@@ -26,7 +26,7 @@ import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query
 
 import { runWhenDocumentVisible } from './util'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function RewardedAdSection() {
   const queryClient = useQueryClient()
@@ -39,7 +39,7 @@ export default function RewardedAdSection() {
 
   const verifyTurnstile = useMutation<POSTV1PointTurnstileResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/turnstile`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/turnstile`
       const { data } = await fetchWithErrorHandling<POSTV1PointTurnstileResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

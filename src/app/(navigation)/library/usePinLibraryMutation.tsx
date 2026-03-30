@@ -8,7 +8,7 @@ import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function usePinLibraryMutation() {
   const queryClient = useQueryClient()
@@ -21,7 +21,7 @@ export default function usePinLibraryMutation() {
     { previous?: InfiniteData<GETV1LibraryListResponse> }
   >({
     mutationFn: async ({ libraryId, action }) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/${libraryId}/pin`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/${libraryId}/pin`
       const method = action === 'pin' ? 'POST' : 'DELETE'
       const { data } = await fetchWithErrorHandling(url, { method, credentials: 'include' })
       return data

@@ -9,7 +9,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export function useBookmarkImport() {
   const [importMode, setImportMode] = useState<ImportMode>('merge')
@@ -22,7 +22,7 @@ export function useBookmarkImport() {
     { mode: ImportMode; bookmarks: BookmarkExportData['bookmarks'] }
   >({
     mutationFn: async ({ mode, bookmarks }) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/import`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/import`
 
       const { data } = await fetchWithErrorHandling<POSTV1BookmarkImportResponse>(url, {
         method: 'POST',

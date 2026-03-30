@@ -1,18 +1,18 @@
-import { env } from '@/env/server.hono'
+import { env } from '@/env/server.common'
 
-const { CORS_ORIGIN } = env
+const { APP_ORIGIN } = env
 
 export function resolveCORSOrigin(origin?: string) {
   if (!origin) {
     return undefined
   }
 
-  if (origin === CORS_ORIGIN) {
+  if (origin === APP_ORIGIN) {
     return origin
   }
 
   try {
-    const corsOriginUrl = new URL(CORS_ORIGIN)
+    const corsOriginUrl = new URL(APP_ORIGIN)
     const { hostname, protocol } = new URL(origin)
     const host = hostname.toLowerCase()
 

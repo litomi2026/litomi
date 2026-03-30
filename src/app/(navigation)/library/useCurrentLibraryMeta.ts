@@ -9,7 +9,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type FetchLibraryMetaOptions = {
   libraryId: number
@@ -22,7 +22,7 @@ type Options = {
 }
 
 export async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
-  const url = new URL(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/${libraryId}`)
+  const url = new URL(`${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/${libraryId}`)
   url.searchParams.set('scope', scope)
 
   try {

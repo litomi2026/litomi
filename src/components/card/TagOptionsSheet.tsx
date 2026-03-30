@@ -34,7 +34,7 @@ const TAG_CATEGORY_TO_CENSORSHIP_KEY: Record<string, CensorshipKey> = {
   other: CensorshipKey.TAG_CATEGORY_OTHER,
 }
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function TagOptionsSheet({ isOpen, onClose, category, value, label }: Props) {
   const { copy } = useClipboard()
@@ -54,7 +54,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
 
   const toggleCensorshipMutation = useMutation({
     mutationFn: async () => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
 
       if (isCensored && existingCensorship) {
         await fetchWithErrorHandling<DELETEV1CensorshipDeleteResponse>(url, {

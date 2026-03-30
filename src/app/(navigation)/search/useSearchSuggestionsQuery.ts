@@ -9,7 +9,7 @@ import { env } from '@/env/client'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Params = {
   query: string
@@ -27,7 +27,7 @@ export async function fetchSearchSuggestions({ query, locale }: Params) {
     searchParams.set('locale', locale)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/suggestions?${searchParams}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/search/suggestions?${searchParams}`
   const { data } = await fetchWithErrorHandling<GETSearchSuggestionsResponse>(url)
   return data
 }

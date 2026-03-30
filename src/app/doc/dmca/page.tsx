@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { z } from 'zod'
 
-import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import DmcaNoticeFormClient from './DmcaNoticeFormClient'
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `저작권/DMCA 신고 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/doc/dmca`,
+    url: `${APP_ORIGIN}/doc/dmca`,
   },
 }
 

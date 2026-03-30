@@ -24,6 +24,7 @@ configMapGenerator:
 
   - name: litomi-common-env
     literals:
+      - APP_ORIGIN=https://stg.litomi.in
       - REDIS_URL=redis://redis:6379
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://opentelemetry-collector.tracing.svc:4318
       - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
@@ -33,14 +34,10 @@ configMapGenerator:
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=litomi,deployment.environment=stg,k8s.cluster.name=litomi-k3s
       - POSTGRES_HEALTHCHECK_CACHE_MS=15000
 
-  - name: litomi-backend-env
-    literals:
-      - CORS_ORIGIN=https://stg.litomi.in
-
 images:
   - name: litomi-web
     newName: ghcr.io/gwak2837/litomi-web
-    digest: sha256:378588d8ae058c3629349df5aa67b36b3d7cd155be2ef467e01d56c72f5fbc1e
+    digest: sha256:5347e50aa41c209ee1858050651c1daf7abaa7331352519d6038d28d6405db58
   - name: litomi-backend
     newName: ghcr.io/gwak2837/litomi-backend
-    digest: sha256:111f85dc16c8ee1475714f89198f952a5068a53a63b94406090c829cf8a8c4ef
+    digest: sha256:55cd887236e6f8d8f8069db733580c5ab4452b6a116d37a7ff9e3e1e2bf21b24

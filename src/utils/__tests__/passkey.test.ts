@@ -2,10 +2,16 @@ import { afterEach, describe, expect, mock, test } from 'bun:test'
 
 import { signalUnknownPasskeyCredential, syncPasskeyCredentialState } from '../passkey'
 
+const originalLocation = globalThis.location
 const originalPublicKeyCredential = globalThis.PublicKeyCredential
 
 describe('패스키 신호 헬퍼', () => {
   afterEach(() => {
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: originalLocation,
+      writable: true,
+    })
     Object.defineProperty(globalThis, 'PublicKeyCredential', {
       configurable: true,
       value: originalPublicKeyCredential,
@@ -23,6 +29,11 @@ describe('패스키 신호 헬퍼', () => {
         signalAllAcceptedCredentials,
         signalCurrentUserDetails,
       },
+      writable: true,
+    })
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: { hostname: 'example.com' },
       writable: true,
     })
 
@@ -57,6 +68,11 @@ describe('패스키 신호 헬퍼', () => {
       },
       writable: true,
     })
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: { hostname: 'example.com' },
+      writable: true,
+    })
 
     const result = await syncPasskeyCredentialState({
       credentialIds: [],
@@ -77,6 +93,11 @@ describe('패스키 신호 헬퍼', () => {
       value: {
         signalUnknownCredential,
       },
+      writable: true,
+    })
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: { hostname: 'example.com' },
       writable: true,
     })
 

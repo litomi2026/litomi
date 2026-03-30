@@ -7,11 +7,11 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchPointsTurnstile() {
   try {
-    const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/turnstile`
+    const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/turnstile`
     const { data } = await fetchWithErrorHandling<GETV1PointTurnstileResponse>(url, { credentials: 'include' })
     return data
   } catch (error) {

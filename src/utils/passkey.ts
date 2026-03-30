@@ -1,5 +1,3 @@
-import { env } from '@/env/client'
-
 type PublicKeyCredentialSignalApi = typeof PublicKeyCredential & {
   signalAllAcceptedCredentials?: (options: SignalAllAcceptedCredentialsOptions) => Promise<void>
   signalCurrentUserDetails?: (options: SignalCurrentUserDetailsOptions) => Promise<void>
@@ -93,7 +91,13 @@ export async function syncPasskeyCredentialState({
 }
 
 function getPasskeyRpId() {
-  return new URL(env.NEXT_PUBLIC_CANONICAL_URL).hostname
+  const hostname = globalThis.location?.hostname?.trim()
+
+  if (!hostname) {
+    throw new Error('패스키 RP ID를 확인할 수 없어요')
+  }
+
+  return hostname
 }
 
 function getPublicKeyCredentialSignalApi(): PublicKeyCredentialSignalApi | null {

@@ -9,7 +9,7 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 import BackButton from '@/components/BackButton'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import MangaReportButton from '@/components/report/MangaReportButton'
-import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import AlsoViewedSection from './AlsoViewedSection'
 import PublicLibrarySection from './PublicLibrarySection'
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]/detail
     openGraph: {
       ...defaultOpenGraph,
       title: `작품 상세 #${id} - ${SHORT_NAME}`,
-      url: `${CANONICAL_URL}/manga/${id}/detail`,
+      url: `${APP_ORIGIN}/manga/${id}/detail`,
     },
   }
 }
