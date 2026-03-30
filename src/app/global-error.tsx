@@ -7,7 +7,9 @@ import { useEffect, useState } from 'react'
 import type { ErrorProps } from '@/types/nextjs'
 
 import CloudProviderStatus from '@/components/CloudProviderStatus'
+import ErrorDiagnosticDetails from '@/components/ErrorDiagnosticDetails'
 import RetryGuidance from '@/components/RetryGuidance'
+import { env } from '@/env/client'
 
 export default function GlobalError({ error, reset }: ErrorProps) {
   const pathname = usePathname()
@@ -16,8 +18,14 @@ export default function GlobalError({ error, reset }: ErrorProps) {
 
   useEffect(() => {
     Sentry.captureException(error, {
-      tags: { error_boundary: pathname },
-      extra: { searchParams: Object.fromEntries(searchParams) },
+      tags: {
+        appEnvironment: env.NEXT_PUBLIC_APP_ENV,
+        deployment_id: env.NEXT_PUBLIC_COMMIT_SHA,
+        error_boundary: pathname,
+      },
+      extra: {
+        searchParams: Object.fromEntries(searchParams),
+      },
     })
   }, [error, pathname, searchParams])
 
@@ -26,12 +34,10 @@ export default function GlobalError({ error, reset }: ErrorProps) {
       <body className="flex items-center justify-center p-4 h-dvh bg-background">
         <main className="max-w-prose text-center text-foreground">
           <h2 className="my-8 text-2xl font-medium">문제가 발생했어요</h2>
-          <div className="space-y-2">
-            {error.digest && <p className="text-xs text-zinc-500">오류 코드: {error.digest}</p>}
-          </div>
           <p className="text-sm text-red-400 my-4 max-w-prose break-all">{error.message}</p>
           <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
           <CloudProviderStatus onStatusUpdate={setHasSystemIssues} />
+          <ErrorDiagnosticDetails digest={error.digest} errorMessage={error.message} pathname={pathname} />
           <p className="my-4 break-keep text-sm text-zinc-400">
             문제가 계속되면{' '}
             <a
