@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
+import { normalizeError, UpstreamServerError } from '@/crawler/errors'
 import { env } from '@/env/client'
 import { type CacheControlOptions, createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
