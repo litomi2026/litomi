@@ -6,7 +6,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchAllLibraryMangas({ cursor, userId }: { cursor: string | null; userId?: number }) {
   const params = new URLSearchParams()
@@ -16,7 +16,7 @@ export async function fetchAllLibraryMangas({ cursor, userId }: { cursor: string
     params.set('cursor', cursor)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/manga?${params}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/manga?${params}`
   const { data } = await fetchWithErrorHandling<GETV1LibraryMangaResponse>(url, { credentials: 'include' })
   return data
 }

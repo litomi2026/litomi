@@ -1,4 +1,4 @@
-import { CANONICAL_URL } from '@/constants'
+import { APP_ORIGIN } from '@/constants'
 
 const privateIP = `
   ^(?:
@@ -33,13 +33,13 @@ export function sanitizeRedirect(url: string | null | undefined) {
   if (!url) return
 
   try {
-    const parsedUrl = new URL(url, CANONICAL_URL)
+    const parsedUrl = new URL(url, APP_ORIGIN)
 
     if (ALLOWED_HOSTNAME_REGEX.some((re) => re.test(parsedUrl.hostname))) {
       return url
     }
 
-    if (parsedUrl.origin === CANONICAL_URL) {
+    if (parsedUrl.origin === APP_ORIGIN) {
       return url
     }
 

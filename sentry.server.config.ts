@@ -13,6 +13,7 @@ Sentry.init({
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
 
-  environment: process.env.NEXT_PUBLIC_VERCEL_ENV || 'local',
+  environment: process.env.NEXT_PUBLIC_APP_ENV || 'local',
+  release: process.env.COMMIT_SHA,
   sendDefaultPii: true,
 })

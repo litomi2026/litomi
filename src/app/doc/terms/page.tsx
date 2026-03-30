@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 
-import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import Header1 from './Header1'
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `이용약관 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/doc/terms`,
+    url: `${APP_ORIGIN}/doc/terms`,
   },
 }
 

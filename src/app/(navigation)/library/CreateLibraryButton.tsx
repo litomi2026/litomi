@@ -21,7 +21,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 const DEFAULT_COLORS = [
   '#3B82F6', // Blue
@@ -328,7 +328,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
 }
 
 async function createLibraryApi(payload: CreateLibraryPayload): Promise<POSTV1LibraryResponse> {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library`
   const { data } = await fetchWithErrorHandling<POSTV1LibraryResponse>(url, {
     method: 'POST',
     credentials: 'include',

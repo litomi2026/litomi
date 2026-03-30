@@ -7,7 +7,7 @@ import { fetchWebtoonSeries, isValidProvider } from '../../providers'
 
 export const runtime = 'edge'
 
-const { NEXT_PUBLIC_CANONICAL_URL } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Params = {
   provider: string
@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       code: 'unknown-provider',
       detail: '지원하지 않는 제공자예요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -32,7 +32,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -54,12 +54,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         },
       }),
     )
-    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
 
     return Response.json(series, { headers })
   } catch (error) {
     const response = handleRouteError(error, request)
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 }

@@ -2,14 +2,10 @@ import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 import type { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
 
 export const APPLICATION_NAME = '리토미 - 만화 웹 뷰어'
-export const CANONICAL_URL = getCanonicalUrl()
+export const APP_ORIGIN = getAppOrigin()
 export const SALT_ROUNDS = 12
 export const SHORT_NAME = '리토미'
 export const THEME_COLOR = '#0a0a0a'
-export const TOTP_ISSUER = new URL(CANONICAL_URL).hostname
-export const WEBAUTHN_ORIGIN = CANONICAL_URL
-export const WEBAUTHN_RP_ID = new URL(CANONICAL_URL).hostname
-export const WEBAUTHN_RP_NAME = 'litomi'
 export const COOKIE_DOMAIN = process.env.NODE_ENV === 'production' ? '.litomi.in' : 'localhost'
 
 export const DESCRIPTION =
@@ -18,7 +14,7 @@ export const DESCRIPTION =
 export const defaultOpenGraph: OpenGraph = {
   title: APPLICATION_NAME,
   description: DESCRIPTION,
-  url: CANONICAL_URL,
+  url: APP_ORIGIN,
   siteName: SHORT_NAME,
   images: [{ url: '/og-image.webp', alt: SHORT_NAME }], // TODO: 나중에 avif 파일로 바꾸기
   type: 'website',
@@ -55,8 +51,8 @@ export function generateOpenGraphMetadata({ title, description, images, url }: P
   }
 }
 
-function getCanonicalUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_CANONICAL_URL || process.env.CORS_ORIGIN
+function getAppOrigin(): string {
+  const raw = process.env.NEXT_PUBLIC_APP_ORIGIN || process.env.APP_ORIGIN
   const value = raw?.trim()
 
   if (!value) {
@@ -67,6 +63,6 @@ function getCanonicalUrl(): string {
     new URL(value)
     return value
   } catch {
-    throw new Error('Invalid NEXT_PUBLIC_CANONICAL_URL')
+    throw new Error('Invalid APP_ORIGIN or NEXT_PUBLIC_APP_ORIGIN')
   }
 }

@@ -7,7 +7,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type MutationContext = {
   previous?: InfiniteData<GETV1PointsDonationsMeResponse>
@@ -22,7 +22,7 @@ export default function useDeleteDonationMutation() {
 
   return useMutation<void, ProblemDetailsError, Variables, MutationContext>({
     mutationFn: async ({ donationId }) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/donations/${donationId}`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/donations/${donationId}`
       await fetchWithErrorHandling<void>(url, { method: 'DELETE', credentials: 'include' })
     },
     onMutate: async ({ donationId }) => {

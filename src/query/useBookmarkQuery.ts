@@ -8,10 +8,10 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchBookmarkIds() {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/id`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/id`
   const { data } = await fetchWithErrorHandling<GETV1BookmarkIdResponse>(url, { credentials: 'include' })
   return data
 }
