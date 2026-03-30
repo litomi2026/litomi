@@ -7,7 +7,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchRatingsPaginated(cursor: string, sort: RatingSort) {
   const searchParams = new URLSearchParams()
@@ -20,7 +20,7 @@ export async function fetchRatingsPaginated(cursor: string, sort: RatingSort) {
     searchParams.set('sort', sort)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/rating?${searchParams}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/rating?${searchParams}`
   const { data } = await fetchWithErrorHandling<GETV1RatingsResponse>(url, { credentials: 'include' })
   return data
 }

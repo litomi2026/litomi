@@ -3,7 +3,7 @@ import type { Book, WithContext } from 'schema-dts'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { CANONICAL_URL, generateOpenGraphMetadata } from '@/constants'
+import { APP_ORIGIN, generateOpenGraphMetadata } from '@/constants'
 import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
 import { toAbsoluteUrl } from '@/utils/url'
 
@@ -62,7 +62,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
   }
 
   const manga = await getManga(id)
-  const pageURL = new URL(`/manga/${id}`, CANONICAL_URL).toString()
+  const pageURL = new URL(`/manga/${id}`, APP_ORIGIN).toString()
 
   const jsonLd: WithContext<Book> = {
     '@context': 'https://schema.org',

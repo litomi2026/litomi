@@ -7,7 +7,7 @@ import { env } from '@/env/client'
 import { Locale } from '@/translation/common'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_EXTERNAL_API_PROXY_URL } = env
+const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 
 type ProxyRandomResponse = {
   mangas: Manga[]
@@ -21,7 +21,7 @@ export function useRandomMangaQuery() {
 }
 
 async function fetchRandomManga() {
-  const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EXTERNAL_API_PROXY_URL)
+  const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
   url.searchParams.set('locale', Locale.KO)
   url.searchParams.set('sort', 'random')
 

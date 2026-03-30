@@ -37,7 +37,7 @@ This will deploy to `image.gwak2837.workers.dev`.
 In your main application, update the environment variable:
 
 ```env
-NEXT_PUBLIC_CORS_PROXY_URL=https://image.gwak2837.workers.dev
+NEXT_PUBLIC_IMAGE_PROXY_ORIGIN=https://image.gwak2837.workers.dev
 ```
 
 ## Testing

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { APPLICATION_NAME, CANONICAL_URL, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
+import { APP_ORIGIN, APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -11,7 +11,7 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     display_override: ['window-controls-overlay', 'standalone'],
     background_color: THEME_COLOR,
-    id: `${CANONICAL_URL}/`,
+    id: `${APP_ORIGIN}/`,
     theme_color: THEME_COLOR,
     screenshots: [
       {
@@ -64,7 +64,7 @@ export default function manifest(): MetadataRoute.Manifest {
     related_applications: [
       {
         platform: 'webapp',
-        url: `${CANONICAL_URL}/manifest.webmanifest`,
+        url: `${APP_ORIGIN}/manifest.webmanifest`,
       },
     ],
   }

@@ -15,7 +15,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { CENSORSHIP_LEVEL_LABELS } from './constants'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Props = {
   censorship: {
@@ -38,7 +38,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
 
   const updateMutation = useMutation({
     mutationFn: async (items: { id: number; key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
       const { data } = await fetchWithErrorHandling<PATCHV1CensorshipUpdateResponse>(url, {
         method: 'PATCH',
         credentials: 'include',

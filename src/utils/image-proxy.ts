@@ -1,6 +1,6 @@
 import { env } from '@/env/client'
 
-const { NEXT_PUBLIC_CORS_PROXY_URL } = env
+const { NEXT_PUBLIC_IMAGE_PROXY_ORIGIN } = env
 
 const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'hentkor.net',
@@ -53,7 +53,7 @@ export function createMangaImageProxyRequestURL({
   page: number
   variant: MangaImageProxyVariant
 }): string {
-  const proxyURL = new URL(NEXT_PUBLIC_CORS_PROXY_URL)
+  const proxyURL = new URL(NEXT_PUBLIC_IMAGE_PROXY_ORIGIN)
   proxyURL.pathname = `/i/v2/manga/${mangaId}/${variant}/${page}${IMAGE_PROXY_ROUTE_EXTENSION}`
 
   if (sourceURL) {
@@ -120,7 +120,7 @@ export function isMangaImageProxyRequestURL(requestURL: string): boolean {
     return false
   }
 
-  const proxyURL = new URL(NEXT_PUBLIC_CORS_PROXY_URL)
+  const proxyURL = new URL(NEXT_PUBLIC_IMAGE_PROXY_ORIGIN)
 
   return parsedRequestURL.origin === proxyURL.origin && parsedRequestURL.pathname.startsWith('/i/')
 }

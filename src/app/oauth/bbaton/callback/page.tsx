@@ -7,7 +7,7 @@ import { LocalStorageKey } from '@/constants/storage'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type CallbackState = { type: 'error'; message: string } | { type: 'loading' } | { type: 'success' }
 
@@ -17,7 +17,7 @@ export default function BBatonCallbackPage() {
 
   const completeMutation = useMutation<void, unknown, { code: string }>({
     mutationFn: async ({ code }) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/complete`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bbaton/complete`
 
       await fetchWithErrorHandling<void>(url, {
         method: 'POST',

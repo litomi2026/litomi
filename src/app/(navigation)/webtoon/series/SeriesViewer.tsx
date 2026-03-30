@@ -10,7 +10,7 @@ import { WebtoonSeries } from '@/crawler/webtoon/types'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_EXTERNAL_API_PROXY_URL } = env
+const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 
 type EpisodeListProps = {
   series: WebtoonSeries
@@ -156,7 +156,7 @@ function useSeriesQuery({ provider, domain, path }: SeriesQueryParams) {
     queryKey: QueryKeys.webtoonSeries(provider, domain, path),
     queryFn: async () => {
       const params = new URLSearchParams({ domain, path })
-      const url = `${NEXT_PUBLIC_EXTERNAL_API_PROXY_URL}/api/proxy/webtoon/${provider}/series?${params}`
+      const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/webtoon/${provider}/series?${params}`
       const { data } = await fetchWithErrorHandling<WebtoonSeries>(url)
       return data
     },

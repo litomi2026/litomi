@@ -18,7 +18,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess, requiresAdultVerification } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 const MangaReportReason = {
   DEEPFAKE: 'DEEPFAKE',
@@ -48,7 +48,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/report`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/report`
 
       const { data } = await fetchWithErrorHandling<POSTV1MangaIdReportResponse>(url, {
         method: 'POST',

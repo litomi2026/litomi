@@ -116,8 +116,9 @@ Example for local development:
 
 ```bash
 # --- Web (Next.js) ---
-NEXT_PUBLIC_BACKEND_URL="http://localhost:3002"
-NEXT_PUBLIC_CANONICAL_URL="http://localhost:3000"
+NEXT_PUBLIC_API_ORIGIN="http://localhost:3002"
+NEXT_PUBLIC_IMAGE_PROXY_ORIGIN="http://localhost:3002"
+NEXT_PUBLIC_EDGE_PROXY_ORIGIN="http://localhost:3001"
 
 # Cloudflare Turnstile (replace with real keys if needed)
 NEXT_PUBLIC_TURNSTILE_SITE_KEY="dev-site-key"
@@ -127,8 +128,8 @@ TURNSTILE_SECRET_KEY="dev-secret-key"
 NEXT_PUBLIC_VAPID_PUBLIC_KEY="dev-vapid-public-key"
 VAPID_PRIVATE_KEY="dev-vapid-private-key"
 
-# --- Backend (Hono) ---
-CORS_ORIGIN="http://localhost:3000"
+# --- Shared origin (server + client) ---
+APP_ORIGIN="http://localhost:3000"
 
 # Third-party (dev can start with dummy values)
 ADSTERRA_API_KEY="dev"

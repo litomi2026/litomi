@@ -122,6 +122,12 @@ export default function useServerAction<T extends ActionResponse, TActionArgs ex
         }
       } catch (error) {
         if (error instanceof Error && !silentNetworkError) {
+          if (/Failed to find Server Action/i.test(error.message)) {
+            toast.warning('새 배포 버전이 감지되어 페이지를 새로고침합니다.')
+            window.setTimeout(() => window.location.reload(), 300)
+            return
+          }
+
           if (!navigator.onLine) {
             toast.error('네트워크 연결을 확인해 주세요')
           } else {

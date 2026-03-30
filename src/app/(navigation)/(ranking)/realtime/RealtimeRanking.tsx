@@ -12,7 +12,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { useRealtimeStore } from './store'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 interface PageRankingItem {
   activeUsers: number
@@ -130,7 +130,7 @@ export default function RealtimeRanking() {
 }
 
 async function fetchRealtimeAnalytics(): Promise<RealtimeData> {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/analytics/realtime`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/analytics/realtime`
   const { data } = await fetchWithErrorHandling<RealtimeData>(url)
   return data
 }
