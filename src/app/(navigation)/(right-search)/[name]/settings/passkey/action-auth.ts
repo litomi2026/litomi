@@ -26,7 +26,7 @@ import {
   getRefreshTokenCookieConfig,
 } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
-import { getAndDeleteChallengePayload, storeChallengePayload } from '@/utils/redis-challenge'
+import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 import TurnstileValidator from '@/utils/turnstile'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from './common'
@@ -90,7 +90,7 @@ export async function getAuthenticationOptions() {
     const authAttemptCookie = getPasskeyAuthenticationAttemptCookieConfig(authenticationAttemptId)
     const turnstileRequired = shouldRequireTurnstile(rateLimitResult)
 
-    await storeChallengePayload(authenticationAttemptId, ChallengeType.AUTHENTICATION, {
+    await storeChallenge(authenticationAttemptId, ChallengeType.AUTHENTICATION, {
       challenge: options.challenge,
       turnstileRequired,
     } satisfies PasskeyAuthenticationAttempt)
@@ -149,7 +149,7 @@ export async function verifyAuthentication(body: unknown) {
       return badRequest('패스키를 검증할 수 없어요')
     }
 
-    const authenticationAttempt = await getAndDeleteChallengePayload<PasskeyAuthenticationAttempt>(
+    const authenticationAttempt = await getAndDeleteChallenge<PasskeyAuthenticationAttempt>(
       authenticationAttemptId,
       ChallengeType.AUTHENTICATION,
     )
