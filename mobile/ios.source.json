@@ -8,7 +8,7 @@
   "featuredApps": ["in.litomi.app"],
   "apps": [
     {
-      "name": "리토미",
+      "name": "Litomi",
       "bundleIdentifier": "in.litomi.app",
       "developerName": "Litomi",
       "subtitle": "Litomi for AltStore Classic / SideStore",
@@ -23,8 +23,8 @@
           "date": "2026-03-25",
           "localizedDescription": "Latest iOS sideload build for AltStore Classic and SideStore.",
           "downloadURL": "https://github.com/gwak2837/litomi/releases/download/mobile-ios-altstore-v1.0.0/litomi-ios-altstore.ipa",
-          "size": 2461604,
-          "minOSVersion": "15.0"
+          "size": 2475537,
+          "minOSVersion": "16.6"
         }
       ],
       "appPermissions": {
