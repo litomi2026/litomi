@@ -1,3 +1,4 @@
+import 'server-only'
 import { and, eq, inArray } from 'drizzle-orm'
 import webpush, { PushSubscription } from 'web-push'
 

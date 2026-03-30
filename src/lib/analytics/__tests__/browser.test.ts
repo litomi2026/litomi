@@ -8,7 +8,7 @@ let importVersion = 0
 const envMock = {
   NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV ?? 'local',
   NEXT_PUBLIC_API_ORIGIN: process.env.NEXT_PUBLIC_API_ORIGIN ?? 'http://localhost:3002',
-  NEXT_PUBLIC_APP_ORIGIN: process.env.NEXT_PUBLIC_APP_ORIGIN ?? 'http://localhost:3000',
+  NEXT_PUBLIC_APP_ORIGIN: process.env.NEXT_PUBLIC_APP_ORIGIN ?? process.env.APP_ORIGIN ?? 'http://localhost:3000',
   NEXT_PUBLIC_IMAGE_PROXY_ORIGIN: process.env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN ?? 'http://localhost:3002',
   NEXT_PUBLIC_EDGE_PROXY_ORIGIN: process.env.NEXT_PUBLIC_EDGE_PROXY_ORIGIN ?? 'http://localhost:3001',
   NEXT_PUBLIC_GTM_ID: 'GTM-TEST',
