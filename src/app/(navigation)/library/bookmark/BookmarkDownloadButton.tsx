@@ -11,12 +11,12 @@ import { env } from '@/env/client'
 import { downloadBlob } from '@/utils/download'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function BookmarkDownloadButton() {
   const exportMutation = useMutation({
     mutationFn: async () => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/export`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/export`
       const { data } = await fetchWithErrorHandling<GETV1BookmarkExportResponse>(url, { credentials: 'include' })
       return data.bookmarks
     },

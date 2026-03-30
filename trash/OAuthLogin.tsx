@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import { NEXT_PUBLIC_API_ORIGIN } from '@/constants/env'
 import { useAuthStore } from '@/store/auth'
 
 export enum LoginSearchParams {
@@ -26,7 +26,7 @@ export default function Login() {
     const loginPromise = new Promise((resolve, reject) =>
       (async () => {
         try {
-          const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/auth/${provider}?code=${code}`, {
+          const response = await fetch(`${NEXT_PUBLIC_API_ORIGIN}/auth/${provider}?code=${code}`, {
             method: 'POST',
           })
 

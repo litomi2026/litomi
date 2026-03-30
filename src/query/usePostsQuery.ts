@@ -6,7 +6,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function usePostInfiniteQuery(filter: PostFilter, mangaId?: number, username?: string) {
   return useInfiniteQuery<GETV1PostResponse>({
@@ -25,7 +25,7 @@ export default function usePostInfiniteQuery(filter: PostFilter, mangaId?: numbe
         searchParams.set('username', username)
       }
 
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/post?${searchParams}`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post?${searchParams}`
       const requestInit = filter === PostFilter.FOLLOWING ? { credentials: 'include' as const } : undefined
       const { data } = await fetchWithErrorHandling<GETV1PostResponse>(url, requestInit)
       return data

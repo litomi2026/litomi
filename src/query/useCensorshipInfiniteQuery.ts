@@ -9,7 +9,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Params = {
   pageParam?: string
@@ -22,7 +22,7 @@ export async function fetchPaginatedCensorships({ pageParam }: Params) {
     params.set('cursor', pageParam)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship?${params}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship?${params}`
   const { data } = await fetchWithErrorHandling<GETV1CensorshipResponse>(url, { credentials: 'include' })
   return data
 }

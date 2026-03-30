@@ -15,7 +15,7 @@ import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query
 
 import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Props = {
   isTwoFactorEnabled: boolean
@@ -28,7 +28,7 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
 
   const unlinkMutation = useMutation<POSTV1BBatonUnlinkResponse, unknown, { password: string; token?: string }>({
     mutationFn: async ({ password, token }) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/unlink`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bbaton/unlink`
 
       const { data } = await fetchWithErrorHandling<POSTV1BBatonUnlinkResponse>(url, {
         method: 'POST',

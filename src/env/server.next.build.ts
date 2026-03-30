@@ -13,11 +13,11 @@ export const nextBuildEnv = createEnv({
   server: {
     // Client-side requirements
     NEXT_PUBLIC_APP_ENV: z.string().default(env.NEXT_PUBLIC_APP_ENV),
+    NEXT_PUBLIC_API_ORIGIN: z.url().default(env.NEXT_PUBLIC_API_ORIGIN),
+    NEXT_PUBLIC_APP_ORIGIN: z.url().default(env.NEXT_PUBLIC_APP_ORIGIN),
     NEXT_PUBLIC_COMMIT_SHA: z.string().optional(),
-    NEXT_PUBLIC_BACKEND_URL: z.url().default(env.NEXT_PUBLIC_BACKEND_URL),
-    NEXT_PUBLIC_CANONICAL_URL: z.url().default(env.NEXT_PUBLIC_CANONICAL_URL),
-    NEXT_PUBLIC_CORS_PROXY_URL: z.url().default(env.NEXT_PUBLIC_CORS_PROXY_URL),
-    NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: z.url().default(env.NEXT_PUBLIC_EXTERNAL_API_PROXY_URL),
+    NEXT_PUBLIC_EDGE_PROXY_ORIGIN: z.url().default(env.NEXT_PUBLIC_EDGE_PROXY_ORIGIN),
+    NEXT_PUBLIC_IMAGE_PROXY_ORIGIN: z.url().default(env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN),
     NEXT_PUBLIC_GTM_ID: z.string().optional(),
     NEXT_PUBLIC_GTM_SCRIPT_URL: z.url().optional(),
     NEXT_PUBLIC_IOS_TESTFLIGHT_URL: z.url().optional(),

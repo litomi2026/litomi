@@ -45,13 +45,13 @@ projects:
                 sync: false
               - key: NEXT_PUBLIC_GA_ID
                 sync: false
-              - key: NEXT_PUBLIC_EXTERNAL_API_PROXY_URL
+              - key: NEXT_PUBLIC_EDGE_PROXY_ORIGIN
                 sync: false
-              - key: NEXT_PUBLIC_CORS_PROXY_URL
+              - key: NEXT_PUBLIC_IMAGE_PROXY_ORIGIN
                 sync: false
-              - key: NEXT_PUBLIC_CANONICAL_URL
+              - key: NEXT_PUBLIC_APP_ORIGIN
                 sync: false
-              - key: NEXT_PUBLIC_BACKEND_URL
+              - key: NEXT_PUBLIC_API_ORIGIN
                 sync: false
               - key: JWT_SECRET_TRUSTED_DEVICE
                 sync: false
@@ -107,13 +107,13 @@ projects:
                 sync: false
               - key: NEXT_PUBLIC_TURNSTILE_SITE_KEY
                 sync: false
-              - key: NEXT_PUBLIC_EXTERNAL_API_PROXY_URL
+              - key: NEXT_PUBLIC_EDGE_PROXY_ORIGIN
                 sync: false
-              - key: NEXT_PUBLIC_CORS_PROXY_URL
+              - key: NEXT_PUBLIC_IMAGE_PROXY_ORIGIN
                 sync: false
-              - key: NEXT_PUBLIC_CANONICAL_URL
+              - key: NEXT_PUBLIC_APP_ORIGIN
                 sync: false
-              - key: NEXT_PUBLIC_BACKEND_URL
+              - key: NEXT_PUBLIC_API_ORIGIN
                 sync: false
               - key: JWT_SECRET_TRUSTED_DEVICE
                 sync: false

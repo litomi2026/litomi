@@ -27,7 +27,7 @@ import CensorshipStats from './CensorshipStats'
 import { CENSORSHIP_KEY_LABELS } from './constants'
 import DefaultCensorshipInfo from './DefaultCensorshipInfo'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 const ImportExportModal = dynamic(() => import('./ImportExportModal'))
 
@@ -49,7 +49,7 @@ export default function Censorships() {
 
   const deleteMutation = useMutation({
     mutationFn: async (ids: number[]) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
       const { data } = await fetchWithErrorHandling<DELETEV1CensorshipDeleteResponse>(url, {
         method: 'DELETE',
         credentials: 'include',

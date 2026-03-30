@@ -16,7 +16,7 @@ import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
 
-const { NEXT_PUBLIC_CANONICAL_URL } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Params = {
   id: string
@@ -36,7 +36,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       code: 'bad-request',
       detail: '잘못된 요청이에요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -61,7 +61,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       detail: '요청하신 작품은 접근할 수 없어요',
       headers: forbiddenHeaders,
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -71,7 +71,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -99,7 +99,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         detail: '요청하신 작품을 찾을 수 없어요',
         headers: notFoundHeaders,
       })
-      response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+      response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
       return response
     }
 
@@ -116,7 +116,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       })
 
       const headers = new Headers(errorHeaders)
-      headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+      headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
       headers.set(DEGRADED_HEADER, '1')
       headers.set(DEGRADED_REASON_HEADER, 'IMAGES_ONLY')
 
@@ -142,11 +142,11 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     })
 
     const headers = new Headers(successHeaders)
-    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return Response.json(manga, { headers })
   } catch (error) {
     const response = handleRouteError(error, request)
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 }

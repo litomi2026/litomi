@@ -8,14 +8,14 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export function useEarnPointMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<POSTV1PointEarnResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/earn`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/earn`
 
       const { data } = await fetchWithErrorHandling<POSTV1PointEarnResponse>(url, {
         method: 'POST',
