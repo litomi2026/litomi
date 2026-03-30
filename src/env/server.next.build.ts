@@ -11,8 +11,8 @@ import { env } from './client'
  */
 export const nextBuildEnv = createEnv({
   server: {
-    // Client-side requirements
-    NEXT_PUBLIC_APP_ENV: z.string().default(env.NEXT_PUBLIC_APP_ENV),
+    // Client-side requirements (NEXT_PUBLIC_*)
+    NEXT_PUBLIC_APP_ENV: z.enum(['local', 'dev', 'prod', 'stg']).default(env.NEXT_PUBLIC_APP_ENV as never),
     NEXT_PUBLIC_API_ORIGIN: z.url().default(env.NEXT_PUBLIC_API_ORIGIN),
     NEXT_PUBLIC_APP_ORIGIN: z.url().default(env.NEXT_PUBLIC_APP_ORIGIN),
     NEXT_PUBLIC_COMMIT_SHA: z.string().optional(),
