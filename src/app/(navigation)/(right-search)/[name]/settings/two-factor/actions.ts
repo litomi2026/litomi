@@ -6,13 +6,12 @@ import ms from 'ms'
 import { generateSecret, generateURI } from 'otplib'
 import { z } from 'zod'
 
-import { TOTP_ISSUER } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
-import { decryptTOTPSecret, encryptTOTPSecret, generateQRCode, verifyTOTPToken } from '@/utils/two-factor'
+import { decryptTOTPSecret, encryptTOTPSecret, generateQRCode, TOTP_CONFIG, verifyTOTPToken } from '@/utils/two-factor'
 import { generateBackupCodes } from '@/utils/two-factor-backup-code'
 
 const tokenSchema = z.object({
@@ -182,7 +181,7 @@ export async function setupTwoFactor() {
     }
 
     const keyURI = generateURI({
-      issuer: TOTP_ISSUER,
+      issuer: TOTP_CONFIG.issuer,
       label: loginId,
       secret: rawSecret,
     })

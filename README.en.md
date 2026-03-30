@@ -116,8 +116,10 @@ Example for local development:
 
 ```bash
 # --- Web (Next.js) ---
-NEXT_PUBLIC_BACKEND_URL="http://localhost:3002"
-NEXT_PUBLIC_CANONICAL_URL="http://localhost:3000"
+NEXT_PUBLIC_API_ORIGIN="http://localhost:3002"
+NEXT_PUBLIC_APP_ORIGIN="http://localhost:3000"
+NEXT_PUBLIC_IMAGE_PROXY_ORIGIN="http://localhost:3002"
+NEXT_PUBLIC_EDGE_PROXY_ORIGIN="http://localhost:3001"
 
 # Cloudflare Turnstile (replace with real keys if needed)
 NEXT_PUBLIC_TURNSTILE_SITE_KEY="dev-site-key"

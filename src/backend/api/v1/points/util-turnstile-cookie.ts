@@ -2,7 +2,7 @@ import type { JWTPayload } from 'jose'
 
 import { jwtVerify, SignJWT } from 'jose'
 
-import { CANONICAL_URL } from '@/constants'
+import { APP_ORIGIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { env } from '@/env/server.common'
 import { sec } from '@/utils/format/date'
@@ -12,7 +12,8 @@ type PointsTurnstileTokenPayload = JWTPayload & {
 }
 
 const { JWT_SECRET_TRUSTED_DEVICE } = env
-const issuer = new URL(CANONICAL_URL).hostname
+const issuer = new URL(APP_ORIGIN).hostname
+
 export const POINTS_TURNSTILE_TTL_SECONDS = sec('2 minutes')
 
 export async function signPointsTurnstileToken(userId: number): Promise<string> {

@@ -18,8 +18,8 @@ import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import ThemeProvider from '@/components/ThemeProvider'
 import OverlayHost from '@/components/ui/OverlayHost'
 import {
+  APP_ORIGIN,
   APPLICATION_NAME,
-  CANONICAL_URL,
   DESCRIPTION,
   generateOpenGraphMetadata,
   SHORT_NAME,
@@ -57,7 +57,7 @@ const PretendardVariable = localFont({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(CANONICAL_URL),
+  metadataBase: new URL(APP_ORIGIN),
   title: {
     default: APPLICATION_NAME,
     template: `%s - ${SHORT_NAME}`,
@@ -72,10 +72,10 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: CANONICAL_URL,
+    canonical: APP_ORIGIN,
     languages: {
-      ko: CANONICAL_URL,
-      'x-default': CANONICAL_URL,
+      ko: APP_ORIGIN,
+      'x-default': APP_ORIGIN,
     },
   },
   ...generateOpenGraphMetadata(),

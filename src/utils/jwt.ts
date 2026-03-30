@@ -1,8 +1,10 @@
+import 'server-only'
+
 import type { JWTPayload } from 'jose'
 
 import { jwtVerify, SignJWT } from 'jose'
 
-import { CANONICAL_URL } from '@/constants'
+import { APP_ORIGIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { env } from '@/env/server.common'
 
@@ -10,7 +12,7 @@ import { sec } from './format/date'
 
 const { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN, JWT_SECRET_TRUSTED_DEVICE } = env
 
-const url = new URL(CANONICAL_URL)
+const url = new URL(APP_ORIGIN)
 
 export enum JWTType {
   ACCESS,
