@@ -10,6 +10,7 @@ const ERROR_PATTERNS = {
   authentication: /auth|login|credential|permission|forbidden/i,
   database: /database|query|transaction|constraint/i,
   rateLimit: /rate limit|too many requests|429/i,
+  serverActionSkew: /Failed to find Server Action/i,
 }
 
 export default function RetryGuidance({ hasSystemIssues, errorMessage = '' }: SmartRetryGuidanceProps) {
@@ -21,7 +22,9 @@ export default function RetryGuidance({ hasSystemIssues, errorMessage = '' }: Sm
       return
     }
 
-    if (ERROR_PATTERNS.network.test(errorMessage)) {
+    if (ERROR_PATTERNS.serverActionSkew.test(errorMessage)) {
+      setGuidance('새 버전이 배포되는 중일 수 있어요. 페이지를 새로고침 해주세요.')
+    } else if (ERROR_PATTERNS.network.test(errorMessage)) {
       setGuidance('네트워크 연결을 확인하고 다시 시도해주세요.')
     } else if (ERROR_PATTERNS.database.test(errorMessage)) {
       setGuidance('데이터 처리 중 문제가 발생했어요.')
