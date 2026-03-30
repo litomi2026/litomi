@@ -10,7 +10,7 @@ const mobileDir = path.resolve(__dirname, '..')
 
 const packageJson = readJson(path.join(mobileDir, 'package.json'))
 const capacitorConfig = readJson(path.join(mobileDir, 'capacitor.config.json'))
-const altstoreConfig = readJson(path.join(mobileDir, 'altstore.config.json'))
+const iosConfig = readJson(path.join(mobileDir, 'ios.config.json'))
 
 const versionName = String(packageJson.version ?? '').trim()
 const versionParts = versionName.split('.').map((value) => Number.parseInt(value, 10))
@@ -26,8 +26,9 @@ const releaseTag = process.env.ALTSTORE_RELEASE_TAG || `mobile-ios-altstore-v${v
 const repositoryUrl = normalizeRepositoryUrl(process.env.ALTSTORE_REPOSITORY_URL || getGitRemoteUrl())
 const releaseBaseUrl = (process.env.ALTSTORE_RELEASE_BASE_URL || `${repositoryUrl}/releases`).replace(/\/+$/, '')
 const sourceBranch = process.env.ALTSTORE_SOURCE_BRANCH || 'main'
-const sourceRepositoryPath = path.join(mobileDir, 'altstore', 'source.json')
-const sourceUrl = process.env.ALTSTORE_SOURCE_URL || getRawGitHubUrl(repositoryUrl, sourceBranch, 'mobile/altstore/source.json')
+const sourceRepositoryPath = path.join(mobileDir, 'ios.source.json')
+const sourceUrl =
+  process.env.ALTSTORE_SOURCE_URL || getRawGitHubUrl(repositoryUrl, sourceBranch, 'mobile/ios.source.json')
 
 const archivePath = path.join(mobileDir, 'build', 'ios-archive', 'Litomi.xcarchive')
 const payloadRoot = path.join(mobileDir, 'build', 'ios-altstore-payload')
@@ -88,8 +89,12 @@ if (!fs.existsSync(appInfoPath)) {
 
 const appInfo = readPlist(appInfoPath)
 const bundleIdentifier = String(appInfo.CFBundleIdentifier || capacitorConfig.appId || '').trim()
-const displayName = String(appInfo.CFBundleDisplayName || appInfo.CFBundleName || altstoreConfig.app?.name || '').trim()
-const minOSVersion = String(appInfo.MinimumOSVersion || detectDeploymentTarget(path.join(mobileDir, 'ios', 'App', 'App.xcodeproj', 'project.pbxproj')) || '').trim()
+const displayName = String(appInfo.CFBundleDisplayName || appInfo.CFBundleName || iosConfig.app?.name || '').trim()
+const minOSVersion = String(
+  appInfo.MinimumOSVersion ||
+    detectDeploymentTarget(path.join(mobileDir, 'ios', 'App', 'App.xcodeproj', 'project.pbxproj')) ||
+    '',
+).trim()
 
 if (!bundleIdentifier) {
   throw new Error('Could not determine iOS bundle identifier for AltStore source generation.')
@@ -128,29 +133,29 @@ const today = new Date().toISOString().slice(0, 10)
 const ipaSize = fs.statSync(ipaPath).size
 
 const sourceJson = {
-  name: altstoreConfig.source.name,
-  subtitle: altstoreConfig.source.subtitle,
-  description: altstoreConfig.source.description,
-  iconURL: altstoreConfig.source.iconURL,
-  website: altstoreConfig.source.website,
-  tintColor: altstoreConfig.source.tintColor,
+  name: iosConfig.source.name,
+  subtitle: iosConfig.source.subtitle,
+  description: iosConfig.source.description,
+  iconURL: iosConfig.source.iconURL,
+  website: iosConfig.source.website,
+  tintColor: iosConfig.source.tintColor,
   featuredApps: [bundleIdentifier],
   apps: [
     {
-      name: altstoreConfig.app.name,
+      name: iosConfig.app.name,
       bundleIdentifier,
-      developerName: altstoreConfig.app.developerName,
-      subtitle: altstoreConfig.app.subtitle,
-      localizedDescription: altstoreConfig.app.localizedDescription,
-      iconURL: altstoreConfig.app.iconURL,
-      tintColor: altstoreConfig.app.tintColor,
-      category: altstoreConfig.app.category,
+      developerName: iosConfig.app.developerName,
+      subtitle: iosConfig.app.subtitle,
+      localizedDescription: iosConfig.app.localizedDescription,
+      iconURL: iosConfig.app.iconURL,
+      tintColor: iosConfig.app.tintColor,
+      category: iosConfig.app.category,
       versions: [
         {
           version: versionName,
           buildVersion: buildNumber,
           date: today,
-          localizedDescription: altstoreConfig.app.versionDescription,
+          localizedDescription: iosConfig.app.versionDescription,
           downloadURL: `${releaseBaseUrl}/download/${releaseTag}/${ipaName}`,
           size: ipaSize,
           minOSVersion,
@@ -182,7 +187,7 @@ const buildInfoLines = [
   `ipa_asset=${ipaName}`,
   `dsyms_asset=${dsymsName}`,
   `source_asset=${sourceName}`,
-  `note=AltStore Classic distribution requires users to install with AltStore and refresh through AltServer using their own Apple account.`,
+  `note=AltStore Classic and SideStore distribution requires users to sideload with their own Apple account. AltStore Classic refreshes through AltServer, and SideStore refreshes on-device with LocalDevVPN.`,
 ]
 
 fs.writeFileSync(buildInfoPath, `${buildInfoLines.join('\n')}\n`)
