@@ -1,6 +1,6 @@
 import { type MetadataRoute } from 'next'
 
-import { CANONICAL_URL } from '@/constants'
+import { APP_ORIGIN } from '@/constants'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/',
       },
     ],
-    sitemap: CANONICAL_URL + '/sitemap.xml',
+    sitemap: APP_ORIGIN + '/sitemap.xml',
   }
 }

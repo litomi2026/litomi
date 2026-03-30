@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 
-import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 const EFFECTIVE_DATE = '2026-01-04'
 const CONTACT_EMAIL = 'litomi2026@gmail.com'
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `개인정보 처리방침 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/doc/privacy`,
+    url: `${APP_ORIGIN}/doc/privacy`,
   },
 }
 

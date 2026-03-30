@@ -1,14 +1,15 @@
+import 'server-only'
 import crypto from 'crypto'
 import { verify } from 'otplib'
 import QRCode from 'qrcode'
 
-import { TOTP_ISSUER } from '@/constants'
+import { APP_ORIGIN } from '@/constants'
 import { env } from '@/env/server.common'
 
 const { TOTP_ENCRYPTION_KEY } = env
 
-const TOTP_CONFIG = {
-  issuer: TOTP_ISSUER,
+export const TOTP_CONFIG = {
+  issuer: new URL(APP_ORIGIN).hostname,
   algorithm: 'aes-256-cbc',
   key: Buffer.from(TOTP_ENCRYPTION_KEY, 'hex'),
 }

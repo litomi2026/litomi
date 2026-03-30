@@ -11,7 +11,6 @@ import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants'
 import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'
 import { ChallengeType, encodeDeviceType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
@@ -21,6 +20,7 @@ import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from './common'
 import { hasCredentialId } from './utils'
 
 const verifyRegistrationSchema = z.object({

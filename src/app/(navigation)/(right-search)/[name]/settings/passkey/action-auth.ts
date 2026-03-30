@@ -6,7 +6,6 @@ import { eq } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/constants'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { ChallengeType } from '@/database/enum'
@@ -23,6 +22,8 @@ import {
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 import TurnstileValidator from '@/utils/turnstile'
+
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from './common'
 
 const verifyAuthenticationSchema = z.object({
   id: z.string(),
