@@ -15,8 +15,8 @@
 주요 관리 파일은 아래 정도만 보면 됩니다.
 
 - `capacitor.config.json`
-- `altstore.config.json`
-- `altstore/source.json`
+- `ios.config.json`
+- `ios.source.json`
 - `package.json`
 - `web/index.html`
 - `android/app/build.gradle`
@@ -50,13 +50,14 @@ bun run android:release
 bun run ios:altstore
 ```
 
-## AltStore Classic 배포
+## AltStore Classic / SideStore 배포
 
-- `bun run ios:altstore`는 unsigned iOS archive를 만든 뒤 AltStore Classic이 설치할 수 있는 `.ipa`와 `source.json`을 생성합니다.
-- 결과물은 `artifacts/ios/` 아래에 `.ipa`, AltStore source, dSYMs, 체크섬, 빌드 정보 파일로 저장됩니다.
-- 저장소에 커밋되는 고정 source 파일은 `mobile/altstore/source.json`이며, AltStore에는 이 파일의 raw GitHub URL을 등록하면 됩니다.
+- `bun run ios:altstore`는 unsigned iOS archive를 만든 뒤 AltStore Classic과 SideStore에서 함께 쓸 수 있는 `.ipa`와 AltSource(`source.json`)를 생성합니다.
+- 결과물은 `artifacts/ios/` 아래에 `.ipa`, AltSource, dSYMs, 체크섬, 빌드 정보 파일로 저장됩니다.
+- 저장소에 커밋되는 고정 source 파일은 `mobile/ios.source.json`이며, AltStore Classic과 SideStore 모두 이 파일의 raw GitHub URL을 등록할 수 있습니다.
 - GitHub Actions의 `.github/workflows/mobile-ios-altstore-release.yml`는 같은 산출물을 GitHub Release와 Actions artifact로 올립니다.
-- 사용자는 AltStore Classic과 AltServer를 직접 설치해야 하며, 무료 Apple 계정 기준으로 앱은 7일마다 갱신이 필요합니다.
+- AltStore Classic 사용자는 AltServer를 직접 설치해야 하고, SideStore 사용자는 초기 설치 시 한 번 컴퓨터가 필요합니다.
+- 무료 Apple 계정 기준으로 앱은 7일마다 갱신이 필요하며, SideStore는 설치·업데이트·갱신 중에 LocalDevVPN을 켜 두는 편이 안전합니다.
 - 이 흐름은 App Store/TestFlight가 아니라 사용자가 자신의 Apple 계정으로 직접 사이드로드하는 배포 방식입니다.
 
 ## 메모

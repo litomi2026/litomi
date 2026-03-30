@@ -115,7 +115,7 @@ export default function InstallPrompt() {
       <div className="flex flex-col gap-4 p-2">
         <div className="grid gap-1.5">
           <p className="text-sm font-semibold text-zinc-100">브라우저가 웹앱 설치를 지원해요</p>
-          <p className="text-xs leading-6 text-zinc-400">
+          <p className="text-sm leading-6 text-zinc-400">
             버튼을 누르면 브라우저의 설치 창이 바로 열려요. 설치 후에는 일반 앱처럼 홈 화면에서 실행할 수 있어요.
           </p>
         </div>
