@@ -1,7 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { CANONICAL_URL } from '@/constants'
-import { normalizeError, UpstreamServerError } from '@/crawler/errors'
+import { env } from '@/env/client'
 import { type CacheControlOptions, createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 import {
@@ -10,6 +9,8 @@ import {
   PROBLEM_CONTENT_TYPE,
   type ProblemDetails,
 } from '@/utils/problem-details'
+
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export type CreateProblemDetailsResponseOptions = {
   code: string
@@ -188,7 +189,7 @@ export function isUpstreamServerError(error: unknown): boolean {
 
 function extractExpirationFromURL(imageUrl: string): number | null {
   try {
-    const url = new URL(imageUrl, CANONICAL_URL)
+    const url = new URL(imageUrl, NEXT_PUBLIC_APP_ORIGIN)
     const expires = url.searchParams.get('expires')
     if (expires && /^\d+$/.test(expires)) {
       return parseInt(expires, 10)
