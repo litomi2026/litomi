@@ -229,12 +229,12 @@ export default function AppInstallPage() {
 
   return (
     <div className="p-safe mx-auto max-w-3xl px-4 py-6 sm:px-8 sm:py-12">
-      <div className="grid gap-3 sm:gap-4">
+      <div className="grid gap-4">
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">앱 설치 안내</h1>
-        <p className="max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
-          사용 중인 기기에 맞는 설치 방법을 선택해 주세요. 현재 리토미 앱은 기기에 최적화된 네이티브 앱으로 완전히
-          개발된 것이 아니라 기존의 웹 서비스를 앱 형태로 감싸서 보여주는 방식으로 제작되었기에, 웹앱(PWA) 설치 방식을
-          권장해요.
+        <p className="max-w-2xl text-sm text-zinc-400 sm:text-base">
+          사용 중인 기기에 맞는 설치 방법을 선택해 주세요. 현재 리토미 앱은 기기에 최적화된 네이티브 앱으로 개발된 것이
+          아니라 기존의 웹 서비스를 앱 형태로 감싸서 보여주는 방식으로 제작되었기에, 웹 푸시 알림과 전체 화면 기능을
+          지원하는 웹앱(PWA) 설치 방식을 권장해요.
         </p>
       </div>
 
