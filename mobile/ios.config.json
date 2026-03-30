@@ -1,0 +1,20 @@
+{
+  "source": {
+    "name": "Litomi iOS Source",
+    "subtitle": "Litomi iOS builds for AltStore Classic and SideStore",
+    "description": "Self-hosted AltSource for Litomi iOS builds. Install with AltStore Classic or SideStore using your own Apple account.",
+    "website": "https://litomi.in",
+    "iconURL": "https://litomi.in/web-app-manifest-512x512.png",
+    "tintColor": "#101418"
+  },
+  "app": {
+    "name": "Litomi",
+    "developerName": "Litomi",
+    "subtitle": "Litomi for AltStore Classic / SideStore",
+    "localizedDescription": "Capacitor-based Litomi iOS build distributed through a self-hosted AltSource for AltStore Classic and SideStore sideloading.",
+    "iconURL": "https://litomi.in/web-app-manifest-512x512.png",
+    "category": "utilities",
+    "tintColor": "#101418",
+    "versionDescription": "Latest iOS sideload build for AltStore Classic and SideStore."
+  }
+}
