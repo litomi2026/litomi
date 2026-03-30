@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { CANONICAL_URL } from '@/constants'
+import { APP_ORIGIN } from '@/constants'
 
 import { MetricParam, PeriodParam } from './(navigation)/(ranking)/common'
 
@@ -22,7 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: CANONICAL_URL,
+      url: APP_ORIGIN,
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.HOME,
@@ -31,80 +31,80 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...generatePopularMangaPages(lastModified),
     ...generateRankingPages(lastModified),
     {
-      url: `${CANONICAL_URL}/realtime`,
+      url: `${APP_ORIGIN}/realtime`,
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.RANKING,
     },
     ...generateSearchPages(lastModified),
     {
-      url: `${CANONICAL_URL}/random`,
+      url: `${APP_ORIGIN}/random`,
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.SEARCH,
     },
     {
-      url: `${CANONICAL_URL}/library`,
+      url: `${APP_ORIGIN}/library`,
       lastModified,
       changeFrequency: 'weekly',
       priority: PRIORITY_LEVELS.LIBRARY,
     },
     {
-      url: `${CANONICAL_URL}/library/bookmark`,
+      url: `${APP_ORIGIN}/library/bookmark`,
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.LIBRARY,
     },
     {
-      url: `${CANONICAL_URL}/library/history`,
+      url: `${APP_ORIGIN}/library/history`,
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.LIBRARY,
     },
     {
-      url: `${CANONICAL_URL}/@`,
+      url: `${APP_ORIGIN}/@`,
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.USER_PAGES,
     },
     {
-      url: `${CANONICAL_URL}/posts/recommend`,
+      url: `${APP_ORIGIN}/posts/recommend`,
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.POSTS,
     },
     {
-      url: `${CANONICAL_URL}/doc/privacy`,
+      url: `${APP_ORIGIN}/doc/privacy`,
       lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
-      url: `${CANONICAL_URL}/doc/terms`,
+      url: `${APP_ORIGIN}/doc/terms`,
       lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
-      url: `${CANONICAL_URL}/doc/dmca`,
+      url: `${APP_ORIGIN}/doc/dmca`,
       lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
-      url: `${CANONICAL_URL}/deterrence`,
+      url: `${APP_ORIGIN}/deterrence`,
       lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
-      url: `${CANONICAL_URL}/auth/login`,
+      url: `${APP_ORIGIN}/auth/login`,
       lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.AUTH,
     },
     {
-      url: `${CANONICAL_URL}/auth/signup`,
+      url: `${APP_ORIGIN}/auth/signup`,
       lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.AUTH,
@@ -117,7 +117,7 @@ function generateNewMangaPages(lastModified: Date): MetadataRoute.Sitemap {
 
   for (let i = 1; i <= 9; i++) {
     pages.push({
-      url: `${CANONICAL_URL}/new/${i}`,
+      url: `${APP_ORIGIN}/new/${i}`,
       lastModified,
       changeFrequency: 'daily' as const,
       priority: PRIORITY_LEVELS.MAIN_SECTIONS,
@@ -133,7 +133,7 @@ function generatePopularMangaPages(lastModified: Date): MetadataRoute.Sitemap {
 
   for (const mangaId of mangaIds) {
     pages.push({
-      url: `${CANONICAL_URL}/manga/${mangaId}`,
+      url: `${APP_ORIGIN}/manga/${mangaId}`,
       lastModified,
       changeFrequency: 'yearly' as const,
       priority: PRIORITY_LEVELS.MANGA_DETAIL,
@@ -149,7 +149,7 @@ function generateRankingPages(lastModified: Date): MetadataRoute.Sitemap {
   for (const metric of Object.values(MetricParam)) {
     for (const period of Object.values(PeriodParam)) {
       pages.push({
-        url: `${CANONICAL_URL}/ranking/${metric}/${period}`,
+        url: `${APP_ORIGIN}/ranking/${metric}/${period}`,
         lastModified,
         changeFrequency: 'daily' as const,
         priority: PRIORITY_LEVELS.RANKING,
@@ -167,7 +167,7 @@ function generateSearchPages(lastModified: Date): MetadataRoute.Sitemap {
   for (const tag of popularTags) {
     const query = tag ? `query=${encodeURIComponent(tag)}` : ''
     pages.push({
-      url: `${CANONICAL_URL}/search?${query}`,
+      url: `${APP_ORIGIN}/search?${query}`,
       lastModified,
       changeFrequency: 'weekly' as const,
       priority: PRIORITY_LEVELS.SEARCH,
