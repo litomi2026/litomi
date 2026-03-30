@@ -9,6 +9,7 @@ export const env = createEnv({
   server: {
     AIVEN_POSTGRES_URL: z.string().default('postgresql://test_user:test_password@localhost:5434/test_db'),
     AIVEN_CERTIFICATE: z.string().optional(),
+    APP_ORIGIN: z.url().default('http://localhost:3000'),
     JWT_SECRET_ACCESS_TOKEN: z.string().default('123'),
     JWT_SECRET_REFRESH_TOKEN: z.string().default('456'),
     JWT_SECRET_TRUSTED_DEVICE: z.string().default('789'),

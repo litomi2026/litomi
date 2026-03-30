@@ -22,8 +22,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: litomi-common-env
-            - configMapRef:
-                name: litomi-backend-env
             - secretRef:
                 name: litomi-backend-secret
           readinessProbe:

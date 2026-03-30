@@ -52,7 +52,7 @@ export function generateOpenGraphMetadata({ title, description, images, url }: P
 }
 
 function getAppOrigin(): string {
-  const raw = process.env.NEXT_PUBLIC_APP_ORIGIN || process.env.CORS_ORIGIN
+  const raw = process.env.NEXT_PUBLIC_APP_ORIGIN || process.env.APP_ORIGIN
   const value = raw?.trim()
 
   if (!value) {
@@ -63,6 +63,6 @@ function getAppOrigin(): string {
     new URL(value)
     return value
   } catch {
-    throw new Error('Invalid NEXT_PUBLIC_APP_ORIGIN')
+    throw new Error('Invalid APP_ORIGIN or NEXT_PUBLIC_APP_ORIGIN')
   }
 }

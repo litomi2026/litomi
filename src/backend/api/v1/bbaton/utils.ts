@@ -7,12 +7,14 @@ import { jwtVerify, SignJWT } from 'jose'
 import type { Env } from '@/backend'
 
 import { CookieKey } from '@/constants/storage'
+import { env as commonEnv } from '@/env/server.common'
 import { env } from '@/env/server.hono'
 import { getAccessTokenCookieConfig, getAuthHintCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
 import { sec } from '@/utils/format/date'
 import { JWTType, verifyJWT } from '@/utils/jwt'
 
-const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT, CORS_ORIGIN } = env
+const { APP_ORIGIN } = commonEnv
+const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT } = env
 
 type BBatonAttemptTokenPayload = JWTPayload & {
   userId: string
@@ -37,7 +39,7 @@ export function generateAttemptId(): string {
 }
 
 export function getBBatonRedirectURI(): string {
-  const url = new URL('/oauth/bbaton/callback', CORS_ORIGIN)
+  const url = new URL('/oauth/bbaton/callback', APP_ORIGIN)
   return url.toString()
 }
 
@@ -46,7 +48,7 @@ export function parseBirthYear(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0
 }
 
-const issuer = new URL(CORS_ORIGIN).hostname
+const issuer = new URL(APP_ORIGIN).hostname
 
 type ReissueAuthCookiesClaims = {
   userId: number
