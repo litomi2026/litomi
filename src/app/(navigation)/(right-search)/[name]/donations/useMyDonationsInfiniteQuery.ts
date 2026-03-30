@@ -6,10 +6,10 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchMyDonations(searchParams: URLSearchParams) {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/donations/me?${searchParams}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/donations/me?${searchParams}`
   const { data } = await fetchWithErrorHandling<GETV1PointsDonationsMeResponse>(url, { credentials: 'include' })
   return data
 }

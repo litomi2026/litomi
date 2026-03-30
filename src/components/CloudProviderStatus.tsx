@@ -40,7 +40,7 @@ function toServiceStatus(indicator: string | undefined): ServiceStatus {
 const STATUS_ENDPOINTS = {
   supabase: 'https://status.supabase.com/api/v2/status.json',
   vercel: 'https://www.vercel-status.com/api/v2/status.json',
-  api: `${env.NEXT_PUBLIC_BACKEND_URL}/health`,
+  api: `${env.NEXT_PUBLIC_API_ORIGIN}/health`,
   litomi: '/api/health',
 }
 

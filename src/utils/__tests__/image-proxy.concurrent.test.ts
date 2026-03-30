@@ -9,7 +9,7 @@ import {
   parseImageProxySourceURL,
 } from '@/utils/image-proxy'
 
-const proxyOrigin = new URL(env.NEXT_PUBLIC_CORS_PROXY_URL).origin
+const proxyOrigin = new URL(env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN).origin
 
 describe('만화 이미지 프록시 유틸', () => {
   test('프록시 요청 URL을 queryless /i/v2/manga/:mangaId/:variant/:page 형태로 만든다', () => {

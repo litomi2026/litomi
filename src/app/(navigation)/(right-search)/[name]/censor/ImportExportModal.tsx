@@ -22,7 +22,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 const PLACEHOLDER_JSON = `[
   {
@@ -52,7 +52,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
       const { data } = await fetchWithErrorHandling<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',
         credentials: 'include',

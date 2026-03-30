@@ -6,7 +6,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 interface Options {
   enabled?: boolean
@@ -21,7 +21,7 @@ export async function fetchLibraryList({ cursor, userId }: { cursor: string | nu
     params.set('cursor', cursor)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library?${params}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library?${params}`
   const { data } = await fetchWithErrorHandling<GETV1LibraryListResponse>(url, { credentials: 'include' })
   return data
 }

@@ -16,7 +16,7 @@ import { upsertReadingHistoryIndexEntry } from '@/utils/reading-history-index'
 
 import { useImageIndexStore } from './store/imageIndex'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 const SEND_INTERVAL_MS = ms('1 minute')
 
 type Props = {
@@ -89,7 +89,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
     // NOTE: 뷰어 재진입 시 서버 호출 없이도 이어읽기가 가능하도록 최신 페이지를 인덱스에 반영해요
     upsertReadingHistoryIndexEntry(context.me.id, mangaId, context.page)
 
-    const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/history`
+    const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/history`
     const keepalive = options?.keepalive ?? false
 
     const body: POSTV1MangaIdHistoryBody = {

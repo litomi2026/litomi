@@ -93,7 +93,7 @@ export async function syncPasskeyCredentialState({
 }
 
 function getPasskeyRpId() {
-  return new URL(env.NEXT_PUBLIC_CANONICAL_URL).hostname
+  return new URL(env.NEXT_PUBLIC_APP_ORIGIN).hostname
 }
 
 function getPublicKeyCredentialSignalApi(): PublicKeyCredentialSignalApi | null {

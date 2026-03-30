@@ -9,10 +9,10 @@ import { CookieKey } from '@/constants/storage'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchMe() {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/me`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me`
   const { data } = await fetchWithErrorHandling<GETV1MeResponse>(url, { credentials: 'include' })
   return data
 }
