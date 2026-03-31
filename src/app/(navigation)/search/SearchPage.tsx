@@ -1,6 +1,3 @@
-'use client'
-
-import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
@@ -10,27 +7,27 @@ import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import SearchResult, { SearchResultLoading } from './SearchResults'
 import TrendingKeywords from './TrendingKeywords'
 
-export default function SearchPage() {
-  const searchParams = useSearchParams()
-  const viewFromQuery = searchParams.get('view')
-  const view = viewFromQuery === View.IMAGE ? View.IMAGE : View.CARD
+type Filters = {
+  sort: string | null
+  minView: string | null
+  maxView: string | null
+  minPage: string | null
+  maxPage: string | null
+  minRating: string | null
+  maxRating: string | null
+  from: string | null
+  to: string | null
+  nextId: string | null
+  skip: string | null
+}
 
-  const filters = {
-    sort: searchParams.get('sort'),
-    minView: searchParams.get('min-view'),
-    maxView: searchParams.get('max-view'),
-    minPage: searchParams.get('min-page'),
-    maxPage: searchParams.get('max-page'),
-    minRating: searchParams.get('min-rating'),
-    maxRating: searchParams.get('max-rating'),
-    from: searchParams.get('from'),
-    to: searchParams.get('to'),
-    nextId: searchParams.get('next-id'),
-    skip: searchParams.get('skip'),
-  }
+type Props = {
+  filters: Filters
+  hasActiveFilters: boolean
+  view: View
+}
 
-  const hasActiveFilters = Boolean(Object.values(filters).some(Boolean))
-
+export default function SearchPage({ filters, hasActiveFilters, view }: Readonly<Props>) {
   return (
     <>
       {hasActiveFilters ? (
@@ -42,7 +39,7 @@ export default function SearchPage() {
           <ActiveFilters filters={filters} />
         </div>
       ) : (
-        <TrendingKeywords />
+        <TrendingKeywords view={view} />
       )}
       <NonAdultJuicyAdsBanner />
       <Suspense fallback={<SearchResultLoading view={view} />}>

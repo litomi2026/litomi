@@ -16,7 +16,7 @@ import { ChallengeType, encodeDeviceType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 import { userTable } from '@/database/supabase/user'
-import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
+import { badRequest, forbidden, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 
@@ -144,7 +144,10 @@ export async function verifyRegistration(body: RegistrationResponseJSON) {
     await db.insert(credentialTable).values(newPasskey)
     revalidatePath('/[name]/settings', 'page')
 
-    return noContent()
+    return ok({
+      credentialId,
+      message: '패스키를 등록했어요',
+    })
   } catch (error) {
     console.error('verifyRegistration:', error)
     captureException(error, { extra: { name: 'verifyRegistration', userId } })

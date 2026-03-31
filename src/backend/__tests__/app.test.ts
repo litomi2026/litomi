@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
 import appRoutes from '../app'
 
@@ -29,6 +29,10 @@ let shouldReportDatabaseDisconnected = false
 
 beforeAll(() => {
   spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 mock.module('@/database/supabase/drizzle', () => ({
