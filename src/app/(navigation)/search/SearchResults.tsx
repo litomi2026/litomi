@@ -1,7 +1,6 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useSearchParams } from 'next/navigation'
 import { Fragment, useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
@@ -19,12 +18,12 @@ import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 const Error400 = dynamic(() => import('./Error400'))
 const SearchResultError = dynamic(() => import('./SearchResultError'))
 
-export default function SearchResult() {
-  const searchParams = useSearchParams()
-  const viewFromQuery = searchParams.get('view')
-  const view = viewFromQuery === View.IMAGE ? View.IMAGE : View.CARD
-  const isRandomSort = searchParams.get('sort') === 'random'
+type Props = {
+  showRefreshButton: boolean
+  view: View
+}
 
+export default function SearchResult({ showRefreshButton, view }: Props) {
   const {
     data,
     isLoading,
@@ -93,7 +92,7 @@ export default function SearchResult() {
       {mangas.length > 0 && (isFetchNextPageError || isRefetchError) && (
         <LoadMoreRetryButton onRetry={isFetchNextPageError ? fetchNextPage : refetch} />
       )}
-      {isRandomSort ? (
+      {showRefreshButton ? (
         <RandomRefreshButton
           className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition mx-auto"
           isLoading={isRefetching}
@@ -111,10 +110,9 @@ export default function SearchResult() {
 }
 
 export function SearchResultLoading({ view }: { view: View }) {
-  const skeletonCount = view === View.IMAGE ? 12 : 6
   return (
     <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
-      {Array.from({ length: skeletonCount }).map((_, i) => (
+      {Array.from({ length: view === View.IMAGE ? 12 : 6 }).map((_, i) => (
         <MangaCardSkeleton key={i} />
       ))}
     </ul>
