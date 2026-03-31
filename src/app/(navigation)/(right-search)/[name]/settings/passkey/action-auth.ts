@@ -1,7 +1,12 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { generateAuthenticationOptions, verifyAuthenticationResponse } from '@simplewebauthn/server'
+import {
+  AuthenticationResponseJSON,
+  generateAuthenticationOptions,
+  PublicKeyCredentialRequestOptionsJSON,
+  verifyAuthenticationResponse,
+} from '@simplewebauthn/server'
 import { eq } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
@@ -18,6 +23,7 @@ import {
   getAccessTokenCookieConfig,
   getAuthHintCookieConfig,
   getPasskeyAuthenticationAttemptCookieConfig,
+  getRefreshTokenCookieConfig,
 } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
@@ -38,12 +44,35 @@ const verifyAuthenticationSchema = z.object({
   clientExtensionResults: z.record(z.string(), z.unknown()).optional().default({}),
 })
 
+const verifyAuthenticationRequestSchema = z.object({
+  authentication: verifyAuthenticationSchema,
+  remember: z.boolean(),
+  turnstileToken: z.string().nullable().optional(),
+})
+
 const authenticationLimiter = new RateLimiter(RateLimitPresets.balanced())
+
+export type GetAuthenticationOptionsResponse = {
+  options: PublicKeyCredentialRequestOptionsJSON
+  turnstileRequired: boolean
+}
+
+export type VerifyAuthenticationRequest = {
+  authentication: AuthenticationResponseJSON
+  remember: boolean
+  turnstileToken?: string | null
+}
+
+type PasskeyAuthenticationAttempt = {
+  challenge: string
+  turnstileRequired: boolean
+}
 
 export async function getAuthenticationOptions() {
   const headersList = await headers()
   const remoteIP = getRemoteAddress(headersList)
-  const { allowed, retryAfter } = await authenticationLimiter.check(remoteIP)
+  const rateLimitResult = await authenticationLimiter.check(remoteIP)
+  const { allowed, retryAfter } = rateLimitResult
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
@@ -59,13 +88,19 @@ export async function getAuthenticationOptions() {
     const authenticationAttemptId = crypto.randomUUID()
     const cookieStore = await cookies()
     const authAttemptCookie = getPasskeyAuthenticationAttemptCookieConfig(authenticationAttemptId)
+    const turnstileRequired = shouldRequireTurnstile(rateLimitResult)
 
-    await Promise.all([
-      storeChallenge(authenticationAttemptId, ChallengeType.AUTHENTICATION, options.challenge),
-      cookieStore.set(authAttemptCookie.key, authAttemptCookie.value, authAttemptCookie.options),
-    ])
+    await storeChallenge(authenticationAttemptId, ChallengeType.AUTHENTICATION, {
+      challenge: options.challenge,
+      turnstileRequired,
+    } satisfies PasskeyAuthenticationAttempt)
 
-    return ok(options)
+    cookieStore.set(authAttemptCookie.key, authAttemptCookie.value, authAttemptCookie.options)
+
+    return ok<GetAuthenticationOptionsResponse>({
+      options,
+      turnstileRequired,
+    })
   } catch (error) {
     console.error('getAuthenticationOptions:', error)
     captureException(error, { extra: { name: 'getAuthenticationOptions', remoteIP } })
@@ -84,29 +119,16 @@ function getRemoteAddress(headersList: Awaited<ReturnType<typeof headers>>) {
 
 const verifyAuthenticationLimiter = new RateLimiter(RateLimitPresets.strict())
 
-export async function verifyAuthentication(body: unknown, turnstileToken: string) {
-  const validator = new TurnstileValidator()
+export async function verifyAuthentication(body: unknown) {
   const headersList = await headers()
   const remoteIP = getRemoteAddress(headersList)
-
-  const turnstile = await validator.validate({
-    token: turnstileToken,
-    remoteIP,
-    expectedAction: 'login',
-  })
-
-  if (!turnstile.success) {
-    const message = validator.getTurnstileErrorMessage(turnstile['error-codes'])
-    return badRequest(message)
-  }
-
-  const validation = verifyAuthenticationSchema.safeParse(body)
+  const validation = verifyAuthenticationRequestSchema.safeParse(body)
 
   if (!validation.success) {
-    return badRequest('잘못된 요청이에요')
+    return badRequest('패스키를 검증할 수 없어요')
   }
 
-  const validatedData = validation.data
+  const { authentication: validatedData, remember, turnstileToken } = validation.data
   const { allowed, retryAfter } = await verifyAuthenticationLimiter.check(validatedData.id)
 
   if (!allowed) {
@@ -127,6 +149,34 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
       return badRequest('패스키를 검증할 수 없어요')
     }
 
+    const authenticationAttempt = await getAndDeleteChallenge<PasskeyAuthenticationAttempt>(
+      authenticationAttemptId,
+      ChallengeType.AUTHENTICATION,
+    )
+
+    if (!authenticationAttempt) {
+      return badRequest('패스키를 검증할 수 없어요')
+    }
+
+    if (authenticationAttempt.turnstileRequired) {
+      if (!turnstileToken) {
+        return badRequest('Cloudflare 보안 검증을 완료해 주세요')
+      }
+
+      const validator = new TurnstileValidator()
+
+      const turnstile = await validator.validate({
+        token: turnstileToken,
+        remoteIP,
+        expectedAction: 'login',
+      })
+
+      if (!turnstile.success) {
+        const message = validator.getTurnstileErrorMessage(turnstile['error-codes'])
+        return badRequest(message)
+      }
+    }
+
     const result = await db.transaction(async (tx) => {
       const [credential] = await tx
         .select({
@@ -142,15 +192,9 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
         return notFound('패스키를 검증할 수 없어요')
       }
 
-      const challenge = await getAndDeleteChallenge(authenticationAttemptId, ChallengeType.AUTHENTICATION)
-
-      if (!challenge) {
-        return badRequest('패스키를 검증할 수 없어요')
-      }
-
       const { verified, authenticationInfo } = await verifyAuthenticationResponse({
         response: validatedData,
-        expectedChallenge: challenge,
+        expectedChallenge: authenticationAttempt.challenge,
         expectedOrigin: WEBAUTHN_ORIGIN,
         expectedRPID: WEBAUTHN_RP_ID,
         credential: {
@@ -196,13 +240,28 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
       }
 
       const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
-      const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
-
       cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
-      cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
+
+      if (remember) {
+        const refreshTokenCookie = await getRefreshTokenCookieConfig(tokenClaims)
+        const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: refreshTokenCookie.options.maxAge })
+
+        cookieStore.set(refreshTokenCookie.key, refreshTokenCookie.value, refreshTokenCookie.options)
+        cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
+      } else {
+        const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+        cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
+      }
 
       return ok(user)
     })
+
+    if (result.ok) {
+      await Promise.allSettled([
+        authenticationLimiter.reward(remoteIP),
+        verifyAuthenticationLimiter.reward(validatedData.id),
+      ])
+    }
 
     return result
   } catch (error) {
@@ -210,4 +269,13 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
     captureException(error, { extra: { name: 'verifyAuthentication', credentialId: validatedData.id, remoteIP } })
     return internalServerError('패스키 인증 중 오류가 발생했어요')
   }
+}
+
+function shouldRequireTurnstile({ limit, remaining }: { limit?: number; remaining?: number }) {
+  if (limit === undefined || remaining === undefined) {
+    return false
+  }
+
+  const attemptCount = limit - remaining
+  return attemptCount >= 4
 }
