@@ -1,12 +1,9 @@
 import '@test/setup.dom'
+import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { fireEvent, render } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
-mock.module('next/navigation', () => ({
-  useSearchParams: () => new URLSearchParams(window.location.search),
-}))
-
-const { default: ViewToggle } = await import('../ViewToggle')
+import ViewToggle from '../ViewToggle'
 
 describe('ViewToggle', () => {
   beforeEach(() => {
@@ -18,7 +15,7 @@ describe('ViewToggle', () => {
   })
 
   test('현재 pathname은 유지한 채 view 쿼리만 추가한다', () => {
-    const view = render(<ViewToggle />)
+    const view = render(<ViewToggle />, { wrapper: createTestNavigationWrapper() })
 
     fireEvent.click(view.getByRole('radio', { name: '그림' }))
 
@@ -29,7 +26,7 @@ describe('ViewToggle', () => {
 
   test('카드 모드로 돌아가면 view 쿼리만 제거한다', () => {
     window.history.replaceState({}, '', 'http://localhost:3000/library/bookmark?sort=created_desc&view=img')
-    const view = render(<ViewToggle />)
+    const view = render(<ViewToggle />, { wrapper: createTestNavigationWrapper() })
 
     fireEvent.click(view.getByRole('radio', { name: '카드' }))
 
@@ -39,7 +36,7 @@ describe('ViewToggle', () => {
   })
 
   test('방향키로 다음 보기 방식으로 이동한다', () => {
-    const view = render(<ViewToggle />)
+    const view = render(<ViewToggle />, { wrapper: createTestNavigationWrapper() })
 
     fireEvent.keyDown(view.getByRole('radio', { name: '카드' }), { key: 'ArrowRight' })
 
