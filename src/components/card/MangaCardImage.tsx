@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { twMerge } from 'tailwind-merge'
 
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
+import { View } from '@/utils/param'
 
 import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'
@@ -13,25 +15,53 @@ type Props = {
   manga: Manga
   mangaIndex: number
   className?: string
+  variant: View
 }
 
-export default function MangaCardImage({ manga, mangaIndex, className = '' }: Readonly<Props>) {
+const VARIANT_CONFIG = {
+  [View.CARD]: {
+    containerClassName:
+      'h-fit my-auto aspect-4/3 [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-4/3',
+    imageContainerClassName: 'h-fit',
+    pageCountClassName: 'bottom-1 right-1',
+    showPreviewImages: true,
+    torrentBadgeClassName: 'bottom-1 left-1',
+  },
+  [View.IMAGE]: {
+    containerClassName:
+      'aspect-5/7 [&_img]:block [&_img]:h-full [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-5/7',
+    imageContainerClassName: 'h-full',
+    pageCountClassName: 'bottom-2 right-2',
+    showPreviewImages: false,
+    torrentBadgeClassName: 'bottom-2 left-2',
+  },
+} as const
+
+export default function MangaCardImage({ manga, mangaIndex, className = '', variant }: Props) {
   const { count, images = [] } = manga
   const href = getViewerLink(manga.id)
+  const config = VARIANT_CONFIG[variant]
+  const shouldShowPreviewImages = config.showPreviewImages && images.length > 1
 
   return (
-    <div className={`overflow-hidden relative ${className}`}>
+    <div className={twMerge('overflow-hidden relative', config.containerClassName, className)}>
       {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 이미지 배열 길이 검사 */}
-      {images.length > 1 ? (
+      {shouldShowPreviewImages ? (
         <MangaCardPreviewImages
-          className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden relative"
+          className={twMerge(
+            'flex overflow-x-auto snap-x snap-mandatory select-none scrollbar-hidden relative',
+            config.imageContainerClassName,
+          )}
           href={href}
           manga={manga}
           mangaIndex={mangaIndex}
         />
-      ) : images.length === 1 ? (
+      ) : images.length > 0 ? (
         <Link
-          className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden relative"
+          className={twMerge(
+            'flex overflow-x-auto snap-x snap-mandatory select-none scrollbar-hidden relative',
+            config.imageContainerClassName,
+          )}
           href={href}
           prefetch={false}
         >
@@ -48,8 +78,13 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
         </Link>
       ) : null}
       <MangaCardCensorship manga={manga} />
-      <MangaTorrentBadge className="absolute bottom-1 left-1 z-10 font-semibold text-xs" manga={manga} />
-      <div className="absolute bottom-1 right-1 z-10 px-1 font-medium text-sm bg-background rounded">
+      <MangaTorrentBadge
+        className={twMerge('absolute z-10 font-semibold text-xs', config?.torrentBadgeClassName)}
+        manga={manga}
+      />
+      <div
+        className={twMerge('absolute z-10 px-1 font-medium text-sm bg-background rounded', config?.pageCountClassName)}
+      >
         {count ?? images.length}p
       </div>
     </div>

@@ -173,14 +173,14 @@ function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchin
                 <StarRating rating={rating} />
               </div>
               <CensoredManga mangaId={mangaId} />
-              <MangaCard className="h-full" index={index} manga={manga} />
+              <MangaCard className="h-full" index={index} manga={manga} variant={view} />
             </div>
           )
         }
 
-        return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
+        return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
       })}
-      {isFetchingNextPage && <MangaCardSkeleton />}
+      {isFetchingNextPage && <MangaCardSkeleton variant={view} />}
     </ul>
   )
 }

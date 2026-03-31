@@ -26,8 +26,8 @@ const basePage: GETV1RatingsResponse = {
 }
 
 mock.module('@/components/card/MangaCard', () => ({
-  default: () => <div>manga-card</div>,
-  MangaCardSkeleton: () => <div>manga-card-skeleton</div>,
+  default: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-${variant}`}</div>,
+  MangaCardSkeleton: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-skeleton-${variant}`}</div>,
 }))
 
 mock.module('../CensoredManga', () => ({
@@ -35,7 +35,7 @@ mock.module('../CensoredManga', () => ({
 }))
 
 mock.module('../SelectableMangaCard', () => ({
-  default: () => <div>selectable-card</div>,
+  default: ({ variant = 'card' }: { variant?: string }) => <div>{`selectable-card-${variant}`}</div>,
 }))
 
 let fetchRoutes: FetchRoute[] = []
@@ -125,15 +125,15 @@ describe('RatingPageClient', () => {
       true,
     )
 
-    expect(view.getByText('selectable-card')).toBeTruthy()
+    expect(view.getByText('selectable-card-card')).toBeTruthy()
 
     fireEvent.change(view.getByRole('combobox'), {
       target: { value: RatingSort.MANGA_ID_ASC },
     })
 
-    expect(view.queryByText('selectable-card')).toBeNull()
+    expect(view.queryByText('selectable-card-card')).toBeNull()
     expect(window.location.search).toBe(`?sort=${RatingSort.MANGA_ID_ASC}`)
-    expect(view.getByText('manga-card-skeleton')).toBeTruthy()
+    expect(view.getByText('manga-card-skeleton-card')).toBeTruthy()
 
     await waitFor(() => {
       const ratingRequests = fetchController.calls
@@ -173,13 +173,13 @@ describe('RatingPageClient', () => {
       target: { value: RatingSort.MANGA_ID_ASC },
     })
 
-    expect(view.getByText('manga-card-skeleton')).toBeTruthy()
+    expect(view.getByText('manga-card-skeleton-card')).toBeTruthy()
 
     resolveResponse(jsonResponse(basePage))
 
     await waitFor(
       () => {
-        expect(view.getByText('manga-card')).toBeTruthy()
+        expect(view.getByText('manga-card-card')).toBeTruthy()
       },
       { timeout: 5000 },
     )
@@ -226,21 +226,21 @@ describe('RatingPageClient', () => {
     expect(new URLSearchParams(window.location.search).get('view')).toBe(View.IMAGE)
 
     await waitFor(() => {
-      expect(view.getByText('manga-card')).toBeTruthy()
+      expect(view.getByText('manga-card-img')).toBeTruthy()
     })
   })
 
-  test('initialView가 그림이어도 기존 카드 렌더링은 유지한다', () => {
+  test('initialView가 그림이면 image variant를 전달한다', () => {
     window.history.replaceState({}, '', '/library/rating?view=img')
 
     const view = renderWithLibrarySelection(
       <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.IMAGE} />,
     )
 
-    expect(view.getByText('manga-card')).toBeTruthy()
+    expect(view.getByText('manga-card-img')).toBeTruthy()
   })
 
-  test('선택 모드와 그림 보기에서도 기존 selectable 카드 렌더링은 유지한다', () => {
+  test('선택 모드와 그림 보기에서도 image selectable variant를 전달한다', () => {
     window.history.replaceState({}, '', '/library/rating?view=img')
 
     const view = renderWithLibrarySelection(
@@ -248,6 +248,6 @@ describe('RatingPageClient', () => {
       true,
     )
 
-    expect(view.getByText('selectable-card')).toBeTruthy()
+    expect(view.getByText('selectable-card-img')).toBeTruthy()
   })
 })
