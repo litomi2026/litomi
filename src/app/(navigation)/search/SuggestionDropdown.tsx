@@ -50,7 +50,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
     <div
       aria-hidden={!showSuggestions}
       className={twMerge(
-        'absolute z-20 w-full mt-1 bg-zinc-950/99 border border-white/10 rounded-[1.25rem] shadow-[0_28px_70px_rgba(0,0,0,0.42)] overflow-hidden transition',
+        'absolute z-20 mt-1 w-full overflow-hidden rounded-[1.25rem] border border-zinc-800 bg-zinc-900/98 shadow-xl transition',
         'aria-hidden:opacity-0 aria-hidden:pointer-events-none',
         className,
       )}
@@ -67,7 +67,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
           {suggestions.map((suggestion, index) => (
             <button
               aria-current={selectedIndex === index}
-              className="w-full p-4 py-2.5 text-left hover:bg-white/6 transition flex items-center gap-1.5 overflow-x-auto scrollbar-hidden aria-current:bg-white/9"
+              className="flex w-full items-center gap-1.5 overflow-x-auto p-4 py-2.5 text-left transition hover:bg-zinc-800/70 aria-current:bg-zinc-800 scrollbar-hidden"
               data-index={index}
               key={suggestion.value}
               onClick={() => onSelect(suggestion)}
@@ -98,16 +98,16 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
         )}
       </div>
       {suggestions.length > 1 && (
-        <div className="sticky bottom-0 px-3 py-2 text-xs text-zinc-500 border-t border-white/6 bg-zinc-950/95 backdrop-blur-sm">
+        <div className="sticky bottom-0 border-t border-zinc-800 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-500 backdrop-blur-sm">
           <div className="flex flex-wrap gap-x-3 gap-y-1">
             <span className="whitespace-nowrap">
-              <kbd className="px-1 py-0.5 text-xs bg-white/6 border border-white/10 rounded">↑↓</kbd> 이동
+              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">↑↓</kbd> 이동
             </span>
             <span className="whitespace-nowrap">
-              <kbd className="px-1 py-0.5 text-xs bg-white/6 border border-white/10 rounded">Enter</kbd> 선택
+              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">Enter</kbd> 선택
             </span>
             <span className="whitespace-nowrap">
-              <kbd className="px-1 py-0.5 text-xs bg-white/6 border border-white/10 rounded">Esc</kbd> 취소
+              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">Esc</kbd> 취소
             </span>
           </div>
         </div>
