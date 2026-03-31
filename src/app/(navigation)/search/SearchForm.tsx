@@ -243,9 +243,8 @@ export default function SearchForm({ className = '' }: Props) {
     <div className={`relative ${className}`}>
       <SearchParamsSync onUpdate={handleSearchParamUpdate} />
       <form
-        className="flex items-center gap-1 rounded-[1.2rem] border border-white/10 bg-zinc-950/82 text-zinc-400
-        shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_18px_36px_rgba(0,0,0,0.22)] transition
-        hover:border-white/16 focus-within:border-white/20 focus-within:bg-zinc-950/88"
+        className="flex items-center gap-1 rounded-2xl border border-zinc-700 bg-zinc-900/92 text-zinc-400 shadow-sm transition
+          hover:border-zinc-600 hover:bg-zinc-900 focus-within:border-zinc-500 focus-within:bg-zinc-900"
         onSubmit={onSubmit}
       >
         <div className="relative flex-1">
@@ -272,8 +271,8 @@ export default function SearchForm({ className = '' }: Props) {
           {keyword && (
             <button
               aria-label="검색어 지우기"
-              className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-1.5 shrink-0 transition text-zinc-500 
-              hover:bg-white/6 hover:text-zinc-200 active:text-zinc-300"
+              className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-1.5 shrink-0 transition text-zinc-500
+              hover:bg-zinc-800/70 hover:text-foreground active:text-zinc-300"
               onClick={handleClear}
               type="button"
             >
@@ -283,17 +282,16 @@ export default function SearchForm({ className = '' }: Props) {
         </div>
         <button
           aria-label="검색하기"
-          className="flex items-center justify-center rounded-[0.95rem] bg-zinc-100 px-3.5 py-2 shrink-0 text-sm font-semibold text-zinc-950
-          shadow-[0_8px_24px_rgba(255,255,255,0.12)] transition
-          aria-disabled:opacity-60 active:scale-[0.98] hover:bg-white
-          focus:outline-none focus:ring-2 focus:ring-white/35 focus:ring-inset"
+          className="flex items-center justify-center rounded-[0.95rem] bg-foreground px-3.5 py-2 shrink-0 text-sm font-bold text-background
+            shadow-sm transition aria-disabled:opacity-60 active:scale-[0.98] hover:opacity-90
+            focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:ring-inset"
           disabled={isSearching}
           type="submit"
         >
           {isSearching ? (
-            <Loader2 className="size-5 shrink-0 mx-1 animate-spin" />
+            <Loader2 className="size-5 shrink-0 mx-0.5 animate-spin" />
           ) : (
-            <span className="block min-w-7">검색</span>
+            <span className="block min-w-6">검색</span>
           )}
         </button>
       </form>
@@ -301,7 +299,7 @@ export default function SearchForm({ className = '' }: Props) {
         dropdownRef={suggestionsRef}
         header={
           keyword === '' && (
-            <div className="border-b border-white/6">
+            <div className="border-b border-zinc-800">
               <div className="flex items-center justify-between px-4 py-2">
                 <div className="flex items-center gap-2 text-xs text-zinc-400">
                   <Clock className="size-3" />
@@ -323,7 +321,7 @@ export default function SearchForm({ className = '' }: Props) {
                 </div>
               )}
               {recentSearches.map((search) => (
-                <div className="w-full flex items-center hover:bg-white/6 transition group" key={search.timestamp}>
+                <div className="w-full flex items-center hover:bg-zinc-800/70 transition group" key={search.timestamp}>
                   <button
                     className="flex-1 p-4 py-2.5 text-left text-sm truncate"
                     onClick={() => {
@@ -356,7 +354,7 @@ export default function SearchForm({ className = '' }: Props) {
         onSelect={selectSuggestion}
         renderRightContent={({ value }) =>
           value.endsWith(':') && (
-            <span className="text-xs text-zinc-300 bg-white/7 px-1.5 py-0.5 rounded-full">접두사</span>
+            <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-300">접두사</span>
           )
         }
         searchTerm={currentWordInfo.word}

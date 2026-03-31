@@ -55,19 +55,19 @@ export default function FilterButton() {
         aria-label="상세 조건 설정"
         aria-pressed={hasActiveFilters}
         className="relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] border transition
-          bg-zinc-950/78 border-white/10 text-zinc-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]
-          hover:border-white/16 hover:bg-zinc-900/82
-          focus:outline-none focus:ring-2 focus:ring-white/15 focus:ring-offset-2 focus:ring-offset-zinc-950
-          aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
+          bg-zinc-900/92 border-zinc-700 text-zinc-200 shadow-sm
+          hover:border-zinc-600 hover:bg-zinc-800/80
+          focus:outline-none focus:ring-2 focus:ring-zinc-500/30 focus:ring-offset-2 focus:ring-offset-background
+          aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-foreground aria-pressed:hover:border-brand"
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
         title="상세 조건 설정"
         type="button"
       >
-        <SlidersHorizontal aria-hidden className="size-4" />
+        <SlidersHorizontal aria-hidden className="size-4 sm:size-5" />
         <span className="md:hidden lg:inline">조건</span>
         {hasActiveFilters && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] font-bold bg-brand text-background rounded-full">
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-xs font-bold bg-brand text-background rounded-full">
             {activeFilterCount}
           </span>
         )}

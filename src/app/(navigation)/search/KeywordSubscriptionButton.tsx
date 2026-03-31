@@ -93,10 +93,10 @@ export default function KeywordSubscriptionButton() {
       aria-label={buttonTitle}
       aria-pressed={isSubscribed}
       className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] transition border
-        bg-zinc-950/78 border-white/10 text-zinc-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]
-        hover:border-white/16 hover:bg-zinc-900/82
-        focus:outline-none focus:ring-2 focus:ring-white/15 focus:ring-offset-2 focus:ring-offset-zinc-950
-        disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
+        bg-zinc-900/92 border-zinc-700 text-zinc-200 shadow-sm
+        hover:border-zinc-600 hover:bg-zinc-800/80
+        focus:outline-none focus:ring-2 focus:ring-zinc-500/30 focus:ring-offset-2 focus:ring-offset-background
+        disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-foreground aria-pressed:hover:border-brand"
       disabled={isPending}
       onClick={handleToggleSubscription}
       title={buttonTitle}
@@ -104,11 +104,11 @@ export default function KeywordSubscriptionButton() {
     >
       <SearchParamsSync onUpdate={handleUpdateQuery} />
       {isPending ? (
-        <Loader2 className="size-4 animate-spin" />
+        <Loader2 className="size-4 sm:size-5 animate-spin" />
       ) : isSubscribed ? (
-        <BellRing className="size-4 text-brand" />
+        <BellRing className="size-4 sm:size-5 text-brand" />
       ) : (
-        <IconBell className="size-4" />
+        <IconBell className="size-4 sm:size-5" />
       )}
       <span className="md:hidden lg:inline">{buttonLabel}</span>
     </button>
