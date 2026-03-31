@@ -243,8 +243,9 @@ export default function SearchForm({ className = '' }: Props) {
     <div className={`relative ${className}`}>
       <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
       <form
-        className="flex bg-zinc-900 border border-zinc-700 rounded-xl text-zinc-400 overflow-hidden transition
-        hover:border-zinc-500 focus-within:border-zinc-400"
+        className="flex items-center gap-1 rounded-[1.2rem] border border-white/10 bg-zinc-950/82 text-zinc-400
+        shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_18px_36px_rgba(0,0,0,0.22)] transition
+        hover:border-white/16 focus-within:border-white/20 focus-within:bg-zinc-950/88"
         onSubmit={onSubmit}
       >
         <div className="relative flex-1">
@@ -253,8 +254,7 @@ export default function SearchForm({ className = '' }: Props) {
             aria-controls="search-suggestions"
             autoCapitalize="off"
             autoComplete="off"
-            className="bg-transparent px-3 py-2 pr-8 text-foreground min-w-0 w-full placeholder-zinc-500 text-base leading-5
-            focus:outline-none
+            className="bg-transparent px-3.5 py-2 pr-10 text-foreground min-w-0 w-full placeholder-zinc-500/95 text-base leading-5 focus:outline-none
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
             [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0"
             maxLength={MAX_SEARCH_QUERY_LENGTH}
@@ -272,8 +272,8 @@ export default function SearchForm({ className = '' }: Props) {
           {keyword && (
             <button
               aria-label="검색어 지우기"
-              className="absolute right-0 top-0 bottom-0 p-1.5 shrink-0 transition text-zinc-500 
-              hover:text-zinc-300 active:text-zinc-400"
+              className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-1.5 shrink-0 transition text-zinc-500 
+              hover:bg-white/6 hover:text-zinc-200 active:text-zinc-300"
               onClick={handleClear}
               type="button"
             >
@@ -283,10 +283,10 @@ export default function SearchForm({ className = '' }: Props) {
         </div>
         <button
           aria-label="검색하기"
-          className="flex items-center justify-center px-3 py-1.5 shrink-0 text-sm font-medium rounded-l-none transition
-          aria-disabled:opacity-60 bg-zinc-800 text-zinc-200 
-          active:bg-zinc-800 hover:bg-zinc-700 hover:text-foreground
-          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset"
+          className="flex items-center justify-center rounded-[0.95rem] bg-zinc-100 px-3.5 py-2 shrink-0 text-sm font-semibold text-zinc-950
+          shadow-[0_8px_24px_rgba(255,255,255,0.12)] transition
+          aria-disabled:opacity-60 active:scale-[0.98] hover:bg-white
+          focus:outline-none focus:ring-2 focus:ring-white/35 focus:ring-inset"
           disabled={isSearching}
           type="submit"
         >
@@ -301,7 +301,7 @@ export default function SearchForm({ className = '' }: Props) {
         dropdownRef={suggestionsRef}
         header={
           keyword === '' && (
-            <div className="border-b border-zinc-800">
+            <div className="border-b border-white/6">
               <div className="flex items-center justify-between px-4 py-2">
                 <div className="flex items-center gap-2 text-xs text-zinc-400">
                   <Clock className="size-3" />
@@ -323,7 +323,7 @@ export default function SearchForm({ className = '' }: Props) {
                 </div>
               )}
               {recentSearches.map((search) => (
-                <div className="w-full flex items-center hover:bg-zinc-700/50 transition group" key={search.timestamp}>
+                <div className="w-full flex items-center hover:bg-white/6 transition group" key={search.timestamp}>
                   <button
                     className="flex-1 p-4 py-2.5 text-left text-sm truncate"
                     onClick={() => {
@@ -356,7 +356,7 @@ export default function SearchForm({ className = '' }: Props) {
         onSelect={selectSuggestion}
         renderRightContent={({ value }) =>
           value.endsWith(':') && (
-            <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">접두사</span>
+            <span className="text-xs text-zinc-300 bg-white/7 px-1.5 py-0.5 rounded-full">접두사</span>
           )
         }
         searchTerm={currentWordInfo.word}
