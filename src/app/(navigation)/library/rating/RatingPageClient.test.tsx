@@ -97,7 +97,9 @@ afterAll(() => {
 
 describe('RatingPageClient', () => {
   test('작품 ID 정렬 옵션을 렌더링한다', () => {
-    const view = renderWithLibrarySelection(<RatingPageClient initialData={basePage} initialView={View.CARD} />)
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.CARD} />,
+    )
 
     expect(view.getByRole('option', { name: '작품 ID 높은순' })).toBeTruthy()
     expect(view.getByRole('option', { name: '작품 ID 낮은순' })).toBeTruthy()
@@ -175,9 +177,12 @@ describe('RatingPageClient', () => {
 
     resolveResponse(jsonResponse(basePage))
 
-    await waitFor(() => {
-      expect(view.getByText('manga-card')).toBeTruthy()
-    }, { timeout: 5000 })
+    await waitFor(
+      () => {
+        expect(view.getByText('manga-card')).toBeTruthy()
+      },
+      { timeout: 5000 },
+    )
   })
 
   test('평점 정렬에서는 평점 그룹 헤더를 렌더링한다', () => {
@@ -190,7 +195,11 @@ describe('RatingPageClient', () => {
 
   test('평가가 비어 있으면 빈 상태를 렌더링한다', () => {
     const view = renderWithLibrarySelection(
-      <RatingPageClient initialData={{ items: [], nextCursor: null }} initialView={View.CARD} />,
+      <RatingPageClient
+        initialData={{ items: [], nextCursor: null }}
+        initialSort={RatingSort.UPDATED_DESC}
+        initialView={View.CARD}
+      />,
     )
 
     expect(view.getByText('아직 평가한 작품이 없어요')).toBeTruthy()
@@ -224,7 +233,9 @@ describe('RatingPageClient', () => {
   test('initialView가 그림이어도 기존 카드 렌더링은 유지한다', () => {
     window.history.replaceState({}, '', '/library/rating?view=img')
 
-    const view = renderWithLibrarySelection(<RatingPageClient initialData={basePage} initialView={View.IMAGE} />)
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.IMAGE} />,
+    )
 
     expect(view.getByText('manga-card')).toBeTruthy()
   })
@@ -233,7 +244,7 @@ describe('RatingPageClient', () => {
     window.history.replaceState({}, '', '/library/rating?view=img')
 
     const view = renderWithLibrarySelection(
-      <RatingPageClient initialData={basePage} initialView={View.IMAGE} />,
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.IMAGE} />,
       true,
     )
 
