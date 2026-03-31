@@ -1,18 +1,14 @@
 import '@test/setup.dom'
 import { createTestNavigationWrapper } from '@test/utils/navigation'
-import { render } from '@testing-library/react'
+import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-mock.module('@/components/ads/juicy-ads/NonAdultJuicyAdsBanner', () => ({
-  default: () => <div>ad-banner</div>,
-}))
-
 mock.module('@/components/card/MangaCard', () => ({
-  default: () => <div>manga-card</div>,
-  MangaCardSkeleton: () => <div>manga-card-skeleton</div>,
+  default: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-${variant}`}</div>,
+  MangaCardSkeleton: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-skeleton-${variant}`}</div>,
 }))
 
 mock.module('@/hook/useMangaListCachedQuery', () => ({
@@ -64,20 +60,21 @@ afterAll(() => {
 
 describe('AllLibraryMangaView', () => {
   test('initialView가 카드면 카드 토글과 카드 그리드를 초기값으로 사용한다', () => {
-    const view = render(<AllLibraryMangaView initialView={View.CARD} />, {
+    const view = renderWithTestQueryClient(<AllLibraryMangaView initialView={View.CARD} />, {
       wrapper: createTestNavigationWrapper({ pathname: '/library' }),
     })
 
     const list = view.container.querySelector('ul')
 
     expect(view.getByRole('radio', { name: '카드' }).getAttribute('aria-checked')).toBe('true')
+    expect(view.getByText('manga-card-card')).toBeTruthy()
     expect(list?.className).toContain(MANGA_LIST_GRID_COLUMNS[View.CARD])
   })
 
   test('initialView가 그림이면 그림 토글과 그림 그리드를 초기값으로 사용한다', () => {
     window.history.replaceState({}, '', '/library?view=img')
 
-    const view = render(<AllLibraryMangaView initialView={View.IMAGE} />, {
+    const view = renderWithTestQueryClient(<AllLibraryMangaView initialView={View.IMAGE} />, {
       wrapper: createTestNavigationWrapper({
         pathname: '/library',
         searchParams: new URLSearchParams(window.location.search),
@@ -87,6 +84,7 @@ describe('AllLibraryMangaView', () => {
     const list = view.container.querySelector('ul')
 
     expect(view.getByRole('radio', { name: '그림' }).getAttribute('aria-checked')).toBe('true')
+    expect(view.getByText('manga-card-img')).toBeTruthy()
     expect(list?.className).toContain(MANGA_LIST_GRID_COLUMNS[View.IMAGE])
   })
 })

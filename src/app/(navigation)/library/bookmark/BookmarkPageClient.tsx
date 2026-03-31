@@ -93,12 +93,12 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
           if (!isSelectionMode) {
-            return <MangaCard index={index} key={mangaId} manga={manga} />
+            return <MangaCard index={index} key={mangaId} manga={manga} variant={view} />
           }
 
-          return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
+          return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
         })}
-        {showLoadingSkeleton && <MangaCardSkeleton />}
+        {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
       </ul>
       {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
       {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}

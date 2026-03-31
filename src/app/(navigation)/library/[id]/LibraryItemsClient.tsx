@@ -141,12 +141,12 @@ export default function LibraryItemsClient({
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
           if (!isSelectionMode) {
-            return <MangaCard index={index} key={mangaId} manga={manga} />
+            return <MangaCard index={index} key={mangaId} manga={manga} variant={view} />
           }
 
-          return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
+          return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
         })}
-        {showLoadingSkeleton && <MangaCardSkeleton />}
+        {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
         {canAutoLoadMore && <div className="w-full p-4" ref={infiniteScrollTriggerRef} />}
         {!shouldBlockPrivate && isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
       </ul>
