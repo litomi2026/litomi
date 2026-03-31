@@ -120,14 +120,19 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
           비밀번호 확인
         </label>
         <input
+          autoCapitalize="off"
+          autoComplete="current-password"
+          autoCorrect="off"
           className="w-full p-3 py-2 bg-zinc-800 border-2 border-zinc-600 rounded-lg 
             focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent
             placeholder-zinc-500"
           disabled={isPending}
+          enterKeyHint="done"
           id="export-password"
           name="password"
           placeholder="현재 비밀번호"
           required
+          spellCheck={false}
           type="password"
         />
       </div>

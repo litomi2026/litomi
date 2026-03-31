@@ -99,32 +99,39 @@ export default function SignupForm() {
 
       <form
         className="grid gap-5"
+        id="signup-form"
+        name="signup"
         onInput={(e) => clearSignupInputValidity(e.currentTarget, e.target)}
         onSubmit={handleSubmit}
         ref={formRef}
       >
         <div className="grid gap-4">
           <div>
-            <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-id">
+            <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="signup-username">
               아이디
             </label>
             <div className="relative group">
               <input
+                aria-describedby="signup-username-help"
                 autoCapitalize="off"
                 autoComplete="username"
+                autoCorrect="off"
                 autoFocus
                 className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                   focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                   disabled:opacity-60 disabled:cursor-not-allowed
                   user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
                 disabled={isPending}
-                id="login-id"
+                enterKeyHint="next"
+                id="signup-username"
                 maxLength={32}
                 minLength={2}
                 name="login-id"
                 pattern={LOGIN_ID_PATTERN}
                 placeholder="아이디"
                 required
+                spellCheck={false}
+                type="text"
               />
               <button
                 aria-label="아이디 지우기"
@@ -141,29 +148,35 @@ export default function SignupForm() {
                 <X className="size-3.5" />
               </button>
             </div>
-            <p className="mt-1 text-xs text-zinc-400">영문과 숫자, _ 를 사용해서 2자 이상 입력해 주세요</p>
+            <p className="mt-1 text-xs text-zinc-400" id="signup-username-help">
+              영문과 숫자, _ 를 사용해서 2자 이상 입력해 주세요
+            </p>
           </div>
 
           <div>
-            <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="password">
+            <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="signup-new-password">
               비밀번호
             </label>
             <div className="relative group">
               <input
+                aria-describedby="signup-password-help"
                 autoCapitalize="off"
                 autoComplete="new-password"
+                autoCorrect="off"
                 className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                   focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                   disabled:opacity-60 disabled:cursor-not-allowed
                   user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
                 disabled={isPending}
-                id="password"
+                enterKeyHint="next"
+                id="signup-new-password"
                 maxLength={64}
                 minLength={8}
                 name="password"
                 pattern={PASSWORD_PATTERN}
                 placeholder="비밀번호"
                 required
+                spellCheck={false}
                 type="password"
               />
               <button
@@ -183,28 +196,37 @@ export default function SignupForm() {
                 <EyeOff className="eye-off-icon size-3.5 hidden" />
               </button>
             </div>
-            <p className="mt-1 text-xs text-zinc-400">영문과 숫자를 포함해서 8자 이상 입력해 주세요</p>
+            <p className="mt-1 text-xs text-zinc-400" id="signup-password-help">
+              영문과 숫자를 포함해서 8자 이상 입력해 주세요
+            </p>
           </div>
 
           <div>
-            <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="password-confirm">
+            <label
+              className="block mb-1.5 text-sm font-medium text-zinc-300"
+              htmlFor="signup-new-password-confirmation"
+            >
               비밀번호 확인
             </label>
             <div className="relative group">
               <input
+                aria-describedby="signup-password-confirmation-help"
                 autoCapitalize="off"
                 autoComplete="new-password"
+                autoCorrect="off"
                 className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                   focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                   disabled:opacity-60 disabled:cursor-not-allowed
                   user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
                 disabled={isPending}
-                id="password-confirm"
+                enterKeyHint="next"
+                id="signup-new-password-confirmation"
                 maxLength={64}
                 minLength={8}
                 name="password-confirm"
                 placeholder="비밀번호 확인"
                 required
+                spellCheck={false}
                 type="password"
               />
               <button
@@ -224,27 +246,37 @@ export default function SignupForm() {
                 <EyeOff className="eye-off-icon size-3.5 hidden" />
               </button>
             </div>
-            <p className="mt-1 text-xs text-zinc-400">비밀번호는 안전하게 암호화해서 저장돼요</p>
+            <p className="mt-1 text-xs text-zinc-400" id="signup-password-confirmation-help">
+              비밀번호는 안전하게 암호화해서 저장돼요
+            </p>
           </div>
 
           <div>
-            <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="nickname">
+            <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="signup-nickname">
               닉네임
             </label>
             <input
+              aria-describedby="signup-nickname-help"
               autoCapitalize="off"
+              autoComplete="nickname"
+              autoCorrect="off"
               className="w-full rounded-xl bg-white/4 border border-white/7 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                 focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                 disabled:opacity-60 disabled:cursor-not-allowed
                 user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
               disabled={isPending}
-              id="nickname"
+              enterKeyHint="done"
+              id="signup-nickname"
               maxLength={32}
               minLength={2}
               name="nickname"
               placeholder="닉네임(선택)"
+              spellCheck={false}
+              type="text"
             />
-            <p className="mt-1 text-xs text-zinc-400">2자 이상 입력해 주세요(비워두면 자동으로 생성돼요)</p>
+            <p className="mt-1 text-xs text-zinc-400" id="signup-nickname-help">
+              2자 이상 입력해 주세요(비워두면 자동으로 생성돼요)
+            </p>
           </div>
         </div>
 

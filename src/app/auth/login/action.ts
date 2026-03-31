@@ -126,17 +126,17 @@ export default async function login(formData: FormData) {
     }
 
     const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
-    const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
-
     cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
-    cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
 
     if (remember) {
       const refreshTokenCookie = await getRefreshTokenCookieConfig(tokenClaims)
-      const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: refreshTokenCookie.options.maxAge })
+      const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: refreshTokenCookie.options.maxAge })
 
       cookieStore.set(refreshTokenCookie.key, refreshTokenCookie.value, refreshTokenCookie.options)
-      cookieStore.set(longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
+      cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
+    } else {
+      const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+      cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
     }
 
     return ok({
