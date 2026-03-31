@@ -3,16 +3,16 @@
 import { useMutation } from '@tanstack/react-query'
 import { BellRing, Loader2 } from 'lucide-react'
 import { ReadonlyURLSearchParams, useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconBell from '@/components/icons/IconBell'
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@/constants/policy'
 import useMeQuery from '@/query/useMeQuery'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { createNotificationCriteria } from './api'
-import UpdateFromSearchParams from './UpdateFromSearchParams'
 import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 
 export default function KeywordSubscriptionButton() {
@@ -38,9 +38,9 @@ export default function KeywordSubscriptionButton() {
 
   const isPending = createCriteriaMutation.isPending
 
-  const updateQuery = useCallback((searchParams: ReadonlyURLSearchParams) => {
+  function handleUpdateQuery(searchParams: ReadonlyURLSearchParams) {
     setQuery(parseSearchQuery(searchParams.get('query') ?? ''))
-  }, [])
+  }
 
   function handleToggleSubscription() {
     if (isPending || !query) {
@@ -102,7 +102,7 @@ export default function KeywordSubscriptionButton() {
       title={buttonTitle}
       type="button"
     >
-      <UpdateFromSearchParams onUpdate={updateQuery} />
+      <SearchParamsSync onUpdate={handleUpdateQuery} />
       {isPending ? (
         <Loader2 className="size-4 animate-spin" />
       ) : isSubscribed ? (

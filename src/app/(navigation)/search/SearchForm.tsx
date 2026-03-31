@@ -4,12 +4,12 @@ import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
 import { SubmitEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 
 import { type SearchSuggestion } from './constants'
 import SuggestionDropdown from './SuggestionDropdown'
-import UpdateFromSearchParams from './UpdateFromSearchParams'
 import useRecentSearches from './useRecentSearches'
 import useSearchSuggestions from './useSearchSuggestions'
 import { getWordAtCursor, translateKoreanToEnglish } from './utils'
@@ -195,11 +195,11 @@ export default function SearchForm({ className = '' }: Props) {
     })
   }
 
-  const handleSearchParamUpdate = useCallback((searchParams: ReadonlyURLSearchParams) => {
+  function handleSearchParamUpdate(searchParams: ReadonlyURLSearchParams) {
     const query = searchParams.get('query') ?? ''
     setKeyword(query)
     setCursorPosition(query.length)
-  }, [])
+  }
 
   // NOTE: "/" 키보드 단축키로 검색 입력창에 포커스
   useEffect(() => {
@@ -241,7 +241,7 @@ export default function SearchForm({ className = '' }: Props) {
 
   return (
     <div className={`relative ${className}`}>
-      <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
+      <SearchParamsSync onUpdate={handleSearchParamUpdate} />
       <form
         className="flex items-center gap-1 rounded-[1.2rem] border border-white/10 bg-zinc-950/82 text-zinc-400
         shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_18px_36px_rgba(0,0,0,0.22)] transition
