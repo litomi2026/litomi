@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
@@ -35,6 +35,10 @@ let insertedConditionValues: unknown[] | null = null
 let insertedCriteriaValues: Record<string, unknown> | null = null
 let notificationRoutes: NotificationRoutesModule['default']
 let scenario: Scenario
+
+afterAll(() => {
+  mock.restore()
+})
 
 mock.module('@/database/supabase/drizzle', () => ({
   db: {

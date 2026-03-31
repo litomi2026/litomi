@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
@@ -23,6 +23,10 @@ type MeResponse = {
 
 beforeAll(() => {
   spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 beforeEach(() => {

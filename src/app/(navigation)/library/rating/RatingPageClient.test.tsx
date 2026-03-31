@@ -1,7 +1,7 @@
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 
 import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
@@ -86,6 +86,10 @@ function SelectionModeController({ children, selectionMode }: { children: ReactN
 afterEach(() => {
   fetchController.restore()
   cleanup()
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 describe('RatingPageClient', () => {

@@ -1,6 +1,6 @@
 import type { SQL } from 'drizzle-orm'
 
-import { beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { PgDialect } from 'drizzle-orm/pg-core'
 
 import { CollectionItemSort } from '@/backend/api/v1/library/item-sort'
@@ -18,6 +18,10 @@ const queryState: {
 }
 
 let nextRows: Array<{ mangaId: number; createdAt: Date }> = []
+
+afterAll(() => {
+  mock.restore()
+})
 
 const limitMock = mock((limit: number) => {
   queryState.limit = limit

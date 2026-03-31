@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
@@ -14,6 +14,10 @@ const mockReadingHistory: Map<string, number | null> = new Map()
 
 beforeAll(() => {
   spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 type TestEnv = Env & {
