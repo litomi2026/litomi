@@ -8,10 +8,13 @@ import { sec } from './format/date'
 /**
  * Get and delete a challenge atomically
  */
-export async function getAndDeleteChallenge(identifier: number | string, type: ChallengeType): Promise<string | null> {
+export async function getAndDeleteChallenge<T = string>(
+  identifier: number | string,
+  type: ChallengeType
+): Promise<T | null> {
   try {
     const key = getChallengeKey(identifier, type)
-    return await redisClient.getdel<string>(key)
+    return await redisClient.getdel<T>(key)
   } catch (error) {
     console.error('getAndDeleteChallenge:', error)
     return null
@@ -24,7 +27,7 @@ export async function getAndDeleteChallenge(identifier: number | string, type: C
 export async function storeChallenge(
   identifier: number | string,
   type: ChallengeType,
-  challenge: string
+  challenge: unknown
 ): Promise<void> {
   try {
     const key = getChallengeKey(identifier, type)

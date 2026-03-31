@@ -200,17 +200,19 @@ export default function LoginForm() {
             <p className="mt-2 text-sm text-zinc-400">아이디/비밀번호 또는 패스키로 계속해요</p>
           </div>
 
-          <form action={dispatchLoginAction} className="grid gap-5" ref={formRef}>
+          <form action={dispatchLoginAction} className="grid gap-5" id="login-form" name="login" ref={formRef}>
             <div className="grid gap-4">
               <div>
-                <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-id">
+                <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-username">
                   아이디
                 </label>
                 <div className="relative group">
                   <input
+                    aria-describedby={loginIdError ? 'login-username-error' : undefined}
                     aria-invalid={!!loginIdError}
                     autoCapitalize="off"
                     autoComplete="username webauthn"
+                    autoCorrect="off"
                     autoFocus
                     className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                       focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
@@ -218,13 +220,16 @@ export default function LoginForm() {
                       aria-invalid:border-red-600/50 aria-invalid:focus:ring-red-600/30"
                     defaultValue={defaultLoginId}
                     disabled={isPending}
-                    id="login-id"
+                    enterKeyHint="next"
+                    id="login-username"
                     maxLength={32}
                     minLength={2}
                     name="login-id"
                     pattern={LOGIN_ID_PATTERN}
                     placeholder="아이디"
                     required
+                    spellCheck={false}
+                    type="text"
                   />
                   <button
                     aria-label="아이디 지우기"
@@ -241,24 +246,32 @@ export default function LoginForm() {
                     <X className="size-3.5" />
                   </button>
                 </div>
-                {loginIdError && <p className="mt-1 text-xs text-red-400">{loginIdError}</p>}
+                {loginIdError && (
+                  <p className="mt-1 text-xs text-red-400" id="login-username-error">
+                    {loginIdError}
+                  </p>
+                )}
               </div>
 
               <div>
-                <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="password">
+                <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-current-password">
                   비밀번호
                 </label>
                 <div className="relative group">
                   <input
+                    aria-describedby={passwordError ? 'login-password-error' : undefined}
                     aria-invalid={!!passwordError}
+                    autoCapitalize="off"
                     autoComplete="current-password"
+                    autoCorrect="off"
                     className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                       focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                       disabled:opacity-60 disabled:cursor-not-allowed
                       aria-invalid:border-red-600/50 aria-invalid:focus:ring-red-600/30"
                     defaultValue={defaultPassword}
                     disabled={isPending}
-                    id="password"
+                    enterKeyHint="done"
+                    id="login-current-password"
                     maxLength={64}
                     minLength={8}
                     name="password"
@@ -266,6 +279,7 @@ export default function LoginForm() {
                     placeholder="비밀번호"
                     ref={passwordInputRef}
                     required
+                    spellCheck={false}
                     type="password"
                   />
                   <button
@@ -285,7 +299,11 @@ export default function LoginForm() {
                     <EyeOff className="eye-off-icon size-3.5 hidden" />
                   </button>
                 </div>
-                {passwordError && <p className="mt-1 text-xs text-red-400">{passwordError}</p>}
+                {passwordError && (
+                  <p className="mt-1 text-xs text-red-400" id="login-password-error">
+                    {passwordError}
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-end">
@@ -332,6 +350,7 @@ export default function LoginForm() {
 
             <PasskeyLoginButton
               disabled={isPending}
+              formRef={formRef}
               onSuccess={handleLoginSuccess}
               turnstile={{
                 getToken: getTurnstileToken,

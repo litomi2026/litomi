@@ -67,6 +67,8 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
       [&_input]:focus:ring-zinc-500 [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 
       [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
       [&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700"
+      id="password-change-form"
+      name="password-change"
       onSubmit={handleSubmit}
     >
       <input name="userId" type="hidden" value={userId} />
@@ -75,13 +77,17 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
         <div className="relative">
           <input
             aria-invalid={!!currentPasswordError}
+            autoCapitalize="off"
             autoComplete="current-password"
+            autoCorrect="off"
             defaultValue={defaultCurrentPassword}
             disabled={isPending}
+            enterKeyHint="next"
             id="currentPassword"
             name="currentPassword"
             placeholder="현재 비밀번호를 입력하세요"
             required
+            spellCheck={false}
             type={showCurrentPassword ? 'text' : 'password'}
           />
           <button
@@ -104,9 +110,12 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
         <div className="relative">
           <input
             aria-invalid={!!newPasswordError}
+            autoCapitalize="off"
             autoComplete="new-password"
+            autoCorrect="off"
             defaultValue={defaultNewPassword}
             disabled={isPending}
+            enterKeyHint="next"
             id="newPassword"
             maxLength={64}
             minLength={8}
@@ -115,6 +124,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
             pattern={PASSWORD_PATTERN}
             placeholder="새 비밀번호를 입력하세요"
             required
+            spellCheck={false}
             type={showNewPassword ? 'text' : 'password'}
           />
           <button
@@ -158,15 +168,19 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
         <div className="relative">
           <input
             aria-invalid={!!confirmPasswordError}
+            autoCapitalize="off"
             autoComplete="new-password"
+            autoCorrect="off"
             defaultValue={defaultConfirmPassword}
             disabled={isPending}
+            enterKeyHint="done"
             id="confirmPassword"
             maxLength={64}
             minLength={8}
             name="confirmPassword"
             placeholder="새 비밀번호를 다시 입력하세요"
             required
+            spellCheck={false}
             type={showConfirmPassword ? 'text' : 'password'}
           />
           <button
