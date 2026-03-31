@@ -1,7 +1,7 @@
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, fireEvent, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 
 import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
@@ -66,6 +66,10 @@ function SelectionModeController({ children, selectionMode }: { children: ReactN
 afterEach(() => {
   cleanup()
   fetchController.restore()
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 describe('LibraryItemsClient', () => {

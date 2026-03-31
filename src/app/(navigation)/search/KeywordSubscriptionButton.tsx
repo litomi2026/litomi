@@ -3,16 +3,16 @@
 import { useMutation } from '@tanstack/react-query'
 import { BellRing, Loader2 } from 'lucide-react'
 import { ReadonlyURLSearchParams, useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconBell from '@/components/icons/IconBell'
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@/constants/policy'
 import useMeQuery from '@/query/useMeQuery'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { createNotificationCriteria } from './api'
-import UpdateFromSearchParams from './UpdateFromSearchParams'
 import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 
 export default function KeywordSubscriptionButton() {
@@ -38,9 +38,9 @@ export default function KeywordSubscriptionButton() {
 
   const isPending = createCriteriaMutation.isPending
 
-  const updateQuery = useCallback((searchParams: ReadonlyURLSearchParams) => {
+  function handleUpdateQuery(searchParams: ReadonlyURLSearchParams) {
     setQuery(parseSearchQuery(searchParams.get('query') ?? ''))
-  }, [])
+  }
 
   function handleToggleSubscription() {
     if (isPending || !query) {
@@ -92,15 +92,17 @@ export default function KeywordSubscriptionButton() {
     <button
       aria-label={buttonTitle}
       aria-pressed={isSubscribed}
-      className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition border bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500
-      focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900
-      disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
+      className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] transition border
+        bg-zinc-950/78 border-white/10 text-zinc-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]
+        hover:border-white/16 hover:bg-zinc-900/82
+        focus:outline-none focus:ring-2 focus:ring-white/15 focus:ring-offset-2 focus:ring-offset-zinc-950
+        disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
       disabled={isPending}
       onClick={handleToggleSubscription}
       title={buttonTitle}
       type="button"
     >
-      <UpdateFromSearchParams onUpdate={updateQuery} />
+      <SearchParamsSync onUpdate={handleUpdateQuery} />
       {isPending ? (
         <Loader2 className="size-4 animate-spin" />
       ) : isSubscribed ? (

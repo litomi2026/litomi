@@ -1,5 +1,5 @@
 import '@test/setup.base'
-import { afterEach, describe, expect, it, mock } from 'bun:test'
+import { afterAll, afterEach, describe, expect, it, mock } from 'bun:test'
 
 import { ChallengeType } from '@/database/enum'
 
@@ -18,6 +18,10 @@ const { getAndDeleteChallenge, storeChallenge } = await import('../redis-challen
 afterEach(() => {
   getdelMock.mockClear()
   setMock.mockClear()
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 describe('redis-challenge', () => {

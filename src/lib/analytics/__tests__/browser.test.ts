@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 
 type AnalyticsBrowserModule = typeof import('../browser')
 
@@ -38,6 +38,10 @@ describe('브라우저 분석 래퍼', () => {
 
   afterEach(() => {
     sendGTMEventMock.mockClear()
+  })
+
+  afterAll(() => {
+    mock.restore()
   })
 
   test('track는 날짜 파라미터를 직렬화하고 정의되지 않은 값은 무시한다', async () => {

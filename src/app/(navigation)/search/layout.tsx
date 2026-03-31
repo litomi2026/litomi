@@ -16,12 +16,12 @@ export default async function Layout({ children }: LayoutProps<'/search'>) {
       </Suspense>
       <h1 className="sr-only">작품 검색</h1>
       <header
-        className="fixed top-0 z-20 w-full p-2 pt-[max(0.5rem,var(--safe-area-top))] pr-[max(0.5rem,calc(var(--safe-area-right)))] bg-background border-b-2 shadow-sm 
-          sm:max-w-[calc(100vw-5rem-var(--safe-area-left))] 2xl:max-w-7xl max-sm:aria-busy:opacity-50 transition"
+        className="fixed top-0 z-20 w-full pt-safe px-safe border-b-2 border-white/6 bg-background/98 shadow-[0_18px_48px_rgba(0,0,0,0.34)]
+          sm:max-w-[calc(100vw-5rem-var(--safe-area-left))] sm:pl-0 2xl:max-w-7xl max-sm:aria-busy:opacity-50 transition"
         data-search-header
       >
         <AutoHideNavigation selector="[data-search-header]" />
-        <div className="flex items-center justify-center flex-wrap gap-2 whitespace-nowrap md:justify-end">
+        <div className="flex items-center justify-center flex-wrap gap-2 whitespace-nowrap p-2 md:justify-end">
           <SearchForm className="grow w-full min-w-0 md:w-auto" />
           <KeywordSubscriptionButton />
           <ViewToggle />

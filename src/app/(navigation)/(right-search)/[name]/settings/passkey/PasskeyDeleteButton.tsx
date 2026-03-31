@@ -8,18 +8,30 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import useServerAction from '@/hook/useServerAction'
+import { signalCurrentPasskeyUserDetails } from '@/utils/passkey'
 
 import { deleteCredential } from './action-delete'
+import { PasskeySignalData } from './common'
 
 type Props = {
+  credentialId: string
   id: number
   className?: string
   onCancel?: () => void
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  passkeySignalData: PasskeySignalData
 }
 
-export default function PasskeyDeleteButton({ id, className, onCancel, open, onOpenChange }: Readonly<Props>) {
+export default function PasskeyDeleteButton({
+  credentialId,
+  id,
+  className,
+  onCancel,
+  open,
+  onOpenChange,
+  passkeySignalData,
+}: Props) {
   const [internalOpen, setInternalOpen] = useState(false)
   const isControlled = open !== undefined
   const isOpen = isControlled ? open : internalOpen
@@ -38,8 +50,13 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
 
   const [_, dispatchAction, isPending] = useServerAction({
     action: deleteCredential,
-    onSuccess: (data) => {
-      toast.success(data)
+    onSuccess: async ({ message }) => {
+      await signalCurrentPasskeyUserDetails({
+        ...passkeySignalData,
+        credentialIds: passkeySignalData.credentialIds.filter((id) => id !== credentialId),
+      })
+
+      toast.success(message)
       setIsOpen(false)
     },
   })

@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { PgDialect } from 'drizzle-orm/pg-core'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
@@ -23,6 +23,10 @@ type UserRatingRow = {
 let ratingRoutes: RatingRouteModule['default']
 let app: Hono<TestEnv>
 let shouldThrowDatabaseError = false
+
+afterAll(() => {
+  mock.restore()
+})
 
 const dialect = new PgDialect()
 const mockRatings = new Map<number, UserRatingRow[]>()

@@ -1,12 +1,13 @@
 import '@test/setup.dom'
 
-import type { ReactElement, ReactNode } from 'react'
+import type { ComponentType, ReactElement, ReactNode } from 'react'
 
 import { QueryClient, type QueryClientConfig, QueryClientProvider } from '@tanstack/react-query'
 import { render, type RenderOptions } from '@testing-library/react'
 
 type RenderWithQueryClientOptions = Omit<RenderOptions, 'wrapper'> & {
   queryClient?: QueryClient
+  wrapper?: ComponentType<{ children: ReactNode }>
 }
 
 export function createTestQueryClient(config: QueryClientConfig = {}) {
@@ -32,20 +33,29 @@ export function createTestQueryClient(config: QueryClientConfig = {}) {
   })
 }
 
-export function createTestQueryClientWrapper(queryClient: QueryClient) {
+export function createTestQueryClientWrapper(
+  queryClient: QueryClient,
+  Wrapper?: ComponentType<{ children: ReactNode }>,
+) {
   return function TestQueryClientWrapper({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    const content = <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+
+    if (!Wrapper) {
+      return content
+    }
+
+    return <Wrapper>{content}</Wrapper>
   }
 }
 
 export function renderWithTestQueryClient(
   ui: ReactElement,
-  { queryClient = createTestQueryClient(), ...options }: RenderWithQueryClientOptions = {},
+  { queryClient = createTestQueryClient(), wrapper, ...options }: RenderWithQueryClientOptions = {},
 ) {
   return {
     queryClient,
     ...render(ui, {
-      wrapper: createTestQueryClientWrapper(queryClient),
+      wrapper: createTestQueryClientWrapper(queryClient, wrapper),
       ...options,
     }),
   }

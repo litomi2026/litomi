@@ -1,4 +1,4 @@
-import { beforeAll, mock } from 'bun:test'
+import { afterAll, beforeAll, mock } from 'bun:test'
 
 process.env.SKIP_ENV_VALIDATION = 'true'
 process.env.POSTGRES_URL ??= 'postgresql://test:test@localhost:5432/test'
@@ -46,4 +46,8 @@ beforeAll(() => {
 
     originalError.call(console, ...args)
   }
+})
+
+afterAll(() => {
+  mock.restore()
 })

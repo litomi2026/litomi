@@ -3,15 +3,15 @@
 import { SlidersHorizontal } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { ReadonlyURLSearchParams } from 'next/navigation'
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 import useMounted from '@/hook/useMounted'
 import { formatLocalDate } from '@/utils/format/date'
 
 import type { FilterState } from './constants'
 
 import { FILTER_KEYS, isDateFilter } from './constants'
-import UpdateFromSearchParams from './UpdateFromSearchParams'
 
 // NOTE: 필터 패널은 사용자가 필터를 클릭할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
 const FilterPanel = dynamic(() => import('./FilterPanel'))
@@ -24,11 +24,11 @@ export default function FilterButton() {
   const hasActiveFilters = FILTER_KEYS.some((key) => Boolean(filters[key]))
   const activeFilterCount = FILTER_KEYS.filter((key) => Boolean(filters[key])).length
 
-  const handleClose = useCallback(() => {
+  function handleClose() {
     setShowFilters(false)
-  }, [])
+  }
 
-  const handleSearchParamUpdate = useCallback((searchParams: ReadonlyURLSearchParams) => {
+  function handleSearchParamUpdate(searchParams: ReadonlyURLSearchParams) {
     const initialState: FilterState = {}
 
     FILTER_KEYS.forEach((key) => {
@@ -45,18 +45,19 @@ export default function FilterButton() {
     })
 
     setFilters(initialState)
-  }, [])
+  }
 
   return (
     <div className="relative">
-      <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
+      <SearchParamsSync onUpdate={handleSearchParamUpdate} />
       <button
         aria-expanded={showFilters}
         aria-label="상세 조건 설정"
         aria-pressed={hasActiveFilters}
-        className="relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl border transition
-          bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500
-          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900
+        className="relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] border transition
+          bg-zinc-950/78 border-white/10 text-zinc-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]
+          hover:border-white/16 hover:bg-zinc-900/82
+          focus:outline-none focus:ring-2 focus:ring-white/15 focus:ring-offset-2 focus:ring-offset-zinc-950
           aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
