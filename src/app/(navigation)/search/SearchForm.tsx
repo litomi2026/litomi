@@ -243,9 +243,8 @@ export default function SearchForm({ className = '' }: Props) {
     <div className={`relative ${className}`}>
       <SearchParamsSync onUpdate={handleSearchParamUpdate} />
       <form
-        className="flex items-center gap-1 rounded-[1.2rem] border border-white/10 bg-zinc-950/82 text-zinc-400
-        shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_18px_36px_rgba(0,0,0,0.22)] transition
-        hover:border-white/16 focus-within:border-white/20 focus-within:bg-zinc-950/88"
+        className="flex items-center gap-1 rounded-[1.2rem] border border-white/10 bg-zinc-950/82 text-zinc-400 transition
+          hover:border-white/16 focus-within:border-white/20 focus-within:bg-zinc-950/88"
         onSubmit={onSubmit}
       >
         <div className="relative flex-1">
