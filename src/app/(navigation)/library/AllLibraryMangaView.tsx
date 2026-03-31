@@ -2,15 +2,18 @@
 
 import { Library } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { ReadonlyURLSearchParams } from 'next/navigation'
+import { useMemo, useState } from 'react'
 
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
+import ViewToggle from '@/components/ViewToggle'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import { View } from '@/utils/param'
+import { getViewFromSearchParams, View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import CensoredManga from './CensoredManga'
@@ -29,7 +32,13 @@ type LibraryItem = {
   library: Library
 }
 
-export default function AllLibraryMangaView() {
+type Props = {
+  initialView: View
+}
+
+export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
+  const [view, setView] = useState<View>(initialView)
+
   const {
     data,
     fetchNextPage,
@@ -64,9 +73,13 @@ export default function AllLibraryMangaView() {
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
   const isInitialLoading = items.length === 0 && isMangaPending
 
+  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
+    setView(getViewFromSearchParams(searchParams))
+  }
+
   if (isInitialLoading) {
     return (
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
         {Array.from({ length: 6 }).map((_, i) => (
           <MangaCardSkeleton key={i} />
         ))}
@@ -87,8 +100,12 @@ export default function AllLibraryMangaView() {
 
   return (
     <>
+      <SearchParamsSync onUpdate={handleViewUpdate} />
       <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
+      <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
+        <ViewToggle initialView={initialView} />
+      </div>
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
         {items.map(({ library, mangaId }, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
