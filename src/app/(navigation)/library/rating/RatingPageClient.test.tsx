@@ -1,4 +1,5 @@
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
+import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, waitFor } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
@@ -7,6 +8,7 @@ import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 
 import { isGroupedRatingSort, RatingSort } from '@/backend/api/v1/library/enum'
+import { View } from '@/utils/param'
 
 import { fireEvent } from '../../../../../test/utils/render'
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
@@ -23,17 +25,8 @@ const basePage: GETV1RatingsResponse = {
   nextCursor: null,
 }
 
-mock.module('@/components/card/MangaCard', () => ({
-  default: () => <div>manga-card</div>,
-  MangaCardSkeleton: () => <div>manga-card-skeleton</div>,
-}))
-
-mock.module('../CensoredManga', () => ({
-  default: () => null,
-}))
-
 mock.module('../SelectableMangaCard', () => ({
-  default: () => <div>selectable-card</div>,
+  default: ({ variant = 'card' }: { variant?: string }) => <div>{`selectable-card-${variant}`}</div>,
 }))
 
 let fetchRoutes: FetchRoute[] = []
@@ -65,6 +58,7 @@ function renderWithLibrarySelection(ui: ReactElement, selectionMode = false) {
     <LibrarySelectionProvider scopeKey="rating-test">
       <SelectionModeController selectionMode={selectionMode}>{ui}</SelectionModeController>
     </LibrarySelectionProvider>,
+    { wrapper: createTestNavigationWrapper() },
   )
 }
 
@@ -94,7 +88,9 @@ afterAll(() => {
 
 describe('RatingPageClient', () => {
   test('작품 ID 정렬 옵션을 렌더링한다', () => {
-    const view = renderWithLibrarySelection(<RatingPageClient initialData={basePage} />)
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.CARD} />,
+    )
 
     expect(view.getByRole('option', { name: '작품 ID 높은순' })).toBeTruthy()
     expect(view.getByRole('option', { name: '작품 ID 낮은순' })).toBeTruthy()
@@ -116,19 +112,20 @@ describe('RatingPageClient', () => {
     })
 
     const view = renderWithLibrarySelection(
-      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} />,
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.CARD} />,
       true,
     )
 
-    expect(view.getByText('selectable-card')).toBeTruthy()
+    expect(view.getByText('selectable-card-card')).toBeTruthy()
 
     fireEvent.change(view.getByRole('combobox'), {
       target: { value: RatingSort.MANGA_ID_ASC },
     })
 
-    expect(view.queryByText('selectable-card')).toBeNull()
+    expect(view.queryByText('selectable-card-card')).toBeNull()
     expect(window.location.search).toBe(`?sort=${RatingSort.MANGA_ID_ASC}`)
-    expect(view.getByText('manga-card-skeleton')).toBeTruthy()
+    expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
+    expect(view.container.querySelectorAll('ul > li')).toHaveLength(1)
 
     await waitFor(() => {
       const ratingRequests = fetchController.calls
@@ -141,7 +138,9 @@ describe('RatingPageClient', () => {
   })
 
   test('작품 ID 정렬에서는 평점 그룹 헤더를 렌더링하지 않는다', () => {
-    const view = renderWithLibrarySelection(<RatingPageClient initialData={basePage} initialSort={RatingSort.MANGA_ID_ASC} />)
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.MANGA_ID_ASC} initialView={View.CARD} />,
+    )
 
     expect(view.queryByText('(4점)')).toBeNull()
   })
@@ -158,30 +157,90 @@ describe('RatingPageClient', () => {
       response: () => pendingResponse,
     })
 
-    const view = renderWithLibrarySelection(<RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} />)
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.CARD} />,
+    )
 
     fireEvent.change(view.getByRole('combobox'), {
       target: { value: RatingSort.MANGA_ID_ASC },
     })
 
-    expect(view.getByText('manga-card-skeleton')).toBeTruthy()
+    expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
+    expect(view.container.querySelectorAll('ul > li')).toHaveLength(1)
 
     resolveResponse(jsonResponse(basePage))
 
-    await waitFor(() => {
-      expect(view.getByText('manga-card')).toBeTruthy()
-    }, { timeout: 5000 })
+    await waitFor(
+      () => {
+        expect(view.container.querySelector('[data-manga-card]')).toBeTruthy()
+      },
+      { timeout: 5000 },
+    )
   })
 
   test('평점 정렬에서는 평점 그룹 헤더를 렌더링한다', () => {
-    const view = renderWithLibrarySelection(<RatingPageClient initialData={basePage} initialSort={RatingSort.RATING_DESC} />)
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.RATING_DESC} initialView={View.CARD} />,
+    )
 
     expect(view.getByText('(4점)')).toBeTruthy()
   })
 
   test('평가가 비어 있으면 빈 상태를 렌더링한다', () => {
-    const view = renderWithLibrarySelection(<RatingPageClient initialData={{ items: [], nextCursor: null }} />)
+    const view = renderWithLibrarySelection(
+      <RatingPageClient
+        initialData={{ items: [], nextCursor: null }}
+        initialSort={RatingSort.UPDATED_DESC}
+        initialView={View.CARD}
+      />,
+    )
 
     expect(view.getByText('아직 평가한 작품이 없어요')).toBeTruthy()
+  })
+
+  test('정렬을 변경하면 view 쿼리를 유지한다', async () => {
+    window.history.replaceState({}, '', '/library/rating?view=img')
+
+    fetchRoutes.push({
+      matcher: ({ url }) =>
+        url.pathname === '/api/v1/library/rating' && url.searchParams.get('sort') === RatingSort.MANGA_ID_ASC,
+      response: () => jsonResponse(basePage),
+    })
+
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.IMAGE} />,
+    )
+
+    fireEvent.change(view.getByRole('combobox'), {
+      target: { value: RatingSort.MANGA_ID_ASC },
+    })
+
+    expect(new URLSearchParams(window.location.search).get('sort')).toBe(RatingSort.MANGA_ID_ASC)
+    expect(new URLSearchParams(window.location.search).get('view')).toBe(View.IMAGE)
+
+    await waitFor(() => {
+      expect(view.container.querySelector('[data-manga-card]')?.className).not.toContain('flex-col')
+    })
+  })
+
+  test('initialView가 그림이면 image variant를 전달한다', () => {
+    window.history.replaceState({}, '', '/library/rating?view=img')
+
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.IMAGE} />,
+    )
+
+    expect(view.container.querySelector('[data-manga-card]')?.className).not.toContain('flex-col')
+  })
+
+  test('선택 모드와 그림 보기에서도 image selectable variant를 전달한다', () => {
+    window.history.replaceState({}, '', '/library/rating?view=img')
+
+    const view = renderWithLibrarySelection(
+      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.IMAGE} />,
+      true,
+    )
+
+    expect(view.getByText('selectable-card-img')).toBeTruthy()
   })
 })

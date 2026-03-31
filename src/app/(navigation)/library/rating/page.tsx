@@ -9,6 +9,7 @@ import { RATING_PER_PAGE } from '@/constants/policy'
 import { userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { getUserIdFromCookie } from '@/utils/cookie'
+import { View } from '@/utils/param'
 
 import NotFound from './NotFound'
 import RatingPageClient from './RatingPageClient'
@@ -28,6 +29,7 @@ export const metadata: Metadata = {
 
 const searchParamsSchema = z.object({
   sort: z.enum(RatingSort).default(RatingSort.UPDATED_DESC),
+  view: z.enum(View).default(View.CARD),
 })
 
 export default async function RatingPage({ searchParams }: PageProps<'/library/rating'>) {
@@ -43,7 +45,7 @@ export default async function RatingPage({ searchParams }: PageProps<'/library/r
     return <NotFound />
   }
 
-  const { sort } = validation.data
+  const { sort, view } = validation.data
 
   const baseQuery = db
     .select({
@@ -85,7 +87,7 @@ export default async function RatingPage({ searchParams }: PageProps<'/library/r
   return (
     <main className="flex-1 flex flex-col">
       <h1 className="sr-only">작품 평가</h1>
-      <RatingPageClient initialData={initialData} initialSort={sort} />
+      <RatingPageClient initialData={initialData} initialSort={sort} initialView={view} />
     </main>
   )
 }

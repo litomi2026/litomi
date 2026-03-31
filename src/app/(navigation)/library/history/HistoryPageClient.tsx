@@ -75,7 +75,7 @@ export default function HistoryPageClient({ initialData }: Props) {
                   )
                 }
 
-                return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
+                return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={View.CARD} />
               })}
             </ul>
           </div>
