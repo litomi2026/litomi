@@ -16,7 +16,7 @@ export default async function Layout({ children }: LayoutProps<'/search'>) {
       </Suspense>
       <h1 className="sr-only">작품 검색</h1>
       <header
-        className="fixed top-0 z-20 w-full pt-safe px-safe border-b-2 border-white/6 bg-background/98 shadow-[0_18px_48px_rgba(0,0,0,0.34)]
+        className="fixed top-0 z-20 w-full pt-safe px-safe border-b-2 border-zinc-800 bg-background/95 shadow-md
           sm:max-w-[calc(100vw-5rem-var(--safe-area-left))] sm:pl-0 2xl:max-w-7xl max-sm:aria-busy:opacity-50 transition"
         data-search-header
       >
