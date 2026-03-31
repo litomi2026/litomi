@@ -96,7 +96,7 @@ export default function ViewToggle({ className = '' }: Readonly<Props>) {
         <button
           aria-checked={view === value}
           aria-label={label}
-          className="relative z-10 inline-flex min-h-8 min-w-[3.1rem] touch-manipulation select-none items-center justify-center gap-0.5 rounded-[0.65rem] px-2 py-1 text-[11px] font-medium tracking-[-0.01em] text-zinc-400 transition-[color,transform] duration-200 hover:text-zinc-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-checked:font-semibold aria-checked:text-zinc-950 sm:min-w-[3.4rem] sm:px-2.5 sm:text-xs"
+          className="relative z-10 inline-flex min-h-8 min-w-[3.1rem] touch-manipulation select-none items-center justify-center gap-0.5 rounded-[0.65rem] px-2 py-1 text-xs font-medium tracking-[-0.01em] text-zinc-400 transition-[color,transform] duration-200 hover:text-zinc-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-checked:font-semibold aria-checked:text-zinc-950 sm:min-w-[3.4rem] sm:px-2.5"
           key={value}
           onClick={() => setView(value)}
           onKeyDown={(event) => handleKeyDown(event, index)}
