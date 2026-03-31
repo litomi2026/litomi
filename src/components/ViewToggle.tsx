@@ -15,11 +15,12 @@ const VIEW_OPTIONS = [
 
 type Props = {
   className?: string
+  initialView?: View
 }
 
-export default function ViewToggle({ className = '' }: Props) {
+export default function ViewToggle({ className = '', initialView = View.CARD }: Props) {
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([])
-  const [view, setCurrentView] = useState<View>(View.CARD)
+  const [view, setCurrentView] = useState<View>(initialView)
 
   function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
     setCurrentView(getViewFromSearchParams(searchParams))
@@ -100,7 +101,7 @@ export default function ViewToggle({ className = '' }: Props) {
           <button
             aria-checked={view === value}
             aria-label={label}
-            className="relative z-10 inline-flex min-h-8 min-w-[3.1rem] touch-manipulation select-none items-center justify-center gap-0.5 rounded-[0.65rem] px-2 py-1 text-sm font-medium text-zinc-400 transition hover:text-foreground active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-checked:font-semibold aria-checked:text-foreground sm:min-w-[3.4rem] sm:px-2.5"
+            className="relative z-10 inline-flex min-h-8 min-w-12 touch-manipulation select-none items-center justify-center gap-0.5 rounded-[0.65rem] px-2 py-1 text-sm font-medium text-zinc-400 transition hover:text-foreground active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-checked:font-semibold aria-checked:text-foreground sm:min-w-[3.4rem] sm:px-2.5"
             key={value}
             onClick={() => setView(value)}
             onKeyDown={(event) => handleKeyDown(event, index)}
