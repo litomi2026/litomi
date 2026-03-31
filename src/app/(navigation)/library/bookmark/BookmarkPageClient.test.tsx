@@ -13,11 +13,6 @@ import { View } from '@/utils/param'
 
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
 
-mock.module('@/components/card/MangaCard', () => ({
-  default: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-${variant}`}</div>,
-  MangaCardSkeleton: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-skeleton-${variant}`}</div>,
-}))
-
 mock.module('../SelectableMangaCard', () => ({
   default: ({ variant = 'card' }: { variant?: string }) => <div>{`selectable-card-${variant}`}</div>,
 }))
@@ -92,7 +87,7 @@ describe('BookmarkPageClient', () => {
     expect(view.getByRole('option', { name: '오래된순' })).toBeTruthy()
     expect(view.getByRole('option', { name: '작품 ID 높은순' })).toBeTruthy()
     expect(view.getByRole('option', { name: '작품 ID 낮은순' })).toBeTruthy()
-    expect(view.getByText('manga-card-img')).toBeTruthy()
+    expect(view.container.querySelector('[data-manga-card]')?.className).not.toContain('flex-col')
   })
 
   test('정렬을 변경하면 새 쿼리로 재조회하고 URL을 갱신한다', async () => {
@@ -114,11 +109,12 @@ describe('BookmarkPageClient', () => {
       target: { value: CollectionItemSort.MANGA_ID_ASC },
     })
 
-    expect(view.getByText('manga-card-skeleton-img')).toBeTruthy()
+    expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
+    expect(view.container.querySelectorAll('ul > li')).toHaveLength(1)
     expect(window.location.search).toBe(`?view=${View.IMAGE}&sort=${CollectionItemSort.MANGA_ID_ASC}`)
 
     await waitFor(() => {
-      expect(view.getByText('manga-card-img')).toBeTruthy()
+      expect(view.container.querySelector('[data-manga-card]')).toBeTruthy()
     })
 
     const bookmarkRequests = fetchController.calls.filter(({ url }) => url.pathname === '/api/v1/bookmark')

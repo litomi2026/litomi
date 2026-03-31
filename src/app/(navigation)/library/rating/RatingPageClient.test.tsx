@@ -25,15 +25,6 @@ const basePage: GETV1RatingsResponse = {
   nextCursor: null,
 }
 
-mock.module('@/components/card/MangaCard', () => ({
-  default: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-${variant}`}</div>,
-  MangaCardSkeleton: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-skeleton-${variant}`}</div>,
-}))
-
-mock.module('../CensoredManga', () => ({
-  default: () => null,
-}))
-
 mock.module('../SelectableMangaCard', () => ({
   default: ({ variant = 'card' }: { variant?: string }) => <div>{`selectable-card-${variant}`}</div>,
 }))
@@ -133,7 +124,8 @@ describe('RatingPageClient', () => {
 
     expect(view.queryByText('selectable-card-card')).toBeNull()
     expect(window.location.search).toBe(`?sort=${RatingSort.MANGA_ID_ASC}`)
-    expect(view.getByText('manga-card-skeleton-card')).toBeTruthy()
+    expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
+    expect(view.container.querySelectorAll('ul > li')).toHaveLength(1)
 
     await waitFor(() => {
       const ratingRequests = fetchController.calls
@@ -173,13 +165,14 @@ describe('RatingPageClient', () => {
       target: { value: RatingSort.MANGA_ID_ASC },
     })
 
-    expect(view.getByText('manga-card-skeleton-card')).toBeTruthy()
+    expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
+    expect(view.container.querySelectorAll('ul > li')).toHaveLength(1)
 
     resolveResponse(jsonResponse(basePage))
 
     await waitFor(
       () => {
-        expect(view.getByText('manga-card-card')).toBeTruthy()
+        expect(view.container.querySelector('[data-manga-card]')).toBeTruthy()
       },
       { timeout: 5000 },
     )
@@ -226,7 +219,7 @@ describe('RatingPageClient', () => {
     expect(new URLSearchParams(window.location.search).get('view')).toBe(View.IMAGE)
 
     await waitFor(() => {
-      expect(view.getByText('manga-card-img')).toBeTruthy()
+      expect(view.container.querySelector('[data-manga-card]')?.className).not.toContain('flex-col')
     })
   })
 
@@ -237,7 +230,7 @@ describe('RatingPageClient', () => {
       <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.IMAGE} />,
     )
 
-    expect(view.getByText('manga-card-img')).toBeTruthy()
+    expect(view.container.querySelector('[data-manga-card]')?.className).not.toContain('flex-col')
   })
 
   test('선택 모드와 그림 보기에서도 image selectable variant를 전달한다', () => {

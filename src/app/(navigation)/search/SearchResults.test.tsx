@@ -1,6 +1,7 @@
 import '@test/setup.dom'
 import { createTestNavigationWrapper } from '@test/utils/navigation'
-import { cleanup, render } from '@testing-library/react'
+import { renderWithTestQueryClient } from '@test/utils/query-client'
+import { cleanup } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import { View } from '@/utils/param'
@@ -9,7 +10,14 @@ type SearchQueryState = {
   data: {
     pages: Array<{
       mangas: Array<{ id: number; title: string; images: []; count: number }>
-      promotion?: { position?: number }
+      promotion?: {
+        id: string
+        url: string
+        title: string
+        description: string
+        badge?: string
+        position?: number
+      }
     }>
   } | null
   error: Error | null
@@ -25,33 +33,6 @@ type SearchQueryState = {
 
 let searchQueryState: SearchQueryState
 
-mock.module('@/components/card/MangaCard', () => ({
-  default: ({
-    showSearchFromNextButton = false,
-    variant = 'card',
-  }: {
-    showSearchFromNextButton?: boolean
-    variant?: string
-  }) => <div>{`manga-card-${variant}-${showSearchFromNextButton ? 'search' : 'plain'}`}</div>,
-  MangaCardSkeleton: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-skeleton-${variant}`}</div>,
-}))
-
-mock.module('@/components/card/MangaCardPromotion', () => ({
-  default: () => <div>promotion-card</div>,
-}))
-
-mock.module('@/components/ui/LoadMoreRetryButton', () => ({
-  default: () => <div>retry-button</div>,
-}))
-
-mock.module('@/hook/useInfiniteScrollObserver', () => ({
-  default: () => ({ current: null }),
-}))
-
-mock.module('../(top-navigation)/RandomRefreshButton', () => ({
-  default: () => null,
-}))
-
 mock.module('./useSearchQuery', () => ({
   useSearchQuery: () => searchQueryState,
 }))
@@ -64,7 +45,14 @@ beforeEach(() => {
       pages: [
         {
           mangas: [{ id: 101, title: 'Manga 101', images: [], count: 10 }],
-          promotion: { position: 0 },
+          promotion: {
+            id: 'promo-101',
+            url: 'https://example.com/promotion',
+            title: '프로모션 작품',
+            description: '추천 작품 설명',
+            badge: '스폰서',
+            position: 0,
+          },
         },
       ],
     },
@@ -91,33 +79,42 @@ afterAll(() => {
 
 describe('SearchResult', () => {
   test('카드 보기에서는 카드 variant와 프로모션 카드를 렌더링한다', () => {
-    const view = render(<SearchResult />, {
+    const view = renderWithTestQueryClient(<SearchResult />, {
       wrapper: createTestNavigationWrapper({ pathname: '/search' }),
     })
 
-    expect(view.getByText('promotion-card')).toBeTruthy()
-    expect(view.getByText('manga-card-card-search')).toBeTruthy()
+    const card = view.container.querySelector('[data-manga-card]')
+
+    expect(view.getByText('프로모션 작품')).toBeTruthy()
+    expect(view.getByText('추천 작품 설명')).toBeTruthy()
+    expect(card).toBeTruthy()
+    expect(card?.className).toContain('flex-col')
+    expect(view.getByText('Manga 101')).toBeTruthy()
   })
 
   test('그림 보기에서는 image variant를 렌더링하고 프로모션 카드는 숨긴다', () => {
     window.history.replaceState({}, '', '/search?view=img')
 
-    const view = render(<SearchResult />, {
+    const view = renderWithTestQueryClient(<SearchResult />, {
       wrapper: createTestNavigationWrapper({
         pathname: '/search',
         searchParams: new URLSearchParams(window.location.search),
       }),
     })
 
-    expect(view.getByText('manga-card-img-plain')).toBeTruthy()
-    expect(view.queryByText('promotion-card')).toBeNull()
+    const card = view.container.querySelector('[data-manga-card]')
+
+    expect(card).toBeTruthy()
+    expect(card?.className).not.toContain('flex-col')
+    expect(view.queryByText('Manga 101')).toBeNull()
+    expect(view.queryByText('프로모션 작품')).toBeNull()
   })
 })
 
 describe('SearchResultLoading', () => {
   test('그림 보기에서는 image skeleton을 12개 렌더링한다', () => {
-    const view = render(<SearchResultLoading view={View.IMAGE} />)
+    const view = renderWithTestQueryClient(<SearchResultLoading view={View.IMAGE} />)
 
-    expect(view.getAllByText('manga-card-skeleton-img')).toHaveLength(12)
+    expect(view.container.querySelectorAll('ul > li')).toHaveLength(12)
   })
 })
