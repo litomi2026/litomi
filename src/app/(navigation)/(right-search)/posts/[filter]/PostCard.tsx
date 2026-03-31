@@ -96,7 +96,7 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
           />
         </div>
         {hasSocialStats && (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 pb-3 text-[11px] text-zinc-500">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 pb-3 text-xs text-zinc-500">
             {socialStats.map(({ Icon, label, value }) => (
               <div className="flex items-center gap-1" key={label} title={`${label} ${value.toLocaleString('ko-KR')}`}>
                 <Icon className="size-3.5 shrink-0" />
