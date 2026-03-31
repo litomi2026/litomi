@@ -1,7 +1,10 @@
 import { Metadata } from 'next'
+import { z } from 'zod'
 
 import { generateOpenGraphMetadata } from '@/constants'
+import { View } from '@/utils/param'
 
+import NotFound from './[id]/not-found'
 import AllLibraryMangaView from './AllLibraryMangaView'
 
 export const metadata: Metadata = {
@@ -16,10 +19,22 @@ export const metadata: Metadata = {
   },
 }
 
-export default function LibraryPage() {
+const searchParamsSchema = z.object({
+  view: z.enum(View).default(View.CARD),
+})
+
+export default async function LibraryPage({ searchParams }: PageProps<'/library'>) {
+  const validation = searchParamsSchema.safeParse(await searchParams)
+
+  if (!validation.success) {
+    return <NotFound />
+  }
+
+  const { view } = validation.data
+
   return (
     <main className="flex-1">
-      <AllLibraryMangaView />
+      <AllLibraryMangaView initialView={view} />
     </main>
   )
 }

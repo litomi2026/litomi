@@ -27,9 +27,8 @@ type Props = {
   showSearchFromNextButton?: boolean
 }
 
-export default function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
+export default function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Props) {
   const { id, artists, characters, date, group, series, images, tags, title, type, count, languages, uploader } = manga
-  const isDownloadable = images?.length === count
   const viewerLink = getViewerLink(id)
 
   return (
@@ -131,7 +130,7 @@ export default function MangaCard({ manga, index = 0, className = '', showSearch
               <Suspense>
                 <SearchFromHereButton className="flex-1" mangaId={id} />
               </Suspense>
-            ) : isDownloadable ? (
+            ) : images?.length === count ? (
               <DownloadButton className="flex-1" manga={manga} />
             ) : null}
           </div>
