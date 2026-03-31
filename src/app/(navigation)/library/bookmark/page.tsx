@@ -9,6 +9,7 @@ import { generateOpenGraphMetadata } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { selectBookmark } from '@/sql/selectBookmark'
 import { getUserIdFromCookie } from '@/utils/cookie'
+import { View } from '@/utils/param'
 
 import BookmarkPageClient from './BookmarkPageClient'
 import NotFound from './NotFound'
@@ -28,6 +29,7 @@ export const metadata: Metadata = {
 
 const searchParamsSchema = z.object({
   sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+  view: z.enum(View).default(View.CARD),
 })
 
 export default async function BookmarkPage({ searchParams }: PageProps<'/library/bookmark'>) {
@@ -37,13 +39,14 @@ export default async function BookmarkPage({ searchParams }: PageProps<'/library
     return <Unauthorized />
   }
 
-  const validation = searchParamsSchema.safeParse(await searchParams)
+  const resolvedSearchParams = await searchParams
+  const validation = searchParamsSchema.safeParse(resolvedSearchParams)
 
   if (!validation.success) {
     return <NotFound />
   }
 
-  const { sort } = validation.data
+  const { sort, view } = validation.data
 
   const bookmarks = await selectBookmark({
     userId,
@@ -61,23 +64,19 @@ export default async function BookmarkPage({ searchParams }: PageProps<'/library
     bookmarks.pop()
   }
 
-  const initialBookmarks = bookmarks.map((b) => ({
-    mangaId: b.mangaId,
-    createdAt: b.createdAt.getTime(),
-  }))
-
-  const lastBookmark = bookmarks[bookmarks.length - 1]
-
   const initialData = {
-    bookmarks: initialBookmarks,
-    nextCursor: hasNextPage ? getNextCollectionItemCursor(lastBookmark) : null,
+    bookmarks: bookmarks.map((b) => ({
+      mangaId: b.mangaId,
+      createdAt: b.createdAt.getTime(),
+    })),
+    nextCursor: hasNextPage ? getNextCollectionItemCursor(bookmarks[bookmarks.length - 1]) : null,
   }
 
   return (
     <main className="flex-1 flex flex-col">
       <h1 className="sr-only">북마크</h1>
       <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
-      <BookmarkPageClient initialData={initialData} initialSort={sort} />
+      <BookmarkPageClient initialData={initialData} initialSort={sort} initialView={view} />
     </main>
   )
 }
