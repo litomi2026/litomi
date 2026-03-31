@@ -1,17 +1,20 @@
 'use client'
 
 import { Star } from 'lucide-react'
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 
 import { isGroupedRatingSort, RatingSort } from '@/backend/api/v1/library/enum'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
+import ViewToggle from '@/components/ViewToggle'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { Manga } from '@/types/manga'
-import { View } from '@/utils/param'
+import { getViewFromSearchParams, View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import CensoredManga from '../CensoredManga'
@@ -21,8 +24,9 @@ import NotFound from './NotFound'
 import useRatingInfiniteQuery from './useRatingInfiniteQuery'
 
 type Props = {
-  initialData?: GETV1RatingsResponse
-  initialSort?: RatingSort
+  initialData: GETV1RatingsResponse
+  initialSort: RatingSort
+  initialView: View
 }
 
 const SORT_OPTIONS: { value: RatingSort; label: string }[] = [
@@ -40,19 +44,20 @@ type MangaListProps = {
   ratingIndexMap: Map<number, number>
   isSelectionMode: boolean
   isFetchingNextPage?: boolean
+  view: View
 }
 
-export default function RatingPageClient({ initialData, initialSort = RatingSort.UPDATED_DESC }: Props) {
+export default function RatingPageClient({ initialData, initialSort, initialView }: Props) {
   const [sort, setSort] = useState<RatingSort>(initialSort)
-  const queryInitialData = sort === initialSort ? initialData : undefined
+  const [view, setView] = useState<View>(initialView)
+  const { exit, isSelectionMode } = useLibrarySelection()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
-    useRatingInfiniteQuery(queryInitialData, sort)
+    useRatingInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
 
   const ratingPages = data?.pages ?? []
   const ratingItems = ratingPages.flatMap((page) => page.items)
   const ratingIndexMap = new Map(ratingItems.map((item, index) => [item.mangaId, index]))
-  const { exit, isSelectionMode } = useLibrarySelection()
   const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const showLoadingSkeleton = isLoading && ratingItems.length === 0
@@ -65,14 +70,14 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
     fetchNextPage,
   })
 
-  ratingItems.forEach((item) => {
+  for (const item of ratingItems) {
     const group = groupedRatings.get(item.rating) || []
     group.push(item)
 
     if (group.length === 1) {
       groupedRatings.set(item.rating, group)
     }
-  })
+  }
 
   const sortedGroups = Array.from(groupedRatings.entries()).sort(([aRating], [bRating]) => {
     if (sort === RatingSort.RATING_ASC) {
@@ -80,6 +85,10 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
     }
     return bRating - aRating
   })
+
+  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
+    setView(getViewFromSearchParams(searchParams))
+  }
 
   function handleSortChange(newSort: RatingSort) {
     if (newSort !== sort) {
@@ -97,9 +106,10 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
 
   return (
     <>
-      <div className="p-2 pb-0">
+      <SearchParamsSync onUpdate={handleViewUpdate} />
+      <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         <select
-          className="bg-zinc-900 text-sm px-3 py-1.5 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
+          className="bg-zinc-900 text-sm px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
           onChange={(e) => handleSortChange(e.target.value as RatingSort)}
           value={sort}
         >
@@ -109,6 +119,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
             </option>
           ))}
         </select>
+        <ViewToggle initialView={initialView} />
       </div>
       {shouldGroupByRating && sortedGroups.length > 0 ? (
         <div className="grid gap-4">
@@ -127,6 +138,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
                 items={items}
                 mangaMap={mangaMap}
                 ratingIndexMap={ratingIndexMap}
+                view={view}
               />
             </div>
           ))}
@@ -138,6 +150,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
           items={ratingItems}
           mangaMap={mangaMap}
           ratingIndexMap={ratingIndexMap}
+          view={view}
         />
       )}
       {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
@@ -146,9 +159,9 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
   )
 }
 
-function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchingNextPage }: MangaListProps) {
+function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchingNextPage, view }: MangaListProps) {
   return (
-    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
+    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
       {items.map(({ mangaId, rating }) => {
         const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
         const index = ratingIndexMap.get(mangaId) ?? 0
@@ -160,14 +173,14 @@ function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchin
                 <StarRating rating={rating} />
               </div>
               <CensoredManga mangaId={mangaId} />
-              <MangaCard className="h-full" index={index} manga={manga} />
+              <MangaCard className="h-full" index={index} manga={manga} variant={view} />
             </div>
           )
         }
 
-        return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
+        return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
       })}
-      {isFetchingNextPage && <MangaCardSkeleton />}
+      {isFetchingNextPage && <MangaCardSkeleton variant={view} />}
     </ul>
   )
 }

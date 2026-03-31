@@ -123,7 +123,7 @@ export default function LibraryItemsClient({
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         {isOwner && (
           <select
-            className="bg-zinc-900 text-sm px-3 py-1.5 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
+            className="bg-zinc-900 text-sm px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
             onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
             value={sort}
           >
@@ -141,12 +141,12 @@ export default function LibraryItemsClient({
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
           if (!isSelectionMode) {
-            return <MangaCard index={index} key={mangaId} manga={manga} />
+            return <MangaCard index={index} key={mangaId} manga={manga} variant={view} />
           }
 
-          return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
+          return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
         })}
-        {showLoadingSkeleton && <MangaCardSkeleton />}
+        {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
         {canAutoLoadMore && <div className="w-full p-4" ref={infiniteScrollTriggerRef} />}
         {!shouldBlockPrivate && isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
       </ul>
