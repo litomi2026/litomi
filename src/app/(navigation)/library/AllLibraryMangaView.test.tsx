@@ -6,19 +6,10 @@ import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'b
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-mock.module('@/components/card/MangaCard', () => ({
-  default: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-${variant}`}</div>,
-  MangaCardSkeleton: ({ variant = 'card' }: { variant?: string }) => <div>{`manga-card-skeleton-${variant}`}</div>,
-}))
-
 mock.module('@/hook/useMangaListCachedQuery', () => ({
   default: () => ({
     mangaMap: new Map([[101, { id: 101, title: 'Manga 101', images: [] }]]),
   }),
-}))
-
-mock.module('./CensoredManga', () => ({
-  default: () => null,
 }))
 
 mock.module('./useAllLibraryMangaInfiniteQuery', () => ({
@@ -64,10 +55,13 @@ describe('AllLibraryMangaView', () => {
       wrapper: createTestNavigationWrapper({ pathname: '/library' }),
     })
 
+    const card = view.container.querySelector('[data-manga-card]')
     const list = view.container.querySelector('ul')
 
     expect(view.getByRole('radio', { name: '카드' }).getAttribute('aria-checked')).toBe('true')
-    expect(view.getByText('manga-card-card')).toBeTruthy()
+    expect(card).toBeTruthy()
+    expect(card?.className).toContain('flex-col')
+    expect(view.getByText('Manga 101')).toBeTruthy()
     expect(list?.className).toContain(MANGA_LIST_GRID_COLUMNS[View.CARD])
   })
 
@@ -81,10 +75,13 @@ describe('AllLibraryMangaView', () => {
       }),
     })
 
+    const card = view.container.querySelector('[data-manga-card]')
     const list = view.container.querySelector('ul')
 
     expect(view.getByRole('radio', { name: '그림' }).getAttribute('aria-checked')).toBe('true')
-    expect(view.getByText('manga-card-img')).toBeTruthy()
+    expect(card).toBeTruthy()
+    expect(card?.className).not.toContain('flex-col')
+    expect(view.queryByText('Manga 101')).toBeNull()
     expect(list?.className).toContain(MANGA_LIST_GRID_COLUMNS[View.IMAGE])
   })
 })
