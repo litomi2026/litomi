@@ -43,7 +43,7 @@ export default function SearchPage({ filters, hasActiveFilters, view }: Readonly
       )}
       <NonAdultJuicyAdsBanner />
       <Suspense fallback={<SearchResultLoading view={view} />}>
-        <SearchResult showRefreshButton={filters.sort === 'random'} view={view} />
+        <SearchResult />
       </Suspense>
     </>
   )
