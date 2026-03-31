@@ -148,15 +148,24 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
           <div className="bg-red-950/30 border-2 border-red-900 rounded-xl p-6">
             <h2 className="text-lg font-semibold mb-4 text-red-400">마지막 확인</h2>
             <p className="text-zinc-300 mb-6">계정 보안을 위해 비밀번호를 입력해주세요. 이 작업은 되돌릴 수 없어요.</p>
+            <label className="sr-only" htmlFor="account-deletion-password">
+              현재 비밀번호
+            </label>
             <input
+              autoCapitalize="off"
+              autoComplete="current-password"
+              autoCorrect="off"
               className="w-full px-4 py-3 bg-zinc-800 border-2 border-red-900/50 rounded-lg 
                   focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent
                   placeholder-zinc-500"
               disabled={isPending}
+              enterKeyHint="done"
+              id="account-deletion-password"
               name="password"
               onChange={(e) => setPassword(e.target.value)}
               placeholder="현재 비밀번호"
               required
+              spellCheck={false}
               type="password"
               value={password}
             />

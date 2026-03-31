@@ -99,13 +99,17 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
                 현재 비밀번호
               </label>
               <input
+                autoCapitalize="off"
                 autoComplete="current-password"
+                autoCorrect="off"
                 className="w-full rounded-md bg-zinc-800 border border-zinc-600 px-3 py-2 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent disabled:bg-zinc-700 disabled:text-zinc-400"
                 disabled={unlinkMutation.isPending}
+                enterKeyHint={isTwoFactorEnabled ? 'next' : 'done'}
                 id="bbaton-unlink-password"
                 name="password"
                 placeholder="비밀번호를 입력해 주세요"
                 required
+                spellCheck={false}
                 type="password"
               />
             </div>

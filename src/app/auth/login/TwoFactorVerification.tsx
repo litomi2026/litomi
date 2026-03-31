@@ -62,7 +62,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
         </p>
       </div>
 
-      <form action={dispatchAction} className="grid gap-5">
+      <form action={dispatchAction} className="grid gap-5" id="two-factor-form" name="two-factor">
         <input name="code-verifier" type="hidden" value={pkceChallenge.codeVerifier} />
         <input name="fingerprint" type="hidden" value={twoFactorData.fingerprint} />
         <input name="authorization-code" type="hidden" value={twoFactorData.authorizationCode} />
@@ -73,16 +73,22 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             인증 코드
           </label>
           <OneTimeCodeInput
+            autoCapitalize={isBackupCode ? 'characters' : 'off'}
+            autoComplete={isBackupCode ? 'off' : 'one-time-code'}
+            autoCorrect="off"
             autoFocus
             className="w-full rounded-xl bg-white/4 border border-white/7 px-4 py-3 text-center text-xl font-mono text-zinc-50 placeholder:text-zinc-500 transition
               focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
               disabled:opacity-60 disabled:cursor-not-allowed"
             defaultValue={defaultToken}
             disabled={isPending}
+            enterKeyHint="done"
+            inputMode={isBackupCode ? 'text' : 'numeric'}
             maxLength={isBackupCode ? 9 : 6}
             minLength={isBackupCode ? 9 : 6}
             pattern={isBackupCode ? BACKUP_CODE_PATTERN : '[0-9]*'}
             placeholder={isBackupCode ? 'XXXX-XXXX' : '000000'}
+            spellCheck={false}
           />
         </div>
 
