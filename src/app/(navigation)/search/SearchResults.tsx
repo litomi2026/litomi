@@ -6,7 +6,6 @@ import { Fragment, useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
-import MangaCardImage from '@/components/card/MangaCardImage'
 import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -71,23 +70,15 @@ export default function SearchResult() {
   return (
     <>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2`}>
-        {mangas.map((manga, i) =>
-          view === View.IMAGE ? (
-            <li data-manga-card key={manga.id}>
-              <MangaCardImage
-                className="bg-zinc-900 rounded-xl border-2 [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-5/7"
-                manga={manga}
-                mangaIndex={i}
-              />
-            </li>
-          ) : (
-            <Fragment key={manga.id}>
-              {promotion && i === (promotion.position ?? 0) && <MangaCardPromotion promotion={promotion} />}
-              <MangaCard index={i} manga={manga} showSearchFromNextButton />
-            </Fragment>
-          ),
-        )}
-        {isFetchingNextPage && <MangaCardSkeleton />}
+        {mangas.map((manga, i) => (
+          <Fragment key={manga.id}>
+            {view === View.CARD && promotion && i === (promotion.position ?? 0) && (
+              <MangaCardPromotion promotion={promotion} />
+            )}
+            <MangaCard index={i} manga={manga} showSearchFromNextButton={view === View.CARD} variant={view} />
+          </Fragment>
+        ))}
+        {isFetchingNextPage && <MangaCardSkeleton variant={view} />}
       </ul>
       {mangas.length > 0 && (isFetchNextPageError || isRefetchError) && (
         <LoadMoreRetryButton onRetry={isFetchNextPageError ? fetchNextPage : refetch} />
@@ -113,7 +104,7 @@ export function SearchResultLoading({ view }: { view: View }) {
   return (
     <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
       {Array.from({ length: view === View.IMAGE ? 12 : 6 }).map((_, i) => (
-        <MangaCardSkeleton key={i} />
+        <MangaCardSkeleton key={i} variant={view} />
       ))}
     </ul>
   )

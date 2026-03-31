@@ -84,10 +84,10 @@ export default function BookmarkUploadButton() {
         type="button"
       >
         <Upload className="size-5 shrink-0" />
-        <span className="hidden md:block">북마크 업로드</span>
+        <span className="hidden md:block">북마크 복원</span>
       </button>
-      <Dialog ariaLabel="북마크 업로드" className="sm:max-w-lg" onClose={handleClose} open={isOpened}>
-        <DialogHeader onClose={handleClose} title="북마크 업로드" />
+      <Dialog ariaLabel="북마크 복원" className="sm:max-w-lg" onClose={handleClose} open={isOpened}>
+        <DialogHeader onClose={handleClose} title="북마크 복원" />
 
         <DialogBody className="p-0 overflow-y-hidden flex flex-col">
           <div className="p-5 pb-10 border-b border-zinc-800/40 bg-linear-to-b from-zinc-900 to-zinc-900/95 shrink-0">

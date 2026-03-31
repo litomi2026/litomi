@@ -68,7 +68,7 @@ export default function BookmarkDownloadButton() {
       type="button"
     >
       <Download className="size-5" />
-      <span className="hidden md:block">북마크 다운로드</span>
+      <span className="hidden md:block">북마크 백업</span>
     </button>
   )
 }

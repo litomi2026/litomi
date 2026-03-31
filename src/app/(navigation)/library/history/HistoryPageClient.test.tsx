@@ -8,19 +8,6 @@ import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/histo
 
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
 
-mock.module('@/components/card/MangaCard', () => ({
-  default: () => <div>manga-card</div>,
-  MangaCardSkeleton: () => <div>manga-card-skeleton</div>,
-}))
-
-mock.module('../CensoredManga', () => ({
-  default: () => null,
-}))
-
-mock.module('../SelectableMangaCard', () => ({
-  default: () => <div>selectable-card</div>,
-}))
-
 let fetchRoutes: FetchRoute[] = []
 let fetchController: ReturnType<typeof installMockFetch>
 
