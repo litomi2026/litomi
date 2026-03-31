@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
@@ -17,6 +17,10 @@ type LogoutResponse = {
 beforeAll(async () => {
   spyOn(console, 'error').mockImplementation(() => {})
   logoutRoutes = (await import('../logout')).default
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 beforeEach(() => {

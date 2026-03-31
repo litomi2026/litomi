@@ -1,7 +1,7 @@
 import '@test/setup.base'
 import '@test/setup.dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterAll, afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 type DispatchedAuthenticationRequest = {
   authentication: { id: string }
@@ -154,6 +154,10 @@ afterEach(() => {
   signalUnknownPasskeyCredentialMock.mockClear()
   toastWarningMock.mockClear()
   toastErrorMock.mockClear()
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 async function clickPasskeyLoginButton(button: HTMLElement) {

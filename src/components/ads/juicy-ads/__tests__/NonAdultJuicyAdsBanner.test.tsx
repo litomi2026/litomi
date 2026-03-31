@@ -6,7 +6,7 @@ import { clearDocumentCookies, setAuthHintCookie } from '@test/utils/auth'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterAll, afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import type { JuicyAdsLayoutNode } from '../types'
 
@@ -37,6 +37,10 @@ mock.module('../JuicyAdsSlot', () => ({
     <div className={className} data-slot-id={adSlotId} data-testid="juicy-slot" data-zone-id={zoneId} />
   ),
 }))
+
+afterAll(() => {
+  mock.restore()
+})
 
 let fetchRoutes: FetchRoute[] = []
 let fetchController: ReturnType<typeof installMockFetch>

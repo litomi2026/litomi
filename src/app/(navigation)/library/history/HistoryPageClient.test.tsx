@@ -1,7 +1,7 @@
 import { type FetchRoute, installMockFetch } from '@test/utils/fetch'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 
 import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
@@ -57,6 +57,10 @@ function SelectionModeController({ children, selectionMode }: { children: ReactN
 afterEach(() => {
   fetchController.restore()
   cleanup()
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 describe('HistoryPageClient', () => {
