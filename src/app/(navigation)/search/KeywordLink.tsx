@@ -6,6 +6,7 @@ import LinkPending from '@/components/LinkPending'
 type Props = {
   ariaCurrent?: boolean
   className?: string
+  href: string
   index: number
   keyword: {
     label: string
@@ -16,12 +17,11 @@ type Props = {
   onFocus?: () => void
   onBlur?: () => void
   textClassName?: string
-  view?: string | null
 }
 
 export default function KeywordLink({
+  href,
   keyword: { label, value },
-  view,
   index,
   linkRef,
   ariaCurrent,
@@ -31,18 +31,12 @@ export default function KeywordLink({
   onFocus,
   onBlur,
 }: Props) {
-  const searchParams = new URLSearchParams({ query: value })
-
-  if (view) {
-    searchParams.set('view', view)
-  }
-
   return (
     <Link
       aria-current={ariaCurrent}
       className={`flex items-center justify-center gap-1 relative text-xs px-2.5 py-1 rounded-full shrink-0 transition overflow-hidden bg-zinc-800 text-zinc-400  
       hover:text-foreground hover:bg-zinc-700 ${className}`}
-      href={`/search?${new URLSearchParams(searchParams)}`}
+      href={href}
       onBlur={onBlur}
       onClick={onClick}
       onFocus={onFocus}
