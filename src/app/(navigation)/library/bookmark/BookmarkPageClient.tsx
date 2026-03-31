@@ -71,7 +71,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 pb-0">
         <div className="flex flex-wrap items-center gap-2">
           <select
-            className="bg-zinc-900 text-sm px-3 py-1.5 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
+            className="bg-zinc-900 text-sm px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
             onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
             value={sort}
           >
