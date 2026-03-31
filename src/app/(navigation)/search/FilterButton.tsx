@@ -54,9 +54,10 @@ export default function FilterButton() {
         aria-expanded={showFilters}
         aria-label="상세 조건 설정"
         aria-pressed={hasActiveFilters}
-        className="relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl border transition
-          bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500
-          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900
+        className="relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] border transition
+          bg-zinc-950/78 border-white/10 text-zinc-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]
+          hover:border-white/16 hover:bg-zinc-900/82
+          focus:outline-none focus:ring-2 focus:ring-white/15 focus:ring-offset-2 focus:ring-offset-zinc-950
           aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
