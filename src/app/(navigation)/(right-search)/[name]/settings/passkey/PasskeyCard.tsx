@@ -1,16 +1,24 @@
 import { Key, Shield } from 'lucide-react'
 
-import { Passkey } from './common'
+import { Passkey, PasskeySignalData } from './common'
 import PasskeyDeleteButton from './PasskeyDeleteButton'
 import PasskeyMobileDeleteWrapper from './PasskeyMobileDeleteWrapper'
-import { getDeviceInfo, getRelativeTime, getTransportIcon, getTransportLabel, getUserVerificationMethod } from './utils'
+import {
+  getDeviceInfo,
+  getRelativeTime,
+  getTransportIcon,
+  getTransportLabel,
+  getTruncatedId,
+  getUserVerificationMethod,
+} from './utils'
 
 type Props = {
   passkey: Passkey
   enableMobileSwipe?: boolean
+  passkeySignalData: PasskeySignalData
 }
 
-export default function PasskeyCard({ passkey }: Readonly<Props>) {
+export default function PasskeyCard({ passkey, passkeySignalData }: Readonly<Props>) {
   const { deviceType, createdAt, credentialId, lastUsedAt, transports, id } = passkey
   const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)
@@ -19,7 +27,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
   const isPlatform = deviceType === 'platform'
 
   return (
-    <PasskeyMobileDeleteWrapper id={id}>
+    <PasskeyMobileDeleteWrapper credentialId={credentialId} id={id} passkeySignalData={passkeySignalData}>
       <div
         className="flex items-start gap-3 group/card relative bg-zinc-900 border-2 rounded-2xl p-4 data-[platform=true]:border-brand/40 border-zinc-800"
         data-platform={isPlatform}
@@ -41,7 +49,9 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
             <PasskeyDeleteButton
               className="opacity-0 sm:opacity-100 -my-2 -mx-1 p-2 text-zinc-600 rounded-xl transition 
               hover:text-red-400 hover:bg-red-900/10 group-hover/card:opacity-100"
+              credentialId={credentialId}
               id={id}
+              passkeySignalData={passkeySignalData}
             />
           </div>
           <div className="flex items-center gap-1.5">
@@ -73,7 +83,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
             )}
             <span className="hidden sm:flex items-center gap-1">
               <Key className="size-3" />
-              {credentialId}
+              {getTruncatedId(credentialId)}
             </span>
           </div>
         </div>

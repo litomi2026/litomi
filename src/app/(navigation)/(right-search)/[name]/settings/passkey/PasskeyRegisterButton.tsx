@@ -5,14 +5,25 @@ import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
 import useServerAction from '@/hook/useServerAction'
+import { signalCurrentPasskeyUserDetails } from '@/utils/passkey'
 
 import { getRegistrationOptions, verifyRegistration } from './action-register'
+import { PasskeySignalData } from './common'
 
-export default function PasskeyRegisterButton() {
+type Props = {
+  passkeySignalData: PasskeySignalData
+}
+
+export default function PasskeyRegisterButton({ passkeySignalData }: Readonly<Props>) {
   const [, dispatchAction, isPending] = useServerAction({
     action: verifyRegistration,
-    onSuccess: () => {
-      toast.success('패스키를 등록했어요')
+    onSuccess: async ({ credentialId, message }) => {
+      await signalCurrentPasskeyUserDetails({
+        ...passkeySignalData,
+        credentialIds: [...passkeySignalData.credentialIds, credentialId].sort(),
+      })
+
+      toast.success(message)
     },
     shouldSetResponse: false,
   })

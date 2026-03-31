@@ -3,14 +3,17 @@
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
+import { PasskeySignalData } from './common'
 import PasskeyDeleteButton from './PasskeyDeleteButton'
 
 type Props = {
   children: React.ReactNode
+  credentialId: string
   id: number
+  passkeySignalData: PasskeySignalData
 }
 
-export default function PasskeyMobileDeleteWrapper({ children, id }: Readonly<Props>) {
+export default function PasskeyMobileDeleteWrapper({ children, credentialId, id, passkeySignalData }: Props) {
   const [swipeX, setSwipeX] = useState(0)
   const [touchStart, setTouchStart] = useState(0)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
@@ -61,7 +64,14 @@ export default function PasskeyMobileDeleteWrapper({ children, id }: Readonly<Pr
       >
         {children}
       </div>
-      <PasskeyDeleteButton id={id} onCancel={handleCancel} onOpenChange={setShowConfirmModal} open={showConfirmModal} />
+      <PasskeyDeleteButton
+        credentialId={credentialId}
+        id={id}
+        onCancel={handleCancel}
+        onOpenChange={setShowConfirmModal}
+        open={showConfirmModal}
+        passkeySignalData={passkeySignalData}
+      />
     </div>
   )
 }

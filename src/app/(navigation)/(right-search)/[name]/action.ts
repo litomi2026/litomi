@@ -9,7 +9,7 @@ import { isPostgresError } from '@/database/error'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
-import { badRequest, conflict, internalServerError, ok, seeOther, unauthorized } from '@/utils/action-response'
+import { badRequest, conflict, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
@@ -43,19 +43,40 @@ export default async function editProfile(formData: FormData) {
   }
 
   try {
-    const [{ name: updatedName }] = await db
+    const [currentUser] = await db
+      .select({
+        loginId: userTable.loginId,
+        name: userTable.name,
+        nickname: userTable.nickname,
+      })
+      .from(userTable)
+      .where(sql`${userTable.id} = ${userId}`)
+
+    const [{ name: updatedName, nickname: updatedNickname }] = await db
       .update(userTable)
       .set({ name, nickname, imageURL })
       .where(sql`${userTable.id} = ${userId}`)
-      .returning({ name: userTable.name })
+      .returning({
+        name: userTable.name,
+        nickname: userTable.nickname,
+      })
 
     revalidatePath(`/@${updatedName}`)
 
-    if (name) {
-      return seeOther(`/@${updatedName}`, '프로필을 수정했어요')
-    }
+    const previousDisplayName = currentUser.nickname || currentUser.name
+    const nextDisplayName = updatedNickname || updatedName
 
-    return ok('프로필을 수정했어요')
+    return ok({
+      message: '프로필을 수정했어요',
+      ...(name && { location: `/@${updatedName}` }),
+      ...(previousDisplayName !== nextDisplayName && {
+        passkeyUserDetails: {
+          displayName: nextDisplayName,
+          name: currentUser.loginId,
+          userId: Buffer.from(userId.toString()).toString('base64url'),
+        },
+      }),
+    })
   } catch (error) {
     if (isPostgresError(error)) {
       if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_unique') {
