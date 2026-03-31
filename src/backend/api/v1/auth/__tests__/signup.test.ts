@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
@@ -10,8 +10,9 @@ import type { POSTV1AuthSignupResponse } from '../signup'
 type SignupRoutesModule = typeof import('../signup')
 
 let signupRoutes: SignupRoutesModule['default']
-let signupAttemptsByIdentifier = new Map<string, number>()
+let requestSequence = 0
 const SIGNUP_RATE_LIMIT_MAX_ATTEMPTS = 10
+const MOCKED_PASSWORD_HASH = 'mocked-password-hash'
 
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
@@ -40,45 +41,39 @@ mock.module('@/utils/nickname', () => ({
   generateRandomProfileImage: () => 'https://example.com/avatar.png',
 }))
 
-mock.module('@/utils/rate-limit', () => ({
-  RateLimiter: class MockRateLimiter {
-    constructor(private readonly config: { maxAttempts: number }) {}
-
-    check = (identifier?: string) => {
-      const key = identifier ?? ''
-      const count = (signupAttemptsByIdentifier.get(key) ?? 0) + 1
-
-      signupAttemptsByIdentifier.set(key, count)
-
-      return Promise.resolve(
-        count > this.config.maxAttempts ? { allowed: false, retryAfter: 120 } : { allowed: true, retryAfter: undefined },
-      )
-    }
-  },
-  RateLimitPresets: {
-    strict: () => ({
-      windowMs: 15 * 60 * 1000,
-      maxAttempts: SIGNUP_RATE_LIMIT_MAX_ATTEMPTS,
-    }),
-  },
-}))
-
-mock.module('@/utils/turnstile', () => ({
-  default: class MockTurnstileValidator {
-    validate = ({ token }: { token: string | null }) =>
-      Promise.resolve(
-        token === 'invalid' ? { success: false, 'error-codes': ['invalid-input-response'] } : { success: true },
-      )
-  },
+mock.module('bcryptjs', () => ({
+  hash: () => Promise.resolve(MOCKED_PASSWORD_HASH),
 }))
 
 beforeAll(async () => {
   spyOn(console, 'error').mockImplementation(() => {})
+  const fetchMock = (async (_input: RequestInfo | URL, init?: BunFetchRequestInit | RequestInit) => {
+    const body = init?.body
+    const token = body instanceof FormData ? body.get('response') : null
+
+    if (token === 'invalid') {
+      return Response.json({
+        success: false,
+        'error-codes': ['invalid-input-response'],
+      })
+    }
+
+    return Response.json({
+      success: true,
+      action: 'signup',
+    })
+  }) as typeof fetch
+
+  spyOn(globalThis, 'fetch').mockImplementation(fetchMock)
   signupRoutes = (await import('../signup')).default
 })
 
+afterAll(() => {
+  mock.restore()
+})
+
 beforeEach(() => {
-  signupAttemptsByIdentifier = new Map()
+  requestSequence = 0
 })
 
 function createApp() {
@@ -88,6 +83,11 @@ function createApp() {
   return app
 }
 
+function getNextIPAddress() {
+  requestSequence += 1
+  return `198.51.100.${requestSequence}`
+}
+
 function getSetCookieHeader(response: Response) {
   return Array.from(response.headers.entries())
     .filter(([key]) => key.toLowerCase() === 'set-cookie')
@@ -95,7 +95,7 @@ function getSetCookieHeader(response: Response) {
     .join('\n')
 }
 
-function requestSignup(body: unknown, ip = '127.0.0.1') {
+function requestSignup(body: unknown, ip = getNextIPAddress()) {
   return createApp().request('/signup', {
     method: 'POST',
     headers: {
