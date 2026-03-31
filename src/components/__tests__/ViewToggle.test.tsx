@@ -3,6 +3,8 @@ import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { fireEvent, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
+import { View } from '@/utils/param'
+
 import ViewToggle from '../ViewToggle'
 
 describe('ViewToggle', () => {
@@ -41,5 +43,14 @@ describe('ViewToggle', () => {
     fireEvent.keyDown(view.getByRole('radio', { name: '카드' }), { key: 'ArrowRight' })
 
     expect(new URLSearchParams(window.location.search).get('view')).toBe('img')
+  })
+
+  test('initialView가 주어지면 첫 렌더부터 해당 보기 방식이 선택된다', () => {
+    window.history.replaceState({}, '', 'http://localhost:3000/library/bookmark?sort=created_desc&view=img')
+
+    const view = render(<ViewToggle initialView={View.IMAGE} />, { wrapper: createTestNavigationWrapper() })
+
+    expect(view.getByRole('radio', { name: '그림' }).getAttribute('aria-checked')).toBe('true')
+    expect(view.getByRole('radio', { name: '카드' }).getAttribute('aria-checked')).toBe('false')
   })
 })
