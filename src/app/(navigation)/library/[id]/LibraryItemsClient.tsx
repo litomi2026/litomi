@@ -1,5 +1,6 @@
 'use client'
 
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
@@ -11,13 +12,15 @@ import {
 } from '@/backend/api/v1/library/item-sort'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
+import ViewToggle from '@/components/ViewToggle'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { View } from '@/utils/param'
+import { getViewFromSearchParams, View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { useLibrarySelection } from '../librarySelection'
@@ -31,6 +34,7 @@ type Props = {
   }
   initialItems: GETLibraryItemsResponse
   initialSort?: CollectionItemSort
+  initialView: View
   isOwner: boolean
 }
 
@@ -38,15 +42,18 @@ export default function LibraryItemsClient({
   library,
   initialItems,
   initialSort = DEFAULT_COLLECTION_ITEM_SORT,
+  initialView,
   isOwner,
 }: Props) {
-  const { id: libraryId, name: libraryName, isPublic } = library
   const [sort, setSort] = useState<CollectionItemSort>(initialSort)
-  const { exit, isSelectionMode } = useLibrarySelection()
-  const scope = isOwner ? 'me' : 'public'
+  const [view, setView] = useState<View>(initialView)
+  const { exit, isSelectionMode, selectedIds, toggle } = useLibrarySelection()
   const { data: me } = useMeQuery()
+
   const adultState = getAdultState(me)
   const canAccess = hasAdultAccess(adultState)
+  const { id: libraryId, name: libraryName, isPublic } = library
+  const scope = isOwner ? 'me' : 'public'
   const enabled = scope === 'public' || isPublic || canAccess
   const shouldBlockPrivate = scope === 'me' && !isPublic && !canAccess
   const effectiveSort = isOwner ? sort : DEFAULT_COLLECTION_ITEM_SORT
@@ -70,6 +77,7 @@ export default function LibraryItemsClient({
   const items = useMemo(() => itemsData?.pages.flatMap((page) => page.items) ?? [], [itemsData])
   const canAutoLoadMore = !shouldBlockPrivate && hasNextPage && !isFetchNextPageError
   const showLoadingSkeleton = (isLoading && items.length === 0) || isFetchingNextPage
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: canAutoLoadMore,
@@ -77,16 +85,8 @@ export default function LibraryItemsClient({
     fetchNextPage,
   })
 
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
-
-  if (shouldBlockPrivate) {
-    return (
-      <AdultVerificationGate
-        description={`비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.`}
-        title="성인인증이 필요해요"
-        username={me?.name}
-      />
-    )
+  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
+    setView(getViewFromSearchParams(searchParams))
   }
 
   function handleSortChange(newSort: CollectionItemSort) {
@@ -99,6 +99,16 @@ export default function LibraryItemsClient({
     }
   }
 
+  if (shouldBlockPrivate) {
+    return (
+      <AdultVerificationGate
+        description={`비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.`}
+        title="성인인증이 필요해요"
+        username={me?.name}
+      />
+    )
+  }
+
   if (items.length === 0 && !isFetchingNextPage && !isLoading) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center">
@@ -109,8 +119,9 @@ export default function LibraryItemsClient({
 
   return (
     <>
-      {isOwner && (
-        <div className="p-2 pb-0">
+      <SearchParamsSync onUpdate={handleViewUpdate} />
+      <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
+        {isOwner && (
           <select
             className="bg-zinc-900 text-sm px-3 py-1.5 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
             onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
@@ -122,9 +133,10 @@ export default function LibraryItemsClient({
               </option>
             ))}
           </select>
-        </div>
-      )}
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
+        )}
+        <ViewToggle initialView={initialView} />
+      </div>
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
         {items.map(({ mangaId }, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 

@@ -15,11 +15,12 @@ const VIEW_OPTIONS = [
 
 type Props = {
   className?: string
+  initialView?: View
 }
 
-export default function ViewToggle({ className = '' }: Props) {
+export default function ViewToggle({ className = '', initialView = View.CARD }: Props) {
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([])
-  const [view, setCurrentView] = useState<View>(View.CARD)
+  const [view, setCurrentView] = useState<View>(initialView)
 
   function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
     setCurrentView(getViewFromSearchParams(searchParams))
