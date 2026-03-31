@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { useSearchParams } from 'next/navigation'
 import { Fragment, useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
@@ -9,7 +10,7 @@ import MangaCardImage from '@/components/card/MangaCardImage'
 import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import { View } from '@/utils/param'
+import { getViewFromSearchParams, View } from '@/utils/param'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -18,12 +19,11 @@ import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 const Error400 = dynamic(() => import('./Error400'))
 const SearchResultError = dynamic(() => import('./SearchResultError'))
 
-type Props = {
-  showRefreshButton: boolean
-  view: View
-}
+export default function SearchResult() {
+  const searchParams = useSearchParams()
+  const view = getViewFromSearchParams(searchParams)
+  const showRefreshButton = searchParams.get('sort') === 'random'
 
-export default function SearchResult({ showRefreshButton, view }: Props) {
   const {
     data,
     isLoading,
