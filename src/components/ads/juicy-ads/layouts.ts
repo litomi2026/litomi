@@ -24,8 +24,8 @@ export const DEFAULT_NON_ADULT_AD_LAYOUT = [
 
 export const LIBRARY_NON_ADULT_AD_LAYOUT = [
   slot(AD_SLOTS.BANNER_308X286),
-  slot(AD_SLOTS.BANNER_300X100, 'md:hidden'),
-  slot(AD_SLOTS.BANNER_308X286_2, 'hidden md:flex'),
+  slot(AD_SLOTS.BANNER_300X100, 'lg:hidden'),
+  slot(AD_SLOTS.BANNER_308X286_2, 'hidden lg:flex'),
   slot(AD_SLOTS.BANNER_300X250, 'hidden xl:flex'),
 ]
 

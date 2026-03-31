@@ -1,4 +1,6 @@
+import '@test/setup.dom'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
+import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, fireEvent, waitFor } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
@@ -7,6 +9,7 @@ import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 
 import { CollectionItemSort } from '@/backend/api/v1/library/item-sort'
+import { View } from '@/utils/param'
 
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
 
@@ -40,10 +43,14 @@ beforeEach(() => {
 })
 
 function renderWithLibrarySelection(ui: ReactElement, selectionMode = false) {
+  const NavigationWrapper = createTestNavigationWrapper()
+
   return renderWithTestQueryClient(
-    <LibrarySelectionProvider scopeKey="bookmark-test">
-      <SelectionModeController selectionMode={selectionMode}>{ui}</SelectionModeController>
-    </LibrarySelectionProvider>,
+    <NavigationWrapper>
+      <LibrarySelectionProvider scopeKey="bookmark-test">
+        <SelectionModeController selectionMode={selectionMode}>{ui}</SelectionModeController>
+      </LibrarySelectionProvider>
+    </NavigationWrapper>,
   )
 }
 
@@ -73,7 +80,13 @@ afterAll(() => {
 
 describe('BookmarkPageClient', () => {
   test('정렬 옵션을 렌더링한다', () => {
-    const view = renderWithLibrarySelection(<BookmarkPageClient initialData={basePage} />)
+    const view = renderWithLibrarySelection(
+      <BookmarkPageClient
+        initialData={basePage}
+        initialSort={CollectionItemSort.CREATED_DESC}
+        initialView={View.IMAGE}
+      />,
+    )
 
     expect(view.getByRole('option', { name: '최근 추가순' })).toBeTruthy()
     expect(view.getByRole('option', { name: '오래된순' })).toBeTruthy()
@@ -89,7 +102,11 @@ describe('BookmarkPageClient', () => {
     })
 
     const view = renderWithLibrarySelection(
-      <BookmarkPageClient initialData={basePage} initialSort={CollectionItemSort.CREATED_DESC} />,
+      <BookmarkPageClient
+        initialData={basePage}
+        initialSort={CollectionItemSort.CREATED_DESC}
+        initialView={View.IMAGE}
+      />,
     )
 
     fireEvent.change(view.getByRole('combobox'), {
@@ -109,14 +126,24 @@ describe('BookmarkPageClient', () => {
   })
 
   test('북마크가 비어 있으면 빈 상태를 렌더링한다', () => {
-    const view = renderWithLibrarySelection(<BookmarkPageClient initialData={{ bookmarks: [], nextCursor: null }} />)
+    const view = renderWithLibrarySelection(
+      <BookmarkPageClient
+        initialData={{ bookmarks: [], nextCursor: null }}
+        initialSort={CollectionItemSort.CREATED_DESC}
+        initialView={View.IMAGE}
+      />,
+    )
 
     expect(view.getByText('북마크가 비어 있어요')).toBeTruthy()
   })
 
   test('선택 모드에서는 선택 가능한 카드 컴포넌트를 렌더링한다', () => {
     const view = renderWithLibrarySelection(
-      <BookmarkPageClient initialData={{ bookmarks: [{ mangaId: 101, createdAt: Date.now() }], nextCursor: null }} />,
+      <BookmarkPageClient
+        initialData={{ bookmarks: [{ mangaId: 101, createdAt: Date.now() }], nextCursor: null }}
+        initialSort={CollectionItemSort.CREATED_DESC}
+        initialView={View.IMAGE}
+      />,
       true,
     )
 

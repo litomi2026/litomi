@@ -1,16 +1,20 @@
 import { and, eq, or } from 'drizzle-orm'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { cache, Suspense } from 'react'
+import { cache } from 'react'
 import { z } from 'zod'
 
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@/backend/api/v1/library/item-sort'
+import { getNextCollectionItemCursor } from '@/backend/api/v1/library/item-sort.server'
 import { generateOpenGraphMetadata } from '@/constants'
+import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { libraryTable } from '@/database/supabase/library'
+import { selectLibraryItem } from '@/sql/selectLibraryItem'
 import { getUserIdFromCookie } from '@/utils/cookie'
+import { View } from '@/utils/param'
 
-import LibraryItems from './LibraryItems'
+import LibraryItemsClient from './LibraryItemsClient'
 
 const schema = z.object({
   id: z.coerce.number().int().positive(),
@@ -18,9 +22,9 @@ const schema = z.object({
 
 const searchParamsSchema = z.object({
   sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+  view: z.enum(View).default(View.CARD),
 })
 
-// NOTE: 연산이 무거우면 정적 메타데이터로 바꾸기
 export async function generateMetadata({ params }: PageProps<'/library/[id]'>): Promise<Metadata> {
   const validation = schema.safeParse(await params)
 
@@ -36,10 +40,13 @@ export async function generateMetadata({ params }: PageProps<'/library/[id]'>): 
     notFound()
   }
 
+  const { description, name } = library
+
   return {
-    title: library.name,
+    title: name,
     ...generateOpenGraphMetadata({
-      title: library.name,
+      title: name,
+      ...(description && { description }),
       url: `/library/${libraryId}`,
     }),
     alternates: {
@@ -73,11 +80,35 @@ export default async function LibraryDetailPage({ params, searchParams }: PagePr
   const isOwner = library.userId === userId
   const sort = isOwner ? searchValidation.data.sort : DEFAULT_COLLECTION_ITEM_SORT
 
+  const libraryItemRows = await selectLibraryItem({
+    libraryId: library.id,
+    sort,
+    limit: LIBRARY_ITEMS_PER_PAGE + 1,
+  })
+
+  const hasNext = libraryItemRows.length > LIBRARY_ITEMS_PER_PAGE
+
+  if (hasNext) {
+    libraryItemRows.pop()
+  }
+
+  const items = libraryItemRows.map((item) => ({
+    mangaId: item.mangaId,
+    createdAt: item.createdAt.getTime(),
+  }))
+
+  const nextCursor = hasNext ? getNextCollectionItemCursor(libraryItemRows[libraryItemRows.length - 1]) : null
+  const view = searchValidation.data.view
+
   return (
     <main className="flex-1 flex flex-col">
-      <Suspense>
-        <LibraryItems initialSort={sort} isOwner={isOwner} library={library} />
-      </Suspense>
+      <LibraryItemsClient
+        initialItems={{ items, nextCursor }}
+        initialSort={sort}
+        initialView={view}
+        isOwner={isOwner}
+        library={library}
+      />
     </main>
   )
 }

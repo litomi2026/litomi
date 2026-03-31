@@ -1,4 +1,5 @@
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
+import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, fireEvent, waitFor } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
@@ -7,6 +8,7 @@ import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
 
 import { CollectionItemSort } from '@/backend/api/v1/library/item-sort'
+import { View } from '@/utils/param'
 
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
 
@@ -45,6 +47,7 @@ function renderWithLibrarySelection(ui: ReactElement, selectionMode = false) {
     <LibrarySelectionProvider scopeKey="library-item-test">
       <SelectionModeController selectionMode={selectionMode}>{ui}</SelectionModeController>
     </LibrarySelectionProvider>,
+    { wrapper: createTestNavigationWrapper() },
   )
 }
 
@@ -78,6 +81,7 @@ describe('LibraryItemsClient', () => {
       <LibraryItemsClient
         initialItems={basePage}
         initialSort={CollectionItemSort.CREATED_DESC}
+        initialView={View.CARD}
         isOwner
         library={{ id: 1, name: '테스트', isPublic: true }}
       />,
@@ -102,6 +106,7 @@ describe('LibraryItemsClient', () => {
       <LibraryItemsClient
         initialItems={basePage}
         initialSort={CollectionItemSort.CREATED_DESC}
+        initialView={View.CARD}
         isOwner
         library={{ id: 1, name: '테스트', isPublic: true }}
       />,
@@ -129,6 +134,7 @@ describe('LibraryItemsClient', () => {
       <LibraryItemsClient
         initialItems={basePage}
         initialSort={CollectionItemSort.CREATED_DESC}
+        initialView={View.CARD}
         isOwner={false}
         library={{ id: 1, name: '테스트', isPublic: true }}
       />,
