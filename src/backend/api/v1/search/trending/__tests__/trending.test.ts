@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from 'bun:test'
+import { afterAll, describe, expect, mock, test } from 'bun:test'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
@@ -33,6 +33,10 @@ mock.module('@/services/TrendingKeywordsService', () => ({
 const app = new Hono<Env>()
 app.use('*', contextStorage())
 app.route('/', trendingRoutes)
+
+afterAll(() => {
+  mock.restore()
+})
 
 describe('GET /api/v1/search/trending', () => {
   const createRequest = (type?: string) => {

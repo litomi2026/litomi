@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { PgDialect } from 'drizzle-orm/pg-core'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
@@ -45,6 +45,10 @@ let postRoutes: PostRouteModule['default']
 let app: Hono<TestEnv>
 let shouldThrowDatabaseError = false
 let nextPostId = 1
+
+afterAll(() => {
+  mock.restore()
+})
 
 const dialect = new PgDialect()
 const mockPosts: ApiPost[] = []

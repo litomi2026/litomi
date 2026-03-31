@@ -1,5 +1,6 @@
 import { Loader2 } from 'lucide-react'
 import { ReactNode, RefObject, useEffect } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 export type SuggestionItem = {
   value: string
@@ -48,8 +49,11 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
   return (
     <div
       aria-hidden={!showSuggestions}
-      className={`absolute z-20 w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg overflow-hidden transition
-      aria-hidden:opacity-0 aria-hidden:pointer-events-none ${className}`}
+      className={twMerge(
+        'absolute z-20 w-full mt-1 bg-zinc-950/99 border border-white/10 rounded-[1.25rem] shadow-[0_28px_70px_rgba(0,0,0,0.42)] overflow-hidden transition',
+        'aria-hidden:opacity-0 aria-hidden:pointer-events-none',
+        className,
+      )}
       ref={dropdownRef}
     >
       <div className="max-h-64 overflow-y-auto relative">
@@ -63,7 +67,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
           {suggestions.map((suggestion, index) => (
             <button
               aria-current={selectedIndex === index}
-              className="w-full p-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center gap-1.5 overflow-x-auto scrollbar-hidden aria-current:bg-zinc-700/70"
+              className="w-full p-4 py-2.5 text-left hover:bg-white/6 transition flex items-center gap-1.5 overflow-x-auto scrollbar-hidden aria-current:bg-white/9"
               data-index={index}
               key={suggestion.value}
               onClick={() => onSelect(suggestion)}
@@ -94,16 +98,16 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
         )}
       </div>
       {suggestions.length > 1 && (
-        <div className="sticky bottom-0 px-3 py-2 text-xs text-zinc-500 border-t border-zinc-800 bg-zinc-900/95 backdrop-blur-sm">
+        <div className="sticky bottom-0 px-3 py-2 text-xs text-zinc-500 border-t border-white/6 bg-zinc-950/95 backdrop-blur-sm">
           <div className="flex flex-wrap gap-x-3 gap-y-1">
             <span className="whitespace-nowrap">
-              <kbd className="px-1 py-0.5 text-xs bg-zinc-800 border border-zinc-700 rounded">↑↓</kbd> 이동
+              <kbd className="px-1 py-0.5 text-xs bg-white/6 border border-white/10 rounded">↑↓</kbd> 이동
             </span>
             <span className="whitespace-nowrap">
-              <kbd className="px-1 py-0.5 text-xs bg-zinc-800 border border-zinc-700 rounded">Enter</kbd> 선택
+              <kbd className="px-1 py-0.5 text-xs bg-white/6 border border-white/10 rounded">Enter</kbd> 선택
             </span>
             <span className="whitespace-nowrap">
-              <kbd className="px-1 py-0.5 text-xs bg-zinc-800 border border-zinc-700 rounded">Esc</kbd> 취소
+              <kbd className="px-1 py-0.5 text-xs bg-white/6 border border-white/10 rounded">Esc</kbd> 취소
             </span>
           </div>
         </div>

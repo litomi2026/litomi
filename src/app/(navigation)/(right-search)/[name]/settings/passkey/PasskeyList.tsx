@@ -1,16 +1,17 @@
 import { Fingerprint, Lock, ScanFace, Shield } from 'lucide-react'
 
 import Onboarding from '../Onboarding'
-import { Passkey } from './common'
+import { Passkey, PasskeySignalData } from './common'
 import PasskeyCard from './PasskeyCard'
 import PasskeyInfoButton from './PasskeyInfoButton'
 import PasskeyRegisterButton from './PasskeyRegisterButton'
 
 type Props = {
+  passkeySignalData: PasskeySignalData
   passkeys: Passkey[]
 }
 
-export default function PasskeyList({ passkeys }: Readonly<Props>) {
+export default function PasskeyList({ passkeySignalData, passkeys }: Props) {
   if (passkeys.length === 0) {
     return (
       <Onboarding
@@ -35,7 +36,7 @@ export default function PasskeyList({ passkeys }: Readonly<Props>) {
         icon={<Fingerprint className="size-12 text-brand" />}
         title="아직 패스키가 없어요"
       >
-        <PasskeyRegisterButton />
+        <PasskeyRegisterButton passkeySignalData={passkeySignalData} />
       </Onboarding>
     )
   }
@@ -48,13 +49,13 @@ export default function PasskeyList({ passkeys }: Readonly<Props>) {
           <p className="text-sm text-zinc-500 mt-1">{passkeys.length}개의 패스키가 등록되어 있어요</p>
         </div>
         <div className="flex items-center gap-2">
-          <PasskeyRegisterButton />
+          <PasskeyRegisterButton passkeySignalData={passkeySignalData} />
           <PasskeyInfoButton />
         </div>
       </div>
       <div className="grid gap-3">
         {passkeys.map((passkey) => (
-          <PasskeyCard key={passkey.id} passkey={passkey} />
+          <PasskeyCard key={passkey.id} passkey={passkey} passkeySignalData={passkeySignalData} />
         ))}
       </div>
       <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-4">

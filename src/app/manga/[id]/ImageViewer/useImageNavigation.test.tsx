@@ -1,6 +1,6 @@
 import '@test/setup.dom'
 import { cleanup, fireEvent, render } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterAll, afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 const warningMock = mock(() => {})
 
@@ -27,6 +27,10 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   useImageIndexStore.setState({ imageIndex: 0 })
+})
+
+afterAll(() => {
+  mock.restore()
 })
 
 describe('useImageNavigation', () => {

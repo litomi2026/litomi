@@ -1,25 +1,27 @@
 'use client'
 
 import { ChevronRight } from 'lucide-react'
-import { ReadonlyURLSearchParams } from 'next/navigation'
 import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
 import { Locale } from '@/translation/common'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
+import { View } from '@/utils/param'
 
 import KeywordLink from './KeywordLink'
-import UpdateFromSearchParams from './UpdateFromSearchParams'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
 const ROTATION_INTERVAL = 5000
 const SCROLL_MOMENTUM_DELAY = 1000 // NOTE: 스크롤 모멘텀을 방지하기 위해 1초 대기
 
-export default function TrendingKeywords() {
+type Props = {
+  view?: View
+}
+
+export default function TrendingKeywords({ view }: Props) {
   const { data } = useTrendingKeywordsQuery()
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [searchParams, setSearchParams] = useState<ReadonlyURLSearchParams>()
   const locale = getLocaleFromCookie()
   const trendingKeywords = data?.keywords.length ? data.keywords : getDefaultKeywords(locale)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -30,7 +32,6 @@ export default function TrendingKeywords() {
   const isProgrammaticScrollRef = useRef(false)
   const trendingKeywordCount = trendingKeywords.length
   const { ref: lastRef, inView: isLastKeywordInView } = useInView()
-  const view = searchParams?.get('view')
 
   function scrollRight() {
     const container = scrollContainerDesktopRef.current
@@ -166,6 +167,16 @@ export default function TrendingKeywords() {
     scrollToKeyword(index)
   }
 
+  function createKeywordHref(value: string) {
+    const searchParams = new URLSearchParams({ query: value })
+
+    if (view === View.IMAGE) {
+      searchParams.set('view', View.IMAGE)
+    }
+
+    return `/search?${searchParams}`
+  }
+
   // NOTE: 인기 검색어 회전 시작 및 종료
   useEffect(() => {
     if (trendingKeywordCount > 1) {
@@ -182,7 +193,6 @@ export default function TrendingKeywords() {
 
   return (
     <>
-      <UpdateFromSearchParams onUpdate={setSearchParams} />
       {/* Mobile */}
       <div className="relative grid gap-2 sm:hidden">
         <div className="flex items-center justify-between text-zinc-500 text-xs">
@@ -206,13 +216,13 @@ export default function TrendingKeywords() {
             <KeywordLink
               ariaCurrent={currentIndex === i}
               className="max-w-full snap-center aria-current:bg-zinc-700 aria-current:text-zinc-100"
+              href={createKeywordHref(value)}
               index={i}
               key={value}
               keyword={{ label, value }}
               onBlur={handleInteractionEnd}
               onClick={() => handleClick(i)}
               onFocus={() => handleFocus(i)}
-              view={view}
             />
           ))}
         </div>
@@ -248,12 +258,12 @@ export default function TrendingKeywords() {
         <div className="relative flex gap-2 overflow-x-auto scrollbar-hidden" ref={scrollContainerDesktopRef}>
           {trendingKeywords.map(({ label, value }, i) => (
             <KeywordLink
+              href={createKeywordHref(value)}
               index={i}
               key={value}
               keyword={{ label, value }}
               linkRef={i === trendingKeywordCount - 1 ? lastRef : undefined}
               textClassName="truncate max-w-[50svw] sm:max-w-[25svw]"
-              view={view}
             />
           ))}
         </div>

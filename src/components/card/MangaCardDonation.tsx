@@ -58,7 +58,7 @@ export default function MangaCardDonation() {
           <h3 className="text-lg font-semibold text-foreground">리토미를 함께 키워주세요</h3>
         </div>
         <p className="text-sm text-zinc-400 leading-relaxed">
-          매달 10~20만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요
+          매달 10~15만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요
         </p>
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-2">
@@ -89,15 +89,6 @@ export default function MangaCardDonation() {
                 Patreon
               </a>
               <a
-                className="p-3 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
-                href="https://ko-fi.com/litomi"
-                onClick={() => handleDonationClick('ko-fi')}
-                rel="noopener"
-                target="_blank"
-              >
-                Ko-fi
-              </a>
-              <a
                 className="py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://opencollective.com/litomi"
                 onClick={() => handleDonationClick('open_collective')}
@@ -105,19 +96,6 @@ export default function MangaCardDonation() {
                 target="_blank"
               >
                 open collective
-              </a>
-              <a
-                className="flex items-center justify-center bg-[#FFDD00] rounded-lg overflow-hidden"
-                href="https://www.buymeacoffee.com/litomi"
-                onClick={() => handleDonationClick('buy_me_a_coffee')}
-                rel="noopener"
-                target="_blank"
-              >
-                <img
-                  alt="Buy me a coffee"
-                  className="max-h-9"
-                  src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-                />
               </a>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { PgDialect } from 'drizzle-orm/pg-core'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
@@ -20,6 +20,10 @@ const dialect = new PgDialect()
 
 let bookmarkRoutes: BookmarkRoutesModule['default']
 let app: Hono<TestEnv>
+
+afterAll(() => {
+  mock.restore()
+})
 
 type BookmarkDeleteResponse = {
   deletedCount: number
