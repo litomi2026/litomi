@@ -16,10 +16,11 @@ type Props = {
   className?: string
 }
 
-export default function ViewToggle({ className = '' }: Readonly<Props>) {
+export default function ViewToggle({ className = '' }: Props) {
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([])
   const searchParams = useSearchParams()
   const view = getViewFromSearchParams(searchParams)
+
   const activeIndex = Math.max(
     0,
     VIEW_OPTIONS.findIndex(({ value }) => value === view),
