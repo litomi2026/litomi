@@ -84,7 +84,7 @@ export default function BookmarkUploadButton() {
         type="button"
       >
         <Upload className="size-5 shrink-0" />
-        <span className="hidden sm:block">북마크 업로드</span>
+        <span className="hidden md:block">북마크 업로드</span>
       </button>
       <Dialog ariaLabel="북마크 업로드" className="sm:max-w-lg" onClose={handleClose} open={isOpened}>
         <DialogHeader onClose={handleClose} title="북마크 업로드" />
