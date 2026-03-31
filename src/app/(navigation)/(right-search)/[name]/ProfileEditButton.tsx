@@ -14,6 +14,7 @@ import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction, { getFieldError } from '@/hook/useServerAction'
+import { signalCurrentPasskeyUserDetails } from '@/utils/passkey'
 
 import editProfile from './action'
 
@@ -42,17 +43,19 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
 
   const [response, dispatchAction, isPending] = useServerAction({
     action: editProfile,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
       setShowModal(false)
 
-      if (typeof data === 'string') {
-        toast.success(data)
-        return
+      if (data.passkeyUserDetails) {
+        await signalCurrentPasskeyUserDetails(data.passkeyUserDetails)
       }
 
       toast.success(data.message)
-      router.replace(data.location)
+
+      if (data.location) {
+        router.replace(data.location)
+      }
     },
   })
 

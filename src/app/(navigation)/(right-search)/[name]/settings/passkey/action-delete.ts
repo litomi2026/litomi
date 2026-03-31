@@ -40,7 +40,7 @@ export async function deleteCredential(formData: FormData) {
     }
 
     revalidatePath('/[name]/settings', 'page')
-    return ok('패스키가 삭제됐어요')
+    return ok({ message: '패스키가 삭제됐어요' })
   } catch (error) {
     console.error('deleteCredential:', error)
     captureException(error, { extra: { name: 'deleteCredential', userId } })
