@@ -6,20 +6,21 @@ import { usePathname } from 'next/navigation'
 
 import LinkPending from '@/components/LinkPending'
 
+import { getPrimaryRankingIconClassName, PRIMARY_RANKING_NAV_LINK_CLASSNAME } from './common'
+
 export default function DonationLink() {
   const pathname = usePathname()
   const isDonationPage = pathname.startsWith('/ranking/donation')
 
   return (
     <Link
-      aria-current={isDonationPage}
-      className="flex items-center gap-2 p-2 px-4 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-foreground hover:bg-zinc-900
-      aria-current:bg-zinc-900 aria-current:text-foreground aria-current:pointer-events-none"
+      aria-current={isDonationPage ? 'page' : undefined}
+      className={PRIMARY_RANKING_NAV_LINK_CLASSNAME}
       href="/ranking/donation"
       prefetch={false}
     >
-      <LinkPending className="size-4 text-foreground">
-        <Heart className="size-4" />
+      <LinkPending className="size-4">
+        <Heart className={getPrimaryRankingIconClassName(isDonationPage, 'fill')} />
       </LinkPending>
       후원
     </Link>

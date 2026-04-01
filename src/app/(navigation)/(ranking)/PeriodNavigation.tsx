@@ -5,7 +5,14 @@ import { useParams } from 'next/navigation'
 
 import LinkPending from '@/components/LinkPending'
 
-import { DEFAULT_METRIC, DEFAULT_PERIOD, Params, periodLabels, PeriodParam } from './common'
+import {
+  DEFAULT_METRIC,
+  DEFAULT_PERIOD,
+  Params,
+  periodLabels,
+  PeriodParam,
+  SECONDARY_RANKING_NAV_LINK_CLASSNAME,
+} from './common'
 
 export default function PeriodNavigation() {
   const { metric, period } = useParams<Params>()
@@ -23,14 +30,13 @@ export default function PeriodNavigation() {
 
         return (
           <Link
-            aria-current={period === periodValue}
-            className="p-2 px-4 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-foreground hover:bg-zinc-900
-            aria-current:bg-zinc-900 aria-current:text-foreground aria-current:pointer-events-none"
+            aria-current={period === periodValue ? 'page' : undefined}
+            className={SECONDARY_RANKING_NAV_LINK_CLASSNAME}
             href={`/ranking/${metric || DEFAULT_METRIC}/${periodValue || DEFAULT_PERIOD}`}
             key={periodValue}
             prefetch={false}
           >
-            <LinkPending className="text-foreground w-6 h-5">{label}</LinkPending>
+            <LinkPending className="h-5 w-6">{label}</LinkPending>
           </Link>
         )
       })}
