@@ -43,6 +43,8 @@ export function formatDistanceToNow(date: Date): string {
   if (minutes < 1) return '방금 전'
   if (minutes < 60) return `${minutes}분 전`
   if (hours < 24) return `${hours}시간 전`
+  if (days < 2) return '어제'
+  if (days < 3) return '그제'
   if (days < 7) return `${days}일 전`
   if (days < 30) return `${Math.floor(days / 7)}주 전`
   if (months < 12) return `${Math.max(1, months)}개월 전`
