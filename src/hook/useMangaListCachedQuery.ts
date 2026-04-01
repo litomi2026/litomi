@@ -1,9 +1,9 @@
 'use client'
 
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { QueryKey, useQueries, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import pLimit from 'p-limit'
-import { useEffect, useEffectEvent, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -12,6 +12,13 @@ import { isDegradedResponse } from '@/utils/degraded-response'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
+
+const DEFAULT_STALE_TIME = ms('1 hour')
+const DEFAULT_GC_TIME = ms('2 hours')
+const ERROR_CACHE_CLEANUP_DELAY = ms('30 seconds')
+const MAX_CONCURRENT_REQUESTS = 2
+
+const limit = pLimit(MAX_CONCURRENT_REQUESTS)
 
 interface Options {
   /**
@@ -30,8 +37,11 @@ interface Options {
   staleTime?: number
 }
 
-const MAX_CONCURRENT_REQUESTS = 2
-const limit = pLimit(MAX_CONCURRENT_REQUESTS)
+class InactiveQueuedMangaRequestError extends Error {
+  constructor() {
+    super('Skipped inactive queued manga request')
+  }
+}
 
 /**
  * Hook to fetch manga data with individual caching and rate-limited parallel requests.
@@ -44,49 +54,57 @@ const limit = pLimit(MAX_CONCURRENT_REQUESTS)
  */
 export default function useMangaListCachedQuery({
   mangaIds,
-  staleTime = ms('1 hour'),
-  gcTime = ms('2 hours'),
+  staleTime = DEFAULT_STALE_TIME,
+  gcTime = DEFAULT_GC_TIME,
 }: Options) {
   const uniqueMangaIds = useMemo(() => Array.from(new Set(mangaIds)), [mangaIds])
   const queryClient = useQueryClient()
-  const cleanupTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([])
 
-  const cleanupPendingMangaQueriesEvent = useEffectEvent(() => {
-    // NOTE: 페이지 이탈 시, 아직 완료되지 않은(pending) 작품 쿼리는 전부 제거
-    for (const id of uniqueMangaIds) {
-      const queryKey = QueryKeys.manga(id)
-      const state = queryClient.getQueryState(queryKey)
-      const cachedData = queryClient.getQueryData<Manga>(queryKey)
+  function scheduleErrorCacheCleanup(queryKey: QueryKey) {
+    setTimeout(() => {
+      queryClient.removeQueries({ queryKey, exact: true, type: 'inactive' })
+    }, ERROR_CACHE_CLEANUP_DELAY)
+  }
 
-      if (cachedData) {
-        continue
+  async function fetchManga(id: number) {
+    const queryKey = QueryKeys.manga(id)
+
+    async function runQuery() {
+      const query = queryClient.getQueryCache().find({ queryKey, exact: true })
+
+      if (query && !query.isActive()) {
+        query.cancel({ revert: true })
+        throw new InactiveQueuedMangaRequestError()
       }
 
-      if (state?.status === 'pending') {
-        queryClient.removeQueries({ queryKey, exact: true })
+      const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/manga/${id}`
+      const { data, response } = await fetchWithErrorHandling<Manga>(url)
+
+      if (isDegradedResponse(response.headers)) {
+        scheduleErrorCacheCleanup(queryKey)
       }
+
+      return data
     }
-  })
+
+    try {
+      return await limit(runQuery)
+    } catch (error) {
+      if (error instanceof InactiveQueuedMangaRequestError) {
+        throw error
+      }
+
+      scheduleErrorCacheCleanup(queryKey)
+      throw error
+    }
+  }
 
   const queries = useQueries({
     queries: uniqueMangaIds.map((id) => ({
       queryKey: QueryKeys.manga(id),
-      queryFn: () =>
-        limit(async () => {
-          const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/manga/${id}`
-          const { data, response } = await fetchWithErrorHandling<Manga>(url)
-
-          if (isDegradedResponse(response.headers)) {
-            scheduleErrorCacheCleanup(QueryKeys.manga(id))
-          }
-
-          return data
-        }),
+      queryFn: () => fetchManga(id),
       staleTime,
       gcTime,
-      onError: () => {
-        scheduleErrorCacheCleanup(QueryKeys.manga(id))
-      },
     })),
   })
 
@@ -107,30 +125,6 @@ export default function useMangaListCachedQuery({
 
   const isLoading = queries.some((query) => query.isLoading)
   const isFetching = queries.some((query) => query.isFetching)
-
-  function scheduleErrorCacheCleanup(queryKey: ReturnType<typeof QueryKeys.manga>) {
-    const timer = setTimeout(() => {
-      queryClient.removeQueries({ queryKey, exact: true })
-    }, ms('1 minute'))
-    cleanupTimersRef.current.push(timer)
-  }
-
-  // NOTE: 타이머 정리
-  useEffect(() => {
-    return () => {
-      for (const timer of cleanupTimersRef.current) {
-        clearTimeout(timer)
-      }
-      cleanupTimersRef.current = []
-    }
-  }, [])
-
-  // NOTE: 페이지 이탈 시, pending 작품 쿼리를 제거
-  useEffect(() => {
-    return () => {
-      cleanupPendingMangaQueriesEvent()
-    }
-  }, [])
 
   return {
     mangaMap,

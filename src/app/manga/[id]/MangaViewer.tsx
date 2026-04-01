@@ -30,6 +30,17 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const status = useNonAdultGate()
 
+  const shouldFetch = (initialManga?.images?.length ?? 0) === 0
+  const isWaitingForAdClick = shouldFetch && !me && !hasClickedAd
+  const actualShouldFetch = shouldFetch && !isWaitingForAdClick
+  const mangaIds = actualShouldFetch ? [id] : []
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds })
+
+  const fetchedManga = mangaMap.get(id) // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
+  const data = fetchedManga ?? (actualShouldFetch && !initialManga ? { id, title: '불러오는 중' } : undefined)
+  const manga = prepareManga(data, initialManga)
+  const metadata = prepareMetadata(manga)
+
   function handleAdClick() {
     if (unlockTimeoutRef.current !== null) {
       return
@@ -41,17 +52,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
     }, AD_UNLOCK_DELAY_MS)
   }
 
-  // 미로그인 사용자는 광고를 클릭해야만 패치하도록 합니다.
-  const shouldFetch = (initialManga?.images?.length ?? 0) === 0
-  const isWaitingForAdClick = shouldFetch && !me && !hasClickedAd
-  const actualShouldFetch = shouldFetch && !isWaitingForAdClick
-
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: actualShouldFetch ? [id] : [] }) // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
-  const data = mangaMap.get(id) ?? (actualShouldFetch && !initialManga ? { id, title: '불러오는 중' } : undefined)
-  const manga = prepareManga(data, initialManga)
-  const metadata = prepareMetadata(manga)
-
-  // NOTE: Vercel Fluid Active CPU 비용을 줄이기 위해
+  // NOTE: 클라이언트 측에서 메타데이터를 업데이트 해요
   usePageMetadata(metadata)
 
   // NOTE: 컴포넌트 언마운트 시 타이머를 정리해요
