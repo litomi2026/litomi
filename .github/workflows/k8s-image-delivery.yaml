@@ -179,8 +179,6 @@ jobs:
           push: true
           tags: ${{ steps.metadata_backend.outputs.tags }}
           labels: ${{ steps.metadata_backend.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   update-staging-image-digests:
     name: Update staging image digests
