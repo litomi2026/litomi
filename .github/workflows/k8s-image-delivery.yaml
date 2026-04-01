@@ -120,8 +120,6 @@ jobs:
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Resolve published web image digest
         id: resolve_published_web_digest
