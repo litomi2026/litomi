@@ -95,7 +95,7 @@ jobs:
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
-            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
@@ -115,6 +115,9 @@ jobs:
             ${{ steps.load_public_env.outputs.build_args }}
           secrets: |
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
@@ -175,6 +178,12 @@ jobs:
           file: Dockerfile.hono
           platforms: linux/arm64
           push: true
+          build-args: |
+            COMMIT_SHA=${{ github.sha }}
+          secrets: |
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_BACKEND }}
           tags: ${{ steps.metadata_backend.outputs.tags }}
           labels: ${{ steps.metadata_backend.outputs.labels }}
 
