@@ -10,6 +10,7 @@ import { sec } from '@/utils/format/date'
 
 const isProduction = process.env.NODE_ENV === 'production'
 const commitSHA = process.env.COMMIT_SHA
+const sentryDeployEnv = process.env.NEXT_PUBLIC_APP_ENV
 
 const cspHeader = `
   default-src 'self';
@@ -106,39 +107,23 @@ const withAnalyzer = withBundleAnalyzer({
 })(nextConfig)
 
 export default withSentryConfig(withAnalyzer, {
-  // For all available options, see:
-  // https://www.npmjs.com/package/@sentry/webpack-plugin#options
-
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
-
-  // Only print logs for uploading source maps in CI
+  authToken: process.env.SENTRY_AUTH_TOKEN,
   silent: !process.env.CI,
 
-  // For all available options, see:
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-  // Upload a larger set of source maps for prettier stack traces (increases build time)
-  widenClientFileUpload: true,
-
-  // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  // This can increase your server load as well as your hosting bill.
-  // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-  // side errors will fail.
-  // tunnelRoute: "/monitoring",
-
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  webpack: {
-    treeshake: {
-      removeDebugLogging: true,
+  ...(commitSHA && {
+    release: {
+      name: commitSHA,
+      create: Boolean(process.env.SENTRY_AUTH_TOKEN),
+      finalize: Boolean(process.env.SENTRY_AUTH_TOKEN),
+      ...(sentryDeployEnv && { deploy: { env: sentryDeployEnv } }),
     },
-  },
+  }),
 
-  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-  // See the following for more information:
-  // https://docs.sentry.io/product/crons/
-  // https://vercel.com/docs/cron-jobs
-  // automaticVercelMonitors: true,
-
+  widenClientFileUpload: true,
+  sourcemaps: { deleteSourcemapsAfterUpload: true },
+  bundleSizeOptimizations: { excludeTracing: true },
+  webpack: { treeshake: { removeDebugLogging: true } },
   telemetry: false,
 })
