@@ -39,8 +39,7 @@ ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=$NEXT_PUBLIC_VAPID_PUBLIC_KEY
 
 COPY . .
 
-RUN --mount=type=cache,target=/app/.next/cache,id=next-build-cache \
-    --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=false \
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=false \
     --mount=type=secret,id=SENTRY_ORG,env=SENTRY_ORG,required=false \
     --mount=type=secret,id=SENTRY_PROJECT,env=SENTRY_PROJECT,required=false \
     --mount=type=secret,id=POSTGRES_URL,env=POSTGRES_URL,required=false \

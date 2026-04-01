@@ -24,6 +24,7 @@ configMapGenerator:
 
   - name: litomi-common-env
     literals:
+      - APP_ENV=stg
       - APP_ORIGIN=https://stg.litomi.in
       - REDIS_URL=redis://redis:6379
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://opentelemetry-collector.tracing.svc:4318
@@ -37,7 +38,7 @@ configMapGenerator:
 images:
   - name: litomi-web
     newName: ghcr.io/gwak2837/litomi-web
-    digest: sha256:5f0980ccf84b09fe70d730a2e264e19c8a127f45f651a1d920061f5a92d62d7b
+    digest: sha256:128ce7680b5904f51b81cdb2180994a138ac39484d87f8055583933f111d24ec
   - name: litomi-backend
     newName: ghcr.io/gwak2837/litomi-backend
-    digest: sha256:9df5521b95569322ba75548dc1976a70bc56ab40c0b9f65c04744b2bc6f2b5b5
+    digest: sha256:46f1df1852a2aabf27cbb074f55d2a0ea81e0257501ab85b807a45d729ca833e
