@@ -44,7 +44,7 @@ export default function MangaCardImage({ manga, mangaIndex, className = '', vari
   const shouldShowPreviewImages = config.showPreviewImages && images.length > 1
 
   return (
-    <div className={twMerge('overflow-hidden relative', config.containerClassName, className)}>
+    <div className={twMerge('overflow-hidden relative content-auto', config.containerClassName, className)}>
       {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 이미지 배열 길이 검사 */}
       {shouldShowPreviewImages ? (
         <MangaCardPreviewImages
