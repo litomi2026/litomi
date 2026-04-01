@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url'
 const isProduction = process.env.NODE_ENV === 'production'
 const configDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = join(configDir, '..')
+const sentryRelease = process.env.VERCEL_GIT_COMMIT_SHA
+const sentryDeployEnv = process.env.VERCEL_ENV
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -24,12 +26,19 @@ const nextConfig: NextConfig = {
 export default withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
   silent: !process.env.CI,
-  widenClientFileUpload: true,
-  webpack: {
-    treeshake: {
-      removeDebugLogging: true,
+
+  ...(sentryRelease && {
+    release: {
+      name: sentryRelease,
+      create: Boolean(process.env.SENTRY_AUTH_TOKEN),
+      finalize: Boolean(process.env.SENTRY_AUTH_TOKEN),
+      ...(sentryDeployEnv && { deploy: { env: sentryDeployEnv } }),
     },
-  },
+  }),
+
+  bundleSizeOptimizations: { excludeTracing: true },
+  webpack: { treeshake: { removeDebugLogging: true } },
   telemetry: false,
 })

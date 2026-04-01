@@ -95,12 +95,10 @@ jobs:
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
-            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build and publish web image for staging
         id: build_web_staging
@@ -117,11 +115,12 @@ jobs:
             ${{ steps.load_public_env.outputs.build_args }}
           secrets: |
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Resolve published web image digest
         id: resolve_published_web_digest
@@ -179,10 +178,14 @@ jobs:
           file: Dockerfile.hono
           platforms: linux/arm64
           push: true
+          build-args: |
+            COMMIT_SHA=${{ github.sha }}
+          secrets: |
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_BACKEND }}
           tags: ${{ steps.metadata_backend.outputs.tags }}
           labels: ${{ steps.metadata_backend.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   update-staging-image-digests:
     name: Update staging image digests

@@ -16,6 +16,7 @@ RUN bun build --compile \
   --minify \
   --sourcemap \
   ./src/backend/index.ts \
+  --target=bun \
   --outfile litomi-backend
 
 # Runtime stage
