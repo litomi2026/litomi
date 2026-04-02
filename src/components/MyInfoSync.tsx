@@ -3,10 +3,16 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
+import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
+
+import { QueryKeys } from '@/constants/query'
+import { LocalStorageKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
+import { safeParseJSON } from '@/utils/json'
+import { patchUserSettings, type UserSettingsSignal } from '@/utils/user-settings'
 
 export default function MyInfoSync() {
   const queryClient = useQueryClient()
@@ -29,6 +35,35 @@ export default function MyInfoSync() {
       queryClient.removeQueries({ predicate: (query) => query.meta?.requiresAdult === true })
     }
   }, [queryClient, shouldPurgeAdultQueries])
+
+  // NOTE: 다른 탭에서 사용자 설정이 바뀌면 storage 이벤트로 me 캐시를 네트워크 없이 동기화해요
+  useEffect(() => {
+    function handleStorage(event: StorageEvent) {
+      if (event.key !== LocalStorageKey.USER_SETTINGS_SIGNAL || !event.newValue) {
+        return
+      }
+
+      const payload = safeParseJSON<UserSettingsSignal>(event.newValue)
+
+      if (!payload || typeof payload.userId !== 'number') {
+        return
+      }
+
+      queryClient.setQueryData<GETV1MeResponse | null>(QueryKeys.me, (current) => {
+        if (!current || current.id !== payload.userId) {
+          return current
+        }
+
+        return {
+          ...current,
+          settings: patchUserSettings(current.settings, payload.settings),
+        }
+      })
+    }
+
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [queryClient])
 
   return null
 }
