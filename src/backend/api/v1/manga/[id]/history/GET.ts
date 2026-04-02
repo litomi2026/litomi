@@ -12,6 +12,7 @@ import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_MANGA_ID } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
+import { readUserSettings } from '@/utils/user-settings.server'
 
 const paramSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
@@ -27,6 +28,12 @@ route.get('/:id/history', requireAuth, requireAdult, zProblemValidator('param', 
   const { id: mangaId } = c.req.valid('param')
 
   try {
+    const settings = await readUserSettings(userId)
+
+    if (!settings.historySyncEnabled) {
+      return new Response(null, { status: 204, headers: { 'Cache-Control': privateCacheControl } })
+    }
+
     const [history] = await db
       .select({ lastPage: readingHistoryTable.lastPage })
       .from(readingHistoryTable)

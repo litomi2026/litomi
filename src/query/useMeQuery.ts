@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import ms from 'ms'
 
-import type { GETV1MeResponse } from '@/backend/api/v1/me'
+import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
 import { QueryKeys } from '@/constants/query'
 import { CookieKey } from '@/constants/storage'
