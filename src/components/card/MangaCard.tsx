@@ -24,6 +24,7 @@ import SearchFromHereButton from './SearchFromHereButton'
 type Props = {
   manga: Manga
   index?: number
+  rank?: number
   className?: string
   showSearchFromNextButton?: boolean
   variant?: View
@@ -55,6 +56,7 @@ const SKELETON_VARIANT_CLASS_NAMES = {
 export default function MangaCard({
   manga,
   index = 0,
+  rank,
   className = '',
   showSearchFromNextButton,
   variant = View.CARD,
@@ -73,7 +75,7 @@ export default function MangaCard({
       data-manga-card
       key={id}
     >
-      <MangaCardImage manga={manga} mangaIndex={index} variant={variant} />
+      <MangaCardImage manga={manga} mangaIndex={index} rank={rank} variant={variant} />
       {config.showBody && (
         <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2">
           <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap [&_dt]:font-semibold">
