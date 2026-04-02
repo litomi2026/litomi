@@ -9,11 +9,13 @@ import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'
 import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardPreviewImages from './MangaCardPreviewImages'
+import MangaCardRankBadge from './MangaCardRankBadge'
 import MangaTorrentBadge from './MangaTorrentBadge'
 
 type Props = {
   manga: Manga
   mangaIndex: number
+  rank?: number
   className?: string
   variant: View
 }
@@ -24,6 +26,7 @@ const VARIANT_CONFIG = {
       'h-fit my-auto aspect-4/3 [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-4/3',
     imageContainerClassName: 'h-fit',
     pageCountClassName: 'bottom-1 right-1',
+    rankBadgeClassName: 'top-1 left-1',
     showPreviewImages: true,
     torrentBadgeClassName: 'bottom-1 left-1',
   },
@@ -32,12 +35,13 @@ const VARIANT_CONFIG = {
       'aspect-5/7 [&_img]:block [&_img]:h-full [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-5/7',
     imageContainerClassName: 'h-full',
     pageCountClassName: 'bottom-2 right-2',
+    rankBadgeClassName: 'top-2 left-2',
     showPreviewImages: false,
     torrentBadgeClassName: 'bottom-2 left-2',
   },
 } as const
 
-export default function MangaCardImage({ manga, mangaIndex, className = '', variant }: Props) {
+export default function MangaCardImage({ manga, mangaIndex, rank, className = '', variant }: Props) {
   const { count, images = [] } = manga
   const href = getViewerLink(manga.id)
   const config = VARIANT_CONFIG[variant]
@@ -78,6 +82,7 @@ export default function MangaCardImage({ manga, mangaIndex, className = '', vari
         </Link>
       ) : null}
       <MangaCardCensorship manga={manga} />
+      {rank && rank > 0 && <MangaCardRankBadge className={config.rankBadgeClassName} rank={rank} />}
       <MangaTorrentBadge
         className={twMerge('absolute z-10 font-semibold text-xs', config?.torrentBadgeClassName)}
         manga={manga}
