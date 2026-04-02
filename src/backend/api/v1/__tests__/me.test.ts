@@ -4,7 +4,7 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import meRoutes from '../me'
+import meRoutes from '../me/index'
 
 let shouldThrowDatabaseError = false
 let currentUserId: number | undefined
@@ -18,6 +18,11 @@ type MeResponse = {
   adultVerification: {
     required: boolean
     status: 'adult' | 'not_adult' | 'unverified'
+  }
+  settings: {
+    historySyncEnabled: boolean
+    adultVerifiedAdVisible: boolean
+    autoDeletionDay: number
   }
 }
 
@@ -55,40 +60,50 @@ mock.module('@/database/supabase/drizzle', () => ({
     select: () => ({
       from: () => ({
         leftJoin: () => ({
-          where: () => {
-            if (shouldThrowDatabaseError) {
-              return Promise.reject(new Error('Database connection failed'))
-            }
+          leftJoin: () => ({
+            where: () => {
+              if (shouldThrowDatabaseError) {
+                return Promise.reject(new Error('Database connection failed'))
+              }
 
-            if (currentUserId === 1) {
-              return Promise.resolve([
-                {
-                  id: 1,
-                  loginId: 'testuser1',
-                  name: 'Test User 1',
-                  nickname: 'Tester1',
-                  imageURL: 'https://example.com/avatar1.jpg',
-                  adultFlag: null,
-                },
-              ])
-            }
-            if (currentUserId === 2) {
-              return Promise.resolve([
-                {
-                  id: 2,
-                  loginId: 'testuser2',
-                  name: 'Test User 2',
-                  nickname: 'Tester2',
-                  imageURL: null,
-                  adultFlag: null,
-                },
-              ])
-            }
-            if (currentUserId === 999) {
+              if (currentUserId === 1) {
+                return Promise.resolve([
+                  {
+                    id: 1,
+                    loginId: 'testuser1',
+                    name: 'Test User 1',
+                    nickname: 'Tester1',
+                    imageURL: 'https://example.com/avatar1.jpg',
+                    adultFlag: null,
+                    historySyncEnabled: false,
+                    adultVerifiedAdVisible: true,
+                    autoDeletionDay: 365,
+                    fallbackAutoDeletionDay: 180,
+                  },
+                ])
+              }
+              if (currentUserId === 2) {
+                return Promise.resolve([
+                  {
+                    id: 2,
+                    loginId: 'testuser2',
+                    name: 'Test User 2',
+                    nickname: 'Tester2',
+                    imageURL: null,
+                    adultFlag: null,
+                    historySyncEnabled: null,
+                    adultVerifiedAdVisible: null,
+                    autoDeletionDay: null,
+                    fallbackAutoDeletionDay: 90,
+                  },
+                ])
+              }
+              if (currentUserId === 999) {
+                return Promise.resolve([])
+              }
               return Promise.resolve([])
-            }
-            return Promise.resolve([])
-          },
+            },
+          }),
         }),
       }),
     }),
@@ -121,6 +136,11 @@ describe('GET /api/v1/me', () => {
           required: true,
           status: 'unverified',
         },
+        settings: {
+          historySyncEnabled: false,
+          adultVerifiedAdVisible: true,
+          autoDeletionDay: 365,
+        },
       })
       expect(getSetCookieHeader(response)).toBe('')
     })
@@ -140,6 +160,11 @@ describe('GET /api/v1/me', () => {
         adultVerification: {
           required: true,
           status: 'unverified',
+        },
+        settings: {
+          historySyncEnabled: true,
+          adultVerifiedAdVisible: false,
+          autoDeletionDay: 90,
         },
       })
       expect(getSetCookieHeader(response)).toBe('')
