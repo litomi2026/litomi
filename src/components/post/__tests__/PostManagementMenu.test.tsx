@@ -26,6 +26,11 @@ beforeEach(() => {
           name: 'user1',
           nickname: 'User One',
           adultVerification: { required: false, status: 'adult' },
+          settings: {
+            historySyncEnabled: true,
+            adultVerifiedAdVisible: false,
+            autoDeletionDay: 180,
+          },
         }),
     },
   ]

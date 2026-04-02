@@ -104,6 +104,11 @@ describe('NonAdultJuicyAdsBanner', () => {
           nickname: 'Alice',
           imageURL: null,
           adultVerification: { required: true, status: 'unverified' },
+          settings: {
+            historySyncEnabled: true,
+            adultVerifiedAdVisible: false,
+            autoDeletionDay: 180,
+          },
         }),
     })
 
@@ -148,6 +153,11 @@ describe('NonAdultJuicyAdsBanner', () => {
           nickname: 'Adult',
           imageURL: null,
           adultVerification: { required: true, status: 'adult' },
+          settings: {
+            historySyncEnabled: true,
+            adultVerifiedAdVisible: false,
+            autoDeletionDay: 180,
+          },
         }),
     })
 
@@ -158,6 +168,32 @@ describe('NonAdultJuicyAdsBanner', () => {
     })
 
     expect(container.innerHTML).toBe('')
+  })
+
+  it('성인 인증이 끝났어도 광고 설정을 켰으면 배너를 다시 보여준다', async () => {
+    setAuthHintCookie()
+    fetchRoutes.push({
+      matcher: ({ url }) => url.pathname === '/api/v1/me',
+      response: () =>
+        jsonResponse({
+          id: 1,
+          loginId: 'adult-visible',
+          name: 'adult-visible',
+          nickname: 'Adult Visible',
+          imageURL: null,
+          adultVerification: { required: true, status: 'adult' },
+          settings: {
+            historySyncEnabled: true,
+            adultVerifiedAdVisible: true,
+            autoDeletionDay: 180,
+          },
+        }),
+    })
+
+    const view = renderBanner(<NonAdultJuicyAdsBanner />)
+
+    expect(await view.findByText('광고 수익은 서비스 운영에 사용돼요.')).not.toBeNull()
+    expect(view.getAllByTestId('juicy-slot').length).toBeGreaterThan(1)
   })
 
   it('가운데 정렬 레이아웃에서도 슬롯 너비를 계산할 수 있도록 광고 행을 늘린다', async () => {

@@ -1,4 +1,5 @@
-import type { GETV1MeResponse } from '@/backend/api/v1/me'
+import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
+import type { UserSettings } from '@/utils/user-settings'
 
 export enum AdultState {
   UNRESOLVED,
@@ -42,8 +43,9 @@ export function isAdultAccessBlocked(state: AdultState): boolean {
   return state === AdultState.NOT_ADULT || state === AdultState.UNVERIFIED || state === AdultState.NOT_LOGIN
 }
 
-export function requiresAds(state: AdultState): boolean {
+export function requiresAds(state: AdultState, settings?: UserSettings | null) {
   return (
+    (state === AdultState.ADULT && settings?.adultVerifiedAdVisible) ||
     state === AdultState.NOT_ADULT ||
     state === AdultState.UNVERIFIED ||
     state === AdultState.NOT_LOGIN ||

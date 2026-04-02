@@ -13,6 +13,7 @@ import { LocalStorageKey } from '@/constants/storage'
 import { env } from '@/env/client'
 import BBatonButton from '@/svg/BBatonButton'
 import { formatDistanceToNow } from '@/utils/format/date'
+import { safeParseJSON } from '@/utils/json'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 import AdultVerificationHelp from './AdultVerificationHelp'
@@ -275,12 +276,4 @@ function getErrorMessage(error: unknown): string {
   }
 
   return '인증에 실패했어요. 다시 시도해 주세요.'
-}
-
-function safeParseJSON<T>(value: string): T | null {
-  try {
-    return JSON.parse(value) as T
-  } catch {
-    return null
-  }
 }

@@ -3,12 +3,14 @@ import {
   CalendarMinus,
   CaseSensitive,
   Download,
+  Eye,
   Fingerprint,
   Key,
   Languages,
   Loader2,
   Palette,
   RectangleEllipsis,
+  Settings,
   ShieldCheck,
   Trash2,
 } from 'lucide-react'
@@ -20,9 +22,11 @@ import CollapsibleSection from '@/components/ui/CollapsibleSection'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
+import { readUserSettings } from '@/utils/user-settings.server'
 
 import { getMe } from '../common'
 import AdultVerificationSection from './adult/AdultVerificationSection'
+import ContentSettingsForm from './content/ContentSettingsForm'
 import DataExportSection from './data/DataExportSection'
 import AccountDeletionForm from './delete/AccountDeletionForm'
 import Forbidden from './Forbidden'
@@ -31,7 +35,7 @@ import KeywordSettings from './keyword/KeywordSettings'
 import LanguageSettings from './language/LanguageSettings'
 import PasskeySettings from './passkey/PasskeySettings'
 import PasswordChangeForm from './password/PasswordChangeForm'
-import PrivacySettings from './privacy/PrivacySettings'
+import AutoDeletionForm from './privacy/AutoDeletionForm'
 import PushSettings from './push/PushSettings'
 import ThemeSettings from './theme/ThemeSettings'
 import TwoFactorSettings from './two-factor/TwoFactorSettings'
@@ -82,8 +86,9 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </>
     )
   }
+
   const { name } = await params
-  const me = await getMe(userId)
+  const [me, settings] = await Promise.all([getMe(userId), readUserSettings(userId)])
   const usernameFromParam = getUsernameFromParam(name)
 
   if (me.name !== usernameFromParam) {
@@ -167,6 +172,14 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
+        description="감상 기록 자동 저장과 광고 표시 방식을 관리하세요"
+        icon={<Settings className="size-5 shrink-0" />}
+        id="content"
+        title="개인 설정"
+      >
+        <ContentSettingsForm initialSettings={settings} />
+      </CollapsibleSection>
+      <CollapsibleSection
         description="개인정보 보호를 위해 계정 자동 삭제 기간을 관리하세요"
         icon={<CalendarMinus className="size-5 shrink-0" />}
         id="privacy"
@@ -174,7 +187,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       >
         <ErrorBoundary fallback={InternalServerError}>
           <Suspense fallback={<LoadingFallback />}>
-            <PrivacySettings userId={userId} />
+            <AutoDeletionForm autoDeletionDay={settings.autoDeletionDay} />
           </Suspense>
         </ErrorBoundary>
       </CollapsibleSection>
