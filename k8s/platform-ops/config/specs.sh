@@ -2,6 +2,7 @@
 # shellcheck shell=bash
 
 declare -ra VAULT_CA_NAMESPACES=(
+  "argocd"
   "litomi-prod"
   "litomi-stg"
   "cloudflared"
@@ -14,6 +15,7 @@ declare -ra VAULT_CA_NAMESPACES=(
 )
 
 declare -ra VAULT_POLICY_SPECS=(
+  "argocd-read|argocd"
   "litomi-prod-read|litomi-prod"
   "litomi-stg-read|litomi-stg"
   "cloudflared-read|cloudflared"
@@ -24,6 +26,7 @@ declare -ra VAULT_POLICY_SPECS=(
 )
 
 declare -ra VAULT_ROLE_SPECS=(
+  "eso-argocd|argocd|argocd-read"
   "eso-litomi-prod|litomi-prod|litomi-prod-read"
   "eso-litomi-stg|litomi-stg|litomi-stg-read"
   "eso-cloudflared|cloudflared|cloudflared-read"
@@ -36,6 +39,7 @@ declare -ra VAULT_ROLE_SPECS=(
 )
 
 declare -ra REQUIRED_SEED_FILES=(
+  "argocd/github-repo-creds.env"
   "litomi-prod/litomi-backend-secret.env"
   "litomi-stg/litomi-backend-secret.env"
   "cloudflared/cloudflared-token.env"
@@ -48,6 +52,7 @@ declare -ra REQUIRED_SEED_FILES=(
 )
 
 declare -ra REQUIRED_CLUSTER_SECRETS=(
+  "argocd|github-repo-creds"
   "litomi-prod|litomi-backend-secret"
   "litomi-stg|litomi-backend-secret"
   "cloudflared|cloudflared-token"

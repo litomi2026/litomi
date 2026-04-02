@@ -81,6 +81,141 @@ ensure_argocd_server_transport_dependency() {
   ok "argocd Traefik ServersTransport dependency verified"
 }
 
+argocd_bootstrap_repo_credentials_env_file() {
+  printf '%s' "${VAULT_SECRETS_DIR}/argocd/github-repo-creds.env"
+}
+
+validate_argocd_bootstrap_repo_credentials_layout() {
+  local env_file
+  local schema_file
+  local schema_key
+  local schema_has_keys
+
+  env_file="$(argocd_bootstrap_repo_credentials_env_file)"
+  schema_file="${env_file}.example"
+
+  [[ -f "$env_file" ]] || die "missing required Argo CD bootstrap repo credentials file: ${env_file}"
+  [[ -f "$schema_file" ]] || die "missing required Argo CD bootstrap repo credentials schema file: ${schema_file}"
+
+  schema_has_keys="false"
+  while IFS= read -r schema_key; do
+    schema_key="$(trim "$schema_key")"
+    [[ -z "$schema_key" ]] && continue
+    schema_has_keys="true"
+    if ! env_file_has_key "$env_file" "$schema_key"; then
+      die "missing key '${schema_key}' in ${env_file} (schema: ${schema_file})"
+    fi
+  done < <(list_env_keys "$schema_file")
+
+  if [[ "$schema_has_keys" != "true" ]]; then
+    die "no keys found in seed schema file: ${schema_file}"
+  fi
+}
+
+argocd_repo_credentials_secret_is_ready() {
+  local secret_type
+  local key
+  local encoded
+
+  if ! resource_exists argocd secret github-repo-creds; then
+    return 1
+  fi
+
+  secret_type="$(k -n argocd get secret github-repo-creds -o go-template='{{ index .metadata.labels "argocd.argoproj.io/secret-type" }}' 2>/dev/null || true)"
+  [[ "$secret_type" == "repo-creds" ]] || return 1
+
+  for key in type url githubAppID githubAppInstallationID githubAppPrivateKey; do
+    encoded="$(k -n argocd get secret github-repo-creds -o "jsonpath={.data.${key}}" 2>/dev/null || true)"
+    [[ -n "$encoded" ]] || return 1
+  done
+
+  return 0
+}
+
+ensure_argocd_bootstrap_repo_credentials() {
+  local env_file
+  local manifest
+  local tmp_file
+  local raw
+  local line
+  local key
+  local value
+  local entry_count=0
+  local -a render_cmd=()
+  local -a temp_files=()
+
+  env_file="$(argocd_bootstrap_repo_credentials_env_file)"
+  validate_argocd_bootstrap_repo_credentials_layout
+
+  if argocd_repo_credentials_secret_is_ready; then
+    ok "Argo CD repo credentials secret already exists: argocd/github-repo-creds"
+    return
+  fi
+
+  if resource_exists argocd secret github-repo-creds; then
+    die "argocd/github-repo-creds exists but is not a valid repo-creds secret; inspect or delete it and rerun"
+  fi
+
+  wait_for_namespace argocd
+  manifest="$(mktemp)"
+  render_cmd=(
+    k -n argocd create secret generic github-repo-creds
+    --type Opaque
+    --dry-run=client
+    -o yaml
+  )
+
+  while IFS= read -r raw || [[ -n "$raw" ]]; do
+    line="$(trim "$raw")"
+    [[ -z "$line" ]] && continue
+    [[ "${line:0:1}" == "#" ]] && continue
+
+    if [[ "${line#export }" != "$line" ]]; then
+      line="${line#export }"
+    fi
+
+    [[ "$line" == *=* ]] || continue
+
+    key="$(trim "${line%%=*}")"
+    value="${line#*=}"
+    [[ -z "$key" ]] && continue
+
+    value="$(normalize_env_value "$value")"
+    if [[ "$value" == *$'\n'* ]]; then
+      tmp_file="$(mktemp)"
+      printf '%s' "$value" >"$tmp_file"
+      temp_files+=("$tmp_file")
+      render_cmd+=(--from-file="${key}=${tmp_file}")
+    else
+      render_cmd+=(--from-literal="${key}=${value}")
+    fi
+
+    entry_count=$((entry_count + 1))
+  done < "$env_file"
+
+  if (( entry_count == 0 )); then
+    rm -f "$manifest" "${temp_files[@]}"
+    die "no key/value found in ${env_file}"
+  fi
+
+  if ! "${render_cmd[@]}" >"$manifest"; then
+    rm -f "$manifest" "${temp_files[@]}"
+    die "failed to render argocd/github-repo-creds secret manifest"
+  fi
+
+  if ! k_quiet_or_return apply --server-side -f "$manifest"; then
+    rm -f "$manifest" "${temp_files[@]}"
+    die "failed to apply argocd/github-repo-creds secret manifest"
+  fi
+  if ! k_quiet_or_return -n argocd label secret github-repo-creds argocd.argoproj.io/secret-type=repo-creds --overwrite; then
+    rm -f "$manifest" "${temp_files[@]}"
+    die "failed to label argocd/github-repo-creds as repo-creds"
+  fi
+
+  rm -f "$manifest" "${temp_files[@]}"
+  ok "Argo CD bootstrap repo credentials secret ensured: argocd/github-repo-creds"
+}
+
 argocd_control_plane_missing_resources() {
   local -a missing=()
 
@@ -224,6 +359,8 @@ ensure_argocd_bootstrap_and_control_plane() {
   else
     ok "Argo CD control plane already present; bootstrap reapply skipped"
   fi
+
+  ensure_argocd_bootstrap_repo_credentials
 
   k_quiet apply --server-side -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
   ok "Argo CD root app applied"
