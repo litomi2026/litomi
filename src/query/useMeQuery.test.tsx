@@ -59,6 +59,11 @@ describe('useMeQuery', () => {
           nickname: 'Alice',
           imageURL: null,
           adultVerification: { required: true, status: 'adult' },
+          settings: {
+            historySyncEnabled: true,
+            adultVerifiedAdVisible: false,
+            autoDeletionDay: 180,
+          },
         }),
         {
           status: 200,

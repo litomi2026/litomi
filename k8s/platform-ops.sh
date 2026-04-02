@@ -82,6 +82,7 @@ main() {
 
   log "Vault init output: ${VAULT_INIT_OUTPUT}"
   log "Vault secrets dir: ${VAULT_SECRETS_DIR}"
+  log "Argo CD bootstrap repo creds: $(argocd_bootstrap_repo_credentials_env_file)"
 
   step "Step 1/9: k3s install/check"
   ensure_k3s_if_needed

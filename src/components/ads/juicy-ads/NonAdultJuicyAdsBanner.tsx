@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import type { GETV1MeResponse } from '@/backend/api/v1/me'
+import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
 import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'
@@ -39,7 +39,7 @@ export default function NonAdultJuicyAdsBanner({
   const isMounted = useMounted()
   const { data: me } = useMeQuery()
   const status = useNonAdultGate()
-  const shouldShowAds = isMounted && requiresAds(status)
+  const shouldShowAds = isMounted && requiresAds(status, me?.settings)
 
   if (!shouldShowAds) {
     return null
