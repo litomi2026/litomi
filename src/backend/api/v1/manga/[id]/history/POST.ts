@@ -14,6 +14,7 @@ import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points'
 import { userTable } from '@/database/supabase/user'
+import { readUserSettings } from '@/utils/user-settings.server'
 
 type SessionDBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
@@ -37,11 +38,16 @@ route.post(
   zProblemValidator('json', postBodySchema),
   async (c) => {
     const userId = c.get('userId')!
-
     const { id: mangaId } = c.req.valid('param')
     const { lastPage } = c.req.valid('json')
 
     try {
+      const settings = await readUserSettings(userId)
+
+      if (!settings.historySyncEnabled) {
+        return c.body(null, 204)
+      }
+
       await db.transaction(async (tx) => {
         // NOTE: 유저 락으로 동시성 보장 (감상 기록 한도 초과 방지)
         await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
