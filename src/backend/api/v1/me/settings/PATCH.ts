@@ -3,12 +3,11 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { db } from '@/database/supabase/drizzle'
 import { userSettingsTable } from '@/database/supabase/user'
-import { patchUserSettings, resolveUserSettings, type UserSettings } from '@/utils/user-settings'
+import { patchUserSettings } from '@/utils/user-settings'
 import { readUserSettings } from '@/utils/user-settings.server'
 
 const patchMySettingsSchema = z
@@ -23,10 +22,6 @@ const patchMySettingsSchema = z
 
 export type PATCHV1MeSettingsBody = z.infer<typeof patchMySettingsSchema>
 
-export type PATCHV1MeSettingsResponse = {
-  settings: UserSettings
-}
-
 const route = new Hono<Env>()
 
 route.patch('/', zProblemValidator('json', patchMySettingsSchema), async (c) => {
@@ -37,7 +32,7 @@ route.patch('/', zProblemValidator('json', patchMySettingsSchema), async (c) => 
     const currentSettings = await readUserSettings(userId)
     const nextSettings = patchUserSettings(currentSettings, patch)
 
-    const [row] = await db
+    await db
       .insert(userSettingsTable)
       .values({
         userId,
@@ -53,20 +48,8 @@ route.patch('/', zProblemValidator('json', patchMySettingsSchema), async (c) => 
           ...(patch.autoDeletionDay !== undefined && { autoDeletionDay: patch.autoDeletionDay }),
         },
       })
-      .returning({
-        historySyncEnabled: userSettingsTable.historySyncEnabled,
-        adultVerifiedAdVisible: userSettingsTable.adultVerifiedAdVisible,
-        autoDeletionDay: userSettingsTable.autoDeletionDay,
-      })
 
-    if (!row) {
-      return problemResponse(c, { status: 500, detail: '설정을 저장하지 못했어요' })
-    }
-
-    return c.json<PATCHV1MeSettingsResponse>(
-      { settings: resolveUserSettings(row) },
-      { headers: { 'Cache-Control': privateCacheControl } },
-    )
+    return c.body(null, 204)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '설정을 저장하지 못했어요' })
