@@ -33,7 +33,10 @@ export default function ErrorDiagnosticDetails({ digest, errorMessage, pathname 
         </div>
       )}
 
-      <details className="mx-auto max-w-prose rounded-lg border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-left text-xs text-zinc-300">
+      <details
+        className="mx-auto max-w-prose rounded-lg border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-left text-xs text-zinc-300"
+        open
+      >
         <summary className="cursor-pointer list-none font-medium text-zinc-200">진단 정보</summary>
         <div className="mt-3 grid gap-1.5">
           <DiagnosticRow label="환경" value={environment} />

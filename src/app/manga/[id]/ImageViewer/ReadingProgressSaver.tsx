@@ -5,8 +5,8 @@ import { useEffect, useEffectEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
 import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/history/POST'
+import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
-import { GETV1MeResponse } from '@/backend/api/v1/me'
 import { SessionStorageKeyMap } from '@/constants/storage'
 import { env } from '@/env/client'
 import { useLatestRef } from '@/hook/useLatestRef'
@@ -31,7 +31,7 @@ type SyncContext = {
 export default function ReadingProgressSaver({ mangaId }: Props) {
   const { data: me } = useMeQuery()
   const adultState = getAdultState(me)
-  const canSyncReadingProgress = hasAdultAccess(adultState)
+  const canSyncReadingProgress = hasAdultAccess(adultState) && me?.settings.historySyncEnabled === true
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isRequestPendingRef = useRef(false)
@@ -180,6 +180,8 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   // NOTE: 서버에 감상 상태를 저장할 수 있게 되는 순간(=로그인/성인인증 완료) 마지막 페이지를 큐에 넣어요
   useEffect(() => {
     if (!canSyncReadingProgress) {
+      pendingPageRef.current = null
+      clearTimer()
       return
     }
 

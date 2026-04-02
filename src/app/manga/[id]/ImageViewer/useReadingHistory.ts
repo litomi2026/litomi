@@ -33,7 +33,7 @@ export default function useReadingHistory(mangaId: number) {
         }
       }
 
-      if (!me || !hasAdultAccess(adultState)) {
+      if (!me || !hasAdultAccess(adultState) || !me.settings.historySyncEnabled) {
         return null
       }
 

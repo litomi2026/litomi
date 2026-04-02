@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
-import type { GETV1MeResponse } from '@/backend/api/v1/me'
+import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
 import { POSTV1BBatonUnlinkResponse } from '@/backend/api/v1/bbaton/unlink'
 import { QueryKeys } from '@/constants/query'

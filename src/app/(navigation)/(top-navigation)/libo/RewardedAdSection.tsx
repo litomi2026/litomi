@@ -7,7 +7,7 @@ import ms from 'ms'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
-import type { GETV1MeResponse } from '@/backend/api/v1/me'
+import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile/POST'
 import type { AdClickResult } from '@/components/ads/types'
 
