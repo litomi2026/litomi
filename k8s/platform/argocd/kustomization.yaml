@@ -4,6 +4,9 @@ kind: Kustomization
 namespace: argocd
 
 resources:
+  - serviceaccount-eso-vault.yaml
+  - secretstore-vault.yaml
+  - externalsecret-github-repo-creds.yaml
   - ingress.yaml
   - argocd-server-service.yaml
   - servers-transport.yaml

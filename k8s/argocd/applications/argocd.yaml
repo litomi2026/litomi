@@ -2,6 +2,10 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: argocd
+  annotations:
+    # This app now manages ExternalSecret/SecretStore resources in argocd,
+    # so wait until ESO is installed first.
+    argocd.argoproj.io/sync-wave: '2'
 spec:
   project: platform
   source:
