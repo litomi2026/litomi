@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import type { GETV1MeResponse } from '@/backend/api/v1/me'
+import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
 import { AdultState, getAdultState, hasAdultAccess, requiresAdultVerification } from '../adult-verification'
 
@@ -14,6 +14,11 @@ function createMe(status: GETV1MeResponse['adultVerification']['status'], requir
     adultVerification: {
       required,
       status,
+    },
+    settings: {
+      historySyncEnabled: true,
+      adultVerifiedAdVisible: false,
+      autoDeletionDay: 180,
     },
   }
 }
