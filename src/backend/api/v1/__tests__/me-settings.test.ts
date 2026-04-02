@@ -74,35 +74,27 @@ mock.module('@/database/supabase/drizzle', () => ({
         adultVerifiedAdVisible: boolean
         autoDeletionDay: number
       }) => ({
-        onConflictDoUpdate: ({ set }: { set: Partial<typeof values> }) => ({
-          returning: () => {
-            if (shouldThrowDatabaseError) {
-              return Promise.reject(new Error('Database connection failed'))
-            }
+        onConflictDoUpdate: ({ set }: { set: Partial<typeof values> }) => {
+          if (shouldThrowDatabaseError) {
+            return Promise.reject(new Error('Database connection failed'))
+          }
 
-            if (!currentSettingRow) {
-              currentSettingRow = {
-                historySyncEnabled: values.historySyncEnabled,
-                adultVerifiedAdVisible: values.adultVerifiedAdVisible,
-                autoDeletionDay: values.autoDeletionDay,
-              }
-            } else {
-              currentSettingRow = {
-                historySyncEnabled: set.historySyncEnabled ?? currentSettingRow.historySyncEnabled,
-                adultVerifiedAdVisible: set.adultVerifiedAdVisible ?? currentSettingRow.adultVerifiedAdVisible,
-                autoDeletionDay: set.autoDeletionDay ?? currentSettingRow.autoDeletionDay,
-              }
+          if (!currentSettingRow) {
+            currentSettingRow = {
+              historySyncEnabled: values.historySyncEnabled,
+              adultVerifiedAdVisible: values.adultVerifiedAdVisible,
+              autoDeletionDay: values.autoDeletionDay,
             }
+          } else {
+            currentSettingRow = {
+              historySyncEnabled: set.historySyncEnabled ?? currentSettingRow.historySyncEnabled,
+              adultVerifiedAdVisible: set.adultVerifiedAdVisible ?? currentSettingRow.adultVerifiedAdVisible,
+              autoDeletionDay: set.autoDeletionDay ?? currentSettingRow.autoDeletionDay,
+            }
+          }
 
-            return Promise.resolve([
-              {
-                historySyncEnabled: currentSettingRow.historySyncEnabled,
-                adultVerifiedAdVisible: currentSettingRow.adultVerifiedAdVisible,
-                autoDeletionDay: currentSettingRow.autoDeletionDay,
-              },
-            ])
-          },
-        }),
+          return Promise.resolve()
+        },
       }),
     }),
   },
@@ -120,13 +112,11 @@ describe('PATCH /api/v1/me/settings', () => {
       { userId: 1 },
     )
 
-    expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({
-      settings: {
-        historySyncEnabled: false,
-        adultVerifiedAdVisible: false,
-        autoDeletionDay: 365,
-      },
+    expect(response.status).toBe(204)
+    expect(currentSettingRow).toEqual({
+      historySyncEnabled: false,
+      adultVerifiedAdVisible: false,
+      autoDeletionDay: 365,
     })
   })
 
@@ -147,13 +137,11 @@ describe('PATCH /api/v1/me/settings', () => {
       { userId: 1 },
     )
 
-    expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({
-      settings: {
-        historySyncEnabled: false,
-        adultVerifiedAdVisible: true,
-        autoDeletionDay: 365,
-      },
+    expect(response.status).toBe(204)
+    expect(currentSettingRow).toEqual({
+      historySyncEnabled: false,
+      adultVerifiedAdVisible: true,
+      autoDeletionDay: 365,
     })
   })
 
