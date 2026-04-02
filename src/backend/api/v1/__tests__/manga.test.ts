@@ -62,6 +62,15 @@ mock.module('@/database/supabase/drizzle', () => ({
   },
 }))
 
+mock.module('@/utils/user-settings.server', () => ({
+  readUserSettings: () =>
+    Promise.resolve({
+      historySyncEnabled: true,
+      adultVerifiedAdVisible: false,
+      autoDeletionDay: 180,
+    }),
+}))
+
 describe('GET /api/v1/manga/:id/history', () => {
   beforeEach(() => {
     currentUserId = undefined
