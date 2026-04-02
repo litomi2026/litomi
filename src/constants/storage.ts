@@ -22,6 +22,7 @@ export enum LocalStorageKey {
   THEME = 'theme',
   CHAT_WEBLLM_SETTINGS = 'chat/webllm-settings',
   BBATON_ADULT_VERIFICATION_SIGNAL = 'bbaton/adult-verification/signal',
+  USER_SETTINGS_SIGNAL = 'user-settings/signal',
 }
 
 export enum SearchParamKey {
