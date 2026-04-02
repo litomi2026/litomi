@@ -22,7 +22,6 @@ export default function RankingTitle() {
 
   return (
     <div className="flex items-center flex-wrap gap-3 p-4 pb-2">
-      {currentMetric && <currentMetric.icon className="size-5 text-foreground" />}
       <h1 className="text-xl font-bold">{renderTitle()}</h1>
       <div className="ml-auto flex items-center gap-2">
         <TrendingUp className="size-4 text-zinc-500" />
