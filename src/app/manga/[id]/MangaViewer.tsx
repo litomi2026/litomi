@@ -9,9 +9,8 @@ import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/la
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import useNonAdultGate from '@/hook/useNonAdultGate'
 import useMeQuery from '@/query/useMeQuery'
-import { AdultState } from '@/utils/adult-verification'
+import { AdultState, getAdultState } from '@/utils/adult-verification'
 
 import ImageViewer from './ImageViewer/ImageViewer'
 import usePageMetadata from './usePageMetadata'
@@ -28,8 +27,8 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const unlockTimeoutRef = useRef<number>(null)
   const { data: me } = useMeQuery()
-  const status = useNonAdultGate()
 
+  const status = getAdultState(me)
   const shouldFetch = (initialManga?.images?.length ?? 0) === 0
   const isWaitingForAdClick = shouldFetch && !me && !hasClickedAd
   const actualShouldFetch = shouldFetch && !isWaitingForAdClick
