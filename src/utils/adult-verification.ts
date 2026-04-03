@@ -47,7 +47,7 @@ export function requiresAds(state: AdultState, settings?: UserSettings | null) {
   return (
     (state === AdultState.ADULT && settings?.adultVerifiedAdVisible) ||
     state === AdultState.NOT_ADULT ||
-    state === AdultState.UNVERIFIED ||
+    // state === AdultState.UNVERIFIED ||
     // state === AdultState.NOT_LOGIN ||
     state === AdultState.NOT_REQUIRED
   )
