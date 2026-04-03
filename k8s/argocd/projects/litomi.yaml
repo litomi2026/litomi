@@ -5,7 +5,7 @@ metadata:
 spec:
   description: Litomi applications (prod/stg)
   sourceRepos:
-    - https://github.com/gwak2837/litomi.git
+    - https://github.com/litomi2026/litomi.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: litomi-stg

@@ -24,7 +24,7 @@
           "buildVersion": "1000000",
           "date": "2026-03-30",
           "localizedDescription": "Latest iOS sideload build for AltStore Classic and SideStore.",
-          "downloadURL": "https://github.com/gwak2837/litomi/releases/download/mobile-ios-altstore-v1.0.0/litomi-ios-altstore.ipa",
+          "downloadURL": "https://github.com/litomi2026/litomi/releases/download/mobile-ios-altstore-v1.0.0/litomi-ios-altstore.ipa",
           "size": 2475537,
           "minOSVersion": "16.6"
         }

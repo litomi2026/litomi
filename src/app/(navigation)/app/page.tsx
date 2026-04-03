@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   description: '리토미 앱 설치 방법을 환경별로 안내해요',
 }
 
-const ANDROID_APK_URL = 'https://github.com/gwak2837/litomi/releases/download/mobile-android-latest/litomi.apk'
-const IOS_SOURCE_URL = 'https://raw.githubusercontent.com/gwak2837/litomi/main/mobile/ios.source.json'
+const ANDROID_APK_URL = 'https://github.com/litomi2026/litomi/releases/download/mobile-android-latest/litomi.apk'
+const IOS_SOURCE_URL = 'https://raw.githubusercontent.com/litomi2026/litomi/main/mobile/ios.source.json'
 const IOS_SIDESTORE_SETUP_GUIDE_URL = 'https://docs.sidestore.io/ko/docs/installation/prerequisites'
 const IOS_SIDESTORE_ADD_SOURCE_URL = `sidestore://source?url=${encodeURIComponent(IOS_SOURCE_URL)}`
 
