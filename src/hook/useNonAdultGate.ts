@@ -11,15 +11,14 @@ export type NonAdultAdGateStatus = 'hidden' | 'loading' | 'visible'
 export default function useNonAdultGate() {
   const { data: me, isPending } = useMeQuery()
   const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
-  const adultState = getAdultState(me)
 
-  if (hasAuthHint && isPending) {
+  if (!hasAuthHint) {
+    return AdultState.NOT_LOGIN
+  }
+
+  if (isPending) {
     return AdultState.UNRESOLVED
   }
 
-  if (adultState === AdultState.ADULT) {
-    return AdultState.ADULT
-  }
-
-  return AdultState.NOT_ADULT
+  return getAdultState(me)
 }
