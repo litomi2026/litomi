@@ -5,7 +5,7 @@ Prometheus/Grafana/Alertmanager 다음 단계로, 로그/트레이싱/외부 사
 ### 자동화 빠른 시작 (`k8s/platform-ops.sh`)
 
 ```zsh
-cd /Users/gwak2837/Documents/GitHub/litomi
+cd litomi
 
 # Monitoring/Logging/Tracing 포함 상태 점검
 ./k8s/platform-ops.sh --skip-public-check

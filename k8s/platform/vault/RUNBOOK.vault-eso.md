@@ -6,7 +6,7 @@
 ## 0) 자동화 빠른 시작 (`k8s/platform-ops.sh`)
 
 ```zsh
-cd /Users/gwak2837/Documents/GitHub/litomi
+cd litomi
 
 ./k8s/platform-ops.sh
 ```
