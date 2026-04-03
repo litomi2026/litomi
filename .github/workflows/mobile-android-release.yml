@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/mobile-android-release.yml'
       - 'mobile/**'
+    workflow_dispatch:
 
 permissions:
   contents: write

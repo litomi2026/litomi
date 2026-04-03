@@ -32,7 +32,7 @@ check_requirements() {
 download_artifact() {
     echo ""
     echo "📦 To download artifacts from GitHub Actions:"
-    echo "1. Go to: https://github.com/ridi25/litomi/actions"
+    echo "1. Go to: https://github.com/litomi2026/litomi/actions"
     echo "2. Click on the latest 'Database Backup' workflow run"
     echo "3. Download the artifact (e.g., litomi-backup-YYYYMMDD-HHMM)"
     echo "4. Extract the downloaded ZIP file"
