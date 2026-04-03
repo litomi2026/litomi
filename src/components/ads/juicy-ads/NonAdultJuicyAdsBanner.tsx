@@ -10,9 +10,8 @@ import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
 import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'
-import useNonAdultGate from '@/hook/useNonAdultGate'
 import useMeQuery from '@/query/useMeQuery'
-import { requiresAds } from '@/utils/adult-verification'
+import { getAdultState, requiresAds } from '@/utils/adult-verification'
 
 import type { JuicyAdsLayoutNode } from './types'
 
@@ -38,7 +37,8 @@ export default function NonAdultJuicyAdsBanner({
 }: Props) {
   const isMounted = useMounted()
   const { data: me } = useMeQuery()
-  const status = useNonAdultGate()
+
+  const status = getAdultState(me)
   const shouldShowAds = isMounted && requiresAds(status, me?.settings)
 
   if (!shouldShowAds) {
