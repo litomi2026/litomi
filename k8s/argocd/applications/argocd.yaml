@@ -9,7 +9,7 @@ metadata:
 spec:
   project: platform
   source:
-    repoURL: https://github.com/gwak2837/litomi.git
+    repoURL: https://github.com/litomi2026/litomi.git
     targetRevision: main
     path: k8s/platform/argocd
   destination:

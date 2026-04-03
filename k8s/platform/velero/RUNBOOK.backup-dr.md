@@ -6,7 +6,7 @@
 ## 자동화 빠른 시작 (`k8s/platform-ops.sh`)
 
 ```zsh
-cd /Users/gwak2837/Documents/GitHub/litomi
+cd litomi
 
 # Velero 포함 플랫폼 상태 점검
 ./k8s/platform-ops.sh --skip-public-check

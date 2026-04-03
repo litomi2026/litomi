@@ -16,10 +16,10 @@ spec:
         releaseName: vault
         valueFiles:
           - $values/k8s/platform/vault/vault.values.yaml
-    - repoURL: https://github.com/gwak2837/litomi.git
+    - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
       ref: values
-    - repoURL: https://github.com/gwak2837/litomi.git
+    - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
       path: k8s/platform/vault
   destination:
