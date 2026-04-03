@@ -3,6 +3,7 @@
 import { QueryKey, useQueries, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import pLimit from 'p-limit'
+import pThrottle from 'p-throttle'
 import { useMemo } from 'react'
 
 import { QueryKeys } from '@/constants/query'
@@ -16,9 +17,18 @@ const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 const DEFAULT_STALE_TIME = ms('1 hour')
 const DEFAULT_GC_TIME = ms('2 hours')
 const ERROR_CACHE_CLEANUP_DELAY = ms('30 seconds')
-const MAX_CONCURRENT_REQUESTS = 2
+const MAX_CONCURRENT_MANGA_METADATA_REQUESTS = 2
+const MAX_MANGA_METADATA_REQUESTS_PER_SECOND = 3
 
-const limit = pLimit(MAX_CONCURRENT_REQUESTS)
+const concurrencyLimit = pLimit(MAX_CONCURRENT_MANGA_METADATA_REQUESTS)
+
+const throttle = pThrottle({
+  limit: MAX_MANGA_METADATA_REQUESTS_PER_SECOND,
+  interval: ms('1 second'),
+  strict: true,
+})
+
+const mangaMetadataRequestExecutor = throttle(concurrencyLimit)
 
 interface Options {
   /**
@@ -88,7 +98,7 @@ export default function useMangaListCachedQuery({
     }
 
     try {
-      return await limit(runQuery)
+      return await mangaMetadataRequestExecutor(runQuery)
     } catch (error) {
       if (error instanceof InactiveQueuedMangaRequestError) {
         throw error

@@ -2,12 +2,18 @@ import '@test/setup.dom'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestQueryClient, createTestQueryClientWrapper, renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, renderHook, waitFor } from '@testing-library/react'
-import { afterEach, describe, expect, test } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
-import useMangaListCachedQuery from './useMangaListCachedQuery'
+type UseMangaListCachedQueryModule = typeof import('./useMangaListCachedQuery')
 
 let fetchRoutes: FetchRoute[] = []
 let fetchController: ReturnType<typeof installMockFetch> | null = null
+let importVersion = 0
+let useMangaListCachedQuery!: UseMangaListCachedQueryModule['default']
+
+async function importFreshUseMangaListCachedQuery(): Promise<UseMangaListCachedQueryModule> {
+  return import(`./useMangaListCachedQuery?test=${importVersion++}`) as Promise<UseMangaListCachedQueryModule>
+}
 
 function MangaTitleList({ mangaIds }: { mangaIds: number[] }) {
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
@@ -26,6 +32,10 @@ function SingleMangaTitle({ mangaId }: { mangaId: number }) {
 
   return <div>{mangaMap.get(mangaId)?.title ?? 'loading'}</div>
 }
+
+beforeEach(async () => {
+  ;({ default: useMangaListCachedQuery } = await importFreshUseMangaListCachedQuery())
+})
 
 afterEach(() => {
   fetchController?.restore()
