@@ -88,7 +88,10 @@ export default function MangaCardImage({ manga, mangaIndex, rank, className = ''
         manga={manga}
       />
       <div
-        className={twMerge('absolute z-10 px-1 font-medium text-sm bg-background rounded', config?.pageCountClassName)}
+        className={twMerge(
+          'absolute z-10 px-1 font-medium text-sm bg-background/90 rounded',
+          config?.pageCountClassName,
+        )}
       >
         {count ?? images.length}p
       </div>
