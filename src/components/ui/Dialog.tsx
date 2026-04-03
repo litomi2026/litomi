@@ -238,7 +238,7 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
     <dialog
       aria-label={ariaLabel}
       className="fixed inset-0 m-0 h-dvh w-dvw max-h-none max-w-none p-0 border-0 bg-transparent text-foreground outline-none group flex items-center justify-center 
-        data-[state=closed]:hidden backdrop:bg-background/80 backdrop:transition backdrop:opacity-0 data-[state=open]:backdrop:opacity-100"
+        data-[state=closed]:hidden backdrop:bg-black/80 backdrop:transition backdrop:opacity-0 data-[state=open]:backdrop:opacity-100"
       data-state={state}
       onClick={handleClick}
       onTouchMoveCapture={stopScrollEventPropagation}
