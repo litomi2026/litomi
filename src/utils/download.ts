@@ -1,12 +1,30 @@
+import pLimit from 'p-limit'
+import pThrottle from 'p-throttle'
 import { toast } from 'sonner'
 
-const MAX_DOWNLOAD_REQUESTS_PER_SECOND = 5
-const DOWNLOAD_REQUEST_INTERVAL_MS = Math.ceil(1000 / MAX_DOWNLOAD_REQUESTS_PER_SECOND)
+import { sleep } from './time'
+
+type Options = {
+  filename: string
+  images: { filename: string; url?: string; urls?: string[] }[]
+  onProgress?: (completed: number) => void
+}
+
+const MAX_DOWNLOAD_CONCURRENT_REQUESTS = 4
+const MAX_DOWNLOAD_REQUESTS_PER_SECOND = 4
+const DOWNLOAD_REQUEST_INTERVAL_MS = 1000
 const DEFAULT_429_RETRY_DELAY_MS = 1000
 const MAX_429_RETRIES = 3
 
-let nextDownloadRequestAt = 0
-let downloadRequestQueue: Promise<void> = Promise.resolve()
+const downloadConcurrencyLimit = pLimit(MAX_DOWNLOAD_CONCURRENT_REQUESTS)
+
+const downloadThrottle = pThrottle({
+  limit: MAX_DOWNLOAD_REQUESTS_PER_SECOND,
+  interval: DOWNLOAD_REQUEST_INTERVAL_MS,
+  strict: true,
+})
+
+const runThrottledDownloadAttempt = downloadThrottle((url: string) => fetch(url, { credentials: 'include' }))
 
 export function downloadBlob(blob: Blob, filename: string) {
   const blobURL = URL.createObjectURL(blob)
@@ -17,17 +35,7 @@ export function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(blobURL)
 }
 
-export async function downloadMultipleImages({
-  filename,
-  images,
-  onProgress,
-  maxConcurrent = 10,
-}: {
-  filename: string
-  images: { filename: string; url?: string; urls?: string[] }[]
-  onProgress?: (completed: number) => void
-  maxConcurrent?: number
-}): Promise<void> {
+export async function downloadMultipleImages({ filename, images, onProgress }: Options) {
   const JSZip = (await import('jszip')).default
   const zip = new JSZip()
 
@@ -37,8 +45,7 @@ export async function downloadMultipleImages({
 
   const downloadImage = async ({ url, urls, filename }: { filename: string; url?: string; urls?: string[] }) => {
     try {
-      const response = await fetchDownloadResponse(urls?.length ? urls : (url ?? ''))
-      const blob = await response.blob()
+      const blob = await fetchDownloadBlob(urls?.length ? urls : (url ?? ''))
       zip.file(filename, blob)
 
       successCount++
@@ -54,7 +61,8 @@ export async function downloadMultipleImages({
   const downloadPool = async () => {
     const activeDownloads: Promise<void>[] = []
 
-    while (currentIndex < images.length && activeDownloads.length < maxConcurrent) {
+    // Limit how many image jobs a single batch can queue at once.
+    while (currentIndex < images.length && activeDownloads.length < MAX_DOWNLOAD_CONCURRENT_REQUESTS) {
       const image = images[currentIndex]
       currentIndex++
       activeDownloads.push(downloadImage(image))
@@ -83,39 +91,35 @@ export async function downloadMultipleImages({
   downloadBlob(zipFile, `${filename}.zip`)
 }
 
-export function resetDownloadRequestRateLimiter() {
-  nextDownloadRequestAt = 0
-  downloadRequestQueue = Promise.resolve()
-}
-
-async function fetchDownloadResponse(imageURL: string | string[]): Promise<Response> {
+async function fetchDownloadBlob(imageURL: string | string[]): Promise<Blob> {
   const candidates = (Array.isArray(imageURL) ? imageURL : [imageURL]).filter(Boolean)
-  let lastError: Error | undefined
 
-  for (const candidate of candidates) {
-    try {
-      const response = await fetchWith429Retry(candidate)
+  return downloadConcurrencyLimit(async () => {
+    let lastError: Error | undefined
 
-      if (response.ok) {
-        return response
+    for (const candidate of candidates) {
+      try {
+        const response = await fetchWith429Retry(candidate)
+
+        if (response.ok) {
+          return response.blob()
+        }
+
+        lastError = new Error([response.status, response.statusText].filter(Boolean).join(' '))
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error('다운로드에 실패했어요')
       }
-
-      lastError = new Error([response.status, response.statusText].filter(Boolean).join(' '))
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error('다운로드에 실패했어요')
     }
-  }
 
-  throw lastError ?? new Error('다운로드할 이미지 URL이 없어요')
+    throw lastError ?? new Error('다운로드할 이미지 URL이 없어요')
+  })
 }
 
 async function fetchWith429Retry(url: string): Promise<Response> {
   let attempt = 0
 
   while (attempt <= MAX_429_RETRIES) {
-    await waitForDownloadRequestTurn()
-
-    const response = await fetch(url, { credentials: 'include' })
+    const response = await runThrottledDownloadAttempt(url)
 
     if (response.status !== 429) {
       return response
@@ -150,24 +154,4 @@ function getRetryAfterMs(retryAfterHeader: string | null): number {
   }
 
   return Math.max(0, retryAfterDate - Date.now())
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-async function waitForDownloadRequestTurn(): Promise<void> {
-  const scheduledRequest = downloadRequestQueue.then(async () => {
-    const now = Date.now()
-    const waitMs = Math.max(0, nextDownloadRequestAt - now)
-
-    nextDownloadRequestAt = Math.max(now, nextDownloadRequestAt) + DOWNLOAD_REQUEST_INTERVAL_MS
-
-    if (waitMs > 0) {
-      await sleep(waitMs)
-    }
-  })
-
-  downloadRequestQueue = scheduledRequest.catch(() => {})
-  await scheduledRequest
 }
