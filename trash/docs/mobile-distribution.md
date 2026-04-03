@@ -4,7 +4,7 @@
 
 - Share `https://litomi.in/app` (or your own domain + `/app`)
 - Android APK download is fixed to GitHub Releases (no env needed):
-  - `https://github.com/gwak2837/litomi/releases/latest/download/litomi.apk`
+  - `https://github.com/litomi2026/litomi/releases/latest/download/litomi.apk`
 - iOS TestFlight is optional (show the button only when set):
   - `NEXT_PUBLIC_IOS_TESTFLIGHT_URL`
 

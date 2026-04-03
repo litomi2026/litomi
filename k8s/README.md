@@ -9,7 +9,7 @@
 sudo apt-get -qq update >/dev/null
 sudo apt-get -qq install -y git >/dev/null
 
-git clone https://github.com/gwak2837/litomi.git
+git clone https://github.com/litomi2026/litomi.git
 ```
 
 ### 2) Vault seed 파일 준비
