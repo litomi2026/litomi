@@ -39,7 +39,7 @@ export default function NonAdultJuicyAdsBanner({
   const { data: me } = useMeQuery()
 
   const status = getAdultState(me)
-  const shouldShowAds = isMounted && requiresAds(status, me?.settings) && false
+  const shouldShowAds = isMounted && requiresAds(status, me?.settings)
 
   if (!shouldShowAds) {
     return null
