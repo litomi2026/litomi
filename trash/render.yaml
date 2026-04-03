@@ -8,7 +8,7 @@ projects:
           - type: web
             name: litomi
             runtime: node
-            repo: https://github.com/gwak2837/litomi
+            repo: https://github.com/litomi2026/litomi
             branch: main
             plan: free
             envVars:
@@ -83,7 +83,7 @@ projects:
           - type: web
             name: litomi-stage
             runtime: node
-            repo: https://github.com/gwak2837/litomi
+            repo: https://github.com/litomi2026/litomi
             branch: stage
             plan: free
             envVars:
