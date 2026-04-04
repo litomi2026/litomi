@@ -86,6 +86,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
+      url: `${APP_ORIGIN}/doc/youth-protection`,
+      lastModified,
+      changeFrequency: 'yearly',
+      priority: PRIORITY_LEVELS.LEGAL,
+    },
+    {
       url: `${APP_ORIGIN}/doc/2257`,
       lastModified,
       changeFrequency: 'yearly',
