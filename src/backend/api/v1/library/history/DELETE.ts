@@ -6,13 +6,13 @@ import { z } from 'zod'
 import { Env } from '@/backend'
 import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
+import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { POINT_CONSTANTS } from '@/constants/points'
 import { MAX_MANGA_ID } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
 
 const deleteSelectedBodySchema = z.object({
   mode: z.literal('selected'),
@@ -39,7 +39,7 @@ route.delete('/', requireAuth, requireAdult, zProblemValidator('json', deleteRea
 
   try {
     const deletedCount = await db.transaction(async (tx) => {
-      await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
+      await lockUserRowForUpdate(tx, userId)
 
       if (body.mode === 'all') {
         const deleted = await tx

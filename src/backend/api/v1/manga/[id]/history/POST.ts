@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { Env } from '@/backend'
 import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
+import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
@@ -13,7 +14,6 @@ import { MAX_MANGA_ID, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points'
-import { userTable } from '@/database/supabase/user'
 import { readUserSettings } from '@/utils/user-settings.server'
 
 type SessionDBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
@@ -50,7 +50,7 @@ route.post(
 
       await db.transaction(async (tx) => {
         // NOTE: 유저 락으로 동시성 보장 (감상 기록 한도 초과 방지)
-        await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
+        await lockUserRowForUpdate(tx, userId)
 
         const now = new Date()
 

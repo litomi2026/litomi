@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { areNotificationCriteriaConditionsEqual } from '@/backend/api/v1/notification/criteria/util'
+import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import {
@@ -15,7 +16,6 @@ import {
 import { NotificationConditionType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification'
-import { userTable } from '@/database/supabase/user'
 import { normalizeValue } from '@/translation/common'
 
 type ExistingCriteriaRow = {
@@ -110,7 +110,7 @@ route.post('/', zProblemValidator('json', bodySchema), async (c) => {
 
   try {
     const result = await db.transaction(async (tx) => {
-      await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
+      await lockUserRowForUpdate(tx, userId)
 
       const [{ count: existingCount }] = await tx
         .select({ count: count(notificationCriteriaTable.id) })

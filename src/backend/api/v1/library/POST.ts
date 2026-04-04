@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/backend/utils/adult-gate'
+import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
@@ -13,7 +14,6 @@ import { MAX_LIBRARIES_PER_USER, MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAM
 import { db } from '@/database/supabase/drizzle'
 import { libraryTable } from '@/database/supabase/library'
 import { userExpansionTable } from '@/database/supabase/points'
-import { userTable } from '@/database/supabase/user'
 import { hexColorToInt } from '@/utils/color'
 
 export type POSTV1LibraryResponse = {
@@ -57,7 +57,7 @@ route.post('/', requireAuth, zProblemValidator('json', postBodySchema), async (c
   try {
     const created = await db.transaction(async (tx) => {
       // 1) 유저 락으로 동시성 보장
-      await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
+      await lockUserRowForUpdate(tx, userId)
 
       // 2) 확장량 조회
       const [expansion] = await tx

@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { Env } from '@/backend'
 import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
+import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { bookmarkTable } from '@/database/supabase/activity'
@@ -41,10 +42,10 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', importSchem
   try {
     const { imported, skipped } = await db.transaction(async (tx) => {
       // 1) 유저 락으로 동시성 보장
-      await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
 
       // 2) 북마크 저장 한도 계산
       const limit = await getBookmarkLimit(tx, userId)
+      await lockUserRowForUpdate(tx, userId)
 
       const now = new Date()
       const newBookmarks = bookmarks.map((bookmark) => ({
