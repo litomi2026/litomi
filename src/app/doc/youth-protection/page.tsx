@@ -76,13 +76,8 @@ export default async function Page() {
               </a>
             </li>
             <li>
-              <a className="underline underline-offset-4 hover:text-zinc-100" href="#agencies">
-                7. 외부 기관 안내
-              </a>
-            </li>
-            <li>
               <a className="underline underline-offset-4 hover:text-zinc-100" href="#changes">
-                8. 변경
+                7. 변경
               </a>
             </li>
           </ol>
@@ -224,58 +219,8 @@ export default async function Page() {
             </div>
           </section>
 
-          <section className="space-y-3" id="agencies">
-            <h2 className="scroll-mt-24 text-xl font-semibold tracking-tight text-zinc-100">7. 외부 기관 안내</h2>
-            <ul className="list-disc list-inside space-y-2 text-sm text-zinc-300 marker:text-zinc-600">
-              <li>
-                방송통신심의위원회 불법·유해정보 신고:{' '}
-                <a
-                  className="underline underline-offset-4 text-zinc-200 hover:text-zinc-100"
-                  href="https://www.kocsc.or.kr"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  www.kocsc.or.kr
-                </a>
-              </li>
-              <li>
-                경찰청 사이버범죄 신고시스템:{' '}
-                <a
-                  className="underline underline-offset-4 text-zinc-200 hover:text-zinc-100"
-                  href="https://ecrm.police.go.kr/minwon/main"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  ecrm.police.go.kr
-                </a>
-              </li>
-              <li>
-                여성긴급전화 1366:{' '}
-                <a
-                  className="underline underline-offset-4 text-zinc-200 hover:text-zinc-100"
-                  href="https://women1366.kr"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  women1366.kr
-                </a>
-              </li>
-              <li>
-                개인정보침해신고센터:{' '}
-                <a
-                  className="underline underline-offset-4 text-zinc-200 hover:text-zinc-100"
-                  href="https://privacy.kisa.or.kr"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  privacy.kisa.or.kr
-                </a>
-              </li>
-            </ul>
-          </section>
-
           <section className="space-y-3" id="changes">
-            <h2 className="scroll-mt-24 text-xl font-semibold tracking-tight text-zinc-100">8. 변경</h2>
+            <h2 className="scroll-mt-24 text-xl font-semibold tracking-tight text-zinc-100">7. 변경</h2>
             <p className="text-sm leading-relaxed text-zinc-300">
               본 정책은 관련 법령, 서비스 구조, 신고 처리 절차 및 내부 운영 기준의 변경에 따라 수정될 수 있습니다.
             </p>
