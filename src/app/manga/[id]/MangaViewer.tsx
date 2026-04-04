@@ -76,7 +76,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
         onAdClick={handleAdClick}
         title={
           <div className="grid gap-0.5 text-center">
-            <p className="text-zinc-300">작품을 보려면 광고를 클릭해주세요.</p>
+            <p className="text-zinc-300 text-sm">작품을 보려면 광고를 클릭해주세요.</p>
             <p>
               <LoginPageLink className="text-foreground">로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수
               있어요.
