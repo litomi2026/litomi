@@ -204,7 +204,7 @@ resource "cloudflare_dns_record" "google_verification_txt" {
   zone_id = var.zone_id
   name    = "litomi.in"
   type    = "TXT"
-  content = "\"google-site-verification=E8dCRgQMvY3hE4oaZ-vsuhopmTS7qyQG-O5WIMdVenA\""
+  content = "\"google-site-verification=9lwchIN7Iw35PvdxZPPW-QFktzJY1q_SP4llbtlVej4\""
   ttl     = 3600
   proxied = false
 }
