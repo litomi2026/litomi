@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
+import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
+
 import MangaImportButton from '@/components/card/MangaImportButton'
 import MangaImportModal from '@/components/card/MangaImportModal'
 
@@ -54,9 +56,7 @@ type Props = {
     itemCount: number
   }[]
   userId?: number
-  bookmarkCount?: number
-  historyCount?: number
-  ratingCount?: number
+  summary?: GETV1LibrarySummaryResponse
   sidebarPagination?: SidebarPagination
 }
 
@@ -68,18 +68,11 @@ type SidebarPagination = {
   onRetryNextPage?: () => void
 }
 
-export default function LibraryHeader({
-  libraries,
-  pinnedLibraries = [],
-  userId,
-  bookmarkCount,
-  historyCount,
-  ratingCount,
-  sidebarPagination,
-}: Props) {
+export default function LibraryHeader({ libraries, pinnedLibraries = [], userId, summary, sidebarPagination }: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const drawerScrollContainerRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
+  const { bookmarkCount, historyCount, ratingCount } = summary ?? {}
   const pageKind = getLibraryPageKind(pathname)
   const { isSelectionMode, enter, exit } = useLibrarySelection()
   const { currentLibrary } = useCurrentLibraryMeta({ libraries, userId })
@@ -312,15 +305,13 @@ export default function LibraryHeader({
               </button>
             </div>
             <LibrarySidebar
-              bookmarkCount={bookmarkCount}
               className="pb-safe"
-              historyCount={historyCount}
               libraries={libraries}
               onClick={closeDrawer}
               pagination={sidebarPagination}
               pinnedLibraries={pinnedLibraries}
-              ratingCount={ratingCount}
               scrollContainerRef={drawerScrollContainerRef}
+              summary={summary}
               userId={userId}
             />
           </div>

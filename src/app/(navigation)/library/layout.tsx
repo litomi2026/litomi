@@ -1,5 +1,5 @@
-import LibraryNavigation from './LibraryNavigation'
+import LibraryLayout from './LibraryLayout'
 
-export default function LibraryLayout({ children }: LayoutProps<'/library'>) {
-  return <LibraryNavigation>{children}</LibraryNavigation>
+export default function Layout({ children }: LayoutProps<'/library'>) {
+  return <LibraryLayout>{children}</LibraryLayout>
 }
