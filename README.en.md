@@ -119,6 +119,7 @@ Example for local development:
 NEXT_PUBLIC_API_ORIGIN="http://localhost:3002"
 NEXT_PUBLIC_IMAGE_PROXY_ORIGIN="http://localhost:3002"
 NEXT_PUBLIC_EDGE_PROXY_ORIGIN="http://localhost:3001"
+NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN="http://localhost:3001"
 
 # Cloudflare Turnstile (replace with real keys if needed)
 NEXT_PUBLIC_TURNSTILE_SITE_KEY="dev-site-key"

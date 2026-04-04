@@ -17,6 +17,7 @@ export const nextBuildEnv = createEnv({
     NEXT_PUBLIC_APP_ORIGIN: z.url().default(env.NEXT_PUBLIC_APP_ORIGIN),
     NEXT_PUBLIC_COMMIT_SHA: z.string().optional(),
     NEXT_PUBLIC_EDGE_PROXY_ORIGIN: z.url().default(env.NEXT_PUBLIC_EDGE_PROXY_ORIGIN),
+    NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN: z.url().default(env.NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN),
     NEXT_PUBLIC_IMAGE_PROXY_ORIGIN: z.url().default(env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN),
     NEXT_PUBLIC_GTM_ID: z.string().optional(),
     NEXT_PUBLIC_GTM_SCRIPT_URL: z.url().optional(),
