@@ -103,7 +103,7 @@ export default async function Page() {
                 여기서 멈춰주세요.
               </h1>
 
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400 md:text-base">
+              <p className="mt-5 text-sm leading-7 text-zinc-400 md:text-base">
                 리토미는 성인 대상 콘텐츠를 포함하고 있어 19세 미만 청소년의 이용을 제한합니다. 청소년은 본 사이트와
                 관련 성인 콘텐츠를 이용할 수 없으며, 일부 기능에는 추가적인 성인인증 또는 접근 제한이 적용될 수
                 있습니다.
