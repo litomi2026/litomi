@@ -10,11 +10,13 @@ import exportBookmarksRoute from './export'
 import getBookmarksRoute from './GET'
 import getBookmarkIdsRoute from './id'
 import importBookmarksRoute from './import'
+import postBookmarksRoute from './POST'
 
 const bookmarkRoutes = new Hono<Env>()
 
 bookmarkRoutes.route('/', getBookmarksRoute)
 bookmarkRoutes.route('/', bookmarkDeleteRoute)
+bookmarkRoutes.route('/', postBookmarksRoute)
 bookmarkRoutes.route('/id', getBookmarkIdsRoute)
 bookmarkRoutes.route('/export', exportBookmarksRoute)
 bookmarkRoutes.route('/import', importBookmarksRoute)
