@@ -39,7 +39,7 @@ export default function NonAdultJuicyAdsBanner({ className, title, layout, onAdC
   }
 
   return (
-    <section className={twMerge('flex flex-col gap-1.5', className)}>
+    <section className={twMerge('flex flex-col gap-2', className)}>
       <div className="grid gap-0.5 text-center">
         <p className="text-xs text-zinc-400 font-medium">{title || <DefaultTitle me={me} />}</p>
       </div>
