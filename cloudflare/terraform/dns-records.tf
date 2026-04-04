@@ -120,6 +120,15 @@ resource "cloudflare_dns_record" "vercel_cname" {
   proxied = true
 }
 
+resource "cloudflare_dns_record" "vercel2_cname" {
+  zone_id = var.zone_id
+  name    = "vercel2.litomi.in"
+  type    = "CNAME"
+  content = "55c4083f74bdeeda.vercel-dns-016.com"
+  ttl     = 1
+  proxied = true
+}
+
 resource "cloudflare_dns_record" "vercel_stg_cname" {
   zone_id = var.zone_id
   name    = "vercel-stg.litomi.in"
@@ -205,6 +214,15 @@ resource "cloudflare_dns_record" "google_verification_txt" {
   name    = "litomi.in"
   type    = "TXT"
   content = "\"google-site-verification=9lwchIN7Iw35PvdxZPPW-QFktzJY1q_SP4llbtlVej4\""
+  ttl     = 3600
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "vercel_verification_txt" {
+  zone_id = var.zone_id
+  name    = "_vercel"
+  type    = "TXT"
+  content = "vc-domain-verify=vercel2.litomi.in,4c27109d593e9215186d"
   ttl     = 3600
   proxied = false
 }
