@@ -71,16 +71,18 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   if (isWaitingForAdClick) {
     return (
       <NonAdultJuicyAdsBanner
-        className="h-full flex flex-col gap-4 items-center justify-center"
+        className="h-full flex flex-col gap-3 items-center justify-center"
         layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
         onAdClick={handleAdClick}
-        subtitle={
-          <div>
-            <LoginPageLink className="text-zinc-400">로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수
-            있어요.
+        title={
+          <div className="grid gap-0.5 text-center">
+            <p className="text-zinc-300">작품을 보려면 광고를 클릭해주세요.</p>
+            <p>
+              <LoginPageLink className="text-foreground">로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수
+              있어요.
+            </p>
           </div>
         }
-        title="작품을 보려면 광고를 클릭해주세요."
       />
     )
   }
