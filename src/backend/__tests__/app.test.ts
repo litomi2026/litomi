@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
-import appRoutes from '../app'
+import * as drizzleModule from '@/database/supabase/drizzle'
 
 type HealthResponse = {
   status: 'ok'
@@ -26,17 +26,12 @@ type ReadyResponse = ReadyErrorResponse | ReadyOkResponse
 
 let shouldThrowDatabaseError = false
 let shouldReportDatabaseDisconnected = false
+let appRoutes: typeof import('../app').default
+let checkDatabaseReadinessSpy: ReturnType<typeof spyOn>
 
-beforeAll(() => {
+beforeAll(async () => {
   spyOn(console, 'error').mockImplementation(() => {})
-})
-
-afterAll(() => {
-  mock.restore()
-})
-
-mock.module('@/database/supabase/drizzle', () => ({
-  checkDatabaseReadiness: () => {
+  checkDatabaseReadinessSpy = spyOn(drizzleModule, 'checkDatabaseReadiness').mockImplementation(() => {
     if (shouldThrowDatabaseError) {
       return Promise.reject(new Error('Database connection failed'))
     }
@@ -52,8 +47,15 @@ mock.module('@/database/supabase/drizzle', () => ({
       checkedAt: new Date('2025-10-23T10:00:00Z'),
       connected: true,
     })
-  },
-}))
+  })
+
+  appRoutes = (await import('../app')).default
+})
+
+afterAll(() => {
+  checkDatabaseReadinessSpy.mockRestore()
+  mock.restore()
+})
 
 describe('GET /', () => {
   beforeEach(() => {
