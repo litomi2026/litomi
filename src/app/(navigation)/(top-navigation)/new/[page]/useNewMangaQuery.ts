@@ -7,7 +7,7 @@ import { env } from '@/env/client'
 import { Locale } from '@/translation/common'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
+const { NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN } = env
 
 type QueryOptions = {
   page: number
@@ -21,7 +21,7 @@ export function useNewMangaQuery({ page }: QueryOptions) {
 }
 
 async function fetchNewManga(page: number) {
-  const url = new URL('/api/proxy/hiyobi/new', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
+  const url = new URL('/api/proxy/hiyobi/new', NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN)
   url.searchParams.set('locale', Locale.KO)
   url.searchParams.set('page', String(page))
   const { data } = await fetchWithErrorHandling<Manga[]>(url)
