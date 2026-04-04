@@ -14,6 +14,7 @@ process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ??= 'test-turnstile-site-key'
 process.env.NEXT_PUBLIC_APP_ORIGIN ??= process.env.APP_ORIGIN
 process.env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN ??= 'https://example.com'
 process.env.NEXT_PUBLIC_EDGE_PROXY_ORIGIN ??= 'https://example.com'
+process.env.NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN ??= process.env.NEXT_PUBLIC_EDGE_PROXY_ORIGIN
 process.env.JWT_SECRET_ACCESS_TOKEN ??= 'test-jwt-access'
 process.env.JWT_SECRET_REFRESH_TOKEN ??= 'test-jwt-refresh'
 process.env.JWT_SECRET_TRUSTED_DEVICE ??= 'test-jwt-trusted'
