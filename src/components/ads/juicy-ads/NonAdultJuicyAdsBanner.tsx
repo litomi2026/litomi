@@ -23,18 +23,11 @@ import { DEFAULT_NON_ADULT_AD_LAYOUT } from './layouts'
 type Props = {
   className?: string
   title?: ReactNode
-  subtitle?: ReactNode
   layout?: readonly JuicyAdsLayoutNode[]
   onAdClick?: () => void
 }
 
-export default function NonAdultJuicyAdsBanner({
-  className,
-  title = '광고 수익은 서비스 운영에 사용돼요.',
-  subtitle,
-  layout,
-  onAdClick,
-}: Props) {
+export default function NonAdultJuicyAdsBanner({ className, title, layout, onAdClick }: Props) {
   const isMounted = useMounted()
   const { data: me } = useMeQuery()
 
@@ -46,10 +39,9 @@ export default function NonAdultJuicyAdsBanner({
   }
 
   return (
-    <section className={twMerge('flex flex-col gap-2', className)}>
-      <div className="grid gap-1 text-center">
-        <p className="text-sm text-zinc-300 font-medium">{title}</p>
-        <p className="text-xs text-zinc-500">{subtitle || <DefaultSubtitle me={me} />}</p>
+    <section className={twMerge('flex flex-col gap-1.5', className)}>
+      <div className="grid gap-0.5 text-center">
+        <p className="text-xs text-zinc-400 font-medium">{title || <DefaultTitle me={me} />}</p>
       </div>
       <JuicyAdsScript />
       <div className="flex flex-wrap justify-center gap-1.5 self-stretch" id={JUICY_ADS_BANNER_ID}>
@@ -59,15 +51,15 @@ export default function NonAdultJuicyAdsBanner({
   )
 }
 
-function DefaultSubtitle({ me }: { me?: GETV1MeResponse | null }) {
+function DefaultTitle({ me }: { me?: GETV1MeResponse | null }) {
   return (
     <>
       {me ? (
-        <Link className="font-bold text-zinc-400 p-2 -m-2" href={`/@${me.name}/settings#adult`}>
+        <Link className="font-bold text-foreground p-2 -m-2" href={`/@${me.name}/settings#adult`}>
           익명 성인인증
         </Link>
       ) : (
-        <LoginPageLink className="text-zinc-400">로그인 후 익명 성인인증</LoginPageLink>
+        <LoginPageLink className="text-foreground">로그인 후 익명 성인인증</LoginPageLink>
       )}
       을 완료하면 광고는 자동으로 숨겨져요.
     </>

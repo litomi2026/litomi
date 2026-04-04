@@ -48,7 +48,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <Link className="hover:underline" href="/doc/privacy" prefetch={false}>
             개인정보처리방침
           </Link>
-
           <Link className="hover:underline" href="/deterrence" prefetch={false}>
             사용자 연령 제한 규정
           </Link>
@@ -59,6 +58,9 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </Link>
           <Link className="hover:underline" href="/doc/dmca" prefetch={false}>
             저작권/DMCA
+          </Link>
+          <Link className="hover:underline" href="/doc/youth-protection" prefetch={false}>
+            청소년보호정책
           </Link>
         </div>
       </footer>
