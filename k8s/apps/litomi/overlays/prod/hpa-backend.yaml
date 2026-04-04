@@ -7,7 +7,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: litomi-backend
-  maxReplicas: 4
+  minReplicas: 2
+  maxReplicas: 5
   metrics:
     - type: Resource
       resource:
@@ -25,6 +26,7 @@ spec:
           value: 2
           periodSeconds: 60
     scaleDown:
+      stabilizationWindowSeconds: 600
       policies:
         - type: Percent
           value: 50

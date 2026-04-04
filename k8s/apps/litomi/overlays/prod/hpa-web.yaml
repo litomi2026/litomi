@@ -7,6 +7,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: litomi-web
+  minReplicas: 1
   maxReplicas: 4
   metrics:
     - type: Resource
@@ -14,7 +15,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 80
   behavior:
     scaleUp:
       policies:
@@ -22,9 +23,10 @@ spec:
           value: 100
           periodSeconds: 60
         - type: Pods
-          value: 4
+          value: 2
           periodSeconds: 60
     scaleDown:
+      stabilizationWindowSeconds: 600
       policies:
         - type: Percent
           value: 50
