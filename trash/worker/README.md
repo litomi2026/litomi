@@ -1,8 +1,6 @@
 # Cloudflare worker
 
-Since already have the worker created at `image.gwak2837.workers.dev`, follow these steps:
-
-## Deploy TypeScript CORS Proxy to image.gwak2837.workers.dev
+## Deploy TypeScript CORS Proxy
 
 ### 1. Set up the project structure
 
@@ -30,23 +28,13 @@ bunx wrangler login
 bun run deploy
 ```
 
-This will deploy to `image.gwak2837.workers.dev`.
-
 ### 5. Update your environment variables
 
 In your main application, update the environment variable:
 
-```env
-NEXT_PUBLIC_IMAGE_PROXY_ORIGIN=https://image.gwak2837.workers.dev
-```
-
 ## Testing
 
 Test the deployment by visiting:
-
-```
-https://image.gwak2837.workers.dev/?url=https://cdn.harpi.in/test-image.jpg
-```
 
 You should see CORS headers in the response.
 
