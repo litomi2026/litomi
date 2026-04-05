@@ -5,12 +5,12 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
+import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_MANGA_ID } from '@/constants/policy'
 import { bookmarkTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
 
 import { getBookmarkLimit } from '../limit'
 
@@ -37,7 +37,7 @@ route.put('/', requireAuth, zProblemValidator('param', paramSchema), async (c) =
   try {
     const result = await db.transaction(async (tx) => {
       // Serialize bookmark writes per user so mixed PUT/DELETE requests resolve predictably.
-      await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
+      await lockUserRowForUpdate(tx, userId)
 
       const [existing] = await tx
         .select({ createdAt: bookmarkTable.createdAt })

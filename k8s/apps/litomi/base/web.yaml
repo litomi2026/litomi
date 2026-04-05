@@ -43,11 +43,11 @@ spec:
             failureThreshold: 6
           resources:
             requests:
-              cpu: 300m
-              memory: 1Gi
+              cpu: 200m
+              memory: 896Mi
             limits:
-              cpu: 500m
-              memory: 1.5Gi
+              cpu: 1000m
+              memory: 1280Mi
           securityContext:
             allowPrivilegeEscalation: false
             # `runAsNonRoot: true` + image `USER nextjs`(string) 조합이면 kubelet이 non-root 검증을 못 해서 거부할 수 있어요.

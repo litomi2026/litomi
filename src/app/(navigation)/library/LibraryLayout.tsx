@@ -30,7 +30,7 @@ type Props = {
   children: ReactNode
 }
 
-export default function LibraryNavigation({ children }: Readonly<Props>) {
+export default function LibraryLayout({ children }: Props) {
   const pathname = usePathname()
   const { data: me, isPending: isMePending } = useMeQuery()
   const userId = me?.id
@@ -59,29 +59,8 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
     userId,
   })
 
-  const libraries = useMemo(() => {
-    const map = new Map<number, LibraryListItem>()
-    data?.pages.forEach((page) => {
-      page.libraries.forEach((lib) => {
-        if (!map.has(lib.id)) {
-          map.set(lib.id, lib)
-        }
-      })
-    })
-    return Array.from(map.values())
-  }, [data])
-
-  const pinnedLibraries = useMemo(() => {
-    const map = new Map<number, LibraryListItem>()
-    pinnedData?.pages.forEach((page) => {
-      page.libraries.forEach((lib) => {
-        if (!map.has(lib.id)) {
-          map.set(lib.id, lib)
-        }
-      })
-    })
-    return Array.from(map.values())
-  }, [pinnedData])
+  const libraries = useMemo(() => mergeUniqueLibraries(data?.pages), [data?.pages])
+  const pinnedLibraries = useMemo(() => mergeUniqueLibraries(pinnedData?.pages), [pinnedData?.pages])
 
   const sidebarPagination = {
     hasNextPage: hasNextPage || hasNextPinnedPage,
@@ -97,25 +76,21 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
   return (
     <div className="flex-1 flex flex-col sm:flex-row">
       <LibrarySidebar
-        bookmarkCount={summary?.bookmarkCount}
         className="fixed top-0 bottom-0 z-20 hidden flex-col bg-background overflow-y-auto scrollbar-hidden sm:flex lg:w-52"
-        historyCount={summary?.historyCount}
         libraries={libraries}
         pagination={sidebarPagination}
         pinnedLibraries={pinnedLibraries}
-        ratingCount={summary?.ratingCount}
+        summary={summary}
         userId={userId}
       />
       <div className="hidden sm:block sm:w-[67px] lg:w-52" />
       <div className="flex flex-col flex-1">
         <LibrarySelectionProvider scopeKey={pathname}>
           <LibraryHeader
-            bookmarkCount={summary?.bookmarkCount}
-            historyCount={summary?.historyCount}
             libraries={libraries}
             pinnedLibraries={pinnedLibraries}
-            ratingCount={summary?.ratingCount}
             sidebarPagination={sidebarPagination}
+            summary={summary}
             userId={userId}
           />
           {children}
@@ -123,4 +98,22 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
       </div>
     </div>
   )
+}
+
+function mergeUniqueLibraries(pages?: { libraries: LibraryListItem[] }[]) {
+  const seen = new Set<number>()
+  const libraries: LibraryListItem[] = []
+
+  for (const page of pages ?? []) {
+    for (const library of page.libraries) {
+      if (seen.has(library.id)) {
+        continue
+      }
+
+      seen.add(library.id)
+      libraries.push(library)
+    }
+  }
+
+  return libraries
 }

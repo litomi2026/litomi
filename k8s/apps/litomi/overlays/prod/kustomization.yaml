@@ -12,10 +12,13 @@ resources:
   - secretstore-vault.yaml
   - externalsecret-litomi-backend-secret.yaml
   - ingress.yaml
+  - workload-identity-template/serviceaccount-backend-google-auth.yaml
+  - workload-identity-template/configmap-backend-google-credentials.yaml
 
 patches:
   - path: patch-backend-deployment.yaml
   - path: patch-web-deployment.yaml
+  - path: workload-identity-template/patch-backend-deployment-google-auth.yaml
 
 configMapGenerator:
   - name: litomi-public-env

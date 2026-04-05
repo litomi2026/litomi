@@ -3,6 +3,8 @@
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 import { type RefObject, useRef } from 'react'
 
+import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
+
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { formatNumber } from '@/utils/format/number'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
@@ -42,9 +44,7 @@ type Props = {
   userId?: number
   className?: string
   onClick?: () => void
-  bookmarkCount?: number
-  historyCount?: number
-  ratingCount?: number
+  summary?: GETV1LibrarySummaryResponse
   pagination?: PaginationProps
   scrollContainerRef?: RefObject<Element | null>
 }
@@ -55,13 +55,12 @@ export default function LibrarySidebar({
   userId,
   className = '',
   onClick,
-  bookmarkCount,
-  historyCount,
-  ratingCount,
+  summary,
   pagination,
   scrollContainerRef,
 }: Props) {
   const asideRef = useRef<HTMLElement>(null)
+  const { bookmarkCount, historyCount, ratingCount } = summary ?? {}
   const ownerLibraries = userId ? libraries.filter((lib) => lib.userId === userId) : []
   const publicLibraries = userId ? libraries.filter((lib) => lib.userId !== userId) : libraries
   const publicMangaCount = publicLibraries.reduce((sum, lib) => sum + lib.itemCount, 0)

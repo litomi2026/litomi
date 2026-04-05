@@ -12,10 +12,13 @@ resources:
   - secretstore-vault.yaml
   - externalsecret-litomi-backend-secret.yaml
   - ingress.yaml
+  - workload-identity-template/serviceaccount-backend-google-auth.yaml
+  - workload-identity-template/configmap-backend-google-credentials.yaml
 
 patches:
   - path: patch-backend-deployment.yaml
   - path: patch-web-deployment.yaml
+  - path: workload-identity-template/patch-backend-deployment-google-auth.yaml
 
 configMapGenerator:
   - name: litomi-public-env
@@ -38,7 +41,7 @@ configMapGenerator:
 images:
   - name: litomi-web
     newName: ghcr.io/litomi2026/litomi-web
-    digest: sha256:2c34126ef421e42a09f50aac8dfb5a1d516b30241e273f9f242fff1ba9a4a767
+    digest: sha256:84a6a70f7a2a57a73d8774deab8ab27a569797af99f72c8920622c155e2b9350
   - name: litomi-backend
     newName: ghcr.io/litomi2026/litomi-backend
-    digest: sha256:4ae62dab495a56acbfa0a07db26468a5af72b74b919265deac078eced1017f86
+    digest: sha256:1cefb9d4a83ea24aff8aa68b567250d2491ef901bc33cb8b0bb04c0f853ef016

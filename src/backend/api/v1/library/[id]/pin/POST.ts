@@ -6,11 +6,11 @@ import { z } from 'zod'
 import { Env } from '@/backend'
 import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
+import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { db } from '@/database/supabase/drizzle'
 import { libraryTable, pinnedLibraryTable } from '@/database/supabase/library'
-import { userTable } from '@/database/supabase/user'
 
 import { getPinnedLibraryLimit } from './limit'
 
@@ -27,7 +27,7 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', paramsSch
   try {
     const result = await db.transaction(async (tx) => {
       // 1) 유저 락으로 동시성 보장
-      await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
+      await lockUserRowForUpdate(tx, userId)
 
       const [library] = await tx
         .select({ id: libraryTable.id, userId: libraryTable.userId, isPublic: libraryTable.isPublic })
