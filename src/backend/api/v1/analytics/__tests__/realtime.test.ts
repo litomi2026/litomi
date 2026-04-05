@@ -85,9 +85,7 @@ describe('GET /api/v1/analytics/realtime', () => {
     const response = await realtimeRoutes.fetch(new Request('http://localhost/'))
 
     expect(response.status).toBe(503)
-    expect(analyticsClientConstructorMock).toHaveBeenCalledWith({
-      fallback: 'rest',
-    })
+    expect(analyticsClientConstructorMock).toHaveBeenCalled()
   })
 
   test('서비스 계정 키가 없으면 ADC로 클라이언트를 생성한다', async () => {
@@ -95,8 +93,6 @@ describe('GET /api/v1/analytics/realtime', () => {
     const response = await realtimeRoutes.fetch(new Request('http://localhost/'))
 
     expect(response.status).toBe(200)
-    expect(analyticsClientConstructorMock).toHaveBeenCalledWith({
-      fallback: 'rest',
-    })
+    expect(analyticsClientConstructorMock).toHaveBeenCalled()
   })
 })
