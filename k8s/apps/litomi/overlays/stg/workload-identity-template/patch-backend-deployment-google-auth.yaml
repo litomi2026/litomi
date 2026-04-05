@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litomi-backend
+spec:
+  template:
+    spec:
+      serviceAccountName: litomi-backend
+      automountServiceAccountToken: false
+      containers:
+        - name: backend
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /etc/workload-identity/credential-configuration.json
+          volumeMounts:
+            - name: google-identity-token
+              mountPath: /var/run/service-account
+              readOnly: true
+            - name: google-application-credentials
+              mountPath: /etc/workload-identity
+              readOnly: true
+      volumes:
+        - name: google-identity-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  audience: https://iam.googleapis.com/projects/63417037891/locations/global/workloadIdentityPools/litomi-k3s-pool/providers/litomi-k3s-oidc
+                  expirationSeconds: 3600
+                  path: token
+        - name: google-application-credentials
+          configMap:
+            name: litomi-backend-google-credentials

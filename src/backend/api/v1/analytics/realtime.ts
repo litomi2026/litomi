@@ -9,7 +9,7 @@ import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
 import { env } from '@/env/server.hono'
 import { createCacheControl } from '@/utils/cache-control'
 
-const { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } = env
+const { GA_PROPERTY_ID } = env
 
 export type GETV1AnalyticsRealtimeResponse = {
   totalActiveUsers: number
@@ -85,12 +85,12 @@ realtimeRoutes.get('/', async (c) => {
 })
 
 function getAnalyticsClient() {
+  if (!GA_PROPERTY_ID) {
+    throw new Error('GA_PROPERTY_ID is not configured')
+  }
+
   if (!analyticsClient) {
     analyticsClient = new BetaAnalyticsDataClient({
-      credentials: {
-        client_email: GA_SERVICE_ACCOUNT_EMAIL,
-        private_key: GA_SERVICE_ACCOUNT_KEY,
-      },
       fallback: 'rest',
     })
   }
