@@ -1,6 +1,7 @@
-import { BetaAnalyticsDataClient } from '@google-analytics/data'
-import { Hono } from 'hono'
 import 'server-only'
+import { BetaAnalyticsDataClient } from '@google-analytics/data'
+import { GaxiosError } from 'gaxios'
+import { Hono } from 'hono'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
@@ -22,20 +23,24 @@ export type PageRanking = {
   activeUsers: number
 }
 
-let analyticsClient: BetaAnalyticsDataClient | null = null
+const analyticsClient = new BetaAnalyticsDataClient({ fallback: 'rest' })
+
+registerAnalyticsClientShutdown()
 
 const realtimeRoutes = new Hono<Env>()
 
 realtimeRoutes.get('/', async (c) => {
-  try {
-    const client = getAnalyticsClient()
+  if (!GA_PROPERTY_ID) {
+    return problemResponse(c, { status: 503 })
+  }
 
+  try {
     const [[totalActiveUsersResponse], [pageViewRankingResponse]] = await Promise.all([
-      client.runRealtimeReport({
+      analyticsClient.runRealtimeReport({
         property: `properties/${GA_PROPERTY_ID}`,
         metrics: [{ name: 'activeUsers' }],
       }),
-      client.runRealtimeReport({
+      analyticsClient.runRealtimeReport({
         property: `properties/${GA_PROPERTY_ID}`,
         metrics: [{ name: 'screenPageViews' }],
         dimensions: [{ name: 'unifiedScreenName' }],
@@ -79,22 +84,29 @@ realtimeRoutes.get('/', async (c) => {
 
     return c.json(response, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
-    console.error(error)
+    if (error instanceof Error && error.name === 'AbortError') {
+      return problemResponse(c, { status: 499, detail: '요청이 취소됐어요' })
+    }
+
+    if (error instanceof GaxiosError) {
+      console.error('Google Analytics realtime upstream error:', error.status, error.message)
+    } else {
+      console.error('Google Analytics realtime error:', error instanceof Error ? error.message : String(error))
+    }
+
     return problemResponse(c, { status: 503 })
   }
 })
 
-function getAnalyticsClient() {
-  if (!GA_PROPERTY_ID) {
-    throw new Error('GA_PROPERTY_ID is not configured')
-  }
-
-  if (!analyticsClient) {
-    analyticsClient = new BetaAnalyticsDataClient({
-      fallback: 'rest',
+function registerAnalyticsClientShutdown() {
+  function shutdown() {
+    analyticsClient.close().catch((error: unknown) => {
+      console.error('Failed to close Google Analytics Data client', error)
     })
   }
-  return analyticsClient
+
+  process.once('SIGTERM', shutdown)
+  process.once('SIGINT', shutdown)
 }
 
 export default realtimeRoutes

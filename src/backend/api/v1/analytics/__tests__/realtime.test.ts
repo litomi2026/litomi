@@ -28,11 +28,13 @@ const runRealtimeReportMock = mock(async (request?: { dimensions?: unknown[] }) 
 })
 
 const analyticsClientConstructorMock = mock((options?: unknown) => options)
+const analyticsClientCloseMock = mock(async () => {})
 
 class BetaAnalyticsDataClientMock {
   constructor(options?: unknown) {
     analyticsClientConstructorMock(options)
     return {
+      close: analyticsClientCloseMock,
       runRealtimeReport: runRealtimeReportMock,
     }
   }
@@ -62,11 +64,13 @@ describe('GET /api/v1/analytics/realtime', () => {
   beforeEach(() => {
     envMock.GA_PROPERTY_ID = '123456789'
     analyticsClientConstructorMock.mockClear()
+    analyticsClientCloseMock.mockClear()
     runRealtimeReportMock.mockClear()
   })
 
   afterEach(() => {
     analyticsClientConstructorMock.mockClear()
+    analyticsClientCloseMock.mockClear()
     runRealtimeReportMock.mockClear()
   })
 
@@ -81,7 +85,9 @@ describe('GET /api/v1/analytics/realtime', () => {
     const response = await realtimeRoutes.fetch(new Request('http://localhost/'))
 
     expect(response.status).toBe(503)
-    expect(analyticsClientConstructorMock).not.toHaveBeenCalled()
+    expect(analyticsClientConstructorMock).toHaveBeenCalledWith({
+      fallback: 'rest',
+    })
   })
 
   test('서비스 계정 키가 없으면 ADC로 클라이언트를 생성한다', async () => {
