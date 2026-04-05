@@ -23,7 +23,7 @@ export type PageRanking = {
   activeUsers: number
 }
 
-const analyticsClient = new BetaAnalyticsDataClient()
+const analyticsClient = new BetaAnalyticsDataClient({ fallback: 'rest' })
 
 registerAnalyticsClientShutdown()
 
