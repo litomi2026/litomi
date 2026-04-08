@@ -45,6 +45,7 @@ const issueAuthCookiesMock = mock(async () => [
     },
   },
 ])
+const revokeCurrentSessionMock = mock(async () => {})
 const createUserMock = mock(async ({ loginId }: CreateUserMockInput) => {
   if (loginId === 'dberror') {
     throw new Error('Database connection failed')
@@ -57,16 +58,9 @@ const createUserMock = mock(async ({ loginId }: CreateUserMockInput) => {
   return { id: 123 }
 })
 
-mock.module('@/auth/session', () => ({
-  getActiveRefreshSession: mock(async () => null),
+mock.module('@/backend/api/v1/auth/session', () => ({
   issueAuthCookies: issueAuthCookiesMock,
-  refreshSession: mock(async () => ({
-    ok: false,
-    reason: 'invalid' as const,
-    cookies: [],
-  })),
-  revokeAllUserSessions: mock(async () => {}),
-  revokeCurrentSession: mock(async () => {}),
+  revokeCurrentSession: revokeCurrentSessionMock,
 }))
 
 mock.module('@/backend/api/v1/auth/signup.query', () => ({
@@ -130,6 +124,7 @@ afterAll(() => {
 beforeEach(() => {
   requestSequence = 0
   issueAuthCookiesMock.mockClear()
+  revokeCurrentSessionMock.mockClear()
   createUserMock.mockClear()
 })
 

@@ -1,9 +1,9 @@
 import { Hono } from 'hono'
 import { getCookie } from 'hono/cookie'
 
-import { revokeCurrentSession } from '@/auth/session'
 import { Env } from '@/backend'
 import { touchUserLogoutAtAndReturnLoginId } from '@/backend/api/v1/auth/query'
+import { revokeCurrentSession } from '@/backend/api/v1/auth/session'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { CookieKey } from '@/constants/storage'

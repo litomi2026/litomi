@@ -10,6 +10,7 @@ let shouldThrowDatabaseError = false
 let currentUserId: number | undefined
 let logoutRoute: LogoutRouteModule['default']
 
+const issueAuthCookiesMock = mock(async () => [])
 const revokeCurrentSessionMock = mock(async () => {})
 const touchUserLogoutAtAndReturnLoginIdMock = mock(async (userId: number) => {
   if (shouldThrowDatabaseError) {
@@ -31,15 +32,8 @@ type LogoutResponse = {
   loginId: string | null
 }
 
-mock.module('@/auth/session', () => ({
-  getActiveRefreshSession: mock(async () => null),
-  issueAuthCookies: mock(async () => []),
-  refreshSession: mock(async () => ({
-    ok: false,
-    reason: 'invalid' as const,
-    cookies: [],
-  })),
-  revokeAllUserSessions: mock(async () => {}),
+mock.module('@/backend/api/v1/auth/session', () => ({
+  issueAuthCookies: issueAuthCookiesMock,
   revokeCurrentSession: revokeCurrentSessionMock,
 }))
 
@@ -62,6 +56,7 @@ afterAll(() => {
 beforeEach(() => {
   currentUserId = undefined
   shouldThrowDatabaseError = false
+  issueAuthCookiesMock.mockClear()
   revokeCurrentSessionMock.mockClear()
   touchUserLogoutAtAndReturnLoginIdMock.mockClear()
 })

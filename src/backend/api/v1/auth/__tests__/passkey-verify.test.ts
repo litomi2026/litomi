@@ -49,6 +49,7 @@ const issueAuthCookiesMock = mock(async () => [
     },
   },
 ])
+const revokeCurrentSessionMock = mock(async () => {})
 const getAndDeleteChallengeMock = mock(async () => passkeyState.challenge)
 const readCredentialByCredentialIdMock = mock(async () => passkeyState.credential)
 const touchCredentialUseMock = mock(async () => {})
@@ -105,16 +106,9 @@ mock.module('@/database/supabase/drizzle', () => ({
   },
 }))
 
-mock.module('@/auth/session', () => ({
-  getActiveRefreshSession: mock(async () => null),
+mock.module('@/backend/api/v1/auth/session', () => ({
   issueAuthCookies: issueAuthCookiesMock,
-  refreshSession: mock(async () => ({
-    ok: false,
-    reason: 'invalid' as const,
-    cookies: [],
-  })),
-  revokeAllUserSessions: mock(async () => {}),
-  revokeCurrentSession: mock(async () => {}),
+  revokeCurrentSession: revokeCurrentSessionMock,
 }))
 
 mock.module('@/backend/api/v1/auth/query', () => ({
@@ -161,6 +155,7 @@ afterAll(() => {
 beforeEach(() => {
   requestSequence = 0
   issueAuthCookiesMock.mockClear()
+  revokeCurrentSessionMock.mockClear()
   getAndDeleteChallengeMock.mockClear()
   readCredentialByCredentialIdMock.mockClear()
   touchCredentialUseMock.mockClear()

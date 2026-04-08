@@ -2,10 +2,11 @@ import crypto from 'crypto'
 import { and, desc, eq, gt, inArray, lt, or } from 'drizzle-orm'
 import { userAgent as getUserAgent } from 'next/server'
 
-import { TRUSTED_BROWSER_EXPIRY_DAYS } from '@/auth/trusted-browser'
 import { MAX_TRUSTED_DEVICES_PER_USER } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { trustedBrowserTable } from '@/database/supabase/two-factor'
+
+import { TRUSTED_BROWSER_EXPIRY_DAYS } from './trusted-browser'
 
 export async function registerTrustedBrowser(userId: number, fingerprint: string, userAgent: string) {
   const browserId = generateBrowserId(fingerprint)

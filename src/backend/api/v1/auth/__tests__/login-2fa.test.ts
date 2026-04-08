@@ -40,7 +40,20 @@ const issueAuthCookiesMock = mock(async () => [
     },
   },
 ])
+const revokeCurrentSessionMock = mock(async () => {})
 const signTrustedBrowserTokenMock = mock(async () => 'trusted-browser-token')
+const verifyTrustedBrowserTokenMock = mock(async () => null)
+const getTrustedBrowserCookieConfigMock = (token: string) => ({
+  key: 'tbt',
+  value: token,
+  options: {
+    domain: 'localhost',
+    httpOnly: true,
+    path: '/auth/login',
+    sameSite: 'strict' as const,
+    secure: true,
+  },
+})
 const verifyPKCEChallengeMock = mock(
   async (): Promise<{ valid: boolean; userId?: number }> => ({
     valid: true,
@@ -95,33 +108,16 @@ mock.module('@/database/supabase/drizzle', () => ({
   },
 }))
 
-mock.module('@/auth/session', () => ({
-  getActiveRefreshSession: mock(async () => null),
+mock.module('@/backend/api/v1/auth/session', () => ({
   issueAuthCookies: issueAuthCookiesMock,
-  refreshSession: mock(async () => ({
-    ok: false,
-    reason: 'invalid' as const,
-    cookies: [],
-  })),
-  revokeAllUserSessions: mock(async () => {}),
-  revokeCurrentSession: mock(async () => {}),
+  revokeCurrentSession: revokeCurrentSessionMock,
 }))
 
-mock.module('@/auth/trusted-browser', () => ({
-  getTrustedBrowserCookieConfig: (token: string) => ({
-    key: 'tbt',
-    value: token,
-    options: {
-      domain: 'localhost',
-      httpOnly: true,
-      path: '/auth/login',
-      sameSite: 'strict' as const,
-      secure: true,
-    },
-  }),
-  getTrustedBrowserIdForUser: mock(async () => null),
+mock.module('@/backend/api/v1/auth/login/trusted-browser', () => ({
+  TRUSTED_BROWSER_EXPIRY_DAYS: 30,
+  getTrustedBrowserCookieConfig: getTrustedBrowserCookieConfigMock,
   signTrustedBrowserToken: signTrustedBrowserTokenMock,
-  verifyTrustedBrowserToken: mock(async () => null),
+  verifyTrustedBrowserToken: verifyTrustedBrowserTokenMock,
 }))
 
 mock.module('@/backend/api/v1/auth/query', () => ({
@@ -169,7 +165,9 @@ afterAll(() => {
 beforeEach(() => {
   requestSequence = 0
   issueAuthCookiesMock.mockClear()
+  revokeCurrentSessionMock.mockClear()
   signTrustedBrowserTokenMock.mockClear()
+  verifyTrustedBrowserTokenMock.mockClear()
   verifyPKCEChallengeMock.mockClear()
   readActiveTwoFactorByUserIdMock.mockClear()
   readBackupCodeHashesByUserIdMock.mockClear()
@@ -311,6 +309,6 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
     expect(response.status).toBe(401)
     const problem = (await response.json()) as ValidationProblemDetails
-    expect(problem.detail).toBe('세션이 만료됐어요. 새로고침 후 시도해 주세요.')
+    expect(problem.detail).toBe('인증이 만료됐어요. 새로고침 후 시도해 주세요.')
   })
 })

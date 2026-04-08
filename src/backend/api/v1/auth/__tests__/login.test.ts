@@ -47,9 +47,22 @@ const issueAuthCookiesMock = mock(async () => [
     },
   },
 ])
+const revokeCurrentSessionMock = mock(async () => {})
 const verifyTrustedBrowserTokenMock = mock(async (token: string | undefined) =>
   token ? loginState.trustedBrowserTokenData : null,
 )
+const getTrustedBrowserCookieConfigMock = (token: string) => ({
+  key: 'tbt',
+  value: token,
+  options: {
+    domain: 'localhost',
+    httpOnly: true,
+    path: '/auth/login',
+    sameSite: 'strict' as const,
+    secure: true,
+  },
+})
+const signTrustedBrowserTokenMock = mock(async () => 'trusted-browser-token')
 const initiatePKCEChallengeMock = mock(async () => ({ authorizationCode: 'auth-code-123' }))
 const readLoginUserByLoginIdMock = mock(async () => loginState.user)
 const hasActiveTwoFactorMock = mock(async () => loginState.twoFactorEnabled)
@@ -84,32 +97,15 @@ mock.module('bcryptjs', () => ({
   hash: mock(async () => 'hashed'),
 }))
 
-mock.module('@/auth/session', () => ({
-  getActiveRefreshSession: mock(async () => null),
+mock.module('@/backend/api/v1/auth/session', () => ({
   issueAuthCookies: issueAuthCookiesMock,
-  refreshSession: mock(async () => ({
-    ok: false,
-    reason: 'invalid' as const,
-    cookies: [],
-  })),
-  revokeAllUserSessions: mock(async () => {}),
-  revokeCurrentSession: mock(async () => {}),
+  revokeCurrentSession: revokeCurrentSessionMock,
 }))
 
-mock.module('@/auth/trusted-browser', () => ({
-  getTrustedBrowserCookieConfig: (token: string) => ({
-    key: 'tbt',
-    value: token,
-    options: {
-      domain: 'localhost',
-      httpOnly: true,
-      path: '/auth/login',
-      sameSite: 'strict' as const,
-      secure: true,
-    },
-  }),
-  getTrustedBrowserIdForUser: mock(async () => null),
-  signTrustedBrowserToken: mock(async () => 'trusted-browser-token'),
+mock.module('@/backend/api/v1/auth/login/trusted-browser', () => ({
+  TRUSTED_BROWSER_EXPIRY_DAYS: 30,
+  getTrustedBrowserCookieConfig: getTrustedBrowserCookieConfigMock,
+  signTrustedBrowserToken: signTrustedBrowserTokenMock,
   verifyTrustedBrowserToken: verifyTrustedBrowserTokenMock,
 }))
 
@@ -170,7 +166,9 @@ beforeEach(() => {
   requestSequence = 0
   compareMock.mockClear()
   issueAuthCookiesMock.mockClear()
+  revokeCurrentSessionMock.mockClear()
   verifyTrustedBrowserTokenMock.mockClear()
+  signTrustedBrowserTokenMock.mockClear()
   initiatePKCEChallengeMock.mockClear()
   readLoginUserByLoginIdMock.mockClear()
   hasActiveTwoFactorMock.mockClear()

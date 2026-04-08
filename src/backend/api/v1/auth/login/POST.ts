@@ -3,10 +3,9 @@ import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 import { z } from 'zod'
 
-import { issueAuthCookies } from '@/auth/session'
-import { verifyTrustedBrowserToken } from '@/auth/trusted-browser'
 import { Env } from '@/backend'
 import { readAdultFlag, touchUserLoginAt } from '@/backend/api/v1/auth/query'
+import { issueAuthCookies } from '@/backend/api/v1/auth/session'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -19,6 +18,7 @@ import TurnstileValidator from '@/utils/turnstile'
 
 import { hasActiveTwoFactor, readLoginUserByLoginId } from './query'
 import { DUMMY_PASSWORD_HASH, ensureAllowed, loginIdLimiter, loginIpLimiter } from './shared'
+import { verifyTrustedBrowserToken } from './trusted-browser'
 import { touchTrustedBrowserLastUsedAt } from './trusted-browser.query'
 
 export type POSTV1AuthLoginAuthenticatedResponse = {
