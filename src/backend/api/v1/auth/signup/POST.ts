@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
-import { createUser } from '@/backend/api/v1/auth/signup.query'
+import { createUser } from '@/backend/api/v1/auth/signup/query'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -50,9 +50,9 @@ const signupRequestSchema = z
   })
 
 const signupLimiter = new RateLimiter(RateLimitPresets.strict())
-const signupRoutes = new Hono<Env>()
+const route = new Hono<Env>()
 
-signupRoutes.post('/', zProblemValidator('json', signupRequestSchema), async (c) => {
+route.post('/', zProblemValidator('json', signupRequestSchema), async (c) => {
   const { loginId, nickname, password, turnstileToken } = c.req.valid('json')
   const validator = new TurnstileValidator()
   const remoteIP = getRequestIP(c.req.raw.headers)
@@ -129,4 +129,4 @@ signupRoutes.post('/', zProblemValidator('json', signupRequestSchema), async (c)
   }
 })
 
-export default signupRoutes
+export default route

@@ -8,15 +8,15 @@ import { problemResponse } from '@/backend/utils/problem'
 import { CookieKey } from '@/constants/storage'
 import { getAuthCookieClearConfigs } from '@/utils/cookie'
 
-import { hashToken, revokeCurrentSessionByTokenHash } from './session.query'
+import { hashToken, revokeCurrentSessionByTokenHash } from '../session.query'
 
 export type POSTV1AuthLogoutResponse = {
   loginId: string | null
 }
 
-const logoutRoutes = new Hono<Env>()
+const route = new Hono<Env>()
 
-logoutRoutes.post('/', async (c) => {
+route.post('/', async (c) => {
   const userId = c.get('userId')
   const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
   const now = new Date()
@@ -48,4 +48,4 @@ logoutRoutes.post('/', async (c) => {
   }
 })
 
-export default logoutRoutes
+export default route
