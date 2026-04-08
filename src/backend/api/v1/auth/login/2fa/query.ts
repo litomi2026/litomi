@@ -7,7 +7,7 @@ import { db } from '@/database/supabase/drizzle'
 import { trustedBrowserTable } from '@/database/supabase/two-factor'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 
-import { TRUSTED_BROWSER_EXPIRY_DAYS } from '../trusted-browser'
+import { TRUSTED_BROWSER_EXPIRY_DAYS } from './util'
 
 export type TwoFactorTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 

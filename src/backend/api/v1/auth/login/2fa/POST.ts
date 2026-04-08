@@ -16,7 +16,6 @@ import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
 import { verifyBackupCode } from '@/utils/two-factor-backup-code'
 
 import { ensureAllowed, twoFactorIpLimiter, twoFactorUserLimiter } from '../shared'
-import { getTrustedBrowserCookieConfig, signTrustedBrowserToken } from '../trusted-browser'
 import {
   deleteBackupCodeByHash,
   readActiveTwoFactorByUserId,
@@ -25,6 +24,7 @@ import {
   touchTwoFactorLastUsedAt,
   type TwoFactorTransaction,
 } from './query'
+import { getTrustedBrowserCookieConfig, signTrustedBrowserToken } from './util'
 
 export type POSTV1AuthLogin2FARequest = {
   authorizationCode: string

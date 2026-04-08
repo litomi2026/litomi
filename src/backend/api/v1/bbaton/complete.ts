@@ -13,10 +13,10 @@ import { isPostgresError } from '@/database/error'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 
-import { reissueAuthCookies, verifyBBatonAttemptToken } from './auth'
 import { exchangeAuthorizationCode, fetchBBatonProfile } from './lib'
+import { reissueAuthCookies } from './query'
 import { checkBBatonRateLimit } from './rate-limit'
-import { getBBatonRedirectURI, parseBirthYear } from './utils'
+import { getBBatonRedirectURI, parseBirthYear, verifyBBatonAttemptToken } from './utils'
 
 const completeSchema = z.object({
   code: z.string().min(1).max(2048),

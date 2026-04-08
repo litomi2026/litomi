@@ -18,7 +18,7 @@ import TurnstileValidator from '@/utils/turnstile'
 
 import { hasActiveTwoFactor, readLoginUserByLoginId, touchTrustedBrowserLastUsedAt } from './query'
 import { DUMMY_PASSWORD_HASH, ensureAllowed, loginIdLimiter, loginIpLimiter } from './shared'
-import { verifyTrustedBrowserToken } from './trusted-browser'
+import { verifyTrustedBrowserToken } from './util'
 
 export type POSTV1AuthLoginAuthenticatedResponse = {
   nextStep: 'authenticated'
