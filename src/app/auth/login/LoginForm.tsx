@@ -159,9 +159,12 @@ export default function LoginForm() {
 
   async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
-    clearLoginValidity(e.currentTarget)
 
-    if (!e.currentTarget.reportValidity()) {
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    clearLoginValidity(form)
+
+    if (!form.reportValidity()) {
       return
     }
 
@@ -177,8 +180,6 @@ export default function LoginForm() {
       generatePKCEChallenge(),
       FingerprintJS.load().then((fp) => fp.get()),
     ])
-
-    const formData = new FormData(e.currentTarget)
 
     setPkceChallenge(pkceChallenge)
 
