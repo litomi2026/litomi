@@ -2,7 +2,6 @@
 
 import crypto from 'crypto'
 import { and, desc, eq, inArray, lt, or } from 'drizzle-orm'
-import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { userAgent as getUserAgent } from 'next/server'
 
 import { COOKIE_DOMAIN } from '@/constants'
@@ -11,7 +10,7 @@ import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { trustedBrowserTable } from '@/database/supabase/two-factor'
 import { sec } from '@/utils/format/date'
-import { JWTType, signJWT } from '@/utils/jwt'
+import { JWTType, verifyJWT } from '@/utils/jwt'
 
 const TRUSTED_DEVICE_EXPIRY_DAYS = 30
 
@@ -21,8 +20,19 @@ export type TrustedBrowserPayload = {
   fingerprint: string
 }
 
-export async function createTrustedBrowserToken(userId: number, fingerprint: string, browserId: string) {
-  return signJWT({ sub: browserId, userId: String(userId), fingerprint }, JWTType.TRUSTED_BROWSER)
+export function getTrustedBrowserCookieConfig(token: string) {
+  return {
+    key: CookieKey.TRUSTED_BROWSER_TOKEN,
+    value: token,
+    options: {
+      domain: COOKIE_DOMAIN,
+      httpOnly: true,
+      maxAge: sec(`${TRUSTED_DEVICE_EXPIRY_DAYS} days`),
+      path: '/auth/login',
+      sameSite: 'strict' as const,
+      secure: true,
+    },
+  }
 }
 
 export async function insertTrustedBrowser(userId: number, fingerprint: string, userAgent: string) {
@@ -84,15 +94,26 @@ export async function insertTrustedBrowser(userId: number, fingerprint: string, 
   return browserId
 }
 
-export async function setTrustedBrowserCookie(cookieStore: ReadonlyRequestCookies, token: string) {
-  cookieStore.set(CookieKey.TRUSTED_BROWSER_TOKEN, token, {
-    domain: COOKIE_DOMAIN,
-    httpOnly: true,
-    maxAge: sec(`${TRUSTED_DEVICE_EXPIRY_DAYS} days`),
-    path: '/auth/login',
-    sameSite: 'strict',
-    secure: true,
-  })
+export async function verifyTrustedBrowserToken(token: string | undefined) {
+  if (!token) {
+    return null
+  }
+
+  try {
+    const payload = await verifyJWT<TrustedBrowserPayload>(token, JWTType.TRUSTED_BROWSER)
+
+    if (!payload.sub || !payload.userId || !payload.fingerprint) {
+      return null
+    }
+
+    return {
+      userId: Number(payload.userId),
+      browserId: payload.sub,
+      fingerprint: payload.fingerprint,
+    }
+  } catch {
+    return null
+  }
 }
 
 function generateBrowserId(fingerprint: string): string {

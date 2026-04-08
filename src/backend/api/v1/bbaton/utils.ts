@@ -6,12 +6,12 @@ import { jwtVerify, SignJWT } from 'jose'
 
 import type { Env } from '@/backend'
 
+import { getActiveRefreshSession } from '@/auth/session'
 import { CookieKey } from '@/constants/storage'
 import { env as commonEnv } from '@/env/server.common'
 import { env } from '@/env/server.hono'
-import { getAccessTokenCookieConfig, getAuthHintCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
 import { sec } from '@/utils/format/date'
-import { JWTType, verifyJWT } from '@/utils/jwt'
 
 const { APP_ORIGIN } = commonEnv
 const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT } = env
@@ -67,15 +67,12 @@ export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: Rei
     return
   }
 
-  const rtPayload = await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null)
-  if (rtPayload?.sub !== String(userId)) {
+  const activeSession = await getActiveRefreshSession(refreshToken)
+  if (!activeSession || activeSession.userId !== userId) {
     return
   }
 
-  const { key: rtKey, value: rtValue, options: rtOptions } = await getRefreshTokenCookieConfig({ userId, adult })
-  const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: rtOptions.maxAge })
-
-  setCookie(c, rtKey, rtValue, rtOptions)
+  const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: activeSession.maxAgeSeconds })
   setCookie(c, longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
 }
 
