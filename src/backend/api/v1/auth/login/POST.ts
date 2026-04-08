@@ -16,10 +16,9 @@ import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { getRequestIP, getRequestUserAgent } from '@/utils/request'
 import TurnstileValidator from '@/utils/turnstile'
 
-import { hasActiveTwoFactor, readLoginUserByLoginId } from './query'
+import { hasActiveTwoFactor, readLoginUserByLoginId, touchTrustedBrowserLastUsedAt } from './query'
 import { DUMMY_PASSWORD_HASH, ensureAllowed, loginIdLimiter, loginIpLimiter } from './shared'
 import { verifyTrustedBrowserToken } from './trusted-browser'
-import { touchTrustedBrowserLastUsedAt } from './trusted-browser.query'
 
 export type POSTV1AuthLoginAuthenticatedResponse = {
   nextStep: 'authenticated'

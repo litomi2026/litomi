@@ -1,7 +1,7 @@
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, eq, gt, isNull } from 'drizzle-orm'
 
 import { db } from '@/database/supabase/drizzle'
-import { twoFactorTable } from '@/database/supabase/two-factor'
+import { trustedBrowserTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 
 export async function hasActiveTwoFactor(userId: number) {
@@ -26,4 +26,20 @@ export async function readLoginUserByLoginId(loginId: string) {
     .where(eq(userTable.loginId, loginId))
 
   return user ?? null
+}
+
+export async function touchTrustedBrowserLastUsedAt(userId: number, browserId: string, now: Date) {
+  const [browser] = await db
+    .update(trustedBrowserTable)
+    .set({ lastUsedAt: now })
+    .where(
+      and(
+        eq(trustedBrowserTable.userId, userId),
+        eq(trustedBrowserTable.browserId, browserId),
+        gt(trustedBrowserTable.expiresAt, now),
+      ),
+    )
+    .returning({ id: trustedBrowserTable.id })
+
+  return Boolean(browser)
 }
