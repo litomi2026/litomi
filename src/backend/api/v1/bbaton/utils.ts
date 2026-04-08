@@ -1,26 +1,8 @@
-import type { Context } from 'hono'
-import type { JWTPayload } from 'jose'
-
-import { getCookie, setCookie } from 'hono/cookie'
-import { jwtVerify, SignJWT } from 'jose'
-
-import type { Env } from '@/backend'
-
-import { getActiveRefreshSession } from '@/auth/session'
-import { CookieKey } from '@/constants/storage'
 import { env as commonEnv } from '@/env/server.common'
 import { env } from '@/env/server.hono'
-import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
-import { sec } from '@/utils/format/date'
 
 const { APP_ORIGIN } = commonEnv
-const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT } = env
-
-type BBatonAttemptTokenPayload = JWTPayload & {
-  userId: string
-}
-
-export const BBATON_ATTEMPT_TTL_SECONDS = sec('10 minutes')
+const { BBATON_CLIENT_ID } = env
 
 export function buildAuthorizeUrl(): string {
   const redirectURI = getBBatonRedirectURI()
@@ -32,12 +14,6 @@ export function buildAuthorizeUrl(): string {
   return authorizeUrl.toString()
 }
 
-export function generateAttemptId(): string {
-  const array = new Uint8Array(32)
-  crypto.getRandomValues(array)
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
 export function getBBatonRedirectURI(): string {
   const url = new URL('/oauth/bbaton/callback', APP_ORIGIN)
   return url.toString()
@@ -46,75 +22,4 @@ export function getBBatonRedirectURI(): string {
 export function parseBirthYear(value: string): number {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : 0
-}
-
-const issuer = new URL(APP_ORIGIN).hostname
-
-type ReissueAuthCookiesClaims = {
-  userId: number
-  adult: boolean
-}
-
-export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: ReissueAuthCookiesClaims): Promise<void> {
-  const { key: atKey, value: atValue, options: atOptions } = await getAccessTokenCookieConfig({ userId, adult })
-  const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: atOptions.maxAge })
-
-  setCookie(c, atKey, atValue, atOptions)
-  setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
-
-  const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
-  if (!refreshToken) {
-    return
-  }
-
-  const activeSession = await getActiveRefreshSession(refreshToken)
-  if (!activeSession || activeSession.userId !== userId) {
-    return
-  }
-
-  const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: activeSession.maxAgeSeconds })
-  setCookie(c, longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
-}
-
-export async function signBBatonAttemptToken(userId: number): Promise<string> {
-  const payload: BBatonAttemptTokenPayload = {
-    userId: String(userId),
-    jti: generateAttemptId(),
-  }
-
-  return await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256', typ: CookieKey.BBATON_ATTEMPT_ID })
-    .setIssuer(issuer)
-    .setIssuedAt()
-    .setExpirationTime(Math.floor(Date.now() / 1000) + BBATON_ATTEMPT_TTL_SECONDS)
-    .sign(new TextEncoder().encode(JWT_SECRET_BBATON_ATTEMPT))
-}
-
-export async function verifyBBatonAttemptToken(token: string) {
-  try {
-    const { payload } = await jwtVerify<BBatonAttemptTokenPayload>(
-      token,
-      new TextEncoder().encode(JWT_SECRET_BBATON_ATTEMPT),
-      {
-        algorithms: ['HS256'],
-        issuer,
-        typ: CookieKey.BBATON_ATTEMPT_ID,
-      },
-    )
-
-    const userId = Number.parseInt(payload.userId, 10)
-    if (!Number.isFinite(userId)) {
-      return null
-    }
-
-    const issuedAt = typeof payload.iat === 'number' ? payload.iat : null
-    const expiresAt = typeof payload.exp === 'number' ? payload.exp : null
-    if (!issuedAt || !expiresAt) {
-      return null
-    }
-
-    return { userId, issuedAt, expiresAt }
-  } catch {
-    return null
-  }
 }

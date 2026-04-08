@@ -8,8 +8,9 @@ import { problemResponse } from '@/backend/utils/problem'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 
+import { BBATON_ATTEMPT_TTL_SECONDS, signBBatonAttemptToken } from './auth'
 import { checkBBatonRateLimit } from './rate-limit'
-import { BBATON_ATTEMPT_TTL_SECONDS, buildAuthorizeUrl, signBBatonAttemptToken } from './utils'
+import { buildAuthorizeUrl } from './utils'
 
 export type POSTV1BBatonAttemptResponse = {
   authorizeUrl: string
