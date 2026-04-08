@@ -4,7 +4,7 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import meRoutes from '../me/index'
+import meRoutes from '..'
 
 let fallbackAutoDeletionDay = 365
 let currentSettingRow:
@@ -69,11 +69,7 @@ mock.module('@/database/supabase/drizzle', () => ({
       }),
     }),
     insert: () => ({
-      values: (values: {
-        historySyncEnabled: boolean
-        adultVerifiedAdVisible: boolean
-        autoDeletionDay: number
-      }) => ({
+      values: (values: { historySyncEnabled: boolean; adultVerifiedAdVisible: boolean; autoDeletionDay: number }) => ({
         onConflictDoUpdate: ({ set }: { set: Partial<typeof values> }) => {
           if (shouldThrowDatabaseError) {
             return Promise.reject(new Error('Database connection failed'))

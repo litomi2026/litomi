@@ -3,12 +3,13 @@ import { Hono } from 'hono'
 import 'server-only'
 
 import { Env } from '@/backend'
-import { clearAuthCookies } from '@/backend/utils/auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
+import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { userSettingsTable, userTable } from '@/database/supabase/user'
+import { getAuthCookieClearConfigs } from '@/utils/cookie'
 import { resolveUserSettings, type UserSettings } from '@/utils/user-settings'
 
 export type AdultVerificationStatus = 'adult' | 'not_adult' | 'unverified'
@@ -53,7 +54,7 @@ route.get('/', async (c) => {
       .where(eq(userTable.id, userId))
 
     if (!user) {
-      clearAuthCookies(c)
+      applyAuthCookie(c, getAuthCookieClearConfigs())
       return problemResponse(c, { status: 404, detail: '사용자 정보를 찾을 수 없어요' })
     }
 

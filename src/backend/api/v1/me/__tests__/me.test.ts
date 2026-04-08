@@ -4,7 +4,7 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import meRoutes from '../me/index'
+import meRoutes from '..'
 
 let shouldThrowDatabaseError = false
 let currentUserId: number | undefined
