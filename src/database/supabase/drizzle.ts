@@ -5,6 +5,7 @@ import 'server-only'
 import { env } from '@/env/server.common'
 
 import * as activitySchema from './activity'
+import * as authSchema from './auth'
 import * as bbatonSchema from './bbaton'
 import * as censorshipSchema from './censorship'
 import * as chatSchema from './chat'
@@ -53,6 +54,7 @@ export const db = drizzle({
   client: supabaseClient,
   schema: {
     ...activitySchema,
+    ...authSchema,
     ...bbatonSchema,
     ...chatSchema,
     ...censorshipSchema,
