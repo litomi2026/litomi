@@ -6,12 +6,12 @@ import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
-import { COOKIE_DOMAIN } from '@/constants'
-import { CookieKey } from '@/constants/storage'
+import { revokeAllUserSessions } from '@/auth/session'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
+import { applyCookieConfigs, getAuthCookieClearConfigs } from '@/utils/cookie'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
@@ -49,12 +49,11 @@ export async function deleteAccount(formData: FormData) {
       return unauthorized('비밀번호가 일치하지 않아요', formData)
     }
 
+    await revokeAllUserSessions(userId)
     await db.delete(userTable).where(eq(userTable.id, userId))
 
     const cookieStore = await cookies()
-    cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
-    cookieStore.delete({ name: CookieKey.REFRESH_TOKEN, domain: COOKIE_DOMAIN })
-    cookieStore.delete({ name: CookieKey.AUTH_HINT, domain: COOKIE_DOMAIN })
+    applyCookieConfigs(cookieStore, getAuthCookieClearConfigs())
     return ok(`${user.loginId} 계정을 삭제했어요`)
   } catch (error) {
     captureException(error)

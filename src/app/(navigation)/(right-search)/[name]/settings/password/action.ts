@@ -6,12 +6,13 @@ import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
-import { COOKIE_DOMAIN, SALT_ROUNDS } from '@/constants'
-import { CookieKey } from '@/constants/storage'
+import { revokeAllUserSessions } from '@/auth/session'
+import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, created, internalServerError, tooManyRequests, unauthorized } from '@/utils/action-response'
+import { applyCookieConfigs, getAuthCookieClearConfigs } from '@/utils/cookie'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -86,10 +87,13 @@ export async function changePassword(formData: FormData) {
       return errorResponse
     }
 
-    const [cookieStore] = await Promise.all([cookies(), passwordChangeLimiter.reward(userId.toString())])
-    cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
-    cookieStore.delete({ name: CookieKey.REFRESH_TOKEN, domain: COOKIE_DOMAIN })
-    cookieStore.delete({ name: CookieKey.AUTH_HINT, domain: COOKIE_DOMAIN })
+    const [cookieStore] = await Promise.all([
+      cookies(),
+      passwordChangeLimiter.reward(userId.toString()),
+      revokeAllUserSessions(userId),
+    ])
+
+    applyCookieConfigs(cookieStore, getAuthCookieClearConfigs())
     return created('비밀번호가 변경됐어요')
   } catch (error) {
     captureException(error)

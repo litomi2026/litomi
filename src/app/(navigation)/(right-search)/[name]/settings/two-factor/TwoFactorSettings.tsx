@@ -5,7 +5,6 @@ import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { JWTType, verifyJWT } from '@/utils/jwt'
-import { TrustedBrowserPayload } from '@/utils/trusted-browser'
 
 import TwoFactorSettingsClient from './TwoFactorSettingsClient'
 import { TwoFactorStatus } from './types'
@@ -14,13 +13,36 @@ type Props = {
   userId: number
 }
 
+type TrustedBrowserPayload = {
+  sub: string
+  userId: string
+}
+
 export default async function TwoFactorSettings({ userId }: Props) {
   const cookieStore = await cookies()
   const trustedBrowserToken = cookieStore.get(CookieKey.TRUSTED_BROWSER_TOKEN)?.value
-  const currentBrowserId = await verifyTrustedBrowserToken(trustedBrowserToken, userId)
+  const currentBrowserId = await getCurrentTrustedBrowserId(trustedBrowserToken, userId)
   const status = await getTwoFactorStatus(userId, currentBrowserId)
 
   return <TwoFactorSettingsClient initialStatus={status} />
+}
+
+async function getCurrentTrustedBrowserId(token: string | undefined, userId: number) {
+  if (!token) {
+    return null
+  }
+
+  try {
+    const payload = await verifyJWT<TrustedBrowserPayload>(token, JWTType.TRUSTED_BROWSER)
+
+    if (!payload.sub || !payload.userId) {
+      return null
+    }
+
+    return Number(payload.userId) === userId ? payload.sub : null
+  } catch {
+    return null
+  }
 }
 
 async function getTwoFactorStatus(userId: number, currentBrowserId: string | null) {
@@ -65,20 +87,4 @@ async function getTwoFactorStatus(userId: number, currentBrowserId: string | nul
   }
 
   return result
-}
-
-async function verifyTrustedBrowserToken(token: string | undefined, userId: number) {
-  if (!token) {
-    return null
-  }
-
-  try {
-    const tokenData = await verifyJWT<TrustedBrowserPayload>(token, JWTType.TRUSTED_BROWSER)
-    if (tokenData && +tokenData.userId === userId) {
-      return tokenData.sub
-    }
-    return null
-  } catch {
-    return null
-  }
 }
