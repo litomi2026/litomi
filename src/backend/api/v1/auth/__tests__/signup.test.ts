@@ -58,7 +58,7 @@ const createUserMock = mock(async ({ loginId }: CreateUserMockInput) => {
   return { id: 123 }
 })
 
-mock.module('@/backend/api/v1/auth/session', () => ({
+mock.module('@/backend/api/v1/auth/session.query', () => ({
   issueAuthCookies: issueAuthCookiesMock,
   revokeCurrentSession: revokeCurrentSessionMock,
 }))

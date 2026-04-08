@@ -97,12 +97,12 @@ mock.module('bcryptjs', () => ({
   hash: mock(async () => 'hashed'),
 }))
 
-mock.module('@/backend/api/v1/auth/session', () => ({
+mock.module('@/backend/api/v1/auth/session.query', () => ({
   issueAuthCookies: issueAuthCookiesMock,
   revokeCurrentSession: revokeCurrentSessionMock,
 }))
 
-mock.module('@/backend/api/v1/auth/login/trusted-browser', () => ({
+mock.module('@/backend/api/v1/auth/login/util', () => ({
   TRUSTED_BROWSER_EXPIRY_DAYS: 30,
   getTrustedBrowserCookieConfig: getTrustedBrowserCookieConfigMock,
   signTrustedBrowserToken: signTrustedBrowserTokenMock,
@@ -119,10 +119,6 @@ mock.module('@/backend/api/v1/auth/query', () => ({
 mock.module('@/backend/api/v1/auth/login/query', () => ({
   hasActiveTwoFactor: hasActiveTwoFactorMock,
   readLoginUserByLoginId: readLoginUserByLoginIdMock,
-}))
-
-mock.module('@/backend/api/v1/auth/login/trusted-browser.query', () => ({
-  registerTrustedBrowser: mock(async () => 'browser-id'),
   touchTrustedBrowserLastUsedAt: touchTrustedBrowserLastUsedAtMock,
 }))
 

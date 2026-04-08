@@ -106,7 +106,7 @@ mock.module('@/database/supabase/drizzle', () => ({
   },
 }))
 
-mock.module('@/backend/api/v1/auth/session', () => ({
+mock.module('@/backend/api/v1/auth/session.query', () => ({
   issueAuthCookies: issueAuthCookiesMock,
   revokeCurrentSession: revokeCurrentSessionMock,
 }))

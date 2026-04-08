@@ -108,12 +108,12 @@ mock.module('@/database/supabase/drizzle', () => ({
   },
 }))
 
-mock.module('@/backend/api/v1/auth/session', () => ({
+mock.module('@/backend/api/v1/auth/session.query', () => ({
   issueAuthCookies: issueAuthCookiesMock,
   revokeCurrentSession: revokeCurrentSessionMock,
 }))
 
-mock.module('@/backend/api/v1/auth/login/trusted-browser', () => ({
+mock.module('@/backend/api/v1/auth/login/2fa/util', () => ({
   TRUSTED_BROWSER_EXPIRY_DAYS: 30,
   getTrustedBrowserCookieConfig: getTrustedBrowserCookieConfigMock,
   signTrustedBrowserToken: signTrustedBrowserTokenMock,
@@ -131,12 +131,8 @@ mock.module('@/backend/api/v1/auth/login/2fa/query', () => ({
   deleteBackupCodeByHash: deleteBackupCodeByHashMock,
   readActiveTwoFactorByUserId: readActiveTwoFactorByUserIdMock,
   readBackupCodeHashesByUserId: readBackupCodeHashesByUserIdMock,
-  touchTwoFactorLastUsedAt: touchTwoFactorLastUsedAtMock,
-}))
-
-mock.module('@/backend/api/v1/auth/login/trusted-browser.query', () => ({
   registerTrustedBrowser: registerTrustedBrowserMock,
-  touchTrustedBrowserLastUsedAt: mock(async () => false),
+  touchTwoFactorLastUsedAt: touchTwoFactorLastUsedAtMock,
 }))
 
 mock.module('@/utils/pkce-server', () => ({

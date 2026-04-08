@@ -9,9 +9,6 @@ type LogoutRouteModule = typeof import('../logout')
 let shouldThrowDatabaseError = false
 let currentUserId: number | undefined
 let logoutRoute: LogoutRouteModule['default']
-
-const issueAuthCookiesMock = mock(async () => [])
-const revokeCurrentSessionMock = mock(async () => {})
 const touchUserLogoutAtAndReturnLoginIdMock = mock(async (userId: number) => {
   if (shouldThrowDatabaseError) {
     throw new Error('Database connection failed')
@@ -32,11 +29,6 @@ type LogoutResponse = {
   loginId: string | null
 }
 
-mock.module('@/backend/api/v1/auth/session', () => ({
-  issueAuthCookies: issueAuthCookiesMock,
-  revokeCurrentSession: revokeCurrentSessionMock,
-}))
-
 mock.module('@/backend/api/v1/auth/query', () => ({
   readAdultFlag: mock(async () => false),
   touchUserLoginAt: mock(async () => {}),
@@ -56,8 +48,6 @@ afterAll(() => {
 beforeEach(() => {
   currentUserId = undefined
   shouldThrowDatabaseError = false
-  issueAuthCookiesMock.mockClear()
-  revokeCurrentSessionMock.mockClear()
   touchUserLogoutAtAndReturnLoginIdMock.mockClear()
 })
 

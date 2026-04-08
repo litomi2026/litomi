@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
-import { revokeAllUserSessions } from '@/auth/session'
+import { revokeAllSessionsByUserId } from '@/auth/session.query'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
@@ -49,7 +49,7 @@ export async function deleteAccount(formData: FormData) {
       return unauthorized('비밀번호가 일치하지 않아요', formData)
     }
 
-    await revokeAllUserSessions(userId)
+    await revokeAllSessionsByUserId(userId, new Date())
     await db.delete(userTable).where(eq(userTable.id, userId))
 
     const cookieStore = await cookies()

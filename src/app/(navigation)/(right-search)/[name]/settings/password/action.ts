@@ -6,7 +6,7 @@ import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
-import { revokeAllUserSessions } from '@/auth/session'
+import { revokeAllSessionsByUserId } from '@/auth/session.query'
 import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
@@ -90,7 +90,7 @@ export async function changePassword(formData: FormData) {
     const [cookieStore] = await Promise.all([
       cookies(),
       passwordChangeLimiter.reward(userId.toString()),
-      revokeAllUserSessions(userId),
+      revokeAllSessionsByUserId(userId, new Date()),
     ])
 
     applyCookieConfigs(cookieStore, getAuthCookieClearConfigs())

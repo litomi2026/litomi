@@ -1,11 +1,13 @@
 import { createHash } from 'crypto'
 import 'server-only'
+import { eq } from 'drizzle-orm'
 import { Context } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 
-import { readRefreshSessionByTokenHash } from '@/auth/session.query'
 import { Env } from '@/backend'
 import { CookieKey } from '@/constants/storage'
+import { authSessionTable } from '@/database/supabase/auth'
+import { db } from '@/database/supabase/drizzle'
 import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
 
 type ActiveRefreshSession = {
@@ -71,4 +73,19 @@ async function readActiveRefreshSession(refreshToken: string): Promise<ActiveRef
     userId: session.userId,
     maxAgeSeconds: getRemainingSeconds(session.idleExpiresAt, now),
   }
+}
+
+async function readRefreshSessionByTokenHash(tokenHash: string) {
+  const [session] = await db
+    .select({
+      userId: authSessionTable.userId,
+      absoluteExpiresAt: authSessionTable.absoluteExpiresAt,
+      idleExpiresAt: authSessionTable.idleExpiresAt,
+      revokedAt: authSessionTable.revokedAt,
+      rotatedAt: authSessionTable.rotatedAt,
+    })
+    .from(authSessionTable)
+    .where(eq(authSessionTable.tokenHash, tokenHash))
+
+  return session ?? null
 }

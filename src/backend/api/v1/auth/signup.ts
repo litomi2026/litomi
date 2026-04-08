@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { issueAuthCookies } from '@/backend/api/v1/auth/session'
+import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
 import { createUser } from '@/backend/api/v1/auth/signup.query'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'

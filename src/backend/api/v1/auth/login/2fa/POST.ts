@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/backend/api/v1/auth/query'
-import { issueAuthCookies } from '@/backend/api/v1/auth/session'
+import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
