@@ -6,14 +6,14 @@ import type { Env } from '@/backend'
 import type { ValidationProblemDetails } from '@/utils/problem-details'
 
 import { CookieKey } from '@/constants/storage'
-import { trustedBrowserTable } from '@/database/supabase/two-factor'
 
-import type {
-  POSTV1AuthLoginAuthenticatedResponse,
-  POSTV1AuthLoginTwoFactorResponse,
-} from '../login/POST'
+import type { POSTV1AuthLoginAuthenticatedResponse, POSTV1AuthLoginTwoFactorResponse } from '../login/POST'
 
-type LoginRoutesModule = typeof import('../login')
+type LoginRouteModule = typeof import('../login/POST')
+
+type LoginTurnstileValidationInput = {
+  token: string | null
+}
 
 type MockLoginUser = {
   id: number
@@ -23,7 +23,7 @@ type MockLoginUser = {
   lastLogoutAt: Date | null
 }
 
-let loginRoutes: LoginRoutesModule['default']
+let loginRoute: LoginRouteModule['default']
 let requestSequence = 0
 
 const compareMock = mock(async () => loginState.isPasswordValid)
@@ -51,6 +51,11 @@ const verifyTrustedBrowserTokenMock = mock(async (token: string | undefined) =>
   token ? loginState.trustedBrowserTokenData : null,
 )
 const initiatePKCEChallengeMock = mock(async () => ({ authorizationCode: 'auth-code-123' }))
+const readLoginUserByLoginIdMock = mock(async () => loginState.user)
+const hasActiveTwoFactorMock = mock(async () => loginState.twoFactorEnabled)
+const touchTrustedBrowserLastUsedAtMock = mock(async () => loginState.trustedBrowserRecordExists)
+const readAdultFlagMock = mock(async () => loginState.adult)
+const touchUserLoginAtMock = mock(async () => {})
 
 const loginState: {
   adult: boolean
@@ -91,7 +96,7 @@ mock.module('@/auth/session', () => ({
   revokeCurrentSession: mock(async () => {}),
 }))
 
-mock.module('@/utils/trusted-browser', () => ({
+mock.module('@/auth/trusted-browser', () => ({
   getTrustedBrowserCookieConfig: (token: string) => ({
     key: 'tbt',
     value: token,
@@ -103,78 +108,31 @@ mock.module('@/utils/trusted-browser', () => ({
       secure: true,
     },
   }),
-  insertTrustedBrowser: mock(async () => 'browser-id'),
+  getTrustedBrowserIdForUser: mock(async () => null),
+  signTrustedBrowserToken: mock(async () => 'trusted-browser-token'),
   verifyTrustedBrowserToken: verifyTrustedBrowserTokenMock,
+}))
+
+mock.module('@/backend/api/v1/auth/query', () => ({
+  readAdultFlag: readAdultFlagMock,
+  touchUserLoginAt: touchUserLoginAtMock,
+  touchUserLoginAtAndReturnProfile: mock(async () => loginState.user),
+  touchUserLogoutAtAndReturnLoginId: mock(async () => null),
+}))
+
+mock.module('@/backend/api/v1/auth/login/query', () => ({
+  hasActiveTwoFactor: hasActiveTwoFactorMock,
+  readLoginUserByLoginId: readLoginUserByLoginIdMock,
+}))
+
+mock.module('@/backend/api/v1/auth/login/trusted-browser.query', () => ({
+  registerTrustedBrowser: mock(async () => 'browser-id'),
+  touchTrustedBrowserLastUsedAt: touchTrustedBrowserLastUsedAtMock,
 }))
 
 mock.module('@/utils/pkce-server', () => ({
   initiatePKCEChallenge: initiatePKCEChallengeMock,
   verifyPKCEChallenge: mock(async () => ({ valid: false })),
-}))
-
-mock.module('@/database/supabase/drizzle', () => ({
-  db: {
-    select: (selection: Record<string, unknown>) => ({
-      from: () => ({
-        where: () => {
-          if ('passwordHash' in selection) {
-            return Promise.resolve(loginState.user ? [loginState.user] : [])
-          }
-
-          if ('enabled' in selection) {
-            return Promise.resolve(loginState.twoFactorEnabled ? [{ enabled: loginState.user?.id ?? 0 }] : [])
-          }
-
-          return Promise.resolve(loginState.adult ? [{ adultFlag: true }] : [])
-        },
-      }),
-    }),
-    update: (table?: unknown) => ({
-      set: () => ({
-        where: () => {
-          if (table === trustedBrowserTable) {
-            return {
-              returning: () => Promise.resolve(loginState.trustedBrowserRecordExists ? [{ id: 1 }] : []),
-            }
-          }
-
-          return Promise.resolve(undefined)
-        },
-      }),
-    }),
-    transaction: async (
-      callback: (tx: {
-        select: (selection: Record<string, unknown>) => {
-          from: () => {
-            where: () => Promise<Array<{ adultFlag?: boolean; enabled?: number }>>
-          }
-        }
-        update: () => {
-          set: () => {
-            where: () => Promise<void>
-          }
-        }
-      }) => Promise<unknown>,
-    ) =>
-      await callback({
-        select: (selection: Record<string, unknown>) => ({
-          from: () => ({
-            where: () => {
-              if ('enabled' in selection) {
-                return Promise.resolve(loginState.twoFactorEnabled ? [{ enabled: loginState.user?.id ?? 0 }] : [])
-              }
-
-              return Promise.resolve(loginState.adult ? [{ adultFlag: true }] : [])
-            },
-          }),
-        }),
-        update: () => ({
-          set: () => ({
-            where: () => Promise.resolve(),
-          }),
-        }),
-      }),
-  },
 }))
 
 mock.module('@/utils/turnstile', () => ({
@@ -183,7 +141,7 @@ mock.module('@/utils/turnstile', () => ({
       return 'Cloudflare 보안 검증을 완료해 주세요'
     }
 
-    async validate({ token }: { token: string | null }) {
+    async validate({ token }: LoginTurnstileValidationInput) {
       if (token === 'invalid-turnstile' || token === 'invalid') {
         return {
           success: false,
@@ -201,7 +159,7 @@ mock.module('@/utils/turnstile', () => ({
 
 beforeAll(async () => {
   spyOn(console, 'error').mockImplementation(() => {})
-  loginRoutes = (await import('../login')).default
+  loginRoute = (await import('../login/POST')).default
 })
 
 afterAll(() => {
@@ -214,6 +172,11 @@ beforeEach(() => {
   issueAuthCookiesMock.mockClear()
   verifyTrustedBrowserTokenMock.mockClear()
   initiatePKCEChallengeMock.mockClear()
+  readLoginUserByLoginIdMock.mockClear()
+  hasActiveTwoFactorMock.mockClear()
+  touchTrustedBrowserLastUsedAtMock.mockClear()
+  readAdultFlagMock.mockClear()
+  touchUserLoginAtMock.mockClear()
 
   loginState.user = {
     id: 7,
@@ -244,7 +207,7 @@ function buildLoginRequest(overrides: Partial<Record<string, unknown>> = {}) {
 function createApp() {
   const app = new Hono<Env>()
   app.use('*', contextStorage())
-  app.route('/login', loginRoutes)
+  app.route('/login', loginRoute)
   return app
 }
 
@@ -302,6 +265,8 @@ describe('POST /api/v1/auth/login', () => {
       userAgent: 'bun-test',
     })
     expect(initiatePKCEChallengeMock).not.toHaveBeenCalled()
+    expect(readLoginUserByLoginIdMock).toHaveBeenCalled()
+    expect(touchUserLoginAtMock).toHaveBeenCalled()
   })
 
   test('2FA가 활성화되어 있고 신뢰 브라우저면 바로 authenticated 응답을 반환한다', async () => {
@@ -315,11 +280,9 @@ describe('POST /api/v1/auth/login', () => {
     }
     loginState.trustedBrowserRecordExists = true
 
-    const response = await requestLogin(
-      buildLoginRequest({ fingerprint }),
-      getNextIPAddress(),
-      { cookie: `${CookieKey.TRUSTED_BROWSER_TOKEN}=trusted-token` },
-    )
+    const response = await requestLogin(buildLoginRequest({ fingerprint }), getNextIPAddress(), {
+      cookie: `${CookieKey.TRUSTED_BROWSER_TOKEN}=trusted-token`,
+    })
 
     expect(response.status).toBe(200)
     expect(response.headers.get('content-type')).toContain('application/json')
@@ -337,6 +300,7 @@ describe('POST /api/v1/auth/login', () => {
     })
 
     expect(verifyTrustedBrowserTokenMock).toHaveBeenCalledWith('trusted-token')
+    expect(touchTrustedBrowserLastUsedAtMock).toHaveBeenCalledWith(7, 'browser-id', expect.any(Date))
     expect(initiatePKCEChallengeMock).not.toHaveBeenCalled()
   })
 

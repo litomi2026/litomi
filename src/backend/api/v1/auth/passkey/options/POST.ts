@@ -23,11 +23,11 @@ const route = new Hono<Env>()
 
 route.post('/', async (c) => {
   const remoteIP = getRequestIP(c.req.raw.headers)
-  const rateLimitResult = await authenticationLimiter.check(remoteIP)
+  const { allowed, retryAfter, limit, remaining } = await authenticationLimiter.check(remoteIP)
 
-  if (!rateLimitResult.allowed) {
-    const retryAfter = rateLimitResult.retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(retryAfter / 60))
+  if (!allowed) {
+    const seconds = retryAfter ?? 60
+    const minutes = Math.max(1, Math.ceil(seconds / 60))
 
     return problemResponse(c, {
       status: 429,
@@ -44,7 +44,7 @@ route.post('/', async (c) => {
 
     const authenticationAttemptId = crypto.randomUUID()
     const authAttemptCookie = getPasskeyAuthenticationAttemptCookieConfig(authenticationAttemptId)
-    const turnstileRequired = shouldRequireTurnstile(rateLimitResult)
+    const turnstileRequired = limit !== undefined && remaining !== undefined && limit - remaining >= 4
 
     await storeChallenge(authenticationAttemptId, ChallengeType.AUTHENTICATION, {
       challenge: options.challenge,
@@ -53,10 +53,7 @@ route.post('/', async (c) => {
 
     setCookie(c, authAttemptCookie.key, authAttemptCookie.value, authAttemptCookie.options)
 
-    return c.json<POSTV1AuthPasskeyOptionsResponse>({
-      options,
-      turnstileRequired,
-    })
+    return c.json<POSTV1AuthPasskeyOptionsResponse>({ options, turnstileRequired })
   } catch (error) {
     console.error('getAuthenticationOptions:', error)
     return problemResponse(c, { status: 500, detail: '패스키 인증 중 오류가 발생했어요' })
@@ -64,11 +61,3 @@ route.post('/', async (c) => {
 })
 
 export default route
-
-function shouldRequireTurnstile({ limit, remaining }: { limit?: number; remaining?: number }) {
-  if (limit === undefined || remaining === undefined) {
-    return false
-  }
-
-  return limit - remaining >= 4
-}

@@ -7,33 +7,70 @@ import type { ValidationProblemDetails } from '@/utils/problem-details'
 
 import type { POSTV1AuthSignupResponse } from '../signup'
 
-type SignupRoutesModule = typeof import('../signup')
+type CreateUserMockInput = {
+  imageURL: string
+  loginId: string
+  nickname: string
+  passwordHash: string
+}
 
-let signupRoutes: SignupRoutesModule['default']
+type SignupRouteModule = typeof import('../signup')
+
+type SignupTurnstileValidationInput = {
+  token: string
+}
+
+let signupRoute: SignupRouteModule['default']
 let requestSequence = 0
 const SIGNUP_RATE_LIMIT_MAX_ATTEMPTS = 10
 const MOCKED_PASSWORD_HASH = 'mocked-password-hash'
 
-mock.module('@/database/supabase/drizzle', () => ({
-  db: {
-    insert: () => ({
-      values: (values: { loginId?: string }) => ({
-        onConflictDoNothing: () => ({
-          returning: () => {
-            if (values.loginId === 'dberror') {
-              return Promise.reject(new Error('Database connection failed'))
-            }
-
-            if (values.loginId === 'existinguser') {
-              return Promise.resolve([])
-            }
-
-            return Promise.resolve([{ id: 123 }])
-          },
-        }),
-      }),
-    }),
+const issueAuthCookiesMock = mock(async () => [
+  {
+    key: 'at',
+    value: 'access-token',
+    options: {
+      httpOnly: true,
+      sameSite: 'strict' as const,
+      secure: true,
+    },
   },
+  {
+    key: 'ah',
+    value: '1',
+    options: {
+      httpOnly: false,
+      sameSite: 'strict' as const,
+      secure: true,
+    },
+  },
+])
+const createUserMock = mock(async ({ loginId }: CreateUserMockInput) => {
+  if (loginId === 'dberror') {
+    throw new Error('Database connection failed')
+  }
+
+  if (loginId === 'existinguser') {
+    return null
+  }
+
+  return { id: 123 }
+})
+
+mock.module('@/auth/session', () => ({
+  getActiveRefreshSession: mock(async () => null),
+  issueAuthCookies: issueAuthCookiesMock,
+  refreshSession: mock(async () => ({
+    ok: false,
+    reason: 'invalid' as const,
+    cookies: [],
+  })),
+  revokeAllUserSessions: mock(async () => {}),
+  revokeCurrentSession: mock(async () => {}),
+}))
+
+mock.module('@/backend/api/v1/auth/signup.query', () => ({
+  createUser: createUserMock,
 }))
 
 mock.module('@/utils/nickname', () => ({
@@ -43,6 +80,24 @@ mock.module('@/utils/nickname', () => ({
 
 mock.module('bcryptjs', () => ({
   hash: () => Promise.resolve(MOCKED_PASSWORD_HASH),
+}))
+
+mock.module('@/utils/turnstile', () => ({
+  default: class MockTurnstileValidator {
+    async validate({ token }: SignupTurnstileValidationInput) {
+      if (token === 'invalid') {
+        return {
+          success: false,
+          'error-codes': ['invalid-input-response'],
+        }
+      }
+
+      return {
+        success: true,
+        action: 'signup',
+      }
+    }
+  },
 }))
 
 beforeAll(async () => {
@@ -65,7 +120,7 @@ beforeAll(async () => {
   }) as typeof fetch
 
   spyOn(globalThis, 'fetch').mockImplementation(fetchMock)
-  signupRoutes = (await import('../signup')).default
+  signupRoute = (await import('../signup')).default
 })
 
 afterAll(() => {
@@ -74,12 +129,14 @@ afterAll(() => {
 
 beforeEach(() => {
   requestSequence = 0
+  issueAuthCookiesMock.mockClear()
+  createUserMock.mockClear()
 })
 
 function createApp() {
   const app = new Hono<Env>()
   app.use('*', contextStorage())
-  app.route('/signup', signupRoutes)
+  app.route('/signup', signupRoute)
   return app
 }
 
@@ -129,6 +186,12 @@ describe('POST /api/v1/auth/signup', () => {
       loginId: 'testuser',
       name: 'testuser',
       nickname: '테스터',
+    })
+    expect(createUserMock).toHaveBeenCalledWith({
+      imageURL: 'https://example.com/avatar.png',
+      loginId: 'testuser',
+      nickname: '테스터',
+      passwordHash: MOCKED_PASSWORD_HASH,
     })
   })
 

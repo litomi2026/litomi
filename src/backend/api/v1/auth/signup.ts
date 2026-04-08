@@ -4,12 +4,11 @@ import { z } from 'zod'
 
 import { issueAuthCookies } from '@/auth/session'
 import { Env } from '@/backend'
+import { createUser } from '@/backend/api/v1/auth/signup.query'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { SALT_ROUNDS } from '@/constants'
-import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -88,17 +87,12 @@ signupRoutes.post('/', zProblemValidator('json', signupRequestSchema), async (c)
   const passwordHash = await hash(password, SALT_ROUNDS)
 
   try {
-    const [result] = await db
-      .insert(userTable)
-      .values({
-        loginId,
-        name: loginId,
-        passwordHash,
-        nickname,
-        imageURL: generateRandomProfileImage(),
-      })
-      .onConflictDoNothing()
-      .returning({ id: userTable.id })
+    const result = await createUser({
+      imageURL: generateRandomProfileImage(),
+      loginId,
+      nickname,
+      passwordHash,
+    })
 
     if (!result) {
       return problemResponse(c, {

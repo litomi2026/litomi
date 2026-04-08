@@ -1,7 +1,6 @@
 import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
 
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
-import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 import { z } from 'zod'
@@ -9,22 +8,21 @@ import { z } from 'zod'
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/common'
 import { issueAuthCookies } from '@/auth/session'
 import { Env } from '@/backend'
+import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/backend/api/v1/auth/query'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { ChallengeType } from '@/database/enum'
-import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
-import { credentialTable } from '@/database/supabase/passkey'
-import { userTable } from '@/database/supabase/user'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { getAndDeleteChallenge } from '@/utils/redis-challenge'
 import { getRequestIP, getRequestUserAgent } from '@/utils/request'
 import TurnstileValidator from '@/utils/turnstile'
 
 import { authenticationLimiter, type PasskeyAuthenticationAttempt } from '../shared'
+import { readCredentialByCredentialId, touchCredentialUse } from './query'
 
 export type POSTV1AuthPasskeyVerifyRequest = {
   authentication: AuthenticationResponseJSON
@@ -121,15 +119,7 @@ route.post('/', zProblemValidator('json', verifyAuthenticationRequestSchema), as
     }
 
     const result = await db.transaction(async (tx) => {
-      const [credential] = await tx
-        .select({
-          userId: credentialTable.userId,
-          publicKey: credentialTable.publicKey,
-          counter: credentialTable.counter,
-          credentialId: credentialTable.credentialId,
-        })
-        .from(credentialTable)
-        .where(eq(credentialTable.credentialId, authentication.id))
+      const credential = await readCredentialByCredentialId(tx, authentication.id)
 
       if (!credential) {
         return {
@@ -164,31 +154,20 @@ route.post('/', zProblemValidator('json', verifyAuthenticationRequestSchema), as
 
       const now = new Date()
 
-      const [verification, [user]] = await Promise.all([
-        tx
-          .select({ adultFlag: bbatonVerificationTable.adultFlag })
-          .from(bbatonVerificationTable)
-          .where(eq(bbatonVerificationTable.userId, credential.userId)),
-        tx.update(userTable).set({ loginAt: now }).where(eq(userTable.id, credential.userId)).returning({
-          id: userTable.id,
-          loginId: userTable.loginId,
-          name: userTable.name,
-          lastLoginAt: userTable.loginAt,
-          lastLogoutAt: userTable.logoutAt,
-        }),
-        tx
-          .update(credentialTable)
-          .set({
-            counter: newCounter,
-            lastUsedAt: now,
-          })
-          .where(eq(credentialTable.credentialId, authentication.id)),
+      const [adult, user] = await Promise.all([
+        readAdultFlag(credential.userId, tx),
+        touchUserLoginAtAndReturnProfile(credential.userId, now, tx),
+        touchCredentialUse(tx, authentication.id, newCounter, now),
       ])
+
+      if (!user) {
+        throw new Error(`User not found: ${credential.userId}`)
+      }
 
       return {
         ok: true,
         user,
-        adult: verification[0]?.adultFlag === true,
+        adult,
       } as const
     })
 

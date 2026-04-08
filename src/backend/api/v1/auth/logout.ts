@@ -1,14 +1,12 @@
-import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { getCookie } from 'hono/cookie'
 
 import { revokeCurrentSession } from '@/auth/session'
 import { Env } from '@/backend'
+import { touchUserLogoutAtAndReturnLoginId } from '@/backend/api/v1/auth/query'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { CookieKey } from '@/constants/storage'
-import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
 import { getAuthCookieClearConfigs } from '@/utils/cookie'
 
 export type POSTV1AuthLogoutResponse = {
@@ -29,11 +27,7 @@ logoutRoutes.post('/', async (c) => {
       return c.json<POSTV1AuthLogoutResponse>({ loginId: null })
     }
 
-    const [user] = await db
-      .update(userTable)
-      .set({ logoutAt: new Date() })
-      .where(eq(userTable.id, userId))
-      .returning({ loginId: userTable.loginId })
+    const user = await touchUserLogoutAtAndReturnLoginId(userId, new Date())
 
     if (!user) {
       applyAuthCookie(c, getAuthCookieClearConfigs())

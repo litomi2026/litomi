@@ -7,7 +7,7 @@ export const loginIdLimiter = new RateLimiter(RateLimitPresets.strict())
 export const twoFactorIpLimiter = new RateLimiter(RateLimitPresets.strict())
 export const twoFactorUserLimiter = new RateLimiter(RateLimitPresets.strict())
 
-export async function ensureAllowed(limitChecks: Array<Promise<RateLimitResult>>) {
+export async function ensureAllowed(limitChecks: Promise<RateLimitResult>[]) {
   const results = await Promise.all(limitChecks)
   const blocked = results.filter((result) => !result.allowed)
 

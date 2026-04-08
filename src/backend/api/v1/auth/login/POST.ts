@@ -1,27 +1,25 @@
 import { compare } from 'bcryptjs'
-import { and, eq, gt, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 import { z } from 'zod'
 
 import { issueAuthCookies } from '@/auth/session'
+import { verifyTrustedBrowserToken } from '@/auth/trusted-browser'
 import { Env } from '@/backend'
+import { readAdultFlag, touchUserLoginAt } from '@/backend/api/v1/auth/query'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
-import { bbatonVerificationTable } from '@/database/supabase/bbaton'
-import { db } from '@/database/supabase/drizzle'
-import { trustedBrowserTable, twoFactorTable } from '@/database/supabase/two-factor'
-import { userTable } from '@/database/supabase/user'
 import { loginIdSchema, passwordSchema } from '@/database/zod'
 import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { getRequestIP, getRequestUserAgent } from '@/utils/request'
-import { verifyTrustedBrowserToken } from '@/utils/trusted-browser'
 import TurnstileValidator from '@/utils/turnstile'
 
+import { hasActiveTwoFactor, readLoginUserByLoginId } from './query'
 import { DUMMY_PASSWORD_HASH, ensureAllowed, loginIdLimiter, loginIpLimiter } from './shared'
+import { touchTrustedBrowserLastUsedAt } from './trusted-browser.query'
 
 export type POSTV1AuthLoginAuthenticatedResponse = {
   nextStep: 'authenticated'
@@ -90,17 +88,7 @@ route.post('/', zProblemValidator('json', loginRequestSchema), async (c) => {
   }
 
   try {
-    const [user] = await db
-      .select({
-        id: userTable.id,
-        name: userTable.name,
-        passwordHash: userTable.passwordHash,
-        lastLoginAt: userTable.loginAt,
-        lastLogoutAt: userTable.logoutAt,
-      })
-      .from(userTable)
-      .where(eq(userTable.loginId, loginId))
-
+    const user = await readLoginUserByLoginId(loginId)
     const passwordHash = user?.passwordHash || DUMMY_PASSWORD_HASH
     const isValidPassword = await compare(password, passwordHash)
 
@@ -111,39 +99,24 @@ route.post('/', zProblemValidator('json', loginRequestSchema), async (c) => {
       })
     }
 
-    const [twoFactor] = await db
-      .select({ enabled: twoFactorTable.userId })
-      .from(twoFactorTable)
-      .where(and(eq(twoFactorTable.userId, user.id), isNull(twoFactorTable.expiresAt)))
-
-    if (twoFactor) {
+    if (await hasActiveTwoFactor(user.id)) {
       const trustedBrowserToken = getCookie(c, CookieKey.TRUSTED_BROWSER_TOKEN)
       const trustedBrowser = await verifyTrustedBrowserToken(trustedBrowserToken)
       const trustedBrowserMatches = trustedBrowser?.fingerprint === fingerprint && trustedBrowser?.userId === user.id
       const lastUsedAt = new Date()
 
-      const [browser] = trustedBrowserMatches
-        ? await db
-            .update(trustedBrowserTable)
-            .set({ lastUsedAt })
-            .where(
-              and(
-                eq(trustedBrowserTable.userId, trustedBrowser.userId),
-                eq(trustedBrowserTable.browserId, trustedBrowser.browserId),
-                gt(trustedBrowserTable.expiresAt, lastUsedAt),
-              ),
-            )
-            .returning({ id: trustedBrowserTable.id })
-        : []
+      const browserExists =
+        trustedBrowserMatches &&
+        (await touchTrustedBrowserLastUsedAt(trustedBrowser.userId, trustedBrowser.browserId, lastUsedAt))
 
-      if (!browser && trustedBrowserToken) {
+      if (!browserExists && trustedBrowserToken) {
         deleteCookie(c, CookieKey.TRUSTED_BROWSER_TOKEN, {
           domain: COOKIE_DOMAIN,
           path: '/auth/login',
         })
       }
 
-      if (!browser) {
+      if (!browserExists) {
         const { authorizationCode } = await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
 
         return c.json<POSTV1AuthLoginResponse>({
@@ -153,21 +126,12 @@ route.post('/', zProblemValidator('json', loginRequestSchema), async (c) => {
       }
     }
 
-    const now = new Date()
-
-    const [[verification]] = await Promise.all([
-      db
-        .select({ adultFlag: bbatonVerificationTable.adultFlag })
-        .from(bbatonVerificationTable)
-        .where(eq(bbatonVerificationTable.userId, user.id)),
-      db.update(userTable).set({ loginAt: now }).where(eq(userTable.id, user.id)),
-    ])
-
+    const [adult] = await Promise.all([readAdultFlag(user.id), touchUserLoginAt(user.id, new Date())])
     await Promise.allSettled([loginIpLimiter.reward(remoteIP), loginIdLimiter.reward(loginId)])
 
     const cookieConfigs = await issueAuthCookies({
       userId: user.id,
-      adult: verification?.adultFlag === true,
+      adult,
       remember,
       ipAddress: remoteIP,
       userAgent,
