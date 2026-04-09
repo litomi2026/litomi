@@ -22,7 +22,6 @@ import {
   readBackupCodeHashesByUserId,
   registerTrustedBrowser,
   touchTwoFactorLastUsedAt,
-  type TwoFactorTransaction,
 } from './query'
 import { getTrustedBrowserCookieConfig, signTrustedBrowserToken } from './util'
 
@@ -44,6 +43,8 @@ export type POSTV1AuthLogin2FAResponse = {
   isBackupCode: boolean
   backupCodeCount: number
 }
+
+type SuccessfulTokenVerification = Extract<TokenVerificationResult, { ok: true }>
 
 type TokenVerificationResult =
   | {
@@ -108,13 +109,45 @@ route.post('/', zProblemValidator('json', verifyTwoFactorRequestSchema), async (
         } as const
       }
 
-      const tokenVerification =
-        token.length === 6
-          ? await verifyTotpLoginToken(twoFactor.secret, token)
-          : await verifyBackupLoginToken(tx, userId, token)
+      const isTOTPCode = token.length === 6
+      let tokenVerification: SuccessfulTokenVerification
 
-      if (!tokenVerification.ok) {
-        return tokenVerification
+      if (isTOTPCode) {
+        const secret = decryptTOTPSecret(twoFactor.secret)
+        const verified = await verifyTOTPToken(token, secret)
+
+        if (!verified) {
+          return INVALID_TOKEN_RESPONSE
+        }
+
+        tokenVerification = {
+          ok: true,
+          isBackupCode: false,
+          backupCodeCount: 0,
+        }
+      } else {
+        const backupCodes = await readBackupCodeHashesByUserId(tx, userId)
+
+        const verificationResults = await Promise.all(
+          backupCodes.map(async (backupCode) => ({
+            codeHash: backupCode.codeHash,
+            isValid: await verifyBackupCode(token, backupCode.codeHash),
+          })),
+        )
+
+        const validCode = verificationResults.find((result) => result.isValid)
+
+        if (!validCode) {
+          return INVALID_TOKEN_RESPONSE
+        }
+
+        await deleteBackupCodeByHash(tx, userId, validCode.codeHash)
+
+        tokenVerification = {
+          ok: true,
+          isBackupCode: true,
+          backupCodeCount: verificationResults.length - 1,
+        }
       }
 
       const now = new Date()
@@ -190,51 +223,4 @@ const INVALID_TOKEN_RESPONSE = {
   ok: false,
   status: 400,
   detail: '인증 코드를 확인해 주세요',
-} as const satisfies TokenVerificationResult
-
-const BROKEN_TOTP_RESPONSE = {
-  ok: false,
-  status: 400,
-  detail: '2단계 인증에 문제가 있어요. 관리자에게 문의해 주세요.',
-} as const satisfies TokenVerificationResult
-
-async function verifyBackupLoginToken(
-  tx: TwoFactorTransaction,
-  userId: number,
-  token: string,
-): Promise<TokenVerificationResult> {
-  const backupCodes = await readBackupCodeHashesByUserId(tx, userId)
-
-  const verificationResults = await Promise.all(
-    backupCodes.map(async (backupCode) => ({
-      codeHash: backupCode.codeHash,
-      isValid: await verifyBackupCode(token, backupCode.codeHash),
-    })),
-  )
-
-  const validCode = verificationResults.find((result) => result.isValid)
-
-  if (!validCode) {
-    return INVALID_TOKEN_RESPONSE
-  }
-
-  await deleteBackupCodeByHash(tx, userId, validCode.codeHash)
-
-  return {
-    ok: true,
-    isBackupCode: true,
-    backupCodeCount: verificationResults.length - 1,
-  }
-}
-
-async function verifyTotpLoginToken(encryptedSecret: string, token: string): Promise<TokenVerificationResult> {
-  try {
-    const secret = decryptTOTPSecret(encryptedSecret)
-    const verified = await verifyTOTPToken(token, secret)
-
-    return verified ? { ok: true, isBackupCode: false, backupCodeCount: 0 } : INVALID_TOKEN_RESPONSE
-  } catch (error) {
-    console.error('Failed to decrypt TOTP secret:', error)
-    return BROKEN_TOTP_RESPONSE
-  }
-}
+} as const

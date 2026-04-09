@@ -73,6 +73,7 @@ const registerTrustedBrowserMock = mock(async () => {
 
   return 'browser-id'
 })
+const decryptTOTPSecretMock = mock(() => 'decrypted-secret')
 const verifyTOTPTokenMock = mock(async () => login2faState.isTotpValid)
 const verifyBackupCodeMock = mock(
   async (_token: string, codeHash: string) => codeHash === login2faState.validBackupCodeHash,
@@ -141,7 +142,7 @@ mock.module('@/utils/pkce-server', () => ({
 }))
 
 mock.module('@/utils/two-factor', () => ({
-  decryptTOTPSecret: () => 'decrypted-secret',
+  decryptTOTPSecret: decryptTOTPSecretMock,
   verifyTOTPToken: verifyTOTPTokenMock,
 }))
 
@@ -172,6 +173,7 @@ beforeEach(() => {
   readAdultFlagMock.mockClear()
   touchUserLoginAtAndReturnProfileMock.mockClear()
   registerTrustedBrowserMock.mockClear()
+  decryptTOTPSecretMock.mockClear()
   verifyTOTPTokenMock.mockClear()
   verifyBackupCodeMock.mockClear()
 
@@ -303,6 +305,20 @@ describe('POST /api/v1/auth/login/2fa', () => {
     expect(getSetCookieHeader(response)).not.toContain('tbt=')
     expect(getSetCookieHeader(response)).toContain('at=')
     expect(signTrustedBrowserTokenMock).not.toHaveBeenCalled()
+  })
+
+  test('TOTP secret 복호화에 실패하면 500 Problem Details를 반환한다', async () => {
+    decryptTOTPSecretMock.mockImplementationOnce(() => {
+      throw new Error('decrypt failed')
+    })
+
+    const response = await requestLogin2FA({ token: '123456' })
+
+    expect(response.status).toBe(500)
+    expect(verifyTOTPTokenMock).not.toHaveBeenCalled()
+
+    const problem = (await response.json()) as ValidationProblemDetails
+    expect(problem.detail).toBe('2단계 인증 중 오류가 발생했어요')
   })
 
   test('PKCE 검증이 실패하면 401 Problem Details를 반환한다', async () => {
