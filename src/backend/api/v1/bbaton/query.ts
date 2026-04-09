@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm'
 import { Context } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 
+import { hashSessionToken } from '@/auth/session.util'
 import { Env } from '@/backend'
 import { CookieKey } from '@/constants/storage'
 import { authSessionTable } from '@/database/supabase/auth'
@@ -47,16 +48,12 @@ function getRemainingSeconds(expiresAt: Date, now: Date) {
   return Math.max(1, Math.ceil((expiresAt.getTime() - now.getTime()) / 1000))
 }
 
-function hashToken(token: string) {
-  return createHash('sha256').update(token).digest('base64url')
-}
-
 function isSessionExpired(session: Pick<RefreshSessionLookup, 'absoluteExpiresAt' | 'idleExpiresAt'>, now: Date) {
   return session.absoluteExpiresAt <= now || session.idleExpiresAt <= now
 }
 
 async function readActiveRefreshSession(refreshToken: string): Promise<ActiveRefreshSession | null> {
-  const tokenHash = hashToken(refreshToken)
+  const tokenHash = hashSessionToken(refreshToken)
   const session = await readRefreshSessionByTokenHash(tokenHash)
 
   if (!session) {
