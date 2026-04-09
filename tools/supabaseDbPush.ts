@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import { spawn } from 'node:child_process'
 
 const envFile = process.env.DB_ENV === 'production' ? '.env.production' : '.env.development'
-dotenv.config({ path: envFile })
+dotenv.config({ path: envFile, override: true })
 
 const dbUrl = process.env.POSTGRES_URL_DIRECT ?? process.env.POSTGRES_URL
 
@@ -12,13 +12,19 @@ if (!dbUrl) {
 }
 
 const resolvedDbUrl = withLocalSSLDisabled(dbUrl)
-// NOTE: Supabase CLI 2.88.1 only respected sslmode=disable reliably for our local plain Postgres
-// when debug mode was enabled, so we keep --debug in this wrapper for deterministic local runs.
-const command = `bunx supabase db push --yes --debug --db-url '${resolvedDbUrl.replaceAll("'", "'\\''")}'`
 
-const child = spawn(command, {
+const command = [
+  'supabase',
+  'db',
+  'push',
+  '--yes',
+  ...(shouldUseDebugMode(resolvedDbUrl) ? ['--debug'] : []),
+  '--db-url',
+  resolvedDbUrl,
+]
+
+const child = spawn('bunx', command, {
   env: process.env,
-  shell: true,
   stdio: 'inherit',
 })
 
@@ -30,6 +36,14 @@ child.on('error', (error) => {
   console.error(error)
   process.exit(1)
 })
+
+function shouldUseDebugMode(rawUrl: string) {
+  const url = new URL(rawUrl)
+
+  // NOTE: Supabase CLI 2.88.1 cannot use SSL when --debug is enabled.
+  // Keep --debug only for local plain Postgres where sslmode=disable is expected.
+  return url.hostname === 'localhost' || url.hostname === '127.0.0.1'
+}
 
 function withLocalSSLDisabled(rawUrl: string) {
   const url = new URL(rawUrl)
