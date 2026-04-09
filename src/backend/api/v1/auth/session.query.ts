@@ -1,8 +1,9 @@
-import crypto from 'crypto'
 import { and, eq, isNull } from 'drizzle-orm'
 
-import { insertSession, type SessionInsert, type SessionWriteExecutor } from '@/auth/session.query'
-import { authSessionTable } from '@/database/supabase/auth'
+import { issuePersistentSession } from '@/auth/session'
+import { type SessionWriteExecutor } from '@/auth/session.query'
+import { hashSessionToken } from '@/auth/session.util'
+import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
 import {
   type AuthCookieConfig,
@@ -10,7 +11,6 @@ import {
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
 } from '@/utils/cookie'
-import { sec } from '@/utils/format/date'
 
 type IssueAuthCookiesInput = {
   adult: boolean
@@ -21,20 +21,7 @@ type IssueAuthCookiesInput = {
   userId: number
 }
 
-const REFRESH_SESSION_ABSOLUTE_TTL_SECONDS = sec('30 days')
-const REFRESH_SESSION_IDLE_TTL_SECONDS = sec('30 days')
-const REFRESH_SESSION_TOKEN_BYTES = 32
-
-type IssueRefreshSessionInput = {
-  ipAddress?: string | null
-  tx?: SessionWriteExecutor
-  userAgent?: string | null
-  userId: number
-}
-
-export function hashToken(token: string) {
-  return crypto.createHash('sha256').update(token).digest('base64url')
-}
+export const hashToken = hashSessionToken
 
 export async function issueAuthCookies({
   userId,
@@ -50,70 +37,29 @@ export async function issueAuthCookies({
     return [accessTokenCookie, authHintCookie]
   }
 
-  const issuedSession = await issueRefreshSession({ userId, tx, ...metadata })
+  const issuedSession = await issuePersistentSession(userId, metadata, tx)
   const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: issuedSession.maxAgeSeconds })
 
-  return [accessTokenCookie, issuedSession.cookie, authHintCookie]
+  const options = {
+    token: issuedSession.token,
+    maxAgeSeconds: issuedSession.maxAgeSeconds,
+  }
+
+  return [accessTokenCookie, getRefreshSessionCookieConfig(options), authHintCookie]
 }
 
 export async function revokeCurrentSessionByTokenHash(tokenHash: string, now: Date) {
+  const [token] = await db
+    .select({ familyId: authSessionTokenTable.familyId })
+    .from(authSessionTokenTable)
+    .where(eq(authSessionTokenTable.tokenHash, tokenHash))
+
+  if (!token) {
+    return
+  }
+
   await db
-    .update(authSessionTable)
+    .update(authSessionFamilyTable)
     .set({ revokedAt: now, lastUsedAt: now })
-    .where(and(eq(authSessionTable.tokenHash, tokenHash), isNull(authSessionTable.revokedAt)))
-}
-
-function addSeconds(date: Date, seconds: number) {
-  return new Date(date.getTime() + seconds * 1000)
-}
-
-function generateSessionToken() {
-  return crypto.randomBytes(REFRESH_SESSION_TOKEN_BYTES).toString('base64url')
-}
-
-function getRemainingSeconds(expiresAt: Date, now: Date) {
-  return Math.max(1, Math.ceil((expiresAt.getTime() - now.getTime()) / 1000))
-}
-
-async function issueRefreshSession({ userId, ipAddress, userAgent, tx }: IssueRefreshSessionInput) {
-  const now = new Date()
-  const absoluteExpiresAt = addSeconds(now, REFRESH_SESSION_ABSOLUTE_TTL_SECONDS)
-  const idleExpiresAt = addSeconds(now, REFRESH_SESSION_IDLE_TTL_SECONDS)
-  const sessionId = crypto.randomUUID()
-  const familyId = crypto.randomUUID()
-  const token = generateSessionToken()
-
-  const session: SessionInsert = {
-    id: sessionId,
-    userId,
-    familyId,
-    tokenHash: hashToken(token),
-    createdAt: now,
-    lastUsedAt: now,
-    absoluteExpiresAt,
-    idleExpiresAt,
-    userAgent: truncate(userAgent, 512),
-    ipAddress: truncate(ipAddress, 64),
-  }
-
-  await insertSession(session, tx)
-
-  return {
-    id: sessionId,
-    familyId,
-    token,
-    maxAgeSeconds: getRemainingSeconds(idleExpiresAt, now),
-    cookie: getRefreshSessionCookieConfig({
-      token,
-      maxAgeSeconds: getRemainingSeconds(idleExpiresAt, now),
-    }),
-  }
-}
-
-function truncate(value: string | null | undefined, maxLength: number) {
-  if (!value) {
-    return null
-  }
-
-  return value.slice(0, maxLength)
+    .where(and(eq(authSessionFamilyTable.id, token.familyId), isNull(authSessionFamilyTable.revokedAt)))
 }
