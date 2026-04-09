@@ -3,11 +3,11 @@ import {
   CalendarMinus,
   CaseSensitive,
   Download,
-  Eye,
   Fingerprint,
   Key,
   Languages,
   Loader2,
+  MonitorSmartphone,
   Palette,
   RectangleEllipsis,
   Settings,
@@ -37,6 +37,7 @@ import PasskeySettings from './passkey/PasskeySettings'
 import PasswordChangeForm from './password/PasswordChangeForm'
 import AutoDeletionForm from './privacy/AutoDeletionForm'
 import PushSettings from './push/PushSettings'
+import SessionSettings from './session/SessionSettings'
 import ThemeSettings from './theme/ThemeSettings'
 import TwoFactorSettings from './two-factor/TwoFactorSettings'
 
@@ -124,6 +125,14 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
+        description="감상 기록 자동 저장과 광고 표시 방식을 관리하세요"
+        icon={<Settings className="size-5 shrink-0" />}
+        id="content"
+        title="개인 설정"
+      >
+        <ContentSettingsForm initialSettings={settings} />
+      </CollapsibleSection>
+      <CollapsibleSection
         description="내 데이터를 백업할 수 있어요"
         icon={<Download className="size-5 shrink-0" />}
         id="data"
@@ -172,12 +181,16 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
-        description="감상 기록 자동 저장과 광고 표시 방식을 관리하세요"
-        icon={<Settings className="size-5 shrink-0" />}
-        id="content"
-        title="개인 설정"
+        description="로그인 유지 중인 브라우저와 기기를 확인하고 종료하세요"
+        icon={<MonitorSmartphone className="size-5 shrink-0" />}
+        id="session"
+        title="세션 관리"
       >
-        <ContentSettingsForm initialSettings={settings} />
+        <ErrorBoundary fallback={InternalServerError}>
+          <Suspense fallback={<LoadingFallback />}>
+            <SessionSettings userId={userId} />
+          </Suspense>
+        </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
         description="개인정보 보호를 위해 계정 자동 삭제 기간을 관리하세요"

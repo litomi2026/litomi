@@ -6,7 +6,6 @@ import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
-import { revokeAllSessionsByUserId } from '@/auth/session.query'
 import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
@@ -16,6 +15,8 @@ import { applyCookieConfigs, getAuthCookieClearConfigs } from '@/utils/cookie'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+
+import { revokeAllSessionsByUserId } from '../query'
 
 const changePasswordSchema = z
   .object({
