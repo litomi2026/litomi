@@ -52,12 +52,8 @@ export function generateOpenGraphMetadata({ title, description, images, url }: P
 }
 
 function getAppOrigin(): string {
-  const raw = process.env.NEXT_PUBLIC_APP_ORIGIN || process.env.APP_ORIGIN
-  const value = raw?.trim()
-
-  if (!value) {
-    return 'https://litomi.in'
-  }
+  const raw = process.env.NEXT_PUBLIC_APP_ORIGIN || process.env.APP_ORIGIN || 'http://localhost:3000'
+  const value = raw.trim()
 
   try {
     new URL(value)
