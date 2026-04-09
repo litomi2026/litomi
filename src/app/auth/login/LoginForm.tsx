@@ -2,12 +2,16 @@
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { MouseEvent, useRef, useState } from 'react'
+import { MouseEvent, SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
+
+import type { POSTV1AuthLoginAuthenticatedResponse } from '@/backend/api/v1/auth/login/POST'
+import type { POSTV1AuthPasskeyVerifyResponse } from '@/backend/api/v1/auth/passkey/verify/POST'
+import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { migrateReadingHistory } from '@/app/manga/[id]/actions'
 import IconLogo from '@/components/icons/LogoLitomi'
@@ -16,17 +20,18 @@ import { clearMigratedHistory, getLocalReadingHistory } from '@/components/Readi
 import TurnstileWidget from '@/components/TurnstileWidget'
 import Toggle from '@/components/ui/Toggle'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
-import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
+import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
+import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
 
-import login from './action'
+import { login } from './api'
 import SignupLink from './SignupLink'
 import TwoFactorVerification from './TwoFactorVerification'
+import { applyLoginProblem, clearLoginId, clearLoginValidity } from './util'
 
 type TwoFactorData = {
   fingerprint: string
@@ -34,13 +39,9 @@ type TwoFactorData = {
   authorizationCode: string
 }
 
-type User = {
-  id: number
-  loginId: string
-  name: string
-  lastLoginAt: Date | null
-  lastLogoutAt: Date | null
-}
+const LOGIN_LOCAL_ERROR_STATUSES = [400, 401, 429]
+
+type User = POSTV1AuthLoginAuthenticatedResponse | POSTV1AuthPasskeyVerifyResponse
 
 export default function LoginForm() {
   const router = useRouter()
@@ -51,6 +52,48 @@ export default function LoginForm() {
   const [hasTurnstileToken, setHasTurnstileToken] = useState(false)
   const [twoFactorData, setTwoFactorData] = useState<TwoFactorData | null>(null)
   const [pkceChallenge, setPkceChallenge] = useState<PKCEChallenge | null>(null)
+
+  const { mutate: submitLogin, isPending } = useMutation({
+    mutationFn: login,
+    onError: (error: ProblemDetailsError) => {
+      resetTurnstile()
+      clearLoginValidity(formRef.current)
+
+      window.requestAnimationFrame(() => {
+        const form = formRef.current
+
+        if (applyLoginProblem(form, error.problem)) {
+          return
+        }
+
+        if (!LOGIN_LOCAL_ERROR_STATUSES.includes(error.status)) {
+          return
+        }
+
+        toast.warning(error.problem.detail ?? '로그인할 수 없어요')
+      })
+    },
+    onSuccess: (data, variables) => {
+      if (data.nextStep === 'two_factor_required') {
+        setTwoFactorData({
+          fingerprint: variables.fingerprint,
+          remember: variables.remember,
+          authorizationCode: data.authorizationCode,
+        })
+        return
+      }
+
+      setPkceChallenge(null)
+      handleLoginSuccess(data)
+    },
+    meta: { suppressGlobalErrorToastForStatuses: LOGIN_LOCAL_ERROR_STATUSES },
+  })
+
+  const [_, dispatchMigration] = useServerAction({
+    action: migrateReadingHistory,
+    shouldSetResponse: false,
+    onSuccess: clearMigratedHistory,
+  })
 
   async function getTurnstileToken() {
     const existingToken = turnstileRef.current?.getResponse()
@@ -71,16 +114,6 @@ export default function LoginForm() {
     setHasTurnstileToken(false)
   }
 
-  function resetId() {
-    const loginIdInput = formRef.current?.elements.namedItem('login-id')
-    if (!(loginIdInput instanceof HTMLInputElement)) {
-      return
-    }
-
-    loginIdInput.value = ''
-    loginIdInput.focus()
-  }
-
   function togglePasswordVisibility(e: MouseEvent<HTMLButtonElement>) {
     const input = passwordInputRef.current
     if (!input) {
@@ -97,12 +130,6 @@ export default function LoginForm() {
     }
     input.focus()
   }
-
-  const [_, dispatchMigration] = useServerAction({
-    action: migrateReadingHistory,
-    shouldSetResponse: false,
-    onSuccess: clearMigratedHistory,
-  })
 
   async function handleLoginSuccess({ loginId, name, id, lastLoginAt, lastLogoutAt }: User) {
     toast.success(`${loginId} 계정으로 로그인했어요`)
@@ -122,7 +149,8 @@ export default function LoginForm() {
       dispatchMigration(localHistory)
     }
 
-    await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+    await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
+
     const params = new URLSearchParams(window.location.search)
     const redirect = params.get(SearchParamKey.REDIRECT)
     const sanitizedURL = sanitizeRedirect(redirect) || '/'
@@ -130,31 +158,18 @@ export default function LoginForm() {
     router.replace(redirectURL)
   }
 
-  const [response, dispatchAction, isPending] = useServerAction({
-    action: login,
-    onError: resetTurnstile,
-    onSuccess: (data, [formData]) => {
-      if ('authorizationCode' in data) {
-        setTwoFactorData({
-          fingerprint: formData.get('fingerprint') as string,
-          remember: formData.get('remember') === 'on',
-          authorizationCode: data.authorizationCode,
-        })
-      } else {
-        setPkceChallenge(null)
-        handleLoginSuccess(data)
-      }
-    },
-  })
+  async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+    e.preventDefault()
 
-  const loginIdError = getFieldError(response, 'login-id')
-  const passwordError = getFieldError(response, 'password')
-  const defaultLoginId = getFormField(response, 'login-id')
-  const defaultPassword = getFormField(response, 'password')
-  const defaultRemember = getFormField(response, 'remember')
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    clearLoginValidity(form)
 
-  async function dispatchLoginAction(formData: FormData) {
-    const turnstileToken = turnstileRef.current?.getResponse()
+    if (!form.reportValidity()) {
+      return
+    }
+
+    const turnstileToken = await getTurnstileToken()
 
     if (!turnstileToken) {
       resetTurnstile()
@@ -168,13 +183,22 @@ export default function LoginForm() {
     ])
 
     setPkceChallenge(pkceChallenge)
-    formData.set('cf-turnstile-response', turnstileToken)
-    formData.append('code-challenge', pkceChallenge.codeChallenge)
-    formData.append('fingerprint', fingerprint.visitorId)
-    dispatchAction(formData)
+
+    submitLogin({
+      loginId: String(formData.get('login-id') ?? ''),
+      password: String(formData.get('password') ?? ''),
+      remember: formData.get('remember') === 'on',
+      turnstileToken,
+      codeChallenge: pkceChallenge.codeChallenge,
+      fingerprint: fingerprint.visitorId,
+    })
   }
 
-  const twoFactorPayload = twoFactorData && pkceChallenge ? { twoFactorData, pkceChallenge } : null
+  function handleFormInput(e: React.InputEvent) {
+    if (e.target instanceof HTMLInputElement) {
+      e.target.setCustomValidity('')
+    }
+  }
 
   return (
     <div className="grid gap-6 sm:gap-7">
@@ -182,7 +206,7 @@ export default function LoginForm() {
         <IconLogo className="w-9" priority />
       </Link>
 
-      {twoFactorPayload ? (
+      {twoFactorData && pkceChallenge ? (
         <TwoFactorVerification
           onCancel={() => {
             setTwoFactorData(null)
@@ -190,8 +214,8 @@ export default function LoginForm() {
             resetTurnstile()
           }}
           onSuccess={handleLoginSuccess}
-          pkceChallenge={twoFactorPayload.pkceChallenge}
-          twoFactorData={twoFactorPayload.twoFactorData}
+          pkceChallenge={pkceChallenge}
+          twoFactorData={twoFactorData}
         />
       ) : (
         <>
@@ -200,7 +224,14 @@ export default function LoginForm() {
             <p className="mt-2 text-sm text-zinc-400">아이디/비밀번호 또는 패스키로 계속해요</p>
           </div>
 
-          <form action={dispatchLoginAction} className="grid gap-5" id="login-form" name="login" ref={formRef}>
+          <form
+            className="grid gap-5"
+            id="login-form"
+            name="login"
+            onInput={handleFormInput}
+            onSubmit={handleSubmit}
+            ref={formRef}
+          >
             <div className="grid gap-4">
               <div>
                 <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-username">
@@ -208,8 +239,6 @@ export default function LoginForm() {
                 </label>
                 <div className="relative group">
                   <input
-                    aria-describedby={loginIdError ? 'login-username-error' : undefined}
-                    aria-invalid={!!loginIdError}
                     autoCapitalize="off"
                     autoComplete="username webauthn"
                     autoCorrect="off"
@@ -217,8 +246,7 @@ export default function LoginForm() {
                     className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                       focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                       disabled:opacity-60 disabled:cursor-not-allowed
-                      aria-invalid:border-red-600/50 aria-invalid:focus:ring-red-600/30"
-                    defaultValue={defaultLoginId}
+                      user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
                     disabled={isPending}
                     enterKeyHint="next"
                     id="login-username"
@@ -238,7 +266,7 @@ export default function LoginForm() {
                       group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto
                       disabled:opacity-50 disabled:pointer-events-none"
                     disabled={isPending}
-                    onClick={resetId}
+                    onClick={() => clearLoginId(formRef.current)}
                     onMouseDown={(e) => e.preventDefault()}
                     tabIndex={-1}
                     type="button"
@@ -246,11 +274,6 @@ export default function LoginForm() {
                     <X className="size-3.5" />
                   </button>
                 </div>
-                {loginIdError && (
-                  <p className="mt-1 text-xs text-red-400" id="login-username-error">
-                    {loginIdError}
-                  </p>
-                )}
               </div>
 
               <div>
@@ -259,16 +282,13 @@ export default function LoginForm() {
                 </label>
                 <div className="relative group">
                   <input
-                    aria-describedby={passwordError ? 'login-password-error' : undefined}
-                    aria-invalid={!!passwordError}
                     autoCapitalize="off"
                     autoComplete="current-password"
                     autoCorrect="off"
                     className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                       focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                       disabled:opacity-60 disabled:cursor-not-allowed
-                      aria-invalid:border-red-600/50 aria-invalid:focus:ring-red-600/30"
-                    defaultValue={defaultPassword}
+                      user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
                     disabled={isPending}
                     enterKeyHint="done"
                     id="login-current-password"
@@ -299,11 +319,6 @@ export default function LoginForm() {
                     <EyeOff className="eye-off-icon size-3.5 hidden" />
                   </button>
                 </div>
-                {passwordError && (
-                  <p className="mt-1 text-xs text-red-400" id="login-password-error">
-                    {passwordError}
-                  </p>
-                )}
               </div>
 
               <div className="flex justify-end">
@@ -317,7 +332,6 @@ export default function LoginForm() {
                       peer-checked:bg-brand/65 peer-checked:border-transparent
                       peer-checked:shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.18)]
                       peer-focus-visible:ring-white/20 peer-focus-visible:ring-offset-0"
-                    defaultChecked={defaultRemember === 'on'}
                     disabled={isPending}
                     id="remember"
                     name="remember"

@@ -1,7 +1,10 @@
 import '@test/setup.base'
 import '@test/setup.dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
 type DispatchedAuthenticationRequest = {
   authentication: { id: string }
@@ -9,71 +12,51 @@ type DispatchedAuthenticationRequest = {
   turnstileToken?: string | null
 }
 
-type GetAuthenticationOptionsResponse =
-  | {
-      ok: false
-      status: 400 | 429 | 500
-      error: string
-    }
-  | {
-      ok: true
-      status: 200
-      data: {
-        options: { challenge: string }
-        turnstileRequired: boolean
-      }
-    }
-
-type RateLimitResult = {
-  allowed: boolean
-  limit: number
-  remaining: number
-  retryAfter: number | undefined
+type PasskeyAuthenticationOptionsResponse = {
+  options: { challenge: string }
+  turnstileRequired: boolean
 }
 
-type VerifyAuthenticationResponse =
-  | {
-      ok: false
-      status: 400 | 404
-      error: string
-    }
-  | {
-      ok: true
-      status: 200
-      data: {
-        id: number
-        loginId: string
-        name: string
-        lastLoginAt: null
-        lastLogoutAt: null
-      }
-    }
+type PasskeyUser = {
+  id: number
+  loginId: string
+  name: string
+  lastLoginAt: null
+  lastLogoutAt: null
+}
 
 const browserSupportsWebAuthnAutofillMock = mock(() => Promise.resolve(false))
 const startAuthenticationMock = mock(() => Promise.resolve({ id: 'cred-1' }))
-const getAuthenticationOptionsMock = mock(async () => getAuthenticationOptionsState.response)
-const verifyAuthenticationActionMock = mock(async () => actionState.response)
+const requestPasskeyAuthenticationOptionsMock = mock(async () => passkeyOptionsState.response)
+const verifyPasskeyAuthenticationMock = mock(async (request: DispatchedAuthenticationRequest) => {
+  dispatchedRequests.push(request)
+
+  if (verifyState.error) {
+    throw verifyState.error
+  }
+
+  return verifyState.response
+})
 const signalUnknownPasskeyCredentialMock = mock(() => Promise.resolve(true))
 const toastWarningMock = mock(() => {})
 const toastErrorMock = mock(() => {})
 const dispatchedRequests: DispatchedAuthenticationRequest[] = []
 
-const getAuthenticationOptionsState: { response: GetAuthenticationOptionsResponse } = {
+const passkeyOptionsState: { response: PasskeyAuthenticationOptionsResponse } = {
   response: {
-    ok: true,
-    status: 200,
-    data: {
-      options: { challenge: 'passkey-challenge' },
-      turnstileRequired: false,
-    },
+    options: { challenge: 'passkey-challenge' },
+    turnstileRequired: false,
   },
 }
 
-const actionState: { response: VerifyAuthenticationResponse } = {
+const verifyState: { error: ProblemDetailsError | null; response: PasskeyUser } = {
+  error: createProblemError(400, '보안 검증에 실패했어요'),
   response: {
-    ok: false,
-    status: 400,
-    error: '보안 검증에 실패했어요',
+    id: 1,
+    loginId: 'tester',
+    name: 'tester',
+    lastLoginAt: null,
+    lastLogoutAt: null,
   },
 }
 
@@ -89,37 +72,9 @@ mock.module('sonner', () => ({
   },
 }))
 
-mock.module('@/app/(navigation)/(right-search)/[name]/settings/passkey/action-auth', () => ({
-  getAuthenticationOptions: getAuthenticationOptionsMock,
-  verifyAuthentication: verifyAuthenticationActionMock,
-}))
-
-mock.module('@/hook/useServerAction', () => ({
-  default: ({
-    onError,
-    onSuccess,
-  }: {
-    onError?: (response: Extract<VerifyAuthenticationResponse, { ok: false }>) => void
-    onSuccess?: (
-      data: Extract<VerifyAuthenticationResponse, { ok: true }>['data'],
-      args: [DispatchedAuthenticationRequest]
-    ) => void
-  }) => {
-    function dispatchAction(request: DispatchedAuthenticationRequest) {
-      dispatchedRequests.push(request)
-
-      queueMicrotask(() => {
-        if (actionState.response.ok) {
-          onSuccess?.(actionState.response.data, [request])
-          return
-        }
-
-        onError?.(actionState.response)
-      })
-    }
-
-    return [undefined, dispatchAction, false] as const
-  },
+mock.module('@/app/auth/login/api', () => ({
+  requestPasskeyAuthenticationOptions: requestPasskeyAuthenticationOptionsMock,
+  verifyPasskeyAuthentication: verifyPasskeyAuthenticationMock,
 }))
 
 mock.module('@/utils/passkey', () => ({
@@ -129,18 +84,17 @@ mock.module('@/utils/passkey', () => ({
 const { default: PasskeyLoginButton } = await import('../PasskeyLoginButton')
 
 beforeEach(() => {
-  getAuthenticationOptionsState.response = {
-    ok: true,
-    status: 200,
-    data: {
-      options: { challenge: 'passkey-challenge' },
-      turnstileRequired: false,
-    },
+  passkeyOptionsState.response = {
+    options: { challenge: 'passkey-challenge' },
+    turnstileRequired: false,
   }
-  actionState.response = {
-    ok: false,
-    status: 400,
-    error: '보안 검증에 실패했어요',
+  verifyState.error = createProblemError(400, '보안 검증에 실패했어요')
+  verifyState.response = {
+    id: 1,
+    loginId: 'tester',
+    name: 'tester',
+    lastLoginAt: null,
+    lastLogoutAt: null,
   }
 })
 
@@ -149,8 +103,8 @@ afterEach(() => {
   dispatchedRequests.length = 0
   browserSupportsWebAuthnAutofillMock.mockClear()
   startAuthenticationMock.mockClear()
-  getAuthenticationOptionsMock.mockClear()
-  verifyAuthenticationActionMock.mockClear()
+  requestPasskeyAuthenticationOptionsMock.mockClear()
+  verifyPasskeyAuthenticationMock.mockClear()
   signalUnknownPasskeyCredentialMock.mockClear()
   toastWarningMock.mockClear()
   toastErrorMock.mockClear()
@@ -167,7 +121,7 @@ async function clickPasskeyLoginButton(button: HTMLElement) {
   })
 }
 
-async function flushMicrotasks(iterations = 6) {
+async function flushMicrotasks(iterations = 10) {
   for (let index = 0; index < iterations; index += 1) {
     await Promise.resolve()
   }
@@ -183,20 +137,28 @@ function renderPasskeyButton({
   reset?: () => void
 } = {}) {
   const formRef = { current: null as HTMLFormElement | null }
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      mutations: { retry: false },
+      queries: { retry: false },
+    },
+  })
 
   const view = render(
-    <div>
-      <form ref={(node) => void (formRef.current = node)}>
-        <input defaultChecked={rememberChecked} name="remember" type="checkbox" />
-      </form>
-      <PasskeyLoginButton
-        formRef={formRef}
-        turnstile={{
-          getToken,
-          reset,
-        }}
-      />
-    </div>,
+    <QueryClientProvider client={queryClient}>
+      <div>
+        <form ref={(node) => void (formRef.current = node)}>
+          <input defaultChecked={rememberChecked} name="remember" type="checkbox" />
+        </form>
+        <PasskeyLoginButton
+          formRef={formRef}
+          turnstile={{
+            getToken,
+            reset,
+          }}
+        />
+      </div>
+    </QueryClientProvider>,
   )
 
   return {
@@ -206,7 +168,7 @@ function renderPasskeyButton({
   }
 }
 
-async function settlePasskeyFlow(iterations = 6) {
+async function settlePasskeyFlow(iterations = 10) {
   await act(async () => {
     await flushMicrotasks(iterations)
   })
@@ -214,24 +176,14 @@ async function settlePasskeyFlow(iterations = 6) {
 
 describe('PasskeyLoginButton', () => {
   it('폼의 uncontrolled 로그인 유지 값을 읽어 패스키 로그인 요청에 반영한다', async () => {
-    actionState.response = {
-      ok: true,
-      status: 200,
-      data: {
-        id: 1,
-        loginId: 'tester',
-        name: 'tester',
-        lastLoginAt: null,
-        lastLogoutAt: null,
-      },
-    }
+    verifyState.error = null
 
     const { getByRole, getToken } = renderPasskeyButton({ rememberChecked: true })
 
     await clickPasskeyLoginButton(getByRole('button', { name: '패스키로 로그인' }))
 
     expect(getToken).not.toHaveBeenCalled()
-    expect(getAuthenticationOptionsMock).toHaveBeenCalledTimes(1)
+    expect(requestPasskeyAuthenticationOptionsMock).toHaveBeenCalledTimes(1)
     expect(dispatchedRequests[0]).toMatchObject({
       authentication: { id: 'cred-1' },
       remember: true,
@@ -244,7 +196,7 @@ describe('PasskeyLoginButton', () => {
     await clickPasskeyLoginButton(getByRole('button', { name: '패스키로 로그인' }))
 
     expect(getToken).not.toHaveBeenCalled()
-    expect(getAuthenticationOptionsMock).toHaveBeenCalledTimes(1)
+    expect(requestPasskeyAuthenticationOptionsMock).toHaveBeenCalledTimes(1)
     expect(dispatchedRequests[0]).toMatchObject({
       authentication: { id: 'cred-1' },
       remember: false,
@@ -262,11 +214,7 @@ describe('PasskeyLoginButton', () => {
   })
 
   it('등록되지 않은 패스키로 로그인하면 Turnstile을 초기화하고 브라우저에 알려준다', async () => {
-    actionState.response = {
-      ok: false,
-      status: 404,
-      error: '패스키를 검증할 수 없어요',
-    }
+    verifyState.error = createProblemError(404, '패스키를 검증할 수 없어요')
 
     const { getByRole, reset } = renderPasskeyButton()
 
@@ -277,13 +225,9 @@ describe('PasskeyLoginButton', () => {
   })
 
   it('high-risk 수동 패스키 로그인은 Turnstile 토큰이 없으면 경고하고 중단한다', async () => {
-    getAuthenticationOptionsState.response = {
-      ok: true,
-      status: 200,
-      data: {
-        options: { challenge: 'passkey-challenge' },
-        turnstileRequired: true,
-      },
+    passkeyOptionsState.response = {
+      options: { challenge: 'passkey-challenge' },
+      turnstileRequired: true,
     }
 
     const { getByRole, getToken, reset } = renderPasskeyButton({
@@ -300,13 +244,9 @@ describe('PasskeyLoginButton', () => {
 
   it('high-risk autofill 시도는 조용히 중단한다', async () => {
     browserSupportsWebAuthnAutofillMock.mockResolvedValueOnce(true)
-    getAuthenticationOptionsState.response = {
-      ok: true,
-      status: 200,
-      data: {
-        options: { challenge: 'passkey-challenge' },
-        turnstileRequired: true,
-      },
+    passkeyOptionsState.response = {
+      options: { challenge: 'passkey-challenge' },
+      turnstileRequired: true,
     }
 
     const getToken = mock(async () => null)
@@ -314,10 +254,19 @@ describe('PasskeyLoginButton', () => {
 
     await settlePasskeyFlow()
 
-    expect(getAuthenticationOptionsMock).toHaveBeenCalledTimes(1)
+    expect(requestPasskeyAuthenticationOptionsMock).toHaveBeenCalledTimes(1)
     expect(startAuthenticationMock).not.toHaveBeenCalled()
     expect(getToken).not.toHaveBeenCalled()
     expect(dispatchedRequests).toHaveLength(0)
     expect(toastWarningMock).not.toHaveBeenCalled()
   })
 })
+
+function createProblemError(status: number, detail: string) {
+  return new ProblemDetailsError({
+    type: `https://localhost/problems/http-${status}`,
+    title: '오류가 발생했어요',
+    status,
+    detail,
+  })
+}

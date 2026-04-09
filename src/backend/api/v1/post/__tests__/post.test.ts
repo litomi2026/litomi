@@ -11,7 +11,7 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 import { encodePostCursor } from '@/common/cursor'
 import { PostType } from '@/database/enum'
 
-import type { Post as ApiPost, GETV1PostResponse } from '..'
+import type { Post as ApiPost, GETV1PostResponse } from '../GET'
 
 type PostRouteModule = typeof import('..')
 type SelectPostsParams = {

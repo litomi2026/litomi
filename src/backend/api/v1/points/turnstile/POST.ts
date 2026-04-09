@@ -1,5 +1,3 @@
-import type { Context } from 'hono'
-
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 import ms from 'ms'
@@ -11,6 +9,7 @@ import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
+import { getRequestIP } from '@/utils/request'
 import TurnstileValidator from '@/utils/turnstile'
 
 import { POINTS_TURNSTILE_TTL_SECONDS, signPointsTurnstileToken } from '../util-turnstile-cookie'
@@ -27,9 +26,8 @@ const requestSchema = z.object({
 
 route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c) => {
   const userId = c.get('userId')!
-
   const { token } = c.req.valid('json')
-  const remoteIP = getRemoteIP(c)
+  const remoteIP = getRequestIP(c.req.raw.headers)
 
   const turnstile = await turnstileValidator.validate({
     token,
@@ -63,7 +61,3 @@ route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c)
 })
 
 export default route
-
-function getRemoteIP(c: Context<Env>): string {
-  return c.req.header('CF-Connecting-IP') || c.req.header('x-real-ip') || c.req.header('x-forwarded-for') || 'unknown'
-}

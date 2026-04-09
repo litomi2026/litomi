@@ -1,5 +1,6 @@
 'use server'
 
+import { PasskeyAuthenticationAttempt } from '@/backend/api/v1/auth/passkey/shared'
 import { ChallengeType } from '@/database/enum'
 import { redisClient } from '@/database/redis'
 
@@ -10,7 +11,7 @@ import { sec } from './format/date'
  */
 export async function getAndDeleteChallenge<T = string>(
   identifier: number | string,
-  type: ChallengeType
+  type: ChallengeType,
 ): Promise<T | null> {
   try {
     const key = getChallengeKey(identifier, type)
@@ -27,7 +28,7 @@ export async function getAndDeleteChallenge<T = string>(
 export async function storeChallenge(
   identifier: number | string,
   type: ChallengeType,
-  challenge: unknown
+  challenge: string | PasskeyAuthenticationAttempt,
 ): Promise<void> {
   try {
     const key = getChallengeKey(identifier, type)

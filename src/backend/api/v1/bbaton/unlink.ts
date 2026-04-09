@@ -18,7 +18,7 @@ import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
 import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
 
-import { reissueAuthCookies } from './utils'
+import { reissueAuthCookies } from './query'
 
 export type POSTV1BBatonUnlinkResponse = { ok: true }
 

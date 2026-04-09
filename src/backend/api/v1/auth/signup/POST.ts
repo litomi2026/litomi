@@ -1,18 +1,18 @@
 import { hash } from 'bcryptjs'
 import { Hono } from 'hono'
-import { setCookie } from 'hono/cookie'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
+import { createUser } from '@/backend/api/v1/auth/signup/query'
+import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { SALT_ROUNDS } from '@/constants'
-import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
-import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+import { getRequestIP, getRequestUserAgent } from '@/utils/request'
 import TurnstileValidator from '@/utils/turnstile'
 
 export type POSTV1AuthSignupRequest = {
@@ -50,14 +50,12 @@ const signupRequestSchema = z
   })
 
 const signupLimiter = new RateLimiter(RateLimitPresets.strict())
-const signupRoutes = new Hono<Env>()
+const route = new Hono<Env>()
 
-signupRoutes.post('/', zProblemValidator('json', signupRequestSchema), async (c) => {
+route.post('/', zProblemValidator('json', signupRequestSchema), async (c) => {
   const { loginId, nickname, password, turnstileToken } = c.req.valid('json')
   const validator = new TurnstileValidator()
-
-  const remoteIP =
-    c.req.header('CF-Connecting-IP') || c.req.header('x-real-ip') || c.req.header('x-forwarded-for') || 'unknown'
+  const remoteIP = getRequestIP(c.req.raw.headers)
 
   const turnstile = await validator.validate({
     token: turnstileToken,
@@ -89,17 +87,12 @@ signupRoutes.post('/', zProblemValidator('json', signupRequestSchema), async (c)
   const passwordHash = await hash(password, SALT_ROUNDS)
 
   try {
-    const [result] = await db
-      .insert(userTable)
-      .values({
-        loginId,
-        name: loginId,
-        passwordHash,
-        nickname,
-        imageURL: generateRandomProfileImage(),
-      })
-      .onConflictDoNothing()
-      .returning({ id: userTable.id })
+    const result = await createUser({
+      imageURL: generateRandomProfileImage(),
+      loginId,
+      nickname,
+      passwordHash,
+    })
 
     if (!result) {
       return problemResponse(c, {
@@ -112,11 +105,15 @@ signupRoutes.post('/', zProblemValidator('json', signupRequestSchema), async (c)
       })
     }
 
-    const accessTokenCookie = await getAccessTokenCookieConfig({ userId: result.id, adult: false })
-    const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+    const cookieConfigs = await issueAuthCookies({
+      userId: result.id,
+      adult: false,
+      remember: false,
+      ipAddress: remoteIP,
+      userAgent: getRequestUserAgent(c.req.raw.headers),
+    })
 
-    setCookie(c, accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
-    setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
+    applyAuthCookie(c, cookieConfigs)
 
     const response = {
       userId: result.id,
@@ -132,4 +129,4 @@ signupRoutes.post('/', zProblemValidator('json', signupRequestSchema), async (c)
   }
 })
 
-export default signupRoutes
+export default route

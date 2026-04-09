@@ -1,16 +1,21 @@
 'use client'
 
+import { useMutation } from '@tanstack/react-query'
 import { Key, Loader2, RectangleEllipsis } from 'lucide-react'
-import { useState } from 'react'
+import { SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
+
+import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import OneTimeCodeInput from '@/app/(navigation)/(right-search)/[name]/settings/two-factor/components/OneTimeCodeInput'
 import Toggle from '@/components/ui/Toggle'
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
-import useServerAction, { getFormField } from '@/hook/useServerAction'
 import { PKCEChallenge } from '@/utils/pkce-browser'
 
-import { verifyTwoFactorLogin } from './action-2fa'
+import { verifyTwoFactorLogin } from './api'
+import { applyTwoFactorProblem, clearTwoFactorValidity } from './util'
+
+const TWO_FACTOR_LOCAL_ERROR_STATUSES = [400, 401, 429]
 
 interface Props {
   onCancel: () => void
@@ -30,10 +35,28 @@ interface Props {
 }
 
 export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallenge, twoFactorData }: Props) {
+  const formRef = useRef<HTMLFormElement>(null)
   const [isBackupCode, setIsBackupCode] = useState(false)
 
-  const [response, dispatchAction, isPending] = useServerAction({
-    action: verifyTwoFactorLogin,
+  const { mutate: submitTwoFactor, isPending } = useMutation({
+    mutationFn: verifyTwoFactorLogin,
+    onError: (error: ProblemDetailsError) => {
+      clearTwoFactorValidity(formRef.current)
+
+      window.requestAnimationFrame(() => {
+        const form = formRef.current
+
+        if (applyTwoFactorProblem(form, error.problem)) {
+          return
+        }
+
+        if (!TWO_FACTOR_LOCAL_ERROR_STATUSES.includes(error.status)) {
+          return
+        }
+
+        toast.warning(error.problem.detail ?? '2단계 인증을 확인할 수 없어요')
+      })
+    },
     onSuccess: (data) => {
       if (data.isBackupCode) {
         if (data.backupCodeCount > 0) {
@@ -45,10 +68,34 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
 
       onSuccess(data)
     },
+    meta: { suppressGlobalErrorToastForStatuses: TWO_FACTOR_LOCAL_ERROR_STATUSES },
   })
 
-  const defaultToken = getFormField(response, 'token')
-  const defaultTrustBrowser = getFormField(response, 'trust-browser')
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+    e.preventDefault()
+    clearTwoFactorValidity(e.currentTarget)
+
+    if (!e.currentTarget.reportValidity()) {
+      return
+    }
+
+    const formData = new FormData(e.currentTarget)
+
+    submitTwoFactor({
+      authorizationCode: twoFactorData.authorizationCode,
+      codeVerifier: pkceChallenge.codeVerifier,
+      fingerprint: twoFactorData.fingerprint,
+      remember: twoFactorData.remember,
+      token: String(formData.get('token') ?? ''),
+      trustBrowser: formData.get('trust-browser') === 'on',
+    })
+  }
+
+  function handleFormInput(e: React.InputEvent) {
+    if (e.target instanceof HTMLInputElement) {
+      e.target.setCustomValidity('')
+    }
+  }
 
   return (
     <div className="grid gap-6">
@@ -62,12 +109,14 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
         </p>
       </div>
 
-      <form action={dispatchAction} className="grid gap-5" id="two-factor-form" name="two-factor">
-        <input name="code-verifier" type="hidden" value={pkceChallenge.codeVerifier} />
-        <input name="fingerprint" type="hidden" value={twoFactorData.fingerprint} />
-        <input name="authorization-code" type="hidden" value={twoFactorData.authorizationCode} />
-        {twoFactorData.remember && <input name="remember" type="hidden" value="on" />}
-
+      <form
+        className="grid gap-5"
+        id="two-factor-form"
+        name="two-factor"
+        onInput={handleFormInput}
+        onSubmit={handleSubmit}
+        ref={formRef}
+      >
         <div>
           <label className="sr-only" htmlFor="token">
             인증 코드
@@ -80,7 +129,6 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             className="w-full rounded-xl bg-white/4 border border-white/7 px-4 py-3 text-center text-xl font-mono text-zinc-50 placeholder:text-zinc-500 transition
               focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
               disabled:opacity-60 disabled:cursor-not-allowed"
-            defaultValue={defaultToken}
             disabled={isPending}
             enterKeyHint="done"
             inputMode={isBackupCode ? 'text' : 'numeric'}
@@ -107,7 +155,6 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
                 peer-checked:bg-brand/65 peer-checked:border-transparent
                 peer-checked:shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.18)]
                 peer-focus-visible:ring-white/20 peer-focus-visible:ring-offset-0"
-              defaultChecked={defaultTrustBrowser === 'on'}
               disabled={isPending || isBackupCode}
               id="trust-browser"
               name="trust-browser"

@@ -5,7 +5,9 @@ import { languageDetector } from 'hono/language'
 
 import type { Env } from '@/backend'
 
-import suggestionRoutes, { type GETSearchSuggestionsResponse } from '..'
+import type { GETSearchSuggestionsResponse } from '..'
+
+import suggestionRoutes from '..'
 
 const app = new Hono<Env>()
 app.use('*', contextStorage())

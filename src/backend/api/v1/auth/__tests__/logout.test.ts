@@ -4,19 +4,41 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-type LogoutRoutesModule = typeof import('../logout')
+type LogoutRouteModule = typeof import('../logout')
 
 let shouldThrowDatabaseError = false
 let currentUserId: number | undefined
-let logoutRoutes: LogoutRoutesModule['default']
+let logoutRoute: LogoutRouteModule['default']
+const touchUserLogoutAtAndReturnLoginIdMock = mock(async (userId: number) => {
+  if (shouldThrowDatabaseError) {
+    throw new Error('Database connection failed')
+  }
+
+  if (userId === 1) {
+    return { loginId: 'testuser1' }
+  }
+
+  if (userId === 2) {
+    return { loginId: 'testuser2' }
+  }
+
+  return null
+})
 
 type LogoutResponse = {
   loginId: string | null
 }
 
+mock.module('@/backend/api/v1/auth/query', () => ({
+  readAdultFlag: mock(async () => false),
+  touchUserLoginAt: mock(async () => {}),
+  touchUserLoginAtAndReturnProfile: mock(async () => null),
+  touchUserLogoutAtAndReturnLoginId: touchUserLogoutAtAndReturnLoginIdMock,
+}))
+
 beforeAll(async () => {
   spyOn(console, 'error').mockImplementation(() => {})
-  logoutRoutes = (await import('../logout')).default
+  logoutRoute = (await import('../logout')).default
 })
 
 afterAll(() => {
@@ -26,6 +48,7 @@ afterAll(() => {
 beforeEach(() => {
   currentUserId = undefined
   shouldThrowDatabaseError = false
+  touchUserLogoutAtAndReturnLoginIdMock.mockClear()
 })
 
 type TestEnv = Env & {
@@ -44,35 +67,10 @@ function createApp() {
     }
     await next()
   })
-  app.route('/', logoutRoutes)
+  app.route('/', logoutRoute)
 
   return app
 }
-
-mock.module('@/database/supabase/drizzle', () => ({
-  db: {
-    update: () => ({
-      set: () => ({
-        where: () => ({
-          returning: () => {
-            if (shouldThrowDatabaseError) {
-              return Promise.reject(new Error('Database connection failed'))
-            }
-
-            if (currentUserId === 1) {
-              return Promise.resolve([{ loginId: 'testuser1' }])
-            }
-            if (currentUserId === 2) {
-              return Promise.resolve([{ loginId: 'testuser2' }])
-            }
-
-            return Promise.resolve([])
-          },
-        }),
-      }),
-    }),
-  },
-}))
 
 function getSetCookieHeader(response: Response) {
   return Array.from(response.headers.entries())
@@ -95,6 +93,7 @@ describe('POST /api/v1/auth/logout', () => {
     expect(getSetCookieHeader(response)).toContain('at=')
     expect(getSetCookieHeader(response)).toContain('rt=')
     expect(getSetCookieHeader(response)).toContain('ah=')
+    expect(touchUserLogoutAtAndReturnLoginIdMock).toHaveBeenCalledWith(1, expect.any(Date))
   })
 
   test('인증 정보가 없어도 로그아웃 요청은 성공하고 쿠키를 정리한다', async () => {
@@ -107,6 +106,7 @@ describe('POST /api/v1/auth/logout', () => {
     expect(getSetCookieHeader(response)).toContain('at=')
     expect(getSetCookieHeader(response)).toContain('rt=')
     expect(getSetCookieHeader(response)).toContain('ah=')
+    expect(touchUserLogoutAtAndReturnLoginIdMock).not.toHaveBeenCalled()
   })
 
   test('DB에 사용자가 없어도 로그아웃 요청은 성공하고 쿠키를 정리한다', async () => {

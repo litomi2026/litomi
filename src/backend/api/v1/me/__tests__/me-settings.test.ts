@@ -4,7 +4,7 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import meRoutes from '../me/index'
+import { requireAuth } from '@/backend/middleware/require-auth'
 
 let fallbackAutoDeletionDay = 365
 let currentSettingRow:
@@ -36,44 +36,10 @@ type TestEnv = Env & {
   }
 }
 
-const app = new Hono<TestEnv>()
-app.use('*', contextStorage())
-app.use('*', async (c, next) => {
-  if (c.env.userId) {
-    c.set('userId', c.env.userId)
-  }
-  await next()
-})
-app.route('/', meRoutes)
-
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
-    select: () => ({
-      from: () => ({
-        leftJoin: () => ({
-          where: () => {
-            if (shouldThrowDatabaseError) {
-              return Promise.reject(new Error('Database connection failed'))
-            }
-
-            return Promise.resolve([
-              {
-                historySyncEnabled: currentSettingRow?.historySyncEnabled ?? null,
-                adultVerifiedAdVisible: currentSettingRow?.adultVerifiedAdVisible ?? null,
-                autoDeletionDay: currentSettingRow?.autoDeletionDay ?? null,
-                fallbackAutoDeletionDay,
-              },
-            ])
-          },
-        }),
-      }),
-    }),
     insert: () => ({
-      values: (values: {
-        historySyncEnabled: boolean
-        adultVerifiedAdVisible: boolean
-        autoDeletionDay: number
-      }) => ({
+      values: (values: { historySyncEnabled: boolean; adultVerifiedAdVisible: boolean; autoDeletionDay: number }) => ({
         onConflictDoUpdate: ({ set }: { set: Partial<typeof values> }) => {
           if (shouldThrowDatabaseError) {
             return Promise.reject(new Error('Database connection failed'))
@@ -99,6 +65,28 @@ mock.module('@/database/supabase/drizzle', () => ({
     }),
   },
 }))
+
+mock.module('@/utils/user-settings.server', () => ({
+  readUserSettings: () =>
+    Promise.resolve({
+      historySyncEnabled: currentSettingRow?.historySyncEnabled ?? true,
+      adultVerifiedAdVisible: currentSettingRow?.adultVerifiedAdVisible ?? false,
+      autoDeletionDay: currentSettingRow?.autoDeletionDay ?? fallbackAutoDeletionDay,
+    }),
+}))
+
+const { default: settingsRoutes } = await import('../settings')
+
+const app = new Hono<TestEnv>()
+app.use('*', contextStorage())
+app.use('*', async (c, next) => {
+  if (c.env.userId) {
+    c.set('userId', c.env.userId)
+  }
+  await next()
+})
+app.use('*', requireAuth)
+app.route('/settings', settingsRoutes)
 
 describe('PATCH /api/v1/me/settings', () => {
   test('row가 없어도 fallback 값을 유지한 채 partial patch를 저장한다', async () => {

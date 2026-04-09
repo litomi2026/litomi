@@ -5,8 +5,8 @@ import { contextStorage } from 'hono/context-storage'
 import type { Env } from '@/backend'
 import type { TrendingKeyword } from '@/services/TrendingKeywordsService'
 
+import trendingRoutes from '..'
 import { type GETTrendingKeywordsResponse } from '../GET'
-import trendingRoutes from '../index'
 import trendingPostRoutes, { type POSTV1SearchTrendingResponse } from '../POST'
 
 const mockKeywords: TrendingKeyword[] = [

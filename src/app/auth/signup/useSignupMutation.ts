@@ -7,10 +7,10 @@ import { toast } from 'sonner'
 import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@/backend/api/v1/auth/signup'
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
+import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
 
 import { signup } from './api'
@@ -37,7 +37,7 @@ export default function useSignupMutation({ onError }: Params = {}) {
         track('signup')
       }
 
-      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+      await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
 
       const params = new URLSearchParams(window.location.search)
       const redirect = params.get(SearchParamKey.REDIRECT)

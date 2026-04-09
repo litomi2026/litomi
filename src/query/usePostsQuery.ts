@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETV1PostResponse } from '@/backend/api/v1/post'
 import { PostFilter } from '@/backend/api/v1/post/constant'
+import { GETV1PostResponse } from '@/backend/api/v1/post/GET'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

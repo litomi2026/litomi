@@ -1,16 +1,16 @@
 'use client'
 
 import { browserSupportsWebAuthnAutofill, startAuthentication } from '@simplewebauthn/browser'
+import { useMutation } from '@tanstack/react-query'
 import { Fingerprint, Loader2 } from 'lucide-react'
 import { RefObject, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import {
-  getAuthenticationOptions,
-  verifyAuthentication,
-} from '@/app/(navigation)/(right-search)/[name]/settings/passkey/action-auth'
-import useServerAction from '@/hook/useServerAction'
+import type { ProblemDetailsError } from '@/utils/react-query-error'
+
+import { requestPasskeyAuthenticationOptions, verifyPasskeyAuthentication } from '@/app/auth/login/api'
 import { signalUnknownPasskeyCredential } from '@/utils/passkey'
+import { ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/react-query-error'
 
 type Props = {
   disabled?: boolean
@@ -33,20 +33,27 @@ type User = {
 }
 
 export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turnstile }: Props) {
-  const [supportsAutofill, setSupportsAutofill] = useState<boolean | null>(null)
+  const [supportsAutofill, setSupportsAutofill] = useState(false)
   const lastCredentialIdRef = useRef<string | null>(null)
 
-  const [_, dispatchAction, isPending] = useServerAction({
-    action: verifyAuthentication,
-    onError: (response) => {
+  const { mutate: verifyPasskey, isPending } = useMutation({
+    mutationFn: verifyPasskeyAuthentication,
+    onError: (error: ProblemDetailsError) => {
       turnstile.reset()
 
-      if (response.status === 404 && lastCredentialIdRef.current) {
+      if (error.status === 404 && lastCredentialIdRef.current) {
         signalUnknownPasskeyCredential(lastCredentialIdRef.current)
+        return
       }
+
+      if (!PASSKEY_LOCAL_ERROR_STATUSES.includes(error.status)) {
+        return
+      }
+
+      toast.warning(error.problem.detail ?? '패스키를 검증할 수 없어요')
     },
     onSuccess,
-    shouldSetResponse: false,
+    meta: { suppressGlobalErrorToastForStatuses: PASSKEY_LOCAL_ERROR_STATUSES },
   })
 
   async function getTurnstileTokenForLogin(isAutofill: boolean) {
@@ -63,32 +70,46 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
     }
   }
 
-  async function runPasskeyLogin(mode: 'autofill' | 'button') {
-    const isAutofill = mode === 'autofill'
-
+  async function getPasskeyOptionsForLogin(isAutofill: boolean) {
     try {
-      const optionsResult = await getAuthenticationOptions()
+      const response = await requestPasskeyAuthenticationOptions()
 
-      if (!optionsResult.ok) {
-        if (isAutofill) {
-          return
-        }
+      if (isAutofill && response.turnstileRequired) {
+        return null
+      }
 
-        if (optionsResult.status >= 500) {
+      return response
+    } catch (error) {
+      if (isAutofill) {
+        return null
+      }
+
+      if (error instanceof ProblemDetailsErrorClass) {
+        if (error.status >= 500) {
           toast.error('패스키 인증 중 오류가 발생했어요')
         } else {
-          toast.warning(optionsResult.error)
+          toast.warning(error.problem.detail ?? '패스키 인증을 시작할 수 없어요')
         }
 
-        return
+        return null
       }
 
-      const { options, turnstileRequired } = optionsResult.data
+      toast.error('패스키 인증 중 오류가 발생했어요')
+      return null
+    }
+  }
 
-      if (isAutofill && turnstileRequired) {
-        return
-      }
+  async function runPasskeyLogin(mode: 'autofill' | 'button') {
+    const isAutofill = mode === 'autofill'
+    const passkeyOptions = await getPasskeyOptionsForLogin(isAutofill)
 
+    if (!passkeyOptions) {
+      return
+    }
+
+    const { options, turnstileRequired } = passkeyOptions
+
+    try {
       const authResponse = await startAuthentication({
         optionsJSON: options,
         ...(isAutofill && { useBrowserAutofill: true }),
@@ -98,7 +119,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
       const remember = isRememberEnabled(formRef)
 
       if (!turnstileRequired) {
-        dispatchAction({ authentication: authResponse, remember })
+        verifyPasskey({ authentication: authResponse, remember })
         return
       }
 
@@ -108,7 +129,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
         return
       }
 
-      dispatchAction({ authentication: authResponse, remember, turnstileToken })
+      verifyPasskey({ authentication: authResponse, remember, turnstileToken })
     } catch (error) {
       if (isAutofill) {
         return
@@ -153,7 +174,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
 
   // NOTE: 패스키 자동완성은 저위험 시도에만 조용히 시도해요
   useEffect(() => {
-    if (supportsAutofill !== true || disabled) {
+    if (!supportsAutofill || disabled) {
       return
     }
 
@@ -181,3 +202,5 @@ function isRememberEnabled(formRef: RefObject<HTMLFormElement | null>) {
   const rememberInput = formRef.current?.elements.namedItem('remember')
   return rememberInput instanceof HTMLInputElement && rememberInput.checked
 }
+
+const PASSKEY_LOCAL_ERROR_STATUSES = [400, 404, 429]

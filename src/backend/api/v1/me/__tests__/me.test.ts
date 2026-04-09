@@ -4,7 +4,7 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import meRoutes from '../me/index'
+import { requireAuth } from '@/backend/middleware/require-auth'
 
 let shouldThrowDatabaseError = false
 let currentUserId: number | undefined
@@ -44,16 +44,6 @@ type TestEnv = Env & {
     userId?: number
   }
 }
-
-const app = new Hono<TestEnv>()
-app.use('*', contextStorage())
-app.use('*', async (c, next) => {
-  if (c.env.userId) {
-    c.set('userId', c.env.userId)
-  }
-  await next()
-})
-app.route('/', meRoutes)
 
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
@@ -109,6 +99,19 @@ mock.module('@/database/supabase/drizzle', () => ({
     }),
   },
 }))
+
+const { default: getRoute } = await import('../GET')
+
+const app = new Hono<TestEnv>()
+app.use('*', contextStorage())
+app.use('*', async (c, next) => {
+  if (c.env.userId) {
+    c.set('userId', c.env.userId)
+  }
+  await next()
+})
+app.use('*', requireAuth)
+app.route('/', getRoute)
 
 function getSetCookieHeader(response: Response) {
   return Array.from(response.headers.entries())

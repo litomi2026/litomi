@@ -9,8 +9,6 @@ import getPostRoutes from './GET'
 import getLikedPostIdsRoute from './liked'
 import postCreateRoutes from './POST'
 
-export type { GETV1PostResponse, Post } from './GET'
-
 const postRoutes = new Hono<Env>()
 
 postRoutes.route('/', getPostRoutes)

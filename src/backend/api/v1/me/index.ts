@@ -4,7 +4,7 @@ import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 
 import getRoute from './GET'
-import settingsRoutes from './settings/index'
+import settingsRoutes from './settings'
 
 const route = new Hono<Env>()
 

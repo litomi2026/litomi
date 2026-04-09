@@ -14,6 +14,22 @@ export type AccessTokenClaims = {
   adult: boolean
 }
 
+export type AuthCookieConfig = {
+  key: string
+  value: string
+  options: AuthCookieOptions
+}
+
+export type AuthCookieOptions = {
+  domain?: string
+  expires?: Date
+  httpOnly: boolean
+  maxAge?: number
+  path?: string
+  sameSite: 'strict'
+  secure: boolean
+}
+
 type AccessTokenPayload = JWTPayload & {
   adult?: boolean
 }
@@ -24,6 +40,15 @@ type AuthTokenClaims = {
 }
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>
+
+export function applyCookieConfigs(
+  cookieStore: Pick<ReadonlyRequestCookies, 'set'>,
+  cookieConfigs: readonly AuthCookieConfig[],
+) {
+  for (const cookie of cookieConfigs) {
+    cookieStore.set(cookie.key, cookie.value, cookie.options)
+  }
+}
 
 export async function getAccessTokenClaimsFromCookie(): Promise<AccessTokenClaims | null> {
   const cookieStore = await cookies()
@@ -62,6 +87,49 @@ export async function getAccessTokenCookieConfig({ userId, adult }: AuthTokenCla
   } as const
 }
 
+export function getAuthCookieClearConfigs(): AuthCookieConfig[] {
+  const expires = new Date(0)
+
+  return [
+    {
+      key: CookieKey.ACCESS_TOKEN,
+      value: '',
+      options: {
+        domain: COOKIE_DOMAIN,
+        httpOnly: true,
+        maxAge: 0,
+        expires,
+        sameSite: 'strict',
+        secure: true,
+      },
+    },
+    {
+      key: CookieKey.REFRESH_TOKEN,
+      value: '',
+      options: {
+        domain: COOKIE_DOMAIN,
+        httpOnly: true,
+        maxAge: 0,
+        expires,
+        sameSite: 'strict',
+        secure: true,
+      },
+    },
+    {
+      key: CookieKey.AUTH_HINT,
+      value: '',
+      options: {
+        domain: COOKIE_DOMAIN,
+        httpOnly: false,
+        maxAge: 0,
+        expires,
+        sameSite: 'strict',
+        secure: true,
+      },
+    },
+  ]
+}
+
 export function getAuthHintCookieConfig({ maxAgeSeconds }: { maxAgeSeconds: number }) {
   return {
     key: CookieKey.AUTH_HINT,
@@ -90,6 +158,20 @@ export function getPasskeyAuthenticationAttemptCookieConfig(attemptId: string) {
   } as const
 }
 
+export function getRefreshSessionCookieConfig({ token, maxAgeSeconds }: { token: string; maxAgeSeconds: number }) {
+  return {
+    key: CookieKey.REFRESH_TOKEN,
+    value: token,
+    options: {
+      domain: COOKIE_DOMAIN,
+      httpOnly: true,
+      maxAge: maxAgeSeconds,
+      sameSite: 'strict',
+      secure: true,
+    },
+  } as const
+}
+
 export async function getRefreshTokenCookieConfig({ userId, adult }: AuthTokenClaims) {
   const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.REFRESH)
 
@@ -106,17 +188,8 @@ export async function getRefreshTokenCookieConfig({ userId, adult }: AuthTokenCl
   } as const
 }
 
-/**
- * For server component
- */
-export async function getUserIdFromCookie() {
-  const cookieStore = await cookies()
-  return (await verifyAccessToken(cookieStore)) ?? null
-}
-
-export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies, claims: AuthTokenClaims) {
-  const { key, value, options } = await getRefreshTokenCookieConfig(claims)
-  cookieStore.set(key, value, options)
+export async function getUserIdFromCookie(): Promise<number | null> {
+  return (await getAccessTokenClaimsFromCookie())?.userId ?? null
 }
 
 /**

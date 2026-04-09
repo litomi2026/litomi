@@ -1,17 +1,13 @@
-import type { Context } from 'hono'
 import type { JWTPayload } from 'jose'
 
-import { getCookie, setCookie } from 'hono/cookie'
 import { jwtVerify, SignJWT } from 'jose'
 
-import type { Env } from '@/backend'
-
 import { CookieKey } from '@/constants/storage'
+import 'server-only'
+
 import { env as commonEnv } from '@/env/server.common'
 import { env } from '@/env/server.hono'
-import { getAccessTokenCookieConfig, getAuthHintCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
 import { sec } from '@/utils/format/date'
-import { JWTType, verifyJWT } from '@/utils/jwt'
 
 const { APP_ORIGIN } = commonEnv
 const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT } = env
@@ -21,6 +17,8 @@ type BBatonAttemptTokenPayload = JWTPayload & {
 }
 
 export const BBATON_ATTEMPT_TTL_SECONDS = sec('10 minutes')
+
+const issuer = new URL(APP_ORIGIN).hostname
 
 export function buildAuthorizeUrl(): string {
   const redirectURI = getBBatonRedirectURI()
@@ -32,12 +30,6 @@ export function buildAuthorizeUrl(): string {
   return authorizeUrl.toString()
 }
 
-export function generateAttemptId(): string {
-  const array = new Uint8Array(32)
-  crypto.getRandomValues(array)
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
 export function getBBatonRedirectURI(): string {
   const url = new URL('/oauth/bbaton/callback', APP_ORIGIN)
   return url.toString()
@@ -46,37 +38,6 @@ export function getBBatonRedirectURI(): string {
 export function parseBirthYear(value: string): number {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : 0
-}
-
-const issuer = new URL(APP_ORIGIN).hostname
-
-type ReissueAuthCookiesClaims = {
-  userId: number
-  adult: boolean
-}
-
-export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: ReissueAuthCookiesClaims): Promise<void> {
-  const { key: atKey, value: atValue, options: atOptions } = await getAccessTokenCookieConfig({ userId, adult })
-  const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: atOptions.maxAge })
-
-  setCookie(c, atKey, atValue, atOptions)
-  setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
-
-  const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
-  if (!refreshToken) {
-    return
-  }
-
-  const rtPayload = await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null)
-  if (rtPayload?.sub !== String(userId)) {
-    return
-  }
-
-  const { key: rtKey, value: rtValue, options: rtOptions } = await getRefreshTokenCookieConfig({ userId, adult })
-  const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: rtOptions.maxAge })
-
-  setCookie(c, rtKey, rtValue, rtOptions)
-  setCookie(c, longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
 }
 
 export async function signBBatonAttemptToken(userId: number): Promise<string> {
@@ -95,23 +56,24 @@ export async function signBBatonAttemptToken(userId: number): Promise<string> {
 
 export async function verifyBBatonAttemptToken(token: string) {
   try {
-    const { payload } = await jwtVerify<BBatonAttemptTokenPayload>(
-      token,
-      new TextEncoder().encode(JWT_SECRET_BBATON_ATTEMPT),
-      {
-        algorithms: ['HS256'],
-        issuer,
-        typ: CookieKey.BBATON_ATTEMPT_ID,
-      },
-    )
+    const key = new TextEncoder().encode(JWT_SECRET_BBATON_ATTEMPT)
 
+    const options = {
+      algorithms: ['HS256'],
+      issuer,
+      typ: CookieKey.BBATON_ATTEMPT_ID,
+    }
+
+    const { payload } = await jwtVerify<BBatonAttemptTokenPayload>(token, key, options)
     const userId = Number.parseInt(payload.userId, 10)
+
     if (!Number.isFinite(userId)) {
       return null
     }
 
     const issuedAt = typeof payload.iat === 'number' ? payload.iat : null
     const expiresAt = typeof payload.exp === 'number' ? payload.exp : null
+
     if (!issuedAt || !expiresAt) {
       return null
     }
@@ -120,4 +82,10 @@ export async function verifyBBatonAttemptToken(token: string) {
   } catch {
     return null
   }
+}
+
+function generateAttemptId(): string {
+  const array = new Uint8Array(32)
+  crypto.getRandomValues(array)
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
 }
