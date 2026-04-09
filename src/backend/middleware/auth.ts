@@ -2,10 +2,11 @@ import { getCookie } from 'hono/cookie'
 import { createMiddleware } from 'hono/factory'
 
 import { refreshSession } from '@/auth/session'
+import { buildSessionDeviceLabel } from '@/auth/session.util'
 import { CookieKey } from '@/constants/storage'
 import { getAuthCookieClearConfigs } from '@/utils/cookie'
 import { JWTType, verifyJWT } from '@/utils/jwt'
-import { getRequestIP, getRequestUserAgent } from '@/utils/request'
+import { getRequestUserAgent } from '@/utils/request'
 
 import { Env } from '..'
 import { applyAuthCookie } from '../utils/cookie'
@@ -31,8 +32,7 @@ export const auth = createMiddleware<Env>(async (c, next) => {
   }
 
   const refreshResult = await refreshSession(refreshToken, {
-    ipAddress: getRequestIP(c.req.raw.headers),
-    userAgent: getRequestUserAgent(c.req.raw.headers),
+    deviceLabel: buildSessionDeviceLabel(getRequestUserAgent(c.req.raw.headers)),
   })
 
   if (!refreshResult.ok) {

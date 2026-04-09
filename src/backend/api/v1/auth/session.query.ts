@@ -14,10 +14,9 @@ import {
 
 type IssueAuthCookiesInput = {
   adult: boolean
-  ipAddress?: string | null
+  deviceLabel?: string | null
   remember: boolean
   tx?: SessionWriteExecutor
-  userAgent?: string | null
   userId: number
 }
 

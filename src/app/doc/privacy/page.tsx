@@ -95,8 +95,8 @@ export default async function Page() {
                 이용자가 서비스에서 생성·저장한 데이터
               </li>
               <li>
-                <span className="font-medium text-zinc-200">로그/기기 정보</span>: 접속 기록, IP 주소(또는 그 일부),
-                브라우저 정보, 기기/OS 정보, 페이지 뷰 등
+                <span className="font-medium text-zinc-200">로그/기기 정보</span>: 보안 처리에 필요한 접속 IP 주소,
+                브라우저/기기 요약 정보(예: Chrome macOS 데스크톱), 페이지 뷰 등
               </li>
               <li>
                 <span className="font-medium text-zinc-200">성능/통계 정보</span>: Google Analytics 및 Web Vitals을 통해
@@ -111,6 +111,10 @@ export default async function Page() {
             <ul className="list-disc list-inside space-y-2 text-sm text-zinc-300 marker:text-zinc-600">
               <li>실명, 이메일 주소, 연락처, 거주지, 국적 등 개인을 식별할 수 있는 정보</li>
             </ul>
+            <p className="text-xs text-zinc-500">
+              로그인 유지 세션에는 전체 IP 주소나 전체 user-agent 문자열을 저장하지 않고, 기기 구분에 필요한 최소한의
+              요약 정보만 보관합니다.
+            </p>
             <p className="text-xs text-zinc-500">
               단,{' '}
               <Link
@@ -142,6 +146,9 @@ export default async function Page() {
               개인정보는 목적 달성에 필요한 기간 동안 보관하고, 목적 달성 후에는 관련 법령 및 내부 정책에 따라 지체 없이
               파기합니다. 다만, 분쟁 대응, 부정 이용 방지, 법적 의무 준수를 위해 필요한 범위에서 일정 기간 보관될 수
               있습니다.
+            </p>
+            <p className="text-sm leading-relaxed text-zinc-300">
+              로그인 유지 세션에 연결된 기기 요약 정보는 세션이 만료되거나 로그아웃 처리되면 함께 삭제됩니다.
             </p>
           </section>
 

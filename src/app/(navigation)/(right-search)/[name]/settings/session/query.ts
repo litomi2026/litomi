@@ -22,7 +22,7 @@ export async function readPersistentSessionFamiliesByUserId(userId: number, now:
       lastUsedAt: authSessionFamilyTable.lastUsedAt,
       absoluteExpiresAt: authSessionFamilyTable.absoluteExpiresAt,
       idleExpiresAt: authSessionFamilyTable.idleExpiresAt,
-      userAgent: authSessionFamilyTable.userAgent,
+      deviceLabel: authSessionFamilyTable.deviceLabel,
     })
     .from(authSessionFamilyTable)
     .where(

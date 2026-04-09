@@ -6,6 +6,7 @@ import { deleteCookie, getCookie } from 'hono/cookie'
 import { z } from 'zod'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/common'
+import { buildSessionDeviceLabel } from '@/auth/session.util'
 import { Env } from '@/backend'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/backend/api/v1/auth/query'
 import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
@@ -63,7 +64,6 @@ const route = new Hono<Env>()
 
 route.post('/', zProblemValidator('json', verifyAuthenticationRequestSchema), async (c) => {
   const remoteIP = getRequestIP(c.req.raw.headers)
-  const userAgent = getRequestUserAgent(c.req.raw.headers)
   const { authentication, remember, turnstileToken } = c.req.valid('json')
   const { allowed, retryAfter } = await verifyAuthenticationLimiter.check(authentication.id)
 
@@ -179,8 +179,7 @@ route.post('/', zProblemValidator('json', verifyAuthenticationRequestSchema), as
       userId: result.user.id,
       adult: result.adult,
       remember,
-      ipAddress: remoteIP,
-      userAgent,
+      deviceLabel: remember ? buildSessionDeviceLabel(getRequestUserAgent(c.req.raw.headers)) : null,
     })
 
     applyAuthCookie(c, cookieConfigs)

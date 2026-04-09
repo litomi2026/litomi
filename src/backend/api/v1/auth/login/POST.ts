@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 import { z } from 'zod'
 
+import { buildSessionDeviceLabel } from '@/auth/session.util'
 import { Env } from '@/backend'
 import { readAdultFlag, touchUserLoginAt } from '@/backend/api/v1/auth/query'
 import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
@@ -59,7 +60,6 @@ const route = new Hono<Env>()
 route.post('/', zProblemValidator('json', loginRequestSchema), async (c) => {
   const { codeChallenge, fingerprint, loginId, password, remember, turnstileToken } = c.req.valid('json')
   const remoteIP = getRequestIP(c.req.raw.headers)
-  const userAgent = getRequestUserAgent(c.req.raw.headers)
   const validator = new TurnstileValidator()
 
   const turnstile = await validator.validate({
@@ -132,8 +132,7 @@ route.post('/', zProblemValidator('json', loginRequestSchema), async (c) => {
       userId: user.id,
       adult,
       remember,
-      ipAddress: remoteIP,
-      userAgent,
+      deviceLabel: remember ? buildSessionDeviceLabel(getRequestUserAgent(c.req.raw.headers)) : null,
     })
 
     applyAuthCookie(c, cookieConfigs)
