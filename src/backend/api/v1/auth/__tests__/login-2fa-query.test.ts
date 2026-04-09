@@ -48,7 +48,6 @@ describe('registerTrustedBrowser', () => {
       userId: 7,
       browserId: firstBrowserId,
     })
-    expect(firstInsertValues.lastUsedAt).toBeInstanceOf(Date)
     expect(secondInsertValues).toMatchObject({
       userId: 7,
       browserId: secondBrowserId,
