@@ -3,7 +3,7 @@ import 'server-only'
 
 import { userTable } from './user'
 
-// NOTE: Legacy refresh-session table kept for release-1 compatibility only.
+// TODO: 2026-05-09 시점에 삭제
 export const authSessionTable = pgTable(
   'auth_session',
   {
