@@ -1,5 +1,7 @@
 import { describe, expect, mock, test } from 'bun:test'
 
+import { MAX_TRUSTED_DEVICES_PER_USER } from '@/constants/policy'
+
 import { registerTrustedBrowser } from '../login/2fa/query'
 
 type RegisterTrustedBrowserTx = Parameters<typeof registerTrustedBrowser>[0]
@@ -12,15 +14,38 @@ function createTransactionDouble() {
   const insert = mock((_table: unknown) => ({
     values,
   }))
-  const execute = mock(async () => {})
+  const deleteWhere = mock(async (_condition: unknown) => {})
+  const deleteFn = mock((_table: unknown) => ({
+    where: deleteWhere,
+  }))
+  const limit = mock((_count: number) => ({}))
+  const orderBy = mock((..._orderBy: Array<unknown>) => ({
+    limit,
+  }))
+  const selectWhere = mock((_condition: unknown) => ({
+    orderBy,
+  }))
+  const from = mock((_table: unknown) => ({
+    where: selectWhere,
+  }))
+  const select = mock((_fields: unknown) => ({
+    from,
+  }))
 
   return {
     tx: {
-      execute,
+      delete: deleteFn,
       insert,
+      select,
     } as unknown as RegisterTrustedBrowserTx,
-    execute,
+    deleteFn,
+    deleteWhere,
+    from,
     insert,
+    limit,
+    orderBy,
+    select,
+    selectWhere,
     values,
     onConflictDoUpdate,
   }
@@ -38,7 +63,8 @@ describe('registerTrustedBrowser', () => {
     const secondBrowserId = await registerTrustedBrowser(second.tx, 7, 'fingerprint-a', USER_AGENT)
 
     expect(firstBrowserId).toBe(secondBrowserId)
-    expect(first.execute).toHaveBeenCalledTimes(1)
+    expect(first.deleteFn).toHaveBeenCalledTimes(1)
+    expect(first.select).toHaveBeenCalledTimes(1)
     expect(first.insert).toHaveBeenCalledTimes(1)
 
     const [firstInsertValues] = first.values.mock.calls[0]
@@ -65,5 +91,15 @@ describe('registerTrustedBrowser', () => {
 
     expect(baseBrowserId).not.toBe(differentUserBrowserId)
     expect(baseBrowserId).not.toBe(differentFingerprintBrowserId)
+  })
+
+  test('보존 개수만큼 active trusted browser를 남기는 정리 서브쿼리를 만든다', async () => {
+    const txDouble = createTransactionDouble()
+
+    await registerTrustedBrowser(txDouble.tx, 7, 'fingerprint-a', USER_AGENT)
+
+    expect(txDouble.limit).toHaveBeenCalledWith(MAX_TRUSTED_DEVICES_PER_USER)
+    expect(txDouble.deleteFn).toHaveBeenCalledTimes(1)
+    expect(txDouble.deleteWhere).toHaveBeenCalledTimes(1)
   })
 })

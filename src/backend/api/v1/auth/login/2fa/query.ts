@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { and, eq, isNull, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, isNull, lt, notInArray, or } from 'drizzle-orm'
 import { userAgent as getUserAgent } from 'next/server'
 
 import { MAX_TRUSTED_DEVICES_PER_USER } from '@/constants/policy'
@@ -46,25 +46,6 @@ export async function registerTrustedBrowser(
 
   expiresAt.setDate(expiresAt.getDate() + TRUSTED_BROWSER_EXPIRY_DAYS)
 
-  // Keep the current browser slot plus the most recently used N-1 other browsers.
-  await tx.execute(sql`
-    DELETE FROM ${trustedBrowserTable}
-    WHERE ${trustedBrowserTable.userId} = ${userId}
-      AND (
-        ${trustedBrowserTable.expiresAt} < ${now}
-        OR ${trustedBrowserTable.id} IN (
-          SELECT ${trustedBrowserTable.id}
-          FROM ${trustedBrowserTable}
-          WHERE ${trustedBrowserTable.userId} = ${userId}
-            AND ${trustedBrowserTable.browserId} <> ${browserId}
-            AND ${trustedBrowserTable.expiresAt} >= ${now}
-          ORDER BY COALESCE(${trustedBrowserTable.lastUsedAt}, ${trustedBrowserTable.createdAt}) DESC,
-            ${trustedBrowserTable.id} DESC
-          OFFSET ${MAX_TRUSTED_DEVICES_PER_USER - 1}
-        )
-      )
-  `)
-
   await tx
     .insert(trustedBrowserTable)
     .values({
@@ -82,6 +63,28 @@ export async function registerTrustedBrowser(
         lastUsedAt: now,
       },
     })
+
+  await tx.delete(trustedBrowserTable).where(
+    and(
+      eq(trustedBrowserTable.userId, userId),
+      or(
+        lt(trustedBrowserTable.expiresAt, now),
+        notInArray(
+          trustedBrowserTable.id,
+          tx
+            .select({ id: trustedBrowserTable.id })
+            .from(trustedBrowserTable)
+            .where(and(eq(trustedBrowserTable.userId, userId), gte(trustedBrowserTable.expiresAt, now)))
+            .orderBy(
+              desc(trustedBrowserTable.lastUsedAt),
+              desc(trustedBrowserTable.createdAt),
+              desc(trustedBrowserTable.id),
+            )
+            .limit(MAX_TRUSTED_DEVICES_PER_USER),
+        ),
+      ),
+    ),
+  )
 
   return browserId
 }
