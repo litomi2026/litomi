@@ -38,7 +38,7 @@ describe('SessionList', () => {
             createdAt: new Date('2026-04-09T00:00:00.000Z'),
             lastUsedAt: new Date('2026-04-09T01:00:00.000Z'),
             idleExpiresAt: new Date('2026-04-10T01:00:00.000Z'),
-            userAgent: 'Mozilla/5.0 (Macintosh) Chrome/146.0.0.0 Safari/537.36',
+            deviceLabel: 'Chrome macOS 데스크톱',
             isCurrent: true,
           },
         ]}

@@ -10,7 +10,6 @@ import type { DELETEV1MeSessionResponse } from '@/backend/api/v1/me/session'
 
 import { QueryKeys } from '@/constants/query'
 import { formatDistanceToNow } from '@/utils/format/date'
-import { getDeviceInfo } from '@/utils/push-device'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { revokeAllPersistentSessions, revokeOtherPersistentSessions, revokePersistentSession } from './api'
@@ -20,7 +19,7 @@ export type PersistentSession = {
   createdAt: Date
   lastUsedAt: Date
   idleExpiresAt: Date
-  userAgent: string | null
+  deviceLabel: string | null
   isCurrent: boolean
 }
 
@@ -205,11 +204,7 @@ function clearMeCache(queryClient: ReturnType<typeof useQueryClient>) {
 }
 
 function formatSessionInfo(session: PersistentSession) {
-  const { browser, device, os } = session.userAgent
-    ? getDeviceInfo(session.userAgent)
-    : { browser: '알 수 없는 기기', os: '', device: '' }
-
-  const deviceLabel = [browser, os, device].filter(Boolean).join(' ').trim() || '알 수 없는 기기'
+  const deviceLabel = session.deviceLabel?.trim() || '알 수 없는 기기'
   const lastUsedLabel = formatDistanceToNow(new Date(session.lastUsedAt))
   const createdLabel = `${dayjs(session.createdAt).format('YYYY년 M월 D일 HH:mm')} 로그인`
   const idleExpiresAt = dayjs(session.idleExpiresAt)
@@ -241,7 +236,7 @@ function getDeviceIcon(deviceName: string) {
     return <Smartphone className="size-5" />
   }
 
-  if (name.includes('tablet') || name.includes('ipad')) {
+  if (name.includes('tablet') || name.includes('ipad') || name.includes('태블릿')) {
     return <Tablet className="size-5" />
   }
 

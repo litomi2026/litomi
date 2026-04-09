@@ -88,7 +88,7 @@ export async function revokeSessionFamilyById(tx: SessionTransaction, familyId: 
 export async function touchSessionFamily(
   tx: SessionTransaction,
   familyId: string,
-  values: Pick<SessionFamilyRow, 'idleExpiresAt' | 'ipAddress' | 'lastUsedAt' | 'userAgent'>,
+  values: Pick<SessionFamilyRow, 'deviceLabel' | 'idleExpiresAt' | 'lastUsedAt'>,
 ) {
   await tx.update(authSessionFamilyTable).set(values).where(eq(authSessionFamilyTable.id, familyId))
 }

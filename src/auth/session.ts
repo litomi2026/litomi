@@ -24,6 +24,7 @@ import {
   REFRESH_SESSION_ABSOLUTE_TTL_SECONDS,
   REFRESH_SESSION_IDLE_TTL_SECONDS,
   REFRESH_SESSION_REUSE_GRACE_SECONDS,
+  SESSION_DEVICE_LABEL_MAX_LENGTH,
   truncateSessionMetadata,
 } from '@/auth/session.util'
 import { db } from '@/database/supabase/drizzle'
@@ -50,8 +51,7 @@ export type RefreshSessionSuccess = {
 }
 
 export type SessionMetadata = {
-  ipAddress?: string | null
-  userAgent?: string | null
+  deviceLabel?: string | null
 }
 
 export async function issuePersistentSession(
@@ -66,28 +66,25 @@ export async function issuePersistentSession(
   const absoluteExpiresAt = addSeconds(now, REFRESH_SESSION_ABSOLUTE_TTL_SECONDS)
   const idleExpiresAt = addSeconds(now, REFRESH_SESSION_IDLE_TTL_SECONDS)
 
-  await insertSessionFamily(
-    {
-      id: familyId,
-      userId,
-      createdAt: now,
-      lastUsedAt: now,
-      absoluteExpiresAt,
-      idleExpiresAt,
-      userAgent: truncateSessionMetadata(metadata.userAgent, 512),
-      ipAddress: truncateSessionMetadata(metadata.ipAddress, 64),
-    },
-    tx,
-  )
-  await insertSessionToken(
-    {
-      id: tokenId,
-      familyId,
-      tokenHash: hashSessionToken(token),
-      createdAt: now,
-    },
-    tx,
-  )
+  const values = {
+    id: familyId,
+    userId,
+    createdAt: now,
+    lastUsedAt: now,
+    absoluteExpiresAt,
+    idleExpiresAt,
+    deviceLabel: truncateSessionMetadata(metadata.deviceLabel, SESSION_DEVICE_LABEL_MAX_LENGTH),
+  }
+
+  const tokenValues = {
+    id: tokenId,
+    familyId,
+    tokenHash: hashSessionToken(token),
+    createdAt: now,
+  }
+
+  await insertSessionFamily(values, tx)
+  await insertSessionToken(tokenValues, tx)
 
   return {
     familyId,
@@ -199,8 +196,7 @@ export async function refreshSession(
     await touchSessionFamily(tx, family.id, {
       idleExpiresAt: nextIdleExpiresAt,
       lastUsedAt: now,
-      userAgent: truncateSessionMetadata(metadata.userAgent ?? family.userAgent, 512),
-      ipAddress: truncateSessionMetadata(metadata.ipAddress ?? family.ipAddress, 64),
+      deviceLabel: truncateSessionMetadata(metadata.deviceLabel ?? family.deviceLabel, SESSION_DEVICE_LABEL_MAX_LENGTH),
     })
 
     const adult = await readAdultFlag(tx, family.userId)

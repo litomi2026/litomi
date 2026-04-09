@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 import { z } from 'zod'
 
+import { buildSessionDeviceLabel } from '@/auth/session.util'
 import { Env } from '@/backend'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/backend/api/v1/auth/query'
 import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
@@ -177,8 +178,7 @@ route.post('/', zProblemValidator('json', verifyTwoFactorRequestSchema), async (
         userId,
         adult,
         remember,
-        ipAddress: remoteIP,
-        userAgent,
+        deviceLabel: remember ? buildSessionDeviceLabel(userAgent) : null,
         tx,
       })
 

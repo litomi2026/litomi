@@ -12,7 +12,7 @@ import { SALT_ROUNDS } from '@/constants'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
-import { getRequestIP, getRequestUserAgent } from '@/utils/request'
+import { getRequestIP } from '@/utils/request'
 import TurnstileValidator from '@/utils/turnstile'
 
 export type POSTV1AuthSignupRequest = {
@@ -109,8 +109,6 @@ route.post('/', zProblemValidator('json', signupRequestSchema), async (c) => {
       userId: result.id,
       adult: false,
       remember: false,
-      ipAddress: remoteIP,
-      userAgent: getRequestUserAgent(c.req.raw.headers),
     })
 
     applyAuthCookie(c, cookieConfigs)

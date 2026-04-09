@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import 'server-only'
+import { userAgent as parseUserAgent } from 'next/server'
 
 import { sec } from '@/utils/format/date'
 
@@ -7,9 +8,23 @@ export const REFRESH_SESSION_ABSOLUTE_TTL_SECONDS = sec('30 days')
 export const REFRESH_SESSION_IDLE_TTL_SECONDS = sec('30 days')
 export const REFRESH_SESSION_REUSE_GRACE_SECONDS = sec('5 seconds')
 export const REFRESH_SESSION_TOKEN_BYTES = 32
+export const SESSION_DEVICE_LABEL_MAX_LENGTH = 128
 
 export function addSeconds(date: Date, seconds: number) {
   return new Date(date.getTime() + seconds * 1000)
+}
+
+export function buildSessionDeviceLabel(rawUserAgent: string | null | undefined) {
+  if (!rawUserAgent || rawUserAgent === 'unknown') {
+    return null
+  }
+
+  const agent = parseUserAgent({ headers: new Headers({ 'user-agent': rawUserAgent }) })
+  const browser = agent.browser.name || '알 수 없는 브라우저'
+  const os = normalizeSessionOSName(agent.os.name)
+  const device = normalizeSessionDeviceType(agent.device.type)
+
+  return [browser, os, device].filter(Boolean).join(' ').trim().slice(0, SESSION_DEVICE_LABEL_MAX_LENGTH)
 }
 
 export function generateSessionToken() {
@@ -34,4 +49,28 @@ export function truncateSessionMetadata(value: string | null | undefined, maxLen
   }
 
   return value.slice(0, maxLength)
+}
+
+function normalizeSessionDeviceType(type: string | undefined) {
+  if (type === 'mobile') {
+    return '모바일'
+  }
+
+  if (type === 'tablet') {
+    return '태블릿'
+  }
+
+  return '데스크톱'
+}
+
+function normalizeSessionOSName(name: string | undefined) {
+  if (!name) {
+    return ''
+  }
+
+  if (name === 'Mac OS') {
+    return 'macOS'
+  }
+
+  return name
 }

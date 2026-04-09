@@ -20,6 +20,9 @@ export const authSessionTable = pgTable(
     rotatedAt: timestamp('rotated_at', { precision: 3, withTimezone: true }),
     revokedAt: timestamp('revoked_at', { precision: 3, withTimezone: true }),
     replacedBySessionId: uuid('replaced_by_session_id'),
+    deviceLabel: varchar('device_label', { length: 128 }),
+
+    // TODO: 2026-05-09 시점에 삭제
     userAgent: varchar('user_agent', { length: 512 }),
     ipAddress: varchar('ip_address', { length: 64 }),
   },
@@ -43,6 +46,9 @@ export const authSessionFamilyTable = pgTable(
     absoluteExpiresAt: timestamp('absolute_expires_at', { precision: 3, withTimezone: true }).notNull(),
     idleExpiresAt: timestamp('idle_expires_at', { precision: 3, withTimezone: true }).notNull(),
     revokedAt: timestamp('revoked_at', { precision: 3, withTimezone: true }),
+    deviceLabel: varchar('device_label', { length: 128 }),
+
+    // TODO: 2026-04-12 시점에 삭제
     userAgent: varchar('user_agent', { length: 512 }),
     ipAddress: varchar('ip_address', { length: 64 }),
   },

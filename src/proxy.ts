@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { refreshSession } from './auth/session'
+import { buildSessionDeviceLabel } from './auth/session.util'
 import { CookieKey } from './constants/storage'
 import { JWTType, verifyJWT } from './utils/jwt'
-import { getRequestIP, getRequestUserAgent } from './utils/request'
+import { getRequestUserAgent } from './utils/request'
 
 export const config = {
   // DOCS: The matcher values need to be constants so they can be statically analyzed at build-time
@@ -42,10 +43,11 @@ export async function proxy({ cookies, headers }: NextRequest) {
     return response
   }
 
-  const refreshResult = await refreshSession(refreshToken, {
-    ipAddress: getRequestIP(headers),
-    userAgent: getRequestUserAgent(headers),
-  })
+  const metadata = {
+    deviceLabel: buildSessionDeviceLabel(getRequestUserAgent(headers)),
+  }
+
+  const refreshResult = await refreshSession(refreshToken, metadata)
 
   if (!refreshResult.ok) {
     const response = NextResponse.next()

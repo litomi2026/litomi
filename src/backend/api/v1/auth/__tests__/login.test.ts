@@ -25,6 +25,8 @@ type MockLoginUser = {
 
 let loginRoute: LoginRouteModule['default']
 let requestSequence = 0
+const TEST_USER_AGENT =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36'
 
 const compareMock = mock(async () => loginState.isPasswordValid)
 const issueAuthCookiesMock = mock(async () => [
@@ -223,7 +225,7 @@ function requestLogin(body: Record<string, unknown>, ip = getNextIPAddress(), he
     headers: {
       'CF-Connecting-IP': ip,
       'Content-Type': 'application/json',
-      'user-agent': 'bun-test',
+      'user-agent': TEST_USER_AGENT,
       'x-real-ip': ip,
       'x-forwarded-for': ip,
       ...headers,
@@ -255,8 +257,7 @@ describe('POST /api/v1/auth/login', () => {
       userId: 7,
       adult: true,
       remember: false,
-      ipAddress: '198.51.100.1',
-      userAgent: 'bun-test',
+      deviceLabel: null,
     })
     expect(initiatePKCEChallengeMock).not.toHaveBeenCalled()
     expect(readLoginUserByLoginIdMock).toHaveBeenCalled()
