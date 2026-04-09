@@ -35,23 +35,18 @@ type DatabaseReadiness = {
   connected: boolean
 }
 
-const baseClientOptions = {
+const supabaseTransactionClient = postgres(POSTGRES_URL, {
   idle_timeout: POSTGRES_IDLE_TIMEOUT_SECONDS,
   connect_timeout: POSTGRES_CONNECT_TIMEOUT_SECONDS,
   max_lifetime: POSTGRES_MAX_LIFETIME_SECONDS,
-  connection: {
-    application_name: POSTGRES_APPLICATION_NAME,
-  },
+  connection: { application_name: POSTGRES_APPLICATION_NAME },
   ssl: SUPABASE_CERTIFICATE ? { ca: SUPABASE_CERTIFICATE, rejectUnauthorized: true } : ('prefer' as const),
-}
-
-const supabaseClient = postgres(POSTGRES_URL, {
-  ...baseClientOptions,
   max: POSTGRES_POOL_MAX,
+  prepare: false,
 })
 
 export const db = drizzle({
-  client: supabaseClient,
+  client: supabaseTransactionClient,
   schema: {
     ...activitySchema,
     ...authSchema,
@@ -101,7 +96,7 @@ export async function checkDatabaseReadiness(): Promise<DatabaseReadiness> {
 
 async function fetchDatabaseReadiness(): Promise<DatabaseReadiness> {
   try {
-    const [result] = (await supabaseClient`select 1 as connection`) as Array<{ connection: number }>
+    const [result] = (await supabaseTransactionClient`select 1 as connection`) as Array<{ connection: number }>
 
     return {
       checkedAt: new Date(),
