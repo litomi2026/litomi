@@ -49,7 +49,7 @@ const getTrustedBrowserCookieConfigMock = (token: string) => ({
   options: {
     domain: 'localhost',
     httpOnly: true,
-    path: '/auth/login',
+    path: '/',
     sameSite: 'strict' as const,
     secure: true,
   },

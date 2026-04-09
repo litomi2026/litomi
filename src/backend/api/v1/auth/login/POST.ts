@@ -111,7 +111,7 @@ route.post('/', zProblemValidator('json', loginRequestSchema), async (c) => {
       if (!browserExists && trustedBrowserToken) {
         deleteCookie(c, CookieKey.TRUSTED_BROWSER_TOKEN, {
           domain: COOKIE_DOMAIN,
-          path: '/auth/login',
+          path: '/',
         })
       }
 

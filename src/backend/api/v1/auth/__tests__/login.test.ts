@@ -57,7 +57,7 @@ const getTrustedBrowserCookieConfigMock = (token: string) => ({
   options: {
     domain: 'localhost',
     httpOnly: true,
-    path: '/auth/login',
+    path: '/',
     sameSite: 'strict' as const,
     secure: true,
   },
@@ -313,6 +313,37 @@ describe('POST /api/v1/auth/login', () => {
     })
 
     expect(initiatePKCEChallengeMock).toHaveBeenCalledWith(7, 'A'.repeat(43), expect.any(String))
+    expect(issueAuthCookiesMock).not.toHaveBeenCalled()
+  })
+
+  test('유효하지 않은 trusted browser 토큰이 있으면 루트 경로 쿠키를 지우고 2FA를 요구한다', async () => {
+    const fingerprint = `fingerprint-${Math.floor(Math.random() * 1_000_000)}`
+
+    loginState.twoFactorEnabled = true
+    loginState.trustedBrowserTokenData = {
+      browserId: 'browser-id',
+      fingerprint,
+      userId: 7,
+    }
+    loginState.trustedBrowserRecordExists = false
+
+    const response = await requestLogin(buildLoginRequest({ fingerprint }), getNextIPAddress(), {
+      cookie: `${CookieKey.TRUSTED_BROWSER_TOKEN}=trusted-token`,
+    })
+
+    expect(response.status).toBe(200)
+    expect(getSetCookieHeader(response)).toContain('tbt=;')
+    expect(getSetCookieHeader(response)).toContain('Path=/')
+
+    const data = (await response.json()) as POSTV1AuthLoginTwoFactorResponse
+    expect(data).toEqual({
+      nextStep: 'two_factor_required',
+      authorizationCode: 'auth-code-123',
+    })
+
+    expect(verifyTrustedBrowserTokenMock).toHaveBeenCalledWith('trusted-token')
+    expect(touchTrustedBrowserLastUsedAtMock).toHaveBeenCalledWith(7, 'browser-id', expect.any(Date))
+    expect(initiatePKCEChallengeMock).toHaveBeenCalledWith(7, 'A'.repeat(43), fingerprint)
     expect(issueAuthCookiesMock).not.toHaveBeenCalled()
   })
 

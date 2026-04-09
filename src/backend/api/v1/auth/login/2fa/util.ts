@@ -19,7 +19,7 @@ export function getTrustedBrowserCookieConfig(token: string) {
       domain: COOKIE_DOMAIN,
       httpOnly: true,
       maxAge: sec(`${TRUSTED_BROWSER_EXPIRY_DAYS} days`),
-      path: '/auth/login',
+      path: '/',
       sameSite: 'strict' as const,
       secure: true,
     },
