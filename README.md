@@ -119,15 +119,17 @@ bun dev
 
 ## 기타 스크립트
 
-### 1) DB 스키마 반영 (Drizzle)
+### 1) DB 스키마 반영
 
 ```bash
-# Supabase 스키마
+# Supabase 테이블/인덱스(Drizzle) + 커스텀 SQL migration(pg_cron, 함수 등)
 bun run db:push
 
 # Aiven 스키마
 bun run db:push:aiven
 ```
+
+`bun run db:push`는 Drizzle schema를 먼저 적용한 뒤, `supabase/migrations` 아래의 SQL migration도 이어서 적용해요. 커스텀 SQL 적용에는 Supabase CLI가 필요하지만, 스크립트에서 `bunx supabase ...`로 실행하므로 별도 Dashboard 작업은 필요 없어요.
 
 ### 2) Backend 실행
 
