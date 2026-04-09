@@ -114,29 +114,23 @@ export default function SessionList({ sessions, hasCurrentPersistentSession }: P
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-semibold text-zinc-100">로그인 유지 중인 기기</h3>
-          <p className="mt-1 text-sm text-zinc-400">로그인 상태가 저장된 기기와 브라우저를 관리해요</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 disabled:opacity-50"
-            disabled={revokeOthersMutation.isPending}
-            onClick={handleRevokeOthers}
-            type="button"
-          >
-            {revokeOthersMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : revokeOthersLabel}
-          </button>
-          <button
-            className="rounded-lg border border-red-900/60 px-3 py-2 text-sm text-red-300 transition hover:bg-red-950/40 disabled:opacity-50"
-            disabled={revokeAllMutation.isPending}
-            onClick={handleRevokeAll}
-            type="button"
-          >
-            {revokeAllMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : '모든 기기 로그아웃'}
-          </button>
-        </div>
+      <div className="flex flex-wrap gap-2">
+        <button
+          className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 disabled:opacity-50"
+          disabled={revokeOthersMutation.isPending}
+          onClick={handleRevokeOthers}
+          type="button"
+        >
+          {revokeOthersMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : revokeOthersLabel}
+        </button>
+        <button
+          className="rounded-lg border border-red-900/60 px-3 py-2 text-sm text-red-300 transition hover:bg-red-950/40 disabled:opacity-50"
+          disabled={revokeAllMutation.isPending}
+          onClick={handleRevokeAll}
+          type="button"
+        >
+          {revokeAllMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : '모든 기기 로그아웃'}
+        </button>
       </div>
 
       <div className="space-y-2">

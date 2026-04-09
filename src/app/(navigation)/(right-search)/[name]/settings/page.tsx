@@ -184,7 +184,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         description="로그인 유지 중인 브라우저와 기기를 확인하고 종료하세요"
         icon={<MonitorSmartphone className="size-5 shrink-0" />}
         id="session"
-        title="세션 관리"
+        title="로그인 기기 관리"
       >
         <ErrorBoundary fallback={InternalServerError}>
           <Suspense fallback={<LoadingFallback />}>
