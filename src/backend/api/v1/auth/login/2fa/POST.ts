@@ -133,12 +133,21 @@ route.post('/', zProblemValidator('json', verifyTwoFactorRequestSchema), async (
 
       if (trustBrowser && !tokenVerification.isBackupCode) {
         try {
-          const browserId = await registerTrustedBrowser(userId, fingerprint, userAgent)
+          const browserId = await registerTrustedBrowser(tx, userId, fingerprint, userAgent)
           trustedBrowserToken = await signTrustedBrowserToken({ browserId, userId, fingerprint })
         } catch (error) {
           console.error('trustedBrowser setup failed:', error)
         }
       }
+
+      const cookieConfigs = await issueAuthCookies({
+        userId,
+        adult,
+        remember,
+        ipAddress: remoteIP,
+        userAgent,
+        tx,
+      })
 
       return {
         ok: true,
@@ -146,6 +155,7 @@ route.post('/', zProblemValidator('json', verifyTwoFactorRequestSchema), async (
         isBackupCode: tokenVerification.isBackupCode,
         backupCodeCount: tokenVerification.backupCodeCount,
         adult,
+        cookieConfigs,
         trustedBrowserToken,
       } as const
     })
@@ -159,15 +169,7 @@ route.post('/', zProblemValidator('json', verifyTwoFactorRequestSchema), async (
       setCookie(c, trustedBrowserCookie.key, trustedBrowserCookie.value, trustedBrowserCookie.options)
     }
 
-    const cookieConfigs = await issueAuthCookies({
-      userId,
-      adult: result.adult,
-      remember,
-      ipAddress: remoteIP,
-      userAgent,
-    })
-
-    applyAuthCookie(c, cookieConfigs)
+    applyAuthCookie(c, result.cookieConfigs)
 
     await Promise.allSettled([twoFactorIpLimiter.reward(remoteIP), twoFactorUserLimiter.reward(String(userId))])
 
@@ -196,23 +198,11 @@ const BROKEN_TOTP_RESPONSE = {
   detail: '2단계 인증에 문제가 있어요. 관리자에게 문의해 주세요.',
 } as const satisfies TokenVerificationResult
 
-const verifyTotpLoginToken = async (encryptedSecret: string, token: string): Promise<TokenVerificationResult> => {
-  try {
-    const secret = decryptTOTPSecret(encryptedSecret)
-    const verified = await verifyTOTPToken(token, secret)
-
-    return verified ? { ok: true, isBackupCode: false, backupCodeCount: 0 } : INVALID_TOKEN_RESPONSE
-  } catch (error) {
-    console.error('Failed to decrypt TOTP secret:', error)
-    return BROKEN_TOTP_RESPONSE
-  }
-}
-
-const verifyBackupLoginToken = async (
+async function verifyBackupLoginToken(
   tx: TwoFactorTransaction,
   userId: number,
   token: string,
-): Promise<TokenVerificationResult> => {
+): Promise<TokenVerificationResult> {
   const backupCodes = await readBackupCodeHashesByUserId(tx, userId)
 
   const verificationResults = await Promise.all(
@@ -234,5 +224,17 @@ const verifyBackupLoginToken = async (
     ok: true,
     isBackupCode: true,
     backupCodeCount: verificationResults.length - 1,
+  }
+}
+
+async function verifyTotpLoginToken(encryptedSecret: string, token: string): Promise<TokenVerificationResult> {
+  try {
+    const secret = decryptTOTPSecret(encryptedSecret)
+    const verified = await verifyTOTPToken(token, secret)
+
+    return verified ? { ok: true, isBackupCode: false, backupCodeCount: 0 } : INVALID_TOKEN_RESPONSE
+  } catch (error) {
+    console.error('Failed to decrypt TOTP secret:', error)
+    return BROKEN_TOTP_RESPONSE
   }
 }

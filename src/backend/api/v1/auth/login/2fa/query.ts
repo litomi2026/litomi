@@ -33,57 +33,60 @@ export async function readBackupCodeHashesByUserId(tx: TwoFactorTransaction, use
     .where(eq(twoFactorBackupCodeTable.userId, userId))
 }
 
-export async function registerTrustedBrowser(userId: number, fingerprint: string, userAgent: string) {
+export async function registerTrustedBrowser(
+  tx: TwoFactorTransaction,
+  userId: number,
+  fingerprint: string,
+  userAgent: string,
+) {
   const browserId = generateBrowserId(fingerprint)
   const browserName = parseBrowserName(userAgent)
   const expiresAt = new Date()
 
   expiresAt.setDate(expiresAt.getDate() + TRUSTED_BROWSER_EXPIRY_DAYS)
 
-  await db.transaction(async (tx) => {
-    const existingBrowsers = await tx
-      .select({
-        id: trustedBrowserTable.id,
-        browserId: trustedBrowserTable.browserId,
-      })
-      .from(trustedBrowserTable)
-      .where(eq(trustedBrowserTable.userId, userId))
-      .orderBy(desc(trustedBrowserTable.lastUsedAt))
+  const existingBrowsers = await tx
+    .select({
+      id: trustedBrowserTable.id,
+      browserId: trustedBrowserTable.browserId,
+    })
+    .from(trustedBrowserTable)
+    .where(eq(trustedBrowserTable.userId, userId))
+    .orderBy(desc(trustedBrowserTable.lastUsedAt))
 
-    const currentBrowser = existingBrowsers.find((browser) => browser.browserId === browserId)
+  const currentBrowser = existingBrowsers.find((browser) => browser.browserId === browserId)
 
-    if (!currentBrowser && existingBrowsers.length >= MAX_TRUSTED_DEVICES_PER_USER) {
-      const idsToDelete = existingBrowsers.slice(MAX_TRUSTED_DEVICES_PER_USER - 1).map((browser) => browser.id)
+  if (!currentBrowser && existingBrowsers.length >= MAX_TRUSTED_DEVICES_PER_USER) {
+    const idsToDelete = existingBrowsers.slice(MAX_TRUSTED_DEVICES_PER_USER - 1).map((browser) => browser.id)
 
-      if (idsToDelete.length > 0) {
-        await tx
-          .delete(trustedBrowserTable)
-          .where(
-            and(
-              eq(trustedBrowserTable.userId, userId),
-              or(inArray(trustedBrowserTable.id, idsToDelete), lt(trustedBrowserTable.expiresAt, new Date())),
-            ),
-          )
-      }
+    if (idsToDelete.length > 0) {
+      await tx
+        .delete(trustedBrowserTable)
+        .where(
+          and(
+            eq(trustedBrowserTable.userId, userId),
+            or(inArray(trustedBrowserTable.id, idsToDelete), lt(trustedBrowserTable.expiresAt, new Date())),
+          ),
+        )
     }
+  }
 
-    await tx
-      .insert(trustedBrowserTable)
-      .values({
-        userId,
-        browserId,
+  await tx
+    .insert(trustedBrowserTable)
+    .values({
+      userId,
+      browserId,
+      browserName,
+      expiresAt,
+    })
+    .onConflictDoUpdate({
+      target: [trustedBrowserTable.userId, trustedBrowserTable.browserId],
+      set: {
         browserName,
         expiresAt,
-      })
-      .onConflictDoUpdate({
-        target: [trustedBrowserTable.userId, trustedBrowserTable.browserId],
-        set: {
-          browserName,
-          expiresAt,
-          lastUsedAt: new Date(),
-        },
-      })
-  })
+        lastUsedAt: new Date(),
+      },
+    })
 
   return browserId
 }

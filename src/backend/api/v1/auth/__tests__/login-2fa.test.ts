@@ -254,13 +254,20 @@ describe('POST /api/v1/auth/login/2fa', () => {
       backupCodeCount: 0,
     })
 
-    expect(registerTrustedBrowserMock).toHaveBeenCalledWith(7, 'fingerprint-1', 'bun-test')
+    expect(registerTrustedBrowserMock).toHaveBeenCalledWith({}, 7, 'fingerprint-1', 'bun-test')
     expect(signTrustedBrowserTokenMock).toHaveBeenCalledWith({
       browserId: 'browser-id',
       userId: 7,
       fingerprint: 'fingerprint-1',
     })
-    expect(issueAuthCookiesMock).toHaveBeenCalled()
+    expect(issueAuthCookiesMock).toHaveBeenCalledWith({
+      userId: 7,
+      adult: true,
+      remember: false,
+      ipAddress: '198.51.100.1',
+      userAgent: 'bun-test',
+      tx: {},
+    })
   })
 
   test('백업 코드 성공 시 trusted browser 쿠키는 발급하지 않는다', async () => {
