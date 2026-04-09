@@ -20,11 +20,11 @@ import { clearMigratedHistory, getLocalReadingHistory } from '@/components/Readi
 import TurnstileWidget from '@/components/TurnstileWidget'
 import Toggle from '@/components/ui/Toggle'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
-import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
+import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
 
@@ -149,7 +149,8 @@ export default function LoginForm() {
       dispatchMigration(localHistory)
     }
 
-    await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+    await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
+
     const params = new URLSearchParams(window.location.search)
     const redirect = params.get(SearchParamKey.REDIRECT)
     const sanitizedURL = sanitizeRedirect(redirect) || '/'
