@@ -1,4 +1,3 @@
-import { createHash } from 'crypto'
 import 'server-only'
 import { eq } from 'drizzle-orm'
 import { Context } from 'hono'
@@ -7,7 +6,7 @@ import { getCookie, setCookie } from 'hono/cookie'
 import { hashSessionToken } from '@/auth/session.util'
 import { Env } from '@/backend'
 import { CookieKey } from '@/constants/storage'
-import { authSessionTable } from '@/database/supabase/auth'
+import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
 import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
 
@@ -75,14 +74,16 @@ async function readActiveRefreshSession(refreshToken: string): Promise<ActiveRef
 async function readRefreshSessionByTokenHash(tokenHash: string) {
   const [session] = await db
     .select({
-      userId: authSessionTable.userId,
-      absoluteExpiresAt: authSessionTable.absoluteExpiresAt,
-      idleExpiresAt: authSessionTable.idleExpiresAt,
-      revokedAt: authSessionTable.revokedAt,
-      rotatedAt: authSessionTable.rotatedAt,
+      familyId: authSessionFamilyTable.id,
+      userId: authSessionFamilyTable.userId,
+      absoluteExpiresAt: authSessionFamilyTable.absoluteExpiresAt,
+      idleExpiresAt: authSessionFamilyTable.idleExpiresAt,
+      revokedAt: authSessionFamilyTable.revokedAt,
+      rotatedAt: authSessionTokenTable.rotatedAt,
     })
-    .from(authSessionTable)
-    .where(eq(authSessionTable.tokenHash, tokenHash))
+    .from(authSessionTokenTable)
+    .innerJoin(authSessionFamilyTable, eq(authSessionFamilyTable.id, authSessionTokenTable.familyId))
+    .where(eq(authSessionTokenTable.tokenHash, tokenHash))
 
   return session ?? null
 }
