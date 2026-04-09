@@ -167,15 +167,17 @@ TOTP_ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789a
 # GOOGLE_CLOUD_PROJECT=""
 ```
 
-### 4) Apply DB schema (Drizzle)
+### 4) Apply DB schema
 
 ```bash
-# Supabase schema
+# Supabase tables/indexes (Drizzle) + custom SQL migrations (pg_cron, functions, etc.)
 bun run db:push
 
 # Aiven schema
 bun run db:push:aiven
 ```
+
+`bun run db:push` applies the Drizzle schema first, then runs SQL migrations from `supabase/migrations`. Custom SQL uses the Supabase CLI through `bunx supabase ...`, so you do not need to manage these changes manually in the Dashboard.
 
 ### 5) Start Backend
 

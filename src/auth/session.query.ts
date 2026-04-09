@@ -1,37 +1,42 @@
 import { and, eq, isNull } from 'drizzle-orm'
 import 'server-only'
 
-import { authSessionTable } from '@/database/supabase/auth'
+import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 
-export type SessionInsert = typeof authSessionTable.$inferInsert
-export type SessionRow = typeof authSessionTable.$inferSelect
+export type SessionFamilyInsert = typeof authSessionFamilyTable.$inferInsert
+export type SessionFamilyRow = typeof authSessionFamilyTable.$inferSelect
+export type SessionTokenInsert = typeof authSessionTokenTable.$inferInsert
+export type SessionTokenRow = typeof authSessionTokenTable.$inferSelect
 export type SessionTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 export type SessionWriteExecutor = Pick<SessionTransaction, 'insert'> | Pick<typeof db, 'insert'>
 
 type InsertExecutor = Pick<typeof db, 'insert'>
 
-export async function insertSession(values: SessionInsert, tx?: SessionWriteExecutor) {
+export async function insertSessionFamily(values: SessionFamilyInsert, tx?: SessionWriteExecutor) {
   const executor = (tx ?? db) as InsertExecutor
-
-  await executor.insert(authSessionTable).values(values)
+  await executor.insert(authSessionFamilyTable).values(values)
 }
 
-export async function markSessionRotated(
+export async function insertSessionToken(values: SessionTokenInsert, tx?: SessionWriteExecutor) {
+  const executor = (tx ?? db) as InsertExecutor
+  await executor.insert(authSessionTokenTable).values(values)
+}
+
+export async function markSessionTokenRotated(
   tx: SessionTransaction,
-  sessionId: string,
-  replacedBySessionId: string,
+  tokenId: string,
+  replacedByTokenId: string,
   now: Date,
 ) {
   await tx
-    .update(authSessionTable)
+    .update(authSessionTokenTable)
     .set({
       rotatedAt: now,
-      replacedBySessionId,
-      lastUsedAt: now,
+      replacedByTokenId,
     })
-    .where(eq(authSessionTable.id, sessionId))
+    .where(eq(authSessionTokenTable.id, tokenId))
 }
 
 export async function readAdultFlag(tx: SessionTransaction, userId: number) {
@@ -43,39 +48,47 @@ export async function readAdultFlag(tx: SessionTransaction, userId: number) {
   return verification?.adultFlag === true
 }
 
-export async function readSessionByIdForUpdate(tx: SessionTransaction, sessionId: string) {
-  const [session] = await tx.select().from(authSessionTable).where(eq(authSessionTable.id, sessionId)).for('update')
-
-  return session ?? null
-}
-
-export async function readSessionByTokenHashForUpdate(tx: SessionTransaction, tokenHash: string) {
-  const [session] = await tx
+export async function readSessionFamilyByIdForUpdate(tx: SessionTransaction, familyId: string) {
+  const [family] = await tx
     .select()
-    .from(authSessionTable)
-    .where(eq(authSessionTable.tokenHash, tokenHash))
+    .from(authSessionFamilyTable)
+    .where(eq(authSessionFamilyTable.id, familyId))
     .for('update')
 
-  return session ?? null
+  return family ?? null
 }
 
-export async function revokeAllSessionsByUserId(userId: number, now: Date) {
-  await db
-    .update(authSessionTable)
-    .set({ revokedAt: now, lastUsedAt: now })
-    .where(and(eq(authSessionTable.userId, userId), isNull(authSessionTable.revokedAt)))
+export async function readSessionTokenByHashForUpdate(tx: SessionTransaction, tokenHash: string) {
+  const [token] = await tx
+    .select()
+    .from(authSessionTokenTable)
+    .where(eq(authSessionTokenTable.tokenHash, tokenHash))
+    .for('update')
+
+  return token ?? null
 }
 
-export async function revokeSessionById(tx: SessionTransaction, sessionId: string, now: Date) {
+export async function readSessionTokenByIdForUpdate(tx: SessionTransaction, tokenId: string) {
+  const [token] = await tx
+    .select()
+    .from(authSessionTokenTable)
+    .where(eq(authSessionTokenTable.id, tokenId))
+    .for('update')
+
+  return token ?? null
+}
+
+export async function revokeSessionFamilyById(tx: SessionTransaction, familyId: string, now: Date) {
   await tx
-    .update(authSessionTable)
+    .update(authSessionFamilyTable)
     .set({ revokedAt: now, lastUsedAt: now })
-    .where(and(eq(authSessionTable.id, sessionId), isNull(authSessionTable.revokedAt)))
+    .where(and(eq(authSessionFamilyTable.id, familyId), isNull(authSessionFamilyTable.revokedAt)))
 }
 
-export async function revokeSessionFamily(tx: SessionTransaction, familyId: string, now: Date) {
-  await tx
-    .update(authSessionTable)
-    .set({ revokedAt: now, lastUsedAt: now })
-    .where(and(eq(authSessionTable.familyId, familyId), isNull(authSessionTable.revokedAt)))
+export async function touchSessionFamily(
+  tx: SessionTransaction,
+  familyId: string,
+  values: Pick<SessionFamilyRow, 'idleExpiresAt' | 'ipAddress' | 'lastUsedAt' | 'userAgent'>,
+) {
+  await tx.update(authSessionFamilyTable).set(values).where(eq(authSessionFamilyTable.id, familyId))
 }

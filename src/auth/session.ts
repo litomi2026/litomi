@@ -2,15 +2,30 @@ import crypto from 'crypto'
 import 'server-only'
 
 import {
-  insertSession,
-  markSessionRotated,
+  insertSessionFamily,
+  insertSessionToken,
+  markSessionTokenRotated,
   readAdultFlag,
-  readSessionByIdForUpdate,
-  readSessionByTokenHashForUpdate,
-  revokeSessionById,
-  revokeSessionFamily,
-  type SessionRow,
+  readSessionFamilyByIdForUpdate,
+  readSessionTokenByHashForUpdate,
+  readSessionTokenByIdForUpdate,
+  revokeSessionFamilyById,
+  type SessionFamilyRow,
+  type SessionTokenRow,
+  type SessionWriteExecutor,
+  touchSessionFamily,
 } from '@/auth/session.query'
+import {
+  addSeconds,
+  generateSessionToken,
+  getRemainingSeconds,
+  hashSessionToken,
+  minDate,
+  REFRESH_SESSION_ABSOLUTE_TTL_SECONDS,
+  REFRESH_SESSION_IDLE_TTL_SECONDS,
+  REFRESH_SESSION_REUSE_GRACE_SECONDS,
+  truncateSessionMetadata,
+} from '@/auth/session.util'
 import { db } from '@/database/supabase/drizzle'
 import {
   type AuthCookieConfig,
@@ -19,11 +34,6 @@ import {
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
 } from '@/utils/cookie'
-import { sec } from '@/utils/format/date'
-
-const REFRESH_SESSION_IDLE_TTL_SECONDS = sec('30 days')
-const REFRESH_SESSION_REUSE_GRACE_SECONDS = sec('5 seconds')
-const REFRESH_SESSION_TOKEN_BYTES = 32
 
 export type RefreshSessionFailure = {
   cookies: AuthCookieConfig[]
@@ -44,6 +54,48 @@ export type SessionMetadata = {
   userAgent?: string | null
 }
 
+export async function issuePersistentSession(
+  userId: number,
+  metadata: SessionMetadata = {},
+  tx?: SessionWriteExecutor,
+) {
+  const now = new Date()
+  const familyId = crypto.randomUUID()
+  const tokenId = crypto.randomUUID()
+  const token = generateSessionToken()
+  const absoluteExpiresAt = addSeconds(now, REFRESH_SESSION_ABSOLUTE_TTL_SECONDS)
+  const idleExpiresAt = addSeconds(now, REFRESH_SESSION_IDLE_TTL_SECONDS)
+
+  await insertSessionFamily(
+    {
+      id: familyId,
+      userId,
+      createdAt: now,
+      lastUsedAt: now,
+      absoluteExpiresAt,
+      idleExpiresAt,
+      userAgent: truncateSessionMetadata(metadata.userAgent, 512),
+      ipAddress: truncateSessionMetadata(metadata.ipAddress, 64),
+    },
+    tx,
+  )
+  await insertSessionToken(
+    {
+      id: tokenId,
+      familyId,
+      tokenHash: hashSessionToken(token),
+      createdAt: now,
+    },
+    tx,
+  )
+
+  return {
+    familyId,
+    token,
+    maxAgeSeconds: getRemainingSeconds(idleExpiresAt, now),
+  }
+}
+
 export async function refreshSession(
   refreshToken: string | null | undefined,
   metadata: SessionMetadata = {},
@@ -56,13 +108,13 @@ export async function refreshSession(
     }
   }
 
-  const tokenHash = hashToken(refreshToken)
+  const tokenHash = hashSessionToken(refreshToken)
 
   return await db.transaction(async (tx) => {
     const now = new Date()
-    const session = await readSessionByTokenHashForUpdate(tx, tokenHash)
+    const token = await readSessionTokenByHashForUpdate(tx, tokenHash)
 
-    if (!session) {
+    if (!token) {
       return {
         ok: false,
         reason: 'invalid',
@@ -70,7 +122,17 @@ export async function refreshSession(
       } satisfies RefreshSessionFailure
     }
 
-    if (session.revokedAt) {
+    const family = await readSessionFamilyByIdForUpdate(tx, token.familyId)
+
+    if (!family) {
+      return {
+        ok: false,
+        reason: 'invalid',
+        cookies: getAuthCookieClearConfigs(),
+      } satisfies RefreshSessionFailure
+    }
+
+    if (family.revokedAt) {
       return {
         ok: false,
         reason: 'revoked',
@@ -78,30 +140,30 @@ export async function refreshSession(
       } satisfies RefreshSessionFailure
     }
 
-    if (session.rotatedAt) {
-      const withinGrace = now.getTime() - session.rotatedAt.getTime() <= REFRESH_SESSION_REUSE_GRACE_SECONDS * 1000
+    if (token.rotatedAt) {
+      const withinGrace = now.getTime() - token.rotatedAt.getTime() <= REFRESH_SESSION_REUSE_GRACE_SECONDS * 1000
 
-      if (withinGrace && session.replacedBySessionId) {
-        const replacement = await readSessionByIdForUpdate(tx, session.replacedBySessionId)
+      if (withinGrace && token.replacedByTokenId) {
+        const replacement = await readSessionTokenByIdForUpdate(tx, token.replacedByTokenId)
 
-        if (replacement && isSessionActive(replacement, now)) {
-          const adult = await readAdultFlag(tx, replacement.userId)
-          const accessTokenCookie = await getAccessTokenCookieConfig({ userId: replacement.userId, adult })
+        if (replacement && isSessionTokenActive(replacement) && isSessionFamilyActive(family, now)) {
+          const adult = await readAdultFlag(tx, family.userId)
+          const accessTokenCookie = await getAccessTokenCookieConfig({ userId: family.userId, adult })
           const authHintCookie = getAuthHintCookieConfig({
-            maxAgeSeconds: getRemainingSeconds(replacement.idleExpiresAt, now),
+            maxAgeSeconds: getRemainingSeconds(family.idleExpiresAt, now),
           })
 
           return {
             ok: true,
             rotated: false,
-            userId: replacement.userId,
+            userId: family.userId,
             adult,
             cookies: [accessTokenCookie, authHintCookie],
           } satisfies RefreshSessionSuccess
         }
       }
 
-      await revokeSessionFamily(tx, session.familyId, now)
+      await revokeSessionFamilyById(tx, family.id, now)
 
       return {
         ok: false,
@@ -110,8 +172,8 @@ export async function refreshSession(
       } satisfies RefreshSessionFailure
     }
 
-    if (isSessionExpired(session, now)) {
-      await revokeSessionById(tx, session.id, now)
+    if (isSessionFamilyExpired(family, now)) {
+      await revokeSessionFamilyById(tx, family.id, now)
 
       return {
         ok: false,
@@ -120,28 +182,29 @@ export async function refreshSession(
       } satisfies RefreshSessionFailure
     }
 
-    const nextSessionId = crypto.randomUUID()
+    const nextTokenId = crypto.randomUUID()
     const nextToken = generateSessionToken()
-    const nextIdleExpiresAt = minDate(addSeconds(now, REFRESH_SESSION_IDLE_TTL_SECONDS), session.absoluteExpiresAt)
+    const nextIdleExpiresAt = minDate(addSeconds(now, REFRESH_SESSION_IDLE_TTL_SECONDS), family.absoluteExpiresAt)
 
-    const values = {
-      id: nextSessionId,
-      userId: session.userId,
-      familyId: session.familyId,
-      tokenHash: hashToken(nextToken),
-      createdAt: now,
-      lastUsedAt: now,
-      absoluteExpiresAt: session.absoluteExpiresAt,
+    await insertSessionToken(
+      {
+        id: nextTokenId,
+        familyId: family.id,
+        tokenHash: hashSessionToken(nextToken),
+        createdAt: now,
+      },
+      tx,
+    )
+    await markSessionTokenRotated(tx, token.id, nextTokenId, now)
+    await touchSessionFamily(tx, family.id, {
       idleExpiresAt: nextIdleExpiresAt,
-      userAgent: truncate(metadata.userAgent ?? session.userAgent, 512),
-      ipAddress: truncate(metadata.ipAddress ?? session.ipAddress, 64),
-    }
+      lastUsedAt: now,
+      userAgent: truncateSessionMetadata(metadata.userAgent ?? family.userAgent, 512),
+      ipAddress: truncateSessionMetadata(metadata.ipAddress ?? family.ipAddress, 64),
+    })
 
-    await insertSession(values, tx)
-    await markSessionRotated(tx, session.id, nextSessionId, now)
-
-    const adult = await readAdultFlag(tx, session.userId)
-    const accessTokenCookie = await getAccessTokenCookieConfig({ userId: session.userId, adult })
+    const adult = await readAdultFlag(tx, family.userId)
+    const accessTokenCookie = await getAccessTokenCookieConfig({ userId: family.userId, adult })
     const refreshTokenCookie = getRefreshSessionCookieConfig({
       token: nextToken,
       maxAgeSeconds: getRemainingSeconds(nextIdleExpiresAt, now),
@@ -153,45 +216,21 @@ export async function refreshSession(
     return {
       ok: true,
       rotated: true,
-      userId: session.userId,
+      userId: family.userId,
       adult,
       cookies: [accessTokenCookie, refreshTokenCookie, authHintCookie],
     } satisfies RefreshSessionSuccess
   })
 }
 
-function addSeconds(date: Date, seconds: number) {
-  return new Date(date.getTime() + seconds * 1000)
+function isSessionFamilyActive(family: SessionFamilyRow, now: Date) {
+  return !family.revokedAt && !isSessionFamilyExpired(family, now)
 }
 
-function generateSessionToken() {
-  return crypto.randomBytes(REFRESH_SESSION_TOKEN_BYTES).toString('base64url')
+function isSessionFamilyExpired(family: Pick<SessionFamilyRow, 'absoluteExpiresAt' | 'idleExpiresAt'>, now: Date) {
+  return family.absoluteExpiresAt <= now || family.idleExpiresAt <= now
 }
 
-function getRemainingSeconds(expiresAt: Date, now: Date) {
-  return Math.max(1, Math.ceil((expiresAt.getTime() - now.getTime()) / 1000))
-}
-
-function hashToken(token: string) {
-  return crypto.createHash('sha256').update(token).digest('base64url')
-}
-
-function isSessionActive(session: SessionRow, now: Date) {
-  return !session.revokedAt && !session.rotatedAt && !isSessionExpired(session, now)
-}
-
-function isSessionExpired(session: Pick<SessionRow, 'absoluteExpiresAt' | 'idleExpiresAt'>, now: Date) {
-  return session.absoluteExpiresAt <= now || session.idleExpiresAt <= now
-}
-
-function minDate(a: Date, b: Date) {
-  return a.getTime() <= b.getTime() ? a : b
-}
-
-function truncate(value: string | null | undefined, maxLength: number) {
-  if (!value) {
-    return null
-  }
-
-  return value.slice(0, maxLength)
+function isSessionTokenActive(token: SessionTokenRow) {
+  return !token.rotatedAt
 }

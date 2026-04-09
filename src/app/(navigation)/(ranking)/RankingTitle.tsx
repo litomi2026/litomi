@@ -25,7 +25,7 @@ export default function RankingTitle() {
       <h1 className="text-xl font-bold">{renderTitle()}</h1>
       <div className="ml-auto flex items-center gap-2">
         <TrendingUp className="size-4 text-zinc-500" />
-        <span className="text-xs text-zinc-500">TOP 20 (매일 업데이트)</span>
+        <span className="text-xs text-zinc-500">TOP 20</span>
       </div>
     </div>
   )

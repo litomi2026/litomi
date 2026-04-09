@@ -6,7 +6,6 @@ import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
-import { revokeAllSessionsByUserId } from '@/auth/session.query'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
@@ -14,6 +13,8 @@ import { badRequest, internalServerError, ok, unauthorized } from '@/utils/actio
 import { applyCookieConfigs, getAuthCookieClearConfigs } from '@/utils/cookie'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
+
+import { revokeAllSessionsByUserId } from '../query'
 
 const deleteAccountSchema = z.object({
   password: passwordSchema,
