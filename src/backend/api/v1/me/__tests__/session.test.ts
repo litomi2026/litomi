@@ -84,7 +84,7 @@ describe('DELETE /api/v1/me/session', () => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({
       clearedCurrentSession: true,
-      message: '모든 로그인 유지 세션을 종료했어요',
+      message: '모든 기기에서 로그아웃했어요',
     })
     expect(revokeAllSessionsByUserIdMock).toHaveBeenCalledWith(7, expect.any(Date))
     expect(getSetCookieHeader(response)).toContain('at=')
@@ -120,7 +120,7 @@ describe('DELETE /api/v1/me/session', () => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({
       clearedCurrentSession: false,
-      message: '모든 로그인 유지 세션을 종료했어요',
+      message: '표시된 기기에서 모두 로그아웃했어요',
     })
     expect(revokeOtherSessionFamiliesByUserIdMock).toHaveBeenCalledWith(7, null, expect.any(Date))
   })

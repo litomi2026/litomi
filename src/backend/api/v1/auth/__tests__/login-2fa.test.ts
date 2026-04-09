@@ -330,4 +330,14 @@ describe('POST /api/v1/auth/login/2fa', () => {
     const problem = (await response.json()) as ValidationProblemDetails
     expect(problem.detail).toBe('인증이 만료됐어요. 새로고침 후 시도해 주세요.')
   })
+
+  test('2단계 인증 정보가 없으면 인증 만료 안내를 반환한다', async () => {
+    login2faState.twoFactor = null
+
+    const response = await requestLogin2FA({ token: '123456' })
+
+    expect(response.status).toBe(401)
+    const problem = (await response.json()) as ValidationProblemDetails
+    expect(problem.detail).toBe('인증이 만료됐어요. 새로고침 후 시도해 주세요.')
+  })
 })

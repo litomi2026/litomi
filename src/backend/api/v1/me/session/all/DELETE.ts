@@ -22,11 +22,11 @@ route.delete('/', async (c) => {
 
     return c.json<DELETEV1MeSessionResponse>({
       clearedCurrentSession: true,
-      message: '모든 로그인 유지 세션을 종료했어요',
+      message: '모든 기기에서 로그아웃했어요',
     })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '세션 종료 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500, detail: '로그아웃 중 문제가 발생했어요' })
   }
 })
 

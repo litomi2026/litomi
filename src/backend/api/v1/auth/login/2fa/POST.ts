@@ -105,7 +105,7 @@ route.post('/', zProblemValidator('json', verifyTwoFactorRequestSchema), async (
         return {
           ok: false,
           status: 401,
-          detail: '세션이 만료됐어요. 새로고침 후 시도해 주세요.',
+          detail: '인증이 만료됐어요. 새로고침 후 시도해 주세요.',
         } as const
       }
 
