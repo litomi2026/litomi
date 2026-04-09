@@ -69,7 +69,8 @@ async function getTwoFactorStatus(userId: number, currentBrowserId: string | nul
                 'createdAt', ${trustedBrowserTable.createdAt},
                 'expiresAt', ${trustedBrowserTable.expiresAt},
                 'isCurrentBrowser', ${trustedBrowserTable.browserId} = ${currentBrowserId}
-              ) ORDER BY ${trustedBrowserTable.lastUsedAt} DESC
+              ) ORDER BY COALESCE(${trustedBrowserTable.lastUsedAt}, ${trustedBrowserTable.createdAt}) DESC,
+                ${trustedBrowserTable.id} DESC
             )
             FROM ${trustedBrowserTable}
             WHERE ${trustedBrowserTable.userId} = ${userId}

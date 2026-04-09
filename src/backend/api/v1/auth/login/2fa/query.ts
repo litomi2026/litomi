@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { and, desc, eq, inArray, isNull, lt, or } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 import { userAgent as getUserAgent } from 'next/server'
 
 import { MAX_TRUSTED_DEVICES_PER_USER } from '@/constants/policy'
@@ -39,37 +39,31 @@ export async function registerTrustedBrowser(
   fingerprint: string,
   userAgent: string,
 ) {
-  const browserId = generateBrowserId(fingerprint)
+  const browserId = generateBrowserId(userId, fingerprint)
   const browserName = parseBrowserName(userAgent)
-  const expiresAt = new Date()
+  const now = new Date()
+  const expiresAt = new Date(now)
 
   expiresAt.setDate(expiresAt.getDate() + TRUSTED_BROWSER_EXPIRY_DAYS)
 
-  const existingBrowsers = await tx
-    .select({
-      id: trustedBrowserTable.id,
-      browserId: trustedBrowserTable.browserId,
-    })
-    .from(trustedBrowserTable)
-    .where(eq(trustedBrowserTable.userId, userId))
-    .orderBy(desc(trustedBrowserTable.lastUsedAt))
-
-  const currentBrowser = existingBrowsers.find((browser) => browser.browserId === browserId)
-
-  if (!currentBrowser && existingBrowsers.length >= MAX_TRUSTED_DEVICES_PER_USER) {
-    const idsToDelete = existingBrowsers.slice(MAX_TRUSTED_DEVICES_PER_USER - 1).map((browser) => browser.id)
-
-    if (idsToDelete.length > 0) {
-      await tx
-        .delete(trustedBrowserTable)
-        .where(
-          and(
-            eq(trustedBrowserTable.userId, userId),
-            or(inArray(trustedBrowserTable.id, idsToDelete), lt(trustedBrowserTable.expiresAt, new Date())),
-          ),
+  // Keep the current browser slot plus the most recently used N-1 other browsers.
+  await tx.execute(sql`
+    DELETE FROM ${trustedBrowserTable}
+    WHERE ${trustedBrowserTable.userId} = ${userId}
+      AND (
+        ${trustedBrowserTable.expiresAt} < ${now}
+        OR ${trustedBrowserTable.id} IN (
+          SELECT ${trustedBrowserTable.id}
+          FROM ${trustedBrowserTable}
+          WHERE ${trustedBrowserTable.userId} = ${userId}
+            AND ${trustedBrowserTable.browserId} <> ${browserId}
+            AND ${trustedBrowserTable.expiresAt} >= ${now}
+          ORDER BY COALESCE(${trustedBrowserTable.lastUsedAt}, ${trustedBrowserTable.createdAt}) DESC,
+            ${trustedBrowserTable.id} DESC
+          OFFSET ${MAX_TRUSTED_DEVICES_PER_USER - 1}
         )
-    }
-  }
+      )
+  `)
 
   await tx
     .insert(trustedBrowserTable)
@@ -78,13 +72,14 @@ export async function registerTrustedBrowser(
       browserId,
       browserName,
       expiresAt,
+      lastUsedAt: now,
     })
     .onConflictDoUpdate({
       target: [trustedBrowserTable.userId, trustedBrowserTable.browserId],
       set: {
         browserName,
         expiresAt,
-        lastUsedAt: new Date(),
+        lastUsedAt: now,
       },
     })
 
@@ -95,12 +90,8 @@ export async function touchTwoFactorLastUsedAt(tx: TwoFactorTransaction, userId:
   await tx.update(twoFactorTable).set({ lastUsedAt: now }).where(eq(twoFactorTable.userId, userId))
 }
 
-function generateBrowserId(fingerprint: string) {
-  const randomBytes = crypto.randomBytes(32).toString('hex')
-  const timestamp = Date.now().toString()
-  const combined = `${randomBytes}-${timestamp}-${fingerprint}`
-
-  return crypto.createHash('sha256').update(combined).digest('hex')
+function generateBrowserId(userId: number, fingerprint: string) {
+  return crypto.createHash('sha256').update(`${userId}:${fingerprint}`).digest('hex')
 }
 
 function parseBrowserName(ua: string) {
