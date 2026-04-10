@@ -1,8 +1,8 @@
 'use client'
 
-import type { POSTV1MangaHistoryImportBody } from '@/backend/api/v1/manga/history/import'
+import type { POSTV1LibraryHistoryImportBody } from '@/backend/api/v1/library/history/import'
 
-export type LocalReadingHistoryItem = POSTV1MangaHistoryImportBody['localHistories'][number]
+export type LocalReadingHistoryItem = POSTV1LibraryHistoryImportBody['localHistories'][number]
 
 export function clearMigratedHistory() {
   for (let i = sessionStorage.length - 1; i >= 0; i--) {

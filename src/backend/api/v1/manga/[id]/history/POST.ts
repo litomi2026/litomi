@@ -8,7 +8,7 @@ import {
   enforceHistoryLimit,
   getUserHistoryLimitInTx,
   MAX_READING_HISTORY_LAST_PAGE,
-} from '@/backend/api/v1/manga/history/shared'
+} from '@/backend/api/v1/library/history/shared'
 import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'

@@ -6,19 +6,19 @@ import type {
   POSTV1AuthPasskeyVerifyResponse,
 } from '@/backend/api/v1/auth/passkey/verify/POST'
 import type {
-  POSTV1MangaHistoryImportBody,
-  POSTV1MangaHistoryImportResponse,
-} from '@/backend/api/v1/manga/history/import'
+  POSTV1LibraryHistoryImportBody,
+  POSTV1LibraryHistoryImportResponse,
+} from '@/backend/api/v1/library/history/import'
 
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
-export async function importReadingHistory(request: POSTV1MangaHistoryImportBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/history/import`
+export async function importReadingHistory(request: POSTV1LibraryHistoryImportBody) {
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/history/import`
 
-  const { data } = await fetchWithErrorHandling<POSTV1MangaHistoryImportResponse>(url, {
+  const { data } = await fetchWithErrorHandling<POSTV1LibraryHistoryImportResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
