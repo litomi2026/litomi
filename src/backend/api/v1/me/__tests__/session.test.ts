@@ -4,8 +4,8 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import { hashSessionToken } from '@/auth/session.util'
 import { requireAuth } from '@/backend/middleware/require-auth'
+import { hashSessionToken } from '@/query/session.util'
 
 const readCurrentSessionFamilyIdByTokenHashMock = mock(async () => sessionRouteState.currentFamilyId)
 const revokeAllSessionsByUserIdMock = mock(async () => {})

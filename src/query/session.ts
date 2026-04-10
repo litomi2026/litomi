@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import 'server-only'
 
+import { db } from '@/database/supabase/drizzle'
 import {
   insertSessionFamily,
   insertSessionToken,
@@ -14,7 +15,7 @@ import {
   type SessionTokenRow,
   type SessionWriteExecutor,
   touchSessionFamily,
-} from '@/auth/session.query'
+} from '@/query/session.query'
 import {
   addSeconds,
   generateSessionToken,
@@ -26,8 +27,7 @@ import {
   REFRESH_SESSION_REUSE_GRACE_SECONDS,
   SESSION_DEVICE_LABEL_MAX_LENGTH,
   truncateSessionMetadata,
-} from '@/auth/session.util'
-import { db } from '@/database/supabase/drizzle'
+} from '@/query/session.util'
 import {
   type AuthCookieConfig,
   getAccessTokenCookieConfig,

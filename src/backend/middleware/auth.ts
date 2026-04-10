@@ -1,9 +1,9 @@
 import { getCookie } from 'hono/cookie'
 import { createMiddleware } from 'hono/factory'
 
-import { refreshSession } from '@/auth/session'
-import { buildSessionDeviceLabel } from '@/auth/session.util'
 import { CookieKey } from '@/constants/storage'
+import { refreshSession } from '@/query/session'
+import { buildSessionDeviceLabel } from '@/query/session.util'
 import { getAuthCookieClearConfigs } from '@/utils/cookie'
 import { JWTType, verifyJWT } from '@/utils/jwt'
 import { getRequestUserAgent } from '@/utils/request'
