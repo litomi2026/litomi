@@ -250,7 +250,7 @@ function SessionHint({ hasCurrentPersistentSession }: { hasCurrentPersistentSess
       <ul className="space-y-1 text-xs text-zinc-400">
         <li>• 여기에는 로그인 유지를 켠 기기만 보여요</li>
         {!hasCurrentPersistentSession && <li>• 지금 사용 중인 기기는 로그인 유지를 켜지 않아 목록에 없어요</li>}
-        <li>• 다른 기기에서 로그아웃해도, 그 기기에서는 최대 1시간 정도 더 사용될 수 있어요</li>
+        <li>• 다른 기기를 로그아웃 시켜도, 그 기기에서 최대 1시간 동안은 계속 사용할 수 있어요</li>
       </ul>
     </div>
   )

@@ -29,13 +29,12 @@ tempo:
       type: RuntimeDefault
   resources:
     requests:
-      cpu: 100m
+      cpu: 10m
       memory: 512Mi
     limits:
-      cpu: 500m
-      # Keep chart default memBallastSizeMbs(1024) and reserve headroom to avoid OOM.
-      # Ref: https://github.com/grafana-community/helm-charts/tree/main/charts/tempo
-      memory: 2Gi
+      cpu: 40m
+      # 14일 p99는 낮지만, WAL/compaction과 chart 기본 메모리 동작을 고려해 limit은 보수적으로 남겨요.
+      memory: 1280Mi
   storage:
     trace:
       backend: s3
