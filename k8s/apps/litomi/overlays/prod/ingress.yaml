@@ -32,13 +32,6 @@ spec:
                 name: litomi-backend
                 port:
                   number: 3002
-          - path: /ready
-            pathType: Prefix
-            backend:
-              service:
-                name: litomi-backend
-                port:
-                  number: 3002
     - host: img.litomi.in
       http:
         paths:
@@ -49,4 +42,3 @@ spec:
                 name: litomi-backend
                 port:
                   number: 3002
-

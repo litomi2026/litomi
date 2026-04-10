@@ -23,17 +23,11 @@ const {
   POSTGRES_URL,
   POSTGRES_APPLICATION_NAME,
   POSTGRES_CONNECT_TIMEOUT_SECONDS,
-  POSTGRES_HEALTHCHECK_CACHE_MS,
   POSTGRES_IDLE_TIMEOUT_SECONDS,
   POSTGRES_MAX_LIFETIME_SECONDS,
   POSTGRES_POOL_MAX,
   SUPABASE_CERTIFICATE,
 } = env
-
-type DatabaseReadiness = {
-  checkedAt: Date
-  connected: boolean
-}
 
 const supabaseClient = postgres(POSTGRES_URL, {
   idle_timeout: POSTGRES_IDLE_TIMEOUT_SECONDS,
@@ -64,50 +58,3 @@ export const db = drizzle({
     ...userSchema,
   },
 })
-
-let readinessCache: { expiresAt: number; result: DatabaseReadiness } | undefined
-let inflightReadinessCheck: Promise<DatabaseReadiness> | undefined
-
-export async function checkDatabaseReadiness(): Promise<DatabaseReadiness> {
-  const now = Date.now()
-
-  if (readinessCache && now < readinessCache.expiresAt) {
-    return readinessCache.result
-  }
-
-  if (inflightReadinessCheck) {
-    return inflightReadinessCheck
-  }
-
-  inflightReadinessCheck = fetchDatabaseReadiness()
-    .then((result) => {
-      readinessCache = {
-        expiresAt: Date.now() + POSTGRES_HEALTHCHECK_CACHE_MS,
-        result,
-      }
-      return result
-    })
-    .finally(() => {
-      inflightReadinessCheck = undefined
-    })
-
-  return inflightReadinessCheck
-}
-
-async function fetchDatabaseReadiness(): Promise<DatabaseReadiness> {
-  try {
-    const [result] = (await supabaseClient`select 1 as connection`) as [{ connection: number }]
-
-    return {
-      checkedAt: new Date(),
-      connected: result?.connection === 1,
-    }
-  } catch (error) {
-    console.error(error)
-
-    return {
-      checkedAt: new Date(),
-      connected: false,
-    }
-  }
-}

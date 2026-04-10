@@ -24,19 +24,26 @@ spec:
                 name: litomi-common-env
             - secretRef:
                 name: litomi-backend-secret
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: 3002
+            periodSeconds: 3
+            timeoutSeconds: 3
+            failureThreshold: 20
           readinessProbe:
             httpGet:
               path: /ready
               port: 3002
-            initialDelaySeconds: 3
-            periodSeconds: 10
+            periodSeconds: 5
             timeoutSeconds: 3
-            failureThreshold: 6
+            failureThreshold: 1
+            successThreshold: 1
           livenessProbe:
             httpGet:
               path: /health
               port: 3002
-            initialDelaySeconds: 10
+            periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 6
           resources:

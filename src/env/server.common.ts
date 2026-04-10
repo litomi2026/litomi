@@ -1,6 +1,5 @@
 import { createEnv } from '@t3-oss/env-core'
 import 'server-only'
-import ms from 'ms'
 import { z } from 'zod'
 
 import { sec } from '@/utils/format/date'
@@ -19,7 +18,6 @@ export const env = createEnv({
     POSTGRES_CONNECT_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(10),
     POSTGRES_MAX_LIFETIME_SECONDS: z.coerce.number().int().positive().default(sec('30 minutes')),
     POSTGRES_APPLICATION_NAME: z.string().default('litomi-local'),
-    POSTGRES_HEALTHCHECK_CACHE_MS: z.coerce.number().int().positive().default(ms('5 seconds')),
     REDIS_URL: z.url().default('redis://redis:6380'),
     SUPABASE_CERTIFICATE: z.string().optional(),
 
