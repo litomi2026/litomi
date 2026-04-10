@@ -1,21 +1,32 @@
-import type {
-  POSTV1AuthLogin2FARequest,
-  POSTV1AuthLogin2FAResponse,
-} from '@/backend/api/v1/auth/login/2fa/POST'
-import type {
-  POSTV1AuthLoginRequest,
-  POSTV1AuthLoginResponse,
-} from '@/backend/api/v1/auth/login/POST'
+import type { POSTV1AuthLogin2FARequest, POSTV1AuthLogin2FAResponse } from '@/backend/api/v1/auth/login/2fa/POST'
+import type { POSTV1AuthLoginRequest, POSTV1AuthLoginResponse } from '@/backend/api/v1/auth/login/POST'
 import type { POSTV1AuthPasskeyOptionsResponse } from '@/backend/api/v1/auth/passkey/options/POST'
 import type {
   POSTV1AuthPasskeyVerifyRequest,
   POSTV1AuthPasskeyVerifyResponse,
 } from '@/backend/api/v1/auth/passkey/verify/POST'
+import type {
+  POSTV1MangaHistoryImportBody,
+  POSTV1MangaHistoryImportResponse,
+} from '@/backend/api/v1/manga/history/import'
 
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
+
+export async function importReadingHistory(request: POSTV1MangaHistoryImportBody) {
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/history/import`
+
+  const { data } = await fetchWithErrorHandling<POSTV1MangaHistoryImportResponse>(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  })
+
+  return data
+}
 
 export async function login(request: POSTV1AuthLoginRequest) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/login`

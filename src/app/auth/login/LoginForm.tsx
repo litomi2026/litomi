@@ -13,7 +13,6 @@ import type { POSTV1AuthLoginAuthenticatedResponse } from '@/backend/api/v1/auth
 import type { POSTV1AuthPasskeyVerifyResponse } from '@/backend/api/v1/auth/passkey/verify/POST'
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { migrateReadingHistory } from '@/app/manga/[id]/actions'
 import IconLogo from '@/components/icons/LogoLitomi'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
@@ -21,14 +20,13 @@ import TurnstileWidget from '@/components/TurnstileWidget'
 import Toggle from '@/components/ui/Toggle'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { SearchParamKey } from '@/constants/storage'
-import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
 
-import { login } from './api'
+import { importReadingHistory, login } from './api'
 import SignupLink from './SignupLink'
 import TwoFactorVerification from './TwoFactorVerification'
 import { applyLoginProblem, clearLoginId, clearLoginValidity } from './util'
@@ -89,10 +87,13 @@ export default function LoginForm() {
     meta: { suppressGlobalErrorToastForStatuses: LOGIN_LOCAL_ERROR_STATUSES },
   })
 
-  const [_, dispatchMigration] = useServerAction({
-    action: migrateReadingHistory,
-    shouldSetResponse: false,
-    onSuccess: clearMigratedHistory,
+  const { mutate: migrateReadingHistory } = useMutation({
+    mutationFn: importReadingHistory,
+    onSuccess: ({ synced }) => {
+      if (synced) {
+        clearMigratedHistory()
+      }
+    },
   })
 
   async function getTurnstileToken() {
@@ -146,7 +147,7 @@ export default function LoginForm() {
     const localHistory = getLocalReadingHistory()
 
     if (localHistory.length > 0) {
-      dispatchMigration(localHistory)
+      migrateReadingHistory({ localHistories: localHistory })
     }
 
     await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
