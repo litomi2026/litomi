@@ -29,13 +29,14 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: 2
-            failureThreshold: 6
+            failureThreshold: 3
           livenessProbe:
             exec:
               command: ['redis-cli', 'ping']
             initialDelaySeconds: 10
+            periodSeconds: 10
             timeoutSeconds: 2
-            failureThreshold: 6
+            failureThreshold: 3
           securityContext:
             allowPrivilegeEscalation: false
             runAsUser: 999

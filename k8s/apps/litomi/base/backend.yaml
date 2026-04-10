@@ -28,9 +28,9 @@ spec:
             httpGet:
               path: /startup
               port: 3002
-            periodSeconds: 3
+            periodSeconds: 5
             timeoutSeconds: 3
-            failureThreshold: 20
+            failureThreshold: 12
           readinessProbe:
             httpGet:
               path: /ready
@@ -45,7 +45,7 @@ spec:
               port: 3002
             periodSeconds: 10
             timeoutSeconds: 3
-            failureThreshold: 6
+            failureThreshold: 3
           resources:
             requests:
               cpu: 100m
