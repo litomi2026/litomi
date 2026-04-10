@@ -88,10 +88,10 @@ grafana:
   resources:
     requests:
       cpu: 15m
-      memory: 192Mi
+      memory: 224Mi
     limits:
       cpu: 60m
-      memory: 320Mi
+      memory: 352Mi
   sidecar:
     resources:
       requests:
@@ -188,11 +188,11 @@ prometheus:
 
     resources:
       requests:
-        cpu: 50m
+        cpu: 150m
         memory: 768Mi
       limits:
-        cpu: 150m
-        memory: 1280Mi
+        cpu: 300m
+        memory: 1536Mi
 
     storageSpec:
       volumeClaimTemplate:
