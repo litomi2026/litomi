@@ -65,11 +65,11 @@ alertmanager:
     replicas: 1
     resources:
       requests:
-        cpu: 50m
-        memory: 128Mi
+        cpu: 5m
+        memory: 48Mi
       limits:
-        cpu: 200m
-        memory: 256Mi
+        cpu: 20m
+        memory: 64Mi
     # Small PVC is enough for silences/inhibitions history.
     storage:
       volumeClaimTemplate:
@@ -85,6 +85,21 @@ grafana:
     existingSecret: grafana-admin
     userKey: admin-user
     passwordKey: admin-password
+  resources:
+    requests:
+      cpu: 15m
+      memory: 192Mi
+    limits:
+      cpu: 60m
+      memory: 320Mi
+  sidecar:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 80Mi
+      limits:
+        cpu: 20m
+        memory: 96Mi
   additionalDataSources:
     - name: Loki
       uid: loki
@@ -119,10 +134,43 @@ kubeScheduler:
 kubeProxy:
   enabled: false
 
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 5m
+      memory: 56Mi
+    limits:
+      cpu: 20m
+      memory: 80Mi
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 5m
+      memory: 32Mi
+    limits:
+      cpu: 20m
+      memory: 48Mi
+
 prometheusOperator:
   # Kubernetes v1.33+에서 Endpoints(v1)는 deprecated라서, kubelet 대상도 EndpointSlice로 만들어요.
   kubeletEndpointsEnabled: false
   kubeletEndpointSliceEnabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 30m
+      memory: 96Mi
+  prometheusConfigReloader:
+    resources:
+      requests:
+        cpu: 5m
+        memory: 32Mi
+      limits:
+        cpu: 20m
+        memory: 48Mi
 
 prometheus:
   prometheusSpec:
@@ -140,11 +188,11 @@ prometheus:
 
     resources:
       requests:
-        cpu: 500m
-        memory: 2Gi
+        cpu: 50m
+        memory: 768Mi
       limits:
-        cpu: '2'
-        memory: 4Gi
+        cpu: 150m
+        memory: 1280Mi
 
     storageSpec:
       volumeClaimTemplate:

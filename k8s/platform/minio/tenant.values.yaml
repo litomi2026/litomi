@@ -35,10 +35,10 @@ tenant:
           type: RuntimeDefault
       resources:
         requests:
-          cpu: 100m
-          memory: 256Mi
+          cpu: 15m
+          memory: 384Mi
         limits:
-          cpu: 500m
+          cpu: 60m
           memory: 512Mi
 
   certificate:

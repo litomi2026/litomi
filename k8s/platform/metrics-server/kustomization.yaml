@@ -19,3 +19,12 @@ patches:
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 10m
+            memory: 80Mi
+          limits:
+            cpu: 30m
+            memory: 96Mi
