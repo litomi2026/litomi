@@ -4,7 +4,7 @@ import 'server-only'
 import { db } from '@/database/supabase/drizzle'
 import { userSettingsTable, userTable } from '@/database/supabase/user'
 
-import { resolveUserSettings, type UserSettings } from './user-settings'
+import { resolveUserSettings, type UserSettings } from '../utils/user-settings'
 
 export async function readUserSettings(userId: number): Promise<UserSettings> {
   const [row] = await db

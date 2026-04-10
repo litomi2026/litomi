@@ -16,6 +16,8 @@ import appRoutes from './app'
 import { auth } from './middleware/auth'
 import { getDefaultSecureHeadersOptions } from './middleware/secure-headers'
 import { initBackendOtel } from './otel'
+import probeRoutes from './probe'
+import { markProbeStartupComplete, registerProbeSignalHandlers } from './probe/state'
 import { resolveCORSOrigin } from './utils/cors-origin'
 
 export type Env = {
@@ -27,19 +29,20 @@ export type Env = {
 }
 
 initBackendOtel()
+registerProbeSignalHandlers()
 
 const app = new Hono<Env>()
 
 // NOTE: 공통 미들웨어
-
 app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-backend' }))
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
+app.use(logger())
+app.use(timing())
+app.route('/', probeRoutes)
 app.use(compress())
 app.use(contextStorage())
 app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchSite: 'same-site' }))
-app.use(logger())
-app.use(timing())
 app.use('*', auth)
 
 app.use(
@@ -52,12 +55,10 @@ app.use(
 )
 
 // NOTE: /api 미들웨어
-
 app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
 app.use('/api/*', etag())
 
 // NOTE: /i 미들웨어
-
 app.use(
   '/i/*',
   secureHeaders({
@@ -78,6 +79,7 @@ app.use(
 // )
 
 app.route('/', appRoutes)
+markProbeStartupComplete()
 
 const honoApp = {
   ...app,

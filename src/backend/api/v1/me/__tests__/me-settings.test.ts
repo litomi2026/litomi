@@ -66,7 +66,7 @@ mock.module('@/database/supabase/drizzle', () => ({
   },
 }))
 
-mock.module('@/utils/user-settings.server', () => ({
+mock.module('@/query/user-settings.query', () => ({
   readUserSettings: () =>
     Promise.resolve({
       historySyncEnabled: currentSettingRow?.historySyncEnabled ?? true,

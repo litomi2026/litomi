@@ -1,29 +1,30 @@
-import { and, eq, sql, sum } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import {
+  enforceHistoryLimit,
+  getUserHistoryLimitInTx,
+  MAX_READING_HISTORY_LAST_PAGE,
+} from '@/backend/api/v1/library/history/shared'
 import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
-import { MAX_MANGA_ID, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
+import { MAX_MANGA_ID } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { userExpansionTable } from '@/database/supabase/points'
-import { readUserSettings } from '@/utils/user-settings.server'
-
-type SessionDBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
+import { readUserSettings } from '@/query/user-settings.query'
 
 const paramSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
 })
 
 const postBodySchema = z.object({
-  lastPage: z.coerce.number().int().positive().max(32767),
+  lastPage: z.coerce.number().int().positive().max(MAX_READING_HISTORY_LAST_PAGE),
 })
 
 export type POSTV1MangaIdHistoryBody = z.infer<typeof postBodySchema>
@@ -90,29 +91,5 @@ route.post(
     }
   },
 )
-
-async function enforceHistoryLimit(tx: SessionDBTransaction, userId: number, limit: number) {
-  await tx.execute(sql`
-    DELETE FROM ${readingHistoryTable}
-    WHERE ${readingHistoryTable.userId} = ${userId}
-      AND (manga_id, updated_at) NOT IN (
-        SELECT ${readingHistoryTable.mangaId}, ${readingHistoryTable.updatedAt}
-        FROM ${readingHistoryTable}
-        WHERE ${readingHistoryTable.userId} = ${userId}
-        ORDER BY ${readingHistoryTable.updatedAt} DESC, ${readingHistoryTable.mangaId} DESC
-        LIMIT ${limit}
-      )
-  `)
-}
-
-async function getUserHistoryLimitInTx(tx: SessionDBTransaction, userId: number): Promise<number> {
-  const [expansion] = await tx
-    .select({ totalAmount: sum(userExpansionTable.amount) })
-    .from(userExpansionTable)
-    .where(and(eq(userExpansionTable.userId, userId), eq(userExpansionTable.type, EXPANSION_TYPE.READING_HISTORY)))
-
-  const extra = Number(expansion?.totalAmount ?? 0)
-  return Math.min(MAX_READING_HISTORY_PER_USER + extra, POINT_CONSTANTS.HISTORY_MAX_EXPANSION)
-}
 
 export default route

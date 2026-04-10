@@ -3,8 +3,8 @@ import { getCookie } from 'hono/cookie'
 
 import type { Env } from '@/backend'
 
-import { hashSessionToken } from '@/auth/session.util'
 import { CookieKey } from '@/constants/storage'
+import { hashSessionToken } from '@/query/session.util'
 
 import { readCurrentSessionFamilyIdByTokenHash } from './query'
 

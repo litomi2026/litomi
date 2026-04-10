@@ -12,7 +12,7 @@ import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_MANGA_ID } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { readUserSettings } from '@/utils/user-settings.server'
+import { readUserSettings } from '@/query/user-settings.query'
 
 const paramSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),

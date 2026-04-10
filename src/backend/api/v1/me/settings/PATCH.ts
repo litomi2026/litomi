@@ -7,8 +7,8 @@ import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { db } from '@/database/supabase/drizzle'
 import { userSettingsTable } from '@/database/supabase/user'
+import { readUserSettings } from '@/query/user-settings.query'
 import { patchUserSettings } from '@/utils/user-settings'
-import { readUserSettings } from '@/utils/user-settings.server'
 
 const patchMySettingsSchema = z
   .object({

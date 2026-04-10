@@ -6,10 +6,23 @@ import type { Env } from '@/backend'
 
 import { MAX_MANGA_ID } from '@/constants/policy'
 
+import libraryHistoryRoutes from '../library/history'
 import mangaRoutes from '../manga/[id]/history'
 
 let shouldThrowDatabaseError = false
+let historySyncEnabled = true
 let currentUserId: number | undefined
+let transactionCallCount = 0
+let totalHistoryExpansionAmount = 0
+let lastLockedUserId: number | null = null
+let lastEnforceHistoryLimitQuery: unknown = null
+let importInsertedMangaIds: number[] = []
+let importInsertedValues: Array<{
+  lastPage: number
+  mangaId: number
+  updatedAt: Date
+  userId: number
+}> = []
 const mockReadingHistory: Map<string, number | null> = new Map()
 
 beforeAll(() => {
@@ -38,6 +51,7 @@ app.use('*', async (c, next) => {
   await next()
 })
 app.route('/', mangaRoutes)
+app.route('/library/history', libraryHistoryRoutes)
 
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
@@ -59,25 +73,90 @@ mock.module('@/database/supabase/drizzle', () => ({
         },
       }),
     }),
+    transaction: async (callback: (tx: unknown) => Promise<unknown>) => {
+      transactionCallCount += 1
+
+      if (shouldThrowDatabaseError) {
+        throw new Error('Database connection failed')
+      }
+
+      const historyLimitSelectQuery = {
+        orderBy: () => ({
+          limit: () => ({ kind: 'history-limit-subquery' }),
+        }),
+        then: (resolve: (value: Array<{ totalAmount: number }>) => unknown) =>
+          resolve([{ totalAmount: totalHistoryExpansionAmount }]),
+      }
+
+      const tx = {
+        delete: () => ({
+          where: (query: unknown) => {
+            lastEnforceHistoryLimitQuery = query
+            return Promise.resolve([])
+          },
+        }),
+        insert: () => ({
+          values: (values: unknown) => {
+            const insertedValues = (Array.isArray(values) ? values : [values]) as typeof importInsertedValues
+            importInsertedValues = insertedValues
+
+            return {
+              onConflictDoNothing: () => ({
+                returning: () => Promise.resolve(importInsertedMangaIds.map((mangaId) => ({ mangaId }))),
+              }),
+              returning: () => Promise.resolve(importInsertedMangaIds.map((mangaId) => ({ mangaId }))),
+            }
+          },
+        }),
+        select: () => ({
+          from: () => ({
+            where: () => historyLimitSelectQuery,
+          }),
+        }),
+        update: () => ({
+          set: () => ({
+            where: () => ({
+              returning: () => Promise.resolve([]),
+            }),
+          }),
+        }),
+      }
+
+      return await callback(tx)
+    },
   },
 }))
 
-mock.module('@/utils/user-settings.server', () => ({
+mock.module('@/query/user-settings.query', () => ({
   readUserSettings: () =>
     Promise.resolve({
-      historySyncEnabled: true,
+      historySyncEnabled,
       adultVerifiedAdVisible: false,
       autoDeletionDay: 180,
     }),
 }))
 
-describe('GET /api/v1/manga/:id/history', () => {
-  beforeEach(() => {
-    currentUserId = undefined
-    shouldThrowDatabaseError = false
-    mockReadingHistory.clear()
-  })
+mock.module('@/backend/utils/lock-user-row', () => ({
+  lockUserRowForUpdate: (_tx: unknown, userId: number) => {
+    lastLockedUserId = userId
+    return Promise.resolve()
+  },
+}))
 
+beforeEach(() => {
+  currentUserId = undefined
+  historySyncEnabled = true
+  importInsertedMangaIds = []
+  importInsertedValues = []
+  lastEnforceHistoryLimitQuery = null
+  lastLockedUserId = null
+  shouldThrowDatabaseError = false
+  totalHistoryExpansionAmount = 0
+  transactionCallCount = 0
+  mockReadingHistory.clear()
+})
+
+describe('GET /api/v1/manga/:id/history', () => {
   describe('성공', () => {
     test('인증된 사용자가 읽기 기록을 성공적으로 조회한다', async () => {
       // 준비
@@ -292,5 +371,128 @@ describe('POST /api/v1/manga/:id/history', () => {
     const response = await app.request('/123/history', { method: 'POST' }, { userId: 1, isAdult: false })
     expect(response.status).toBe(403)
     expect(response.headers.get('content-type')).toContain('application/problem+json')
+  })
+})
+
+describe('POST /api/v1/library/history/import', () => {
+  test('인증되지 않은 사용자(userId 없음)는 401 응답을 받는다', async () => {
+    const response = await app.request(
+      '/library/history/import',
+      {
+        body: JSON.stringify({
+          localHistories: [{ mangaId: 123, lastPage: 7, updatedAt: 1710000000000 }],
+        }),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      },
+      {},
+    )
+
+    expect(response.status).toBe(401)
+  })
+
+  test('성인인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+    const response = await app.request(
+      '/library/history/import',
+      {
+        body: JSON.stringify({
+          localHistories: [{ mangaId: 123, lastPage: 7, updatedAt: 1710000000000 }],
+        }),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      },
+      { isAdult: false, userId: 1 },
+    )
+
+    expect(response.status).toBe(403)
+    expect(response.headers.get('content-type')).toContain('application/problem+json')
+  })
+
+  test('historySyncEnabled=false면 서버 저장 없이 synced=false를 반환한다', async () => {
+    historySyncEnabled = false
+
+    const response = await app.request(
+      '/library/history/import',
+      {
+        body: JSON.stringify({
+          localHistories: [{ mangaId: 123, lastPage: 7, updatedAt: 1710000000000 }],
+        }),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      },
+      { userId: 1 },
+    )
+
+    expect(response.status).toBe(200)
+    expect(transactionCallCount).toBe(0)
+
+    const data = await response.json()
+    expect(data).toEqual({ importedCount: 0, skippedCount: 1, synced: false })
+  })
+
+  test('중복된 로컬 기록은 최신값 기준으로 정리해서 import한다', async () => {
+    importInsertedMangaIds = [123, 456]
+    totalHistoryExpansionAmount = 5
+
+    const response = await app.request(
+      '/library/history/import',
+      {
+        body: JSON.stringify({
+          localHistories: [
+            { mangaId: 123, lastPage: 1, updatedAt: 1710000000000 },
+            { mangaId: 123, lastPage: 9, updatedAt: 1710000005000 },
+            { mangaId: 456, lastPage: 3, updatedAt: 1710000001000 },
+          ],
+        }),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      },
+      { userId: 1 },
+    )
+
+    expect(response.status).toBe(200)
+    expect(transactionCallCount).toBe(1)
+    expect(lastLockedUserId).toBe(1)
+    expect(lastEnforceHistoryLimitQuery).toBeDefined()
+    expect(importInsertedValues).toEqual([
+      { mangaId: 123, lastPage: 9, updatedAt: new Date(1710000005000), userId: 1 },
+      { mangaId: 456, lastPage: 3, updatedAt: new Date(1710000001000), userId: 1 },
+    ])
+
+    const data = await response.json()
+    expect(data).toEqual({ importedCount: 2, skippedCount: 1, synced: true })
+  })
+
+  test('유효하지 않은 요청 본문은 400 응답을 받는다', async () => {
+    const response = await app.request(
+      '/library/history/import',
+      {
+        body: JSON.stringify({ localHistories: [] }),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      },
+      { userId: 1 },
+    )
+
+    expect(response.status).toBe(400)
+    expect(response.headers.get('content-type')).toContain('application/problem+json')
+  })
+
+  test('데이터베이스 오류 시 500 응답을 반환한다', async () => {
+    shouldThrowDatabaseError = true
+
+    const response = await app.request(
+      '/library/history/import',
+      {
+        body: JSON.stringify({
+          localHistories: [{ mangaId: 123, lastPage: 7, updatedAt: 1710000000000 }],
+        }),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      },
+      { userId: 1 },
+    )
+
+    expect(response.status).toBe(500)
   })
 })
