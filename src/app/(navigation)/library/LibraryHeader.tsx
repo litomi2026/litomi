@@ -5,12 +5,11 @@ import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
-import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
-
 import MangaImportButton from '@/components/card/MangaImportButton'
 import MangaImportModal from '@/components/card/MangaImportModal'
 
 import type { BulkActionDescriptor, BulkTargetLibrary } from './bulkActionTypes'
+import type { ReadingHistorySource } from './history/common'
 
 import AutoHideNavigation from '../AutoHideNavigation'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
@@ -56,7 +55,12 @@ type Props = {
     itemCount: number
   }[]
   userId?: number
-  summary?: GETV1LibrarySummaryResponse
+  historySource?: ReadingHistorySource
+  summary?: {
+    bookmarkCount?: number
+    historyCount?: number
+    ratingCount?: number
+  }
   sidebarPagination?: SidebarPagination
 }
 
@@ -68,7 +72,14 @@ type SidebarPagination = {
   onRetryNextPage?: () => void
 }
 
-export default function LibraryHeader({ libraries, pinnedLibraries = [], userId, summary, sidebarPagination }: Props) {
+export default function LibraryHeader({
+  libraries,
+  pinnedLibraries = [],
+  userId,
+  historySource = 'server',
+  summary,
+  sidebarPagination,
+}: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const drawerScrollContainerRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
@@ -77,10 +88,19 @@ export default function LibraryHeader({ libraries, pinnedLibraries = [], userId,
   const { isSelectionMode, enter, exit } = useLibrarySelection()
   const { currentLibrary } = useCurrentLibraryMeta({ libraries, userId })
   const deleteBookmarksAction = useBulkDeleteBookmarkAction()
-  const deleteReadingHistoryAction = useBulkDeleteReadingHistoryAction({ userId })
+  const deleteReadingHistoryAction = useBulkDeleteReadingHistoryAction({ source: historySource, userId })
   const deleteRatingsAction = useBulkDeleteRatingAction()
 
-  const permissions = getBulkOperationPermissions(pageKind, currentLibrary, userId)
+  const permissions =
+    pageKind === 'history' && historySource === 'local' && !userId
+      ? {
+          canSelectItems: true,
+          canCopy: false,
+          canMove: false,
+          canDelete: true,
+        }
+      : getBulkOperationPermissions(pageKind, currentLibrary, userId)
+
   const isOwner = currentLibrary?.userId === userId
   const isPublicLibrary = currentLibrary?.isPublic
   const currentLibraryId = currentLibrary?.id
@@ -255,8 +275,8 @@ export default function LibraryHeader({ libraries, pinnedLibraries = [], userId,
         </div>
         {isSelectionMode && <BulkOperationsToolbar actions={bulkActions} />}
         <div className="flex items-center">
-          {!isSelectionMode && pageKind === 'history' && userId && (
-            <HistoryClearAllButton historyCount={historyCount} userId={userId} />
+          {!isSelectionMode && pageKind === 'history' && (userId || historySource === 'local') && (
+            <HistoryClearAllButton historyCount={historyCount} source={historySource} userId={userId} />
           )}
           {!isSelectionMode && isPublicLibrary && currentLibrary && (
             <>

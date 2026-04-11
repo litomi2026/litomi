@@ -3,8 +3,6 @@
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 import { type RefObject, useRef } from 'react'
 
-import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
-
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { formatNumber } from '@/utils/format/number'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
@@ -44,7 +42,11 @@ type Props = {
   userId?: number
   className?: string
   onClick?: () => void
-  summary?: GETV1LibrarySummaryResponse
+  summary?: {
+    bookmarkCount?: number
+    historyCount?: number
+    ratingCount?: number
+  }
   pagination?: PaginationProps
   scrollContainerRef?: RefObject<Element | null>
 }

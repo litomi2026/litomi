@@ -6,7 +6,9 @@ import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
 
 import useMeQuery from '@/query/useMeQuery'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 
+import useLocalReadingHistorySummaryQuery from './history/useLocalReadingHistorySummaryQuery'
 import LibraryHeader from './LibraryHeader'
 import { LibrarySelectionProvider } from './librarySelection'
 import LibrarySidebar from './LibrarySidebar'
@@ -34,7 +36,15 @@ export default function LibraryLayout({ children }: Props) {
   const pathname = usePathname()
   const { data: me, isPending: isMePending } = useMeQuery()
   const userId = me?.id
-  const { data: summary } = useLibrarySummaryQuery({ userId })
+  const adultState = getAdultState(me)
+  const canUseServerHistory = userId && hasAdultAccess(adultState)
+  const { data: serverSummary } = useLibrarySummaryQuery({ userId })
+  const { data: localHistorySummary } = useLocalReadingHistorySummaryQuery({ enabled: !canUseServerHistory })
+
+  const summary = {
+    ...serverSummary,
+    historyCount: canUseServerHistory ? serverSummary?.historyCount : localHistorySummary?.historyCount,
+  }
 
   const {
     data,
@@ -87,6 +97,7 @@ export default function LibraryLayout({ children }: Props) {
       <div className="flex flex-col flex-1">
         <LibrarySelectionProvider scopeKey={pathname}>
           <LibraryHeader
+            historySource={canUseServerHistory ? 'server' : 'local'}
             libraries={libraries}
             pinnedLibraries={pinnedLibraries}
             sidebarPagination={sidebarPagination}
