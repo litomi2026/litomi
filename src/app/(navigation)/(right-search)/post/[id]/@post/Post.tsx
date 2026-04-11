@@ -4,13 +4,36 @@ import Link from 'next/link'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
-import ReferredPostCard from '@/components/post/ReferredPostCard'
-import { type Post } from '@/components/post/XPostCard'
+import ReferredPostCard, { ReferredPost } from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
+import { PostType } from '@/database/enum'
 
 import FollowButton from './FollowButton'
 import PostDetailActionBar from './PostDetailActionBar'
 import PostMangaCard from './PostMangaCard'
+
+export type Post = {
+  id: number
+  createdAt: Date
+  type: PostType
+  updatedAt?: Date
+  content?: string | null
+  imageURLs?: string[] | null
+  mangaId?: number | null
+  isLiked?: boolean
+  author?: {
+    id: number
+    name: string
+    nickname: string
+    imageURL: string | null
+  } | null
+  commentCount: number
+  repostCount: number
+  likeCount: number
+  bookmarkCount?: number
+  viewCount?: number
+  referredPost?: ReferredPost | null
+}
 
 type Props = {
   post: Post
