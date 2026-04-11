@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
@@ -7,9 +8,10 @@ import PostManagementMenu from '@/components/post/PostManagementMenu'
 import ReferredPostCard, { ReferredPost } from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
 import { PostType } from '@/database/enum'
+import { formatDistanceToNow } from '@/utils/format/date'
 
 import FollowButton from './FollowButton'
-import PostDetailActionBar from './PostDetailActionBar'
+import PostDetailLikeButton from './PostDetailLikeButton'
 import PostMangaCard from './PostMangaCard'
 
 export type Post = {
@@ -48,7 +50,7 @@ export default function Post({ post }: Props) {
       {/* {post.parentPosts?.map((post) => <PostCard isThread key={post.id} post={post} />)} */}
       <div className="relative grid gap-4 px-4 py-3">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex gap-2">
+          <Link className="flex gap-2" href={`/@${author?.name ?? ''}`}>
             <Squircle className="w-10 shrink-0" src={author?.imageURL}>
               {author?.nickname.slice(0, 2)}
             </Squircle>
@@ -58,7 +60,7 @@ export default function Post({ post }: Props) {
               </div>
               {author && <div className="text-zinc-500">@{author.name}</div>}
             </div>
-          </div>
+          </Link>
           <div className="flex items-center gap-2">
             {author && <FollowButton leader={author} />}
             <PostManagementMenu
@@ -83,19 +85,46 @@ export default function Post({ post }: Props) {
           </Link>
         )}
         <div className="flex items-center gap-1 text-zinc-500">
-          <span>{dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}</span>
-          <span>·</span>
+          <span title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}>{formatDistanceToNow(post.createdAt)}</span>
+          {/* <span>·</span>
           <span className="text-sm">
             <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수
-          </span>
+          </span> */}
         </div>
-        <PostDetailActionBar
-          bookmarkCount={post.bookmarkCount ?? 0}
-          commentCount={post.commentCount}
-          likeCount={post.likeCount}
-          postId={post.id}
-          repostCount={post.repostCount}
-        />
+        <div className="flex justify-between gap-1 border-y-2 px-2 py-1 text-sm">
+          <div className="flex items-center">
+            <button className="group flex items-center w-fit transition hover:text-brand">
+              <div className="shrink-0 rounded-full transition group-hover:bg-brand/20">
+                <MessageCircle className="size-9 sm:size-10 p-2" />
+              </div>
+              {post.commentCount}
+            </button>
+          </div>
+          <div className="flex items-center">
+            <button className="group flex items-center w-fit transition hover:text-green-500">
+              <div className="shrink-0 rounded-full transition group-hover:bg-green-500/20 group-hover:text-green-500">
+                <Repeat className="size-9 sm:size-10 p-2" />
+              </div>
+              {post.repostCount}
+            </button>
+          </div>
+          <PostDetailLikeButton likeCount={post.likeCount} postId={post.id} />
+          <div className="flex items-center">
+            <button className="group flex items-center w-fit transition hover:text-sky-500">
+              <div className="shrink-0 rounded-full transition group-hover:bg-sky-800/20">
+                <Bookmark className="size-9 sm:size-10 p-2" />
+              </div>
+              {post.bookmarkCount ?? 0}
+            </button>
+          </div>
+          <div className="flex items-center">
+            <button className="group flex items-center w-fit transition">
+              <div className="shrink-0 rounded-full transition group-hover:bg-zinc-800">
+                <Upload className="size-9 sm:size-10 p-2" />
+              </div>
+            </button>
+          </div>
+        </div>
         <PostCreationForm
           buttonText="답글"
           className="flex"
