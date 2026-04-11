@@ -63,7 +63,7 @@ resources:
     cpu: 10m
     memory: 128Mi
   limits:
-    cpu: 30m
+    cpu: 50m
     memory: 192Mi
 
 nodeAgent:
@@ -72,7 +72,7 @@ nodeAgent:
       cpu: 5m
       memory: 48Mi
     limits:
-      cpu: 20m
+      cpu: 50m
       memory: 80Mi
 
 # Backup 스케줄은 “복구 리허설 가능”한 단순한 형태로만 시작해요.

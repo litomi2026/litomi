@@ -68,7 +68,7 @@ alertmanager:
         cpu: 5m
         memory: 48Mi
       limits:
-        cpu: 20m
+        cpu: 50m
         memory: 64Mi
     # Small PVC is enough for silences/inhibitions history.
     storage:
@@ -87,18 +87,18 @@ grafana:
     passwordKey: admin-password
   resources:
     requests:
-      cpu: 15m
+      cpu: 20m
       memory: 224Mi
     limits:
-      cpu: 60m
+      cpu: 100m
       memory: 352Mi
   sidecar:
     resources:
       requests:
-        cpu: 50m
+        cpu: 5m
         memory: 80Mi
       limits:
-        cpu: 100m
+        cpu: 50m
         memory: 96Mi
   additionalDataSources:
     - name: Loki
@@ -140,7 +140,7 @@ kube-state-metrics:
       cpu: 5m
       memory: 56Mi
     limits:
-      cpu: 20m
+      cpu: 50m
       memory: 80Mi
 
 prometheus-node-exporter:
@@ -149,7 +149,7 @@ prometheus-node-exporter:
       cpu: 5m
       memory: 32Mi
     limits:
-      cpu: 20m
+      cpu: 50m
       memory: 48Mi
 
 prometheusOperator:
@@ -161,7 +161,7 @@ prometheusOperator:
       cpu: 10m
       memory: 64Mi
     limits:
-      cpu: 30m
+      cpu: 50m
       memory: 96Mi
   prometheusConfigReloader:
     resources:
@@ -169,7 +169,7 @@ prometheusOperator:
         cpu: 5m
         memory: 32Mi
       limits:
-        cpu: 20m
+        cpu: 50m
         memory: 48Mi
 
 prometheus:
