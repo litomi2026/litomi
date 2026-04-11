@@ -2,17 +2,13 @@
 
 import ms from 'ms'
 import { useEffect, useEffectEvent, useRef } from 'react'
-import { toast } from 'sonner'
 
 import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/history/POST'
-import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
-import { SessionStorageKeyMap } from '@/constants/storage'
 import { env } from '@/env/client'
-import { useLatestRef } from '@/hook/useLatestRef'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { upsertReadingHistoryIndexEntry } from '@/utils/reading-history-index'
+import { upsertLocalReadingHistoryIndexEntry } from '@/utils/reading-history-index'
 
 import { useImageIndexStore } from './store/imageIndex'
 
@@ -23,77 +19,22 @@ type Props = {
   mangaId: number
 }
 
-type SyncContext = {
-  me: GETV1MeResponse
-  page: number
-}
-
 export default function ReadingProgressSaver({ mangaId }: Props) {
   const { data: me } = useMeQuery()
   const adultState = getAdultState(me)
   const canSyncReadingProgress = hasAdultAccess(adultState) && me?.settings.historySyncEnabled === true
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isRequestPendingRef = useRef(false)
-  const latestPageRef = useRef<number | null>(null)
-  const pendingPageRef = useRef<number | null>(null)
-  const lastSyncedAtRef = useRef<number | null>(null)
-  const lastSyncedPageRef = useRef<number | null>(null)
-  const hasStorageErrorToastShownRef = useRef(false)
-  const scheduleSendRef = useLatestRef(scheduleSend)
-  const queueSaveEvent = useEffectEvent(queueSave)
-  const flushEvent = useEffectEvent(flush)
 
-  function writeSessionStorage(page: number) {
-    try {
-      sessionStorage.setItem(SessionStorageKeyMap.readingHistory(mangaId), String(page))
-    } catch {
-      if (!hasStorageErrorToastShownRef.current) {
-        toast.warning('읽기 기록을 저장하지 못했어요')
-        hasStorageErrorToastShownRef.current = true
-      }
-    }
-  }
-
-  function clearTimer() {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
-  }
-
-  function getSyncContext() {
-    const page = pendingPageRef.current
-
-    if (!me || !canSyncReadingProgress || page === null) {
-      return null
-    }
-
-    if (lastSyncedPageRef.current === page) {
-      clearTimer()
-      return null
-    }
-
-    return { me, page }
-  }
-
-  function sendContext(context: SyncContext, options?: { keepalive?: boolean }) {
-    if (isRequestPendingRef.current) {
+  const sendCurrentPage = useEffectEvent((options?: { keepalive?: boolean }) => {
+    if (!canSyncReadingProgress || isRequestPendingRef.current || imageIndex <= 0) {
       return
     }
 
-    lastSyncedAtRef.current = Date.now()
-    lastSyncedPageRef.current = context.page
-    clearTimer()
-
-    // NOTE: 뷰어 재진입 시 서버 호출 없이도 이어읽기가 가능하도록 최신 페이지를 인덱스에 반영해요
-    upsertReadingHistoryIndexEntry(context.me.id, mangaId, context.page)
-
     const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/history`
-    const keepalive = options?.keepalive ?? false
 
     const body: POSTV1MangaIdHistoryBody = {
-      lastPage: context.page,
+      lastPage: imageIndex + 1,
     }
 
     isRequestPendingRef.current = true
@@ -101,7 +42,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
     fetch(url, {
       method: 'POST',
       credentials: 'include',
-      keepalive,
+      keepalive: options?.keepalive,
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
     })
@@ -109,107 +50,45 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       .finally(() => {
         isRequestPendingRef.current = false
       })
-  }
+  })
 
-  function scheduleSend() {
-    const context = getSyncContext()
-    if (!context) {
-      return
-    }
+  const flush = useEffectEvent(() => {
+    sendCurrentPage({ keepalive: true })
+  })
 
-    const now = Date.now()
-    const lastAt = lastSyncedAtRef.current
-    const nextAt = typeof lastAt === 'number' ? lastAt + SEND_INTERVAL_MS : now
-    const delayMs = Math.max(0, nextAt - now)
-
-    if (delayMs === 0) {
-      sendContext(context)
-      return
-    }
-
-    if (timeoutRef.current) {
-      return
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      timeoutRef.current = null
-      scheduleSendRef.current()
-    }, delayMs)
-  }
-
-  function queueSave(page: number) {
-    // NOTE: 탭 단위 이어읽기를 위해 로컬 기록은 항상 최신으로 유지
-    writeSessionStorage(page)
-    latestPageRef.current = page
-
-    if (!canSyncReadingProgress) {
-      return
-    }
-
-    pendingPageRef.current = page
-    scheduleSend()
-  }
-
-  function flush() {
-    clearTimer()
-
-    const context = getSyncContext()
-    if (!context) {
-      return
-    }
-
-    sendContext(context, { keepalive: true })
-  }
-
-  // NOTE: 작품이 바뀌면(=mangaId 변경) 감상 저장 상태를 초기화해요
+  // NOTE: 로컬 기록은 항상 최신으로 유지해요.
   useEffect(() => {
-    pendingPageRef.current = null
-    latestPageRef.current = null
-    lastSyncedAtRef.current = null
-    lastSyncedPageRef.current = null
-    clearTimer()
-  }, [mangaId])
-
-  // NOTE: 페이지가 바뀌면(=imageIndex 변경) 작품 감상 상태를 저장 큐에 넣어요
-  useEffect(() => {
-    if (imageIndex > 0) {
-      queueSaveEvent(imageIndex + 1)
+    if (imageIndex <= 0) {
+      return
     }
-  }, [imageIndex])
 
-  // NOTE: 서버에 감상 상태를 저장할 수 있게 되는 순간(=로그인/성인인증 완료) 마지막 페이지를 큐에 넣어요
+    upsertLocalReadingHistoryIndexEntry(mangaId, imageIndex + 1)
+  }, [imageIndex, mangaId])
+
+  // NOTE: 감상 기록 자동 저장이 켜져 있으면 1분마다 최신 페이지를 서버에 보내요.
   useEffect(() => {
     if (!canSyncReadingProgress) {
-      pendingPageRef.current = null
-      clearTimer()
       return
     }
 
-    const page = latestPageRef.current
-    if (page === null) {
-      return
-    }
+    const intervalId = setInterval(() => {
+      sendCurrentPage()
+    }, SEND_INTERVAL_MS)
 
-    pendingPageRef.current = page
-    scheduleSendRef.current()
-  }, [canSyncReadingProgress, scheduleSendRef])
-
-  // NOTE: 뷰어를 떠날 때 마지막 작품 감상 상태를 flush하고 타이머를 정리해요
-  useEffect(() => {
     return () => {
-      flushEvent()
+      clearInterval(intervalId)
     }
-  }, [])
+  }, [canSyncReadingProgress])
 
-  // NOTE: 탭/페이지가 숨김·종료되는 시점에 작품 감상 상태를 flush해요
+  // NOTE: 탭/페이지가 숨김·종료되거나 뷰어를 떠나는 시점에 마지막 감상 상태를 보내요.
   useEffect(() => {
     function handlePageHide() {
-      flushEvent()
+      flush()
     }
 
     function handleVisibilityChange() {
       if (document.visibilityState === 'hidden') {
-        flushEvent()
+        flush()
       }
     }
 
@@ -217,6 +96,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
+      flush()
       window.removeEventListener('pagehide', handlePageHide)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
