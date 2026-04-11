@@ -5,15 +5,42 @@ import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/histo
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { getLocalReadingHistory } from '@/utils/reading-history-index'
+
+import type { ReadingHistorySource } from './common'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Options = {
   initialData?: GETV1ReadingHistoryResponse
-  enabled?: boolean
+  source: ReadingHistorySource
+  userId?: number
 }
 
-export async function fetchReadingHistoryPaginated(cursor: string | null) {
+export default function useReadingHistoryInfiniteQuery({ initialData, source, userId }: Options) {
+  return useInfiniteQuery({
+    queryKey: QueryKeys.infiniteReadingHistory(source, userId),
+    queryFn: ({ pageParam }) =>
+      source === 'local' ? fetchLocalReadingHistoryPaginated() : fetchReadingHistoryPaginated(pageParam),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    ...(source === 'server' && initialData && { initialData: { pages: [initialData], pageParams: [''] } }),
+    initialPageParam: '',
+    meta: source === 'server' ? { requiresAdult: true } : undefined,
+  })
+}
+
+async function fetchLocalReadingHistoryPaginated() {
+  return {
+    items: getLocalReadingHistory().map((item) => ({
+      mangaId: item.mangaId,
+      lastPage: item.lastPage,
+      updatedAt: item.updatedAt,
+    })),
+    nextCursor: null,
+  }
+}
+
+async function fetchReadingHistoryPaginated(cursor: string | null) {
   const params = new URLSearchParams()
 
   if (cursor) {
@@ -23,16 +50,4 @@ export async function fetchReadingHistoryPaginated(cursor: string | null) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/history?${params}`
   const { data } = await fetchWithErrorHandling<GETV1ReadingHistoryResponse>(url, { credentials: 'include' })
   return data
-}
-
-export default function useReadingHistoryInfiniteQuery({ initialData, enabled = true }: Options = {}) {
-  return useInfiniteQuery({
-    queryKey: QueryKeys.infiniteReadingHistory,
-    queryFn: ({ pageParam }) => fetchReadingHistoryPaginated(pageParam),
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-    ...(initialData && { initialData: { pages: [initialData], pageParams: [''] } }),
-    initialPageParam: '',
-    enabled,
-    meta: { requiresAdult: true },
-  })
 }
