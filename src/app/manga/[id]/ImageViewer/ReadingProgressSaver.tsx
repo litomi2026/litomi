@@ -8,7 +8,7 @@ import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/histo
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { upsertLocalReadingHistoryIndexEntry } from '@/utils/reading-history-index'
+import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 
 import { useImageIndexStore } from './store/imageIndex'
 
@@ -62,7 +62,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       return
     }
 
-    upsertLocalReadingHistoryIndexEntry(mangaId, imageIndex + 1)
+    setLocalReadingHistoryEntry(mangaId, imageIndex + 1)
   }, [imageIndex, mangaId])
 
   // NOTE: 감상 기록 자동 저장이 켜져 있으면 1분마다 최신 페이지를 서버에 보내요.

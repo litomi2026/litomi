@@ -9,7 +9,7 @@ import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
-import { getLocalReadingHistoryMap } from '@/utils/reading-history-index'
+import { getLocalReadingHistory } from '@/utils/reading-history-index'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -20,10 +20,10 @@ export default function useReadingHistory(mangaId: number) {
   const { data: lastPage } = useQuery({
     queryKey: QueryKeys.readingHistory(mangaId),
     queryFn: async () => {
-      const stored = getLocalReadingHistoryMap().get(mangaId)
+      const readingHistory = getLocalReadingHistory()[mangaId]
 
-      if (stored?.lastPage) {
-        return stored.lastPage
+      if (readingHistory) {
+        return readingHistory.lastPage
       }
 
       if (!me || !hasAdultAccess(adultState) || !me.settings.historySyncEnabled) {

@@ -5,7 +5,7 @@ import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/histo
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
-import { getLocalReadingHistory } from '@/utils/reading-history-index'
+import { getLocalReadingHistoryArray } from '@/utils/reading-history-index'
 
 import type { ReadingHistorySource } from './common'
 
@@ -31,7 +31,7 @@ export default function useReadingHistoryInfiniteQuery({ initialData, source, us
 
 async function fetchLocalReadingHistoryPaginated() {
   return {
-    items: getLocalReadingHistory().map((item) => ({
+    items: getLocalReadingHistoryArray().map((item) => ({
       mangaId: item.mangaId,
       lastPage: item.lastPage,
       updatedAt: item.updatedAt,

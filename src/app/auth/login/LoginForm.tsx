@@ -26,7 +26,7 @@ import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
-import { clearAllSessionReadingHistoryEntries, getLocalReadingHistory } from '@/utils/reading-history-index'
+import { getLocalReadingHistoryArray, removeLocalReadingHistory } from '@/utils/reading-history-index'
 
 import { importReadingHistory, login } from './api'
 import SignupLink from './SignupLink'
@@ -93,7 +93,7 @@ export default function LoginForm() {
     mutationFn: importReadingHistory,
     onSuccess: ({ synced }) => {
       if (synced) {
-        clearAllSessionReadingHistoryEntries()
+        removeLocalReadingHistory()
         queryClient.invalidateQueries({ queryKey: QueryKeys.readingHistoryBase })
         queryClient.invalidateQueries({ queryKey: QueryKeys.localReadingHistorySummary })
       }
@@ -149,7 +149,7 @@ export default function LoginForm() {
     }
 
     const me = await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
-    const localHistory = getLocalReadingHistory()
+    const localHistory = getLocalReadingHistoryArray()
 
     if (localHistory.length > 0 && me && hasAdultAccess(getAdultState(me))) {
       await migrateReadingHistory({ localHistories: localHistory }).catch(() => undefined)

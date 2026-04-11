@@ -16,7 +16,7 @@ type Options = {
 export default function useLocalReadingHistorySummaryQuery({ enabled = true }: Options = {}) {
   return useQuery({
     queryKey: QueryKeys.localReadingHistorySummary,
-    queryFn: () => ({ historyCount: getLocalReadingHistory().length }),
+    queryFn: () => ({ historyCount: Object.keys(getLocalReadingHistory()).length }),
     enabled,
   })
 }

@@ -1,16 +1,34 @@
 import '@test/setup.dom'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
+import { SessionStorageKeyMap } from '@/constants/storage'
+
 import {
-  clearAllReadingHistoryLocalEntries,
-  readReadingHistoryIndex,
-  removeReadingHistoryLocalEntries,
-  writeReadingHistoryIndex,
+  getLocalReadingHistory,
+  getLocalReadingHistoryArray,
+  removeLocalReadingHistory,
+  removeLocalReadingHistoryEntries,
+  setLocalReadingHistoryEntry,
 } from '../reading-history-index'
 
-describe('reading-history-index 로컬 정리', () => {
-  const userId = 7
+function seedLocalReadingHistory(items: { mangaId: number; lastPage: number; updatedAt: number }[]) {
+  sessionStorage.setItem(
+    SessionStorageKeyMap.readingHistory(),
+    JSON.stringify(
+      Object.fromEntries(
+        items.map((item) => [
+          String(item.mangaId),
+          {
+            lastPage: item.lastPage,
+            updatedAt: item.updatedAt,
+          },
+        ]),
+      ),
+    ),
+  )
+}
 
+describe('reading-history-index 로컬 정리', () => {
   beforeEach(() => {
     sessionStorage.clear()
   })
@@ -19,60 +37,60 @@ describe('reading-history-index 로컬 정리', () => {
     sessionStorage.clear()
   })
 
-  test('선택 삭제 시 지정한 작품의 sessionStorage와 인덱스만 제거한다', () => {
-    sessionStorage.setItem('reading-history-101', '12')
-    sessionStorage.setItem('reading-history-202', '24')
+  test('선택 삭제 시 지정한 작품의 로컬 인덱스만 제거한다', () => {
+    seedLocalReadingHistory([
+      { mangaId: 101, lastPage: 12, updatedAt: 1000 },
+      { mangaId: 202, lastPage: 24, updatedAt: 2000 },
+    ])
     sessionStorage.setItem('unrelated-key', 'keep')
-    writeReadingHistoryIndex(
-      userId,
-      [
-        { mangaId: 101, lastPage: 12 },
-        { mangaId: 202, lastPage: 24 },
-      ],
-      { notify: false },
-    )
 
-    let notifiedUserId: number | undefined
-    window.addEventListener(
-      'reading-history-index-updated',
-      ((event: CustomEvent<{ userId?: number }>) => {
-        notifiedUserId = event.detail?.userId
-      }) as EventListener,
-      { once: true },
-    )
+    removeLocalReadingHistoryEntries([101])
 
-    removeReadingHistoryLocalEntries(userId, [101])
-
-    expect(sessionStorage.getItem('reading-history-101')).toBeNull()
-    expect(sessionStorage.getItem('reading-history-202')).toBe('24')
+    expect(getLocalReadingHistoryArray()).toEqual([{ mangaId: 202, lastPage: 24, updatedAt: 2000 }])
     expect(sessionStorage.getItem('unrelated-key')).toBe('keep')
-    expect(Array.from(readReadingHistoryIndex(userId).entries())).toEqual([[202, 24]])
-    expect(notifiedUserId).toBe(userId)
   })
 
-  test('전체 삭제 시 현재 브라우저의 감상 기록 캐시를 전부 제거한다', () => {
-    sessionStorage.setItem('reading-history-101', '12')
-    sessionStorage.setItem('reading-history-202', '24')
-    sessionStorage.setItem('reading-history-index-7', JSON.stringify({ 101: 12, 202: 24 }))
-    sessionStorage.setItem('reading-history-index-99', JSON.stringify({ 1: 3 }))
+  test('전체 삭제 시 현재 탭의 감상 기록 캐시만 제거한다', () => {
+    seedLocalReadingHistory([
+      { mangaId: 101, lastPage: 12, updatedAt: 1000 },
+      { mangaId: 202, lastPage: 24, updatedAt: 2000 },
+    ])
     sessionStorage.setItem('unrelated-key', 'keep')
 
-    let notifiedUserId: number | undefined
-    window.addEventListener(
-      'reading-history-index-updated',
-      ((event: CustomEvent<{ userId?: number }>) => {
-        notifiedUserId = event.detail?.userId
-      }) as EventListener,
-      { once: true },
-    )
+    removeLocalReadingHistory()
 
-    clearAllReadingHistoryLocalEntries(userId)
-
-    expect(sessionStorage.getItem('reading-history-101')).toBeNull()
-    expect(sessionStorage.getItem('reading-history-202')).toBeNull()
-    expect(readReadingHistoryIndex(userId).size).toBe(0)
-    expect(sessionStorage.getItem('reading-history-index-99')).toBe(JSON.stringify({ 1: 3 }))
+    expect(sessionStorage.getItem(SessionStorageKeyMap.readingHistory())).toBeNull()
+    expect(getLocalReadingHistoryArray()).toEqual([])
     expect(sessionStorage.getItem('unrelated-key')).toBe('keep')
-    expect(notifiedUserId).toBe(userId)
+  })
+
+  test('로컬 인덱스는 updatedAt 내림차순으로 읽는다', () => {
+    seedLocalReadingHistory([
+      { mangaId: 101, lastPage: 12, updatedAt: 1000 },
+      { mangaId: 202, lastPage: 24, updatedAt: 3000 },
+      { mangaId: 303, lastPage: 36, updatedAt: 2000 },
+    ])
+
+    expect(getLocalReadingHistoryArray()).toEqual([
+      { mangaId: 202, lastPage: 24, updatedAt: 3000 },
+      { mangaId: 303, lastPage: 36, updatedAt: 2000 },
+      { mangaId: 101, lastPage: 12, updatedAt: 1000 },
+    ])
+  })
+
+  test('업서트 시 같은 작품은 최신 페이지와 시각으로 덮어쓴다', () => {
+    seedLocalReadingHistory([{ mangaId: 101, lastPage: 12, updatedAt: 1000 }])
+    const originalDateNow = Date.now
+    Date.now = () => 3000
+
+    setLocalReadingHistoryEntry(101, 24)
+
+    Date.now = originalDateNow
+
+    expect(getLocalReadingHistoryArray()).toEqual([{ mangaId: 101, lastPage: 24, updatedAt: 3000 }])
+    expect(getLocalReadingHistory()[101]).toEqual({ lastPage: 24, updatedAt: 3000 })
+
+    const raw = sessionStorage.getItem(SessionStorageKeyMap.readingHistory())
+    expect(raw).toBe('{"101":{"lastPage":24,"updatedAt":3000}}')
   })
 })
