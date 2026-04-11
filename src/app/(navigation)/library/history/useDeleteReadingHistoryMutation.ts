@@ -1,62 +1,46 @@
 'use client'
 
-import type { InfiniteData, QueryKey } from '@tanstack/react-query'
-
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import type { DELETEV1ReadingHistoryBody } from '@/backend/api/v1/library/history/DELETE'
-import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
-import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
 
 import { QueryKeys } from '@/constants/query'
-import { clearAllReadingHistoryLocalEntries, removeReadingHistoryLocalEntries } from '@/utils/reading-history-index'
+import {
+  getLocalReadingHistory,
+  removeLocalReadingHistory,
+  removeLocalReadingHistoryEntries,
+} from '@/utils/reading-history-index'
+
+import type { ReadingHistorySource } from './common'
 
 import { deleteReadingHistory } from './api'
 
 type Options = {
-  userId?: number
+  source: ReadingHistorySource
   onSuccess?: () => void
 }
 
-export default function useDeleteReadingHistoryMutation({ userId, onSuccess }: Options) {
+export default function useDeleteReadingHistoryMutation({ source, onSuccess }: Options) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: deleteReadingHistory,
+    mutationFn: (body: DELETEV1ReadingHistoryBody) =>
+      source === 'local' ? deleteLocalReadingHistory(body) : deleteReadingHistory(body),
+
     onSuccess: ({ deletedCount }, variables) => {
-      const selectedIds = variables.mode === 'selected' ? [...new Set(variables.mangaIds)] : []
-
       if (variables.mode === 'all') {
-        if (userId) {
-          clearAllReadingHistoryLocalEntries(userId)
-        }
-
-        queryClient.setQueriesData<number | null>(
-          { predicate: (query) => isReadingHistoryDetailQuery(query.queryKey) },
-          () => null,
-        )
+        removeLocalReadingHistory()
       } else {
-        if (userId) {
-          removeReadingHistoryLocalEntries(userId, selectedIds)
-        }
-
-        for (const mangaId of selectedIds) {
-          queryClient.setQueryData<number | null>(QueryKeys.readingHistory(mangaId), null)
-        }
+        removeLocalReadingHistoryEntries(variables.mangaIds)
       }
 
-      queryClient.setQueryData<InfiniteData<GETV1ReadingHistoryResponse, string | null>>(
-        QueryKeys.infiniteReadingHistory,
-        (previous) => updateInfiniteReadingHistory(previous, variables),
-      )
+      queryClient.invalidateQueries({ queryKey: QueryKeys.readingHistoryBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.localReadingHistorySummary })
 
-      queryClient.setQueriesData<GETV1LibrarySummaryResponse>({ queryKey: QueryKeys.librarySummaryBase }, (previous) =>
-        updateLibrarySummaryHistoryCount(previous, variables, deletedCount),
-      )
-
-      queryClient.invalidateQueries({ queryKey: ['me', 'readingHistory'] })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.librarySummaryBase })
+      if (source === 'server') {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.librarySummaryBase })
+      }
 
       if (variables.mode === 'all') {
         if (deletedCount === 0) {
@@ -72,61 +56,22 @@ export default function useDeleteReadingHistoryMutation({ userId, onSuccess }: O
 
       onSuccess?.()
     },
+
     onError: (error) => {
       toast.warning(error instanceof Error ? error.message : '감상 기록을 삭제하지 못했어요')
     },
   })
 }
 
-function isReadingHistoryDetailQuery(queryKey: QueryKey) {
-  return (
-    Array.isArray(queryKey) &&
-    queryKey.length === 3 &&
-    queryKey[0] === 'me' &&
-    queryKey[1] === 'readingHistory' &&
-    typeof queryKey[2] === 'number'
-  )
-}
+async function deleteLocalReadingHistory(body: DELETEV1ReadingHistoryBody) {
+  const localHistory = getLocalReadingHistory()
 
-function updateInfiniteReadingHistory(
-  previous: InfiniteData<GETV1ReadingHistoryResponse, string | null> | undefined,
-  variables: DELETEV1ReadingHistoryBody,
-) {
-  if (!previous) {
-    return previous
+  if (body.mode === 'all') {
+    return { deletedCount: Object.keys(localHistory).length }
   }
 
-  if (variables.mode === 'all') {
-    const pageParam = previous.pageParams[0] ?? null
+  const selectedIds = new Set(body.mangaIds)
+  const deletedCount = Array.from(selectedIds).filter((mangaId) => localHistory[mangaId]).length
 
-    return {
-      pages: [{ items: [], nextCursor: null }],
-      pageParams: [pageParam],
-    }
-  }
-
-  const selectedIds = new Set(variables.mangaIds)
-
-  return {
-    ...previous,
-    pages: previous.pages.map((page) => ({
-      ...page,
-      items: page.items.filter((item) => !selectedIds.has(item.mangaId)),
-    })),
-  }
-}
-
-function updateLibrarySummaryHistoryCount(
-  previous: GETV1LibrarySummaryResponse | undefined,
-  variables: DELETEV1ReadingHistoryBody,
-  deletedCount: number,
-) {
-  if (!previous) {
-    return previous
-  }
-
-  return {
-    ...previous,
-    historyCount: variables.mode === 'all' ? 0 : Math.max(previous.historyCount - deletedCount, 0),
-  }
+  return { deletedCount }
 }

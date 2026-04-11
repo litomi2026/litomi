@@ -2,12 +2,6 @@
 
 import { SessionStorageKeyMap } from '@/constants/storage'
 
-export type LocalReadingHistoryItem = {
-  mangaId: number
-  lastPage: number
-  updatedAt: number
-}
-
 type LocalReadingHistory = Record<string, LocalReadingHistoryStorageEntry>
 
 type LocalReadingHistoryStorageEntry = {
@@ -56,7 +50,7 @@ export function getLocalReadingHistory(): LocalReadingHistory {
   }
 }
 
-export function getLocalReadingHistoryArray(): LocalReadingHistoryItem[] {
+export function getLocalReadingHistoryArray() {
   return Object.entries(getLocalReadingHistory())
     .map(([mangaId, entry]) => ({
       mangaId: Number(mangaId),

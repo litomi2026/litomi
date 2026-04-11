@@ -51,7 +51,7 @@ afterAll(() => {
 describe('HistoryPageClient', () => {
   test('감상 기록이 비어 있으면 빈 상태를 렌더링한다', () => {
     const view = renderWithLibrarySelection(
-      <HistoryPageClient initialData={{ items: [], nextCursor: null }} source="server" userId={1} />,
+      <HistoryPageClient initialData={{ items: [], nextCursor: null }} source="server" />,
     )
 
     expect(view.getByText('아직 읽은 작품이 없어요')).toBeTruthy()
@@ -59,7 +59,7 @@ describe('HistoryPageClient', () => {
 
   test('다음 페이지가 남아 있으면 빈 상태를 바로 렌더링하지 않는다', () => {
     const view = renderWithLibrarySelection(
-      <HistoryPageClient initialData={{ items: [], nextCursor: 'next-cursor' }} source="server" userId={1} />,
+      <HistoryPageClient initialData={{ items: [], nextCursor: 'next-cursor' }} source="server" />,
     )
 
     expect(view.queryByText('아직 읽은 작품이 없어요')).toBeNull()

@@ -30,11 +30,7 @@ export default function useReadingHistoryInfiniteQuery({ initialData, source }: 
 
 async function fetchLocalReadingHistoryPaginated() {
   return {
-    items: getLocalReadingHistoryArray().map((item) => ({
-      mangaId: item.mangaId,
-      lastPage: item.lastPage,
-      updatedAt: item.updatedAt,
-    })),
+    items: getLocalReadingHistoryArray(),
     nextCursor: null,
   }
 }
