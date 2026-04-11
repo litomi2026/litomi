@@ -18,6 +18,7 @@ spec:
           averageUtilization: 80
   behavior:
     scaleUp:
+      stabilizationWindowSeconds: 120
       policies:
         - type: Percent
           value: 100

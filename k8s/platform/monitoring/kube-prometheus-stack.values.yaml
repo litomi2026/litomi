@@ -95,10 +95,10 @@ grafana:
   sidecar:
     resources:
       requests:
-        cpu: 5m
+        cpu: 50m
         memory: 80Mi
       limits:
-        cpu: 20m
+        cpu: 100m
         memory: 96Mi
   additionalDataSources:
     - name: Loki
@@ -188,10 +188,10 @@ prometheus:
 
     resources:
       requests:
-        cpu: 150m
+        cpu: 300m
         memory: 768Mi
       limits:
-        cpu: 300m
+        cpu: 1500m
         memory: 1536Mi
 
     storageSpec:

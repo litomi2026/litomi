@@ -12,6 +12,13 @@ spec:
     spec:
       containers:
         - name: backend
+          resources:
+            requests:
+              cpu: 80m
+              memory: 640Mi
+            limits:
+              cpu: 240m
+              memory: 896Mi
           env:
             - name: POSTGRES_APPLICATION_NAME
               value: litomi-backend-stg
