@@ -63,10 +63,10 @@ spec:
             failureThreshold: 6
           resources:
             requests:
-              cpu: 25m
+              cpu: 40m
               memory: 240Mi
             limits:
-              cpu: 75m
+              cpu: 150m
               memory: 320Mi
           securityContext:
             allowPrivilegeEscalation: false
