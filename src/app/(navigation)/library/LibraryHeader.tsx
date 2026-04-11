@@ -276,7 +276,7 @@ export default function LibraryHeader({
         {isSelectionMode && <BulkOperationsToolbar actions={bulkActions} />}
         <div className="flex items-center">
           {!isSelectionMode && pageKind === 'history' && (userId || historySource === 'local') && (
-            <HistoryClearAllButton historyCount={historyCount} source={historySource} userId={userId} />
+            <HistoryClearAllButton historyCount={historyCount} source={historySource} />
           )}
           {!isSelectionMode && isPublicLibrary && currentLibrary && (
             <>

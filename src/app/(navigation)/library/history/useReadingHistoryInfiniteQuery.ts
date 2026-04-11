@@ -14,12 +14,11 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 type Options = {
   initialData?: GETV1ReadingHistoryResponse
   source: ReadingHistorySource
-  userId?: number
 }
 
-export default function useReadingHistoryInfiniteQuery({ initialData, source, userId }: Options) {
+export default function useReadingHistoryInfiniteQuery({ initialData, source }: Options) {
   return useInfiniteQuery({
-    queryKey: QueryKeys.infiniteReadingHistory(source, userId),
+    queryKey: QueryKeys.infiniteReadingHistory(source),
     queryFn: ({ pageParam }) =>
       source === 'local' ? fetchLocalReadingHistoryPaginated() : fetchReadingHistoryPaginated(pageParam),
     getNextPageParam: (lastPage) => lastPage.nextCursor,

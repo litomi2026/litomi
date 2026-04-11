@@ -77,7 +77,7 @@ export default async function HistoryPage() {
   return (
     <main className="flex-1 flex flex-col">
       <h1 className="sr-only">감상 기록</h1>
-      <HistoryPageClient initialData={initialData} source="server" userId={claims.userId} />
+      <HistoryPageClient initialData={initialData} source="server" />
     </main>
   )
 }

@@ -18,7 +18,6 @@ export default function useBulkDeleteReadingHistoryAction({ source, userId }: Op
 
   const mutation = useDeleteReadingHistoryMutation({
     source,
-    userId,
     onSuccess: exit,
   })
 

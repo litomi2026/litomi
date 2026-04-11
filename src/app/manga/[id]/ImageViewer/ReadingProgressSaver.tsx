@@ -1,10 +1,12 @@
 'use client'
 
+import { useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import { useEffect, useEffectEvent, useRef } from 'react'
 
 import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/history/POST'
 
+import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
@@ -25,6 +27,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   const canSyncReadingProgress = hasAdultAccess(adultState) && me?.settings.historySyncEnabled === true
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const isRequestPendingRef = useRef(false)
+  const queryClient = useQueryClient()
 
   const sendCurrentPage = useEffectEvent((options?: { keepalive?: boolean }) => {
     if (!canSyncReadingProgress || isRequestPendingRef.current || imageIndex <= 0) {
@@ -63,7 +66,10 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
     }
 
     setLocalReadingHistoryEntry(mangaId, imageIndex + 1)
-  }, [imageIndex, mangaId])
+
+    queryClient.invalidateQueries({ queryKey: QueryKeys.localReadingHistorySummary })
+    queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteReadingHistory('local') })
+  }, [imageIndex, mangaId, queryClient])
 
   // NOTE: 감상 기록 자동 저장이 켜져 있으면 1분마다 최신 페이지를 서버에 보내요.
   useEffect(() => {

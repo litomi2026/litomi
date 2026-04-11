@@ -4,12 +4,13 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 
 export const QueryKeys = {
   me: ['me'],
+  readingHistoryBase: ['me', 'readingHistory'],
   ratingsBase: ['me', 'ratings'],
   bookmarks: ['me', 'bookmarks'],
   likedPosts: ['me', 'posts', 'liked'],
   infiniteBookmarksBase: ['me', 'bookmarks', 'infinite'],
   infiniteBookmarks: (sort: CollectionItemSort) => [...QueryKeys.infiniteBookmarksBase, sort],
-  infiniteReadingHistory: ['me', 'readingHistory', 'infinite'],
+  infiniteReadingHistory: (source: 'local' | 'server') => ['me', 'readingHistory', 'infinite', source],
   infiniteRatings: (sort: RatingSort) => ['me', 'ratings', 'infinite', sort],
   censorship: ['me', 'censorships'],
   infiniteCensorships: ['me', 'censorships', 'infinite'],
@@ -21,6 +22,7 @@ export const QueryKeys = {
   infiniteLibraryListBase: ['library', 'list', 'infinite'],
   infiniteLibraryMangasBase: ['library', 'manga', 'infinite'],
   librarySummaryBase: ['library', 'summary'],
+  localReadingHistorySummary: ['library', 'history', 'local', 'summary'],
   infiniteLibraryList: (userId?: number) => [...QueryKeys.infiniteLibraryListBase, userId ?? 'guest'],
   infinitePinnedLibraryList: (userId?: number) => ['library', 'list', 'infinite', 'pinned', userId ?? 'guest'],
   infiniteLibraryMangas: (userId?: number) => [...QueryKeys.infiniteLibraryMangasBase, userId ?? 'guest'],

@@ -21,7 +21,6 @@ import { DATE_GROUP_LABELS, groupHistoryByDate } from './utils'
 type Props = {
   initialData?: GETV1ReadingHistoryResponse
   source: ReadingHistorySource
-  userId?: number
 }
 
 export default function HistoryPageClient(props: Props) {

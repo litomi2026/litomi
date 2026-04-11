@@ -11,15 +11,13 @@ import useDeleteReadingHistoryMutation from './useDeleteReadingHistoryMutation'
 type Props = {
   historyCount?: number
   source: ReadingHistorySource
-  userId?: number
 }
 
-export default function HistoryClearAllButton({ historyCount, source, userId }: Readonly<Props>) {
+export default function HistoryClearAllButton({ historyCount, source }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const deleteMutation = useDeleteReadingHistoryMutation({
     source,
-    userId,
     onSuccess: () => setIsDialogOpen(false),
   })
 
