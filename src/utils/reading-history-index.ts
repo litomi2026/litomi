@@ -2,110 +2,110 @@
 
 import { SessionStorageKeyMap } from '@/constants/storage'
 
-export const READING_HISTORY_INDEX_UPDATED_EVENT = 'reading-history-index-updated'
-const READING_HISTORY_STORAGE_PREFIX = 'reading-history-'
-const READING_HISTORY_INDEX_STORAGE_PREFIX = 'reading-history-index-'
+type LocalReadingHistory = Record<string, LocalReadingHistoryStorageEntry>
 
-type ReadingHistoryIndexStorageShape = Record<string, number>
+type LocalReadingHistoryStorageEntry = {
+  lastPage: number
+  updatedAt: number
+}
 
-export function clearAllReadingHistoryLocalEntries(userId: number) {
+export function getLocalReadingHistory(): LocalReadingHistory {
   try {
-    for (let i = sessionStorage.length - 1; i >= 0; i--) {
-      const key = sessionStorage.key(i)
+    const raw = sessionStorage.getItem(SessionStorageKeyMap.readingHistory())
+
+    if (!raw) {
+      return {}
+    }
+
+    const parsed = JSON.parse(raw)
+
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return {}
+    }
+
+    const readingHistory: LocalReadingHistory = {}
+
+    for (const [mangaId, value] of Object.entries(parsed)) {
+      if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        continue
+      }
+
+      const { lastPage, updatedAt } = value as Partial<LocalReadingHistoryStorageEntry>
 
       if (
-        key &&
-        key.startsWith(READING_HISTORY_STORAGE_PREFIX) &&
-        !key.startsWith(READING_HISTORY_INDEX_STORAGE_PREFIX)
+        typeof lastPage !== 'number' ||
+        !Number.isFinite(lastPage) ||
+        typeof updatedAt !== 'number' ||
+        !Number.isFinite(updatedAt)
       ) {
-        sessionStorage.removeItem(key)
+        continue
       }
+
+      readingHistory[mangaId] = { lastPage, updatedAt }
     }
+
+    return readingHistory
+  } catch {
+    return {}
+  }
+}
+
+export function getLocalReadingHistoryArray() {
+  return Object.entries(getLocalReadingHistory())
+    .map(([mangaId, entry]) => ({
+      mangaId: Number(mangaId),
+      lastPage: entry.lastPage,
+      updatedAt: entry.updatedAt,
+    }))
+    .sort((a, b) => b.updatedAt - a.updatedAt || b.mangaId - a.mangaId)
+}
+
+export function removeLocalReadingHistory() {
+  try {
+    sessionStorage.removeItem(SessionStorageKeyMap.readingHistory())
   } catch {
     // ignore
   }
-
-  writeReadingHistoryIndex(userId, [], { notify: true })
 }
 
-export function readReadingHistoryIndex(userId: number): Map<number, number> {
-  const key = SessionStorageKeyMap.readingHistoryIndex(userId)
-  const raw = sessionStorage.getItem(key)
-
-  if (!raw) {
-    return new Map()
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as ReadingHistoryIndexStorageShape
-    const result = new Map<number, number>()
-    for (const [mangaIdStr, lastPage] of Object.entries(parsed)) {
-      result.set(Number(mangaIdStr), lastPage)
-    }
-    return result
-  } catch {
-    return new Map()
-  }
-}
-
-export function removeReadingHistoryIndexEntries(
-  userId: number,
-  mangaIds: Iterable<number>,
-  options?: { notify?: boolean },
-) {
-  const current = readReadingHistoryIndex(userId)
+export function removeLocalReadingHistoryEntries(mangaIds: Iterable<number>) {
+  const readingHistory = getLocalReadingHistory()
+  let changed = false
 
   for (const mangaId of mangaIds) {
-    current.delete(mangaId)
-  }
-
-  const readingHistories = Array.from(current.entries()).map(([id, page]) => ({ mangaId: id, lastPage: page }))
-  writeReadingHistoryIndex(userId, readingHistories, options)
-}
-
-export function removeReadingHistoryLocalEntries(userId: number, mangaIds: Iterable<number>) {
-  const ids = Array.from(mangaIds)
-  removeReadingHistorySessionEntries(ids)
-  removeReadingHistoryIndexEntries(userId, ids, { notify: true })
-}
-
-export function removeReadingHistorySessionEntries(mangaIds: Iterable<number>) {
-  for (const mangaId of mangaIds) {
-    try {
-      sessionStorage.removeItem(SessionStorageKeyMap.readingHistory(mangaId))
-    } catch {
-      // ignore
+    if (!(String(mangaId) in readingHistory)) {
+      continue
     }
+
+    delete readingHistory[String(mangaId)]
+    changed = true
+  }
+
+  if (changed) {
+    setLocalReadingHistory(readingHistory)
   }
 }
 
-export function upsertReadingHistoryIndexEntry(userId: number, mangaId: number, lastPage: number) {
-  const current = readReadingHistoryIndex(userId)
-  current.set(mangaId, lastPage)
-  const readingHistories = Array.from(current.entries()).map(([id, page]) => ({ mangaId: id, lastPage: page }))
-  writeReadingHistoryIndex(userId, readingHistories)
-}
+export function setLocalReadingHistoryEntry(mangaId: number, lastPage: number) {
+  const readingHistory = getLocalReadingHistory()
 
-export function writeReadingHistoryIndex(
-  userId: number,
-  items: Iterable<{ mangaId: number; lastPage: number }>,
-  options?: { notify?: boolean },
-) {
-  const map: ReadingHistoryIndexStorageShape = {}
-
-  for (const item of items) {
-    map[String(item.mangaId)] = item.lastPage
+  readingHistory[String(mangaId)] = {
+    lastPage,
+    updatedAt: Date.now(),
   }
 
-  const key = SessionStorageKeyMap.readingHistoryIndex(userId)
+  setLocalReadingHistory(readingHistory)
+}
 
+function setLocalReadingHistory(readingHistory: LocalReadingHistory) {
   try {
-    sessionStorage.setItem(key, JSON.stringify(map))
+    if (Object.keys(readingHistory).length === 0) {
+      sessionStorage.removeItem(SessionStorageKeyMap.readingHistory())
+      return
+    }
+
+    sessionStorage.setItem(SessionStorageKeyMap.readingHistory(), JSON.stringify(readingHistory))
   } catch {
     // ignore
-  }
-
-  if (options?.notify) {
-    window.dispatchEvent(new window.CustomEvent(READING_HISTORY_INDEX_UPDATED_EVENT, { detail: { userId } }))
   }
 }

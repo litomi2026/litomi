@@ -9,6 +9,8 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
+import type { ReadingHistorySource } from './common'
+
 import CensoredManga from '../CensoredManga'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -18,12 +20,12 @@ import { DATE_GROUP_LABELS, groupHistoryByDate } from './utils'
 
 type Props = {
   initialData?: GETV1ReadingHistoryResponse
+  source: ReadingHistorySource
 }
 
-export default function HistoryPageClient({ initialData }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } = useReadingHistoryInfiniteQuery(
-    { initialData },
-  )
+export default function HistoryPageClient(props: Props) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } =
+    useReadingHistoryInfiniteQuery(props)
 
   const historyItems = data?.pages.flatMap((page) => page.items) ?? []
   const { isSelectionMode } = useLibrarySelection()

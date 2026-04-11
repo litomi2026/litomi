@@ -1,6 +1,7 @@
 'use client'
 
 import { Loader2, Trash2 } from 'lucide-react'
+import { ReactNode } from 'react'
 
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
@@ -16,7 +17,7 @@ type Props = {
   onConfirm: () => void
   open: boolean
   title: string
-  warning: string
+  warning: ReactNode
 }
 
 export default function BulkDeleteDialog({
@@ -29,7 +30,7 @@ export default function BulkDeleteDialog({
   open,
   title,
   warning,
-}: Readonly<Props>) {
+}: Props) {
   return (
     <Dialog ariaLabel={ariaLabel} className="sm:max-w-sm" onClose={onClose} open={open}>
       <DialogHeader onClose={onClose} title={title} />

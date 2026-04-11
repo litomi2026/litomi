@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
@@ -63,7 +64,13 @@ route.post('/import', requireAuth, requireAdult, zProblemValidator('json', postB
       const inserted = await tx
         .insert(readingHistoryTable)
         .values(values)
-        .onConflictDoNothing()
+        .onConflictDoUpdate({
+          target: [readingHistoryTable.userId, readingHistoryTable.mangaId],
+          set: {
+            lastPage: sql`excluded.${sql.identifier(readingHistoryTable.lastPage.name)}`,
+            updatedAt: sql`excluded.${sql.identifier(readingHistoryTable.updatedAt.name)}`,
+          },
+        })
         .returning({ mangaId: readingHistoryTable.mangaId })
 
       const userHistoryLimit = await getUserHistoryLimitInTx(tx, userId)

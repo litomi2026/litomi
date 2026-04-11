@@ -1,5 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 
+import { ReactNode } from 'react'
+
 export type BulkActionDescriptor = BulkConfirmActionDescriptor | BulkLibrarySelectActionDescriptor
 
 export type BulkConfirmActionDescriptor = BulkActionBase & {
@@ -9,7 +11,7 @@ export type BulkConfirmActionDescriptor = BulkActionBase & {
   onConfirm: () => void
   title: string
   type: 'confirm'
-  warning: string
+  warning: ReactNode
 }
 
 export type BulkLibrarySelectActionDescriptor = BulkActionBase & {

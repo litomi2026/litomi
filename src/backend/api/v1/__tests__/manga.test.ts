@@ -17,6 +17,8 @@ let totalHistoryExpansionAmount = 0
 let lastLockedUserId: number | null = null
 let lastEnforceHistoryLimitQuery: unknown = null
 let importInsertedMangaIds: number[] = []
+let importConflictUpdateKeys: string[] = []
+let importUsedConflictUpdate = false
 let importInsertedValues: Array<{
   lastPage: number
   mangaId: number
@@ -101,6 +103,14 @@ mock.module('@/database/supabase/drizzle', () => ({
             importInsertedValues = insertedValues
 
             return {
+              onConflictDoUpdate: ({ set }: { set: Record<string, unknown> }) => {
+                importUsedConflictUpdate = true
+                importConflictUpdateKeys = Object.keys(set)
+
+                return {
+                  returning: () => Promise.resolve(importInsertedMangaIds.map((mangaId) => ({ mangaId }))),
+                }
+              },
               onConflictDoNothing: () => ({
                 returning: () => Promise.resolve(importInsertedMangaIds.map((mangaId) => ({ mangaId }))),
               }),
@@ -146,8 +156,10 @@ mock.module('@/backend/utils/lock-user-row', () => ({
 beforeEach(() => {
   currentUserId = undefined
   historySyncEnabled = true
+  importConflictUpdateKeys = []
   importInsertedMangaIds = []
   importInsertedValues = []
+  importUsedConflictUpdate = false
   lastEnforceHistoryLimitQuery = null
   lastLockedUserId = null
   shouldThrowDatabaseError = false
@@ -454,6 +466,8 @@ describe('POST /api/v1/library/history/import', () => {
     expect(transactionCallCount).toBe(1)
     expect(lastLockedUserId).toBe(1)
     expect(lastEnforceHistoryLimitQuery).toBeDefined()
+    expect(importUsedConflictUpdate).toBe(true)
+    expect(importConflictUpdateKeys).toEqual(['lastPage', 'updatedAt'])
     expect(importInsertedValues).toEqual([
       { mangaId: 123, lastPage: 9, updatedAt: new Date(1710000005000), userId: 1 },
       { mangaId: 456, lastPage: 3, updatedAt: new Date(1710000001000), userId: 1 },

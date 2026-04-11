@@ -3,17 +3,14 @@ import { Metadata } from 'next'
 import { headers } from 'next/headers'
 
 import { encodeReadingHistoryCursor } from '@/common/cursor'
-import AdultVerificationGate from '@/components/AdultVerificationGate'
 import { generateOpenGraphMetadata } from '@/constants'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
 import { getAccessTokenClaimsFromCookie } from '@/utils/cookie'
 
 import HistoryPageClient from './HistoryPageClient'
 import NotFound from './NotFound'
-import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
   title: '감상 기록',
@@ -29,24 +26,16 @@ export const metadata: Metadata = {
 
 export default async function HistoryPage() {
   const claims = await getAccessTokenClaimsFromCookie()
-
-  if (!claims) {
-    return <Unauthorized />
-  }
-
   const headersList = await headers()
   const country = headersList.get('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
-  const isAdultVerificationRequired = country === 'KR'
+  const canUseServerHistory = Boolean(claims) && (country !== 'KR' || claims?.adult === true)
 
-  if (isAdultVerificationRequired && claims.adult !== true) {
-    const [user] = await db.select({ name: userTable.name }).from(userTable).where(eq(userTable.id, claims.userId))
-
+  if (!claims || !canUseServerHistory) {
     return (
-      <AdultVerificationGate
-        description="감상 기록을 보려면 익명 성인인증이 필요해요"
-        title="성인인증이 필요해요"
-        username={user?.name}
-      />
+      <main className="flex-1 flex flex-col">
+        <h1 className="sr-only">감상 기록</h1>
+        <HistoryPageClient source="local" />
+      </main>
     )
   }
 
@@ -88,7 +77,7 @@ export default async function HistoryPage() {
   return (
     <main className="flex-1 flex flex-col">
       <h1 className="sr-only">감상 기록</h1>
-      <HistoryPageClient initialData={initialData} />
+      <HistoryPageClient initialData={initialData} source="server" />
     </main>
   )
 }
