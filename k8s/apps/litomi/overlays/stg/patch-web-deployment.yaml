@@ -14,10 +14,10 @@ spec:
         - name: web
           resources:
             requests:
-              cpu: 20m
+              cpu: 40m
               memory: 384Mi
             limits:
-              cpu: 60m
+              cpu: 120m
               memory: 512Mi
           env:
             - name: POSTGRES_APPLICATION_NAME
