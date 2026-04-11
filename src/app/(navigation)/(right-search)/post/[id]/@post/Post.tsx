@@ -2,43 +2,20 @@ import dayjs from 'dayjs'
 import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
+import { type Post as PostType } from '@/backend/api/v1/post/GET'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
-import ReferredPostCard, { ReferredPost } from '@/components/post/ReferredPostCard'
+import ReferredPostCard from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
-import { PostType } from '@/database/enum'
 import { formatDistanceToNow } from '@/utils/format/date'
 
 import FollowButton from './FollowButton'
 import PostDetailLikeButton from './PostDetailLikeButton'
 import PostMangaCard from './PostMangaCard'
 
-export type Post = {
-  id: number
-  createdAt: Date
-  type: PostType
-  updatedAt?: Date
-  content?: string | null
-  imageURLs?: string[] | null
-  mangaId?: number | null
-  isLiked?: boolean
-  author?: {
-    id: number
-    name: string
-    nickname: string
-    imageURL: string | null
-  } | null
-  commentCount: number
-  repostCount: number
-  likeCount: number
-  bookmarkCount?: number
-  viewCount?: number
-  referredPost?: ReferredPost | null
-}
-
 type Props = {
-  post: Post
+  post: PostType
 }
 
 export default function Post({ post }: Props) {

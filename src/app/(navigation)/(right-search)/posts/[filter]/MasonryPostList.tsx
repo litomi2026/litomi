@@ -6,8 +6,8 @@ import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import { PostFilter } from '@/backend/api/v1/post/constant'
+import { Post } from '@/backend/api/v1/post/GET'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
-import { type Post } from '@/components/post/XPostCard'
 import RetryGuidance from '@/components/RetryGuidance'
 import usePostInfiniteQuery from '@/query/usePostsQuery'
 

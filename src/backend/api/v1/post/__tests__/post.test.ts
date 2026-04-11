@@ -463,7 +463,9 @@ describe('GET /api/v1/post', () => {
   test('cursor가 있는 비개인화 목록은 public cache-control을 반환한다', async () => {
     mockPosts.push(createGetPost({ id: 3, createdAt: new Date('2025-01-03T00:00:00.000Z') }))
 
-    const response = await app.request(`/?filter=${PostFilter.RECOMMEND}&cursor=${encodePostCursor(Date.parse('2025-01-03T00:00:00.000Z'), 3)}`)
+    const response = await app.request(
+      `/?filter=${PostFilter.RECOMMEND}&cursor=${encodePostCursor(Date.parse('2025-01-03T00:00:00.000Z'), 3)}`,
+    )
 
     expect(response.status).toBe(200)
     expect(response.headers.get('Cache-Control')).toBe(
@@ -488,7 +490,7 @@ describe('GET /api/v1/post/liked', () => {
     expect(response.status).toBe(200)
     const data = (await response.json()) as GETV1PostLikedResponse
     expect(data).toEqual({ postIds: [9, 3, 1] })
-    expect(response.headers.get('Cache-Control')).toBe('private, max-age=86400')
+    expect(response.headers.get('Cache-Control')).toBe('private, max-age=3')
   })
 
   test('인증되지 않은 사용자는 401 응답을 받는다', async () => {

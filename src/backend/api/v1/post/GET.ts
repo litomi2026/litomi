@@ -46,6 +46,10 @@ export type Post = {
   repostCount: number
   viewCount?: number
   referredPost: ReferredPost | null
+
+  // TODO(2026-04-12)
+  imageURLs?: string[] | null
+  bookmarkCount?: number
 }
 
 const route = new Hono<Env>()
