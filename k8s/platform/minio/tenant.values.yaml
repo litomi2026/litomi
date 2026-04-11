@@ -38,7 +38,7 @@ tenant:
           cpu: 20m
           memory: 384Mi
         limits:
-          cpu: 60m
+          cpu: 150m
           memory: 512Mi
 
   certificate:

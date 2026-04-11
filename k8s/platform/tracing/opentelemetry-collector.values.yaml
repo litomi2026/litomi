@@ -41,7 +41,7 @@ resources:
     cpu: 10m
     memory: 160Mi
   limits:
-    cpu: 40m
+    cpu: 50m
     memory: 224Mi
 
 serviceMonitor:
