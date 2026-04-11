@@ -51,6 +51,10 @@ export default async function Page({ params }: PageProps<'/post/[id]'>) {
   const { id } = validation.data
   const post = await getPost(id)
 
+  if (!post) {
+    notFound()
+  }
+
   return <Post post={post} />
 }
 

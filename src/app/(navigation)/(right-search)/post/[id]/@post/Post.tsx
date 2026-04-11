@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import { Bookmark, Heart, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
@@ -10,13 +9,14 @@ import { type Post } from '@/components/post/XPostCard'
 import Squircle from '@/components/ui/Squircle'
 
 import FollowButton from './FollowButton'
+import PostDetailActionBar from './PostDetailActionBar'
 import PostMangaCard from './PostMangaCard'
 
 type Props = {
   post: Post
 }
 
-export default function Post({ post }: Readonly<Props>) {
+export default function Post({ post }: Props) {
   const author = post.author
   const referredPost = post.referredPost
 
@@ -66,47 +66,13 @@ export default function Post({ post }: Readonly<Props>) {
             <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수
           </span>
         </div>
-        <div className="flex justify-between gap-1 border-y-2 px-2 py-1 text-sm">
-          {[
-            {
-              Icon: MessageCircle,
-              content: post.commentCount ?? 0,
-              iconClassName: 'group-hover:bg-brand/20',
-              textClassName: 'hover:text-brand',
-            },
-            {
-              Icon: Repeat,
-              content: post.repostCount ?? 0,
-              iconClassName: 'group-hover:bg-green-500/20 group-hover:text-green-500',
-              textClassName: 'hover:text-green-500',
-            },
-            {
-              Icon: Heart,
-              content: post.likeCount ?? 0,
-              iconClassName: 'group-hover:bg-red-600/20 group-hover:text-red-600',
-              textClassName: 'hover:text-red-600',
-            },
-            {
-              Icon: Bookmark,
-              content: post.bookmarkCount ?? 0,
-              iconClassName: 'group-hover:bg-sky-800/20',
-              textClassName: 'hover:text-sky-500',
-            },
-            {
-              Icon: Upload,
-              iconClassName: 'group-hover:bg-zinc-800',
-            },
-          ].map(({ Icon, content, iconClassName = '', textClassName = '' }, i) => (
-            <div className="flex items-center" key={i}>
-              <button className={`group flex items-center w-fit transition ${textClassName}`}>
-                <div className={`shrink-0 rounded-full transition ${iconClassName}`}>
-                  <Icon className="size-10 p-2" />
-                </div>
-                {content}
-              </button>
-            </div>
-          ))}
-        </div>
+        <PostDetailActionBar
+          bookmarkCount={post.bookmarkCount ?? 0}
+          commentCount={post.commentCount}
+          likeCount={post.likeCount}
+          postId={post.id}
+          repostCount={post.repostCount}
+        />
         <PostCreationForm
           buttonText="답글"
           className="flex"
