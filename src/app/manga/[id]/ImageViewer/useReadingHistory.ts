@@ -56,16 +56,25 @@ export default function useReadingHistory(mangaId: number) {
   // NOTE: 전체 감상 기록을 얻으면 lastPage를 즉시 최신으로 맞춰요
   useEffect(() => {
     function handleIndexUpdated(event: Event) {
-      const detail = (event as CustomEvent<{ userId?: number }>).detail
-      if (!detail || detail.userId !== userId) {
+      const detail = (event as CustomEvent<{ scope?: 'local' | 'user'; userId?: number }>).detail
+
+      if (!detail) {
         return
       }
+
+      const shouldInvalidateForUser = detail.scope === 'user' && detail.userId === userId
+      const shouldInvalidateForLocal = detail.scope === 'local' && !hasAdultAccess(adultState)
+
+      if (!shouldInvalidateForUser && !shouldInvalidateForLocal) {
+        return
+      }
+
       queryClient.invalidateQueries({ queryKey: QueryKeys.readingHistory(mangaId) })
     }
 
     window.addEventListener(READING_HISTORY_INDEX_UPDATED_EVENT, handleIndexUpdated)
     return () => window.removeEventListener(READING_HISTORY_INDEX_UPDATED_EVENT, handleIndexUpdated)
-  }, [mangaId, queryClient, userId])
+  }, [adultState, mangaId, queryClient, userId])
 
   return { lastPage }
 }

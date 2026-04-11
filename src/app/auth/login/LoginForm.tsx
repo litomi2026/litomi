@@ -15,16 +15,18 @@ import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import IconLogo from '@/components/icons/LogoLitomi'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
-import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import Toggle from '@/components/ui/Toggle'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
+import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
+import { clearAllSessionReadingHistoryEntries, getLocalReadingHistory } from '@/utils/reading-history-index'
 
 import { importReadingHistory, login } from './api'
 import SignupLink from './SignupLink'
@@ -87,11 +89,13 @@ export default function LoginForm() {
     meta: { suppressGlobalErrorToastForStatuses: LOGIN_LOCAL_ERROR_STATUSES },
   })
 
-  const { mutate: migrateReadingHistory } = useMutation({
+  const { mutateAsync: migrateReadingHistory } = useMutation({
     mutationFn: importReadingHistory,
     onSuccess: ({ synced }) => {
       if (synced) {
-        clearMigratedHistory()
+        clearAllSessionReadingHistoryEntries()
+        queryClient.invalidateQueries({ queryKey: QueryKeys.readingHistoryBase })
+        queryClient.invalidateQueries({ queryKey: QueryKeys.localReadingHistorySummary })
       }
     },
   })
@@ -144,13 +148,12 @@ export default function LoginForm() {
       track('login')
     }
 
+    const me = await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
     const localHistory = getLocalReadingHistory()
 
-    if (localHistory.length > 0) {
-      migrateReadingHistory({ localHistories: localHistory })
+    if (localHistory.length > 0 && me && hasAdultAccess(getAdultState(me))) {
+      await migrateReadingHistory({ localHistories: localHistory }).catch(() => undefined)
     }
-
-    await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
 
     const params = new URLSearchParams(window.location.search)
     const redirect = params.get(SearchParamKey.REDIRECT)
