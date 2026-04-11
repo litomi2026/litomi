@@ -80,6 +80,17 @@ function createPostgresForeignKeyError() {
   })
 }
 
+function createPostRecord(overrides: Partial<StoredPost> & Pick<StoredPost, 'id' | 'userId'>): StoredPost {
+  return {
+    content: 'post',
+    mangaId: null,
+    parentPostId: null,
+    referredPostId: null,
+    type: PostType.TEXT,
+    ...overrides,
+  }
+}
+
 function extractPostLikeWhereParams(condition: unknown): Record<string, number> {
   const params: Record<string, number> = {}
   const { params: queryParams, sql } = dialect.sqlToQuery(condition as Parameters<typeof dialect.sqlToQuery>[0])
@@ -112,6 +123,14 @@ function extractWhereParams(condition: unknown): Record<string, number> {
   return params
 }
 
+function getLikedPostIds(userId: number) {
+  return [...(likedPostIdsByUser.get(userId) ?? [])]
+}
+
+function setLikedPostIds(userId: number, postIds: number[]) {
+  likedPostIdsByUser.set(userId, postIds)
+}
+
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
     select: () => ({
@@ -127,6 +146,86 @@ mock.module('@/database/supabase/drizzle', () => ({
         },
       }),
     }),
+    transaction: async (callback: (tx: Record<string, unknown>) => unknown) => {
+      if (shouldThrowDatabaseError) {
+        throw new Error('Database connection failed')
+      }
+
+      const tx = {
+        select: () => ({
+          from: () => ({
+            where: (condition: unknown) => {
+              const execute = async () => {
+                if (shouldThrowDatabaseError) {
+                  throw new Error('Database connection failed')
+                }
+
+                const { post_id: postId, user_id: userId } = extractPostLikeWhereParams(condition)
+
+                if (typeof postId !== 'number' || typeof userId !== 'number') {
+                  return []
+                }
+
+                return getLikedPostIds(userId)
+                  .filter((likedPostId) => likedPostId === postId)
+                  .map((likedPostId) => ({ postId: likedPostId }))
+              }
+
+              return {
+                then: (resolve: (value: { postId: number }[]) => unknown, reject?: (reason: unknown) => unknown) =>
+                  execute().then(resolve, reject),
+                for: async () => [],
+              }
+            },
+          }),
+        }),
+        insert: () => ({
+          values: (values: { postId: number; userId: number }) => ({
+            onConflictDoNothing: () => ({
+              returning: async () => {
+                if (shouldThrowDatabaseError) {
+                  throw new Error('Database connection failed')
+                }
+
+                if (!storedPosts.some((post) => post.id === values.postId)) {
+                  throw createPostgresForeignKeyError()
+                }
+
+                const likedPostIds = getLikedPostIds(values.userId)
+
+                if (likedPostIds.includes(values.postId)) {
+                  return []
+                }
+
+                setLikedPostIds(values.userId, [...likedPostIds, values.postId])
+
+                return [{ postId: values.postId }]
+              },
+            }),
+          }),
+        }),
+        delete: () => ({
+          where: async (condition: unknown) => {
+            if (shouldThrowDatabaseError) {
+              throw new Error('Database connection failed')
+            }
+
+            const { post_id: postId, user_id: userId } = extractPostLikeWhereParams(condition)
+
+            if (typeof postId !== 'number' || typeof userId !== 'number') {
+              return
+            }
+
+            setLikedPostIds(
+              userId,
+              getLikedPostIds(userId).filter((likedPostId) => likedPostId !== postId),
+            )
+          },
+        }),
+      }
+
+      return callback(tx)
+    },
     delete: () => ({
       where: (condition: unknown) => ({
         returning: async () => {
@@ -522,14 +621,87 @@ describe('DELETE /api/v1/post/:id', () => {
   })
 })
 
-describe('POST /api/v1/post/:id/like', () => {
+describe('PUT /api/v1/post/:id/like', () => {
   test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
-    const response = await app.request('/1/like', { method: 'POST' })
+    const response = await app.request('/1/like', { method: 'PUT' })
     expect(response.status).toBe(401)
   })
 
   test('유효하지 않은 post id는 400 응답을 받는다', async () => {
-    const response = await app.request('/invalid/like', { method: 'POST' }, { userId: 1 })
+    const response = await app.request('/invalid/like', { method: 'PUT' }, { userId: 1 })
     expect(response.status).toBe(400)
+  })
+
+  test('처음 좋아요하면 201과 liked=true를 반환한다', async () => {
+    storedPosts.push(createPostRecord({ id: 1, userId: 2 }))
+
+    const response = await app.request('/1/like', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(201)
+    expect(await response.json()).toEqual({ liked: true })
+    expect(likedPostIdsByUser.get(1)).toEqual([1])
+  })
+
+  test('이미 좋아요한 글에 다시 PUT 하면 200과 liked=true를 반환한다', async () => {
+    storedPosts.push(createPostRecord({ id: 1, userId: 2 }))
+    likedPostIdsByUser.set(1, [1])
+
+    const response = await app.request('/1/like', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ liked: true })
+    expect(likedPostIdsByUser.get(1)).toEqual([1])
+  })
+
+  test('없는 글에 좋아요하면 404 응답을 받는다', async () => {
+    const response = await app.request('/999/like', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(404)
+  })
+
+  test('DB 오류가 나면 500 응답을 받는다', async () => {
+    shouldThrowDatabaseError = true
+
+    const response = await app.request('/1/like', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(500)
+  })
+})
+
+describe('DELETE /api/v1/post/:id/like', () => {
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/1/like', { method: 'DELETE' })
+    expect(response.status).toBe(401)
+  })
+
+  test('유효하지 않은 post id는 400 응답을 받는다', async () => {
+    const response = await app.request('/invalid/like', { method: 'DELETE' }, { userId: 1 })
+    expect(response.status).toBe(400)
+  })
+
+  test('좋아요를 취소하면 204를 반환하고 row를 제거한다', async () => {
+    likedPostIdsByUser.set(1, [1, 2])
+
+    const response = await app.request('/1/like', { method: 'DELETE' }, { userId: 1 })
+
+    expect(response.status).toBe(204)
+    expect(likedPostIdsByUser.get(1)).toEqual([2])
+  })
+
+  test('이미 취소된 좋아요를 다시 DELETE 해도 204를 반환한다', async () => {
+    likedPostIdsByUser.set(1, [2])
+
+    const response = await app.request('/1/like', { method: 'DELETE' }, { userId: 1 })
+
+    expect(response.status).toBe(204)
+    expect(likedPostIdsByUser.get(1)).toEqual([2])
+  })
+
+  test('DB 오류가 나면 500 응답을 받는다', async () => {
+    shouldThrowDatabaseError = true
+
+    const response = await app.request('/1/like', { method: 'DELETE' }, { userId: 1 })
+
+    expect(response.status).toBe(500)
   })
 })
