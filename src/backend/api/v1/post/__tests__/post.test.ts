@@ -227,40 +227,90 @@ mock.module('@/database/supabase/drizzle', () => ({
       return callback(tx)
     },
     delete: () => ({
-      where: (condition: unknown) => ({
-        returning: async () => {
+      where: (condition: unknown) => {
+        const executeLikeDelete = async () => {
           if (shouldThrowDatabaseError) {
             throw new Error('Database connection failed')
           }
 
-          const { id, user_id: userId } = extractWhereParams(condition)
-          const targetIndex = storedPosts.findIndex((post) => post.id === id && post.userId === userId)
+          const { post_id: postId, user_id: userId } = extractPostLikeWhereParams(condition)
 
-          if (targetIndex === -1) {
-            return []
+          if (typeof postId !== 'number' || typeof userId !== 'number') {
+            return
           }
 
-          const [deletedPost] = storedPosts.splice(targetIndex, 1)
+          setLikedPostIds(
+            userId,
+            getLikedPostIds(userId).filter((likedPostId) => likedPostId !== postId),
+          )
+        }
 
-          for (const post of storedPosts) {
-            if (post.parentPostId === deletedPost?.id) {
-              post.parentPostId = null
+        return {
+          then: (resolve: (value: void) => unknown, reject?: (reason: unknown) => unknown) =>
+            executeLikeDelete().then(resolve, reject),
+          returning: async () => {
+            if (shouldThrowDatabaseError) {
+              throw new Error('Database connection failed')
             }
 
-            if (post.referredPostId === deletedPost?.id) {
-              post.referredPostId = null
-            }
-          }
+            const { id, user_id: userId } = extractWhereParams(condition)
+            const targetIndex = storedPosts.findIndex((post) => post.id === id && post.userId === userId)
 
-          return [{ id }]
-        },
-      }),
+            if (targetIndex === -1) {
+              return []
+            }
+
+            const [deletedPost] = storedPosts.splice(targetIndex, 1)
+
+            for (const post of storedPosts) {
+              if (post.parentPostId === deletedPost?.id) {
+                post.parentPostId = null
+              }
+
+              if (post.referredPostId === deletedPost?.id) {
+                post.referredPostId = null
+              }
+            }
+
+            return [{ id }]
+          },
+        }
+      },
     }),
     insert: () => ({
-      values: (values: Omit<StoredPost, 'id'>) => ({
+      values: (values: Omit<StoredPost, 'id'> | { postId: number; userId: number }) => ({
+        onConflictDoNothing: () => ({
+          returning: async () => {
+            if (shouldThrowDatabaseError) {
+              throw new Error('Database connection failed')
+            }
+
+            if (!('postId' in values)) {
+              return []
+            }
+
+            if (!storedPosts.some((post) => post.id === values.postId)) {
+              throw createPostgresForeignKeyError()
+            }
+
+            const likedPostIds = getLikedPostIds(values.userId)
+
+            if (likedPostIds.includes(values.postId)) {
+              return []
+            }
+
+            setLikedPostIds(values.userId, [...likedPostIds, values.postId])
+
+            return [{ postId: values.postId }]
+          },
+        }),
         returning: async () => {
           if (shouldThrowDatabaseError) {
             throw new Error('Database connection failed')
+          }
+
+          if ('postId' in values) {
+            return [{ id: values.postId }]
           }
 
           if (values.parentPostId && !storedPosts.some((post) => post.id === values.parentPostId)) {
