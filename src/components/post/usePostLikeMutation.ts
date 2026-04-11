@@ -64,13 +64,13 @@ export default function usePostLikeMutation(postId: number) {
     },
   })
 
-  function setLiked(liked: boolean) {
+  async function setLiked(liked: boolean) {
     if (!me) {
       showLoginRequiredToast()
       return false
     }
 
-    mutation.mutate({ liked })
+    await mutation.mutateAsync({ liked })
     return true
   }
 
