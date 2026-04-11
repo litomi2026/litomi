@@ -15,17 +15,19 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: 90
   behavior:
     scaleUp:
+      stabilizationWindowSeconds: 60
       policies:
         - type: Percent
           value: 100
           periodSeconds: 60
         - type: Pods
-          value: 4
+          value: 1
           periodSeconds: 60
     scaleDown:
+      stabilizationWindowSeconds: 300
       policies:
         - type: Percent
           value: 50
