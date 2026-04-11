@@ -1,22 +1,24 @@
 import dayjs from 'dayjs'
-import { Bookmark, Heart, MessageCircle, Repeat, Upload } from 'lucide-react'
+import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
+import { type Post as PostType } from '@/backend/api/v1/post/GET'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
-import { type Post } from '@/components/post/XPostCard'
 import Squircle from '@/components/ui/Squircle'
+import { formatDistanceToNow } from '@/utils/format/date'
 
 import FollowButton from './FollowButton'
+import PostDetailLikeButton from './PostDetailLikeButton'
 import PostMangaCard from './PostMangaCard'
 
 type Props = {
-  post: Post
+  post: PostType
 }
 
-export default function Post({ post }: Readonly<Props>) {
+export default function Post({ post }: Props) {
   const author = post.author
   const referredPost = post.referredPost
 
@@ -25,7 +27,7 @@ export default function Post({ post }: Readonly<Props>) {
       {/* {post.parentPosts?.map((post) => <PostCard isThread key={post.id} post={post} />)} */}
       <div className="relative grid gap-4 px-4 py-3">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex gap-2">
+          <Link className="flex gap-2" href={`/@${author?.name ?? ''}`}>
             <Squircle className="w-10 shrink-0" src={author?.imageURL}>
               {author?.nickname.slice(0, 2)}
             </Squircle>
@@ -35,7 +37,7 @@ export default function Post({ post }: Readonly<Props>) {
               </div>
               {author && <div className="text-zinc-500">@{author.name}</div>}
             </div>
-          </div>
+          </Link>
           <div className="flex items-center gap-2">
             {author && <FollowButton leader={author} />}
             <PostManagementMenu
@@ -60,52 +62,45 @@ export default function Post({ post }: Readonly<Props>) {
           </Link>
         )}
         <div className="flex items-center gap-1 text-zinc-500">
-          <span>{dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}</span>
-          <span>·</span>
+          <span title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}>{formatDistanceToNow(post.createdAt)}</span>
+          {/* <span>·</span>
           <span className="text-sm">
             <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수
-          </span>
+          </span> */}
         </div>
         <div className="flex justify-between gap-1 border-y-2 px-2 py-1 text-sm">
-          {[
-            {
-              Icon: MessageCircle,
-              content: post.commentCount ?? 0,
-              iconClassName: 'group-hover:bg-brand/20',
-              textClassName: 'hover:text-brand',
-            },
-            {
-              Icon: Repeat,
-              content: post.repostCount ?? 0,
-              iconClassName: 'group-hover:bg-green-500/20 group-hover:text-green-500',
-              textClassName: 'hover:text-green-500',
-            },
-            {
-              Icon: Heart,
-              content: post.likeCount ?? 0,
-              iconClassName: 'group-hover:bg-red-600/20 group-hover:text-red-600',
-              textClassName: 'hover:text-red-600',
-            },
-            {
-              Icon: Bookmark,
-              content: post.bookmarkCount ?? 0,
-              iconClassName: 'group-hover:bg-sky-800/20',
-              textClassName: 'hover:text-sky-500',
-            },
-            {
-              Icon: Upload,
-              iconClassName: 'group-hover:bg-zinc-800',
-            },
-          ].map(({ Icon, content, iconClassName = '', textClassName = '' }, i) => (
-            <div className="flex items-center" key={i}>
-              <button className={`group flex items-center w-fit transition ${textClassName}`}>
-                <div className={`shrink-0 rounded-full transition ${iconClassName}`}>
-                  <Icon className="size-10 p-2" />
-                </div>
-                {content}
-              </button>
-            </div>
-          ))}
+          <div className="flex items-center">
+            <button className="group flex items-center w-fit transition hover:text-brand">
+              <div className="shrink-0 rounded-full transition group-hover:bg-brand/20">
+                <MessageCircle className="size-9 sm:size-10 p-2" />
+              </div>
+              {post.commentCount}
+            </button>
+          </div>
+          <div className="flex items-center">
+            <button className="group flex items-center w-fit transition hover:text-green-500">
+              <div className="shrink-0 rounded-full transition group-hover:bg-green-500/20 group-hover:text-green-500">
+                <Repeat className="size-9 sm:size-10 p-2" />
+              </div>
+              {post.repostCount}
+            </button>
+          </div>
+          <PostDetailLikeButton likeCount={post.likeCount} postId={post.id} />
+          <div className="flex items-center">
+            <button className="group flex items-center w-fit transition hover:text-sky-500">
+              <div className="shrink-0 rounded-full transition group-hover:bg-sky-800/20">
+                <Bookmark className="size-9 sm:size-10 p-2" />
+              </div>
+              {post.bookmarkCount ?? 0}
+            </button>
+          </div>
+          <div className="flex items-center">
+            <button className="group flex items-center w-fit transition">
+              <div className="shrink-0 rounded-full transition group-hover:bg-zinc-800">
+                <Upload className="size-9 sm:size-10 p-2" />
+              </div>
+            </button>
+          </div>
         </div>
         <PostCreationForm
           buttonText="답글"

@@ -1,11 +1,14 @@
 import type { DELETEV1PostIdResponse } from '@/backend/api/v1/post/[id]/DELETE'
-import type { POSTV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/POST'
+import type { DELETEV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/DELETE'
+import type { PUTV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/PUT'
 import type { POSTV1PostBody, POSTV1PostResponse } from '@/backend/api/v1/post/POST'
 
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
+
+export type SetPostLikeResponse = DELETEV1PostIdLikeResponse | PUTV1PostIdLikeResponse
 
 export async function createPost(body: POSTV1PostBody) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post`
@@ -31,11 +34,11 @@ export async function deletePost(postId: number) {
   return data
 }
 
-export async function togglePostLike(postId: number) {
+export async function toggleLikingPost(postId: number, liked: boolean) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post/${postId}/like`
 
-  const { data } = await fetchWithErrorHandling<POSTV1PostIdLikeResponse>(url, {
-    method: 'POST',
+  const { data } = await fetchWithErrorHandling<SetPostLikeResponse>(url, {
+    method: liked ? 'PUT' : 'DELETE',
     credentials: 'include',
   })
 

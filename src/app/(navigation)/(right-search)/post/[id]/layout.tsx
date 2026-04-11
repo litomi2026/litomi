@@ -13,7 +13,6 @@ export default function Layout({ post, comment }: LayoutProps<'/post/[id]'>) {
         </div>
         <button className="rounded-full border-2 border-zinc-600 px-4 py-1 text-sm font-bold mx-2">답글</button>
       </div>
-      <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
       {post}
       {comment}
     </>

@@ -5,11 +5,11 @@ import { ComponentProps } from 'react'
 import { PostType } from '@/database/enum'
 import { formatDistanceToNow } from '@/utils/format/date'
 
-import Squircle from '../ui/Squircle'
+import Squircle from '../src/components/ui/Squircle'
 import PostActionButtons from './PostActionButtons'
-import PostImages from './PostImages'
-import PostManagementMenu from './PostManagementMenu'
-import ReferredPostCard, { ReferredPost } from './ReferredPostCard'
+import PostImages from '../src/components/post/PostImages'
+import PostManagementMenu from '../src/components/post/PostManagementMenu'
+import ReferredPostCard, { ReferredPost } from '../src/components/post/ReferredPostCard'
 
 export type Post = {
   id: number
