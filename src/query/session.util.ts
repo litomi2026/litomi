@@ -20,7 +20,7 @@ export function buildSessionDeviceLabel(rawUserAgent: string | null | undefined)
   }
 
   const agent = parseUserAgent({ headers: new Headers({ 'user-agent': rawUserAgent }) })
-  const browser = agent.browser.name || '알 수 없는 브라우저'
+  const browser = agent.browser.name || '일반 브라우저'
   const os = normalizeSessionOSName(agent.os.name)
   const device = normalizeSessionDeviceType(agent.device.type)
 

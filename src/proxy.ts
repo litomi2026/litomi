@@ -10,17 +10,23 @@ export const config = {
   // DOCS: The matcher values need to be constants so they can be statically analyzed at build-time
   // https://clerk.com/blog/skip-nextjs-middleware-static-and-public-files
   // DOCS: Ignoring matching prefetches
-  // https://nextjs.org/docs/app/guides/content-security-policy#adding-a-nonce-with-middleware
+  // https://nextjs.org/docs/app/guides/content-security-policy#adding-a-nonce-with-proxy
   matcher: [
     {
       source: '/((?!.*\\.|_next/static|_next/image).*)',
       has: [{ type: 'cookie', key: 'rt' }],
-      missing: [{ type: 'header', key: 'next-router-prefetch' }],
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' },
+      ],
     },
     {
       source: '/((?!.*\\.|_next/static|_next/image).*)',
       has: [{ type: 'cookie', key: 'at' }],
-      missing: [{ type: 'header', key: 'next-router-prefetch' }],
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' },
+      ],
     },
   ],
 }
