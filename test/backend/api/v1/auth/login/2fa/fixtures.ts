@@ -1,4 +1,7 @@
+import { TEST_TOTP_SECRET } from '@test/backend/setup/db'
 import { generateSync } from 'otplib'
+
+import type { POSTV1AuthLogin2FARequest } from '@/backend/api/v1/auth/login/2fa/POST'
 
 import { initiatePKCEChallenge } from '@/utils/pkce-server'
 
@@ -7,6 +10,22 @@ import { createPkcePair } from '../../fixtures'
 type AuthorizationChallengeInput = {
   fingerprint?: string
   userId: number
+}
+
+type ChallengePayload = Pick<POSTV1AuthLogin2FARequest, 'authorizationCode' | 'codeVerifier' | 'fingerprint'>
+
+export function buildLoginTwoFactorRequest(
+  challenge: ChallengePayload,
+  overrides: Partial<POSTV1AuthLogin2FARequest> = {},
+): POSTV1AuthLogin2FARequest {
+  return {
+    authorizationCode: challenge.authorizationCode,
+    codeVerifier: challenge.codeVerifier,
+    fingerprint: challenge.fingerprint,
+    remember: overrides.remember ?? false,
+    token: overrides.token ?? createValidTotpToken(TEST_TOTP_SECRET),
+    trustBrowser: overrides.trustBrowser ?? false,
+  }
 }
 
 export function createValidTotpToken(secret: string) {

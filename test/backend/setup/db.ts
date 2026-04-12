@@ -110,8 +110,8 @@ export async function seedAdultVerification({ userId, ...overrides }: SeedAdultV
       gender: overrides.gender ?? 'M',
       income: overrides.income ?? 'unknown',
       student: overrides.student ?? false,
-      ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
-      ...(overrides.verifiedAt ? { verifiedAt: overrides.verifiedAt } : {}),
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
+      ...(overrides.verifiedAt && { verifiedAt: overrides.verifiedAt }),
     })
     .returning()
 
@@ -124,7 +124,7 @@ export async function seedBookmark(userId: number, { mangaId, createdAt }: SeedB
     .values({
       userId,
       mangaId,
-      ...(createdAt ? { createdAt } : {}),
+      ...(createdAt && { createdAt }),
     })
     .returning()
 
@@ -142,7 +142,7 @@ export async function seedBookmarks(userId: number, bookmarks: readonly SeedBook
       bookmarks.map(({ mangaId, createdAt }) => ({
         userId,
         mangaId,
-        ...(createdAt ? { createdAt } : {}),
+        ...(createdAt && { createdAt }),
       })),
     )
     .returning()
@@ -160,9 +160,9 @@ export async function seedTwoFactor({ userId, ...overrides }: SeedTwoFactorInput
     .values({
       userId,
       secret: overrides.encryptedSecret ?? encryptTOTPSecret(plainSecret),
-      ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
-      ...(overrides.lastUsedAt ? { lastUsedAt: overrides.lastUsedAt } : {}),
-      ...(overrides.expiresAt ? { expiresAt: overrides.expiresAt } : {}),
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
+      ...(overrides.lastUsedAt && { lastUsedAt: overrides.lastUsedAt }),
+      ...(overrides.expiresAt && { expiresAt: overrides.expiresAt }),
     })
     .returning()
 
@@ -190,15 +190,16 @@ export async function seedUser({ password = TEST_LOGIN_PASSWORD, passwordHash, .
   const [user] = await db
     .insert(userTable)
     .values({
+      ...(overrides.id !== undefined && { id: overrides.id }),
       loginId: overrides.loginId ?? `testuser${unique}`,
       name: overrides.name ?? `TestUser${unique}`,
       nickname: overrides.nickname ?? `Tester${unique}`,
       passwordHash: passwordHash ?? (await getTestPasswordHash(password)),
-      ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
-      ...(overrides.loginAt ? { loginAt: overrides.loginAt } : {}),
-      ...(overrides.logoutAt ? { logoutAt: overrides.logoutAt } : {}),
-      ...(overrides.imageURL !== undefined ? { imageURL: overrides.imageURL } : {}),
-      ...(overrides.autoDeletionDays !== undefined ? { autoDeletionDays: overrides.autoDeletionDays } : {}),
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
+      ...(overrides.loginAt && { loginAt: overrides.loginAt }),
+      ...(overrides.logoutAt && { logoutAt: overrides.logoutAt }),
+      ...(overrides.imageURL !== undefined && { imageURL: overrides.imageURL }),
+      ...(overrides.autoDeletionDays !== undefined && { autoDeletionDays: overrides.autoDeletionDays }),
     })
     .returning()
 
@@ -212,7 +213,7 @@ export async function seedUserExpansion({ userId, type, amount, ...overrides }: 
       userId,
       type,
       amount,
-      ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
     })
     .returning()
 

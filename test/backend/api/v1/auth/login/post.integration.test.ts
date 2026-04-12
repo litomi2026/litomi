@@ -1,44 +1,47 @@
-import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
-import { createTrustedBrowserCookies, TEST_LOGIN_PASSWORD } from '@test/backend/setup/auth'
-import { readTrustedBrowsersForUser, seedTrustedBrowser, seedTwoFactor, seedUser } from '@test/backend/setup/db'
-import { installExternalFetchGuard } from '@test/backend/setup/network'
-import { expectProblemResponse } from '@test/backend/setup/problem'
+import { createTrustedBrowserCookies, expectCookieCleared } from '@test/backend/setup/auth'
+import {
+  readSessionFamiliesForUser,
+  readTrustedBrowsersForUser,
+  readUserById,
+  seedTrustedBrowser,
+  seedTwoFactor,
+  seedUser,
+} from '@test/backend/setup/db'
+import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
-import { eq } from 'drizzle-orm'
 
-import { authSessionFamilyTable } from '@/database/supabase/auth'
-import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
-import { verifyPKCEChallenge } from '@/utils/pkce-server'
+import {
+  AUTH_TEST_CHROME_USER_AGENT,
+  AUTH_TEST_SAFARI_USER_AGENT,
+  buildAuthHeaders,
+  installAuthIntegrationHooks,
+} from '../fixtures'
+import { buildLoginTwoFactorRequest } from './2fa/fixtures'
+import { buildLoginRequest, installLoginTurnstileGuard } from './fixtures'
 
-import { createPkcePair, nextIp } from '../fixtures'
-import { turnstileFailureRoute, turnstileSuccessRoute } from './fixtures'
-
-installBackendIntegrationHooks({ redis: true })
+installAuthIntegrationHooks({ redis: true })
 
 describe('POST /api/v1/auth/login', () => {
   test('remember=true 이면 인증 응답과 세션 쿠키를 반환한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
-    const fetchGuard = installExternalFetchGuard([turnstileSuccessRoute()])
-    const { codeChallenge } = createPkcePair()
+    const fetchGuard = installLoginTurnstileGuard()
+
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      remember: true,
+      fingerprint: 'fp-auth-login-remember',
+    })
 
     try {
       const response = await requestBackend({
         path: '/api/v1/auth/login',
         method: 'POST',
-        headers: {
-          'CF-Connecting-IP': nextIp(),
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) Safari/605.1.15',
-        },
-        json: {
-          loginId: user.loginId,
-          password: TEST_LOGIN_PASSWORD,
-          remember: true,
-          turnstileToken: 'turnstile-ok',
-          codeChallenge,
-          fingerprint: 'fp-success',
-        },
+        headers: buildAuthHeaders({
+          ip: '203.0.113.11',
+          userAgent: AUTH_TEST_SAFARI_USER_AGENT,
+        }),
+        json: request.payload,
       })
 
       expect(response.status).toBe(200)
@@ -53,16 +56,8 @@ describe('POST /api/v1/auth/login', () => {
         lastLogoutAt: null,
       })
 
-      const sessionFamilies = await db
-        .select()
-        .from(authSessionFamilyTable)
-        .where(eq(authSessionFamilyTable.userId, user.id))
-
-      const [persistedUser] = await db
-        .select({ loginAt: userTable.loginAt })
-        .from(userTable)
-        .where(eq(userTable.id, user.id))
-
+      const sessionFamilies = await readSessionFamiliesForUser(user.id)
+      const persistedUser = await readUserById(user.id)
       expect(sessionFamilies).toHaveLength(1)
       expect(persistedUser?.loginAt).toBeInstanceOf(Date)
     } finally {
@@ -72,30 +67,28 @@ describe('POST /api/v1/auth/login', () => {
 
   test('remember=false 이면 refresh session 없이 로그인한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
-    const fetchGuard = installExternalFetchGuard([turnstileSuccessRoute()])
-    const { codeChallenge } = createPkcePair()
+    const fetchGuard = installLoginTurnstileGuard()
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      fingerprint: 'fp-auth-login-sessionless',
+    })
 
     try {
       const response = await requestBackend({
         path: '/api/v1/auth/login',
         method: 'POST',
-        headers: {
-          'CF-Connecting-IP': nextIp(),
-          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/135.0.0.0 Safari/537.36',
-        },
-        json: {
-          loginId: user.loginId,
-          password: TEST_LOGIN_PASSWORD,
-          remember: false,
-          turnstileToken: 'turnstile-ok',
-          codeChallenge,
-          fingerprint: 'fp-sessionless',
-        },
+        headers: buildAuthHeaders({
+          ip: '203.0.113.12',
+          userAgent: AUTH_TEST_CHROME_USER_AGENT,
+        }),
+        json: request.payload,
       })
 
       expect(response.status).toBe(200)
-      expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'ah']))
-      expect(getSetCookieNames(response)).not.toContain('rt')
+
+      const cookieNames = getSetCookieNames(response)
+      expect(cookieNames).toEqual(expect.arrayContaining(['at', 'ah']))
+      expect(cookieNames).not.toContain('rt')
 
       expect(await response.json()).toEqual({
         nextStep: 'authenticated',
@@ -106,11 +99,7 @@ describe('POST /api/v1/auth/login', () => {
         lastLogoutAt: null,
       })
 
-      const sessionFamilies = await db
-        .select()
-        .from(authSessionFamilyTable)
-        .where(eq(authSessionFamilyTable.userId, user.id))
-
+      const sessionFamilies = await readSessionFamiliesForUser(user.id)
       expect(sessionFamilies).toHaveLength(0)
     } finally {
       fetchGuard.restore()
@@ -119,22 +108,19 @@ describe('POST /api/v1/auth/login', () => {
 
   test('비밀번호가 틀리면 401을 반환한다', async () => {
     const user = await seedUser()
-    const fetchGuard = installExternalFetchGuard([turnstileSuccessRoute()])
-    const { codeChallenge } = createPkcePair()
+    const fetchGuard = installLoginTurnstileGuard()
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      password: 'WrongPassword123',
+      fingerprint: 'fp-auth-login-invalid-password',
+    })
 
     try {
       const response = await requestBackend({
         path: '/api/v1/auth/login',
         method: 'POST',
-        headers: { 'CF-Connecting-IP': nextIp() },
-        json: {
-          loginId: user.loginId,
-          password: 'WrongPassword123',
-          remember: false,
-          turnstileToken: 'turnstile-ok',
-          codeChallenge,
-          fingerprint: 'fp-invalid-password',
-        },
+        headers: buildAuthHeaders({ ip: '203.0.113.13' }),
+        json: request.payload,
       })
 
       expect(response.status).toBe(401)
@@ -151,39 +137,92 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('활성화된 2FA가 있으면 authorization code를 발급하고 PKCE challenge를 저장한다', async () => {
-    const user = await seedUser()
-    await seedTwoFactor({ userId: user.id })
-    const fetchGuard = installExternalFetchGuard([turnstileSuccessRoute()])
-    const { codeChallenge, codeVerifier } = createPkcePair()
-    const fingerprint = 'fp-two-factor'
+  test('존재하지 않는 loginId 도 동일한 401 응답을 반환한다', async () => {
+    const fetchGuard = installLoginTurnstileGuard()
+    const request = buildLoginRequest({
+      loginId: 'missing_login_user',
+      fingerprint: 'fp-auth-login-missing-user',
+    })
 
     try {
       const response = await requestBackend({
         path: '/api/v1/auth/login',
         method: 'POST',
-        headers: { 'CF-Connecting-IP': nextIp() },
-        json: {
-          loginId: user.loginId,
-          password: TEST_LOGIN_PASSWORD,
-          remember: true,
-          turnstileToken: 'turnstile-ok',
-          codeChallenge,
-          fingerprint,
-        },
+        headers: buildAuthHeaders({ ip: '203.0.113.14' }),
+        json: request.payload,
       })
 
-      expect(response.status).toBe(200)
+      expect(response.status).toBe(401)
       expect(getSetCookieNames(response)).toEqual([])
 
-      const body = await response.json()
-      expect(body.nextStep).toBe('two_factor_required')
-      expect(typeof body.authorizationCode).toBe('string')
-
-      expect(await verifyPKCEChallenge(body.authorizationCode, codeVerifier, fingerprint)).toEqual({
-        valid: true,
-        userId: user.id,
+      await expectProblemResponse(response, {
+        status: 401,
+        code: 'unauthorized',
+        detail: '아이디 또는 비밀번호가 일치하지 않아요',
+        instance: '/api/v1/auth/login',
       })
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
+  test('활성화된 2FA가 있으면 로그인 응답의 authorization code로 2단계 인증을 이어간다', async () => {
+    const user = await seedUser({ id: 2101, loginAt: null, logoutAt: null })
+    await seedTwoFactor({ userId: user.id })
+    const fetchGuard = installLoginTurnstileGuard()
+
+    const loginRequest = buildLoginRequest({
+      loginId: user.loginId,
+      fingerprint: 'fp-auth-login-2fa-flow',
+    })
+
+    try {
+      const loginResponse = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.15' }),
+        json: loginRequest.payload,
+      })
+
+      expect(loginResponse.status).toBe(200)
+      expect(getSetCookieNames(loginResponse)).toEqual([])
+
+      const loginBody = await loginResponse.json()
+      expect(loginBody.nextStep).toBe('two_factor_required')
+      expect(typeof loginBody.authorizationCode).toBe('string')
+
+      const twoFactorResponse = await requestBackend({
+        path: '/api/v1/auth/login/2fa',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.16' }),
+        json: buildLoginTwoFactorRequest({
+          authorizationCode: String(loginBody.authorizationCode),
+          codeVerifier: loginRequest.codeVerifier,
+          fingerprint: loginRequest.payload.fingerprint,
+        }),
+      })
+
+      expect(twoFactorResponse.status).toBe(200)
+
+      const cookieNames = getSetCookieNames(twoFactorResponse)
+      expect(cookieNames).toEqual(expect.arrayContaining(['at', 'ah']))
+      expect(cookieNames).not.toContain('rt')
+
+      const twoFactorBody = await twoFactorResponse.json()
+
+      expect(twoFactorBody).toMatchObject({
+        id: user.id,
+        loginId: user.loginId,
+        name: user.name,
+        lastLogoutAt: null,
+        isBackupCode: false,
+        backupCodeCount: 0,
+      })
+
+      expect(typeof twoFactorBody.lastLoginAt).toBe('string')
+
+      const persistedUser = await readUserById(user.id)
+      expect(persistedUser?.loginAt).toBeInstanceOf(Date)
     } finally {
       fetchGuard.restore()
     }
@@ -196,6 +235,7 @@ describe('POST /api/v1/auth/login', () => {
     const previousLastUsedAt = new Date('2025-01-01T00:00:00.000Z')
 
     await seedTwoFactor({ userId: user.id })
+
     await seedTrustedBrowser({
       userId: user.id,
       browserId,
@@ -210,27 +250,26 @@ describe('POST /api/v1/auth/login', () => {
       userId: user.id,
     })
 
-    const fetchGuard = installExternalFetchGuard([turnstileSuccessRoute()])
-    const { codeChallenge } = createPkcePair()
+    const fetchGuard = installLoginTurnstileGuard()
+
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      remember: true,
+      fingerprint: trustedFingerprint,
+    })
 
     try {
       const response = await requestBackend({
         path: '/api/v1/auth/login',
         method: 'POST',
         cookies: trustedBrowser.cookieHeader,
-        headers: { 'CF-Connecting-IP': nextIp() },
-        json: {
-          loginId: user.loginId,
-          password: TEST_LOGIN_PASSWORD,
-          remember: true,
-          turnstileToken: 'turnstile-ok',
-          codeChallenge,
-          fingerprint: trustedFingerprint,
-        },
+        headers: buildAuthHeaders({ ip: '203.0.113.17' }),
+        json: request.payload,
       })
 
       expect(response.status).toBe(200)
       expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+
       expect(await response.json()).toEqual({
         nextStep: 'authenticated',
         id: user.id,
@@ -249,23 +288,76 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('Turnstile 검증이 실패하면 400을 반환한다', async () => {
-    const fetchGuard = installExternalFetchGuard([turnstileFailureRoute()])
-    const { codeChallenge } = createPkcePair()
+  test('만료된 trusted browser 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
+    const user = await seedUser()
+    const browserId = 'trusted-browser-expired'
+    const fingerprint = 'fp-trusted-browser-expired'
+
+    await seedTwoFactor({ userId: user.id })
+
+    await seedTrustedBrowser({
+      userId: user.id,
+      browserId,
+      browserName: 'Chrome on macOS (Desktop)',
+      expiresAt: new Date('2020-01-01T00:00:00.000Z'),
+      lastUsedAt: new Date('2020-01-01T00:00:00.000Z'),
+    })
+
+    const trustedBrowser = await createTrustedBrowserCookies({
+      browserId,
+      fingerprint,
+      userId: user.id,
+    })
+
+    const fetchGuard = installLoginTurnstileGuard()
+
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      remember: true,
+      fingerprint,
+    })
 
     try {
       const response = await requestBackend({
         path: '/api/v1/auth/login',
         method: 'POST',
-        headers: { 'CF-Connecting-IP': nextIp() },
-        json: {
-          loginId: 'nobody',
-          password: TEST_LOGIN_PASSWORD,
-          remember: false,
-          turnstileToken: 'turnstile-expired',
-          codeChallenge,
-          fingerprint: 'fp-human-failed',
-        },
+        cookies: trustedBrowser.cookieHeader,
+        headers: buildAuthHeaders({ ip: '203.0.113.18' }),
+        json: request.payload,
+      })
+
+      expect(response.status).toBe(200)
+      expectCookieCleared(response, 'tbt')
+
+      const cookieNames = getSetCookieNames(response)
+      expect(cookieNames).toContain('tbt')
+      expect(cookieNames).not.toContain('at')
+      expect(cookieNames).not.toContain('rt')
+      expect(cookieNames).not.toContain('ah')
+
+      const body = await response.json()
+      expect(body.nextStep).toBe('two_factor_required')
+      expect(typeof body.authorizationCode).toBe('string')
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
+  test('Turnstile 검증이 실패하면 400을 반환한다', async () => {
+    const fetchGuard = installLoginTurnstileGuard('failure')
+
+    const request = buildLoginRequest({
+      loginId: 'nobody',
+      turnstileToken: 'turnstile-expired',
+      fingerprint: 'fp-auth-login-turnstile-failure',
+    })
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.19' }),
+        json: request.payload,
       })
 
       expect(response.status).toBe(400)
@@ -281,59 +373,60 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
+  test('유효하지 않은 payload 는 400 invalid-input 을 반환한다', async () => {
+    const response = await requestBackend({
+      path: '/api/v1/auth/login',
+      method: 'POST',
+      headers: buildAuthHeaders({ ip: '203.0.113.20' }),
+      json: buildLoginRequest({
+        loginId: 'invalid_payload_user',
+        codeChallenge: 'short',
+        fingerprint: 'fp-auth-login-invalid-payload',
+      }).payload,
+    })
+
+    expect(response.status).toBe(400)
+    expect(getSetCookieNames(response)).toEqual([])
+
+    const problem = await expectProblemResponse(response, {
+      status: 400,
+      code: 'invalid-input',
+      instance: '/api/v1/auth/login',
+    })
+
+    expectInvalidParams(problem, [{ name: 'codeChallenge' }])
+  })
+
   test('반복된 로그인 실패는 representative 429를 반환한다', async () => {
     const user = await seedUser()
-    const fetchGuard = installExternalFetchGuard([turnstileSuccessRoute()])
-    const { codeChallenge } = createPkcePair()
-    const rateLimitedIp = nextIp()
+    const fetchGuard = installLoginTurnstileGuard()
+    const rateLimitedIp = '203.0.113.29'
 
     try {
-      for (let attempt = 0; attempt < 9; attempt += 1) {
+      for (let attempt = 0; attempt < 10; attempt += 1) {
         const response = await requestBackend({
           path: '/api/v1/auth/login',
           method: 'POST',
-          headers: { 'CF-Connecting-IP': rateLimitedIp },
-          json: {
+          headers: buildAuthHeaders({ ip: rateLimitedIp }),
+          json: buildLoginRequest({
             loginId: user.loginId,
             password: 'WrongPassword123',
-            remember: false,
-            turnstileToken: 'turnstile-ok',
-            codeChallenge,
-            fingerprint: `fp-rate-limit-${attempt}`,
-          },
+            fingerprint: `fp-auth-login-rate-limit-${attempt}`,
+          }).payload,
         })
 
         expect(response.status).toBe(401)
       }
 
-      const allowedResponse = await requestBackend({
-        path: '/api/v1/auth/login',
-        method: 'POST',
-        headers: { 'CF-Connecting-IP': rateLimitedIp },
-        json: {
-          loginId: user.loginId,
-          password: 'WrongPassword123',
-          remember: false,
-          turnstileToken: 'turnstile-ok',
-          codeChallenge,
-          fingerprint: 'fp-rate-limit-allowed',
-        },
-      })
-
-      expect(allowedResponse.status).toBe(401)
-
       const blockedResponse = await requestBackend({
         path: '/api/v1/auth/login',
         method: 'POST',
-        headers: { 'CF-Connecting-IP': rateLimitedIp },
-        json: {
+        headers: buildAuthHeaders({ ip: rateLimitedIp }),
+        json: buildLoginRequest({
           loginId: user.loginId,
           password: 'WrongPassword123',
-          remember: false,
-          turnstileToken: 'turnstile-ok',
-          codeChallenge,
-          fingerprint: 'fp-rate-limit-blocked',
-        },
+          fingerprint: 'fp-auth-login-rate-limit-blocked',
+        }).payload,
       })
 
       expect(blockedResponse.status).toBe(429)
