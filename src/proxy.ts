@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { refreshSession } from './common/session'
 import { CookieKey } from './constants/storage'
-import { refreshSession } from './query/session'
-import { buildSessionDeviceLabel } from './query/session.util'
 import { applyCookieConfigs, getAuthCookieClearConfigs } from './utils/cookie'
 import { JWTType, verifyJWT } from './utils/jwt'
 import { getRequestUserAgent } from './utils/request'
+import { buildSessionDeviceLabel } from './utils/session'
 
 export const config = {
   // DOCS: The matcher values need to be constants so they can be statically analyzed at build-time

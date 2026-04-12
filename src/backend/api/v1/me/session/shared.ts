@@ -4,7 +4,7 @@ import { getCookie } from 'hono/cookie'
 import type { Env } from '@/backend'
 
 import { CookieKey } from '@/constants/storage'
-import { hashSessionToken } from '@/query/session.util'
+import { hashSessionToken } from '@/utils/session'
 
 import { readCurrentSessionFamilyIdByTokenHash } from './query'
 

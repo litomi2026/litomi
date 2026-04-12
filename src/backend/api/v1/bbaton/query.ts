@@ -7,8 +7,8 @@ import { Env } from '@/backend'
 import { CookieKey } from '@/constants/storage'
 import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
-import { hashSessionToken } from '@/query/session.util'
 import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
+import { hashSessionToken } from '@/utils/session'
 
 type ActiveRefreshSession = {
   maxAgeSeconds: number

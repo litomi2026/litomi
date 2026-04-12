@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test'
 
-import { hashSessionToken } from '@/query/session.util'
+import { hashSessionToken } from '@/utils/session'
 
 const insertSessionFamilyMock = mock(async () => {})
 const insertSessionTokenMock = mock(async () => {})
@@ -70,7 +70,9 @@ describe('issueAuthCookies', () => {
     expect(insertSessionFamilyMock).toHaveBeenCalledTimes(1)
     expect(insertSessionTokenMock).toHaveBeenCalledTimes(1)
 
-    const insertedToken = ((insertSessionTokenMock.mock.calls as unknown) as Array<Array<Record<string, string>>>)?.[0]?.[0]
+    const insertedToken = (
+      insertSessionTokenMock.mock.calls as unknown as Array<Array<Record<string, string>>>
+    )?.[0]?.[0]
     expect(insertedToken?.tokenHash).toBe(hashSessionToken(cookies[1]!.value))
   })
 })

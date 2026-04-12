@@ -1,16 +1,16 @@
 import { and, eq, isNull } from 'drizzle-orm'
 
+import { issuePersistentSession } from '@/common/session'
 import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
-import { issuePersistentSession } from '@/query/session'
 import { type SessionWriteExecutor } from '@/query/session.query'
-import { hashSessionToken } from '@/query/session.util'
 import {
   type AuthCookieConfig,
   getAccessTokenCookieConfig,
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
 } from '@/utils/cookie'
+import { hashSessionToken } from '@/utils/session'
 
 type IssueAuthCookiesInput = {
   adult: boolean
