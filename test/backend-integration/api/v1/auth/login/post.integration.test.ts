@@ -1,7 +1,7 @@
 import { installBackendIntegrationHooks } from '@test/backend-integration/setup'
 import { getSetCookieNames, requestBackend } from '@test/backend/app'
-import { TEST_LOGIN_PASSWORD } from '@test/backend/auth'
-import { seedTwoFactor, seedUser } from '@test/backend/db'
+import { createTrustedBrowserCookies, TEST_LOGIN_PASSWORD } from '@test/backend/auth'
+import { readTrustedBrowsersForUser, seedTrustedBrowser, seedTwoFactor, seedUser } from '@test/backend/db'
 import { installExternalFetchGuard } from '@test/backend/network'
 import { describe, expect, test } from 'bun:test'
 import { eq } from 'drizzle-orm'
@@ -41,6 +41,7 @@ describe('POST /api/v1/auth/login', () => {
 
       expect(response.status).toBe(200)
       expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+
       expect(await response.json()).toEqual({
         nextStep: 'authenticated',
         id: user.id,
@@ -55,13 +56,12 @@ describe('POST /api/v1/auth/login', () => {
         .from(authSessionFamilyTable)
         .where(eq(authSessionFamilyTable.userId, user.id))
 
-      expect(sessionFamilies).toHaveLength(1)
-
       const [persistedUser] = await db
         .select({ loginAt: userTable.loginAt })
         .from(userTable)
         .where(eq(userTable.id, user.id))
 
+      expect(sessionFamilies).toHaveLength(1)
       expect(persistedUser?.loginAt).toBeInstanceOf(Date)
     } finally {
       fetchGuard.restore()
@@ -127,6 +127,7 @@ describe('POST /api/v1/auth/login', () => {
       })
 
       expect(response.status).toBe(401)
+
       expect(await response.json()).toMatchObject({
         status: 401,
         detail: '아이디 또는 비밀번호가 일치하지 않아요',
@@ -174,6 +175,66 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
+  test('활성화된 2FA라도 유효한 trusted browser가 있으면 바로 로그인한다', async () => {
+    const user = await seedUser({ loginAt: null, logoutAt: null })
+    const browserId = 'trusted-browser-auth-login'
+    const trustedFingerprint = 'fp-trusted-browser'
+    const previousLastUsedAt = new Date('2025-01-01T00:00:00.000Z')
+
+    await seedTwoFactor({ userId: user.id })
+    await seedTrustedBrowser({
+      userId: user.id,
+      browserId,
+      browserName: 'Chrome on macOS (Desktop)',
+      expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+      lastUsedAt: previousLastUsedAt,
+    })
+
+    const trustedBrowser = await createTrustedBrowserCookies({
+      browserId,
+      fingerprint: trustedFingerprint,
+      userId: user.id,
+    })
+
+    const fetchGuard = installExternalFetchGuard([turnstileSuccessRoute()])
+    const { codeChallenge } = createPkcePair()
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        cookies: trustedBrowser.cookieHeader,
+        headers: { 'CF-Connecting-IP': nextIp() },
+        json: {
+          loginId: user.loginId,
+          password: TEST_LOGIN_PASSWORD,
+          remember: true,
+          turnstileToken: 'turnstile-ok',
+          codeChallenge,
+          fingerprint: trustedFingerprint,
+        },
+      })
+
+      expect(response.status).toBe(200)
+      expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+      expect(await response.json()).toEqual({
+        nextStep: 'authenticated',
+        id: user.id,
+        loginId: user.loginId,
+        name: user.name,
+        lastLoginAt: null,
+        lastLogoutAt: null,
+      })
+
+      const [trustedBrowserRow] = await readTrustedBrowsersForUser(user.id)
+      expect(trustedBrowserRow).toBeDefined()
+      expect(trustedBrowserRow?.lastUsedAt).toBeInstanceOf(Date)
+      expect(trustedBrowserRow!.lastUsedAt!.getTime()).toBeGreaterThan(previousLastUsedAt.getTime())
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
   test('Turnstile 검증이 실패하면 400을 반환한다', async () => {
     const fetchGuard = installExternalFetchGuard([turnstileFailureRoute()])
     const { codeChallenge } = createPkcePair()
@@ -198,6 +259,71 @@ describe('POST /api/v1/auth/login', () => {
         type: 'https://localhost/problems/human-verification-failed',
         detail: 'Cloudflare 보안 검증이 만료됐어요',
         status: 400,
+      })
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
+  test('반복된 로그인 실패는 representative 429를 반환한다', async () => {
+    const user = await seedUser()
+    const fetchGuard = installExternalFetchGuard([turnstileSuccessRoute()])
+    const { codeChallenge } = createPkcePair()
+    const rateLimitedIp = nextIp()
+
+    try {
+      for (let attempt = 0; attempt < 9; attempt += 1) {
+        const response = await requestBackend({
+          path: '/api/v1/auth/login',
+          method: 'POST',
+          headers: { 'CF-Connecting-IP': rateLimitedIp },
+          json: {
+            loginId: user.loginId,
+            password: 'WrongPassword123',
+            remember: false,
+            turnstileToken: 'turnstile-ok',
+            codeChallenge,
+            fingerprint: `fp-rate-limit-${attempt}`,
+          },
+        })
+
+        expect(response.status).toBe(401)
+      }
+
+      const allowedResponse = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        headers: { 'CF-Connecting-IP': rateLimitedIp },
+        json: {
+          loginId: user.loginId,
+          password: 'WrongPassword123',
+          remember: false,
+          turnstileToken: 'turnstile-ok',
+          codeChallenge,
+          fingerprint: 'fp-rate-limit-allowed',
+        },
+      })
+
+      expect(allowedResponse.status).toBe(401)
+
+      const blockedResponse = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        headers: { 'CF-Connecting-IP': rateLimitedIp },
+        json: {
+          loginId: user.loginId,
+          password: 'WrongPassword123',
+          remember: false,
+          turnstileToken: 'turnstile-ok',
+          codeChallenge,
+          fingerprint: 'fp-rate-limit-blocked',
+        },
+      })
+
+      expect(blockedResponse.status).toBe(429)
+      expect(blockedResponse.headers.get('Retry-After')).not.toBeNull()
+      expect(await blockedResponse.json()).toMatchObject({
+        status: 429,
       })
     } finally {
       fetchGuard.restore()

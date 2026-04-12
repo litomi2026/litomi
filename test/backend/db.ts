@@ -2,16 +2,20 @@ import { eq, sql } from 'drizzle-orm'
 
 import { redisClient } from '@/database/redis'
 import { bookmarkTable } from '@/database/supabase/activity'
-import { authSessionTokenTable } from '@/database/supabase/auth'
+import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points'
-import { trustedBrowserTable, twoFactorTable } from '@/database/supabase/two-factor'
+import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { userSettingsTable, userTable } from '@/database/supabase/user'
+import { encryptTOTPSecret } from '@/utils/two-factor'
+import { generateBackupCodes } from '@/utils/two-factor-backup-code'
 
 import { getTestPasswordHash, TEST_LOGIN_PASSWORD } from './auth'
 
 let uniqueUserSequence = 0
+
+export const TEST_TOTP_SECRET = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP'
 
 type SeedAdultVerificationInput = Partial<typeof bbatonVerificationTable.$inferInsert> & {
   userId: number
@@ -23,6 +27,8 @@ type SeedBookmarkInput = {
 }
 
 type SeedTwoFactorInput = Partial<typeof twoFactorTable.$inferInsert> & {
+  encryptedSecret?: string
+  secret?: string
   userId: number
 }
 
@@ -59,8 +65,30 @@ export async function assertBackendRedisReady() {
   }
 }
 
+export async function readSessionFamiliesForUser(userId: number) {
+  return await db.select().from(authSessionFamilyTable).where(eq(authSessionFamilyTable.userId, userId))
+}
+
 export async function readSessionTokensForFamily(familyId: string) {
   return await db.select().from(authSessionTokenTable).where(eq(authSessionTokenTable.familyId, familyId))
+}
+
+export async function readTrustedBrowsersForUser(userId: number) {
+  return await db.select().from(trustedBrowserTable).where(eq(trustedBrowserTable.userId, userId))
+}
+
+export async function readTwoFactorBackupCodes(userId: number) {
+  return await db.select().from(twoFactorBackupCodeTable).where(eq(twoFactorBackupCodeTable.userId, userId))
+}
+
+export async function readUserById(userId: number) {
+  const [user] = await db.select().from(userTable).where(eq(userTable.id, userId))
+  return user ?? null
+}
+
+export async function readUserByLoginId(loginId: string) {
+  const [user] = await db.select().from(userTable).where(eq(userTable.loginId, loginId))
+  return user ?? null
 }
 
 export async function resetBackendDatabase() {
@@ -126,11 +154,12 @@ export async function seedTrustedBrowser(values: typeof trustedBrowserTable.$inf
 }
 
 export async function seedTwoFactor({ userId, ...overrides }: SeedTwoFactorInput) {
+  const plainSecret = overrides.secret ?? TEST_TOTP_SECRET
   const [record] = await db
     .insert(twoFactorTable)
     .values({
       userId,
-      secret: overrides.secret ?? 'test-totp-secret',
+      secret: overrides.encryptedSecret ?? encryptTOTPSecret(plainSecret),
       ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
       ...(overrides.lastUsedAt ? { lastUsedAt: overrides.lastUsedAt } : {}),
       ...(overrides.expiresAt ? { expiresAt: overrides.expiresAt } : {}),
@@ -138,6 +167,21 @@ export async function seedTwoFactor({ userId, ...overrides }: SeedTwoFactorInput
     .returning()
 
   return record
+}
+
+export async function seedTwoFactorBackupCodes(userId: number, count: number = 3) {
+  const { codes, hashedCodes } = await generateBackupCodes(count)
+
+  const rows = await db
+    .insert(twoFactorBackupCodeTable)
+    .values(hashedCodes.map((codeHash) => ({ userId, codeHash })))
+    .returning()
+
+  return {
+    codes,
+    hashedCodes,
+    rows,
+  }
 }
 
 export async function seedUser({ password = TEST_LOGIN_PASSWORD, passwordHash, ...overrides }: SeedUserInput = {}) {
