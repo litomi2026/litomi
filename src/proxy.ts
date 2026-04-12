@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { CookieKey } from './constants/storage'
 import { refreshSession } from './query/session'
 import { buildSessionDeviceLabel } from './query/session.util'
+import { applyCookieConfigs, getAuthCookieClearConfigs } from './utils/cookie'
 import { JWTType, verifyJWT } from './utils/jwt'
 import { getRequestUserAgent } from './utils/request'
 
@@ -43,9 +44,7 @@ export async function proxy({ cookies, headers }: NextRequest) {
 
   if (!refreshToken) {
     const response = NextResponse.next()
-    response.cookies.delete(CookieKey.ACCESS_TOKEN)
-    response.cookies.delete(CookieKey.REFRESH_TOKEN)
-    response.cookies.delete(CookieKey.AUTH_HINT)
+    applyCookieConfigs(response.cookies, getAuthCookieClearConfigs())
     return response
   }
 
@@ -57,9 +56,7 @@ export async function proxy({ cookies, headers }: NextRequest) {
 
   if (!refreshResult.ok) {
     const response = NextResponse.next()
-    response.cookies.delete(CookieKey.ACCESS_TOKEN)
-    response.cookies.delete(CookieKey.REFRESH_TOKEN)
-    response.cookies.delete(CookieKey.AUTH_HINT)
+    applyCookieConfigs(response.cookies, getAuthCookieClearConfigs())
     return response
   }
 

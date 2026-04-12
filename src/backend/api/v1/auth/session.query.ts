@@ -29,10 +29,10 @@ export async function issueAuthCookies({
   tx,
   ...metadata
 }: IssueAuthCookiesInput): Promise<AuthCookieConfig[]> {
-  const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult })
+  const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult, persistent: remember })
 
   if (!remember) {
-    const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+    const authHintCookie = getAuthHintCookieConfig()
     return [accessTokenCookie, authHintCookie]
   }
 
