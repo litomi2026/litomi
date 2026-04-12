@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-import { getPostComment, postParamsSchema } from '../common.server'
+import { getPost, getPostComment, postParamsSchema } from '../common.server'
 import CommentList from './CommentList'
 
 export default async function Page({ params }: PageProps<'/post/[id]'>) {
@@ -11,7 +11,11 @@ export default async function Page({ params }: PageProps<'/post/[id]'>) {
   }
 
   const { id } = validation.data
-  const comments = await getPostComment(id)
+  const [post, comments] = await Promise.all([getPost(id), getPostComment(id)])
+
+  if (!post) {
+    return null
+  }
 
   return <CommentList comments={comments} />
 }
