@@ -2,12 +2,14 @@ import crypto from 'crypto'
 import 'server-only'
 import { userAgent as parseUserAgent } from 'next/server'
 
+import { env } from '@/env/server.common'
 import { sec } from '@/utils/format/date'
+
+const { JWT_SECRET_REFRESH_TOKEN } = env
 
 export const REFRESH_SESSION_ABSOLUTE_TTL_SECONDS = sec('30 days')
 export const REFRESH_SESSION_IDLE_TTL_SECONDS = sec('30 days')
 export const REFRESH_SESSION_REUSE_GRACE_SECONDS = sec('5 seconds')
-export const REFRESH_SESSION_TOKEN_BYTES = 32
 export const SESSION_DEVICE_LABEL_MAX_LENGTH = 128
 
 export function addSeconds(date: Date, seconds: number) {
@@ -27,8 +29,8 @@ export function buildSessionDeviceLabel(rawUserAgent: string | null | undefined)
   return [browser, os, device].filter(Boolean).join(' ').trim().slice(0, SESSION_DEVICE_LABEL_MAX_LENGTH)
 }
 
-export function generateSessionToken() {
-  return crypto.randomBytes(REFRESH_SESSION_TOKEN_BYTES).toString('base64url')
+export function generateSessionToken({ familyId, tokenId }: { familyId: string; tokenId: string }) {
+  return crypto.createHmac('sha256', JWT_SECRET_REFRESH_TOKEN).update(`${familyId}:${tokenId}`).digest('base64url')
 }
 
 export function getRemainingSeconds(expiresAt: Date, now: Date) {

@@ -18,7 +18,7 @@ export type AuthCookieConfig = {
 type AccessTokenClaims = {
   userId: number
   adult: boolean
-  persistent: boolean
+  persistent?: boolean
 }
 
 type AccessTokenPayload = JWTPayload & {
