@@ -1,19 +1,13 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { cache } from 'react'
-import { z } from 'zod'
 
 import { generateOpenGraphMetadata } from '@/constants'
-import selectPost from '@/sql/selectPost'
 
+import { getPost, postParamsSchema } from '../common.server'
 import Post from './Post'
 
-const schema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
 export async function generateMetadata({ params }: PageProps<'/post/[id]'>): Promise<Metadata> {
-  const validation = schema.safeParse(await params)
+  const validation = postParamsSchema.safeParse(await params)
 
   if (!validation.success) {
     notFound()
@@ -42,7 +36,7 @@ export async function generateMetadata({ params }: PageProps<'/post/[id]'>): Pro
 }
 
 export default async function Page({ params }: PageProps<'/post/[id]'>) {
-  const validation = schema.safeParse(await params)
+  const validation = postParamsSchema.safeParse(await params)
 
   if (!validation.success) {
     notFound()
@@ -57,8 +51,3 @@ export default async function Page({ params }: PageProps<'/post/[id]'>) {
 
   return <Post post={post} />
 }
-
-const getPost = cache(async (id: number) => {
-  const [post] = await selectPost({ postId: id })
-  return post
-})

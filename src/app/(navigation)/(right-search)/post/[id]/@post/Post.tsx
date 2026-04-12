@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
-import { type Post as PostType } from '@/backend/api/v1/post/GET'
+import { type Post as TPost } from '@/backend/api/v1/post/GET'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
@@ -15,7 +15,7 @@ import PostDetailLikeButton from './PostDetailLikeButton'
 import PostMangaCard from './PostMangaCard'
 
 type Props = {
-  post: PostType
+  post: TPost
 }
 
 export default function Post({ post }: Props) {
@@ -68,7 +68,7 @@ export default function Post({ post }: Props) {
             <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수
           </span> */}
         </div>
-        <div className="flex justify-between gap-1 border-y-2 px-2 py-1 text-sm">
+        <div className="flex justify-between gap-1 border-y px-2 py-1 text-sm">
           <div className="flex items-center">
             <button className="group flex items-center w-fit transition hover:text-brand">
               <div className="shrink-0 rounded-full transition group-hover:bg-brand/20">

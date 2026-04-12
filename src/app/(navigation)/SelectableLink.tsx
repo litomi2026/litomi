@@ -40,7 +40,6 @@ export default function SelectableLink({
         className,
       )}
       href={href}
-      prefetch={false}
     >
       <div
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0 relative
