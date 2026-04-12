@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
@@ -42,6 +43,7 @@ export default function PostCreationForm({
   const [hasFocusedBefore, setHasFocusedBefore] = useState(false)
   const { data: me } = useMeQuery()
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const { mutate, isPending } = useMutation<POSTV1PostResponse, ProblemDetailsError, POSTV1PostBody>({
     mutationFn: createPost,
@@ -49,6 +51,10 @@ export default function PostCreationForm({
       queryClient.invalidateQueries({ queryKey: QueryKeys.postsBase })
       toast.success('글을 작성했어요')
       setContent('')
+
+      if (parentPostId) {
+        router.refresh()
+      }
     },
   })
 
