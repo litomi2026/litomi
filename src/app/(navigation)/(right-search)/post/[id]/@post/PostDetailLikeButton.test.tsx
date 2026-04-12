@@ -97,8 +97,6 @@ describe('PostDetailLikeButton', () => {
       expect(likeButton.getAttribute('aria-pressed')).toBe('true')
       expect(view.getByText('6')).toBeTruthy()
     })
-
-    expect(toastSuccessMock).toHaveBeenCalledWith('좋아요 했어요')
   })
 
   test('좋아요 요청이 실패하면 낙관적 업데이트를 롤백한다', async () => {

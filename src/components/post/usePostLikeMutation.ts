@@ -1,7 +1,6 @@
 'use client'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
 
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -54,13 +53,6 @@ export default function usePostLikeMutation(postId: number) {
     onError: (_error, _variables, context) => {
       restorePostLikeInPostLists(queryClient, postId, context?.snapshot ?? [])
       restoreLikedPostIds(queryClient, context?.likedPostIdsSnapshot)
-    },
-    onSuccess: (_data, variables) => {
-      if (variables.liked) {
-        toast.success('좋아요 했어요')
-      } else {
-        toast.info('좋아요를 취소했어요')
-      }
     },
   })
 

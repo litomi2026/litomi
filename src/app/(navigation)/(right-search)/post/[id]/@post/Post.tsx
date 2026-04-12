@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
-import { type Post as PostType } from '@/backend/api/v1/post/GET'
+import { type Post as TPost } from '@/backend/api/v1/post/GET'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
@@ -15,7 +15,7 @@ import PostDetailLikeButton from './PostDetailLikeButton'
 import PostMangaCard from './PostMangaCard'
 
 type Props = {
-  post: PostType
+  post: TPost
 }
 
 export default function Post({ post }: Props) {

@@ -81,13 +81,13 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
           </Link>
         )}
 
-        <div className={`flex items-center gap-2 px-3 ${hasSocialStats ? 'pb-2' : 'pb-3'} text-xs text-zinc-400`}>
+        <div className={`flex items-center gap-2 pr-3 ${hasSocialStats ? 'pb-2' : 'pb-3'} text-xs text-zinc-400`}>
           {author ? (
-            <Link className="flex min-w-0 flex-1 items-center gap-1" href={`/@${author.name}`} prefetch={false}>
+            <Link className="flex min-w-0 flex-1 items-center gap-1 pl-3" href={`/@${author.name}`} prefetch={false}>
               {authorMeta}
             </Link>
           ) : (
-            <div className="flex min-w-0 flex-1 items-center gap-1">{authorMeta}</div>
+            <div className="flex min-w-0 flex-1 items-center gap-1 pl-3">{authorMeta}</div>
           )}
           <PostManagementMenu
             authorId={author?.id}
@@ -96,14 +96,18 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
           />
         </div>
         {hasSocialStats && (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 pb-3 text-xs text-zinc-500">
+          <Link
+            className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 pb-3 text-xs text-zinc-500"
+            href={`/post/${post.id}`}
+            prefetch={false}
+          >
             {socialStats.map(({ Icon, label, value }) => (
               <div className="flex items-center gap-1" key={label} title={`${label} ${value.toLocaleString('ko-KR')}`}>
                 <Icon className="size-3.5 shrink-0" />
                 <span className="tabular-nums">{formatNumber(value, 'ko')}</span>
               </div>
             ))}
-          </div>
+          </Link>
         )}
       </div>
     </article>
