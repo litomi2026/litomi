@@ -87,6 +87,18 @@ describe('POST /api/v1/auth/logout', () => {
     expect(persistedUser?.logoutAt).toBeInstanceOf(Date)
   })
 
+  test('malformed refresh token 만 있어도 loginId: null 과 auth cookie clear 를 반환한다', async () => {
+    const response = await requestBackend({
+      path: '/api/v1/auth/logout',
+      method: 'POST',
+      cookies: 'rt=definitely-not-a-session-token',
+    })
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ loginId: null })
+    expectAuthCookiesCleared(response)
+  })
+
   test('malformed access token 만 있어도 loginId: null 과 auth cookie clear 를 반환한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/logout',

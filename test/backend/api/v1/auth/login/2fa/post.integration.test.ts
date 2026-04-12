@@ -1,5 +1,6 @@
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import {
+  expireTwoFactor,
   readSessionFamiliesForUser,
   readTrustedBrowsersForUser,
   readTwoFactorBackupCodes,
@@ -102,6 +103,46 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
     const remainingBackupCodes = await readTwoFactorBackupCodes(user.id)
     expect(remainingBackupCodes).toHaveLength(2)
+  })
+
+  test('remember=false 여도 trustBrowser=true 면 trusted browser 쿠키만 별도로 발급한다', async () => {
+    const user = await seedUser({ id: 2212, loginAt: null, logoutAt: null })
+    await seedTwoFactor({ userId: user.id })
+
+    const challenge = await issueAuthorizationChallenge({
+      userId: user.id,
+      fingerprint: 'fp-auth-login-2fa-trusted-without-remember',
+    })
+
+    setSystemTime(new Date(AUTH_TEST_TOTP_TIME))
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/login/2fa',
+        method: 'POST',
+        headers: buildAuthHeaders({
+          ip: '203.0.113.42',
+          userAgent: AUTH_TEST_SAFARI_USER_AGENT,
+        }),
+        json: buildLoginTwoFactorRequest(challenge, {
+          trustBrowser: true,
+        }),
+      })
+
+      expect(response.status).toBe(200)
+
+      const cookieNames = getSetCookieNames(response)
+      expect(cookieNames).toEqual(expect.arrayContaining(['at', 'ah', 'tbt']))
+      expect(cookieNames).not.toContain('rt')
+
+      const trustedBrowsers = await readTrustedBrowsersForUser(user.id)
+      expect(trustedBrowsers).toHaveLength(1)
+
+      const sessionFamilies = await readSessionFamiliesForUser(user.id)
+      expect(sessionFamilies).toHaveLength(0)
+    } finally {
+      setSystemTime()
+    }
   })
 
   test('trustBrowser=true 와 TOTP 인증이면 trusted browser 쿠키와 세션을 함께 발급한다', async () => {
@@ -210,6 +251,50 @@ describe('POST /api/v1/auth/login/2fa', () => {
       code: 'unauthorized',
       instance: '/api/v1/auth/login/2fa',
     })
+  })
+
+  test('authorization code 발급 뒤 2FA가 비활성화되면 401을 반환한다', async () => {
+    const user = await seedUser({ id: 2213, loginAt: null, logoutAt: null })
+    await seedTwoFactor({ userId: user.id })
+
+    const challenge = await issueAuthorizationChallenge({
+      userId: user.id,
+      fingerprint: 'fp-auth-login-2fa-expired-after-challenge',
+    })
+
+    await expireTwoFactor(user.id, new Date('2026-01-01T00:00:00.000Z'))
+
+    setSystemTime(new Date(AUTH_TEST_TOTP_TIME))
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/login/2fa',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.43' }),
+        json: buildLoginTwoFactorRequest(challenge),
+      })
+
+      expect(response.status).toBe(401)
+      expect(getSetCookieNames(response)).toEqual([])
+
+      await expectProblemResponse(response, {
+        status: 401,
+        code: 'unauthorized',
+        instance: '/api/v1/auth/login/2fa',
+      })
+
+      const [persistedUser, sessionFamilies, trustedBrowsers] = await Promise.all([
+        readUserById(user.id),
+        readSessionFamiliesForUser(user.id),
+        readTrustedBrowsersForUser(user.id),
+      ])
+
+      expect(persistedUser?.loginAt).toBeNull()
+      expect(sessionFamilies).toHaveLength(0)
+      expect(trustedBrowsers).toHaveLength(0)
+    } finally {
+      setSystemTime()
+    }
   })
 
   test('같은 authorization code 는 한 번만 사용할 수 있다', async () => {

@@ -433,6 +433,53 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
+  test('위조된 trusted browser 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
+    const user = await seedUser({ loginAt: null, logoutAt: null })
+    await seedTwoFactor({ userId: user.id })
+    const fetchGuard = installLoginTurnstileGuard()
+
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      remember: true,
+      fingerprint: 'fp-auth-login-invalid-trusted-browser',
+    })
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        cookies: 'tbt=definitely-not-a-jwt',
+        headers: buildAuthHeaders({ ip: '203.0.113.22' }),
+        json: request.payload,
+      })
+
+      expect(response.status).toBe(200)
+      expectCookieCleared(response, 'tbt')
+
+      const cookieNames = getSetCookieNames(response)
+      expect(cookieNames).toContain('tbt')
+      expect(cookieNames).not.toContain('at')
+      expect(cookieNames).not.toContain('rt')
+      expect(cookieNames).not.toContain('ah')
+
+      const body = await response.json()
+      expect(body.nextStep).toBe('two_factor_required')
+      expect(typeof body.authorizationCode).toBe('string')
+
+      const [persistedUser, sessionFamilies, trustedBrowsers] = await Promise.all([
+        readUserById(user.id),
+        readSessionFamiliesForUser(user.id),
+        readTrustedBrowsersForUser(user.id),
+      ])
+
+      expect(persistedUser?.loginAt).toBeNull()
+      expect(sessionFamilies).toHaveLength(0)
+      expect(trustedBrowsers).toHaveLength(0)
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
   test('Turnstile 검증이 실패하면 400을 반환한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     const fetchGuard = installLoginTurnstileGuard('failure')

@@ -65,6 +65,16 @@ export async function assertBackendRedisReady() {
   }
 }
 
+export async function expireTwoFactor(userId: number, expiresAt: Date = new Date()) {
+  const [twoFactor] = await db
+    .update(twoFactorTable)
+    .set({ expiresAt })
+    .where(eq(twoFactorTable.userId, userId))
+    .returning()
+
+  return twoFactor ?? null
+}
+
 export async function readSessionFamiliesForUser(userId: number) {
   return await db.select().from(authSessionFamilyTable).where(eq(authSessionFamilyTable.userId, userId))
 }
