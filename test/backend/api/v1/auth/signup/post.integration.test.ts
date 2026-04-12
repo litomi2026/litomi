@@ -1,4 +1,5 @@
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
+import { TEST_LOGIN_PASSWORD } from '@test/backend/setup/auth'
 import { readSessionFamiliesForUser, readUserByLoginId, seedUser } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
@@ -71,6 +72,37 @@ describe('POST /api/v1/auth/signup', () => {
       expect(body.nickname).not.toBe('')
 
       const createdUser = await readUserByLoginId('signup_user_blank_nickname')
+      expect(createdUser?.nickname).toBe(body.nickname)
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
+  test('nickname 을 생략해도 랜덤 닉네임을 생성해 회원가입한다', async () => {
+    const fetchGuard = installSignupTurnstileGuard()
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/signup',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.58' }),
+        json: {
+          loginId: 'signup_user_missing_nickname',
+          password: TEST_LOGIN_PASSWORD,
+          passwordConfirm: TEST_LOGIN_PASSWORD,
+          turnstileToken: 'turnstile-ok',
+        },
+      })
+
+      expect(response.status).toBe(201)
+
+      const body = await response.json()
+      expect(typeof body.userId).toBe('number')
+      expect(body.loginId).toBe('signup_user_missing_nickname')
+      expect(body.nickname).toBeTruthy()
+      expect(body.nickname).not.toBe('')
+
+      const createdUser = await readUserByLoginId('signup_user_missing_nickname')
       expect(createdUser?.nickname).toBe(body.nickname)
     } finally {
       fetchGuard.restore()

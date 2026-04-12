@@ -107,6 +107,11 @@ export async function readTwoFactorBackupCodes(userId: number) {
   return await db.select().from(twoFactorBackupCodeTable).where(eq(twoFactorBackupCodeTable.userId, userId))
 }
 
+export async function readTwoFactorByUserId(userId: number) {
+  const [twoFactor] = await db.select().from(twoFactorTable).where(eq(twoFactorTable.userId, userId))
+  return twoFactor ?? null
+}
+
 export async function readUserById(userId: number) {
   const [user] = await db.select().from(userTable).where(eq(userTable.id, userId))
   return user ?? null

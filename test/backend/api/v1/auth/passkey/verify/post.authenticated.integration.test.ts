@@ -16,7 +16,7 @@ import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-searc
 import { CookieKey } from '@/constants/storage'
 
 import { AUTH_TEST_SAFARI_USER_AGENT, buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
-import { buildPasskeyAuthentication, getResponseCookieValue, installPasskeyTurnstileGuard } from '../fixtures'
+import { buildPasskeyAuthentication, installPasskeyTurnstileGuard, issuePasskeyAttempt } from '../fixtures'
 
 installAuthIntegrationHooks({ redis: true })
 
@@ -335,35 +335,5 @@ function buildVerifiedAuthenticationResponse({
       origin: WEBAUTHN_ORIGIN,
       rpID: WEBAUTHN_RP_ID,
     },
-  }
-}
-
-async function issuePasskeyAttempt({ ip, attempts = 1 }: { attempts?: number; ip: string }) {
-  let response: Response | null = null
-
-  for (let attempt = 0; attempt < attempts; attempt += 1) {
-    response = await requestBackend({
-      path: '/api/v1/auth/passkey/options',
-      method: 'POST',
-      headers: buildAuthHeaders({ ip }),
-    })
-
-    expect(response.status).toBe(200)
-  }
-
-  if (!response) {
-    throw new Error('passkey options response should exist')
-  }
-
-  const pkai = getResponseCookieValue(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
-  const body = await response.json()
-
-  if (!pkai) {
-    throw new Error('passkey authentication attempt cookie should be issued')
-  }
-
-  return {
-    pkai,
-    turnstileRequired: Boolean(body.turnstileRequired),
   }
 }

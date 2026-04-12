@@ -2,6 +2,7 @@ import { getSetCookieNames, getSetCookieStrings, requestBackend } from '@test/ba
 import {
   readSessionFamiliesForUser,
   readTrustedBrowsersForUser,
+  readTwoFactorByUserId,
   readUserById,
   seedTrustedBrowser,
   seedTwoFactor,
@@ -24,7 +25,11 @@ installAuthIntegrationHooks({ redis: true })
 describe('POST /api/v1/auth/login/2fa', () => {
   test('유효한 TOTP로 2단계 인증을 완료한다', async () => {
     const user = await seedUser({ id: 2201, loginAt: null, logoutAt: null })
-    await seedTwoFactor({ userId: user.id })
+
+    await seedTwoFactor({
+      userId: user.id,
+      lastUsedAt: new Date('2025-12-31T00:00:00.000Z'),
+    })
 
     const challenge = await issueAuthorizationChallenge({
       userId: user.id,
@@ -60,8 +65,13 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
       expect(typeof body.lastLoginAt).toBe('string')
 
-      const persistedUser = await readUserById(user.id)
+      const [persistedUser, persistedTwoFactor] = await Promise.all([
+        readUserById(user.id),
+        readTwoFactorByUserId(user.id),
+      ])
+
       expect(persistedUser?.loginAt).toBeInstanceOf(Date)
+      expect(persistedTwoFactor?.lastUsedAt?.toISOString()).toBe(AUTH_TEST_TOTP_TIME)
     } finally {
       setSystemTime()
     }

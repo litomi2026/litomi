@@ -3,6 +3,7 @@ import {
   expireTwoFactor,
   readSessionFamiliesForUser,
   readTrustedBrowsersForUser,
+  readTwoFactorByUserId,
   readUserById,
   seedTwoFactor,
   seedUser,
@@ -223,7 +224,8 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
   test('유효하지 않은 TOTP 는 400을 반환한다', async () => {
     const user = await seedUser({ id: 2207, loginAt: null, logoutAt: null })
-    await seedTwoFactor({ userId: user.id })
+    const previousLastUsedAt = new Date('2025-01-01T00:00:00.000Z')
+    await seedTwoFactor({ userId: user.id, lastUsedAt: previousLastUsedAt })
 
     const challenge = await issueAuthorizationChallenge({
       userId: user.id,
@@ -246,15 +248,17 @@ describe('POST /api/v1/auth/login/2fa', () => {
       instance: '/api/v1/auth/login/2fa',
     })
 
-    const [persistedUser, sessionFamilies, trustedBrowsers] = await Promise.all([
+    const [persistedUser, sessionFamilies, trustedBrowsers, persistedTwoFactor] = await Promise.all([
       readUserById(user.id),
       readSessionFamiliesForUser(user.id),
       readTrustedBrowsersForUser(user.id),
+      readTwoFactorByUserId(user.id),
     ])
 
     expect(persistedUser?.loginAt).toBeNull()
     expect(sessionFamilies).toHaveLength(0)
     expect(trustedBrowsers).toHaveLength(0)
+    expect(persistedTwoFactor?.lastUsedAt?.toISOString()).toBe(previousLastUsedAt.toISOString())
   })
 
   test('유효하지 않은 token 형식은 400 invalid-input 을 반환한다', async () => {

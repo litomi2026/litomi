@@ -111,6 +111,28 @@ describe('POST /api/v1/auth/logout', () => {
     expectAuthCookiesCleared(response)
   })
 
+  test('malformed access token 이 함께 있어도 refresh token 으로 로그아웃을 완료한다', async () => {
+    const user = await seedUser({ logoutAt: null })
+    const session = await createRefreshSessionCookies({ userId: user.id })
+
+    const response = await requestBackend({
+      path: '/api/v1/auth/logout',
+      method: 'POST',
+      cookies: `at=definitely-not-a-jwt; ${session.cookieHeader}`,
+    })
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ loginId: user.loginId })
+    expectAuthCookiesCleared(response)
+
+    const sessionFamilies = await readSessionFamiliesForUser(user.id)
+    expect(sessionFamilies).toHaveLength(1)
+    expect(sessionFamilies[0]?.revokedAt).toBeInstanceOf(Date)
+
+    const persistedUser = await readUserById(user.id)
+    expect(persistedUser?.logoutAt).toBeInstanceOf(Date)
+  })
+
   test('토큰은 유효하지만 사용자가 없으면 loginId: null 과 auth cookie clear 를 반환한다', async () => {
     const auth = await createAccessTokenCookies({ userId: 999999 })
 

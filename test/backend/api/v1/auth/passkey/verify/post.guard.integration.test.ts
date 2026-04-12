@@ -16,7 +16,7 @@ import { ChallengeType } from '@/database/enum'
 import { getAndDeleteChallenge } from '@/utils/redis-challenge'
 
 import { buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
-import { buildPasskeyAuthentication, getResponseCookieValue, installPasskeyTurnstileGuard } from '../fixtures'
+import { buildPasskeyAuthentication, installPasskeyTurnstileGuard, issuePasskeyAttempt } from '../fixtures'
 
 type VerifyAuthenticationResult = Awaited<ReturnType<typeof SimpleWebAuthnServer.verifyAuthenticationResponse>>
 
@@ -427,34 +427,4 @@ function expectNoAuthCookies(cookieNames: string[]) {
   expect(cookieNames).not.toContain('at')
   expect(cookieNames).not.toContain('rt')
   expect(cookieNames).not.toContain('ah')
-}
-
-async function issuePasskeyAttempt({ ip, attempts = 1 }: { attempts?: number; ip: string }) {
-  let response: Response | null = null
-
-  for (let attempt = 0; attempt < attempts; attempt += 1) {
-    response = await requestBackend({
-      path: '/api/v1/auth/passkey/options',
-      method: 'POST',
-      headers: buildAuthHeaders({ ip }),
-    })
-
-    expect(response.status).toBe(200)
-  }
-
-  if (!response) {
-    throw new Error('passkey options response should exist')
-  }
-
-  const pkai = getResponseCookieValue(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
-  const body = await response.json()
-
-  if (!pkai) {
-    throw new Error('passkey authentication attempt cookie should be issued')
-  }
-
-  return {
-    pkai,
-    turnstileRequired: Boolean(body.turnstileRequired),
-  }
 }
