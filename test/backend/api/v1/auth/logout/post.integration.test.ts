@@ -65,6 +65,28 @@ describe('POST /api/v1/auth/logout', () => {
     expect(persistedUser?.logoutAt).toBeInstanceOf(Date)
   })
 
+  test('refresh token 만 있어도 세션 family 를 revoke 하고 loginId 를 반환한다', async () => {
+    const user = await seedUser({ logoutAt: null })
+    const session = await createRefreshSessionCookies({ userId: user.id })
+
+    const response = await requestBackend({
+      path: '/api/v1/auth/logout',
+      method: 'POST',
+      cookies: session.cookieHeader,
+    })
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ loginId: user.loginId })
+    expectAuthCookiesCleared(response)
+
+    const sessionFamilies = await readSessionFamiliesForUser(user.id)
+    expect(sessionFamilies).toHaveLength(1)
+    expect(sessionFamilies[0]?.revokedAt).toBeInstanceOf(Date)
+
+    const persistedUser = await readUserById(user.id)
+    expect(persistedUser?.logoutAt).toBeInstanceOf(Date)
+  })
+
   test('malformed access token 만 있어도 loginId: null 과 auth cookie clear 를 반환한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/logout',

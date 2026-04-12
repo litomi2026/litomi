@@ -176,6 +176,37 @@ describe('POST /api/v1/auth/signup', () => {
         code: 'human-verification-failed',
         instance: '/api/v1/auth/signup',
       })
+
+      expect(await readUserByLoginId('signup_user_failed')).toBeNull()
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
+  test('Turnstile 검증 중 외부 오류가 나면 400 을 반환하고 사용자를 만들지 않는다', async () => {
+    const fetchGuard = installSignupTurnstileGuard('error')
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/signup',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.57' }),
+        json: buildSignupRequest({
+          loginId: 'signup_user_turnstile_error',
+          turnstileToken: 'turnstile-error',
+        }),
+      })
+
+      expect(response.status).toBe(400)
+      expect(getSetCookieNames(response)).toEqual([])
+
+      await expectProblemResponse(response, {
+        status: 400,
+        code: 'human-verification-failed',
+        instance: '/api/v1/auth/signup',
+      })
+
+      expect(await readUserByLoginId('signup_user_turnstile_error')).toBeNull()
     } finally {
       fetchGuard.restore()
     }
@@ -219,6 +250,8 @@ describe('POST /api/v1/auth/signup', () => {
         code: 'too-many-requests',
         instance: '/api/v1/auth/signup',
       })
+
+      expect(await readUserByLoginId('signupratelimitblocked')).toBeNull()
     } finally {
       fetchGuard.restore()
     }

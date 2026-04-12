@@ -6,6 +6,7 @@ import type { POSTV1AuthLoginRequest } from '@/backend/api/v1/auth/login/POST'
 import { createPkcePair } from '../fixtures'
 
 type BuildLoginRequestInput = Partial<POSTV1AuthLoginRequest> & Pick<POSTV1AuthLoginRequest, 'loginId'>
+type TurnstileGuardResult = 'error' | 'failure' | 'success'
 
 export function buildLoginRequest(overrides: BuildLoginRequestInput) {
   const { codeChallenge, codeVerifier } = createPkcePair()
@@ -23,8 +24,18 @@ export function buildLoginRequest(overrides: BuildLoginRequestInput) {
   }
 }
 
-export function installLoginTurnstileGuard(result: 'failure' | 'success' = 'success') {
-  return installExternalFetchGuard([result === 'success' ? turnstileSuccessRoute() : turnstileFailureRoute()])
+export function installLoginTurnstileGuard(result: TurnstileGuardResult = 'success') {
+  return installExternalFetchGuard([resolveTurnstileRoute(result)])
+}
+
+export function turnstileErrorRoute(message: string = 'turnstile unavailable') {
+  return externalRoute({
+    matcher: 'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    method: 'POST',
+    response() {
+      throw new Error(message)
+    },
+  })
 }
 
 export function turnstileFailureRoute(errorCodes: readonly string[] = ['timeout-or-duplicate']) {
@@ -48,4 +59,16 @@ export function turnstileSuccessRoute() {
       hostname: 'localhost',
     }),
   })
+}
+
+function resolveTurnstileRoute(result: TurnstileGuardResult) {
+  switch (result) {
+    case 'error':
+      return turnstileErrorRoute()
+    case 'failure':
+      return turnstileFailureRoute()
+    case 'success':
+    default:
+      return turnstileSuccessRoute()
+  }
 }

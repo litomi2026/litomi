@@ -9,11 +9,12 @@ import {
   seedUser,
 } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, setSystemTime, test } from 'bun:test'
 
 import {
   AUTH_TEST_CHROME_USER_AGENT,
   AUTH_TEST_SAFARI_USER_AGENT,
+  AUTH_TEST_TOTP_TIME,
   buildAuthHeaders,
   installAuthIntegrationHooks,
 } from '../fixtures'
@@ -68,6 +69,7 @@ describe('POST /api/v1/auth/login', () => {
   test('remember=false 이면 refresh session 없이 로그인한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     const fetchGuard = installLoginTurnstileGuard()
+
     const request = buildLoginRequest({
       loginId: user.loginId,
       fingerprint: 'fp-auth-login-sessionless',
@@ -107,8 +109,9 @@ describe('POST /api/v1/auth/login', () => {
   })
 
   test('비밀번호가 틀리면 401을 반환한다', async () => {
-    const user = await seedUser()
+    const user = await seedUser({ loginAt: null, logoutAt: null })
     const fetchGuard = installLoginTurnstileGuard()
+
     const request = buildLoginRequest({
       loginId: user.loginId,
       password: 'WrongPassword123',
@@ -132,6 +135,14 @@ describe('POST /api/v1/auth/login', () => {
         detail: '아이디 또는 비밀번호가 일치하지 않아요',
         instance: '/api/v1/auth/login',
       })
+
+      const [persistedUser, sessionFamilies] = await Promise.all([
+        readUserById(user.id),
+        readSessionFamiliesForUser(user.id),
+      ])
+
+      expect(persistedUser?.loginAt).toBeNull()
+      expect(sessionFamilies).toHaveLength(0)
     } finally {
       fetchGuard.restore()
     }
@@ -191,16 +202,32 @@ describe('POST /api/v1/auth/login', () => {
       expect(loginBody.nextStep).toBe('two_factor_required')
       expect(typeof loginBody.authorizationCode).toBe('string')
 
-      const twoFactorResponse = await requestBackend({
-        path: '/api/v1/auth/login/2fa',
-        method: 'POST',
-        headers: buildAuthHeaders({ ip: '203.0.113.16' }),
-        json: buildLoginTwoFactorRequest({
-          authorizationCode: String(loginBody.authorizationCode),
-          codeVerifier: loginRequest.codeVerifier,
-          fingerprint: loginRequest.payload.fingerprint,
-        }),
-      })
+      const [persistedUserBeforeTwoFactor, sessionFamiliesBeforeTwoFactor] = await Promise.all([
+        readUserById(user.id),
+        readSessionFamiliesForUser(user.id),
+      ])
+
+      expect(persistedUserBeforeTwoFactor?.loginAt).toBeNull()
+      expect(sessionFamiliesBeforeTwoFactor).toHaveLength(0)
+
+      setSystemTime(new Date(AUTH_TEST_TOTP_TIME))
+
+      let twoFactorResponse: Response
+
+      try {
+        twoFactorResponse = await requestBackend({
+          path: '/api/v1/auth/login/2fa',
+          method: 'POST',
+          headers: buildAuthHeaders({ ip: '203.0.113.16' }),
+          json: buildLoginTwoFactorRequest({
+            authorizationCode: String(loginBody.authorizationCode),
+            codeVerifier: loginRequest.codeVerifier,
+            fingerprint: loginRequest.payload.fingerprint,
+          }),
+        })
+      } finally {
+        setSystemTime()
+      }
 
       expect(twoFactorResponse.status).toBe(200)
 
@@ -288,6 +315,69 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
+  test('trusted browser fingerprint 가 다르면 쿠키를 지우고 2단계 인증으로 되돌린다', async () => {
+    const user = await seedUser({ loginAt: null, logoutAt: null })
+    const browserId = 'trusted-browser-fingerprint-mismatch'
+    const cookieFingerprint = 'fp-trusted-browser-cookie'
+
+    await seedTwoFactor({ userId: user.id })
+
+    await seedTrustedBrowser({
+      userId: user.id,
+      browserId,
+      browserName: 'Chrome on macOS (Desktop)',
+      expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+      lastUsedAt: new Date('2025-01-01T00:00:00.000Z'),
+    })
+
+    const trustedBrowser = await createTrustedBrowserCookies({
+      browserId,
+      fingerprint: cookieFingerprint,
+      userId: user.id,
+    })
+
+    const fetchGuard = installLoginTurnstileGuard()
+
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      remember: true,
+      fingerprint: 'fp-trusted-browser-request',
+    })
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        cookies: trustedBrowser.cookieHeader,
+        headers: buildAuthHeaders({ ip: '203.0.113.18' }),
+        json: request.payload,
+      })
+
+      expect(response.status).toBe(200)
+      expectCookieCleared(response, 'tbt')
+
+      const cookieNames = getSetCookieNames(response)
+      expect(cookieNames).toContain('tbt')
+      expect(cookieNames).not.toContain('at')
+      expect(cookieNames).not.toContain('rt')
+      expect(cookieNames).not.toContain('ah')
+
+      const body = await response.json()
+      expect(body.nextStep).toBe('two_factor_required')
+      expect(typeof body.authorizationCode).toBe('string')
+
+      const [persistedUser, sessionFamilies] = await Promise.all([
+        readUserById(user.id),
+        readSessionFamiliesForUser(user.id),
+      ])
+
+      expect(persistedUser?.loginAt).toBeNull()
+      expect(sessionFamilies).toHaveLength(0)
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
   test('만료된 trusted browser 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
     const user = await seedUser()
     const browserId = 'trusted-browser-expired'
@@ -344,10 +434,11 @@ describe('POST /api/v1/auth/login', () => {
   })
 
   test('Turnstile 검증이 실패하면 400을 반환한다', async () => {
+    const user = await seedUser({ loginAt: null, logoutAt: null })
     const fetchGuard = installLoginTurnstileGuard('failure')
 
     const request = buildLoginRequest({
-      loginId: 'nobody',
+      loginId: user.loginId,
       turnstileToken: 'turnstile-expired',
       fingerprint: 'fp-auth-login-turnstile-failure',
     })
@@ -368,6 +459,53 @@ describe('POST /api/v1/auth/login', () => {
         code: 'human-verification-failed',
         instance: '/api/v1/auth/login',
       })
+
+      const [persistedUser, sessionFamilies] = await Promise.all([
+        readUserById(user.id),
+        readSessionFamiliesForUser(user.id),
+      ])
+
+      expect(persistedUser?.loginAt).toBeNull()
+      expect(sessionFamilies).toHaveLength(0)
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
+  test('Turnstile 검증 중 외부 오류가 나면 400을 반환하고 로그인 부작용이 없다', async () => {
+    const user = await seedUser({ loginAt: null, logoutAt: null })
+    const fetchGuard = installLoginTurnstileGuard('error')
+
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      turnstileToken: 'turnstile-error',
+      fingerprint: 'fp-auth-login-turnstile-error',
+    })
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.21' }),
+        json: request.payload,
+      })
+
+      expect(response.status).toBe(400)
+      expect(getSetCookieNames(response)).toEqual([])
+
+      await expectProblemResponse(response, {
+        status: 400,
+        code: 'human-verification-failed',
+        instance: '/api/v1/auth/login',
+      })
+
+      const [persistedUser, sessionFamilies] = await Promise.all([
+        readUserById(user.id),
+        readSessionFamiliesForUser(user.id),
+      ])
+
+      expect(persistedUser?.loginAt).toBeNull()
+      expect(sessionFamilies).toHaveLength(0)
     } finally {
       fetchGuard.restore()
     }
