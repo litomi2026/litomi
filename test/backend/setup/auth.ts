@@ -71,15 +71,19 @@ export async function createTrustedBrowserCookies({ browserId, fingerprint, user
 }
 
 export function expectAuthCookiesCleared(response: Response) {
-  const cookies = getSetCookieStrings(response)
-
   for (const name of ['at', 'rt', 'ah']) {
-    const cookie = cookies.find((value) => value.startsWith(`${name}=`) && value.includes('Max-Age=0'))
-
-    expect(cookie).toBeDefined()
-    expect(cookie).toContain(`${name}=;`)
-    expect(cookie).toContain('Max-Age=0')
+    expectCookieCleared(response, name)
   }
+}
+
+export function expectCookieCleared(response: Response, name: string) {
+  const cookie = getSetCookieStrings(response).find(
+    (value) => value.startsWith(`${name}=`) && value.includes('Max-Age=0'),
+  )
+
+  expect(cookie).toBeDefined()
+  expect(cookie).toContain(`${name}=;`)
+  expect(cookie).toContain('Max-Age=0')
 }
 
 export function getTestPasswordHash(password: string = TEST_LOGIN_PASSWORD) {

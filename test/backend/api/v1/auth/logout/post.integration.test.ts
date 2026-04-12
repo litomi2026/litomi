@@ -1,14 +1,16 @@
-import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import {
   createAccessTokenCookies,
   createRefreshSessionCookies,
   expectAuthCookiesCleared,
+  serializeCookieHeader,
 } from '@test/backend/setup/auth'
 import { readSessionFamiliesForUser, readUserById, seedUser } from '@test/backend/setup/db'
 import { describe, expect, test } from 'bun:test'
 
-installBackendIntegrationHooks({ redis: true })
+import { installAuthIntegrationHooks } from '../fixtures'
+
+installAuthIntegrationHooks()
 
 describe('POST /api/v1/auth/logout', () => {
   test('비로그인 상태에서도 loginId: null 과 auth cookie clear 를 반환한다', async () => {
@@ -40,17 +42,15 @@ describe('POST /api/v1/auth/logout', () => {
     expect(persistedUser?.logoutAt).toBeInstanceOf(Date)
   })
 
-  test('refresh token 이 있으면 세션 family 를 revoke 하고 auth cookie 를 비운다', async () => {
+  test('remembered session 처럼 access 와 refresh token 이 함께 있으면 세션 family 를 revoke 하고 auth cookie 를 비운다', async () => {
     const user = await seedUser({ logoutAt: null })
+    const access = await createAccessTokenCookies({ userId: user.id })
     const session = await createRefreshSessionCookies({ userId: user.id })
 
     const response = await requestBackend({
       path: '/api/v1/auth/logout',
       method: 'POST',
-      cookies: session.cookieHeader,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) Safari/605.1.15',
-      },
+      cookies: serializeCookieHeader([...access.cookieConfigs, ...session.cookieConfigs]),
     })
 
     expect(response.status).toBe(200)
@@ -63,6 +63,52 @@ describe('POST /api/v1/auth/logout', () => {
 
     const persistedUser = await readUserById(user.id)
     expect(persistedUser?.logoutAt).toBeInstanceOf(Date)
+  })
+
+  test('refresh token 만 있어도 세션 family 를 revoke 하고 loginId 를 반환한다', async () => {
+    const user = await seedUser({ logoutAt: null })
+    const session = await createRefreshSessionCookies({ userId: user.id })
+
+    const response = await requestBackend({
+      path: '/api/v1/auth/logout',
+      method: 'POST',
+      cookies: session.cookieHeader,
+    })
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ loginId: user.loginId })
+    expectAuthCookiesCleared(response)
+
+    const sessionFamilies = await readSessionFamiliesForUser(user.id)
+    expect(sessionFamilies).toHaveLength(1)
+    expect(sessionFamilies[0]?.revokedAt).toBeInstanceOf(Date)
+
+    const persistedUser = await readUserById(user.id)
+    expect(persistedUser?.logoutAt).toBeInstanceOf(Date)
+  })
+
+  test('malformed refresh token 만 있어도 loginId: null 과 auth cookie clear 를 반환한다', async () => {
+    const response = await requestBackend({
+      path: '/api/v1/auth/logout',
+      method: 'POST',
+      cookies: 'rt=definitely-not-a-session-token',
+    })
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ loginId: null })
+    expectAuthCookiesCleared(response)
+  })
+
+  test('malformed access token 만 있어도 loginId: null 과 auth cookie clear 를 반환한다', async () => {
+    const response = await requestBackend({
+      path: '/api/v1/auth/logout',
+      method: 'POST',
+      cookies: 'at=definitely-not-a-jwt',
+    })
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ loginId: null })
+    expectAuthCookiesCleared(response)
   })
 
   test('토큰은 유효하지만 사용자가 없으면 loginId: null 과 auth cookie clear 를 반환한다', async () => {

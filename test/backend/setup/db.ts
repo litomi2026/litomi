@@ -1,10 +1,12 @@
 import { eq, sql } from 'drizzle-orm'
 
+import { DeviceType } from '@/database/enum'
 import { redisClient } from '@/database/redis'
 import { bookmarkTable } from '@/database/supabase/activity'
 import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
+import { credentialTable } from '@/database/supabase/passkey'
 import { userExpansionTable } from '@/database/supabase/points'
 import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { userSettingsTable, userTable } from '@/database/supabase/user'
@@ -14,6 +16,7 @@ import { generateBackupCodes } from '@/utils/two-factor-backup-code'
 import { getTestPasswordHash, TEST_LOGIN_PASSWORD } from './auth'
 
 let uniqueUserSequence = 0
+let uniquePasskeyCredentialSequence = 0
 
 export const TEST_TOTP_SECRET = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP'
 
@@ -24,6 +27,14 @@ type SeedAdultVerificationInput = Partial<typeof bbatonVerificationTable.$inferI
 type SeedBookmarkInput = {
   createdAt?: Date
   mangaId: number
+}
+
+type SeedPasskeyCredentialInput = Partial<
+  Omit<typeof credentialTable.$inferInsert, 'credentialId' | 'publicKey' | 'userId'>
+> & {
+  credentialId?: string
+  publicKey?: string
+  userId: number
 }
 
 type SeedTwoFactorInput = Partial<typeof twoFactorTable.$inferInsert> & {
@@ -63,6 +74,21 @@ export async function assertBackendRedisReady() {
   } catch (error) {
     throw new Error(`Backend integration Redis is not ready. Start docker compose. ${formatError(error)}`)
   }
+}
+
+export async function expireTwoFactor(userId: number, expiresAt: Date = new Date()) {
+  const [twoFactor] = await db
+    .update(twoFactorTable)
+    .set({ expiresAt })
+    .where(eq(twoFactorTable.userId, userId))
+    .returning()
+
+  return twoFactor ?? null
+}
+
+export async function readPasskeyCredentialByCredentialId(credentialId: string) {
+  const [credential] = await db.select().from(credentialTable).where(eq(credentialTable.credentialId, credentialId))
+  return credential ?? null
 }
 
 export async function readSessionFamiliesForUser(userId: number) {
@@ -110,8 +136,8 @@ export async function seedAdultVerification({ userId, ...overrides }: SeedAdultV
       gender: overrides.gender ?? 'M',
       income: overrides.income ?? 'unknown',
       student: overrides.student ?? false,
-      ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
-      ...(overrides.verifiedAt ? { verifiedAt: overrides.verifiedAt } : {}),
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
+      ...(overrides.verifiedAt && { verifiedAt: overrides.verifiedAt }),
     })
     .returning()
 
@@ -124,7 +150,7 @@ export async function seedBookmark(userId: number, { mangaId, createdAt }: SeedB
     .values({
       userId,
       mangaId,
-      ...(createdAt ? { createdAt } : {}),
+      ...(createdAt && { createdAt }),
     })
     .returning()
 
@@ -142,10 +168,36 @@ export async function seedBookmarks(userId: number, bookmarks: readonly SeedBook
       bookmarks.map(({ mangaId, createdAt }) => ({
         userId,
         mangaId,
-        ...(createdAt ? { createdAt } : {}),
+        ...(createdAt && { createdAt }),
       })),
     )
     .returning()
+}
+
+export async function seedPasskeyCredential({
+  userId,
+  credentialId,
+  publicKey,
+  ...overrides
+}: SeedPasskeyCredentialInput) {
+  const unique = ++uniquePasskeyCredentialSequence
+
+  const [credential] = await db
+    .insert(credentialTable)
+    .values({
+      userId,
+      ...(overrides.id !== undefined && { id: overrides.id }),
+      credentialId: credentialId ?? `test-passkey-credential-${unique}`,
+      publicKey: publicKey ?? Buffer.from(`test-passkey-public-key-${unique}`).toString('base64'),
+      counter: overrides.counter ?? 0,
+      deviceType: overrides.deviceType ?? DeviceType.PLATFORM,
+      transports: overrides.transports ?? ['internal'],
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
+      ...(overrides.lastUsedAt && { lastUsedAt: overrides.lastUsedAt }),
+    })
+    .returning()
+
+  return credential
 }
 
 export async function seedTrustedBrowser(values: typeof trustedBrowserTable.$inferInsert) {
@@ -160,9 +212,9 @@ export async function seedTwoFactor({ userId, ...overrides }: SeedTwoFactorInput
     .values({
       userId,
       secret: overrides.encryptedSecret ?? encryptTOTPSecret(plainSecret),
-      ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
-      ...(overrides.lastUsedAt ? { lastUsedAt: overrides.lastUsedAt } : {}),
-      ...(overrides.expiresAt ? { expiresAt: overrides.expiresAt } : {}),
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
+      ...(overrides.lastUsedAt && { lastUsedAt: overrides.lastUsedAt }),
+      ...(overrides.expiresAt && { expiresAt: overrides.expiresAt }),
     })
     .returning()
 
@@ -190,15 +242,16 @@ export async function seedUser({ password = TEST_LOGIN_PASSWORD, passwordHash, .
   const [user] = await db
     .insert(userTable)
     .values({
+      ...(overrides.id !== undefined && { id: overrides.id }),
       loginId: overrides.loginId ?? `testuser${unique}`,
       name: overrides.name ?? `TestUser${unique}`,
       nickname: overrides.nickname ?? `Tester${unique}`,
       passwordHash: passwordHash ?? (await getTestPasswordHash(password)),
-      ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
-      ...(overrides.loginAt ? { loginAt: overrides.loginAt } : {}),
-      ...(overrides.logoutAt ? { logoutAt: overrides.logoutAt } : {}),
-      ...(overrides.imageURL !== undefined ? { imageURL: overrides.imageURL } : {}),
-      ...(overrides.autoDeletionDays !== undefined ? { autoDeletionDays: overrides.autoDeletionDays } : {}),
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
+      ...(overrides.loginAt && { loginAt: overrides.loginAt }),
+      ...(overrides.logoutAt && { logoutAt: overrides.logoutAt }),
+      ...(overrides.imageURL !== undefined && { imageURL: overrides.imageURL }),
+      ...(overrides.autoDeletionDays !== undefined && { autoDeletionDays: overrides.autoDeletionDays }),
     })
     .returning()
 
@@ -212,7 +265,7 @@ export async function seedUserExpansion({ userId, type, amount, ...overrides }: 
       userId,
       type,
       amount,
-      ...(overrides.createdAt ? { createdAt: overrides.createdAt } : {}),
+      ...(overrides.createdAt && { createdAt: overrides.createdAt }),
     })
     .returning()
 
