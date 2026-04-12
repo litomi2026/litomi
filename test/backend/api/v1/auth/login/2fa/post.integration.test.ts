@@ -1,5 +1,5 @@
-import { installBackendIntegrationHooks } from '@test/backend-integration/setup'
-import { getSetCookieNames, requestBackend } from '@test/backend/app'
+import { installBackendIntegrationHooks } from '@test/backend/setup'
+import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import {
   readSessionFamiliesForUser,
   readTrustedBrowsersForUser,
@@ -9,10 +9,11 @@ import {
   seedTwoFactorBackupCodes,
   seedUser,
   TEST_TOTP_SECRET,
-} from '@test/backend/db'
+} from '@test/backend/setup/db'
+import { expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
 
-import { nextIp } from '../fixtures'
+import { nextIp } from '../../fixtures'
 import { createValidTotpToken, issueAuthorizationChallenge } from './fixtures'
 
 installBackendIntegrationHooks({ redis: true })
@@ -162,10 +163,12 @@ describe('POST /api/v1/auth/login/2fa', () => {
     })
 
     expect(response.status).toBe(401)
+    expect(getSetCookieNames(response)).toEqual([])
 
-    expect(await response.json()).toMatchObject({
+    await expectProblemResponse(response, {
       status: 401,
-      detail: '인증이 만료됐어요. 새로고침 후 시도해 주세요.',
+      code: 'unauthorized',
+      instance: '/api/v1/auth/login/2fa',
     })
   })
 
@@ -192,10 +195,12 @@ describe('POST /api/v1/auth/login/2fa', () => {
     })
 
     expect(response.status).toBe(400)
+    expect(getSetCookieNames(response)).toEqual([])
 
-    expect(await response.json()).toMatchObject({
+    await expectProblemResponse(response, {
       status: 400,
-      detail: '인증 코드를 확인해 주세요',
+      code: 'bad-request',
+      instance: '/api/v1/auth/login/2fa',
     })
   })
 
@@ -234,7 +239,13 @@ describe('POST /api/v1/auth/login/2fa', () => {
     }
 
     expect(blockedResponse).not.toBeNull()
+    expect(getSetCookieNames(blockedResponse!)).toEqual([])
     expect(blockedResponse!.headers.get('Retry-After')).not.toBeNull()
-    expect(await blockedResponse!.json()).toMatchObject({ status: 429 })
+
+    await expectProblemResponse(blockedResponse!, {
+      status: 429,
+      code: 'too-many-requests',
+      instance: '/api/v1/auth/login/2fa',
+    })
   })
 })

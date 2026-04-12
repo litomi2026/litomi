@@ -1,7 +1,7 @@
-import { installBackendIntegrationHooks } from '@test/backend-integration/setup'
-import { getSetCookieNames, requestBackend } from '@test/backend/app'
-import { createAccessTokenCookies, createRefreshSessionCookies } from '@test/backend/auth'
-import { readSessionTokensForFamily, seedAdultVerification, seedUser, seedUserSettings } from '@test/backend/db'
+import { installBackendIntegrationHooks } from '@test/backend/setup'
+import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
+import { createAccessTokenCookies, createRefreshSessionCookies } from '@test/backend/setup/auth'
+import { readSessionTokensForFamily, seedAdultVerification, seedUser, seedUserSettings } from '@test/backend/setup/db'
 import { describe, expect, test } from 'bun:test'
 
 import { privateCacheControl } from '@/backend/utils/cache-control'

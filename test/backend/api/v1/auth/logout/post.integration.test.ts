@@ -1,7 +1,11 @@
-import { installBackendIntegrationHooks } from '@test/backend-integration/setup'
-import { requestBackend } from '@test/backend/app'
-import { createAccessTokenCookies, createRefreshSessionCookies, expectAuthCookiesCleared } from '@test/backend/auth'
-import { readSessionFamiliesForUser, readUserById, seedUser } from '@test/backend/db'
+import { installBackendIntegrationHooks } from '@test/backend/setup'
+import { requestBackend } from '@test/backend/setup/app'
+import {
+  createAccessTokenCookies,
+  createRefreshSessionCookies,
+  expectAuthCookiesCleared,
+} from '@test/backend/setup/auth'
+import { readSessionFamiliesForUser, readUserById, seedUser } from '@test/backend/setup/db'
 import { describe, expect, test } from 'bun:test'
 
 installBackendIntegrationHooks({ redis: true })

@@ -1,7 +1,7 @@
-import { installBackendIntegrationHooks } from '@test/backend-integration/setup'
-import { requestBackend } from '@test/backend/app'
-import { createAccessTokenCookies } from '@test/backend/auth'
-import { seedBookmarks, seedUser } from '@test/backend/db'
+import { installBackendIntegrationHooks } from '@test/backend/setup'
+import { requestBackend } from '@test/backend/setup/app'
+import { createAccessTokenCookies } from '@test/backend/setup/auth'
+import { seedBookmarks, seedUser } from '@test/backend/setup/db'
 import { describe, expect, test } from 'bun:test'
 
 import { privateCacheControl } from '@/backend/utils/cache-control'

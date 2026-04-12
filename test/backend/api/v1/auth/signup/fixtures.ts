@@ -1,4 +1,4 @@
-import { externalRoute, jsonResponse } from '@test/backend/network'
+import { externalRoute, jsonResponse } from '@test/backend/setup/network'
 
 export function turnstileFailureRoute(errorCodes: readonly string[] = ['timeout-or-duplicate']) {
   return externalRoute({

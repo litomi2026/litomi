@@ -1,7 +1,8 @@
-import { installBackendIntegrationHooks } from '@test/backend-integration/setup'
-import { getSetCookieNames, requestBackend } from '@test/backend/app'
-import { readSessionFamiliesForUser, readUserByLoginId, seedUser } from '@test/backend/db'
-import { installExternalFetchGuard } from '@test/backend/network'
+import { installBackendIntegrationHooks } from '@test/backend/setup'
+import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
+import { readSessionFamiliesForUser, readUserByLoginId, seedUser } from '@test/backend/setup/db'
+import { installExternalFetchGuard } from '@test/backend/setup/network'
+import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
 
 import { turnstileFailureRoute, turnstileSignupSuccessRoute } from './fixtures'
@@ -69,12 +70,14 @@ describe('POST /api/v1/auth/signup', () => {
       })
 
       expect(response.status).toBe(409)
-      expect(await response.json()).toMatchObject({
-        type: 'https://localhost/problems/login-id-conflict',
+      expect(getSetCookieNames(response)).toEqual([])
+
+      const problem = await expectProblemResponse(response, {
         status: 409,
-        detail: '이미 사용 중인 아이디예요',
-        invalidParams: [{ name: 'loginId', reason: '이미 사용 중인 아이디예요' }],
+        code: 'login-id-conflict',
+        instance: '/api/v1/auth/signup',
       })
+      expectInvalidParams(problem, [{ name: 'loginId' }])
     } finally {
       fetchGuard.restore()
     }
@@ -94,11 +97,15 @@ describe('POST /api/v1/auth/signup', () => {
     })
 
     expect(response.status).toBe(400)
-    expect(await response.json()).toMatchObject({
+    expect(getSetCookieNames(response)).toEqual([])
+
+    const problem = await expectProblemResponse(response, {
       status: 400,
-      invalidParams: [{ name: 'passwordConfirm', reason: '비밀번호와 비밀번호 확인 값이 일치하지 않아요' }],
+      code: 'invalid-input',
+      instance: '/api/v1/auth/signup',
     })
 
+    expectInvalidParams(problem, [{ name: 'passwordConfirm' }])
     expect(await readUserByLoginId('signup_user_invalid')).toBeNull()
   })
 
@@ -120,10 +127,12 @@ describe('POST /api/v1/auth/signup', () => {
       })
 
       expect(response.status).toBe(400)
-      expect(await response.json()).toMatchObject({
-        type: 'https://localhost/problems/human-verification-failed',
+      expect(getSetCookieNames(response)).toEqual([])
+
+      await expectProblemResponse(response, {
         status: 400,
-        detail: '보안 확인에 실패했어요',
+        code: 'human-verification-failed',
+        instance: '/api/v1/auth/signup',
       })
     } finally {
       fetchGuard.restore()

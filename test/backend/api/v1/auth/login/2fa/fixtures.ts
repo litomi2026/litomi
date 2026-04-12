@@ -2,7 +2,7 @@ import { generateSync } from 'otplib'
 
 import { initiatePKCEChallenge } from '@/utils/pkce-server'
 
-import { createPkcePair } from '../fixtures'
+import { createPkcePair } from '../../fixtures'
 
 type AuthorizationChallengeInput = {
   fingerprint?: string

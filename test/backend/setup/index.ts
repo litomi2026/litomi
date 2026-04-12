@@ -3,7 +3,7 @@ import {
   assertBackendRedisReady,
   resetBackendDatabase,
   resetBackendRedis,
-} from '@test/backend/db'
+} from '@test/backend/setup/db'
 import { beforeAll, beforeEach } from 'bun:test'
 
 type IntegrationOptions = {

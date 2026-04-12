@@ -1,8 +1,9 @@
-import { installBackendIntegrationHooks } from '@test/backend-integration/setup'
-import { getSetCookieNames, requestBackend } from '@test/backend/app'
-import { createTrustedBrowserCookies, TEST_LOGIN_PASSWORD } from '@test/backend/auth'
-import { readTrustedBrowsersForUser, seedTrustedBrowser, seedTwoFactor, seedUser } from '@test/backend/db'
-import { installExternalFetchGuard } from '@test/backend/network'
+import { installBackendIntegrationHooks } from '@test/backend/setup'
+import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
+import { createTrustedBrowserCookies, TEST_LOGIN_PASSWORD } from '@test/backend/setup/auth'
+import { readTrustedBrowsersForUser, seedTrustedBrowser, seedTwoFactor, seedUser } from '@test/backend/setup/db'
+import { installExternalFetchGuard } from '@test/backend/setup/network'
+import { expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
 import { eq } from 'drizzle-orm'
 
@@ -11,7 +12,8 @@ import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 import { verifyPKCEChallenge } from '@/utils/pkce-server'
 
-import { createPkcePair, nextIp, turnstileFailureRoute, turnstileSuccessRoute } from './fixtures'
+import { createPkcePair, nextIp } from '../fixtures'
+import { turnstileFailureRoute, turnstileSuccessRoute } from './fixtures'
 
 installBackendIntegrationHooks({ redis: true })
 
@@ -95,6 +97,15 @@ describe('POST /api/v1/auth/login', () => {
       expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'ah']))
       expect(getSetCookieNames(response)).not.toContain('rt')
 
+      expect(await response.json()).toEqual({
+        nextStep: 'authenticated',
+        id: user.id,
+        loginId: user.loginId,
+        name: user.name,
+        lastLoginAt: null,
+        lastLogoutAt: null,
+      })
+
       const sessionFamilies = await db
         .select()
         .from(authSessionFamilyTable)
@@ -127,10 +138,13 @@ describe('POST /api/v1/auth/login', () => {
       })
 
       expect(response.status).toBe(401)
+      expect(getSetCookieNames(response)).toEqual([])
 
-      expect(await response.json()).toMatchObject({
+      await expectProblemResponse(response, {
         status: 401,
+        code: 'unauthorized',
         detail: '아이디 또는 비밀번호가 일치하지 않아요',
+        instance: '/api/v1/auth/login',
       })
     } finally {
       fetchGuard.restore()
@@ -255,10 +269,12 @@ describe('POST /api/v1/auth/login', () => {
       })
 
       expect(response.status).toBe(400)
-      expect(await response.json()).toMatchObject({
-        type: 'https://localhost/problems/human-verification-failed',
-        detail: 'Cloudflare 보안 검증이 만료됐어요',
+      expect(getSetCookieNames(response)).toEqual([])
+
+      await expectProblemResponse(response, {
         status: 400,
+        code: 'human-verification-failed',
+        instance: '/api/v1/auth/login',
       })
     } finally {
       fetchGuard.restore()
@@ -321,9 +337,13 @@ describe('POST /api/v1/auth/login', () => {
       })
 
       expect(blockedResponse.status).toBe(429)
+      expect(getSetCookieNames(blockedResponse)).toEqual([])
       expect(blockedResponse.headers.get('Retry-After')).not.toBeNull()
-      expect(await blockedResponse.json()).toMatchObject({
+
+      await expectProblemResponse(blockedResponse, {
         status: 429,
+        code: 'too-many-requests',
+        instance: '/api/v1/auth/login',
       })
     } finally {
       fetchGuard.restore()
