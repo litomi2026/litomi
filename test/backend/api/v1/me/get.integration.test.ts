@@ -35,7 +35,7 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('malformed access token 만 있으면 401과 auth cookie clear 를 반환한다', async () => {
+  test('형식이 잘못된 access token만 있으면 401을 반환하고 인증 쿠키를 비운다', async () => {
     const response = await requestBackend({
       path: '/api/v1/me',
       cookies: 'at=definitely-not-a-jwt',
@@ -93,7 +93,7 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('한국 외 국가에서는 미성년 인증 상태와 무관하게 required=false를 반환한다', async () => {
+  test('한국 외 국가에서는 미성년 인증 상태와 관계없이 required=false를 반환한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
 
@@ -124,7 +124,7 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('userSettings 가 없어도 legacy autoDeletionDays 값을 fallback 으로 사용한다', async () => {
+  test('userSettings가 없어도 legacy autoDeletionDays 값을 기본값으로 사용한다', async () => {
     const user = await seedUser({ autoDeletionDays: 45 })
     const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
 
@@ -190,7 +190,7 @@ describe('GET /api/v1/me', () => {
     expect(persistedTokens).toHaveLength(2)
   })
 
-  test('malformed access token 이 함께 있어도 유효한 refresh token 으로 세션을 복구한다', async () => {
+  test('형식이 잘못된 access token이 함께 있어도 유효한 refresh token으로 세션을 복구한다', async () => {
     const user = await seedUser()
     await seedAdultVerification({ userId: user.id, adultFlag: true })
     const session = await createRefreshSessionCookies({ userId: user.id })
@@ -218,7 +218,7 @@ describe('GET /api/v1/me', () => {
     expect(tokens.some((token) => token.rotatedAt instanceof Date)).toBe(true)
   })
 
-  test('유효하지 않은 refresh token 이면 401과 auth cookie clear 를 반환한다', async () => {
+  test('유효하지 않은 refresh token이면 401을 반환하고 인증 쿠키를 비운다', async () => {
     const response = await requestBackend({
       path: '/api/v1/me',
       cookies: 'rt=definitely-not-a-session-token',
@@ -235,7 +235,7 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('reuse grace 를 지난 refresh token 재사용은 세션을 revoke 하고 401을 반환한다', async () => {
+  test('재사용 유예 기간이 지난 refresh token을 다시 쓰면 세션을 폐기하고 401을 반환한다', async () => {
     setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
 
     try {

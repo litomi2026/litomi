@@ -49,7 +49,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('존재하지 않는 loginId 도 동일한 401 응답을 반환한다', async () => {
+  test('존재하지 않는 로그인 ID도 동일한 401 응답을 반환한다', async () => {
     const fetchGuard = installLoginTurnstileGuard()
     const request = buildLoginRequest({
       loginId: 'missing_login_user',
@@ -156,7 +156,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('유효하지 않은 payload 는 400 invalid-input 을 반환한다', async () => {
+  test('유효하지 않은 요청 본문이면 400 invalid-input을 반환한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/login',
       method: 'POST',
@@ -180,7 +180,7 @@ describe('POST /api/v1/auth/login', () => {
     expectInvalidParams(problem, [{ name: 'codeChallenge' }])
   })
 
-  test('반복된 로그인 실패는 representative 429를 반환한다', async () => {
+  test('로그인에 반복해서 실패하면 대표 429 응답을 반환한다', async () => {
     const user = await seedUser()
     const fetchGuard = installLoginTurnstileGuard()
     const rateLimitedIp = '203.0.113.29'

@@ -10,7 +10,7 @@ import { db } from '@/database/supabase/drizzle'
 installBackendIntegrationHooks()
 
 describe('POST /api/v1/bookmark', () => {
-  test('유효하지 않은 mangaIds는 400을 반환하고 저장하지 않는다', async () => {
+  test('mangaIds가 유효하지 않으면 400을 반환하고 저장하지 않는다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id })
 
@@ -30,7 +30,7 @@ describe('POST /api/v1/bookmark', () => {
     expect(rows).toHaveLength(0)
   })
 
-  test('새 북마크를 저장하고 중복 수를 계산한다', async () => {
+  test('새 북마크를 저장하고 중복 개수를 계산한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id })
     await seedBookmark(user.id, { mangaId: 101 })
@@ -55,7 +55,7 @@ describe('POST /api/v1/bookmark', () => {
     expect(rows).toHaveLength(3)
   })
 
-  test('남은 슬롯보다 많은 요청은 overflowCount에 반영한다', async () => {
+  test('남은 슬롯보다 많이 요청하면 overflowCount에 반영한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id })
 

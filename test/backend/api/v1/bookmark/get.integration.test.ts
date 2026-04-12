@@ -22,7 +22,7 @@ describe('GET /api/v1/bookmark', () => {
     })
   })
 
-  test('잘못된 cursor를 전달하면 400을 반환한다', async () => {
+  test('잘못된 커서를 전달하면 400을 반환한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id })
 
@@ -35,7 +35,7 @@ describe('GET /api/v1/bookmark', () => {
     expect(await response.json()).toMatchObject({ status: 400 })
   })
 
-  test('북마크가 없으면 빈 결과와 private cache header를 반환한다', async () => {
+  test('북마크가 없으면 빈 결과와 비공개 캐시 헤더를 반환한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id })
 
@@ -53,7 +53,7 @@ describe('GET /api/v1/bookmark', () => {
     })
   })
 
-  test('페이지네이션 결과와 nextCursor를 안정적으로 반환한다', async () => {
+  test('페이지네이션 결과와 다음 커서(nextCursor)를 안정적으로 반환한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id })
     const newest = new Date('2025-01-03T00:00:00.000Z')

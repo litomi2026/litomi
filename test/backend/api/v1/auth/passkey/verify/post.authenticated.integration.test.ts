@@ -25,7 +25,7 @@ afterEach(() => {
 })
 
 describe('POST /api/v1/auth/passkey/verify', () => {
-  test('remember=false 이면 refresh session 없이 패스키 로그인을 완료한다', async () => {
+  test('remember=false면 로그인 상태를 유지하지 않고 패스키 로그인을 완료한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
 
     const credential = await seedPasskeyCredential({
@@ -85,7 +85,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     expect(sessionFamilies).toHaveLength(0)
   })
 
-  test('remember=true 이면 refresh session과 함께 패스키 로그인을 완료한다', async () => {
+  test('remember=true면 로그인 상태를 유지하는 쿠키를 응답하고 패스키 로그인을 완료한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
 
     const credential = await seedPasskeyCredential({
@@ -147,7 +147,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     expect(sessionFamilies).toHaveLength(1)
   })
 
-  test('turnstileRequired=true 여도 검증을 통과하면 로그인에 성공한다', async () => {
+  test('turnstileRequired=true여도 검증을 통과하면 로그인에 성공한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
 
     const credential = await seedPasskeyCredential({
@@ -208,7 +208,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     }
   })
 
-  test('성공 후 같은 pkai 를 재사용하면 replay 없이 400으로 막는다', async () => {
+  test('성공 후 같은 pkai를 다시 사용하면 리플레이 없이 400으로 차단한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
 
     const credential = await seedPasskeyCredential({
@@ -268,7 +268,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     expect(sessionFamilies).toHaveLength(0)
   })
 
-  test('multi-device credential 은 새 counter 를 보내도 기존 counter를 유지한다', async () => {
+  test('다중 기기 자격 증명은 새 counter 값을 보내도 기존 counter를 유지한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
 
     const credential = await seedPasskeyCredential({

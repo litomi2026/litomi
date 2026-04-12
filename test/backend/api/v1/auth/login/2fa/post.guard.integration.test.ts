@@ -17,7 +17,7 @@ import { buildLoginTwoFactorRequest, issueAuthorizationChallenge } from './fixtu
 installAuthIntegrationHooks({ redis: true })
 
 describe('POST /api/v1/auth/login/2fa', () => {
-  test('authorization code 가 유효하지 않으면 401을 반환한다', async () => {
+  test('인증 코드가 유효하지 않으면 401을 반환한다', async () => {
     const user = await seedUser({ id: 2205 })
     await seedTwoFactor({ userId: user.id })
 
@@ -45,7 +45,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     })
   })
 
-  test('authorization code 발급 뒤 2FA가 비활성화되면 401을 반환한다', async () => {
+  test('인증 코드를 발급한 뒤 2단계 인증이 비활성화되면 401을 반환한다', async () => {
     const user = await seedUser({ id: 2213, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
 
@@ -89,7 +89,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     }
   })
 
-  test('같은 authorization code 는 한 번만 사용할 수 있다', async () => {
+  test('같은 인증 코드는 한 번만 사용할 수 있다', async () => {
     const user = await seedUser({ id: 2206 })
     await seedTwoFactor({ userId: user.id })
 
@@ -138,7 +138,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     })
   })
 
-  test('authorization code 의 fingerprint 가 다르면 401을 반환한다', async () => {
+  test('인증 코드의 지문이 다르면 401을 반환한다', async () => {
     const user = await seedUser({ id: 2210, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
 
@@ -180,7 +180,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     expect(trustedBrowsers).toHaveLength(0)
   })
 
-  test('authorization code 의 codeVerifier 가 다르면 401을 반환한다', async () => {
+  test('인증 코드의 codeVerifier가 다르면 401을 반환한다', async () => {
     const user = await seedUser({ id: 2211, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
 
@@ -222,7 +222,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     expect(trustedBrowsers).toHaveLength(0)
   })
 
-  test('유효하지 않은 TOTP 는 400을 반환한다', async () => {
+  test('유효하지 않은 TOTP는 400을 반환한다', async () => {
     const user = await seedUser({ id: 2207, loginAt: null, logoutAt: null })
     const previousLastUsedAt = new Date('2025-01-01T00:00:00.000Z')
     await seedTwoFactor({ userId: user.id, lastUsedAt: previousLastUsedAt })
@@ -261,7 +261,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     expect(persistedTwoFactor?.lastUsedAt?.toISOString()).toBe(previousLastUsedAt.toISOString())
   })
 
-  test('유효하지 않은 token 형식은 400 invalid-input 을 반환한다', async () => {
+  test('유효하지 않은 토큰 형식이면 400 invalid-input을 반환한다', async () => {
     const user = await seedUser({ id: 2208 })
     await seedTwoFactor({ userId: user.id })
 
@@ -289,7 +289,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     expectInvalidParams(problem, [{ name: 'token' }])
   })
 
-  test('반복된 2단계 인증 실패는 representative 429를 반환한다', async () => {
+  test('2단계 인증에 반복해서 실패하면 대표 429 응답을 반환한다', async () => {
     const user = await seedUser({ id: 2209 })
     await seedTwoFactor({ userId: user.id })
     const rateLimitedIp = '203.0.113.49'

@@ -77,7 +77,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     }
   })
 
-  test('remember=false 여도 trustBrowser=true 면 trusted browser 쿠키만 별도로 발급한다', async () => {
+  test('remember=false여도 trustBrowser=true면 신뢰할 수 있는 브라우저 쿠키만 별도로 발급한다', async () => {
     const user = await seedUser({ id: 2212, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
 
@@ -117,7 +117,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     }
   })
 
-  test('trustBrowser=true 와 TOTP 인증이면 trusted browser 쿠키와 세션을 함께 발급한다', async () => {
+  test('trustBrowser=true로 TOTP 인증하면 신뢰할 수 있는 브라우저 쿠키와 세션을 함께 발급한다', async () => {
     const user = await seedUser({ id: 2203, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
 
@@ -156,7 +156,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     }
   })
 
-  test('trusted browser는 최대 5개까지만 유지하고 가장 오래된 active browser를 제거한다', async () => {
+  test('신뢰할 수 있는 브라우저는 최대 5개까지만 유지하고 가장 오래된 활성 브라우저를 제거한다', async () => {
     const user = await seedUser({ id: 2215, loginAt: null, logoutAt: null })
     const newFingerprint = 'fp-auth-login-2fa-trusted-limit-new'
 
