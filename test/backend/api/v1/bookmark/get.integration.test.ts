@@ -46,6 +46,7 @@ describe('GET /api/v1/bookmark', () => {
 
     expect(response.status).toBe(200)
     expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
+
     expect(await response.json()).toEqual({
       bookmarks: [],
       nextCursor: null,
