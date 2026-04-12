@@ -1,3 +1,4 @@
+import { installBackendIntegrationHooks } from '@test/backend-integration/setup'
 import { getSetCookieNames, requestBackend } from '@test/backend/app'
 import { createAccessTokenCookies, createRefreshSessionCookies } from '@test/backend/auth'
 import { readSessionTokensForFamily, seedAdultVerification, seedUser, seedUserSettings } from '@test/backend/db'
@@ -6,8 +7,6 @@ import { describe, expect, test } from 'bun:test'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
-
-import { installBackendIntegrationHooks } from '../setup'
 
 installBackendIntegrationHooks()
 
@@ -60,6 +59,36 @@ describe('GET /api/v1/me', () => {
     })
   })
 
+  test('한국 외 국가에서는 미성년 인증 상태와 무관하게 required=false를 반환한다', async () => {
+    const user = await seedUser()
+    const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
+
+    const response = await requestBackend({
+      path: '/api/v1/me',
+      cookies: auth.cookieHeader,
+      headers: { 'CF-IPCountry': 'US' },
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
+    expect(await response.json()).toEqual({
+      id: user.id,
+      loginId: user.loginId,
+      name: user.name,
+      nickname: user.nickname,
+      imageURL: null,
+      adultVerification: {
+        required: false,
+        status: 'unverified',
+      },
+      settings: {
+        historySyncEnabled: true,
+        adultVerifiedAdVisible: false,
+        autoDeletionDay: 180,
+      },
+    })
+  })
+
   test('refresh token만 있어도 세션을 회전하고 새 쿠키를 내려준다', async () => {
     const user = await seedUser()
     await seedAdultVerification({ userId: user.id, adultFlag: false })
@@ -71,7 +100,20 @@ describe('GET /api/v1/me', () => {
     })
 
     expect(response.status).toBe(200)
+    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
     expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+    expect(await response.json()).toMatchObject({
+      id: user.id,
+      adultVerification: {
+        required: true,
+        status: 'not_adult',
+      },
+      settings: {
+        historySyncEnabled: true,
+        adultVerifiedAdVisible: false,
+        autoDeletionDay: 180,
+      },
+    })
 
     const tokens = await readSessionTokensForFamily(session.familyId)
     expect(tokens).toHaveLength(2)
