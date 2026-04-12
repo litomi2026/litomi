@@ -69,9 +69,13 @@ export default function CommentList({ comments }: Props) {
                     {formatDistanceToNow(comment.createdAt)}
                   </span>
                 </div>
-                <p className="min-w-0 whitespace-pre-wrap break-all text-[1.02rem] text-zinc-100">
+                <Link
+                  className="min-w-0 whitespace-pre-wrap break-all text-[1.02rem] text-zinc-100 transition hover:text-zinc-200"
+                  href={`/post/${comment.id}`}
+                  prefetch={false}
+                >
                   {comment.content ?? '삭제된 답글이에요'}
-                </p>
+                </Link>
               </article>
             </li>
           )
