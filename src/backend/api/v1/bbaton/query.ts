@@ -7,8 +7,8 @@ import { Env } from '@/backend'
 import { CookieKey } from '@/constants/storage'
 import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
-import { hashSessionToken } from '@/query/session.util'
 import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
+import { hashSessionToken } from '@/utils/session'
 
 type ActiveRefreshSession = {
   maxAgeSeconds: number
@@ -23,24 +23,21 @@ type ReissueAuthCookiesClaims = {
 }
 
 export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: ReissueAuthCookiesClaims): Promise<void> {
-  const { key: atKey, value: atValue, options: atOptions } = await getAccessTokenCookieConfig({ userId, adult })
-  const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: atOptions.maxAge })
-
-  setCookie(c, atKey, atValue, atOptions)
-  setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
-
   const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
-  if (!refreshToken) {
-    return
-  }
+  const activeSession = refreshToken ? await readActiveRefreshSession(refreshToken) : null
+  const hasPersistentSession = activeSession?.userId === userId
 
-  const activeSession = await readActiveRefreshSession(refreshToken)
-  if (!activeSession || activeSession.userId !== userId) {
-    return
-  }
+  const accessTokenCookie = await getAccessTokenCookieConfig({
+    userId,
+    adult,
+    persistent: hasPersistentSession,
+  })
 
-  const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: activeSession.maxAgeSeconds })
-  setCookie(c, longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
+  const authHintCookieMaxAge = hasPersistentSession && activeSession ? activeSession.maxAgeSeconds : null
+  const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: authHintCookieMaxAge })
+
+  setCookie(c, accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
+  setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
 }
 
 function getRemainingSeconds(expiresAt: Date, now: Date) {

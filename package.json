@@ -38,6 +38,8 @@
     "db:push:supabase:sql": "bun tools/supabaseDbPush.ts",
     "db:push:supabase:sql:prod": "DB_ENV=production bun tools/supabaseDbPush.ts",
     "test": "bun test",
+    "test:backend:integration": "bun run test:backend:integration:setup && bun test ./test/backend --max-concurrency 1",
+    "test:backend:integration:setup": "bun tools/setupBackendIntegrationDb.ts",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
     "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts",

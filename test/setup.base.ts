@@ -1,8 +1,14 @@
 import { afterAll, beforeAll, mock } from 'bun:test'
 
+const backendIntegrationPostgresUrl =
+  process.env.BACKEND_INTEGRATION_POSTGRES_URL ??
+  'postgresql://test_user:test_password@localhost:5434/litomi_backend_integration_test'
+
 process.env.SKIP_ENV_VALIDATION = 'true'
-process.env.POSTGRES_URL ??= 'postgresql://test:test@localhost:5432/test'
-process.env.AIVEN_POSTGRES_URL ??= 'postgresql://test:test@localhost:5432/test'
+process.env.BACKEND_INTEGRATION_POSTGRES_URL ??= backendIntegrationPostgresUrl
+process.env.POSTGRES_URL ??= backendIntegrationPostgresUrl
+process.env.POSTGRES_URL_DIRECT ??= backendIntegrationPostgresUrl
+process.env.AIVEN_POSTGRES_URL ??= backendIntegrationPostgresUrl
 process.env.APP_ORIGIN ??= 'http://localhost:3000'
 process.env.ADSTERRA_API_KEY ??= 'test-adsterra-api-key'
 process.env.BBATON_CLIENT_ID ??= 'test-bbaton-client-id'
@@ -21,8 +27,8 @@ process.env.JWT_SECRET_TRUSTED_DEVICE ??= 'test-jwt-trusted'
 process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ??= 'test-vapid-public'
 process.env.TOTP_ENCRYPTION_KEY ??= '0'.repeat(64)
 process.env.TURNSTILE_SECRET_KEY ??= 'test-turnstile-secret'
-process.env.UPSTASH_KV_REST_API_TOKEN ??= 'test-upstash-token'
-process.env.UPSTASH_KV_REST_API_URL ??= 'https://example.com'
+process.env.UPSTASH_KV_REST_API_TOKEN ??= 'local_dev_token'
+process.env.UPSTASH_KV_REST_API_URL ??= 'http://localhost:8079'
 process.env.VAPID_PRIVATE_KEY ??= 'test-vapid-private'
 
 mock.module('server-only', () => ({}))

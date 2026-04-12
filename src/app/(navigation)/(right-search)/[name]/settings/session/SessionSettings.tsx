@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 
 import { CookieKey } from '@/constants/storage'
-import { hashSessionToken } from '@/query/session.util'
+import { hashSessionToken } from '@/utils/session'
 
 import { readCurrentSessionFamilyIdByTokenHash, readPersistentSessionFamiliesByUserId } from './query'
 import SessionList from './SessionList'

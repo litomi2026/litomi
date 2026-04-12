@@ -1,16 +1,16 @@
 import { and, eq, isNull } from 'drizzle-orm'
 
+import { issuePersistentSession } from '@/common/session'
 import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
-import { issuePersistentSession } from '@/query/session'
 import { type SessionWriteExecutor } from '@/query/session.query'
-import { hashSessionToken } from '@/query/session.util'
 import {
   type AuthCookieConfig,
   getAccessTokenCookieConfig,
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
 } from '@/utils/cookie'
+import { hashSessionToken } from '@/utils/session'
 
 type IssueAuthCookiesInput = {
   adult: boolean
@@ -27,16 +27,16 @@ export async function issueAuthCookies({
   adult,
   remember,
   tx,
-  ...metadata
+  deviceLabel,
 }: IssueAuthCookiesInput): Promise<AuthCookieConfig[]> {
-  const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult })
+  const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult, persistent: remember })
 
   if (!remember) {
-    const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+    const authHintCookie = getAuthHintCookieConfig()
     return [accessTokenCookie, authHintCookie]
   }
 
-  const issuedSession = await issuePersistentSession(userId, metadata, tx)
+  const issuedSession = await issuePersistentSession(userId, deviceLabel, tx)
   const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: issuedSession.maxAgeSeconds })
 
   const options = {

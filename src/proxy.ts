@@ -1,26 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { refreshSession } from './common/session'
 import { CookieKey } from './constants/storage'
-import { refreshSession } from './query/session'
-import { buildSessionDeviceLabel } from './query/session.util'
+import { applyCookieConfigs, getAuthCookieClearConfigs } from './utils/cookie'
 import { JWTType, verifyJWT } from './utils/jwt'
 import { getRequestUserAgent } from './utils/request'
+import { buildSessionDeviceLabel } from './utils/session'
 
 export const config = {
   // DOCS: The matcher values need to be constants so they can be statically analyzed at build-time
   // https://clerk.com/blog/skip-nextjs-middleware-static-and-public-files
   // DOCS: Ignoring matching prefetches
-  // https://nextjs.org/docs/app/guides/content-security-policy#adding-a-nonce-with-middleware
+  // https://nextjs.org/docs/app/guides/content-security-policy#adding-a-nonce-with-proxy
   matcher: [
     {
       source: '/((?!.*\\.|_next/static|_next/image).*)',
       has: [{ type: 'cookie', key: 'rt' }],
-      missing: [{ type: 'header', key: 'next-router-prefetch' }],
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' },
+      ],
     },
     {
       source: '/((?!.*\\.|_next/static|_next/image).*)',
       has: [{ type: 'cookie', key: 'at' }],
-      missing: [{ type: 'header', key: 'next-router-prefetch' }],
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' },
+      ],
     },
   ],
 }
@@ -37,23 +44,16 @@ export async function proxy({ cookies, headers }: NextRequest) {
 
   if (!refreshToken) {
     const response = NextResponse.next()
-    response.cookies.delete(CookieKey.ACCESS_TOKEN)
-    response.cookies.delete(CookieKey.REFRESH_TOKEN)
-    response.cookies.delete(CookieKey.AUTH_HINT)
+    applyCookieConfigs(response.cookies, getAuthCookieClearConfigs())
     return response
   }
 
-  const metadata = {
-    deviceLabel: buildSessionDeviceLabel(getRequestUserAgent(headers)),
-  }
-
-  const refreshResult = await refreshSession(refreshToken, metadata)
+  const deviceLabel = buildSessionDeviceLabel(getRequestUserAgent(headers))
+  const refreshResult = await refreshSession(refreshToken, deviceLabel)
 
   if (!refreshResult.ok) {
     const response = NextResponse.next()
-    response.cookies.delete(CookieKey.ACCESS_TOKEN)
-    response.cookies.delete(CookieKey.REFRESH_TOKEN)
-    response.cookies.delete(CookieKey.AUTH_HINT)
+    applyCookieConfigs(response.cookies, getAuthCookieClearConfigs())
     return response
   }
 
