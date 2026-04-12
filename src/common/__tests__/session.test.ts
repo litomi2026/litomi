@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { userAgent as parseUserAgent } from 'next/server'
 
 type SessionFamilyFixture = {
   absoluteExpiresAt: Date
@@ -69,6 +70,43 @@ const sessionState: {
   token: null,
 }
 
+function buildSessionDeviceLabelForTest(rawUserAgent: string | null | undefined) {
+  if (!rawUserAgent || rawUserAgent === 'unknown') {
+    return null
+  }
+
+  const agent = parseUserAgent({ headers: new Headers({ 'user-agent': rawUserAgent }) })
+  const browser = agent.browser.name || '일반 브라우저'
+  const os = normalizeSessionOSNameForTest(agent.os.name)
+  const device = normalizeSessionDeviceTypeForTest(agent.device.type)
+
+  return [browser, os, device].filter(Boolean).join(' ').trim().slice(0, 128)
+}
+
+function normalizeSessionDeviceTypeForTest(type: string | undefined) {
+  if (type === 'mobile') {
+    return '모바일'
+  }
+
+  if (type === 'tablet') {
+    return '태블릿'
+  }
+
+  return '데스크톱'
+}
+
+function normalizeSessionOSNameForTest(name: string | undefined) {
+  if (!name) {
+    return ''
+  }
+
+  if (name === 'Mac OS') {
+    return 'macOS'
+  }
+
+  return name
+}
+
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
     transaction: transactionMock,
@@ -96,6 +134,7 @@ mock.module('@/utils/cookie', () => ({
 
 mock.module('@/utils/session', () => ({
   addSeconds: (date: Date, seconds: number) => new Date(date.getTime() + seconds * 1000),
+  buildSessionDeviceLabel: buildSessionDeviceLabelForTest,
   generateSessionToken: ({ familyId, tokenId }: { familyId: string; tokenId: string }) => `rt:${familyId}:${tokenId}`,
   getRemainingSeconds: (expiresAt: Date, now: Date) => Math.max(1, Math.ceil((expiresAt.getTime() - now.getTime()) / 1000)),
   hashSessionToken: (token: string) => `hash:${token}`,
