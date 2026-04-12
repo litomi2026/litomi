@@ -31,9 +31,8 @@ export const auth = createMiddleware<Env>(async (c, next) => {
     return await next()
   }
 
-  const refreshResult = await refreshSession(refreshToken, {
-    deviceLabel: buildSessionDeviceLabel(getRequestUserAgent(c.req.raw.headers)),
-  })
+  const deviceLabel = buildSessionDeviceLabel(getRequestUserAgent(c.req.raw.headers))
+  const refreshResult = await refreshSession(refreshToken, deviceLabel)
 
   if (!refreshResult.ok) {
     applyAuthCookie(c, getAuthCookieClearConfigs())

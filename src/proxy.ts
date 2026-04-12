@@ -48,11 +48,8 @@ export async function proxy({ cookies, headers }: NextRequest) {
     return response
   }
 
-  const metadata = {
-    deviceLabel: buildSessionDeviceLabel(getRequestUserAgent(headers)),
-  }
-
-  const refreshResult = await refreshSession(refreshToken, metadata)
+  const deviceLabel = buildSessionDeviceLabel(getRequestUserAgent(headers))
+  const refreshResult = await refreshSession(refreshToken, deviceLabel)
 
   if (!refreshResult.ok) {
     const response = NextResponse.next()
