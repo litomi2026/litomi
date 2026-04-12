@@ -168,6 +168,44 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     }
   })
 
+  test('turnstile 검증 중 외부 오류가 나면 400 human-verification-failed 를 반환한다', async () => {
+    const fetchGuard = installPasskeyTurnstileGuard('error')
+
+    try {
+      const { pkai, turnstileRequired } = await issuePasskeyAttempt({
+        ip: '203.0.113.181',
+        attempts: 4,
+      })
+
+      expect(turnstileRequired).toBe(true)
+
+      const response = await requestBackend({
+        path: '/api/v1/auth/passkey/verify',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.181' }),
+        cookies: `${CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT}=${pkai}`,
+        json: {
+          authentication: buildPasskeyAuthentication({ id: 'test-passkey-turnstile-error' }),
+          remember: false,
+          turnstileToken: 'turnstile-error',
+        },
+      })
+
+      expect(response.status).toBe(400)
+      expectCookieCleared(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
+      expectNoAuthCookies(getSetCookieNames(response))
+
+      await expectProblemResponse(response, {
+        status: 400,
+        code: 'human-verification-failed',
+        detail: '일시적인 오류가 발생했어요',
+        instance: '/api/v1/auth/passkey/verify',
+      })
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
   test('알 수 없는 credential 이면 404를 반환한다', async () => {
     const { pkai } = await issuePasskeyAttempt({ ip: '203.0.113.176' })
 
