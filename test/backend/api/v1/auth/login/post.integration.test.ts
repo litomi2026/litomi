@@ -315,6 +315,70 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
+  test('다른 사용자 소유의 trusted browser 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
+    const user = await seedUser({ loginAt: null, logoutAt: null })
+    const otherUser = await seedUser({ loginAt: null, logoutAt: null })
+    const browserId = 'trusted-browser-other-user'
+    const fingerprint = 'fp-trusted-browser-other-user'
+
+    await seedTwoFactor({ userId: user.id })
+
+    await seedTrustedBrowser({
+      userId: otherUser.id,
+      browserId,
+      browserName: 'Chrome on macOS (Desktop)',
+      expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+      lastUsedAt: new Date('2025-01-01T00:00:00.000Z'),
+    })
+
+    const trustedBrowser = await createTrustedBrowserCookies({
+      browserId,
+      fingerprint,
+      userId: otherUser.id,
+    })
+
+    const fetchGuard = installLoginTurnstileGuard()
+
+    const request = buildLoginRequest({
+      loginId: user.loginId,
+      remember: true,
+      fingerprint,
+    })
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        cookies: trustedBrowser.cookieHeader,
+        headers: buildAuthHeaders({ ip: '203.0.113.18' }),
+        json: request.payload,
+      })
+
+      expect(response.status).toBe(200)
+      expectCookieCleared(response, 'tbt')
+
+      const cookieNames = getSetCookieNames(response)
+      expect(cookieNames).toContain('tbt')
+      expect(cookieNames).not.toContain('at')
+      expect(cookieNames).not.toContain('rt')
+      expect(cookieNames).not.toContain('ah')
+
+      const body = await response.json()
+      expect(body.nextStep).toBe('two_factor_required')
+      expect(typeof body.authorizationCode).toBe('string')
+
+      const [persistedUser, sessionFamilies] = await Promise.all([
+        readUserById(user.id),
+        readSessionFamiliesForUser(user.id),
+      ])
+
+      expect(persistedUser?.loginAt).toBeNull()
+      expect(sessionFamilies).toHaveLength(0)
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
   test('trusted browser fingerprint 가 다르면 쿠키를 지우고 2단계 인증으로 되돌린다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     const browserId = 'trusted-browser-fingerprint-mismatch'
