@@ -28,7 +28,7 @@ export default function DonationsClient() {
   return (
     <div className="max-w-3xl w-full mx-auto grid gap-4 sm:p-6">
       <div className="p-3 pb-0 sm:p-0">
-        <h1 className="text-xl font-bold tracking-tight">내 후원</h1>
+        <h2 className="sr-only">내 후원</h2>
         <p className="mt-1 text-sm text-zinc-500">후원한 기록을 모아서 볼 수 있어요</p>
       </div>
 
