@@ -31,7 +31,6 @@ import {
   minDate,
   REFRESH_SESSION_ABSOLUTE_TTL_SECONDS,
   REFRESH_SESSION_IDLE_TTL_SECONDS,
-  REFRESH_SESSION_REUSE_GRACE_SECONDS,
   SESSION_DEVICE_LABEL_MAX_LENGTH,
   truncateSessionMetadata,
 } from '@/utils/session'
@@ -143,7 +142,7 @@ export async function refreshSession(
     }
 
     if (token.rotatedAt) {
-      if (!isWithinReuseGracePeriod(token, now) || !token.replacedByTokenId || isSessionFamilyExpired(family, now)) {
+      if (!token.replacedByTokenId || isSessionFamilyExpired(family, now)) {
         await revokeSessionFamilyById(tx, family.id, now)
 
         return {
@@ -177,6 +176,7 @@ export async function refreshSession(
         }
       }
 
+      // Allow the most recent parent token to recover by reissuing its live child token.
       const adult = await readAdultFlag(tx, family.userId)
 
       return await buildRefreshSuccess({
@@ -271,14 +271,6 @@ function createRefreshToken(familyId: string): IssuedRefreshToken {
 
 function isSessionFamilyExpired(family: Pick<SessionFamilyRow, 'absoluteExpiresAt' | 'idleExpiresAt'>, now: Date) {
   return family.absoluteExpiresAt <= now || family.idleExpiresAt <= now
-}
-
-function isWithinReuseGracePeriod(token: Pick<SessionTokenRow, 'rotatedAt'>, now: Date) {
-  if (!token.rotatedAt) {
-    return false
-  }
-
-  return now.getTime() - token.rotatedAt.getTime() <= REFRESH_SESSION_REUSE_GRACE_SECONDS * 1000
 }
 
 function rebuildRefreshToken(token: Pick<SessionTokenRow, 'familyId' | 'id' | 'tokenHash'>) {
