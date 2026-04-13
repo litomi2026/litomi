@@ -36,7 +36,7 @@ export default function CollapsibleSection({ icon, title, description, variant, 
           <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
         </svg>
       </summary>
-      <div className={`p-4 sm:p-6 border-t ${contentBorderColor}`}>{children}</div>
+      <div className={`p-4 sm:p-5 border-t ${contentBorderColor}`}>{children}</div>
     </details>
   )
 }

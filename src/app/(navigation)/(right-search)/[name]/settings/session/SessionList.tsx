@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { Loader2, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
+import { Loader2, LogOut, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -112,27 +112,29 @@ export default function SessionList({ sessions, hasCurrentPersistentSession }: P
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+    <div className="grid gap-3 sm:gap-4">
+      <div className="flex flex-wrap justify-end gap-2">
         <button
-          className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 disabled:opacity-50"
           disabled={revokeOthersMutation.isPending}
           onClick={handleRevokeOthers}
           type="button"
         >
-          {revokeOthersMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : revokeOthersLabel}
+          {revokeOthersMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
+          {revokeOthersLabel}
         </button>
         <button
-          className="rounded-lg border border-red-900/60 px-3 py-2 text-sm text-red-300 transition hover:bg-red-950/40 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg border border-red-900/60 px-3 py-2 text-sm text-red-300 transition hover:bg-red-950/40 disabled:opacity-50"
           disabled={revokeAllMutation.isPending}
           onClick={handleRevokeAll}
           type="button"
         >
-          {revokeAllMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : '모든 기기 로그아웃'}
+          {revokeAllMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
+          모두 로그아웃
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="grid gap-2 sm:gap-3">
         {sessions.map((session) => {
           const { createdLabel, deviceLabel, expiresLabel, icon, lastUsedLabel } = formatSessionInfo(session)
 
@@ -148,7 +150,7 @@ export default function SessionList({ sessions, hasCurrentPersistentSession }: P
                     <span className="line-clamp-1 font-medium text-zinc-200">{deviceLabel}</span>
                     {session.isCurrent && (
                       <span className="shrink-0 rounded-full bg-green-900/50 px-2 py-0.5 text-xs text-green-400">
-                        이 기기
+                        현재
                       </span>
                     )}
                   </div>
@@ -161,11 +163,11 @@ export default function SessionList({ sessions, hasCurrentPersistentSession }: P
                     </span>
                     <span>•</span>
                     <span title={`로그인 시작: ${dayjs(session.createdAt).format('YYYY년 M월 D일 HH:mm')}`}>
-                      {createdLabel}
+                      {createdLabel} 로그인
                     </span>
                     <span>•</span>
                     <span title={`자동 로그아웃: ${dayjs(session.idleExpiresAt).format('YYYY년 M월 D일 HH:mm')}`}>
-                      {expiresLabel}
+                      {expiresLabel} 자동 로그아웃
                     </span>
                   </div>
                 </div>
@@ -206,16 +208,16 @@ function clearMeCache(queryClient: ReturnType<typeof useQueryClient>) {
 function formatSessionInfo(session: PersistentSession) {
   const deviceLabel = session.deviceLabel?.trim() || '알 수 없는 기기'
   const lastUsedLabel = formatDistanceToNow(new Date(session.lastUsedAt))
-  const createdLabel = `${dayjs(session.createdAt).format('YYYY년 M월 D일 HH:mm')} 로그인`
+  const createdLabel = formatDistanceToNow(new Date(session.createdAt))
   const idleExpiresAt = dayjs(session.idleExpiresAt)
   const hoursUntilExpiry = idleExpiresAt.diff(dayjs(), 'hour')
 
-  let expiresLabel = '곧 자동 로그아웃'
+  let expiresLabel = '곧'
 
   if (hoursUntilExpiry >= 24) {
-    expiresLabel = `${Math.floor(hoursUntilExpiry / 24)}일 후 자동 로그아웃`
+    expiresLabel = `${Math.floor(hoursUntilExpiry / 24)}일 후`
   } else if (hoursUntilExpiry >= 1) {
-    expiresLabel = `${hoursUntilExpiry}시간 후 자동 로그아웃`
+    expiresLabel = `${hoursUntilExpiry}시간 후`
   }
 
   const icon = getDeviceIcon(deviceLabel)

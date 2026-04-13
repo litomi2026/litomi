@@ -45,7 +45,7 @@ export default function AutoDeletionForm({ autoDeletionDay }: Props) {
         설정한 기간 동안 로그인하지 않으면 개인정보 보호를 위해 계정이 자동으로 삭제돼요
       </p>
       <div className="grid gap-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {dayOptions.map((option) => (
             <label className="cursor-pointer" key={option.value}>
               <input
@@ -57,14 +57,14 @@ export default function AutoDeletionForm({ autoDeletionDay }: Props) {
                 value={option.value}
               />
               <div
-                className="relative flex items-center gap-3 rounded-lg border border-zinc-800 px-4 py-3 text-zinc-300 transition
+                className="relative flex items-center gap-3 h-full rounded-lg border border-zinc-800 px-4 py-3 text-zinc-300 transition
                 hover:border-zinc-700 peer-checked:border-brand peer-checked:bg-brand/10 peer-checked:text-zinc-100
                 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
               >
                 <div className="flex-1">
                   <div className="font-medium text-sm">{option.label}</div>
                   {option.value > 0 && (
-                    <div className="mt-0.5 text-xs text-zinc-500">{option.value}일 후 자동 삭제</div>
+                    <div className="mt-0.5 text-xs text-zinc-500 hidden sm:block">{option.value}일 후 자동 삭제</div>
                   )}
                 </div>
                 <div className="h-2 w-2 rounded-full bg-brand opacity-0 transition peer-checked:opacity-100" />
