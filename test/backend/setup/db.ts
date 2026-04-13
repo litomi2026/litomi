@@ -122,6 +122,11 @@ export async function readUserByLoginId(loginId: string) {
   return user ?? null
 }
 
+export async function readUserSettingsByUserId(userId: number) {
+  const [settings] = await db.select().from(userSettingsTable).where(eq(userSettingsTable.userId, userId))
+  return settings ?? null
+}
+
 export async function resetBackendDatabase() {
   await db.execute(sql.raw(TRUNCATE_PUBLIC_TABLES_SQL))
 }

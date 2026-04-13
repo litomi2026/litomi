@@ -121,6 +121,37 @@ describe('GET /api/v1/me', () => {
     })
   })
 
+  test('user_settings가 없어도 legacy autoDeletionDays 값을 기본 설정으로 사용한다', async () => {
+    const user = await seedUser({ autoDeletionDays: 45 })
+    const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
+
+    const response = await requestBackend({
+      path: '/api/v1/me',
+      cookies: auth.cookieHeader,
+      headers: { 'CF-IPCountry': 'KR' },
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
+
+    expect(await response.json()).toEqual({
+      id: user.id,
+      loginId: user.loginId,
+      name: user.name,
+      nickname: user.nickname,
+      imageURL: null,
+      adultVerification: {
+        required: true,
+        status: 'unverified',
+      },
+      settings: {
+        historySyncEnabled: true,
+        adultVerifiedAdVisible: false,
+        autoDeletionDay: 45,
+      },
+    })
+  })
+
   test('한국 외 국가에서는 미성년 인증 상태와 관계없이 required=false를 반환한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
