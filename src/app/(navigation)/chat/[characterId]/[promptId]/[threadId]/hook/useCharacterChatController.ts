@@ -6,15 +6,15 @@ import ms from 'ms'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { ModelId } from '../../../../lib/webllmModel'
-import type { CharacterDefinition, CharacterPromptDefinition } from '../../../../types/characterDefinition'
-import type { ChatMessage } from '../../../../types/chatMessage'
+import { ModelId } from '@/app/(navigation)/chat/lib/webllmModel'
+import { archiveChatMessages } from '@/app/(navigation)/chat/storage/indexeddb'
+import { enqueueAppendMessages, enqueueCreateSession } from '@/app/(navigation)/chat/storage/outbox'
+import { CharacterDefinition, CharacterPromptDefinition } from '@/app/(navigation)/chat/types/characterDefinition'
+import { ChatMessage } from '@/app/(navigation)/chat/types/chatMessage'
+import { buildContext, buildSummaryPrompt } from '@/app/(navigation)/chat/util/chatPrompts'
+import { countHistoryTokens, pickPruneCountByTokenBudget } from '@/app/(navigation)/chat/util/chatTokens'
+import { getTokenBudget, TokenBudget } from '@/app/(navigation)/chat/util/tokenBudget'
 
-import { archiveChatMessages } from '../../../../storage/indexeddb'
-import { enqueueAppendMessages, enqueueCreateSession } from '../../../../storage/outbox'
-import { buildContext, buildSummaryPrompt } from '../../../../util/chatPrompts'
-import { countHistoryTokens, pickPruneCountByTokenBudget } from '../../../../util/chatTokens'
-import { getTokenBudget, type TokenBudget } from '../../../../util/tokenBudget'
 import { useStateWithRef } from './useStateWithRef'
 
 const SUMMARY_MAX_TOKENS = 256

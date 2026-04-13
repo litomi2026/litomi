@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
-import { CHARACTERS } from '../../../character/characters'
+import { CHARACTERS } from '@/app/(navigation)/chat/character/characters'
 
 const AIChat = dynamic(() => import('./AIChat'), { ssr: false })
 

@@ -1,7 +1,7 @@
+import { render } from '@test/utils/render'
 import { cleanup } from '@testing-library/react'
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import { render } from '../../../../test/utils/render'
 import ReferredPostCard from '../ReferredPostCard'
 
 afterEach(() => {

@@ -1,9 +1,5 @@
 import { CookieKey } from '@/constants/storage'
 
-export function clearAuthHintCookie() {
-  document.cookie = `${CookieKey.AUTH_HINT}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`
-}
-
 export function clearDocumentCookies() {
   for (const entry of document.cookie.split(';')) {
     const [rawKey] = entry.split('=')
