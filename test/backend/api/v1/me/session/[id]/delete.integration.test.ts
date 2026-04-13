@@ -76,6 +76,35 @@ describe('DELETE /api/v1/me/session/:id', () => {
     expect(sessionFamilies.find((family) => family.id === session.familyId)?.revokedAt).toBeNull()
   })
 
+  test('refresh token이 없어도 선택한 기기 세션은 로그아웃할 수 있다', async () => {
+    const { auth, user } = await createMeAuthContext()
+    const firstSession = await createRefreshSessionCookies({ userId: user.id, deviceLabel: 'Laptop Session' })
+    const secondSession = await createRefreshSessionCookies({ userId: user.id, deviceLabel: 'Tablet Session' })
+    const otherUser = await seedUser()
+    await createRefreshSessionCookies({ userId: otherUser.id, deviceLabel: 'Other User Session' })
+
+    const response = await requestBackend({
+      path: `/api/v1/me/session/${secondSession.familyId}`,
+      method: 'DELETE',
+      cookies: auth.cookieHeader,
+    })
+
+    expect(response.status).toBe(200)
+    expect(getSetCookieNames(response)).toEqual([])
+    expect(await response.json()).toEqual({
+      clearedCurrentSession: false,
+      message: '선택한 기기에서 로그아웃했어요',
+    })
+
+    const sessionFamilies = await readSessionFamiliesForUser(user.id)
+    expect(sessionFamilies.find((family) => family.id === firstSession.familyId)?.revokedAt).toBeNull()
+    expect(sessionFamilies.find((family) => family.id === secondSession.familyId)?.revokedAt).toBeInstanceOf(Date)
+
+    const otherUserFamilies = await readSessionFamiliesForUser(otherUser.id)
+    expect(otherUserFamilies).toHaveLength(1)
+    expect(otherUserFamilies[0]?.revokedAt).toBeNull()
+  })
+
   test('다른 기기 세션만 무효화하고 현재 세션은 유지한다', async () => {
     const { cookieHeader, session, user } = await createMeSessionAuthContext()
     const otherSession = await createRefreshSessionCookies({ userId: user.id, deviceLabel: 'Tablet Session' })

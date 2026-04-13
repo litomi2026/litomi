@@ -1,7 +1,7 @@
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { readUserSettingsByUserId, seedUserSettings } from '@test/backend/setup/db'
-import { expectProblemResponse } from '@test/backend/setup/problem'
+import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
 
 import { createMeAuthContext } from '../fixtures'
@@ -54,6 +54,53 @@ describe('PATCH /api/v1/me/settings', () => {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
         autoDeletionDay: 180,
+      },
+    })
+  })
+
+  test('유효하지 않은 autoDeletionDay면 400을 반환하고 기존 설정을 유지한다', async () => {
+    const { auth, user } = await createMeAuthContext()
+
+    await seedUserSettings({
+      userId: user.id,
+      historySyncEnabled: false,
+      adultVerifiedAdVisible: true,
+      autoDeletionDay: 30,
+    })
+
+    const response = await requestBackend({
+      path: '/api/v1/me/settings',
+      method: 'PATCH',
+      cookies: auth.cookieHeader,
+      json: { autoDeletionDay: 1501 },
+    })
+
+    const problem = await expectProblemResponse(response, {
+      status: 400,
+      code: 'invalid-input',
+      detail: '입력을 확인해 주세요',
+      instance: '/api/v1/me/settings',
+    })
+
+    expectInvalidParams(problem, [{ name: 'autoDeletionDay' }])
+    expect(await readUserSettingsByUserId(user.id)).toMatchObject({
+      userId: user.id,
+      historySyncEnabled: false,
+      adultVerifiedAdVisible: true,
+      autoDeletionDay: 30,
+    })
+
+    const meResponse = await requestBackend({
+      path: '/api/v1/me',
+      cookies: auth.cookieHeader,
+    })
+
+    expect(meResponse.status).toBe(200)
+    expect(await meResponse.json()).toMatchObject({
+      settings: {
+        historySyncEnabled: false,
+        adultVerifiedAdVisible: true,
+        autoDeletionDay: 30,
       },
     })
   })
