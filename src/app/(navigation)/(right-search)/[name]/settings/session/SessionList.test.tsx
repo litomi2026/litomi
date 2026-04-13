@@ -45,7 +45,7 @@ describe('SessionList', () => {
       />,
     )
 
-    expect(view.getByText('이 기기')).toBeTruthy()
+    expect(view.getByText('현재')).toBeTruthy()
     expect(view.getByText(/Chrome/)).toBeTruthy()
   })
 })
