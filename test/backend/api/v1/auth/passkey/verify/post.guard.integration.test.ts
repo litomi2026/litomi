@@ -16,7 +16,7 @@ import { ChallengeType } from '@/database/enum'
 import { getAndDeleteChallenge } from '@/utils/redis-challenge'
 
 import { buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
-import { buildPasskeyAuthentication, getResponseCookieValue, installPasskeyTurnstileGuard } from '../fixtures'
+import { buildPasskeyAuthentication, installPasskeyTurnstileGuard, issuePasskeyAttempt } from '../fixtures'
 
 type VerifyAuthenticationResult = Awaited<ReturnType<typeof SimpleWebAuthnServer.verifyAuthenticationResponse>>
 
@@ -27,7 +27,7 @@ afterEach(() => {
 })
 
 describe('POST /api/v1/auth/passkey/verify', () => {
-  test('유효하지 않은 payload 는 400 invalid-input 을 반환한다', async () => {
+  test('유효하지 않은 요청 본문이면 400 invalid-input을 반환한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/passkey/verify',
       method: 'POST',
@@ -49,7 +49,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     })
   })
 
-  test('pkai cookie가 없으면 400을 반환하고 cookie를 정리한다', async () => {
+  test('pkai 쿠키가 없으면 400을 반환하고 쿠키를 정리한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/passkey/verify',
       method: 'POST',
@@ -72,7 +72,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     })
   })
 
-  test('Redis challenge가 없으면 400을 반환하고 cookie를 정리한다', async () => {
+  test('Redis challenge가 없으면 400을 반환하고 쿠키를 정리한다', async () => {
     const { pkai } = await issuePasskeyAttempt({ ip: '203.0.113.173' })
 
     await getAndDeleteChallenge(pkai, ChallengeType.AUTHENTICATION)
@@ -100,7 +100,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     })
   })
 
-  test('turnstileRequired=true 인데 token이 없으면 400을 반환한다', async () => {
+  test('turnstileRequired=true인데 토큰이 없으면 400을 반환한다', async () => {
     const { pkai, turnstileRequired } = await issuePasskeyAttempt({
       ip: '203.0.113.174',
       attempts: 4,
@@ -131,7 +131,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     })
   })
 
-  test('turnstile 검증이 실패하면 400 human-verification-failed 를 반환한다', async () => {
+  test('Turnstile 검증이 실패하면 400 human-verification-failed를 반환한다', async () => {
     const fetchGuard = installPasskeyTurnstileGuard('failure')
 
     try {
@@ -168,7 +168,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     }
   })
 
-  test('turnstile 검증 중 외부 오류가 나면 400 human-verification-failed 를 반환한다', async () => {
+  test('Turnstile 검증 중 외부 오류가 나면 400 human-verification-failed를 반환한다', async () => {
     const fetchGuard = installPasskeyTurnstileGuard('error')
 
     try {
@@ -206,7 +206,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     }
   })
 
-  test('알 수 없는 credential 이면 404를 반환한다', async () => {
+  test('알 수 없는 자격 증명이면 404를 반환한다', async () => {
     const { pkai } = await issuePasskeyAttempt({ ip: '203.0.113.176' })
 
     const response = await requestBackend({
@@ -232,7 +232,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     })
   })
 
-  test('검증기가 verified=false 를 반환하면 400을 반환하고 부작용이 없다', async () => {
+  test('검증기가 verified=false를 반환하면 400을 반환하고 부작용이 없다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
 
     const credential = await seedPasskeyCredential({
@@ -280,7 +280,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     expect(sessionFamilies).toHaveLength(0)
   })
 
-  test('검증 결과에 authenticationInfo 가 없으면 400을 반환하고 부작용이 없다', async () => {
+  test('검증 결과에 authenticationInfo가 없으면 400을 반환하고 부작용이 없다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
 
     const credential = await seedPasskeyCredential({
@@ -328,7 +328,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     expect(sessionFamilies).toHaveLength(0)
   })
 
-  test('같은 authentication.id 로 반복 실패하면 429를 반환한다', async () => {
+  test('같은 authentication.id로 반복 실패하면 429를 반환한다', async () => {
     const authenticationId = 'test-passkey-verify-rate-limit'
 
     for (let attempt = 0; attempt < 10; attempt += 1) {
@@ -427,34 +427,4 @@ function expectNoAuthCookies(cookieNames: string[]) {
   expect(cookieNames).not.toContain('at')
   expect(cookieNames).not.toContain('rt')
   expect(cookieNames).not.toContain('ah')
-}
-
-async function issuePasskeyAttempt({ ip, attempts = 1 }: { attempts?: number; ip: string }) {
-  let response: Response | null = null
-
-  for (let attempt = 0; attempt < attempts; attempt += 1) {
-    response = await requestBackend({
-      path: '/api/v1/auth/passkey/options',
-      method: 'POST',
-      headers: buildAuthHeaders({ ip }),
-    })
-
-    expect(response.status).toBe(200)
-  }
-
-  if (!response) {
-    throw new Error('passkey options response should exist')
-  }
-
-  const pkai = getResponseCookieValue(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
-  const body = await response.json()
-
-  if (!pkai) {
-    throw new Error('passkey authentication attempt cookie should be issued')
-  }
-
-  return {
-    pkai,
-    turnstileRequired: Boolean(body.turnstileRequired),
-  }
 }

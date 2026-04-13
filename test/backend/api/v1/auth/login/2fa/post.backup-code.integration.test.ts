@@ -16,7 +16,7 @@ import { buildLoginTwoFactorRequest, issueAuthorizationChallenge } from './fixtu
 installAuthIntegrationHooks({ redis: true })
 
 describe('POST /api/v1/auth/login/2fa', () => {
-  test('유효한 backup code는 소모되고 남은 개수를 반환한다', async () => {
+  test('유효한 복구 코드는 소모되고 남은 개수를 반환한다', async () => {
     const user = await seedUser({ id: 2202, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
     const { codes } = await seedTwoFactorBackupCodes(user.id, 2)
@@ -53,7 +53,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     expect(remainingBackupCodes).toHaveLength(1)
   })
 
-  test('마지막 backup code를 사용하면 모두 소진되고 다시 사용할 수 없다', async () => {
+  test('마지막 복구 코드를 사용하면 모두 소진되어 다시 사용할 수 없다', async () => {
     const user = await seedUser({ id: 2214, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
     const { codes } = await seedTwoFactorBackupCodes(user.id, 1)
@@ -113,7 +113,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     expect(await readTwoFactorBackupCodes(user.id)).toHaveLength(0)
   })
 
-  test('backup code 인증에서는 trustBrowser=true 여도 trusted browser 를 만들지 않는다', async () => {
+  test('복구 코드 인증에서는 trustBrowser=true여도 신뢰할 수 있는 브라우저를 만들지 않는다', async () => {
     const user = await seedUser({ id: 2204, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
     const { codes } = await seedTwoFactorBackupCodes(user.id, 2)

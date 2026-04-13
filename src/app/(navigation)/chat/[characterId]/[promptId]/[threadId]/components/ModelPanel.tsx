@@ -4,16 +4,16 @@ import { ChevronRight, Trash2 } from 'lucide-react'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
 
+import type { CustomWebLLMModel, ModelId } from '@/app/(navigation)/chat/lib/webllmModel'
+import type { ContextWindowPercent } from '@/app/(navigation)/chat/storage/webllmSettingsStore'
+
+import { computeContextWindowSizeFromPercent } from '@/app/(navigation)/chat/lib/webllmAppConfig'
+import { normalizeHuggingFaceUrl } from '@/app/(navigation)/chat/util/huggingface'
 import CustomSelect from '@/components/ui/CustomSelect'
 import Toggle from '@/components/ui/Toggle'
 import { formatBytes } from '@/utils/format/byte'
 import { formatNumber } from '@/utils/format/number'
 
-import type { CustomWebLLMModel, ModelId } from '../../../../lib/webllmModel'
-import type { ContextWindowPercent } from '../../../../storage/webllmSettingsStore'
-
-import { computeContextWindowSizeFromPercent } from '../../../../lib/webllmAppConfig'
-import { normalizeHuggingFaceUrl } from '../../../../util/huggingface'
 import { CustomModelDialog } from './CustomModelDialog'
 import { type InstallState, ModelStatus } from './ModelStatus'
 

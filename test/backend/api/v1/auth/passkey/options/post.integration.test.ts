@@ -15,7 +15,7 @@ afterEach(() => {
 })
 
 describe('POST /api/v1/auth/passkey/options', () => {
-  test('인증 옵션과 attempt cookie를 발급한다', async () => {
+  test('인증 옵션과 시도 쿠키를 발급한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/passkey/options',
       method: 'POST',
@@ -35,7 +35,7 @@ describe('POST /api/v1/auth/passkey/options', () => {
     expect(body.options.challenge.length).toBeGreaterThan(0)
   })
 
-  test('같은 IP에서 반복 요청하면 threshold에서 turnstileRequired=true로 전환된다', async () => {
+  test('같은 IP에서 반복 요청하면 임계치에서 turnstileRequired=true로 전환된다', async () => {
     const turnstileFlags: boolean[] = []
 
     for (let attempt = 0; attempt < 4; attempt += 1) {
@@ -55,7 +55,7 @@ describe('POST /api/v1/auth/passkey/options', () => {
     expect(turnstileFlags).toEqual([false, false, false, true])
   })
 
-  test('허용량을 초과하면 429를 반환하고 새 attempt cookie를 발급하지 않는다', async () => {
+  test('허용량을 초과하면 429를 반환하고 새 시도 쿠키를 발급하지 않는다', async () => {
     const rateLimitedIp = '203.0.113.153'
 
     for (let attempt = 0; attempt < 10; attempt += 1) {
@@ -86,7 +86,7 @@ describe('POST /api/v1/auth/passkey/options', () => {
     })
   })
 
-  test('옵션 생성 중 예외가 나면 500을 반환하고 attempt cookie를 남기지 않는다', async () => {
+  test('옵션 생성 중 예외가 나면 500을 반환하고 시도 쿠키를 남기지 않는다', async () => {
     spyOn(console, 'error').mockImplementation(() => {})
     spyOn(SimpleWebAuthnServer, 'generateAuthenticationOptions').mockRejectedValue(new Error('options failed'))
 

@@ -1,8 +1,11 @@
 import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
 
-import { getSetCookieStrings } from '@test/backend/setup/app'
+import { getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import { installExternalFetchGuard } from '@test/backend/setup/network'
 
+import { CookieKey } from '@/constants/storage'
+
+import { buildAuthHeaders } from '../fixtures'
 import { turnstileErrorRoute, turnstileFailureRoute, turnstileSuccessRoute } from '../login/fixtures'
 
 type BuildPasskeyAuthenticationInput = {
@@ -47,6 +50,38 @@ export function getResponseCookieValue(response: Response, name: string) {
 
 export function installPasskeyTurnstileGuard(result: TurnstileGuardResult = 'success') {
   return installExternalFetchGuard([resolveTurnstileRoute(result)])
+}
+
+export async function issuePasskeyAttempt({ ip, attempts = 1 }: { attempts?: number; ip: string }) {
+  let response: Response | null = null
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    response = await requestBackend({
+      path: '/api/v1/auth/passkey/options',
+      method: 'POST',
+      headers: buildAuthHeaders({ ip }),
+    })
+
+    if (response.status !== 200) {
+      throw new Error(`passkey options setup failed with status ${response.status}`)
+    }
+  }
+
+  if (!response) {
+    throw new Error('passkey options response should exist')
+  }
+
+  const pkai = getResponseCookieValue(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
+  const body = await response.json()
+
+  if (!pkai) {
+    throw new Error('passkey authentication attempt cookie should be issued')
+  }
+
+  return {
+    pkai,
+    turnstileRequired: Boolean(body.turnstileRequired),
+  }
 }
 
 function resolveTurnstileRoute(result: TurnstileGuardResult) {

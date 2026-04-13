@@ -107,6 +107,11 @@ export async function readTwoFactorBackupCodes(userId: number) {
   return await db.select().from(twoFactorBackupCodeTable).where(eq(twoFactorBackupCodeTable.userId, userId))
 }
 
+export async function readTwoFactorByUserId(userId: number) {
+  const [twoFactor] = await db.select().from(twoFactorTable).where(eq(twoFactorTable.userId, userId))
+  return twoFactor ?? null
+}
+
 export async function readUserById(userId: number) {
   const [user] = await db.select().from(userTable).where(eq(userTable.id, userId))
   return user ?? null
@@ -115,6 +120,11 @@ export async function readUserById(userId: number) {
 export async function readUserByLoginId(loginId: string) {
   const [user] = await db.select().from(userTable).where(eq(userTable.loginId, loginId))
   return user ?? null
+}
+
+export async function readUserSettingsByUserId(userId: number) {
+  const [settings] = await db.select().from(userSettingsTable).where(eq(userSettingsTable.userId, userId))
+  return settings ?? null
 }
 
 export async function resetBackendDatabase() {

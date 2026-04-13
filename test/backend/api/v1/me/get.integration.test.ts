@@ -35,7 +35,7 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('malformed access token 만 있으면 401과 auth cookie clear 를 반환한다', async () => {
+  test('형식이 잘못된 access token만 있으면 401을 반환하고 인증 쿠키를 비운다', async () => {
     const response = await requestBackend({
       path: '/api/v1/me',
       cookies: 'at=definitely-not-a-jwt',
@@ -93,27 +93,24 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('한국 외 국가에서는 미성년 인증 상태와 무관하게 required=false를 반환한다', async () => {
+  test('유효한 access token이 있으면 잘못된 refresh token은 무시하고 사용자 정보를 반환한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
 
     const response = await requestBackend({
       path: '/api/v1/me',
-      cookies: auth.cookieHeader,
-      headers: { 'CF-IPCountry': 'US' },
+      cookies: `${auth.cookieHeader}; rt=definitely-not-a-session-token`,
+      headers: { 'CF-IPCountry': 'KR' },
     })
 
     expect(response.status).toBe(200)
     expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
+    expect(getSetCookieNames(response)).toEqual([])
 
-    expect(await response.json()).toEqual({
+    expect(await response.json()).toMatchObject({
       id: user.id,
-      loginId: user.loginId,
-      name: user.name,
-      nickname: user.nickname,
-      imageURL: null,
       adultVerification: {
-        required: false,
+        required: true,
         status: 'unverified',
       },
       settings: {
@@ -124,7 +121,7 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('userSettings 가 없어도 legacy autoDeletionDays 값을 fallback 으로 사용한다', async () => {
+  test('user_settings가 없어도 legacy autoDeletionDays 값을 기본 설정으로 사용한다', async () => {
     const user = await seedUser({ autoDeletionDays: 45 })
     const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
 
@@ -151,6 +148,37 @@ describe('GET /api/v1/me', () => {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
         autoDeletionDay: 45,
+      },
+    })
+  })
+
+  test('한국 외 국가에서는 미성년 인증 상태와 관계없이 required=false를 반환한다', async () => {
+    const user = await seedUser()
+    const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
+
+    const response = await requestBackend({
+      path: '/api/v1/me',
+      cookies: auth.cookieHeader,
+      headers: { 'CF-IPCountry': 'US' },
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
+
+    expect(await response.json()).toEqual({
+      id: user.id,
+      loginId: user.loginId,
+      name: user.name,
+      nickname: user.nickname,
+      imageURL: null,
+      adultVerification: {
+        required: false,
+        status: 'unverified',
+      },
+      settings: {
+        historySyncEnabled: true,
+        adultVerifiedAdVisible: false,
+        autoDeletionDay: 180,
       },
     })
   })
@@ -190,7 +218,51 @@ describe('GET /api/v1/me', () => {
     expect(persistedTokens).toHaveLength(2)
   })
 
-  test('malformed access token 이 함께 있어도 유효한 refresh token 으로 세션을 복구한다', async () => {
+  test('재사용 유예 기간 안에서는 같은 refresh token 재시도를 허용하고 세션을 폐기하지 않는다', async () => {
+    setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
+
+    try {
+      const user = await seedUser()
+      const session = await createRefreshSessionCookies({ userId: user.id })
+
+      const firstResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: session.cookieHeader,
+      })
+
+      expect(firstResponse.status).toBe(200)
+
+      setSystemTime(new Date('2026-01-02T00:00:04.000Z'))
+
+      const retryResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: session.cookieHeader,
+      })
+
+      expect(retryResponse.status).toBe(200)
+      expect(retryResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+      expect(getSetCookieNames(retryResponse)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+
+      expect(await retryResponse.json()).toMatchObject({
+        id: user.id,
+        adultVerification: {
+          required: true,
+          status: 'unverified',
+        },
+      })
+
+      const tokens = await readSessionTokensForFamily(session.familyId)
+      expect(tokens).toHaveLength(2)
+
+      const sessionFamilies = await readSessionFamiliesForUser(user.id)
+      expect(sessionFamilies).toHaveLength(1)
+      expect(sessionFamilies[0]?.revokedAt).toBeNull()
+    } finally {
+      setSystemTime()
+    }
+  })
+
+  test('형식이 잘못된 access token이 함께 있어도 유효한 refresh token으로 세션을 복구한다', async () => {
     const user = await seedUser()
     await seedAdultVerification({ userId: user.id, adultFlag: true })
     const session = await createRefreshSessionCookies({ userId: user.id })
@@ -218,7 +290,7 @@ describe('GET /api/v1/me', () => {
     expect(tokens.some((token) => token.rotatedAt instanceof Date)).toBe(true)
   })
 
-  test('유효하지 않은 refresh token 이면 401과 auth cookie clear 를 반환한다', async () => {
+  test('유효하지 않은 refresh token이면 401을 반환하고 인증 쿠키를 비운다', async () => {
     const response = await requestBackend({
       path: '/api/v1/me',
       cookies: 'rt=definitely-not-a-session-token',
@@ -235,7 +307,7 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('reuse grace 를 지난 refresh token 재사용은 세션을 revoke 하고 401을 반환한다', async () => {
+  test('재사용 유예 기간이 지난 refresh token을 다시 쓰면 세션을 폐기하고 401을 반환한다', async () => {
     setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
 
     try {
@@ -283,6 +355,12 @@ describe('GET /api/v1/me', () => {
     })
 
     expect(response.status).toBe(404)
-    expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+    expectAuthCookiesCleared(response)
+
+    await expectProblemResponse(response, {
+      status: 404,
+      detail: '사용자 정보를 찾을 수 없어요',
+      instance: '/api/v1/me',
+    })
   })
 })

@@ -49,7 +49,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('존재하지 않는 loginId 도 동일한 401 응답을 반환한다', async () => {
+  test('존재하지 않는 로그인 ID도 동일한 401 응답을 반환한다', async () => {
     const fetchGuard = installLoginTurnstileGuard()
     const request = buildLoginRequest({
       loginId: 'missing_login_user',
@@ -156,7 +156,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('유효하지 않은 payload 는 400 invalid-input 을 반환한다', async () => {
+  test('유효하지 않은 요청 본문이면 400 invalid-input을 반환한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/login',
       method: 'POST',
@@ -180,7 +180,7 @@ describe('POST /api/v1/auth/login', () => {
     expectInvalidParams(problem, [{ name: 'codeChallenge' }])
   })
 
-  test('반복된 로그인 실패는 representative 429를 반환한다', async () => {
+  test('로그인에 반복해서 실패하면 대표 429 응답을 반환한다', async () => {
     const user = await seedUser()
     const fetchGuard = installLoginTurnstileGuard()
     const rateLimitedIp = '203.0.113.29'
@@ -209,6 +209,51 @@ describe('POST /api/v1/auth/login', () => {
           loginId: user.loginId,
           password: 'WrongPassword123',
           fingerprint: 'fp-auth-login-rate-limit-blocked',
+        }).payload,
+      })
+
+      expect(blockedResponse.status).toBe(429)
+      expect(getSetCookieNames(blockedResponse)).toEqual([])
+      expect(blockedResponse.headers.get('Retry-After')).not.toBeNull()
+
+      await expectProblemResponse(blockedResponse, {
+        status: 429,
+        code: 'too-many-requests',
+        instance: '/api/v1/auth/login',
+      })
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
+  test('같은 로그인 ID로 IP를 바꿔가며 반복 실패해도 로그인 ID 기준으로 429를 반환한다', async () => {
+    const user = await seedUser()
+    const fetchGuard = installLoginTurnstileGuard()
+
+    try {
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        const response = await requestBackend({
+          path: '/api/v1/auth/login',
+          method: 'POST',
+          headers: buildAuthHeaders({ ip: `203.0.114.${attempt + 1}` }),
+          json: buildLoginRequest({
+            loginId: user.loginId,
+            password: 'WrongPassword123',
+            fingerprint: `fp-auth-login-login-id-rate-limit-${attempt}`,
+          }).payload,
+        })
+
+        expect(response.status).toBe(401)
+      }
+
+      const blockedResponse = await requestBackend({
+        path: '/api/v1/auth/login',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.114.250' }),
+        json: buildLoginRequest({
+          loginId: user.loginId,
+          password: 'WrongPassword123',
+          fingerprint: 'fp-auth-login-login-id-rate-limit-blocked',
         }).payload,
       })
 

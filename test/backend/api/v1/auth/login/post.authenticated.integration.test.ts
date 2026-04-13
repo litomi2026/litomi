@@ -15,7 +15,7 @@ import { buildLoginRequest, installLoginTurnstileGuard } from './fixtures'
 installAuthIntegrationHooks({ redis: true })
 
 describe('POST /api/v1/auth/login', () => {
-  test('remember=true 이면 인증 응답과 세션 쿠키를 반환한다', async () => {
+  test('remember=true면 로그인을 유지하는 쿠키를 응답하고 로그인한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     const fetchGuard = installLoginTurnstileGuard()
 
@@ -57,7 +57,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('remember=false 이면 refresh session 없이 로그인한다', async () => {
+  test('remember=false면 로그인을 유지하지 않고 로그인한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     const fetchGuard = installLoginTurnstileGuard()
 
@@ -99,7 +99,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('활성화된 2FA가 있으면 로그인 응답의 authorization code로 2단계 인증을 이어간다', async () => {
+  test('2단계 인증이 활성화되어 있으면 로그인 응답의 인증 코드로 2단계 인증을 이어간다', async () => {
     const user = await seedUser({ id: 2101, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
     const fetchGuard = installLoginTurnstileGuard()

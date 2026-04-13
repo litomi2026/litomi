@@ -4,12 +4,13 @@ import type { InitProgressReport, WebWorkerMLCEngine } from '@mlc-ai/web-llm'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { buildWebLLMAppConfig, type EngineModelInput } from '../../../../lib/webllmAppConfig'
-import { deleteInstalledModel, hasInstalledModel } from '../../../../lib/webllmCache'
-import { createWebLLMEngine } from '../../../../lib/webllmEngine'
-import { DEFAULT_MODEL_ID, type ModelId, RESOLVED_MODEL_PRESETS } from '../../../../lib/webllmModel'
-import { useWebLLMSettingsStore } from '../../../../storage/webllmSettingsStore'
-import { recommendModelIdFromNavigator } from '../../../../util/modelRecommendation'
+import { buildWebLLMAppConfig, type EngineModelInput } from '@/app/(navigation)/chat/lib/webllmAppConfig'
+import { deleteInstalledModel, hasInstalledModel } from '@/app/(navigation)/chat/lib/webllmCache'
+import { createWebLLMEngine } from '@/app/(navigation)/chat/lib/webllmEngine'
+import { DEFAULT_MODEL_ID, type ModelId, RESOLVED_MODEL_PRESETS } from '@/app/(navigation)/chat/lib/webllmModel'
+import { useWebLLMSettingsStore } from '@/app/(navigation)/chat/storage/webllmSettingsStore'
+import { recommendModelIdFromNavigator } from '@/app/(navigation)/chat/util/modelRecommendation'
+
 import { useStateWithRef } from './useStateWithRef'
 
 type InstallState =

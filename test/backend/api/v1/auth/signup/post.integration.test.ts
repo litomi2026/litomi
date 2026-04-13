@@ -1,4 +1,5 @@
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
+import { TEST_LOGIN_PASSWORD } from '@test/backend/setup/auth'
 import { readSessionFamiliesForUser, readUserByLoginId, seedUser } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
@@ -9,7 +10,7 @@ import { buildSignupRequest, installSignupTurnstileGuard } from './fixtures'
 installAuthIntegrationHooks()
 
 describe('POST /api/v1/auth/signup', () => {
-  test('성공하면 201 과 auth cookie 를 반환한다', async () => {
+  test('성공하면 201과 인증 쿠키를 반환한다', async () => {
     const fetchGuard = installSignupTurnstileGuard()
 
     try {
@@ -48,7 +49,7 @@ describe('POST /api/v1/auth/signup', () => {
     }
   })
 
-  test('빈 nickname 이면 랜덤 닉네임을 생성해 회원가입한다', async () => {
+  test('nickname이 비어 있으면 랜덤 닉네임을 생성해 회원가입한다', async () => {
     const fetchGuard = installSignupTurnstileGuard()
 
     try {
@@ -77,7 +78,38 @@ describe('POST /api/v1/auth/signup', () => {
     }
   })
 
-  test('이미 사용 중인 loginId 이면 409 와 invalidParams 를 반환한다', async () => {
+  test('nickname을 생략해도 랜덤 닉네임을 생성해 회원가입한다', async () => {
+    const fetchGuard = installSignupTurnstileGuard()
+
+    try {
+      const response = await requestBackend({
+        path: '/api/v1/auth/signup',
+        method: 'POST',
+        headers: buildAuthHeaders({ ip: '203.0.113.58' }),
+        json: {
+          loginId: 'signup_user_missing_nickname',
+          password: TEST_LOGIN_PASSWORD,
+          passwordConfirm: TEST_LOGIN_PASSWORD,
+          turnstileToken: 'turnstile-ok',
+        },
+      })
+
+      expect(response.status).toBe(201)
+
+      const body = await response.json()
+      expect(typeof body.userId).toBe('number')
+      expect(body.loginId).toBe('signup_user_missing_nickname')
+      expect(body.nickname).toBeTruthy()
+      expect(body.nickname).not.toBe('')
+
+      const createdUser = await readUserByLoginId('signup_user_missing_nickname')
+      expect(createdUser?.nickname).toBe(body.nickname)
+    } finally {
+      fetchGuard.restore()
+    }
+  })
+
+  test('이미 사용 중인 로그인 ID면 409와 invalidParams를 반환한다', async () => {
     await seedUser({ loginId: 'duplicate_login_id', nickname: 'ExistingTester' })
     const fetchGuard = installSignupTurnstileGuard()
 
@@ -106,7 +138,7 @@ describe('POST /api/v1/auth/signup', () => {
     }
   })
 
-  test('유효하지 않은 payload 는 400 을 반환한다', async () => {
+  test('유효하지 않은 요청 본문이면 400을 반환한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/signup',
       method: 'POST',
@@ -130,7 +162,7 @@ describe('POST /api/v1/auth/signup', () => {
     expect(await readUserByLoginId('signup_user_invalid')).toBeNull()
   })
 
-  test('loginId 와 password 가 같으면 400 invalid-input 을 반환한다', async () => {
+  test('loginId와 password가 같으면 400 invalid-input을 반환한다', async () => {
     const response = await requestBackend({
       path: '/api/v1/auth/signup',
       method: 'POST',
@@ -154,7 +186,7 @@ describe('POST /api/v1/auth/signup', () => {
     expect(await readUserByLoginId('SamePassword1')).toBeNull()
   })
 
-  test('Turnstile 검증이 실패하면 400 을 반환한다', async () => {
+  test('Turnstile 검증이 실패하면 400을 반환한다', async () => {
     const fetchGuard = installSignupTurnstileGuard('failure')
 
     try {
@@ -183,7 +215,7 @@ describe('POST /api/v1/auth/signup', () => {
     }
   })
 
-  test('Turnstile 검증 중 외부 오류가 나면 400 을 반환하고 사용자를 만들지 않는다', async () => {
+  test('Turnstile 검증 중 외부 오류가 나면 400을 반환하고 사용자를 만들지 않는다', async () => {
     const fetchGuard = installSignupTurnstileGuard('error')
 
     try {
@@ -212,7 +244,7 @@ describe('POST /api/v1/auth/signup', () => {
     }
   })
 
-  test('동일 IP 의 반복된 회원가입 시도는 representative 429를 반환한다', async () => {
+  test('같은 IP에서 회원가입을 반복 시도하면 대표 429 응답을 반환한다', async () => {
     const fetchGuard = installSignupTurnstileGuard()
     const rateLimitedIp = '203.0.113.59'
 

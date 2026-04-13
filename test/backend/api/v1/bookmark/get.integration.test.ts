@@ -1,89 +1,182 @@
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
-import { createAccessTokenCookies } from '@test/backend/setup/auth'
 import { seedBookmarks, seedUser } from '@test/backend/setup/db'
+import { expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
 
 import { privateCacheControl } from '@/backend/utils/cache-control'
-import { decodeBookmarkCursor } from '@/common/cursor'
+
+import { createBookmarkAuthContext } from './fixtures'
 
 installBackendIntegrationHooks()
 
 describe('GET /api/v1/bookmark', () => {
   test('인증 정보가 없으면 401을 반환한다', async () => {
-    const response = await requestBackend({
-      path: '/api/v1/bookmark',
-    })
+    const response = await requestBackend({ path: '/api/v1/bookmark' })
 
-    expect(response.status).toBe(401)
-    expect(await response.json()).toMatchObject({
+    await expectProblemResponse(response, {
       status: 401,
+      code: 'unauthorized',
       detail: '로그인 정보가 없거나 만료됐어요',
+      instance: '/api/v1/bookmark',
     })
   })
 
   test('잘못된 cursor를 전달하면 400을 반환한다', async () => {
-    const user = await seedUser()
-    const auth = await createAccessTokenCookies({ userId: user.id })
+    const { auth } = await createBookmarkAuthContext()
 
     const response = await requestBackend({
       path: '/api/v1/bookmark?cursor=invalid-cursor',
       cookies: auth.cookieHeader,
     })
 
-    expect(response.status).toBe(400)
-    expect(await response.json()).toMatchObject({ status: 400 })
-  })
-
-  test('북마크가 없으면 빈 결과와 private cache header를 반환한다', async () => {
-    const user = await seedUser()
-    const auth = await createAccessTokenCookies({ userId: user.id })
-
-    const response = await requestBackend({
-      path: '/api/v1/bookmark',
-      cookies: auth.cookieHeader,
-    })
-
-    expect(response.status).toBe(200)
-    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
-
-    expect(await response.json()).toEqual({
-      bookmarks: [],
-      nextCursor: null,
+    await expectProblemResponse(response, {
+      status: 400,
+      code: 'bad-request',
+      instance: '/api/v1/bookmark?cursor=invalid-cursor',
     })
   })
 
-  test('페이지네이션 결과와 nextCursor를 안정적으로 반환한다', async () => {
-    const user = await seedUser()
-    const auth = await createAccessTokenCookies({ userId: user.id })
+  test('현재 사용자의 북마크만 created-desc 기준으로 안정적으로 페이지네이션한다', async () => {
+    const { auth, user } = await createBookmarkAuthContext()
+    const otherUser = await seedUser()
     const newest = new Date('2025-01-03T00:00:00.000Z')
-    const middle = new Date('2025-01-02T00:00:00.000Z')
+    const older = new Date('2025-01-02T00:00:00.000Z')
     const oldest = new Date('2025-01-01T00:00:00.000Z')
 
     await seedBookmarks(user.id, [
       { mangaId: 300, createdAt: newest },
-      { mangaId: 200, createdAt: middle },
+      { mangaId: 200, createdAt: newest },
+      { mangaId: 150, createdAt: older },
       { mangaId: 100, createdAt: oldest },
     ])
 
-    const response = await requestBackend({
+    await seedBookmarks(otherUser.id, [
+      { mangaId: 999, createdAt: new Date('2025-01-04T00:00:00.000Z') },
+      { mangaId: 250, createdAt: newest },
+    ])
+
+    const firstResponse = await requestBackend({
       path: '/api/v1/bookmark?limit=2',
       cookies: auth.cookieHeader,
     })
 
-    expect(response.status).toBe(200)
-    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
+    expect(firstResponse.status).toBe(200)
+    expect(firstResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
 
-    const body = await response.json()
-    expect(body.bookmarks).toEqual([
-      { mangaId: 300, createdAt: newest.getTime() },
-      { mangaId: 200, createdAt: middle.getTime() },
+    const firstBody = await firstResponse.json()
+
+    expect(firstBody).toEqual({
+      bookmarks: [
+        { mangaId: 300, createdAt: newest.getTime() },
+        { mangaId: 200, createdAt: newest.getTime() },
+      ],
+      nextCursor: `${newest.getTime()}-200`,
+    })
+
+    const secondResponse = await requestBackend({
+      path: `/api/v1/bookmark?limit=2&cursor=${firstBody.nextCursor}`,
+      cookies: auth.cookieHeader,
+    })
+
+    expect(secondResponse.status).toBe(200)
+    expect(secondResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+    expect(await secondResponse.json()).toEqual({
+      bookmarks: [
+        { mangaId: 150, createdAt: older.getTime() },
+        { mangaId: 100, createdAt: oldest.getTime() },
+      ],
+      nextCursor: null,
+    })
+  })
+
+  test('created-asc 정렬에서도 같은 생성 시각을 안정적으로 넘기며 페이지네이션한다', async () => {
+    const { auth, user } = await createBookmarkAuthContext()
+    const oldest = new Date('2025-01-01T00:00:00.000Z')
+    const middle = new Date('2025-01-02T00:00:00.000Z')
+    const newest = new Date('2025-01-03T00:00:00.000Z')
+
+    await seedBookmarks(user.id, [
+      { mangaId: 100, createdAt: oldest },
+      { mangaId: 200, createdAt: middle },
+      { mangaId: 150, createdAt: middle },
+      { mangaId: 300, createdAt: newest },
     ])
 
-    const nextCursor = decodeBookmarkCursor(body.nextCursor)
-    expect(nextCursor).toEqual({
-      mangaId: 200,
-      timestamp: middle.getTime(),
+    const firstResponse = await requestBackend({
+      path: '/api/v1/bookmark?limit=2&sort=created-asc',
+      cookies: auth.cookieHeader,
+    })
+
+    expect(firstResponse.status).toBe(200)
+    expect(firstResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+
+    const firstBody = await firstResponse.json()
+
+    expect(firstBody).toEqual({
+      bookmarks: [
+        { mangaId: 100, createdAt: oldest.getTime() },
+        { mangaId: 150, createdAt: middle.getTime() },
+      ],
+      nextCursor: `${middle.getTime()}-150`,
+    })
+
+    const secondResponse = await requestBackend({
+      path: `/api/v1/bookmark?limit=2&sort=created-asc&cursor=${firstBody.nextCursor}`,
+      cookies: auth.cookieHeader,
+    })
+
+    expect(secondResponse.status).toBe(200)
+    expect(secondResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+    expect(await secondResponse.json()).toEqual({
+      bookmarks: [
+        { mangaId: 200, createdAt: middle.getTime() },
+        { mangaId: 300, createdAt: newest.getTime() },
+      ],
+      nextCursor: null,
+    })
+  })
+
+  test('manga-id-asc 정렬에서도 다음 커서로 이어서 조회한다', async () => {
+    const { auth, user } = await createBookmarkAuthContext()
+    const oldest = new Date('2025-01-01T00:00:00.000Z')
+    const middle = new Date('2025-01-02T00:00:00.000Z')
+    const newest = new Date('2025-01-03T00:00:00.000Z')
+
+    await seedBookmarks(user.id, [
+      { mangaId: 300, createdAt: newest },
+      { mangaId: 100, createdAt: oldest },
+      { mangaId: 200, createdAt: middle },
+    ])
+
+    const firstResponse = await requestBackend({
+      path: '/api/v1/bookmark?limit=2&sort=manga-id-asc',
+      cookies: auth.cookieHeader,
+    })
+
+    expect(firstResponse.status).toBe(200)
+    expect(firstResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+
+    const firstBody = await firstResponse.json()
+
+    expect(firstBody).toEqual({
+      bookmarks: [
+        { mangaId: 100, createdAt: oldest.getTime() },
+        { mangaId: 200, createdAt: middle.getTime() },
+      ],
+      nextCursor: `${middle.getTime()}-200`,
+    })
+
+    const secondResponse = await requestBackend({
+      path: `/api/v1/bookmark?limit=2&sort=manga-id-asc&cursor=${firstBody.nextCursor}`,
+      cookies: auth.cookieHeader,
+    })
+
+    expect(secondResponse.status).toBe(200)
+    expect(secondResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+    expect(await secondResponse.json()).toEqual({
+      bookmarks: [{ mangaId: 300, createdAt: newest.getTime() }],
+      nextCursor: null,
     })
   })
 })

@@ -2,6 +2,7 @@ import { getSetCookieNames, getSetCookieStrings, requestBackend } from '@test/ba
 import {
   readSessionFamiliesForUser,
   readTrustedBrowsersForUser,
+  readTwoFactorByUserId,
   readUserById,
   seedTrustedBrowser,
   seedTwoFactor,
@@ -24,7 +25,11 @@ installAuthIntegrationHooks({ redis: true })
 describe('POST /api/v1/auth/login/2fa', () => {
   test('유효한 TOTP로 2단계 인증을 완료한다', async () => {
     const user = await seedUser({ id: 2201, loginAt: null, logoutAt: null })
-    await seedTwoFactor({ userId: user.id })
+
+    await seedTwoFactor({
+      userId: user.id,
+      lastUsedAt: new Date('2025-12-31T00:00:00.000Z'),
+    })
 
     const challenge = await issueAuthorizationChallenge({
       userId: user.id,
@@ -60,14 +65,19 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
       expect(typeof body.lastLoginAt).toBe('string')
 
-      const persistedUser = await readUserById(user.id)
+      const [persistedUser, persistedTwoFactor] = await Promise.all([
+        readUserById(user.id),
+        readTwoFactorByUserId(user.id),
+      ])
+
       expect(persistedUser?.loginAt).toBeInstanceOf(Date)
+      expect(persistedTwoFactor?.lastUsedAt?.toISOString()).toBe(AUTH_TEST_TOTP_TIME)
     } finally {
       setSystemTime()
     }
   })
 
-  test('remember=false 여도 trustBrowser=true 면 trusted browser 쿠키만 별도로 발급한다', async () => {
+  test('remember=false여도 trustBrowser=true면 신뢰할 수 있는 브라우저 쿠키만 별도로 발급한다', async () => {
     const user = await seedUser({ id: 2212, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
 
@@ -107,7 +117,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     }
   })
 
-  test('trustBrowser=true 와 TOTP 인증이면 trusted browser 쿠키와 세션을 함께 발급한다', async () => {
+  test('trustBrowser=true로 TOTP 인증하면 신뢰할 수 있는 브라우저 쿠키와 세션을 함께 발급한다', async () => {
     const user = await seedUser({ id: 2203, loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
 
@@ -146,7 +156,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
     }
   })
 
-  test('trusted browser는 최대 5개까지만 유지하고 가장 오래된 active browser를 제거한다', async () => {
+  test('신뢰할 수 있는 브라우저는 최대 5개까지만 유지하고 가장 오래된 활성 브라우저를 제거한다', async () => {
     const user = await seedUser({ id: 2215, loginAt: null, logoutAt: null })
     const newFingerprint = 'fp-auth-login-2fa-trusted-limit-new'
 

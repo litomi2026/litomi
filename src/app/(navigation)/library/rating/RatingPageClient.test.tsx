@@ -1,6 +1,7 @@
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
+import { fireEvent } from '@test/utils/render'
 import { cleanup, waitFor } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
@@ -10,7 +11,6 @@ import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 import { isGroupedRatingSort, RatingSort } from '@/backend/api/v1/library/enum'
 import { View } from '@/utils/param'
 
-import { fireEvent } from '../../../../../test/utils/render'
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
 
 const basePage: GETV1RatingsResponse = {

@@ -20,18 +20,6 @@ type FetchInput = Parameters<typeof fetch>[0]
 
 type FetchMatcher = string | RegExp | ((context: FetchContext) => boolean)
 
-export function createFetchWithErrorHandlingMock(routes: FetchRouteSource) {
-  return mock(async <T>(input: FetchInput, init?: FetchInit) => {
-    const response = await resolveFetchResponse(routes, input, init)
-    const contentType = response.headers.get('Content-Type') ?? ''
-
-    return {
-      data: contentType.includes('application/json') ? ((await response.clone().json()) as T) : (undefined as T),
-      response,
-    }
-  })
-}
-
 export function installMockFetch(routes: FetchRouteSource) {
   const originalFetch = global.fetch
   const calls: FetchContext[] = []

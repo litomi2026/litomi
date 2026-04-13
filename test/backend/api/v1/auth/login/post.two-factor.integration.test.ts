@@ -16,7 +16,7 @@ import { buildLoginRequest, installLoginTurnstileGuard } from './fixtures'
 installAuthIntegrationHooks({ redis: true })
 
 describe('POST /api/v1/auth/login', () => {
-  test('활성화된 2FA라도 유효한 trusted browser가 있으면 바로 로그인한다', async () => {
+  test('2단계 인증이 활성화되어 있어도 유효한 신뢰할 수 있는 브라우저가 있으면 바로 로그인한다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     const browserId = 'trusted-browser-auth-login'
     const trustedFingerprint = 'fp-trusted-browser'
@@ -76,7 +76,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('다른 사용자 소유의 trusted browser 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
+  test('다른 사용자의 신뢰할 수 있는 브라우저 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     const otherUser = await seedUser({ loginAt: null, logoutAt: null })
     const browserId = 'trusted-browser-other-user'
@@ -140,7 +140,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('trusted browser fingerprint 가 다르면 쿠키를 지우고 2단계 인증으로 되돌린다', async () => {
+  test('신뢰할 수 있는 브라우저 지문이 다르면 쿠키를 지우고 2단계 인증으로 되돌린다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     const browserId = 'trusted-browser-fingerprint-mismatch'
     const cookieFingerprint = 'fp-trusted-browser-cookie'
@@ -203,7 +203,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('만료된 trusted browser 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
+  test('만료된 신뢰할 수 있는 브라우저 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
     const user = await seedUser()
     const browserId = 'trusted-browser-expired'
     const fingerprint = 'fp-trusted-browser-expired'
@@ -258,7 +258,7 @@ describe('POST /api/v1/auth/login', () => {
     }
   })
 
-  test('위조된 trusted browser 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
+  test('위조된 신뢰할 수 있는 브라우저 쿠키는 지우고 2단계 인증으로 되돌린다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
     await seedTwoFactor({ userId: user.id })
     const fetchGuard = installLoginTurnstileGuard()

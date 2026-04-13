@@ -3,6 +3,8 @@
 import { TrendingUp } from 'lucide-react'
 import { useParams, usePathname } from 'next/navigation'
 
+import { TOP_MANGA_PER_PAGE } from '@/constants/policy'
+
 import { metricInfo, Params, periodLabels } from './common'
 
 export default function RankingTitle() {
@@ -25,7 +27,7 @@ export default function RankingTitle() {
       <h1 className="text-xl font-bold">{renderTitle()}</h1>
       <div className="ml-auto flex items-center gap-2">
         <TrendingUp className="size-4 text-zinc-500" />
-        <span className="text-xs text-zinc-500">TOP 20</span>
+        <span className="text-xs text-zinc-500">TOP {TOP_MANGA_PER_PAGE}</span>
       </div>
     </div>
   )
