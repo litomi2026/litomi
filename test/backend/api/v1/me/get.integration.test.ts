@@ -1,9 +1,10 @@
 import { installBackendIntegrationHooks } from '@test/backend/setup'
-import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
+import { getSetCookieNames, getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import {
   createAccessTokenCookies,
   createRefreshSessionCookies,
   expectAuthCookiesCleared,
+  serializeCookieHeader,
 } from '@test/backend/setup/auth'
 import {
   readSessionFamiliesForUser,
@@ -232,7 +233,7 @@ describe('GET /api/v1/me', () => {
 
       expect(firstResponse.status).toBe(200)
 
-      setSystemTime(new Date('2026-01-02T00:00:04.000Z'))
+      setSystemTime(new Date('2026-01-02T00:00:06.000Z'))
 
       const retryResponse = await requestBackend({
         path: '/api/v1/me',
@@ -321,7 +322,7 @@ describe('GET /api/v1/me', () => {
 
       expect(firstResponse.status).toBe(200)
 
-      setSystemTime(new Date('2026-01-02T00:00:06.000Z'))
+      setSystemTime(new Date('2026-01-02T00:00:11.000Z'))
 
       const replayResponse = await requestBackend({
         path: '/api/v1/me',
@@ -332,6 +333,148 @@ describe('GET /api/v1/me', () => {
       expectAuthCookiesCleared(replayResponse)
 
       await expectProblemResponse(replayResponse, {
+        status: 401,
+        code: 'unauthorized',
+        detail: '로그인 정보가 없거나 만료됐어요',
+        instance: '/api/v1/me',
+      })
+
+      const sessionFamilies = await readSessionFamiliesForUser(user.id)
+      expect(sessionFamilies).toHaveLength(1)
+      expect(sessionFamilies[0]?.revokedAt).toBeInstanceOf(Date)
+    } finally {
+      setSystemTime()
+    }
+  })
+
+  test('몇 시간 뒤 재접속이 성공한 뒤 6초 늦게 도착한 stale in-flight old rt 응답은 브라우저 쿠키 jar를 유지한다', async () => {
+    setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
+
+    try {
+      const user = await seedUser()
+      const access = await createAccessTokenCookies({ userId: user.id, adult: false })
+      const session = await createRefreshSessionCookies({ userId: user.id })
+      const jar = createCookieJar(serializeCookieHeader([...access.cookieConfigs, ...session.cookieConfigs]))
+      const staleInflightCookies = jar.header()
+
+      setSystemTime(new Date('2026-01-02T02:00:00.000Z'))
+
+      const reconnectResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: jar.header(),
+      })
+
+      expect(reconnectResponse.status).toBe(200)
+      expect(reconnectResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+      expect(getSetCookieNames(reconnectResponse)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+
+      jar.applyResponse(reconnectResponse)
+      expect(jar.header()).not.toBe(staleInflightCookies)
+
+      const tokensAfterReconnect = await readSessionTokensForFamily(session.familyId)
+      expect(tokensAfterReconnect).toHaveLength(2)
+      expect(tokensAfterReconnect.some((token) => token.rotatedAt instanceof Date)).toBe(true)
+
+      const refreshedRefreshToken = getCookieValue(jar.header(), 'rt')
+
+      setSystemTime(new Date('2026-01-02T02:00:06.000Z'))
+
+      const delayedStaleResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: staleInflightCookies,
+      })
+
+      expect(delayedStaleResponse.status).toBe(200)
+      expect(delayedStaleResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+      expect(getSetCookieNames(delayedStaleResponse)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+
+      expect(await delayedStaleResponse.json()).toMatchObject({
+        id: user.id,
+        adultVerification: {
+          required: true,
+          status: 'unverified',
+        },
+      })
+
+      jar.applyResponse(delayedStaleResponse)
+      expect(jar.header()).not.toBe('')
+      expect(getCookieValue(jar.header(), 'rt')).toBe(refreshedRefreshToken)
+
+      const nextForegroundResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: jar.header(),
+      })
+
+      expect(nextForegroundResponse.status).toBe(200)
+      expect(nextForegroundResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+      expect(await nextForegroundResponse.json()).toMatchObject({
+        id: user.id,
+      })
+
+      const sessionFamilies = await readSessionFamiliesForUser(user.id)
+      expect(sessionFamilies).toHaveLength(1)
+      expect(sessionFamilies[0]?.revokedAt).toBeNull()
+    } finally {
+      setSystemTime()
+    }
+  })
+
+  test('몇 시간 뒤 재접속이 성공한 뒤 11초 늦게 도착한 stale in-flight old rt 응답은 브라우저 쿠키 jar를 비워 다음 요청에서 로그아웃된다', async () => {
+    setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
+
+    try {
+      const user = await seedUser()
+      const access = await createAccessTokenCookies({ userId: user.id, adult: false })
+      const session = await createRefreshSessionCookies({ userId: user.id })
+      const jar = createCookieJar(serializeCookieHeader([...access.cookieConfigs, ...session.cookieConfigs]))
+      const staleInflightCookies = jar.header()
+
+      setSystemTime(new Date('2026-01-02T02:00:00.000Z'))
+
+      const reconnectResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: jar.header(),
+      })
+
+      expect(reconnectResponse.status).toBe(200)
+      expect(reconnectResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+      expect(getSetCookieNames(reconnectResponse)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+
+      jar.applyResponse(reconnectResponse)
+      expect(jar.header()).not.toBe(staleInflightCookies)
+
+      const tokensAfterReconnect = await readSessionTokensForFamily(session.familyId)
+      expect(tokensAfterReconnect).toHaveLength(2)
+      expect(tokensAfterReconnect.some((token) => token.rotatedAt instanceof Date)).toBe(true)
+
+      setSystemTime(new Date('2026-01-02T02:00:11.000Z'))
+
+      const delayedStaleResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: staleInflightCookies,
+      })
+
+      expect(delayedStaleResponse.status).toBe(401)
+      expectAuthCookiesCleared(delayedStaleResponse)
+
+      await expectProblemResponse(delayedStaleResponse, {
+        status: 401,
+        code: 'unauthorized',
+        detail: '로그인 정보가 없거나 만료됐어요',
+        instance: '/api/v1/me',
+      })
+
+      jar.applyResponse(delayedStaleResponse)
+      expect(jar.header()).toBe('')
+
+      const nextForegroundResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: jar.header(),
+      })
+
+      expect(nextForegroundResponse.status).toBe(401)
+
+      await expectProblemResponse(nextForegroundResponse, {
         status: 401,
         code: 'unauthorized',
         detail: '로그인 정보가 없거나 만료됐어요',
@@ -364,3 +507,69 @@ describe('GET /api/v1/me', () => {
     })
   })
 })
+
+function createCookieJar(cookieHeader: string) {
+  const cookies = new Map<string, string>()
+
+  for (const pair of cookieHeader.split(';')) {
+    const trimmedPair = pair.trim()
+
+    if (!trimmedPair) {
+      continue
+    }
+
+    const separatorIndex = trimmedPair.indexOf('=')
+
+    if (separatorIndex <= 0) {
+      continue
+    }
+
+    const name = trimmedPair.slice(0, separatorIndex)
+    const value = trimmedPair.slice(separatorIndex + 1)
+    cookies.set(name, value)
+  }
+
+  return {
+    applyResponse(response: Response) {
+      for (const setCookie of getSetCookieStrings(response)) {
+        const parts = setCookie.split(';').map((part) => part.trim())
+        const pair = parts[0]
+
+        if (!pair) {
+          continue
+        }
+
+        const separatorIndex = pair.indexOf('=')
+
+        if (separatorIndex <= 0) {
+          continue
+        }
+
+        const name = pair.slice(0, separatorIndex)
+        const value = pair.slice(separatorIndex + 1)
+        const maxAge = parts.find((part) => part.toLowerCase().startsWith('max-age='))
+
+        if (maxAge && Number(maxAge.slice('max-age='.length)) <= 0) {
+          cookies.delete(name)
+          continue
+        }
+
+        cookies.set(name, value)
+      }
+    },
+    header() {
+      return Array.from(cookies.entries())
+        .map(([name, value]) => `${name}=${value}`)
+        .join('; ')
+    },
+  }
+}
+
+function getCookieValue(cookieHeader: string, name: string) {
+  const cookie = cookieHeader
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${name}=`))
+
+  return cookie ? cookie.slice(name.length + 1) : null
+}
