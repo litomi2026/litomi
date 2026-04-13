@@ -93,6 +93,34 @@ describe('GET /api/v1/me', () => {
     })
   })
 
+  test('유효한 access token이 있으면 잘못된 refresh token은 무시하고 사용자 정보를 반환한다', async () => {
+    const user = await seedUser()
+    const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
+
+    const response = await requestBackend({
+      path: '/api/v1/me',
+      cookies: `${auth.cookieHeader}; rt=definitely-not-a-session-token`,
+      headers: { 'CF-IPCountry': 'KR' },
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
+    expect(getSetCookieNames(response)).toEqual([])
+
+    expect(await response.json()).toMatchObject({
+      id: user.id,
+      adultVerification: {
+        required: true,
+        status: 'unverified',
+      },
+      settings: {
+        historySyncEnabled: true,
+        adultVerifiedAdVisible: false,
+        autoDeletionDay: 180,
+      },
+    })
+  })
+
   test('한국 외 국가에서는 미성년 인증 상태와 관계없이 required=false를 반환한다', async () => {
     const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
@@ -120,37 +148,6 @@ describe('GET /api/v1/me', () => {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
         autoDeletionDay: 180,
-      },
-    })
-  })
-
-  test('userSettings가 없어도 legacy autoDeletionDays 값을 기본값으로 사용한다', async () => {
-    const user = await seedUser({ autoDeletionDays: 45 })
-    const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
-
-    const response = await requestBackend({
-      path: '/api/v1/me',
-      cookies: auth.cookieHeader,
-      headers: { 'CF-IPCountry': 'KR' },
-    })
-
-    expect(response.status).toBe(200)
-    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
-
-    expect(await response.json()).toEqual({
-      id: user.id,
-      loginId: user.loginId,
-      name: user.name,
-      nickname: user.nickname,
-      imageURL: null,
-      adultVerification: {
-        required: true,
-        status: 'unverified',
-      },
-      settings: {
-        historySyncEnabled: true,
-        adultVerifiedAdVisible: false,
-        autoDeletionDay: 45,
       },
     })
   })
@@ -188,6 +185,50 @@ describe('GET /api/v1/me', () => {
 
     const persistedTokens = await db.select().from(authSessionTokenTable)
     expect(persistedTokens).toHaveLength(2)
+  })
+
+  test('재사용 유예 기간 안에서는 같은 refresh token 재시도를 허용하고 세션을 폐기하지 않는다', async () => {
+    setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
+
+    try {
+      const user = await seedUser()
+      const session = await createRefreshSessionCookies({ userId: user.id })
+
+      const firstResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: session.cookieHeader,
+      })
+
+      expect(firstResponse.status).toBe(200)
+
+      setSystemTime(new Date('2026-01-02T00:00:04.000Z'))
+
+      const retryResponse = await requestBackend({
+        path: '/api/v1/me',
+        cookies: session.cookieHeader,
+      })
+
+      expect(retryResponse.status).toBe(200)
+      expect(retryResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+      expect(getSetCookieNames(retryResponse)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+
+      expect(await retryResponse.json()).toMatchObject({
+        id: user.id,
+        adultVerification: {
+          required: true,
+          status: 'unverified',
+        },
+      })
+
+      const tokens = await readSessionTokensForFamily(session.familyId)
+      expect(tokens).toHaveLength(2)
+
+      const sessionFamilies = await readSessionFamiliesForUser(user.id)
+      expect(sessionFamilies).toHaveLength(1)
+      expect(sessionFamilies[0]?.revokedAt).toBeNull()
+    } finally {
+      setSystemTime()
+    }
   })
 
   test('형식이 잘못된 access token이 함께 있어도 유효한 refresh token으로 세션을 복구한다', async () => {
@@ -283,6 +324,12 @@ describe('GET /api/v1/me', () => {
     })
 
     expect(response.status).toBe(404)
-    expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+    expectAuthCookiesCleared(response)
+
+    await expectProblemResponse(response, {
+      status: 404,
+      detail: '사용자 정보를 찾을 수 없어요',
+      instance: '/api/v1/me',
+    })
   })
 })
