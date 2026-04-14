@@ -3,7 +3,6 @@ import Link from 'next/link'
 
 import LinkPending from './LinkPending'
 import NavigationJump from './NavigationJump'
-import ScrollToTopEffect from './ScrollToTopEffect'
 
 const VISIBLE_PAGES = 9
 
@@ -22,15 +21,7 @@ export default function PageNavigation({
   hrefPrefix = '',
   hrefSuffix = '',
 }: Props) {
-  let startPage = Math.max(1, currentPage - Math.floor(VISIBLE_PAGES / 2))
-  let endPage = startPage + VISIBLE_PAGES - 1
-
-  if (endPage > totalPages) {
-    endPage = totalPages
-    startPage = Math.max(1, endPage - VISIBLE_PAGES + 1)
-  }
-
-  const visiblePageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i)
+  const { startPage, endPage, visiblePageNumbers } = getVisiblePageRange(currentPage, totalPages, VISIBLE_PAGES)
 
   const commonClassName =
     'justify-center items-center rounded-full px-2 min-w-10 h-10 aria-current:bg-brand-gradient aria-current:pointer-events-none aria-current:text-background aria-disabled:pointer-events-none aria-disabled:text-zinc-600 hover:bg-zinc-700 active:bg-zinc-800'
@@ -39,7 +30,6 @@ export default function PageNavigation({
     <nav
       className={`flex flex-wrap justify-center items-center gap-2 w-fit mx-auto font-bold tabular-nums text-lg md:text-xl ${className}`}
     >
-      <ScrollToTopEffect />
       {currentPage > VISIBLE_PAGES / 2 && (
         <Link
           aria-label="첫 페이지"
@@ -130,4 +120,17 @@ export default function PageNavigation({
       </div>
     </nav>
   )
+}
+
+function getVisiblePageRange(currentPage: number, totalPages: number, visiblePages: number) {
+  if (totalPages <= 0) {
+    return { startPage: 0, endPage: 0, visiblePageNumbers: [] }
+  }
+
+  const half = Math.floor(visiblePages / 2)
+  const startPage = Math.max(1, Math.min(currentPage - half, totalPages - visiblePages + 1))
+  const endPage = Math.min(totalPages, startPage + visiblePages - 1)
+  const visiblePageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i)
+
+  return { startPage, endPage, visiblePageNumbers }
 }
