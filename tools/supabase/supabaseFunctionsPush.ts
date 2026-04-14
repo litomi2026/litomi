@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 
-import { applyDeclaredSupabaseFunctions } from './applyDeclaredFunctions'
+import { applySupabaseFunctions } from './applySupabaseFunctions'
 
 const envFile = process.env.DB_ENV === 'production' ? '.env.production' : '.env.development'
 dotenv.config({ path: envFile, override: true })
@@ -13,7 +13,7 @@ if (!dbUrl) {
 }
 
 try {
-  await applyDeclaredSupabaseFunctions(dbUrl, {
+  await applySupabaseFunctions(dbUrl, {
     log: (message) => console.log(`[supabase-functions] ${message}`),
   })
 } catch (error) {

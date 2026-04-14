@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import { spawn } from 'node:child_process'
 import postgres from 'postgres'
 
-import { applyDeclaredSupabaseFunctions } from './supabase/applyDeclaredFunctions'
+import { applySupabaseFunctions, withLocalSslDisabled } from './supabase/applySupabaseFunctions'
 
 dotenv.config({ path: '.env.development' })
 
@@ -27,8 +27,8 @@ await runCommand(['bunx', 'drizzle-kit', 'push', '--config=drizzle.supabase.conf
   POSTGRES_URL_DIRECT: testDatabaseUrl,
 })
 
-console.log('[backend-test-db] applying declared Supabase functions')
-await applyDeclaredSupabaseFunctions(testDatabaseUrl, {
+console.log('[backend-test-db] applying Supabase function SQL')
+await applySupabaseFunctions(testDatabaseUrl, {
   log: (message) => console.log(`[backend-test-db] ${message}`),
 })
 
@@ -106,14 +106,4 @@ async function runCommand(command: string[], envOverrides: Record<string, string
 
     child.on('error', reject)
   })
-}
-
-function withLocalSslDisabled(rawUrl: string) {
-  const url = new URL(rawUrl)
-
-  if (isLocalHost(url.hostname) && !url.searchParams.has('sslmode')) {
-    url.searchParams.set('sslmode', 'disable')
-  }
-
-  return url.toString()
 }
