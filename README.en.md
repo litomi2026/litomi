@@ -170,14 +170,14 @@ TOTP_ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789a
 ### 4) Apply DB schema
 
 ```bash
-# Supabase tables/indexes (Drizzle) + custom SQL migrations (pg_cron, functions, etc.)
+# Supabase tables/indexes (Drizzle) + declarative Postgres function sync
 bun run db:push
 
 # Aiven schema
 bun run db:push:aiven
 ```
 
-`bun run db:push` applies the Drizzle schema first, then runs SQL migrations from `supabase/migrations`. Custom SQL uses the Supabase CLI through `bunx supabase ...`, so you do not need to manage these changes manually in the Dashboard.
+`bun run db:push` applies the Drizzle schema first, then syncs the Postgres functions declared in [src/database/supabase/functions.ts](/Users/gwak2837/Documents/GitHub/litomi/src/database/supabase/functions.ts). The functions are kept idempotent with `create or replace function`, while cron schedules are managed separately in the Supabase Dashboard UI.
 
 ### 5) Start Backend
 

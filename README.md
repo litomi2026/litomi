@@ -122,14 +122,14 @@ bun dev
 ### 1) DB 스키마 반영
 
 ```bash
-# Supabase 테이블/인덱스(Drizzle) + 커스텀 SQL migration(pg_cron, 함수 등)
+# Supabase 테이블/인덱스(Drizzle) + 선언형 Postgres 함수 동기화
 bun run db:push
 
 # Aiven 스키마
 bun run db:push:aiven
 ```
 
-`bun run db:push`는 Drizzle schema를 먼저 적용한 뒤, `supabase/migrations` 아래의 SQL migration도 이어서 적용해요. 커스텀 SQL 적용에는 Supabase CLI가 필요하지만, 스크립트에서 `bunx supabase ...`로 실행하므로 별도 Dashboard 작업은 필요 없어요.
+`bun run db:push`는 Drizzle schema를 먼저 적용한 뒤, [`src/database/supabase/functions.ts`](/Users/gwak2837/Documents/GitHub/litomi/src/database/supabase/functions.ts) 에 선언된 Postgres 함수를 이어서 최신 상태로 반영해요. 함수는 `create or replace function` 기반으로 멱등하게 동기화되고, cron 스케줄은 Supabase Dashboard UI에서 별도로 관리해요.
 
 ### 2) Backend 실행
 
