@@ -31,6 +31,7 @@ import {
   minDate,
   REFRESH_SESSION_ABSOLUTE_TTL_SECONDS,
   REFRESH_SESSION_IDLE_TTL_SECONDS,
+  REFRESH_SESSION_REUSE_GRACE_SECONDS,
   SESSION_DEVICE_LABEL_MAX_LENGTH,
   truncateSessionMetadata,
 } from '@/utils/session'
@@ -142,7 +143,8 @@ export async function refreshSession(
     }
 
     if (token.rotatedAt) {
-      if (!token.replacedByTokenId || isSessionFamilyExpired(family, now)) {
+      // NOTE: 재사용 유예 기간 동안만 부모 토큰을 써도 자식 토큰으로 복구될 수 있도록 허용해요
+      if (!token.replacedByTokenId || isSessionFamilyExpired(family, now) || !isTokenWithinReuseGrace(token, now)) {
         await revokeSessionFamilyById(tx, family.id, now)
 
         return {
@@ -176,7 +178,6 @@ export async function refreshSession(
         }
       }
 
-      // Allow the most recent parent token to recover by reissuing its live child token.
       const adult = await readAdultFlag(tx, family.userId)
 
       return await buildRefreshSuccess({
@@ -271,6 +272,14 @@ function createRefreshToken(familyId: string): IssuedRefreshToken {
 
 function isSessionFamilyExpired(family: Pick<SessionFamilyRow, 'absoluteExpiresAt' | 'idleExpiresAt'>, now: Date) {
   return family.absoluteExpiresAt <= now || family.idleExpiresAt <= now
+}
+
+function isTokenWithinReuseGrace(token: Pick<SessionTokenRow, 'rotatedAt'>, now: Date) {
+  if (!token.rotatedAt) {
+    return false
+  }
+
+  return addSeconds(token.rotatedAt, REFRESH_SESSION_REUSE_GRACE_SECONDS) >= now
 }
 
 function rebuildRefreshToken(token: Pick<SessionTokenRow, 'familyId' | 'id' | 'tokenHash'>) {
