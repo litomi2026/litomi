@@ -1,50 +1,75 @@
 'use client'
 
-import { useState } from 'react'
-
-import styles from './Squircle.module.css'
+import { useEffect, useId, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 type Props = {
   children?: string
   textClassName?: string
+  backgroundClassName?: string
   fill?: string
   src?: string | null
-  className: string
+  className?: string
 }
 
-export default function Squircle({ src, fill, children, className = '', textClassName = '' }: Readonly<Props>) {
-  const [failedSrc, setFailedSrc] = useState<string | null>()
-  const showImage = Boolean(src) && src !== failedSrc
+export default function Squircle({
+  src,
+  fill,
+  children,
+  className = '',
+  textClassName = '',
+  backgroundClassName = '',
+}: Props) {
+  const [hasImageError, setHasImageError] = useState(false)
+  const shapeId = useId()
+  const clipPathId = useId()
+
+  const fallbackText = children?.trim() ?? ''
+  const fallbackFontSize = Array.from(fallbackText).length > 1 ? 40 : 48
+
+  useEffect(() => {
+    setHasImageError(false)
+  }, [src])
 
   return (
-    <div className={`${styles.userImg} ${className}`}>
-      <svg className="overflow-hidden rounded-[40%] fill-zinc-700" viewBox="0 0 88 88">
+    <svg className={twMerge('block', className)} viewBox="0 0 88 88">
+      <defs>
         <path
           d="M44,0 C76.0948147,0 88,11.9051853 88,44 C88,76.0948147 76.0948147,88 44,88 C11.9051853,88 0,76.0948147 0,44 C0,11.9051853 11.9051853,0 44,0 Z"
-          fill={fill}
-          id="shapeSquircle"
+          id={shapeId}
         />
-        <clipPath id="clipSquircle">
-          <use xlinkHref="#shapeSquircle" />
+        <clipPath id={clipPathId}>
+          <use href={`#${shapeId}`} />
         </clipPath>
-        {showImage ? (
-          <image
-            clipPath="url(#clipSquircle)"
-            height="100%"
-            onError={() => setFailedSrc(src)}
-            preserveAspectRatio="xMidYMid slice"
-            width="100%"
-            xlinkHref={src ?? ''}
-          />
-        ) : (
-          <>
-            <rect clipPath="url(#clipSquircle)" x="0" y="0" />
-            <text className={`text-[2rem] ${textClassName}`} dy="10" textAnchor="middle" x="50%" y="50%">
-              {children}
-            </text>
-          </>
-        )}
-      </svg>
-    </div>
+      </defs>
+      <use
+        className={twMerge('fill-zinc-700', backgroundClassName)}
+        href={`#${shapeId}`}
+        style={fill ? { fill } : undefined}
+      />
+      {src && !hasImageError ? (
+        <image
+          clipPath={`url(#${clipPathId})`}
+          height="100%"
+          href={src}
+          onError={() => setHasImageError(true)}
+          preserveAspectRatio="xMidYMid slice"
+          width="100%"
+        />
+      ) : (
+        <text
+          className={twMerge('fill-current', textClassName)}
+          dominantBaseline="middle"
+          fontSize={fallbackFontSize}
+          fontWeight="600"
+          textAnchor="middle"
+          x="50%"
+          y="55%"
+        >
+          {fallbackText}
+        </text>
+      )}
+      <use fill="none" href={`#${shapeId}`} stroke="rgba(0, 0, 0, 0.08)" strokeWidth="1" />
+    </svg>
   )
 }
