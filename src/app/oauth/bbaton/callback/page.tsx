@@ -57,7 +57,7 @@ export default function BBatonCallbackPage() {
     const error = params.get('error') ?? params.get('error_description')
 
     if (window.location.search) {
-      window.history.replaceState(null, '', window.location.pathname)
+      window.history.replaceState(window.history.state, '', window.location.pathname)
     }
 
     if (!code) {

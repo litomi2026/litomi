@@ -53,7 +53,7 @@ export default function ViewToggle({ className = '', initialView = View.CARD }: 
 
     const url = new URL(window.location.href)
     setViewToSearchParams(url.searchParams, nextView)
-    window.history.replaceState({}, '', url)
+    window.history.replaceState(window.history.state, '', url)
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {

@@ -31,7 +31,7 @@ type Props = {
 export default function BookmarkPageClient({ initialData, initialSort, initialView }: Props) {
   const [sort, setSort] = useState<CollectionItemSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
-  const { exit, isSelectionMode, selectedIds, toggle } = useLibrarySelection()
+  const { exit, isSelectionMode } = useLibrarySelection()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useBookmarkInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
@@ -57,7 +57,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
       setSort(newSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
-      window.history.replaceState({}, '', url.toString())
+      window.history.replaceState(window.history.state, '', url)
     }
   }
 

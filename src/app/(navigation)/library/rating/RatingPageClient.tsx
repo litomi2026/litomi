@@ -96,7 +96,7 @@ export default function RatingPageClient({ initialData, initialSort, initialView
       setSort(newSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
-      window.history.replaceState({}, '', url.toString())
+      window.history.replaceState(window.history.state, '', url)
     }
   }
 

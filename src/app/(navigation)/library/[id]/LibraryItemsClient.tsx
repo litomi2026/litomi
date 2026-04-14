@@ -47,7 +47,7 @@ export default function LibraryItemsClient({
 }: Props) {
   const [sort, setSort] = useState<CollectionItemSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
-  const { exit, isSelectionMode, selectedIds, toggle } = useLibrarySelection()
+  const { exit, isSelectionMode } = useLibrarySelection()
   const { data: me } = useMeQuery()
 
   const adultState = getAdultState(me)
@@ -95,7 +95,7 @@ export default function LibraryItemsClient({
       setSort(newSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
-      window.history.replaceState({}, '', url.toString())
+      window.history.replaceState(window.history.state, '', url)
     }
   }
 
