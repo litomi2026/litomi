@@ -7,9 +7,9 @@ import { sec } from '@/utils/format/date'
 
 const { JWT_SECRET_REFRESH_TOKEN } = env
 
-export const REFRESH_SESSION_ABSOLUTE_TTL_SECONDS = sec('30 days')
-export const REFRESH_SESSION_IDLE_TTL_SECONDS = sec('30 days')
-export const REFRESH_SESSION_REUSE_GRACE_SECONDS = sec('10 seconds')
+export const REFRESH_SESSION_ABSOLUTE_TTL_SECONDS = sec('60 days')
+export const REFRESH_SESSION_IDLE_TTL_SECONDS = sec('14 days')
+export const REFRESH_SESSION_REUSE_GRACE_SECONDS = sec('1 minute')
 export const SESSION_DEVICE_LABEL_MAX_LENGTH = 128
 
 export function addSeconds(date: Date, seconds: number) {

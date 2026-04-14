@@ -308,7 +308,7 @@ describe('GET /api/v1/me', () => {
     })
   })
 
-  test('직전 부모 refresh token이면 재사용 유예 기간이 지나도 replacement로 복구한다', async () => {
+  test('직전 부모 refresh token도 재사용 유예 기간이 지나면 세션 family를 폐기한다', async () => {
     setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
 
     try {
@@ -329,12 +329,14 @@ describe('GET /api/v1/me', () => {
         cookies: session.cookieHeader,
       })
 
-      expect(replayResponse.status).toBe(200)
-      expect(replayResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
-      expect(getSetCookieNames(replayResponse)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+      expect(replayResponse.status).toBe(401)
+      expectAuthCookiesCleared(replayResponse)
 
-      expect(await replayResponse.json()).toMatchObject({
-        id: user.id,
+      await expectProblemResponse(replayResponse, {
+        status: 401,
+        code: 'unauthorized',
+        detail: '로그인 정보가 없거나 만료됐어요',
+        instance: '/api/v1/me',
       })
 
       const tokens = await readSessionTokensForFamily(session.familyId)
@@ -342,7 +344,7 @@ describe('GET /api/v1/me', () => {
 
       const sessionFamilies = await readSessionFamiliesForUser(user.id)
       expect(sessionFamilies).toHaveLength(1)
-      expect(sessionFamilies[0]?.revokedAt).toBeNull()
+      expect(sessionFamilies[0]?.revokedAt).toBeInstanceOf(Date)
     } finally {
       setSystemTime()
     }
@@ -420,7 +422,7 @@ describe('GET /api/v1/me', () => {
     }
   })
 
-  test('몇 시간 뒤 재접속이 성공한 뒤 11초 늦게 도착한 stale in-flight old rt 응답도 직전 부모면 브라우저 쿠키 jar를 유지한다', async () => {
+  test('몇 시간 뒤 재접속이 성공한 뒤 11초 늦게 도착한 stale in-flight old rt 응답은 세션 family를 폐기한다', async () => {
     setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
 
     try {
@@ -455,31 +457,36 @@ describe('GET /api/v1/me', () => {
         cookies: staleInflightCookies,
       })
 
-      expect(delayedStaleResponse.status).toBe(200)
-      expect(delayedStaleResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
-      expect(getSetCookieNames(delayedStaleResponse)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+      expect(delayedStaleResponse.status).toBe(401)
+      expectAuthCookiesCleared(delayedStaleResponse)
 
-      expect(await delayedStaleResponse.json()).toMatchObject({
-        id: user.id,
+      await expectProblemResponse(delayedStaleResponse, {
+        status: 401,
+        code: 'unauthorized',
+        detail: '로그인 정보가 없거나 만료됐어요',
+        instance: '/api/v1/me',
       })
 
       jar.applyResponse(delayedStaleResponse)
-      expect(jar.header()).not.toBe('')
+      expect(jar.header()).toBe('')
 
       const nextForegroundResponse = await requestBackend({
         path: '/api/v1/me',
         cookies: jar.header(),
       })
 
-      expect(nextForegroundResponse.status).toBe(200)
-      expect(nextForegroundResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
-      expect(await nextForegroundResponse.json()).toMatchObject({
-        id: user.id,
+      expect(nextForegroundResponse.status).toBe(401)
+
+      await expectProblemResponse(nextForegroundResponse, {
+        status: 401,
+        code: 'unauthorized',
+        detail: '로그인 정보가 없거나 만료됐어요',
+        instance: '/api/v1/me',
       })
 
       const sessionFamilies = await readSessionFamiliesForUser(user.id)
       expect(sessionFamilies).toHaveLength(1)
-      expect(sessionFamilies[0]?.revokedAt).toBeNull()
+      expect(sessionFamilies[0]?.revokedAt).toBeInstanceOf(Date)
     } finally {
       setSystemTime()
     }

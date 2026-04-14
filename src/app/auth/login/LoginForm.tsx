@@ -328,7 +328,7 @@ export default function LoginForm() {
               <div className="flex justify-end">
                 <div className="flex items-center gap-2">
                   <label className="text-sm text-zinc-400 select-none cursor-pointer" htmlFor="remember">
-                    로그인 유지 (30일)
+                    로그인 유지
                   </label>
                   <Toggle
                     aria-label="로그인 유지"
