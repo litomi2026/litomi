@@ -1,3 +1,7 @@
+'use client'
+
+import { useState } from 'react'
+
 import styles from './Squircle.module.css'
 
 type Props = {
@@ -9,6 +13,9 @@ type Props = {
 }
 
 export default function Squircle({ src, fill, children, className = '', textClassName = '' }: Readonly<Props>) {
+  const [failedSrc, setFailedSrc] = useState<string | null>()
+  const showImage = Boolean(src) && src !== failedSrc
+
   return (
     <div className={`${styles.userImg} ${className}`}>
       <svg className="overflow-hidden rounded-[40%] fill-zinc-700" viewBox="0 0 88 88">
@@ -20,13 +27,14 @@ export default function Squircle({ src, fill, children, className = '', textClas
         <clipPath id="clipSquircle">
           <use xlinkHref="#shapeSquircle" />
         </clipPath>
-        {src ? (
+        {showImage ? (
           <image
             clipPath="url(#clipSquircle)"
             height="100%"
+            onError={() => setFailedSrc(src)}
             preserveAspectRatio="xMidYMid slice"
             width="100%"
-            xlinkHref={src}
+            xlinkHref={src ?? ''}
           />
         ) : (
           <>
