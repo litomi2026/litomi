@@ -40,7 +40,7 @@ configMapGenerator:
 images:
   - name: litomi-web
     newName: ghcr.io/litomi2026/litomi-web
-    digest: sha256:f4b2bebeceb7d79ee05473a3353e599d9f8e55044e0fb45954bc9c52641a027e
+    digest: sha256:5d459701e85b3bd2e5242e7aaee4abbd34d8fa2f5963bbf5d261023c643fe5fd
   - name: litomi-backend
     newName: ghcr.io/litomi2026/litomi-backend
-    digest: sha256:72401cbf91b78fa22e7b1a69ee53b85d56d890dacdc606f986358688096441ec
+    digest: sha256:4dc7003119803e885a0c7bf42b6bb60846c441ac79128ab9012e243207a99521
