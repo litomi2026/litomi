@@ -49,8 +49,9 @@ begin
         coalesce(settings.auto_deletion_day, u.auto_deletion_days)::integer as effective_auto_deletion_day
     ) as candidate on true
     where candidate.effective_auto_deletion_day > 0
-      and candidate.effective_last_activity_at <=
-        run_at - make_interval(days => candidate.effective_auto_deletion_day)
+      and candidate.effective_last_activity_at
+        + make_interval(days => candidate.effective_auto_deletion_day)
+        + interval '30 days' <= run_at
       and coalesce(session_activity.session_valid_until, '-infinity'::timestamptz) <= run_at
     order by greatest(
       candidate.effective_last_activity_at,
@@ -93,8 +94,9 @@ begin
       coalesce(settings.auto_deletion_day, u.auto_deletion_days)::integer as effective_auto_deletion_day
   ) as candidate on true
   where candidate.effective_auto_deletion_day > 0
-    and candidate.effective_last_activity_at <=
-      run_at - make_interval(days => candidate.effective_auto_deletion_day)
+    and candidate.effective_last_activity_at
+      + make_interval(days => candidate.effective_auto_deletion_day)
+      + interval '30 days' <= run_at
     and coalesce(session_activity.session_valid_until, '-infinity'::timestamptz) <= run_at
   order by greatest(
     candidate.effective_last_activity_at,

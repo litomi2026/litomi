@@ -22,7 +22,7 @@ installBackendIntegrationHooks()
 describe('cleanup_inactive_users()', () => {
   test('후보 조회 함수는 삭제 가능한 사용자만 오래된 순서대로 반환한다', async () => {
     const oldestUser = await seedUser({ loginAt: daysAgo(120) })
-    const oldUser = await seedUser({ loginAt: daysAgo(45) })
+    const oldUser = await seedUser({ loginAt: daysAgo(75) })
     const protectedUser = await seedUser({ loginAt: daysAgo(45) })
     const disabledUser = await seedUser({ loginAt: daysAgo(120) })
 
@@ -58,8 +58,19 @@ describe('cleanup_inactive_users()', () => {
     ])
   })
 
-  test('autoDeletionDay 기준으로 오래 비활성 상태인 사용자를 삭제하고 cascade를 적용한다', async () => {
+  test('설정 기간이 지나도 30일 유예 안에서는 삭제하지 않는다', async () => {
     const user = await seedUser({ loginAt: daysAgo(45) })
+
+    await seedUserSettings({ userId: user.id, autoDeletionDay: 30 })
+
+    const deletedCount = await cleanupInactiveUsers()
+
+    expect(deletedCount).toBe(0)
+    expect(await readUserById(user.id)).not.toBeNull()
+  })
+
+  test('autoDeletionDay 기준으로 오래 비활성 상태인 사용자를 삭제하고 cascade를 적용한다', async () => {
+    const user = await seedUser({ loginAt: daysAgo(75) })
 
     await seedUserSettings({ userId: user.id, autoDeletionDay: 30 })
     await seedBookmark(user.id, { mangaId: 1001 })
@@ -67,9 +78,9 @@ describe('cleanup_inactive_users()', () => {
     await db
       .update(authSessionFamilyTable)
       .set({
-        lastUsedAt: daysAgo(45),
-        idleExpiresAt: daysAgo(31),
-        absoluteExpiresAt: daysAgo(31),
+        lastUsedAt: daysAgo(75),
+        idleExpiresAt: daysAgo(61),
+        absoluteExpiresAt: daysAgo(61),
       })
       .where(eq(authSessionFamilyTable.userId, user.id))
     await db.insert(notificationTable).values({
@@ -104,7 +115,7 @@ describe('cleanup_inactive_users()', () => {
   test('user_settings가 없어도 legacy autoDeletionDays로 삭제한다', async () => {
     const user = await seedUser({
       autoDeletionDays: 30,
-      loginAt: daysAgo(45),
+      loginAt: daysAgo(75),
     })
 
     const deletedCount = await cleanupInactiveUsers()
@@ -116,7 +127,7 @@ describe('cleanup_inactive_users()', () => {
   test('login_at이 null이면 created_at을 기준으로 삭제한다', async () => {
     const user = await seedUser({
       autoDeletionDays: 30,
-      createdAt: daysAgo(45),
+      createdAt: daysAgo(75),
     })
 
     const deletedCount = await cleanupInactiveUsers()
@@ -142,7 +153,7 @@ describe('cleanup_inactive_users()', () => {
   test('remember 세션이 최근에 사용된 사용자는 마지막 로그인 시각이 오래돼도 삭제하지 않는다', async () => {
     const user = await seedUser({
       createdAt: daysAgo(120),
-      loginAt: daysAgo(45),
+      loginAt: daysAgo(75),
     })
 
     await seedUserSettings({ userId: user.id, autoDeletionDay: 30 })
@@ -180,7 +191,7 @@ describe('cleanup_inactive_users()', () => {
   test('batch_size만큼만 오래 비활성 상태인 사용자를 삭제한다', async () => {
     const oldestUser = await seedUser({ loginAt: daysAgo(120) })
     const olderUser = await seedUser({ loginAt: daysAgo(90) })
-    const oldUser = await seedUser({ loginAt: daysAgo(45) })
+    const oldUser = await seedUser({ loginAt: daysAgo(75) })
 
     await Promise.all([
       seedUserSettings({ userId: oldestUser.id, autoDeletionDay: 30 }),
