@@ -1,4 +1,4 @@
-import { bigint, index, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core'
+import { bigint, foreignKey, index, pgTable, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core'
 import 'server-only'
 
 import { userTable } from './user'
@@ -31,7 +31,7 @@ export const authSessionTokenTable = pgTable(
     familyId: uuid('family_id')
       .references(() => authSessionFamilyTable.id, { onDelete: 'cascade' })
       .notNull(),
-    tokenHash: text('token_hash').notNull(),
+    tokenHash: varchar('token_hash', { length: 64 }).notNull(),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     rotatedAt: timestamp('rotated_at', { precision: 3, withTimezone: true }),
     replacedByTokenId: uuid('replaced_by_token_id'),
@@ -40,5 +40,10 @@ export const authSessionTokenTable = pgTable(
     index('idx_auth_session_token_family_id').on(table.familyId),
     index('idx_auth_session_token_replaced_by_token_id').on(table.replacedByTokenId),
     uniqueIndex('idx_auth_session_token_token_hash').on(table.tokenHash),
+    foreignKey({
+      name: 'fk_auth_session_token_repl',
+      columns: [table.replacedByTokenId],
+      foreignColumns: [table.id],
+    }).onDelete('set null'),
   ],
 ).enableRLS()

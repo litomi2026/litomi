@@ -1,8 +1,8 @@
 import dotenv from 'dotenv'
 import { spawn } from 'node:child_process'
-import { readdir } from 'node:fs/promises'
-import path from 'node:path'
 import postgres from 'postgres'
+
+import { applySupabaseFunctions, withLocalSslDisabled } from './supabase/applySupabaseFunctions'
 
 dotenv.config({ path: '.env.development' })
 
@@ -27,30 +27,12 @@ await runCommand(['bunx', 'drizzle-kit', 'push', '--config=drizzle.supabase.conf
   POSTGRES_URL_DIRECT: testDatabaseUrl,
 })
 
-await applySupabaseMigrations(testDatabaseUrl)
+console.log('[backend-test-db] applying Supabase function SQL')
+await applySupabaseFunctions(testDatabaseUrl, {
+  log: (message) => console.log(`[backend-test-db] ${message}`),
+})
 
 console.log(`[backend-test-db] ready: ${testDatabaseName}`)
-
-async function applySupabaseMigrations(databaseUrl: string) {
-  const migrationsDirectory = path.join(process.cwd(), 'supabase', 'migrations')
-  const files = await readMigrationFiles(migrationsDirectory)
-
-  if (files.length === 0) {
-    console.log('[backend-test-db] no SQL migrations to apply')
-    return
-  }
-
-  const sql = createPostgresClient(databaseUrl)
-
-  try {
-    for (const file of files) {
-      console.log(`[backend-test-db] applying ${path.relative(process.cwd(), file)}`)
-      await sql.file(file)
-    }
-  } finally {
-    await sql.end({ timeout: 5 })
-  }
-}
 
 function createPostgresClient(rawUrl: string) {
   const url = new URL(rawUrl)
@@ -83,23 +65,6 @@ function isLocalHost(hostname: string) {
 
 function quoteIdentifier(value: string) {
   return `"${value.replaceAll('"', '""')}"`
-}
-
-async function readMigrationFiles(migrationsDirectory: string) {
-  const directoryEntries = await readdir(migrationsDirectory, { withFileTypes: true }).catch(
-    (error: NodeJS.ErrnoException) => {
-      if (error.code === 'ENOENT') {
-        return []
-      }
-
-      throw error
-    },
-  )
-
-  return directoryEntries
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.sql'))
-    .map((entry) => path.join(migrationsDirectory, entry.name))
-    .sort((left, right) => left.localeCompare(right))
 }
 
 async function recreateDatabase(rawUrl: string, databaseName: string) {
@@ -141,14 +106,4 @@ async function runCommand(command: string[], envOverrides: Record<string, string
 
     child.on('error', reject)
   })
-}
-
-function withLocalSslDisabled(rawUrl: string) {
-  const url = new URL(rawUrl)
-
-  if (isLocalHost(url.hostname) && !url.searchParams.has('sslmode')) {
-    url.searchParams.set('sslmode', 'disable')
-  }
-
-  return url.toString()
 }

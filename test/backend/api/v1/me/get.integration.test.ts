@@ -19,6 +19,7 @@ import { describe, expect, setSystemTime, test } from 'bun:test'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
+import { addSeconds, REFRESH_SESSION_REUSE_GRACE_SECONDS } from '@/utils/session'
 
 installBackendIntegrationHooks()
 
@@ -322,7 +323,7 @@ describe('GET /api/v1/me', () => {
 
       expect(firstResponse.status).toBe(200)
 
-      setSystemTime(new Date('2026-01-02T00:00:11.000Z'))
+      setSystemTime(addSeconds(new Date('2026-01-02T00:00:00.000Z'), REFRESH_SESSION_REUSE_GRACE_SECONDS + 1))
 
       const replayResponse = await requestBackend({
         path: '/api/v1/me',
@@ -422,7 +423,7 @@ describe('GET /api/v1/me', () => {
     }
   })
 
-  test('몇 시간 뒤 재접속이 성공한 뒤 11초 늦게 도착한 stale in-flight old rt 응답은 세션 family를 폐기한다', async () => {
+  test('몇 시간 뒤 재접속이 성공한 뒤 재사용 유예 기간이 지난 stale in-flight old rt 응답은 세션 family를 폐기한다', async () => {
     setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
 
     try {
@@ -450,7 +451,7 @@ describe('GET /api/v1/me', () => {
       expect(tokensAfterReconnect).toHaveLength(2)
       expect(tokensAfterReconnect.some((token) => token.rotatedAt instanceof Date)).toBe(true)
 
-      setSystemTime(new Date('2026-01-02T02:00:11.000Z'))
+      setSystemTime(addSeconds(new Date('2026-01-02T02:00:00.000Z'), REFRESH_SESSION_REUSE_GRACE_SECONDS + 1))
 
       const delayedStaleResponse = await requestBackend({
         path: '/api/v1/me',

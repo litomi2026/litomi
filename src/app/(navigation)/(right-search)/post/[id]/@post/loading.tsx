@@ -8,7 +8,7 @@ export default function Loading() {
       <div aria-hidden="true" className="grid gap-4 px-4 py-3 animate-fade-in-fast">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 gap-2">
-            <Squircle className="w-10 shrink-0 fill-zinc-700" />
+            <Squircle backgroundClassName="fill-zinc-700" className="w-10 shrink-0" />
             <div className="grid gap-2 pt-0.5">
               <div className="h-5 w-24 rounded-full bg-zinc-700" />
               <div className="h-4.5 w-16 rounded-full bg-zinc-800" />

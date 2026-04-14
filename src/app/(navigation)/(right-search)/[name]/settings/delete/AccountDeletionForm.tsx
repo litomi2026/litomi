@@ -14,9 +14,10 @@ import { identify } from '@/lib/analytics/browser'
 import { deleteAccount } from './actions'
 
 const CONSEQUENCES = [
-  '모든 북마크가 삭제돼요',
-  '모든 검열 설정이 삭제돼요',
-  '모든 패스키가 삭제돼요',
+  '북마크, 열람 기록, 평점이 삭제돼요',
+  '게시글, 좋아요, 채팅 데이터가 삭제돼요',
+  '세션, 패스키, 검열/알림 설정이 삭제돼요',
+  '포인트와 알림 내역이 삭제돼요',
   '프로필 정보가 영구 삭제돼요',
 ]
 

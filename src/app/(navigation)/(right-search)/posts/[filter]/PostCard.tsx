@@ -34,7 +34,7 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
 
   const authorMeta = (
     <>
-      <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-[10px] text-foreground">
+      <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-foreground">
         {(authorNickname ?? '탈퇴').slice(0, 2)}
       </Squircle>
       <div className="ml-1 min-w-0 flex-1 truncate" title={authorNickname}>
