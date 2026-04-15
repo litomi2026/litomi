@@ -10,7 +10,7 @@ import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
 import { badRequest, conflict, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 const profileSchema = z.object({
@@ -20,7 +20,7 @@ const profileSchema = z.object({
 })
 
 export default async function editProfile(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)

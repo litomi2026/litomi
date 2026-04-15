@@ -181,16 +181,6 @@ export async function getUserIdFromCookie(): Promise<number | null> {
   return (await getAccessTokenClaimsFromCookie())?.userId ?? null
 }
 
-/**
- * For server action, router handler
- */
-export async function validateUserIdFromCookie() {
-  const cookieStore = await cookies()
-  const accessClaims = await readAccessTokenClaims(cookieStore.get(CookieKey.ACCESS_TOKEN)?.value)
-
-  return accessClaims?.userId ?? null
-}
-
 async function readAccessTokenClaims(accessToken: string | null | undefined) {
   if (!accessToken) {
     return null

@@ -7,14 +7,14 @@ import { z } from 'zod'
 import { db } from '@/database/supabase/drizzle'
 import { trustedBrowserTable } from '@/database/supabase/two-factor'
 import { badRequest, internalServerError, noContent, unauthorized } from '@/utils/action-response'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 const revokeTrustedBrowserSchema = z.object({
   trustedBrowserId: z.coerce.number().int().positive(),
 })
 
 export async function revokeAllTrustedBrowsers() {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -32,7 +32,7 @@ export async function revokeAllTrustedBrowsers() {
 }
 
 export async function revokeTrustedBrowser(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
