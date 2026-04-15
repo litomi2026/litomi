@@ -73,6 +73,40 @@ afterAll(() => {
 })
 
 describe('AccountDeletionForm', () => {
+  test('비밀번호 표시 버튼이 입력 표시 여부를 전환한다', async () => {
+    const user = userEvent.setup()
+
+    const view = renderWithTestQueryClient(<AccountDeletionForm isTwoFactorEnabled={false} loginId="testuser" />)
+
+    await user.click(view.getByRole('button', { name: '계속 진행' }))
+    await fillConfirmationText(user, view, 'testuser 계정을 삭제해요')
+
+    const finalConfirmButton = view.getByRole('button', { name: '최종 확인' })
+
+    await waitFor(() => {
+      expect(finalConfirmButton.hasAttribute('disabled')).toBe(false)
+    })
+
+    await user.click(finalConfirmButton)
+
+    const passwordInput = view.getByLabelText('현재 비밀번호') as HTMLInputElement
+    const toggleButton = view.getByRole('button', { name: '비밀번호 표시' })
+
+    expect(passwordInput.type).toBe('password')
+    expect(toggleButton.getAttribute('aria-pressed')).toBe('false')
+
+    await user.type(passwordInput, 'Password123')
+    await user.click(toggleButton)
+
+    expect(passwordInput.type).toBe('text')
+    expect(toggleButton.getAttribute('aria-pressed')).toBe('true')
+
+    await user.click(toggleButton)
+
+    expect(passwordInput.type).toBe('password')
+    expect(toggleButton.getAttribute('aria-pressed')).toBe('false')
+  })
+
   test('2단계 인증이 켜져 있으면 OTP 입력을 노출하고 요청 body에 token을 포함한다', async () => {
     const user = userEvent.setup()
 
@@ -151,7 +185,7 @@ describe('AccountDeletionForm', () => {
     await user.click(finalConfirmButton)
 
     const passwordInput = view.getByLabelText('현재 비밀번호') as HTMLInputElement
-    await user.type(passwordInput, 'short')
+    await user.type(passwordInput, 'Password123')
     fireEvent.submit(view.getByRole('button', { name: '계정 영구 삭제' }).closest('form')!)
 
     await waitFor(() => {
@@ -160,6 +194,52 @@ describe('AccountDeletionForm', () => {
 
     expect(view.getByText('마지막 확인')).toBeTruthy()
     expect(replaceMock).not.toHaveBeenCalled()
+  })
+
+  test('generic 400 오류가 오면 민감 입력을 비우고 경고를 노출한다', async () => {
+    const user = userEvent.setup()
+
+    fetchRoutes.push({
+      matcher: ({ url }) => url.pathname === '/api/v1/me',
+      method: 'DELETE',
+      response: () =>
+        jsonResponse(
+          {
+            type: 'https://litomi.in/problems/bad-request',
+            title: '잘못된 요청이에요',
+            status: 400,
+          },
+          { status: 400 },
+        ),
+    })
+
+    const view = renderWithTestQueryClient(<AccountDeletionForm isTwoFactorEnabled={true} loginId="testuser" />)
+
+    await user.click(view.getByRole('button', { name: '계속 진행' }))
+    await fillConfirmationText(user, view, 'testuser 계정을 삭제해요')
+
+    const finalConfirmButton = view.getByRole('button', { name: '최종 확인' })
+
+    await waitFor(() => {
+      expect(finalConfirmButton.hasAttribute('disabled')).toBe(false)
+    })
+
+    await user.click(finalConfirmButton)
+
+    const passwordInput = view.getByLabelText('현재 비밀번호') as HTMLInputElement
+    const tokenInput = view.getByRole('textbox', { name: /2단계 인증 코드/i }) as HTMLInputElement
+    await user.type(passwordInput, 'Password123')
+    await user.type(tokenInput, '123456')
+    fireEvent.submit(view.getByRole('button', { name: '계정 영구 삭제' }).closest('form')!)
+
+    await waitFor(() => {
+      expect(passwordInput.value).toBe('')
+      expect(tokenInput.value).toBe('')
+    })
+
+    expect(view.getByText('마지막 확인')).toBeTruthy()
+    expect(replaceMock).not.toHaveBeenCalled()
+    expect(toastWarningMock).toHaveBeenCalledWith('잘못된 요청이에요')
   })
 
   test('성공하면 me 캐시를 비우고 홈으로 이동한다', async () => {

@@ -54,7 +54,7 @@ describe('DELETE /api/v1/me', () => {
     expect(await readUserById(user.id)).toBeTruthy()
   })
 
-  test('비밀번호가 일치하지 않으면 401을 반환하고 계정을 유지한다', async () => {
+  test('비밀번호가 일치하지 않으면 400을 반환하고 계정을 유지한다', async () => {
     const { auth, user } = await createMeAuthContext({ id: 3103 })
 
     const response = await requestBackend({
@@ -65,9 +65,9 @@ describe('DELETE /api/v1/me', () => {
     })
 
     await expectProblemResponse(response, {
-      status: 401,
-      code: 'reauthentication-failed',
-      detail: '비밀번호가 일치하지 않아요',
+      status: 400,
+      code: 'bad-request',
+      title: '잘못된 요청이에요',
       instance: '/api/v1/me',
     })
 
@@ -87,8 +87,8 @@ describe('DELETE /api/v1/me', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'two-factor-required',
-      detail: '2단계 인증 코드가 필요해요',
+      code: 'bad-request',
+      title: '잘못된 요청이에요',
       instance: '/api/v1/me',
     })
 
@@ -108,8 +108,8 @@ describe('DELETE /api/v1/me', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'two-factor-invalid',
-      detail: '잘못된 인증 코드예요',
+      code: 'bad-request',
+      title: '잘못된 요청이에요',
       instance: '/api/v1/me',
     })
 
@@ -154,7 +154,7 @@ describe('DELETE /api/v1/me', () => {
     expect(await readUserById(user.id)).toBeNull()
   })
 
-  test('stale auth면 404를 반환하고 인증 쿠키를 비운다', async () => {
+  test('stale auth면 401을 반환하고 인증 쿠키를 비운다', async () => {
     const auth = await createAccessTokenCookies({ userId: 3999 })
 
     const response = await requestBackend({
@@ -165,9 +165,9 @@ describe('DELETE /api/v1/me', () => {
     })
 
     await expectProblemResponse(response, {
-      status: 404,
-      code: 'not-found',
-      detail: '사용자 정보를 찾을 수 없어요',
+      status: 401,
+      code: 'unauthorized',
+      detail: '로그인 정보가 없거나 만료됐어요',
       instance: '/api/v1/me',
     })
     expectAuthCookiesCleared(response)
@@ -184,7 +184,7 @@ describe('DELETE /api/v1/me', () => {
         json: { password: 'WrongPass123' },
       })
 
-      expect(response.status).toBe(401)
+      expect(response.status).toBe(400)
     }
 
     const response = await requestBackend({
