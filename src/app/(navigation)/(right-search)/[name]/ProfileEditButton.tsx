@@ -2,21 +2,28 @@
 
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
-import { useQueryClient } from '@tanstack/react-query'
 import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { SubmitEvent, use, useEffect, useState } from 'react'
+import { SubmitEvent, SyntheticEvent, use, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
-import { QueryKeys } from '@/constants/query'
-import useServerAction, { getFieldError } from '@/hook/useServerAction'
 import { signalCurrentPasskeyUserDetails } from '@/utils/passkey'
 
-import editProfile from './action'
+import {
+  applyProfileProblem,
+  buildProfileEditPatch,
+  clearProfileInputValidity,
+  clearProfileValidity,
+  type EditableProfile,
+  encodePasskeyUserId,
+  getProfileProblemFieldErrors,
+  type ProfileFieldErrors,
+} from './profile-edit-form'
+import usePatchMyProfileMutation from './usePatchMyProfileMutation'
 
 const formId = {
   name: 'name',
@@ -25,65 +32,150 @@ const formId = {
 }
 
 type Props = {
-  mePromise: Promise<{
-    loginId: string
-    name: string
-    nickname: string
-    imageURL: string | null
-  }>
+  mePromise: Promise<EditableProfile>
 }
 
-export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
+export default function ProfileEditButton({ mePromise }: Props) {
   const me = use(mePromise)
+  const [currentMe, setCurrentMe] = useState(me)
   const [showModal, setShowModal] = useState(false)
-  const queryClient = useQueryClient()
+  const [fieldErrors, setFieldErrors] = useState<ProfileFieldErrors>({})
+  const formRef = useRef<HTMLFormElement | null>(null)
   const router = useRouter()
-  const defaultProfileImageURL = me.imageURL ?? ''
+  const defaultProfileImageURL = currentMe.imageURL ?? ''
   const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
 
-  const [response, dispatchAction, isPending] = useServerAction({
-    action: editProfile,
+  const editMutation = usePatchMyProfileMutation({
+    onError: (error) => {
+      clearProfileValidity(formRef.current)
+
+      if (error.status === 401) {
+        setFieldErrors({})
+        setShowModal(false)
+        toast.warning(error.message)
+        router.refresh()
+        return
+      }
+
+      const nextFieldErrors = getProfileProblemFieldErrors(error.problem)
+      setFieldErrors(nextFieldErrors)
+
+      if (applyProfileProblem(formRef.current, error.problem)) {
+        return
+      }
+
+      if (error.status === 400 || error.status === 409) {
+        toast.warning(error.message)
+      }
+    },
+
     onSuccess: async (data) => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
+      const previousDisplayName = currentMe.nickname || currentMe.name
+      const nextDisplayName = data.nickname || data.name
+
+      setCurrentMe((previous) => ({
+        ...previous,
+        name: data.name,
+        nickname: data.nickname,
+        imageURL: data.imageURL,
+      }))
+
+      setFieldErrors({})
       setShowModal(false)
 
-      if (data.passkeyUserDetails) {
-        await signalCurrentPasskeyUserDetails(data.passkeyUserDetails)
+      if (previousDisplayName !== nextDisplayName) {
+        await signalCurrentPasskeyUserDetails({
+          displayName: nextDisplayName,
+          name: currentMe.loginId,
+          userId: encodePasskeyUserId(currentMe.id),
+        })
       }
 
       toast.success(data.message)
 
-      if (data.location) {
-        router.replace(data.location)
+      if (data.name !== currentMe.name) {
+        router.replace(`/@${data.name}`)
+        return
       }
+
+      router.refresh()
     },
   })
 
-  const nameError = getFieldError(response, 'name')
-  const nicknameError = getFieldError(response, 'nickname')
-  const imageURLError = getFieldError(response, 'imageURL')
+  const isPending = editMutation.isPending
 
   function handleClose() {
     setShowModal(false)
   }
 
-  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
-    const formData = new FormData(e.currentTarget)
-    const name = formData.get('name')
-    const nickname = formData.get('nickname')
-    const imageURL = formData.get('imageURL')
+  function handleFormInput(e: SyntheticEvent<HTMLFormElement>) {
+    clearProfileInputValidity(e.target)
 
-    if (name === me.name && nickname === me.nickname && imageURL === (me.imageURL ?? '')) {
-      e.preventDefault()
-      toast.warning('수정할 정보를 입력해 주세요')
+    const target = e.target
+
+    if (!(target instanceof HTMLInputElement)) {
+      return
     }
+
+    setFieldErrors((previous) => {
+      if (!(target.name in previous)) {
+        return previous
+      }
+
+      return {
+        ...previous,
+        [target.name]: undefined,
+      }
+    })
   }
+
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    clearProfileValidity(formRef.current)
+    setFieldErrors({})
+
+    if (!e.currentTarget.reportValidity()) {
+      return
+    }
+
+    const formData = new FormData(e.currentTarget)
+    const patch = buildProfileEditPatch(currentMe, formData)
+
+    if (!patch) {
+      toast.warning('수정할 정보를 입력해 주세요')
+      return
+    }
+
+    editMutation.mutate(patch)
+  }
+
+  function handleReset() {
+    setFieldErrors({})
+    setProfileImageURL(defaultProfileImageURL)
+    clearProfileValidity(formRef.current)
+  }
+
+  // NOTE: me가 변경될 때마다 currentMe를 갱신해요
+  useEffect(() => {
+    setCurrentMe(me)
+  }, [me])
+
+  // NOTE: 모달이 닫힐 때마다 폼을 초기화해요
+  useEffect(() => {
+    if (!showModal) {
+      formRef.current?.reset()
+      setProfileImageURL(defaultProfileImageURL)
+      setFieldErrors({})
+      clearProfileValidity(formRef.current)
+    }
+  }, [defaultProfileImageURL, showModal])
 
   return (
     <>
       <button
         className="flex items-center gap-3 text-sm font-semibold rounded-full p-2 transition whitespace-nowrap md:px-3 md:py-2
-        hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden"
+          hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden"
         onClick={() => setShowModal(true)}
         type="button"
       >
@@ -91,18 +183,20 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
         <span className="min-w-0 hidden md:block">프로필 수정</span>
       </button>
       <Dialog ariaLabel="프로필 수정" className="sm:max-w-2xl" onClose={handleClose} open={showModal}>
-        <form action={dispatchAction} className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-1 flex-col min-h-0"
+          onInput={handleFormInput}
+          onReset={handleReset}
+          onSubmit={handleSubmit}
+          ref={formRef}
+        >
           <DialogHeader onClose={handleClose} title="프로필 수정" />
           <DialogBody className="p-0 sm:p-0">
             <div className="relative">
               <div className="h-32 bg-linear-to-b from-zinc-800 to-zinc-900" />
               <div className="absolute bottom-0 left-4 transform translate-y-1/2">
                 <div className="w-24 h-24 rounded-full border-4 border-background overflow-hidden bg-zinc-800">
-                  <img
-                    alt="프로필 이미지"
-                    className="w-full h-full object-cover"
-                    src={profileImageURL || me.imageURL || undefined}
-                  />
+                  <img alt="프로필 이미지" className="w-full h-full object-cover" src={profileImageURL || undefined} />
                 </div>
               </div>
             </div>
@@ -125,12 +219,12 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                   이름
                 </label>
                 <input
-                  aria-invalid={!!nameError}
+                  aria-invalid={!!fieldErrors.name}
                   autoCapitalize="off"
                   autoComplete="username"
                   className="w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent 
-                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600"
-                  defaultValue={me.name}
+                    aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600"
+                  defaultValue={currentMe.name}
                   id={formId.name}
                   maxLength={32}
                   minLength={2}
@@ -138,8 +232,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                   placeholder="고유한 이름을 입력하세요"
                   type="text"
                 />
-                <p aria-invalid={!!nameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                  {nameError || '이름으로 찾을 수 있어요 (2-32자)'}
+                <p aria-invalid={!!fieldErrors.name} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                  {fieldErrors.name || '이름으로 찾을 수 있어요 (2-32자)'}
                 </p>
               </div>
               <div className="grid gap-1">
@@ -147,11 +241,11 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                   닉네임
                 </label>
                 <input
-                  aria-invalid={!!nicknameError}
+                  aria-invalid={!!fieldErrors.nickname}
                   autoCapitalize="off"
                   className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
-                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
-                  defaultValue={me.nickname}
+                    aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
+                  defaultValue={currentMe.nickname}
                   id={formId.nickname}
                   maxLength={32}
                   minLength={2}
@@ -159,8 +253,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                   placeholder="사용할 닉네임을 입력하세요"
                   type="text"
                 />
-                <p aria-invalid={!!nicknameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                  {nicknameError || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
+                <p aria-invalid={!!fieldErrors.nickname} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                  {fieldErrors.nickname || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
                 </p>
               </div>
               <div className="grid gap-1">
@@ -168,11 +262,11 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                   프로필 이미지 URL
                 </label>
                 <input
-                  aria-invalid={!!imageURLError}
+                  aria-invalid={!!fieldErrors.imageURL}
                   autoCapitalize="off"
                   autoComplete="photo"
                   className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
-                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
+                    aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
                   defaultValue={defaultProfileImageURL}
                   id={formId.imageURL}
                   maxLength={256}
@@ -183,8 +277,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                   placeholder="https://example.com/profile.jpg"
                   type="url"
                 />
-                <p aria-invalid={!!imageURLError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                  {imageURLError || '이미지는 정사각형 비율을 권장해요'}
+                <p aria-invalid={!!fieldErrors.imageURL} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                  {fieldErrors.imageURL || '이미지는 정사각형 비율을 권장해요'}
                 </p>
               </div>
               <p className="p-3 bg-zinc-800/50 rounded-lg text-xs text-zinc-400 leading-relaxed">
@@ -192,14 +286,9 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
               </p>
             </div>
           </DialogBody>
-
           <DialogFooter className="bg-zinc-900/50">
             <div className="flex items-center justify-between">
-              <button
-                className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-300"
-                onClick={() => setProfileImageURL(defaultProfileImageURL)}
-                type="reset"
-              >
+              <button className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-300" type="reset">
                 초기화
               </button>
               <button

@@ -9,9 +9,7 @@ import { toast } from 'sonner'
 import type { DELETEV1MeBody, DELETEV1MeResponse } from '@/backend/api/v1/me/DELETE'
 
 import { PASSWORD_PATTERN } from '@/constants/policy'
-import { QueryKeys } from '@/constants/query'
-import amplitude from '@/lib/amplitude/browser'
-import { identify } from '@/lib/analytics/browser'
+import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
 import { getInvalidParams, type ProblemDetails } from '@/utils/problem-details'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -69,16 +67,14 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
     mutationFn: deleteMyAccount,
 
     onSuccess: (data) => {
-      clearMeCache(queryClient)
+      handleUnauthorizedError(queryClient)
       toast.success(data.message)
-      amplitude.reset()
-      identify(null)
       router.replace('/')
     },
 
     onError: (error) => {
       if (error.status === 401) {
-        handleSignedOutState(queryClient)
+        handleUnauthorizedError(queryClient)
         setPassword('')
         setIsPasswordVisible(false)
         setToken('')
@@ -366,18 +362,4 @@ function clearDeletionValidity(form: HTMLFormElement | null) {
   if (tokenInput instanceof HTMLInputElement) {
     tokenInput.setCustomValidity('')
   }
-}
-
-function clearMeCache(queryClient: ReturnType<typeof useQueryClient>) {
-  queryClient.setQueryData(QueryKeys.me, null)
-  queryClient.removeQueries({
-    queryKey: QueryKeys.me,
-    predicate: (query) => query.queryKey.length > 1,
-  })
-}
-
-function handleSignedOutState(queryClient: ReturnType<typeof useQueryClient>) {
-  clearMeCache(queryClient)
-  amplitude.reset()
-  identify(null)
 }

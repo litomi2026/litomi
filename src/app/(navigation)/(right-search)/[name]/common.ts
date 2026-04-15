@@ -7,6 +7,7 @@ import { userTable } from '@/database/supabase/user'
 export const getMe = cache(async (userId: number) => {
   const [user] = await db
     .select({
+      id: userTable.id,
       loginId: userTable.loginId,
       name: userTable.name,
       nickname: userTable.nickname,

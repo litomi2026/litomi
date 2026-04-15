@@ -8,10 +8,10 @@ import { toast } from 'sonner'
 
 import MyInfoSync from '@/components/MyInfoSync'
 import { QueryKeys } from '@/constants/query'
-import amplitude from '@/lib/amplitude/browser'
-import { identify } from '@/lib/analytics/browser'
 import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import { ProblemDetailsError } from '@/utils/react-query-error'
+
+import { handleUnauthorizedError } from './auth-state'
 
 export function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
   const suffix = '/problems/adult-verification-required'
@@ -84,24 +84,12 @@ function getCachedUsername(queryClient: QueryClient): string | undefined {
   return typeof name === 'string' && name.length > 0 ? name : undefined
 }
 
-function handleUnauthorizedError() {
-  queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
-
-  queryClient.removeQueries({
-    queryKey: QueryKeys.me,
-    predicate: (query) => query.queryKey.length > 1,
-  })
-
-  amplitude.reset()
-  identify(null)
-}
-
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
       if (error instanceof ProblemDetailsError) {
         if (error.status === 401 && isUnauthorizedProblem(error.type)) {
-          handleUnauthorizedError()
+          handleUnauthorizedError(queryClient)
         }
 
         const isToastEnabled =
@@ -132,7 +120,7 @@ const queryClient = new QueryClient({
         const isSuppressed = mutation.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status) === true
 
         if (error.status === 401 && isUnauthorizedProblem(error.type)) {
-          handleUnauthorizedError()
+          handleUnauthorizedError(queryClient)
 
           if (!isSuppressed) {
             showLoginRequiredToast()
