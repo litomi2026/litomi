@@ -248,4 +248,21 @@ describe('ProfileEditButton', () => {
     expect(signalCurrentPasskeyUserDetailsMock).not.toHaveBeenCalled()
     expect(queryClient.getQueryData<GETV1MeResponse>(QueryKeys.me)?.imageURL).toBeNull()
   })
+
+  test('허용되지 않은 프로토콜은 프로필 이미지 미리보기에 반영하지 않는다', async () => {
+    const user = userEvent.setup()
+
+    const view = renderProfileEditButton({
+      id: 1,
+      loginId: 'tester',
+      name: 'alice',
+      nickname: 'Alice',
+      imageURL: null,
+    })
+
+    await user.click(await view.findByRole('button', { name: '프로필 수정' }))
+    await user.type(view.getByLabelText('프로필 이미지 URL'), 'javascript:alert(1)')
+
+    expect(view.getByAltText('프로필 이미지').getAttribute('src')).toBeNull()
+  })
 })
