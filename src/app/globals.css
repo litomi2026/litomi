@@ -99,10 +99,6 @@
   }
 }
 
-@utility content-auto {
-  content-visibility: auto;
-}
-
 @utility callout-none {
   -webkit-touch-callout: none;
 }
