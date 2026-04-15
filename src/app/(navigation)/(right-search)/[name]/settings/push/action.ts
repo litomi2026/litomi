@@ -9,7 +9,7 @@ import { db } from '@/database/supabase/drizzle'
 import { notificationTable, pushSettingsTable, webPushTable } from '@/database/supabase/notification'
 import { WebPushService } from '@/lib/notification/WebPushService'
 import { badRequest, conflict, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import {
@@ -21,7 +21,7 @@ import {
 } from './schema'
 
 export async function removeDevice(params: Record<string, unknown>) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -46,7 +46,7 @@ export async function removeDevice(params: Record<string, unknown>) {
 }
 
 export async function subscribeToNotifications(data: Record<string, unknown>) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -77,7 +77,7 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
 }
 
 export async function testNotification(data: Record<string, unknown>) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -118,7 +118,7 @@ export async function testNotification(data: Record<string, unknown>) {
 }
 
 export async function unsubscribeFromNotifications(data: Record<string, unknown>) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -144,7 +144,7 @@ export async function unsubscribeFromNotifications(data: Record<string, unknown>
 }
 
 export async function updatePushSettings(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인이 필요해요')

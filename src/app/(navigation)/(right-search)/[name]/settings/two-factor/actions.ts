@@ -10,7 +10,7 @@ import { db } from '@/database/supabase/drizzle'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 import { decryptTOTPSecret, encryptTOTPSecret, generateQRCode, TOTP_CONFIG, verifyTOTPToken } from '@/utils/two-factor'
 import { generateBackupCodes } from '@/utils/two-factor-backup-code'
 
@@ -19,7 +19,7 @@ const tokenSchema = z.object({
 })
 
 export async function regenerateBackupCodes(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -77,7 +77,7 @@ export async function regenerateBackupCodes(formData: FormData) {
 }
 
 export async function removeTwoFactor(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -124,7 +124,7 @@ export async function removeTwoFactor(formData: FormData) {
 }
 
 export async function setupTwoFactor() {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -200,7 +200,7 @@ export async function setupTwoFactor() {
 }
 
 export async function verifyAndEnableTwoFactor(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')

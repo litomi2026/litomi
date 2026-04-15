@@ -17,7 +17,7 @@ import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 import { userTable } from '@/database/supabase/user'
 import { badRequest, forbidden, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from './common'
@@ -40,7 +40,7 @@ const verifyRegistrationSchema = z.object({
 })
 
 export async function getRegistrationOptions() {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -96,7 +96,7 @@ export async function getRegistrationOptions() {
 }
 
 export async function verifyRegistration(body: RegistrationResponseJSON) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')

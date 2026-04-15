@@ -29,7 +29,7 @@ export async function issueAuthCookies({
   tx,
   deviceLabel,
 }: IssueAuthCookiesInput): Promise<AuthCookieConfig[]> {
-  const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult, persistent: remember })
+  const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult })
 
   if (!remember) {
     const authHintCookie = getAuthHintCookieConfig()

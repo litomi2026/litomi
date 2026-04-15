@@ -8,14 +8,14 @@ import { z } from 'zod'
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 import { badRequest, internalServerError, notFound, ok, unauthorized } from '@/utils/action-response'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 const deleteCredentialSchema = z.object({
   'credential-id': z.coerce.number().int().positive(),
 })
 
 export async function deleteCredential(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')

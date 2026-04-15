@@ -12,7 +12,7 @@ import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, created, internalServerError, tooManyRequests, unauthorized } from '@/utils/action-response'
 import { applyCookieConfigs, getAuthCookieClearConfigs } from '@/utils/cookie'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
@@ -36,7 +36,7 @@ const changePasswordSchema = z
 const passwordChangeLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export async function changePassword(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)

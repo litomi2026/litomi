@@ -12,7 +12,7 @@ import { libraryItemTable, libraryTable } from '@/database/supabase/library'
 import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 const exportDataSchema = z.object({
   password: passwordSchema,
@@ -34,7 +34,7 @@ export type DataCounts = {
 export type ExportDataInput = z.infer<typeof exportDataSchema>
 
 export async function exportUserData(input: ExportDataInput) {
-  const userId = await validateUserIdFromCookie()
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')

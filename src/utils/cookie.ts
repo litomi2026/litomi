@@ -18,7 +18,6 @@ export type AuthCookieConfig = {
 type AccessTokenClaims = {
   userId: number
   adult: boolean
-  persistent?: boolean
 }
 
 type AccessTokenPayload = JWTPayload & {
@@ -34,8 +33,6 @@ type AuthCookieOptions = {
   sameSite: 'strict'
   secure: boolean
 }
-
-type CookieStore = Awaited<ReturnType<typeof cookies>>
 
 type RefreshTokenClaims = {
   userId: number | string
@@ -72,7 +69,7 @@ export async function getAccessTokenClaimsFromCookie() {
   }
 }
 
-export async function getAccessTokenCookieConfig({ userId, adult, persistent = true }: AccessTokenClaims) {
+export async function getAccessTokenCookieConfig({ userId, adult }: AccessTokenClaims) {
   const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.ACCESS)
 
   return {
@@ -84,7 +81,6 @@ export async function getAccessTokenCookieConfig({ userId, adult, persistent = t
       path: '/',
       sameSite: 'strict',
       secure: true,
-      ...(persistent && { maxAge: sec('1 hour') }),
     },
   } as const
 }
@@ -199,34 +195,4 @@ export async function getRefreshTokenCookieConfig({ userId, adult }: RefreshToke
 
 export async function getUserIdFromCookie(): Promise<number | null> {
   return (await getAccessTokenClaimsFromCookie())?.userId ?? null
-}
-
-/**
- * For server action, router handler
- */
-export async function validateUserIdFromCookie() {
-  const cookieStore = await cookies()
-  const userId = await verifyAccessToken(cookieStore)
-
-  if (!userId) {
-    if (userId === null) {
-      cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN, path: '/' })
-      cookieStore.delete({ name: CookieKey.AUTH_HINT, domain: COOKIE_DOMAIN, path: '/' })
-    }
-    return null
-  }
-
-  return userId
-}
-
-async function verifyAccessToken(cookieStore: CookieStore) {
-  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
-
-  if (!accessToken) {
-    return
-  }
-
-  const payload = await verifyJWT(accessToken, JWTType.ACCESS).catch(() => null)
-  const userId = payload?.sub
-  return userId ? Number(userId) : null
 }

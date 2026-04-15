@@ -1,4 +1,5 @@
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
+import { expectPersistentCookie, expectSessionCookie } from '@test/backend/setup/auth'
 import { readSessionFamiliesForUser, readUserById, seedTwoFactor, seedUser } from '@test/backend/setup/db'
 import { describe, expect, setSystemTime, test } from 'bun:test'
 
@@ -38,6 +39,9 @@ describe('POST /api/v1/auth/login', () => {
 
       expect(response.status).toBe(200)
       expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+      expectSessionCookie(response, 'at')
+      expectPersistentCookie(response, 'rt')
+      expectPersistentCookie(response, 'ah')
 
       expect(await response.json()).toEqual({
         nextStep: 'authenticated',
@@ -82,6 +86,8 @@ describe('POST /api/v1/auth/login', () => {
       const cookieNames = getSetCookieNames(response)
       expect(cookieNames).toEqual(expect.arrayContaining(['at', 'ah']))
       expect(cookieNames).not.toContain('rt')
+      expectSessionCookie(response, 'at')
+      expectSessionCookie(response, 'ah')
 
       expect(await response.json()).toEqual({
         nextStep: 'authenticated',
@@ -156,6 +162,8 @@ describe('POST /api/v1/auth/login', () => {
       const cookieNames = getSetCookieNames(twoFactorResponse)
       expect(cookieNames).toEqual(expect.arrayContaining(['at', 'ah']))
       expect(cookieNames).not.toContain('rt')
+      expectSessionCookie(twoFactorResponse, 'at')
+      expectSessionCookie(twoFactorResponse, 'ah')
 
       const twoFactorBody = await twoFactorResponse.json()
 

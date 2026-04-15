@@ -2,7 +2,7 @@ import type { VerifiedAuthenticationResponse } from '@simplewebauthn/server'
 
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
-import { expectCookieCleared } from '@test/backend/setup/auth'
+import { expectCookieCleared, expectPersistentCookie, expectSessionCookie } from '@test/backend/setup/auth'
 import {
   readPasskeyCredentialByCredentialId,
   readSessionFamiliesForUser,
@@ -60,6 +60,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     const cookieNames = getSetCookieNames(response)
     expect(cookieNames).toEqual(expect.arrayContaining(['at', 'ah', CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT]))
     expect(cookieNames).not.toContain('rt')
+    expectSessionCookie(response, 'at')
+    expectSessionCookie(response, 'ah')
     expectCookieCleared(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
 
     const body = await response.json()
@@ -122,6 +124,9 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     const cookieNames = getSetCookieNames(response)
     expect(cookieNames).toEqual(expect.arrayContaining(['at', 'rt', 'ah', CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT]))
+    expectSessionCookie(response, 'at')
+    expectPersistentCookie(response, 'rt')
+    expectPersistentCookie(response, 'ah')
     expectCookieCleared(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
 
     const body = await response.json()
@@ -191,6 +196,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
       const cookieNames = getSetCookieNames(response)
       expect(cookieNames).toEqual(expect.arrayContaining(['at', 'ah', CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT]))
       expect(cookieNames).not.toContain('rt')
+      expectSessionCookie(response, 'at')
+      expectSessionCookie(response, 'ah')
       expectCookieCleared(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
 
       const [persistedUser, persistedCredential, sessionFamilies] = await Promise.all([

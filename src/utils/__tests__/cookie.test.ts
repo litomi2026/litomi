@@ -11,27 +11,21 @@ import {
 } from '../cookie'
 
 describe('auth cookie configs', () => {
-  test('persistent access token cookie는 maxAge와 path를 포함한다', async () => {
+  test('access token cookie는 remember 여부와 상관없이 session cookie로 발급된다', async () => {
     const config = await getAccessTokenCookieConfig({ userId: 7, adult: true })
+    const secondConfig = await getAccessTokenCookieConfig({ userId: 8, adult: false })
 
     expect(config.key).toBe(CookieKey.ACCESS_TOKEN)
     expect(config.options.domain).toBe(COOKIE_DOMAIN)
     expect(config.options.httpOnly).toBe(true)
-    expect(config.options.maxAge).toBe(60 * 60)
+    expect('maxAge' in config.options).toBe(false)
+    expect('expires' in config.options).toBe(false)
     expect(config.options.path).toBe('/')
     expect(config.options.sameSite).toBe('strict')
     expect(config.options.secure).toBe(true)
-  })
 
-  test('session access token cookie는 maxAge와 expires 없이 발급된다', async () => {
-    const config = await getAccessTokenCookieConfig({ userId: 7, adult: false, persistent: false })
-
-    expect(config.key).toBe(CookieKey.ACCESS_TOKEN)
-    expect(config.options.domain).toBe(COOKIE_DOMAIN)
-    expect(config.options.httpOnly).toBe(true)
-    expect(config.options.maxAge).toBeUndefined()
-    expect('expires' in config.options).toBe(false)
-    expect(config.options.path).toBe('/')
+    expect('maxAge' in secondConfig.options).toBe(false)
+    expect('expires' in secondConfig.options).toBe(false)
   })
 
   test('auth hint cookie는 session/persistent 둘 다 지원한다', () => {
