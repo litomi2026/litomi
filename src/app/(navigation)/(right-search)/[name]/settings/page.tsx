@@ -1,4 +1,5 @@
 import { ErrorBoundary } from '@suspensive/react'
+import { and, eq, isNull } from 'drizzle-orm'
 import {
   CalendarMinus,
   CaseSensitive,
@@ -20,6 +21,8 @@ import { Suspense } from 'react'
 import IconBell from '@/components/icons/IconBell'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { db } from '@/database/supabase/drizzle'
+import { twoFactorTable } from '@/database/supabase/two-factor'
 import { readUserSettings } from '@/query/user-settings.query'
 import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
@@ -89,8 +92,16 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
   }
 
   const { name } = await params
-  const [me, settings] = await Promise.all([getMe(userId), readUserSettings(userId)])
   const usernameFromParam = getUsernameFromParam(name)
+
+  const [me, settings, [isTwoFactorEnabled]] = await Promise.all([
+    getMe(userId),
+    readUserSettings(userId),
+    db
+      .select({ userId: twoFactorTable.userId })
+      .from(twoFactorTable)
+      .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt))),
+  ])
 
   if (me.name !== usernameFromParam) {
     return <Forbidden loginUsername={me.name} />
@@ -223,7 +234,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         <p className="text-zinc-400 text-sm mb-4 sm:mb-6">
           계정을 삭제하면 사용자 관련 모든 데이터가 영구적으로 삭제되고 복구할 수 없어요
         </p>
-        <AccountDeletionForm loginId={me.loginId} />
+        <AccountDeletionForm isTwoFactorEnabled={Boolean(isTwoFactorEnabled)} loginId={me.loginId} />
       </CollapsibleSection>
     </>
   )
