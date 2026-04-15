@@ -105,10 +105,16 @@ export default function Post({ post }: Props) {
         <PostCreationForm
           buttonText="답글"
           className="flex"
-          isReply
           parentPostId={post.id}
           placeholder="답글 게시하기"
-        />
+        >
+          {author && (
+            <p className="text-left">
+              <span className="font-semibold text-foreground">@{author.name} </span>
+              에게 보내는 답글
+            </p>
+          )}
+        </PostCreationForm>
       </div>
     </section>
   )

@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -23,8 +23,8 @@ import PostGeolocationButton from './button/PostGeolocationButton'
 type Props = {
   buttonText?: string
   className?: string
+  children?: ReactNode
   placeholder?: string
-  isReply?: boolean
   mangaId?: number
   parentPostId?: number
   referredPostId?: number
@@ -32,8 +32,8 @@ type Props = {
 
 export default function PostCreationForm({
   className = '',
+  children,
   placeholder,
-  isReply,
   buttonText = '게시하기',
   mangaId,
   parentPostId,
@@ -97,12 +97,7 @@ export default function PostCreationForm({
         {me?.nickname.slice(0, 2)}
       </Squircle>
       <div className="grid items-center gap-3 grow py-1.5">
-        {isReply && me && hasFocusedBefore && (
-          <button className="text-left" type="button">
-            <span className="font-semibold text-foreground">@{me.name} </span>
-            에게 보내는 답글
-          </button>
-        )}
+        {hasFocusedBefore && children}
         <TextareaAutosize
           className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none disabled:pointer-events-none"
           disabled={!me || isPending}
