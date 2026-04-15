@@ -57,9 +57,14 @@ const route = new Hono<Env>()
 route.get('/', zProblemValidator('query', querySchema), async (c) => {
   const { cursor, limit, mangaId, filter, username } = c.req.valid('query')
   const decodedCursor = cursor ? decodePostCursor(cursor) : null
+  const followerId = c.get('userId')
 
   if (cursor && !decodedCursor) {
     return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
+  }
+
+  if (filter === PostFilter.FOLLOWING && !followerId) {
+    return problemResponse(c, { status: 401, detail: '로그인 정보가 없거나 만료됐어요' })
   }
 
   const postRows = await selectPost({
@@ -69,6 +74,7 @@ route.get('/', zProblemValidator('query', querySchema), async (c) => {
     mangaId,
     filter,
     username,
+    followerId,
   })
 
   const hasNextPage = postRows.length > limit

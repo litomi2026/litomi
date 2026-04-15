@@ -7,7 +7,7 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 import { PostType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
 import { postLikeTable, postTable } from '@/database/supabase/post'
-import { userTable } from '@/database/supabase/user'
+import { userFollowTable, userTable } from '@/database/supabase/user'
 
 type Params = {
   limit?: number
@@ -18,6 +18,7 @@ type Params = {
   postId?: number
   parentPostId?: number
   username?: string
+  followerId?: number
 }
 
 export default async function selectPost({
@@ -29,6 +30,7 @@ export default async function selectPost({
   postId,
   parentPostId,
   username,
+  followerId,
 }: Params) {
   const conditions: (SQL | undefined)[] = []
   const commentPosts = alias(postTable, 'comment_posts')
@@ -65,6 +67,14 @@ export default async function selectPost({
     conditions.push(eq(userTable.name, username))
   }
 
+  if (filter === PostFilter.FOLLOWING) {
+    if (!followerId) {
+      throw new Error('viewerUserId is required for following filter')
+    }
+
+    conditions.push(eq(userFollowTable.followerId, followerId))
+  }
+
   let baseQuery = db
     .select({
       id: postTable.id,
@@ -75,6 +85,10 @@ export default async function selectPost({
 
   if (username) {
     baseQuery = baseQuery.innerJoin(userTable, eq(postTable.userId, userTable.id))
+  }
+
+  if (filter === PostFilter.FOLLOWING) {
+    baseQuery = baseQuery.innerJoin(userFollowTable, eq(userFollowTable.followeeId, postTable.userId))
   }
 
   baseQuery = baseQuery

@@ -10,7 +10,9 @@ import { Post } from '@/backend/api/v1/post/GET'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import RetryGuidance from '@/components/RetryGuidance'
 import usePostInfiniteQuery from '@/query/usePostsQuery'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
+import FollowingUnauthorized from './FollowingUnauthorized'
 import PostCard, { PostSkeleton } from './PostCard'
 
 type Props = {
@@ -57,6 +59,10 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
   }
 
   if (isError) {
+    if (filter === PostFilter.FOLLOWING && error instanceof ProblemDetailsError && error.status === 401) {
+      return <FollowingUnauthorized />
+    }
+
     return <ErrorState error={error} retry={() => refetch()} />
   }
 

@@ -4,6 +4,7 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 
 export const QueryKeys = {
   me: ['me'],
+  followingUsers: ['me', 'users', 'following'],
   readingHistoryBase: ['me', 'readingHistory'],
   ratingsBase: ['me', 'ratings'],
   bookmarks: ['me', 'bookmarks'],
@@ -49,6 +50,7 @@ export const QueryKeys = {
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   censorshipSuggestions: (query: string, locale: string) => ['censorship', 'suggestions', locale, query],
   postsBase: ['posts'],
+  followingPosts: ['posts', PostFilter.FOLLOWING],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   realtimeAnalytics: ['realtime-analytics'],
   trendingKeywords: (locale: string) => ['trending-keywords', locale],

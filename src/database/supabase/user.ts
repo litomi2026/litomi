@@ -1,4 +1,16 @@
-import { bigint, boolean, pgTable, smallint, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm'
+import {
+  bigint,
+  boolean,
+  check,
+  index,
+  pgTable,
+  primaryKey,
+  smallint,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import 'server-only'
 
 export const userTable = pgTable('user', {
@@ -23,3 +35,21 @@ export const userSettingsTable = pgTable('user_settings', {
   adultVerifiedAdVisible: boolean('adult_verified_ad_visible').notNull().default(false),
   autoDeletionDay: smallint('auto_deletion_day').notNull().default(180), // 0 = disabled
 }).enableRLS()
+
+export const userFollowTable = pgTable(
+  'user_follow',
+  {
+    followerId: bigint('follower_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    followeeId: bigint('followee_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.followerId, table.followeeId] }),
+    index('idx_user_follow_followee_id').on(table.followeeId),
+    check('user_follow_no_self_follow', sql`${table.followerId} <> ${table.followeeId}`),
+  ],
+).enableRLS()
