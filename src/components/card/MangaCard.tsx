@@ -4,6 +4,7 @@ import { ReactNode, Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { Manga } from '@/types/manga'
+import { createScrollAnchorAttributes } from '@/utils/history-scroll-restoration'
 import { getViewerLink } from '@/utils/manga'
 import { View } from '@/utils/param'
 
@@ -38,11 +39,11 @@ type SkeletonProps = {
 
 const VARIANT_CONFIG = {
   [View.CARD]: {
-    // NOTE: iOS Safari 이슈로 View.IMAGE 일 때 content-auto 비활성화
     containerClassName: 'flex flex-col content-auto',
     showBody: true,
   },
   [View.IMAGE]: {
+    // NOTE: iOS Safari 이슈로 View.IMAGE 일 때 content-auto 비활성화
     containerClassName: '',
     showBody: false,
   },
@@ -64,6 +65,7 @@ export default function MangaCard({
   const { id, artists, characters, date, group, series, images, tags, title, type, count, languages, uploader } = manga
   const viewerLink = getViewerLink(id)
   const config = VARIANT_CONFIG[variant]
+  const scrollAnchorProps = createScrollAnchorAttributes(id, index)
 
   return (
     <li
@@ -74,6 +76,7 @@ export default function MangaCard({
       )}
       data-manga-card
       key={id}
+      {...scrollAnchorProps}
     >
       <MangaCardImage manga={manga} mangaIndex={index} rank={rank} variant={variant} />
       {config.showBody && (

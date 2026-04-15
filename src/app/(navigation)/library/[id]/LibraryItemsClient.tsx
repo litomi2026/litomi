@@ -15,6 +15,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
+import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestoration'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
@@ -83,6 +84,14 @@ export default function LibraryItemsClient({
     hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
+  })
+
+  useInfiniteListScrollRestoration({
+    enabled: !shouldBlockPrivate,
+    fetchNextPage,
+    hasNextPage: canAutoLoadMore,
+    isFetchingNextPage,
+    restoreKey: `library-items-${libraryId}`,
   })
 
   function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {

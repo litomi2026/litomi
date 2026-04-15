@@ -8,6 +8,7 @@ import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
+import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestoration'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { getViewFromSearchParams, View } from '@/utils/param'
 import { ProblemDetailsError } from '@/utils/react-query-error'
@@ -43,6 +44,13 @@ export default function SearchResult() {
     hasNextPage: Boolean(hasNextPage) && !isFetchNextPageError,
     isFetchingNextPage,
     fetchNextPage,
+  })
+
+  useInfiniteListScrollRestoration({
+    fetchNextPage,
+    hasNextPage: Boolean(hasNextPage) && !isFetchNextPageError,
+    isFetchingNextPage,
+    restoreKey: 'search-results',
   })
 
   if (isLoading) {
