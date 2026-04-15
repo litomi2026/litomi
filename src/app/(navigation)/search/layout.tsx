@@ -10,8 +10,8 @@ export default async function Layout({ children }: LayoutProps<'/search'>) {
     <main className="flex flex-col grow">
       <h1 className="sr-only">작품 검색</h1>
       <header
-        className="fixed top-0 z-20 w-full pt-safe px-safe border-b-2 border-zinc-800 bg-background/95 shadow-md
-          sm:max-w-[calc(100vw-5rem-var(--safe-area-left))] sm:pl-0 2xl:max-w-7xl max-sm:aria-busy:opacity-50 transition"
+        className="fixed top-0 z-20 w-full pt-safe px-safe border-b border-zinc-800 bg-background/95 shadow transition
+          sm:max-w-[calc(100vw-5rem-var(--safe-area-left))] sm:pl-0 2xl:max-w-7xl max-sm:aria-busy:opacity-50 sm:border-b-2"
         data-search-header
       >
         <AutoHideNavigation selector="[data-search-header]" />
