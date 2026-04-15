@@ -39,11 +39,7 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
       </NavigationWithMobileMenu>
       <div className="h-26 sm:hidden" />
       <h2 className="sr-only">이야기 목록</h2>
-      <PostCreationForm
-        buttonText="게시하기"
-        className="flex p-4 border-b-2"
-        placeholder="무슨 일이 일어나고 있나요?"
-      />
+      <PostCreationForm className="flex p-4 border-b-2" placeholder="무슨 일이 일어나고 있나요?" />
       {children}
     </div>
   )

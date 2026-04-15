@@ -66,12 +66,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
         <div className="border-b-2">
           <RatingInput className="p-4 py-8" mangaId={id} />
         </div>
-        <PostCreationForm
-          buttonText="게시하기"
-          className="flex p-4 border-b-2"
-          mangaId={id}
-          placeholder="이 작품은 어땠나요?"
-        />
+        <PostCreationForm className="flex p-4 border-b-2" mangaId={id} placeholder="이 작품은 어땠나요?" />
         <PostList filter={PostFilter.MANGA} mangaId={id} NotFound={<EmptyState />} />
       </div>
     </>
