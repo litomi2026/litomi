@@ -26,13 +26,7 @@ export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: Rei
   const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
   const activeSession = refreshToken ? await readActiveRefreshSession(refreshToken) : null
   const hasPersistentSession = activeSession?.userId === userId
-
-  const accessTokenCookie = await getAccessTokenCookieConfig({
-    userId,
-    adult,
-    persistent: hasPersistentSession,
-  })
-
+  const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult })
   const authHintCookieMaxAge = hasPersistentSession && activeSession ? activeSession.maxAgeSeconds : null
   const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: authHintCookieMaxAge })
 

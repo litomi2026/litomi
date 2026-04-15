@@ -18,7 +18,6 @@ export type AuthCookieConfig = {
 type AccessTokenClaims = {
   userId: number
   adult: boolean
-  persistent?: boolean
 }
 
 type AccessTokenPayload = JWTPayload & {
@@ -34,8 +33,6 @@ type AuthCookieOptions = {
   sameSite: 'strict'
   secure: boolean
 }
-
-type CookieStore = Awaited<ReturnType<typeof cookies>>
 
 type RefreshTokenClaims = {
   userId: number | string
@@ -53,26 +50,10 @@ export function applyCookieConfigs(
 
 export async function getAccessTokenClaimsFromCookie() {
   const cookieStore = await cookies()
-  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
-
-  if (!accessToken) {
-    return null
-  }
-
-  const payload = await verifyJWT<AccessTokenPayload>(accessToken, JWTType.ACCESS).catch(() => null)
-  const userId = payload?.sub ? Number(payload.sub) : null
-
-  if (!userId || !Number.isFinite(userId)) {
-    return null
-  }
-
-  return {
-    userId,
-    adult: payload?.adult === true,
-  }
+  return await readAccessTokenClaims(cookieStore.get(CookieKey.ACCESS_TOKEN)?.value)
 }
 
-export async function getAccessTokenCookieConfig({ userId, adult, persistent = true }: AccessTokenClaims) {
+export async function getAccessTokenCookieConfig({ userId, adult }: AccessTokenClaims) {
   const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.ACCESS)
 
   return {
@@ -84,7 +65,6 @@ export async function getAccessTokenCookieConfig({ userId, adult, persistent = t
       path: '/',
       sameSite: 'strict',
       secure: true,
-      ...(persistent && { maxAge: sec('1 hour') }),
     },
   } as const
 }
@@ -206,27 +186,25 @@ export async function getUserIdFromCookie(): Promise<number | null> {
  */
 export async function validateUserIdFromCookie() {
   const cookieStore = await cookies()
-  const userId = await verifyAccessToken(cookieStore)
+  const accessClaims = await readAccessTokenClaims(cookieStore.get(CookieKey.ACCESS_TOKEN)?.value)
 
-  if (!userId) {
-    if (userId === null) {
-      cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN, path: '/' })
-      cookieStore.delete({ name: CookieKey.AUTH_HINT, domain: COOKIE_DOMAIN, path: '/' })
-    }
+  return accessClaims?.userId ?? null
+}
+
+async function readAccessTokenClaims(accessToken: string | null | undefined) {
+  if (!accessToken) {
     return null
   }
 
-  return userId
-}
+  const payload = await verifyJWT<AccessTokenPayload>(accessToken, JWTType.ACCESS).catch(() => null)
+  const userId = payload?.sub ? Number(payload.sub) : null
 
-async function verifyAccessToken(cookieStore: CookieStore) {
-  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
-
-  if (!accessToken) {
-    return
+  if (!userId || !Number.isFinite(userId)) {
+    return null
   }
 
-  const payload = await verifyJWT(accessToken, JWTType.ACCESS).catch(() => null)
-  const userId = payload?.sub
-  return userId ? Number(userId) : null
+  return {
+    userId,
+    adult: payload?.adult === true,
+  }
 }
