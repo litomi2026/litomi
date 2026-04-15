@@ -2,10 +2,17 @@ import '@test/setup.dom'
 import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { fireEvent, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
+import { useSearchParams } from 'next/navigation'
 
-import { View } from '@/utils/param'
+import { getViewFromSearchParams, View } from '@/utils/param'
 
 import ViewToggle from '../ViewToggle'
+
+function SearchParamsViewIndicator() {
+  const searchParams = useSearchParams()
+
+  return <span data-testid="view-indicator">{getViewFromSearchParams(searchParams)}</span>
+}
 
 describe('ViewToggle', () => {
   beforeEach(() => {
@@ -52,5 +59,21 @@ describe('ViewToggle', () => {
 
     expect(view.getByRole('radio', { name: '그림' }).getAttribute('aria-checked')).toBe('true')
     expect(view.getByRole('radio', { name: '카드' }).getAttribute('aria-checked')).toBe('false')
+  })
+
+  test('보기 방식을 바꾸면 useSearchParams를 쓰는 다른 컴포넌트도 함께 갱신된다', () => {
+    const view = render(
+      <>
+        <ViewToggle />
+        <SearchParamsViewIndicator />
+      </>,
+      { wrapper: createTestNavigationWrapper() },
+    )
+
+    expect(view.getByTestId('view-indicator').textContent).toBe(View.CARD)
+
+    fireEvent.click(view.getByRole('radio', { name: '그림' }))
+
+    expect(view.getByTestId('view-indicator').textContent).toBe(View.IMAGE)
   })
 })

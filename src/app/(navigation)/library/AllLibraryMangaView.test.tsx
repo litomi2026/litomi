@@ -82,7 +82,6 @@ describe('AllLibraryMangaView', () => {
     expect(view.getByRole('radio', { name: '그림' }).getAttribute('aria-checked')).toBe('true')
     expect(card).toBeTruthy()
     expect(card?.className).not.toContain('flex-col')
-    expect(card?.className).not.toContain('content-auto')
     expect(view.queryByText('Manga 101')).toBeNull()
     expect(list?.className).toContain(MANGA_LIST_GRID_COLUMNS[View.IMAGE])
   })

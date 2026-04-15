@@ -1,7 +1,7 @@
 'use client'
 
 import { Image, LayoutGrid } from 'lucide-react'
-import { ReadonlyURLSearchParams } from 'next/navigation'
+import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -19,6 +19,8 @@ type Props = {
 }
 
 export default function ViewToggle({ className = '', initialView = View.CARD }: Props) {
+  const pathname = usePathname()
+  const router = useRouter()
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([])
   const [view, setCurrentView] = useState<View>(initialView)
 
@@ -51,9 +53,13 @@ export default function ViewToggle({ className = '', initialView = View.CARD }: 
 
     setCurrentView(nextView)
 
-    const url = new URL(window.location.href)
-    setViewToSearchParams(url.searchParams, nextView)
-    window.history.replaceState(window.history.state, '', url)
+    const searchParams = new URLSearchParams(window.location.search)
+    setViewToSearchParams(searchParams, nextView)
+    const query = searchParams.toString()
+    const hash = window.location.hash
+    const href = `${pathname}${query ? `?${query}` : ''}${hash}`
+
+    router.replace(href, { scroll: false })
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {

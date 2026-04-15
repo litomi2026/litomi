@@ -39,11 +39,10 @@ type SkeletonProps = {
 
 const VARIANT_CONFIG = {
   [View.CARD]: {
-    containerClassName: 'flex flex-col content-auto',
+    containerClassName: 'flex flex-col',
     showBody: true,
   },
   [View.IMAGE]: {
-    // NOTE: iOS Safari 이슈로 View.IMAGE 일 때 content-auto 비활성화
     containerClassName: '',
     showBody: false,
   },
@@ -70,7 +69,7 @@ export default function MangaCard({
   return (
     <li
       className={twMerge(
-        'border-2 rounded-xl overflow-hidden bg-zinc-900 relative',
+        'border-2 rounded-xl overflow-hidden bg-zinc-900 relative content-auto',
         config.containerClassName,
         className,
       )}
