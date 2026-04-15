@@ -3,7 +3,7 @@ name: Database Backup
 on:
   schedule:
     # Run daily at 6 AM KST
-    - cron: '0 21 * * *'
+    - cron: '0 21 */2 * *'
   workflow_dispatch:
 
 permissions:
