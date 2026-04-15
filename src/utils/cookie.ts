@@ -50,7 +50,23 @@ export function applyCookieConfigs(
 
 export async function getAccessTokenClaimsFromCookie() {
   const cookieStore = await cookies()
-  return await readAccessTokenClaims(cookieStore.get(CookieKey.ACCESS_TOKEN)?.value)
+  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
+
+  if (!accessToken) {
+    return null
+  }
+
+  const payload = await verifyJWT<AccessTokenPayload>(accessToken, JWTType.ACCESS).catch(() => null)
+  const userId = payload?.sub ? Number(payload.sub) : null
+
+  if (!userId || !Number.isFinite(userId)) {
+    return null
+  }
+
+  return {
+    userId,
+    adult: payload?.adult === true,
+  }
 }
 
 export async function getAccessTokenCookieConfig({ userId, adult }: AccessTokenClaims) {
@@ -179,22 +195,4 @@ export async function getRefreshTokenCookieConfig({ userId, adult }: RefreshToke
 
 export async function getUserIdFromCookie(): Promise<number | null> {
   return (await getAccessTokenClaimsFromCookie())?.userId ?? null
-}
-
-async function readAccessTokenClaims(accessToken: string | null | undefined) {
-  if (!accessToken) {
-    return null
-  }
-
-  const payload = await verifyJWT<AccessTokenPayload>(accessToken, JWTType.ACCESS).catch(() => null)
-  const userId = payload?.sub ? Number(payload.sub) : null
-
-  if (!userId || !Number.isFinite(userId)) {
-    return null
-  }
-
-  return {
-    userId,
-    adult: payload?.adult === true,
-  }
 }
