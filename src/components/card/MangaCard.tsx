@@ -39,12 +39,11 @@ type SkeletonProps = {
 
 const VARIANT_CONFIG = {
   [View.CARD]: {
-    // NOTE: iOS Safari 이슈로 content-auto 비활성화 (크기 계산이 생략되어 스크롤 시 CLS 발생)
-    containerClassName: 'flex flex-col',
+    containerClassName: 'flex flex-col content-auto',
     showBody: true,
   },
   [View.IMAGE]: {
-    // NOTE: iOS Safari 이슈로 content-auto 비활성화 (초기 크기가 이상함)
+    // NOTE: iOS Safari 이슈로 View.IMAGE 일 때 content-auto 비활성화
     containerClassName: '',
     showBody: false,
   },
