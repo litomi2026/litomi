@@ -41,6 +41,20 @@ export function isLiboExpansionRequiredProblem(typeUrl: string): boolean {
   }
 }
 
+export function isUnauthorizedProblem(typeUrl: string): boolean {
+  const suffix = '/problems/unauthorized'
+
+  if (typeUrl.endsWith(suffix)) {
+    return true
+  }
+
+  try {
+    return new URL(typeUrl).pathname === suffix
+  } catch {
+    return false
+  }
+}
+
 export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
   if (failureCount >= maxRetries) {
     return false
@@ -86,7 +100,7 @@ const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
       if (error instanceof ProblemDetailsError) {
-        if (error.status === 401) {
+        if (error.status === 401 && isUnauthorizedProblem(error.type)) {
           handleUnauthorizedError()
         }
 
@@ -104,7 +118,7 @@ const queryClient = new QueryClient({
           showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
         } else if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
           showLiboExpansionRequiredToast(error.message)
-        } else if (error.status === 401) {
+        } else if (error.status === 401 && isUnauthorizedProblem(error.type)) {
           showLoginRequiredToast()
         } else if (error.status >= 400) {
           toast.warning(error.message || '요청을 처리할 수 없어요')
@@ -115,9 +129,15 @@ const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onError: (error, _variables, _onMutateResult, mutation) => {
       if (error instanceof ProblemDetailsError) {
-        if (error.status === 401) {
+        const isSuppressed = mutation.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status) === true
+
+        if (error.status === 401 && isUnauthorizedProblem(error.type)) {
           handleUnauthorizedError()
-          showLoginRequiredToast()
+
+          if (!isSuppressed) {
+            showLoginRequiredToast()
+          }
+
           return
         }
 
@@ -131,7 +151,7 @@ const queryClient = new QueryClient({
           return
         }
 
-        if (mutation.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status)) {
+        if (isSuppressed) {
           return
         }
 
