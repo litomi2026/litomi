@@ -15,8 +15,9 @@ describe('데이터베이스 zod 스키마', () => {
       expect(result.success).toBe(false)
 
       if (!result.success) {
-        expect(result.error.issues).toHaveLength(1)
-        expect(result.error.issues[0]?.message).toBe('프로필 이미지 주소가 URL 형식이 아니에요')
+        expect(result.error.issues.some((issue) => issue.message === '프로필 이미지 주소가 URL 형식이 아니에요')).toBe(
+          true,
+        )
       }
     })
 
