@@ -12,6 +12,7 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { signalCurrentPasskeyUserDetails } from '@/utils/passkey'
+import { getSafeProfileImageURL } from '@/utils/profile-image-url'
 
 import {
   applyProfileProblem,
@@ -42,7 +43,7 @@ export default function ProfileEditButton({ mePromise }: Props) {
   const [fieldErrors, setFieldErrors] = useState<ProfileFieldErrors>({})
   const formRef = useRef<HTMLFormElement | null>(null)
   const router = useRouter()
-  const defaultProfileImageURL = currentMe.imageURL ?? ''
+  const defaultProfileImageURL = getSafeProfileImageURL(currentMe.imageURL ?? '')
   const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
 
   const editMutation = usePatchMyProfileMutation({
@@ -272,7 +273,7 @@ export default function ProfileEditButton({ mePromise }: Props) {
                   maxLength={256}
                   minLength={8}
                   name={formId.imageURL}
-                  onChange={(e) => setProfileImageURL(e.target.value)}
+                  onChange={(e) => setProfileImageURL(getSafeProfileImageURL(e.currentTarget.value))}
                   pattern="https?://.+"
                   placeholder="https://example.com/profile.jpg"
                   type="url"

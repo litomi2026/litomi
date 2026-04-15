@@ -8,8 +8,9 @@ import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 import { userExpansionTable } from '@/database/supabase/points'
+import { postTable } from '@/database/supabase/post'
 import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
-import { userSettingsTable, userTable } from '@/database/supabase/user'
+import { userFollowTable, userSettingsTable, userTable } from '@/database/supabase/user'
 import { encryptTOTPSecret } from '@/utils/two-factor'
 import { generateBackupCodes } from '@/utils/two-factor-backup-code'
 
@@ -37,6 +38,10 @@ type SeedPasskeyCredentialInput = Partial<
   userId: number
 }
 
+type SeedPostInput = Omit<typeof postTable.$inferInsert, 'userId'> & {
+  userId: number
+}
+
 type SeedTwoFactorInput = Partial<typeof twoFactorTable.$inferInsert> & {
   encryptedSecret?: string
   secret?: string
@@ -47,6 +52,12 @@ type SeedUserExpansionInput = Partial<typeof userExpansionTable.$inferInsert> & 
   amount: number
   type: number
   userId: number
+}
+
+type SeedUserFollowInput = {
+  createdAt?: Date
+  followeeId: number
+  followerId: number
 }
 
 type SeedUserInput = Partial<Omit<typeof userTable.$inferInsert, 'passwordHash'>> & {
@@ -120,6 +131,15 @@ export async function readUserById(userId: number) {
 export async function readUserByLoginId(loginId: string) {
   const [user] = await db.select().from(userTable).where(eq(userTable.loginId, loginId))
   return user ?? null
+}
+
+export async function readUserFollowingIds(userId: number) {
+  const rows = await db
+    .select({ userId: userFollowTable.followeeId })
+    .from(userFollowTable)
+    .where(eq(userFollowTable.followerId, userId))
+
+  return rows.map(({ userId: followeeId }) => followeeId)
 }
 
 export async function readUserSettingsByUserId(userId: number) {
@@ -210,6 +230,18 @@ export async function seedPasskeyCredential({
   return credential
 }
 
+export async function seedPost({ userId, ...overrides }: SeedPostInput) {
+  const [post] = await db
+    .insert(postTable)
+    .values({
+      userId,
+      ...overrides,
+    })
+    .returning()
+
+  return post
+}
+
 export async function seedTrustedBrowser(values: typeof trustedBrowserTable.$inferInsert) {
   const [record] = await db.insert(trustedBrowserTable).values(values).returning()
   return record
@@ -280,6 +312,19 @@ export async function seedUserExpansion({ userId, type, amount, ...overrides }: 
     .returning()
 
   return record
+}
+
+export async function seedUserFollow({ followerId, followeeId, createdAt }: SeedUserFollowInput) {
+  const [follow] = await db
+    .insert(userFollowTable)
+    .values({
+      followerId,
+      followeeId,
+      ...(createdAt && { createdAt }),
+    })
+    .returning()
+
+  return follow
 }
 
 export async function seedUserSettings({ userId, ...overrides }: SeedUserSettingsInput) {
