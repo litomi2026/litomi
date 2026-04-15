@@ -3,15 +3,15 @@
 import { useEffect, useEffectEvent, useRef } from 'react'
 
 import {
-  clearPendingHistoryScrollRestore,
-  createScrollRestoreSnapshot,
-  findScrollAnchorForSnapshot,
+  clearScrollRestoration,
+  createScrollRestorePosition,
+  findScrollAnchorForPosition,
   getCurrentScrollRestoreUrl,
-  getHistoryScrollRestoreSnapshot,
-  getPendingHistoryScrollRestore,
   getScrollAnchorDocumentTop,
-  type ScrollRestoreSnapshot,
-  setHistoryScrollRestoreSnapshot,
+  getScrollRestoreFromHistoryState,
+  getScrollRestoreFromStorage,
+  type ScrollRestorePosition,
+  setScrollRestoreInHistoryState,
 } from '@/utils/history-scroll-restoration'
 
 const INITIAL_RESTORE_GRACE_MS = 500
@@ -32,7 +32,7 @@ type RestoreController = {
   attempts: number
   lastFetchAt: number
   startedAt: number
-  snapshot: ScrollRestoreSnapshot
+  position: ScrollRestorePosition
 }
 
 export default function useInfiniteListScrollRestoration({
@@ -51,17 +51,17 @@ export default function useInfiniteListScrollRestoration({
       return
     }
 
-    const snapshot = createScrollRestoreSnapshot()
+    const position = createScrollRestorePosition()
 
-    if (!snapshot) {
+    if (!position) {
       return
     }
 
-    setHistoryScrollRestoreSnapshot(restoreKey, snapshot)
+    setScrollRestoreInHistoryState(restoreKey, position)
   })
 
   const finishRestore = useEffectEvent(() => {
-    clearPendingHistoryScrollRestore()
+    clearScrollRestoration()
     restoreControllerRef.current = null
 
     if (restoreTimerRef.current !== null) {
@@ -81,10 +81,10 @@ export default function useInfiniteListScrollRestoration({
 
     controller.attempts += 1
 
-    const anchor = findScrollAnchorForSnapshot(controller.snapshot)
+    const anchor = findScrollAnchorForPosition(controller.position)
 
     if (anchor) {
-      const anchorTargetY = Math.round(getScrollAnchorDocumentTop(anchor) + controller.snapshot.anchorOffset)
+      const anchorTargetY = Math.round(getScrollAnchorDocumentTop(anchor) + controller.position.anchorOffset)
 
       if (canScrollTo(anchorTargetY)) {
         window.scrollTo({ top: anchorTargetY })
@@ -104,8 +104,8 @@ export default function useInfiniteListScrollRestoration({
     }
 
     if (hasPassedInitialGrace && !hasNextPage && !isFetchingNextPage) {
-      if (canScrollTo(controller.snapshot.scrollY)) {
-        window.scrollTo({ top: controller.snapshot.scrollY })
+      if (canScrollTo(controller.position.scrollY)) {
+        window.scrollTo({ top: controller.position.scrollY })
       }
 
       finishRestore()
@@ -113,8 +113,8 @@ export default function useInfiniteListScrollRestoration({
     }
 
     if (hasTimedOut) {
-      if (canScrollTo(controller.snapshot.scrollY)) {
-        window.scrollTo({ top: controller.snapshot.scrollY })
+      if (canScrollTo(controller.position.scrollY)) {
+        window.scrollTo({ top: controller.position.scrollY })
       }
 
       finishRestore()
@@ -127,24 +127,24 @@ export default function useInfiniteListScrollRestoration({
       return
     }
 
-    const pendingRestore = getPendingHistoryScrollRestore()
+    const pendingRestore = getScrollRestoreFromStorage()
     const currentUrl = getCurrentScrollRestoreUrl()
 
     if (!pendingRestore || pendingRestore.url !== currentUrl) {
       return
     }
 
-    const snapshot = getHistoryScrollRestoreSnapshot(restoreKey)
+    const position = getScrollRestoreFromHistoryState(restoreKey)
 
-    if (!snapshot || snapshot.url !== currentUrl) {
-      clearPendingHistoryScrollRestore()
+    if (!position || position.url !== currentUrl) {
+      clearScrollRestoration()
       return
     }
 
     restoreControllerRef.current = {
       attempts: 0,
       lastFetchAt: 0,
-      snapshot,
+      position,
       startedAt: Date.now(),
     }
   }, [enabled, restoreKey])

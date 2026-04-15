@@ -5,8 +5,8 @@ import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestoration'
 import {
   createScrollAnchorAttributes,
-  setHistoryScrollRestoreSnapshot,
-  setPendingHistoryScrollRestore,
+  setScrollRestoreInHistoryState,
+  setScrollRestoreInStorage,
 } from '@/utils/history-scroll-restoration'
 
 type Item = {
@@ -81,7 +81,7 @@ afterEach(() => {
 
 describe('useInfiniteListScrollRestoration', () => {
   test('restores using anchor position when a matching anchor is rendered', async () => {
-    setHistoryScrollRestoreSnapshot('test-list', {
+    setScrollRestoreInHistoryState('test-list', {
       anchorId: '104',
       anchorIndex: 3,
       anchorOffset: 50,
@@ -89,7 +89,7 @@ describe('useInfiniteListScrollRestoration', () => {
       timestamp: Date.now(),
       url: '/search?q=test',
     })
-    setPendingHistoryScrollRestore('/search?q=test')
+    setScrollRestoreInStorage('/search?q=test')
 
     const view = render(<TestComponent items={[{ id: 101 }, { id: 102 }, { id: 103 }, { id: 104 }, { id: 105 }]} />)
 
@@ -103,7 +103,7 @@ describe('useInfiniteListScrollRestoration', () => {
   test('requests additional pages while the target anchor is missing', async () => {
     const fetchNextPage = mock(async () => undefined)
 
-    setHistoryScrollRestoreSnapshot('test-list', {
+    setScrollRestoreInHistoryState('test-list', {
       anchorId: '205',
       anchorIndex: 4,
       anchorOffset: 40,
@@ -111,7 +111,7 @@ describe('useInfiniteListScrollRestoration', () => {
       timestamp: Date.now(),
       url: '/search?q=test',
     })
-    setPendingHistoryScrollRestore('/search?q=test')
+    setScrollRestoreInStorage('/search?q=test')
 
     const view = render(<TestComponent fetchNextPage={fetchNextPage} hasNextPage items={[{ id: 201 }, { id: 202 }]} />)
 
@@ -123,7 +123,7 @@ describe('useInfiniteListScrollRestoration', () => {
   })
 
   test('falls back to raw scrollY when no anchor can be found after the grace period', async () => {
-    setHistoryScrollRestoreSnapshot('test-list', {
+    setScrollRestoreInHistoryState('test-list', {
       anchorId: '999',
       anchorIndex: 9,
       anchorOffset: 0,
@@ -131,7 +131,7 @@ describe('useInfiniteListScrollRestoration', () => {
       timestamp: Date.now(),
       url: '/search?q=test',
     })
-    setPendingHistoryScrollRestore('/search?q=test')
+    setScrollRestoreInStorage('/search?q=test')
 
     render(<TestComponent items={[{ id: 101 }, { id: 102 }]} />)
 
@@ -144,7 +144,7 @@ describe('useInfiniteListScrollRestoration', () => {
   })
 
   test('does nothing when the navigation was not triggered by history back/forward', async () => {
-    setHistoryScrollRestoreSnapshot('test-list', {
+    setScrollRestoreInHistoryState('test-list', {
       anchorId: '104',
       anchorIndex: 3,
       anchorOffset: 50,

@@ -1,12 +1,12 @@
 'use client'
 
 const SCROLL_RESTORATION_HISTORY_KEY = 'scrollRestoration'
-const SCROLL_RESTORATION_STORAGE_KEY = 'pendingScrollRestore'
-const PENDING_SCROLL_RESTORE_TTL_MS = 15_000
+const SCROLL_RESTORATION_STORAGE_KEY = 'scrollRestore'
+const SCROLL_RESTORATION_TTL_MS = 15_000
 
 export const SCROLL_ANCHOR_SELECTOR = '[data-scroll-anchor="true"]'
 
-export type ScrollRestoreSnapshot = {
+export type ScrollRestorePosition = {
   anchorId: string | null
   anchorIndex: number | null
   anchorOffset: number
@@ -17,19 +17,19 @@ export type ScrollRestoreSnapshot = {
 
 type HistoryStateRecord = Record<string, unknown>
 
-type PendingScrollRestore = {
-  at: number
-  url: string
-}
-
 type ScrollAnchorMetadata = {
   anchorId: string | null
   anchorIndex: number | null
 }
 
-type ScrollRestoreStateMap = Record<string, ScrollRestoreSnapshot>
+type ScrollRestoration = {
+  at: number
+  url: string
+}
 
-export function clearPendingHistoryScrollRestore() {
+type ScrollRestorePositionMap = Record<string, ScrollRestorePosition>
+
+export function clearScrollRestoration() {
   try {
     sessionStorage.removeItem(SCROLL_RESTORATION_STORAGE_KEY)
   } catch {
@@ -45,7 +45,7 @@ export function createScrollAnchorAttributes(anchorId: number | string, anchorIn
   }
 }
 
-export function createScrollRestoreSnapshot(): ScrollRestoreSnapshot | null {
+export function createScrollRestorePosition(): ScrollRestorePosition | null {
   const url = getCurrentScrollRestoreUrl()
   const scrollY = Math.round(window.scrollY)
   const anchor = getBestScrollAnchor()
@@ -76,7 +76,7 @@ export function createScrollRestoreSnapshot(): ScrollRestoreSnapshot | null {
   }
 }
 
-export function findScrollAnchorForSnapshot(snapshot: ScrollRestoreSnapshot) {
+export function findScrollAnchorForPosition(position: ScrollRestorePosition) {
   const anchors = getScrollAnchorElements()
 
   if (anchors.length === 0) {
@@ -88,8 +88,8 @@ export function findScrollAnchorForSnapshot(snapshot: ScrollRestoreSnapshot) {
   for (const anchor of anchors) {
     const { anchorId, anchorIndex } = getScrollAnchorMetadata(anchor)
 
-    if (snapshot.anchorId && anchorId === snapshot.anchorId) {
-      if (snapshot.anchorIndex == null || anchorIndex === snapshot.anchorIndex) {
+    if (position.anchorId && anchorId === position.anchorId) {
+      if (position.anchorIndex == null || anchorIndex === position.anchorIndex) {
         return anchor
       }
 
@@ -101,11 +101,11 @@ export function findScrollAnchorForSnapshot(snapshot: ScrollRestoreSnapshot) {
     return matchedById
   }
 
-  if (snapshot.anchorIndex == null) {
+  if (position.anchorIndex == null) {
     return null
   }
 
-  return anchors.find((anchor) => getScrollAnchorMetadata(anchor).anchorIndex === snapshot.anchorIndex) ?? null
+  return anchors.find((anchor) => getScrollAnchorMetadata(anchor).anchorIndex === position.anchorIndex) ?? null
 }
 
 export function getBestScrollAnchor() {
@@ -133,11 +133,15 @@ export function getCurrentScrollRestoreUrl() {
   return `${window.location.pathname}${window.location.search}${window.location.hash}`
 }
 
-export function getHistoryScrollRestoreSnapshot(restoreKey: string) {
-  return getScrollRestoreStateMap()[restoreKey] ?? null
+export function getScrollAnchorDocumentTop(anchor: HTMLElement) {
+  return window.scrollY + anchor.getBoundingClientRect().top
 }
 
-export function getPendingHistoryScrollRestore() {
+export function getScrollRestoreFromHistoryState(restoreKey: string) {
+  return getScrollRestorePositionMap()[restoreKey] ?? null
+}
+
+export function getScrollRestoreFromStorage() {
   try {
     const raw = sessionStorage.getItem(SCROLL_RESTORATION_STORAGE_KEY)
 
@@ -145,49 +149,45 @@ export function getPendingHistoryScrollRestore() {
       return null
     }
 
-    const parsed = JSON.parse(raw) as Partial<PendingScrollRestore> | null
+    const parsed = JSON.parse(raw) as Partial<ScrollRestoration> | null
 
     if (!parsed || typeof parsed !== 'object') {
-      clearPendingHistoryScrollRestore()
+      clearScrollRestoration()
       return null
     }
 
     if (typeof parsed.url !== 'string' || typeof parsed.at !== 'number') {
-      clearPendingHistoryScrollRestore()
+      clearScrollRestoration()
       return null
     }
 
-    if (Date.now() - parsed.at > PENDING_SCROLL_RESTORE_TTL_MS) {
-      clearPendingHistoryScrollRestore()
+    if (Date.now() - parsed.at > SCROLL_RESTORATION_TTL_MS) {
+      clearScrollRestoration()
       return null
     }
 
-    return parsed as PendingScrollRestore
+    return parsed as ScrollRestoration
   } catch {
-    clearPendingHistoryScrollRestore()
+    clearScrollRestoration()
     return null
   }
 }
 
-export function getScrollAnchorDocumentTop(anchor: HTMLElement) {
-  return window.scrollY + anchor.getBoundingClientRect().top
-}
-
-export function setHistoryScrollRestoreSnapshot(restoreKey: string, snapshot: ScrollRestoreSnapshot) {
-  const currentSnapshots = getScrollRestoreStateMap()
+export function setScrollRestoreInHistoryState(restoreKey: string, position: ScrollRestorePosition) {
+  const currentPositions = getScrollRestorePositionMap()
 
   const newState = {
     ...getSafeHistoryState(window.history.state),
     [SCROLL_RESTORATION_HISTORY_KEY]: {
-      ...currentSnapshots,
-      [restoreKey]: snapshot,
+      ...currentPositions,
+      [restoreKey]: position,
     },
   }
 
   window.history.replaceState(newState, '', window.location.href)
 }
 
-export function setPendingHistoryScrollRestore(url = getCurrentScrollRestoreUrl()) {
+export function setScrollRestoreInStorage(url = getCurrentScrollRestoreUrl()) {
   try {
     sessionStorage.setItem(SCROLL_RESTORATION_STORAGE_KEY, JSON.stringify({ at: Date.now(), url }))
   } catch {
@@ -217,22 +217,22 @@ function getScrollAnchorMetadata(anchor: HTMLElement): ScrollAnchorMetadata {
   }
 }
 
-function getScrollRestoreStateMap() {
+function getScrollRestorePositionMap() {
   const state = getSafeHistoryState(window.history.state)[SCROLL_RESTORATION_HISTORY_KEY]
 
   if (!state || typeof state !== 'object' || Array.isArray(state)) {
     return {}
   }
 
-  const snapshotEntries = Object.entries(state)
-  const snapshots: ScrollRestoreStateMap = {}
+  const positionEntries = Object.entries(state)
+  const positions: ScrollRestorePositionMap = {}
 
-  for (const [restoreKey, snapshot] of snapshotEntries) {
-    if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
+  for (const [restoreKey, position] of positionEntries) {
+    if (!position || typeof position !== 'object' || Array.isArray(position)) {
       continue
     }
 
-    const { anchorId, anchorIndex, anchorOffset, scrollY, timestamp, url } = snapshot as Partial<ScrollRestoreSnapshot>
+    const { anchorId, anchorIndex, anchorOffset, scrollY, timestamp, url } = position as Partial<ScrollRestorePosition>
 
     if (
       typeof url !== 'string' ||
@@ -243,7 +243,7 @@ function getScrollRestoreStateMap() {
       continue
     }
 
-    snapshots[restoreKey] = {
+    positions[restoreKey] = {
       anchorId: typeof anchorId === 'string' ? anchorId : null,
       anchorIndex: typeof anchorIndex === 'number' ? anchorIndex : null,
       anchorOffset,
@@ -253,7 +253,7 @@ function getScrollRestoreStateMap() {
     }
   }
 
-  return snapshots
+  return positions
 }
 
 function parseAnchorIndex(anchorIndex: string | undefined) {

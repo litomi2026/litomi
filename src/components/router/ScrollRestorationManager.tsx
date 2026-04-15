@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-import { setPendingHistoryScrollRestore } from '@/utils/history-scroll-restoration'
+import { setScrollRestoreInStorage } from '@/utils/history-scroll-restoration'
 
 export default function ScrollRestorationManager() {
   useEffect(() => {
@@ -13,11 +13,11 @@ export default function ScrollRestorationManager() {
     }
 
     if (isBackForwardNavigation()) {
-      setPendingHistoryScrollRestore()
+      setScrollRestoreInStorage()
     }
 
     function handlePopState() {
-      setPendingHistoryScrollRestore()
+      setScrollRestoreInStorage()
     }
 
     window.addEventListener('popstate', handlePopState)

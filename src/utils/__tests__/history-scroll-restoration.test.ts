@@ -2,10 +2,10 @@ import '@test/setup.dom'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
 import {
-  clearPendingHistoryScrollRestore,
-  getHistoryScrollRestoreSnapshot,
-  getPendingHistoryScrollRestore,
-  setHistoryScrollRestoreSnapshot,
+  clearScrollRestoration,
+  getScrollRestoreFromHistoryState,
+  getScrollRestoreFromStorage,
+  setScrollRestoreInHistoryState,
 } from '@/utils/history-scroll-restoration'
 
 beforeEach(() => {
@@ -14,7 +14,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  clearPendingHistoryScrollRestore()
+  clearScrollRestoration()
   sessionStorage.clear()
 })
 
@@ -29,8 +29,8 @@ describe('history-scroll-restoration', () => {
     })
   })
 
-  test('stores and reads scroll snapshots from history state', () => {
-    setHistoryScrollRestoreSnapshot('search-results', {
+  test('stores and reads scroll restore positions from history state', () => {
+    setScrollRestoreInHistoryState('search-results', {
       anchorId: '101',
       anchorIndex: 3,
       anchorOffset: 40,
@@ -39,7 +39,7 @@ describe('history-scroll-restoration', () => {
       url: '/search?q=test',
     })
 
-    expect(getHistoryScrollRestoreSnapshot('search-results')).toEqual({
+    expect(getScrollRestoreFromHistoryState('search-results')).toEqual({
       anchorId: '101',
       anchorIndex: 3,
       anchorOffset: 40,
@@ -50,10 +50,10 @@ describe('history-scroll-restoration', () => {
     expect(window.history.state).toMatchObject({ preserved: 'value' })
   })
 
-  test('clears invalid pending scroll restore payloads', () => {
-    sessionStorage.setItem('pendingScrollRestore', JSON.stringify({ invalid: true }))
+  test('clears invalid scroll restore payloads', () => {
+    sessionStorage.setItem('scrollRestore', JSON.stringify({ invalid: true }))
 
-    expect(getPendingHistoryScrollRestore()).toBeNull()
-    expect(sessionStorage.getItem('pendingScrollRestore')).toBeNull()
+    expect(getScrollRestoreFromStorage()).toBeNull()
+    expect(sessionStorage.getItem('scrollRestore')).toBeNull()
   })
 })
