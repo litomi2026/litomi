@@ -61,7 +61,6 @@ describe('AllLibraryMangaView', () => {
     expect(view.getByRole('radio', { name: '카드' }).getAttribute('aria-checked')).toBe('true')
     expect(card).toBeTruthy()
     expect(card?.className).toContain('flex-col')
-    expect(card?.className).toContain('content-auto')
     expect(view.getByText('Manga 101')).toBeTruthy()
     expect(list?.className).toContain(MANGA_LIST_GRID_COLUMNS[View.CARD])
   })

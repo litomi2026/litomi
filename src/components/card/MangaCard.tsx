@@ -69,7 +69,7 @@ export default function MangaCard({
   return (
     <li
       className={twMerge(
-        'border-2 rounded-xl overflow-hidden bg-zinc-900 relative content-auto',
+        'border-2 rounded-xl overflow-hidden bg-zinc-900 relative',
         config.containerClassName,
         className,
       )}
