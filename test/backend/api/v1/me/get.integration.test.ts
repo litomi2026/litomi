@@ -4,6 +4,8 @@ import {
   createAccessTokenCookies,
   createRefreshSessionCookies,
   expectAuthCookiesCleared,
+  expectPersistentCookie,
+  expectSessionCookie,
   serializeCookieHeader,
 } from '@test/backend/setup/auth'
 import {
@@ -198,6 +200,9 @@ describe('GET /api/v1/me', () => {
     expect(response.status).toBe(200)
     expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
     expect(getSetCookieNames(response)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+    expectSessionCookie(response, 'at')
+    expectPersistentCookie(response, 'rt')
+    expectPersistentCookie(response, 'ah')
 
     expect(await response.json()).toMatchObject({
       id: user.id,

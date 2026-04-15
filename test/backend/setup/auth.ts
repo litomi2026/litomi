@@ -86,6 +86,21 @@ export function expectCookieCleared(response: Response, name: string) {
   expect(cookie).toContain('Max-Age=0')
 }
 
+export function expectPersistentCookie(response: Response, name: string) {
+  const cookie = getSetCookieStrings(response).find((value) => value.startsWith(`${name}=`))
+
+  expect(cookie).toBeDefined()
+  expect(cookie).toContain('Max-Age=')
+}
+
+export function expectSessionCookie(response: Response, name: string) {
+  const cookie = getSetCookieStrings(response).find((value) => value.startsWith(`${name}=`))
+
+  expect(cookie).toBeDefined()
+  expect(cookie).not.toContain('Max-Age=')
+  expect(cookie).not.toContain('Expires=')
+}
+
 export function getTestPasswordHash(password: string = TEST_LOGIN_PASSWORD) {
   const cached = passwordHashCache.get(password)
 
