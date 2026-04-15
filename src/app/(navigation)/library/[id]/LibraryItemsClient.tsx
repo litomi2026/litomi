@@ -15,6 +15,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
+import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestoration'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
@@ -47,7 +48,7 @@ export default function LibraryItemsClient({
 }: Props) {
   const [sort, setSort] = useState<CollectionItemSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
-  const { exit, isSelectionMode, selectedIds, toggle } = useLibrarySelection()
+  const { exit, isSelectionMode } = useLibrarySelection()
   const { data: me } = useMeQuery()
 
   const adultState = getAdultState(me)
@@ -85,6 +86,14 @@ export default function LibraryItemsClient({
     fetchNextPage,
   })
 
+  useInfiniteListScrollRestoration({
+    enabled: !shouldBlockPrivate,
+    fetchNextPage,
+    hasNextPage: canAutoLoadMore,
+    isFetchingNextPage,
+    restoreKey: `library-items-${libraryId}`,
+  })
+
   function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
     setView(getViewFromSearchParams(searchParams))
   }
@@ -95,7 +104,7 @@ export default function LibraryItemsClient({
       setSort(newSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
-      window.history.replaceState({}, '', url.toString())
+      window.history.replaceState(window.history.state, '', url)
     }
   }
 

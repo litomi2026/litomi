@@ -1,19 +1,13 @@
-import { Suspense } from 'react'
-
 import ViewToggle from '@/components/ViewToggle'
 
 import AutoHideNavigation from '../AutoHideNavigation'
 import FilterButton from './FilterButton'
 import KeywordSubscriptionButton from './KeywordSubscriptionButton'
-import ScrollReset from './ScrollReset'
 import SearchForm from './SearchForm'
 
 export default async function Layout({ children }: LayoutProps<'/search'>) {
   return (
     <main className="flex flex-col grow">
-      <Suspense>
-        <ScrollReset />
-      </Suspense>
       <h1 className="sr-only">작품 검색</h1>
       <header
         className="fixed top-0 z-20 w-full pt-safe px-safe border-b-2 border-zinc-800 bg-background/95 shadow-md

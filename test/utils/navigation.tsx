@@ -9,6 +9,7 @@ import type { ReactNode } from 'react'
 
 import { AppRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { PathnameContext, SearchParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime'
+import { useMemo, useState } from 'react'
 
 type NavigationWrapperOptions = {
   pathname?: string
@@ -30,14 +31,41 @@ export function createTestAppRouter(overrides: Partial<AppRouterInstance> = {}):
 
 export function createTestNavigationWrapper({
   pathname = window.location.pathname,
-  router = createTestAppRouter(),
   searchParams = new URLSearchParams(window.location.search),
+  router,
 }: NavigationWrapperOptions = {}) {
   return function TestNavigationWrapper({ children }: { children: ReactNode }) {
+    const [currentPathname, setCurrentPathname] = useState(pathname)
+    const [currentSearchParams, setCurrentSearchParams] = useState(() => new URLSearchParams(searchParams))
+
+    const routerValue = useMemo<AppRouterInstance>(() => {
+      if (router) {
+        return router
+      }
+
+      function navigate(href: string, mode: 'push' | 'replace') {
+        const url = new URL(href, window.location.href)
+
+        if (mode === 'push') {
+          window.history.pushState({}, '', url)
+        } else {
+          window.history.replaceState({}, '', url)
+        }
+
+        setCurrentPathname(url.pathname)
+        setCurrentSearchParams(new URLSearchParams(url.search))
+      }
+
+      return createTestAppRouter({
+        push: (href) => navigate(href, 'push'),
+        replace: (href) => navigate(href, 'replace'),
+      })
+    }, [router])
+
     return (
-      <AppRouterContext.Provider value={router}>
-        <PathnameContext.Provider value={pathname}>
-          <SearchParamsContext.Provider value={searchParams}>{children}</SearchParamsContext.Provider>
+      <AppRouterContext.Provider value={routerValue}>
+        <PathnameContext.Provider value={currentPathname}>
+          <SearchParamsContext.Provider value={currentSearchParams}>{children}</SearchParamsContext.Provider>
         </PathnameContext.Provider>
       </AppRouterContext.Provider>
     )

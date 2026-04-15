@@ -101,6 +101,7 @@
 
 @utility content-auto {
   content-visibility: auto;
+  contain-intrinsic-size: auto;
 }
 
 @utility callout-none {

@@ -16,7 +16,7 @@ let lastImageIndex: number | null = null
 function updatePageSearchParam(imageIndex: number) {
   const url = new URL(window.location.href)
   url.searchParams.set(MangaIdSearchParam.PAGE, String(imageIndex))
-  window.history.replaceState({}, '', url.toString())
+  window.history.replaceState(window.history.state, '', url)
 }
 
 export const useImageIndexStore = create<Store>()((set, get) => ({

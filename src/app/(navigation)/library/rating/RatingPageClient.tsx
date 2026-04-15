@@ -11,6 +11,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
+import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestoration'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { Manga } from '@/types/manga'
@@ -70,6 +71,13 @@ export default function RatingPageClient({ initialData, initialSort, initialView
     fetchNextPage,
   })
 
+  useInfiniteListScrollRestoration({
+    fetchNextPage,
+    hasNextPage: canAutoLoadMore,
+    isFetchingNextPage,
+    restoreKey: 'library-rating',
+  })
+
   for (const item of ratingItems) {
     const group = groupedRatings.get(item.rating) || []
     group.push(item)
@@ -96,7 +104,7 @@ export default function RatingPageClient({ initialData, initialSort, initialView
       setSort(newSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
-      window.history.replaceState({}, '', url.toString())
+      window.history.replaceState(window.history.state, '', url)
     }
   }
 

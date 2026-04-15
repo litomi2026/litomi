@@ -14,6 +14,7 @@ import LibraryModal from '@/components/card/LibraryModal'
 import MangaTorrentModal from '@/components/card/MangaTorrentModal'
 import HiyobiPing from '@/components/HiyobiPing'
 import { MangaDetailModal } from '@/components/MangaDetailModal'
+import ScrollRestorationManager from '@/components/router/ScrollRestorationManager'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import ThemeProvider from '@/components/ThemeProvider'
 import OverlayHost from '@/components/ui/OverlayHost'
@@ -109,6 +110,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <ThemeProvider />
         <CapacitorNativeEffects />
+        <ScrollRestorationManager />
         <QueryProvider>
           {children}
           <LibraryModal />

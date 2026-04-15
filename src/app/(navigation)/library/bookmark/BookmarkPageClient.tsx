@@ -10,6 +10,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
+import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestoration'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { getViewFromSearchParams, View } from '@/utils/param'
@@ -31,7 +32,7 @@ type Props = {
 export default function BookmarkPageClient({ initialData, initialSort, initialView }: Props) {
   const [sort, setSort] = useState<CollectionItemSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
-  const { exit, isSelectionMode, selectedIds, toggle } = useLibrarySelection()
+  const { exit, isSelectionMode } = useLibrarySelection()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useBookmarkInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
@@ -47,6 +48,13 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
     fetchNextPage,
   })
 
+  useInfiniteListScrollRestoration({
+    fetchNextPage,
+    hasNextPage: canAutoLoadMore,
+    isFetchingNextPage,
+    restoreKey: 'library-bookmark',
+  })
+
   function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
     setView(getViewFromSearchParams(searchParams))
   }
@@ -57,7 +65,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
       setSort(newSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
-      window.history.replaceState({}, '', url.toString())
+      window.history.replaceState(window.history.state, '', url)
     }
   }
 
