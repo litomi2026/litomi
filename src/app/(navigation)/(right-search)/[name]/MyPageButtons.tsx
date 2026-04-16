@@ -29,13 +29,13 @@ export default async function MyPageButtons({ user }: Props) {
     return <FollowButton initialFollowing={user.isFollowedByCurrentUser} leader={user} />
   }
 
-  const loginUser = getMe(userId)
+  const currentUser = getMe(userId)
 
   return (
     <div className="flex items-center gap-2">
       <ErrorBoundary fallback={ProfileEditButtonError}>
         <Suspense fallback={<ProfileEditButtonSkeleton />}>
-          <ProfileEditButton mePromise={loginUser} />
+          <ProfileEditButton mePromise={currentUser} />
         </Suspense>
       </ErrorBoundary>
       <LogoutButton />

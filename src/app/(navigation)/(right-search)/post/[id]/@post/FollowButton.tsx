@@ -26,7 +26,8 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
   const [isOpened, setIsOpened] = useState(false)
   const { data: me } = useMeQuery()
   const { data: followingUserIds } = useFollowingUserSetQuery()
-  const isFollowing = followingUserIds?.has(leader.id) ?? initialFollowing ?? false
+
+  const isFollowing = followingUserIds?.has(leader.id) ?? initialFollowing
 
   const followMutation = useUserFollowMutation(leader.id, {
     initialFollowing: isFollowing,
@@ -61,7 +62,7 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
     }
   }
 
-  if (isMyPost) {
+  if (isMyPost || followingUserIds === undefined) {
     return null
   }
 
