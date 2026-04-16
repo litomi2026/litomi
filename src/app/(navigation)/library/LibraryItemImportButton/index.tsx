@@ -2,7 +2,7 @@
 
 import { UploadCloud } from 'lucide-react'
 
-import { useImportMangaModalStore } from './MangaImportModal'
+import { useImportMangaModalStore } from './store'
 
 type Props = {
   libraryId?: number
@@ -10,7 +10,7 @@ type Props = {
   variant?: 'button' | 'icon'
 }
 
-export default function MangaImportButton({ libraryId, className = '' }: Props) {
+export default function LibraryItemImportButton({ libraryId, className = '' }: Props) {
   const openImportModal = useImportMangaModalStore((store) => store.setLibraryId)
 
   return (

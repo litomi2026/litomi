@@ -20,6 +20,7 @@ export default function BookmarkDownloadButton() {
       const { data } = await fetchWithErrorHandling<GETV1BookmarkExportResponse>(url, { credentials: 'include' })
       return data.bookmarks
     },
+
     onSuccess: (bookmarks) => {
       if (bookmarks.length === 0) {
         toast.warning('다운로드할 북마크가 없어요')
