@@ -223,7 +223,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         <p className="text-zinc-400 text-sm mb-4 sm:mb-6">
           계정 보안을 위해 다른 사이트에서 사용하는 비밀번호와 다르게 설정하는 것을 권장해요
         </p>
-        <PasswordChangeForm userId={userId} />
+        <PasswordChangeForm isTwoFactorEnabled={Boolean(isTwoFactorEnabled)} />
       </CollapsibleSection>
       <CollapsibleSection
         description="계정과 모든 데이터를 영구적으로 삭제해요"
