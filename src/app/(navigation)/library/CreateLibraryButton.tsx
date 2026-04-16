@@ -226,7 +226,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 {DEFAULT_COLORS.map((color) => (
                   <button
                     aria-pressed={selectedColor === color}
-                    className="h-12 rounded-lg border-2 border-background transition aria-pressed:ring-2 aria-pressed:ring-brand
+                    className="h-12 rounded-lg border-2 border-background transition aria-pressed:ring-2 aria-pressed:ring-foreground
                       disabled:opacity-50"
                     disabled={isPending}
                     key={color}
