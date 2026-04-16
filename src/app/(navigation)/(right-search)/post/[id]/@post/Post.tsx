@@ -8,7 +8,6 @@ import PostImages from '@/components/post/PostImages'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
-import { formatDistanceToNow } from '@/utils/format/date'
 
 import FollowButton from './FollowButton'
 import PostDetailLikeButton from './PostDetailLikeButton'
@@ -61,8 +60,8 @@ export default function Post({ post }: Props) {
             <PostMangaCard mangaId={post.mangaId} />
           </Link>
         )}
-        <div className="flex items-center gap-1 text-zinc-500">
-          <span title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}>{formatDistanceToNow(post.createdAt)}</span>
+        <div className="flex items-center gap-1 text-sm text-zinc-500">
+          <span>{dayjs(post.createdAt).format('YYYY년 M월 D일 HH:mm')}</span>
           {/* <span>·</span>
           <span className="text-sm">
             <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수
@@ -102,12 +101,7 @@ export default function Post({ post }: Props) {
             </button>
           </div>
         </div>
-        <PostCreationForm
-          buttonText="답글"
-          className="flex"
-          parentPostId={post.id}
-          placeholder="답글 게시하기"
-        >
+        <PostCreationForm buttonText="답글" className="flex" parentPostId={post.id} placeholder="답글 게시하기">
           {author && (
             <p className="text-left">
               <span className="font-semibold text-foreground">@{author.name} </span>
