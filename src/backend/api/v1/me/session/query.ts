@@ -4,6 +4,8 @@ import 'server-only'
 import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
 import { db } from '@/database/supabase/drizzle'
 
+type SessionFamilyWriteExecutor = Pick<Parameters<Parameters<typeof db.transaction>[0]>[0], 'update'> | Pick<typeof db, 'update'>
+
 export async function readCurrentSessionFamilyIdByTokenHash(userId: number, tokenHash: string) {
   const [family] = await db
     .select({ id: authSessionFamilyTable.id })
@@ -14,8 +16,10 @@ export async function readCurrentSessionFamilyIdByTokenHash(userId: number, toke
   return family?.id ?? null
 }
 
-export async function revokeAllSessionsByUserId(userId: number, now: Date) {
-  await db
+export async function revokeAllSessionsByUserId(userId: number, now: Date, tx?: SessionFamilyWriteExecutor) {
+  const executor = (tx ?? db) as Pick<typeof db, 'update'>
+
+  await executor
     .update(authSessionFamilyTable)
     .set({ revokedAt: now, lastUsedAt: now })
     .where(and(eq(authSessionFamilyTable.userId, userId), isNull(authSessionFamilyTable.revokedAt)))

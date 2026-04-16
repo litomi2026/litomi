@@ -78,7 +78,6 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
         setPassword('')
         setIsPasswordVisible(false)
         setToken('')
-        toast.warning(error.message)
         router.refresh()
         return
       }
@@ -96,17 +95,10 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
         toast.warning(error.message)
         return
       }
-
-      if (error.status === 429) {
-        toast.warning(error.message)
-        return
-      }
-
-      toast.error(error.message || '요청 처리 중 오류가 발생했어요')
     },
 
     meta: {
-      suppressGlobalErrorToastForStatuses: [400, 401, 429],
+      suppressGlobalErrorToastForStatuses: [400],
     },
   })
 

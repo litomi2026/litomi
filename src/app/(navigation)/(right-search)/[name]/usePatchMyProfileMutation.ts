@@ -92,7 +92,7 @@ export default function usePatchMyProfileMutation({ onError, onSuccess }: Params
     },
 
     meta: {
-      suppressGlobalErrorToastForStatuses: [400, 401, 409],
+      suppressGlobalErrorToastForStatuses: [400, 409],
     },
   })
 }

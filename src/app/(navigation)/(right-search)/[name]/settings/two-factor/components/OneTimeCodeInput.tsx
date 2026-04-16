@@ -1,14 +1,18 @@
 'use client'
 
 import { ComponentProps } from 'react'
+import { twMerge } from 'tailwind-merge'
 
-export default function OneTimeCodeInput(props: ComponentProps<'input'>) {
+export default function OneTimeCodeInput({ className, ...props }: ComponentProps<'input'>) {
   return (
     <input
       autoCapitalize="off"
       autoComplete="one-time-code"
       autoCorrect="off"
-      className="w-full rounded-lg bg-zinc-800 px-4 py-3 text-center text-xl font-mono text-zinc-100 placeholder-zinc-600"
+      className={twMerge(
+        'w-full rounded-lg bg-zinc-800 px-4 py-3 text-center text-xl font-mono text-zinc-100 placeholder-zinc-600',
+        className,
+      )}
       enterKeyHint="done"
       id="token"
       inputMode="numeric"

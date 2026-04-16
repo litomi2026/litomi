@@ -203,4 +203,4 @@ function isRememberEnabled(formRef: RefObject<HTMLFormElement | null>) {
   return rememberInput instanceof HTMLInputElement && rememberInput.checked
 }
 
-const PASSKEY_LOCAL_ERROR_STATUSES = [400, 404, 429]
+const PASSKEY_LOCAL_ERROR_STATUSES = [400, 404]

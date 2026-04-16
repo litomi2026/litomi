@@ -15,7 +15,7 @@ import { PKCEChallenge } from '@/utils/pkce-browser'
 import { verifyTwoFactorLogin } from './api'
 import { applyTwoFactorProblem, clearTwoFactorValidity } from './util'
 
-const TWO_FACTOR_LOCAL_ERROR_STATUSES = [400, 401, 429]
+const TWO_FACTOR_LOCAL_ERROR_STATUSES = [400, 401]
 
 interface Props {
   onCancel: () => void
