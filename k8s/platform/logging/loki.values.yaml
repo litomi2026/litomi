@@ -80,15 +80,14 @@ sidecar:
 chunksCache:
   enabled: false
 
-# 14일 메트릭에서 results-cache usage가 낮게 유지돼서 footprint를 같이 줄여요.
 resultsCache:
   allocatedMemory: 64
   resources:
     requests:
-      cpu: 5m
+      cpu: 10m
       memory: 32Mi
     limits:
-      cpu: 200m
+      cpu: 50m
       memory: 96Mi
 
 memcachedExporter:
