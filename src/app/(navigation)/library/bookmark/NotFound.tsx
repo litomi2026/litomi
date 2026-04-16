@@ -36,7 +36,7 @@ export default function NotFound() {
           <BookmarkUploadButton variant="cta" />
           <Link
             className="w-full rounded-2xl border-2 border-zinc-800 bg-zinc-900 px-6 py-3 text-center font-semibold text-zinc-100 transition hover:border-zinc-700 hover:bg-zinc-800"
-            href="/new/1"
+            href="/library"
             prefetch={false}
           >
             작품 둘러보기
