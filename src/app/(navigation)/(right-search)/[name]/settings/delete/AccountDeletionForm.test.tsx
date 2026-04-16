@@ -298,6 +298,73 @@ describe('AccountDeletionForm', () => {
     expect(amplitudeResetMock).toHaveBeenCalled()
     expect(identifyMock).toHaveBeenCalledWith(null)
   })
+
+  test('401 오류가 오면 인증 상태를 비우고 새로고침한다', async () => {
+    const user = userEvent.setup()
+
+    fetchRoutes.push({
+      matcher: ({ url }) => url.pathname === '/api/v1/me',
+      method: 'DELETE',
+      response: () =>
+        jsonResponse(
+          {
+            type: 'https://litomi.in/problems/unauthorized',
+            title: '로그인이 필요해요',
+            status: 401,
+            detail: '로그인 정보가 없거나 만료됐어요',
+          },
+          { status: 401 },
+        ),
+    })
+
+    const queryClient = createTestQueryClient()
+    queryClient.setQueryData<GETV1MeResponse | null>(QueryKeys.me, {
+      id: 1,
+      loginId: 'testuser',
+      name: 'testuser',
+      nickname: 'Tester',
+      imageURL: null,
+      adultVerification: { required: false, status: 'adult' },
+      settings: {
+        historySyncEnabled: true,
+        adultVerifiedAdVisible: false,
+        autoDeletionDay: 180,
+      },
+    })
+    queryClient.setQueryData(['me', 'bookmarks'], { items: [1, 2, 3] })
+
+    const view = renderWithTestQueryClient(<AccountDeletionForm isTwoFactorEnabled={true} loginId="testuser" />, {
+      queryClient,
+    })
+
+    await user.click(view.getByRole('button', { name: '계속 진행' }))
+    await fillConfirmationText(user, view, 'testuser 계정을 삭제해요')
+
+    const finalConfirmButton = view.getByRole('button', { name: '최종 확인' })
+
+    await waitFor(() => {
+      expect(finalConfirmButton.hasAttribute('disabled')).toBe(false)
+    })
+
+    await user.click(finalConfirmButton)
+
+    const passwordInput = view.getByLabelText('현재 비밀번호') as HTMLInputElement
+    const tokenInput = view.getByRole('textbox', { name: /2단계 인증 코드/i }) as HTMLInputElement
+    await user.type(passwordInput, 'Password123')
+    await user.type(tokenInput, '123456')
+    fireEvent.submit(view.getByRole('button', { name: '계정 영구 삭제' }).closest('form')!)
+
+    await waitFor(() => {
+      expect(refreshMock).toHaveBeenCalled()
+    })
+
+    expect(queryClient.getQueryData(QueryKeys.me)).toBeNull()
+    expect(queryClient.getQueryData(['me', 'bookmarks'])).toBeUndefined()
+    expect(passwordInput.value).toBe('')
+    expect(tokenInput.value).toBe('')
+    expect(toastWarningMock).not.toHaveBeenCalled()
+    expect(replaceMock).not.toHaveBeenCalled()
+  })
 })
 
 async function fillConfirmationText(

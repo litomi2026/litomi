@@ -39,7 +39,7 @@ type TwoFactorData = {
   authorizationCode: string
 }
 
-const LOGIN_LOCAL_ERROR_STATUSES = [400, 401, 429]
+const LOGIN_LOCAL_ERROR_STATUSES = [400, 401]
 
 type User = POSTV1AuthLoginAuthenticatedResponse | POSTV1AuthPasskeyVerifyResponse
 

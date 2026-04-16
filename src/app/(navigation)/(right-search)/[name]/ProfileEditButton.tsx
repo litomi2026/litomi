@@ -53,7 +53,6 @@ export default function ProfileEditButton({ mePromise }: Props) {
       if (error.status === 401) {
         setFieldErrors({})
         setShowModal(false)
-        toast.warning(error.message)
         router.refresh()
         return
       }
@@ -63,10 +62,6 @@ export default function ProfileEditButton({ mePromise }: Props) {
 
       if (applyProfileProblem(formRef.current, error.problem)) {
         return
-      }
-
-      if (error.status === 400 || error.status === 409) {
-        toast.warning(error.message)
       }
     },
 
