@@ -71,19 +71,12 @@ export const getUserByName = cache(async (name: string, currentUserId?: number |
       createdAt: targetUser.createdAt,
       nickname: targetUser.nickname,
       imageURL: targetUser.imageURL,
-      followingCount: sql<number>`coalesce(${followStats.followingCount}, 0)`,
-      followerCount: sql<number>`coalesce(${followStats.followerCount}, 0)`,
-      isFollowedByCurrentUser: sql<boolean>`coalesce(${followStats.isFollowedByCurrentUser}, false)`,
+      followingCount: followStats.followingCount,
+      followerCount: followStats.followerCount,
+      isFollowedByCurrentUser: followStats.isFollowedByCurrentUser,
     })
     .from(targetUser)
     .leftJoinLateral(followStats, sql`true`)
 
-  if (!user) {
-    return user
-  }
-
-  return {
-    ...user,
-    isCurrentUser: currentUserId === user.id,
-  }
+  return user
 })
