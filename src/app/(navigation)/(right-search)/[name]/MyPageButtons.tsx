@@ -7,19 +7,21 @@ import { getUserIdFromCookie } from '@/utils/cookie'
 import FollowButton from '../post/[id]/@post/FollowButton'
 import { getMe } from './common'
 import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
+import { UserType } from './UserProfileView'
 
 type Props = {
   user: {
     id: number
     name: string
     isFollowedByCurrentUser?: boolean
+    type?: UserType
   }
 }
 
 export default async function MyPageButtons({ user }: Props) {
   const userId = await getUserIdFromCookie()
 
-  if (!userId) {
+  if (!userId || user.type === UserType.GUEST || user.type === UserType.NOT_FOUND) {
     return null
   }
 
