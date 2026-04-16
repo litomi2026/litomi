@@ -1,6 +1,6 @@
 'use client'
 
-import { Link, Share2 } from 'lucide-react'
+import { Check, Link, Share2, X } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
 
 import LogoFacebook from '@/components/icons/LogoFacebook'
@@ -117,11 +117,17 @@ export default function ShareButton({ manga, ...props }: Props) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="text-sm text-center min-h-5">
+            <div className="text-sm text-center h-5">
               {copyStatus === 'success' ? (
-                <p className="text-green-400 font-medium">✓ 링크가 복사되었어요</p>
+                <p className="inline-flex items-center justify-center gap-1.5 text-green-400 font-medium">
+                  <Check aria-hidden className="size-4 shrink-0" />
+                  링크가 복사되었어요
+                </p>
               ) : copyStatus === 'error' ? (
-                <p className="text-red-400 font-medium">✗ 복사에 실패했어요</p>
+                <p className="inline-flex items-center justify-center gap-1.5 text-red-400 font-medium">
+                  <X aria-hidden className="size-4 shrink-0" />
+                  복사에 실패했어요
+                </p>
               ) : (
                 <p className="text-zinc-500">링크 복사</p>
               )}

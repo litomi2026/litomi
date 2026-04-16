@@ -5,14 +5,14 @@ import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
-import MangaImportButton from '@/components/card/MangaImportButton'
-import MangaImportModal from '@/components/card/MangaImportModal'
+import LibraryItemImportButton from '@/app/(navigation)/library/LibraryItemImportButton'
 
 import type { BulkActionDescriptor, BulkTargetLibrary } from './bulkActionTypes'
 import type { ReadingHistorySource } from './history/common'
 
 import AutoHideNavigation from '../AutoHideNavigation'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
+import BookmarkImportButton from './bookmark/BookmarkImportButton'
 import useBulkDeleteBookmarkAction from './bookmark/useBulkDeleteBookmarkAction'
 import { getBulkOperationPermissions } from './bulkOperationPermissions'
 import HistoryClearAllButton from './history/HistoryClearAllButton'
@@ -278,18 +278,14 @@ export default function LibraryHeader({
           {!isSelectionMode && pageKind === 'history' && (userId || historySource === 'local') && (
             <HistoryClearAllButton historyCount={historyCount} source={historySource} />
           )}
+          {!isSelectionMode && pageKind === 'bookmark' && Boolean(userId) && <BookmarkImportButton variant="icon" />}
           {!isSelectionMode && isPublicLibrary && currentLibrary && (
             <>
               <PinLibraryButton className="p-3" library={currentLibrary} libraryId={currentLibrary.id} />
               <ShareLibraryButton className="p-3" library={currentLibrary} />
             </>
           )}
-          {!isSelectionMode && isOwner && currentLibrary && (
-            <>
-              <MangaImportButton libraryId={currentLibrary.id} />
-              <MangaImportModal />
-            </>
-          )}
+          {!isSelectionMode && isOwner && currentLibrary && <LibraryItemImportButton libraryId={currentLibrary.id} />}
           {permissions.canSelectItems && (
             <button
               className="p-3 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"

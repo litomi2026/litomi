@@ -1,7 +1,7 @@
 'use client'
 
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { BookOpen, Heart, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -261,7 +261,7 @@ function WebtoonCard({ item, provider, domain }: WebtoonCardProps) {
           <img alt={item.title} className="w-full h-full object-cover" loading="lazy" src={item.thumbnail} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-zinc-600">
-            <span className="text-2xl">📚</span>
+            <BookOpen aria-hidden className="size-8" />
           </div>
         )}
 
@@ -286,7 +286,7 @@ function WebtoonCard({ item, provider, domain }: WebtoonCardProps) {
         {item.genre && <p className="text-xs text-zinc-500 truncate">{item.genre}</p>}
         {item.likes !== undefined && (
           <p className="text-xs text-zinc-600">
-            <span className="mr-0.5">♥</span>
+            <Heart aria-hidden className="mr-0.5 inline size-3.5 fill-current align-[-2px]" />
             {item.likes}
           </p>
         )}

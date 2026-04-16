@@ -1,150 +1,114 @@
 'use client'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, UploadCloud } from 'lucide-react'
-import ms from 'ms'
-import { SubmitEvent, useMemo, useState } from 'react'
-import { toast } from 'sonner'
-import { create } from 'zustand'
+import { SubmitEvent, useEffect, useId, useMemo, useState } from 'react'
 
-import { bulkCopyToLibrary } from '@/app/(navigation)/library/api'
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
-import { MAX_ITEMS_PER_LIBRARY } from '@/constants/policy'
-import { QueryKeys } from '@/constants/query'
-import useDebouncedValue from '@/hook/useDebouncedValue'
 
-type ImportMangaModalStore = {
-  libraryId: number | null
-  setLibraryId: (libraryId: number | null) => void
-}
+import { parseMangaIds } from './parseMangaIds'
 
-const placeholder = `1234567
+const DIALOG_TITLE = '작품 가져오기'
+const INPUT_LABEL = '작품 ID 입력'
+
+const PLACEHOLDER = `1234567
 8879273
 2345678, 3456789, 18827
 
-쉼표 또는 여러 줄로 구분해서 입력하기`
+쉼표, 공백, 여러 줄로 구분해서 입력하기`
 
-export const useImportMangaModalStore = create<ImportMangaModalStore>()((set) => ({
-  libraryId: null,
-  setLibraryId: (libraryId: number | null) => set({ libraryId }),
-}))
+export type MangaIdActionModalProps = {
+  open: boolean
+  onClose: () => void
+  onAfterClose?: () => void
+  maxCount: number
+  isPending: boolean
+  onSubmit: (mangaIds: number[]) => void
+}
 
-export default function MangaImportModal() {
+export default function MangaImportModal({
+  open,
+  onClose,
+  onAfterClose,
+  maxCount,
+  isPending,
+  onSubmit,
+}: MangaIdActionModalProps) {
+  const inputId = useId()
+  const helperTextId = useId()
   const [inputText, setInputText] = useState('')
-  const debouncedInputText = useDebouncedValue({ value: inputText, delay: ms('0.5s') })
-  const mangaIds = useMemo(() => parseIDs(debouncedInputText), [debouncedInputText])
-  const { libraryId, setLibraryId } = useImportMangaModalStore()
-  const queryClient = useQueryClient()
 
-  const bulkImportMutation = useMutation({
-    mutationFn: bulkCopyToLibrary,
-    onSuccess: ({ copiedCount: successCount }, { mangaIds, toLibraryId }) => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(toLibraryId) })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+  const mangaIds = useMemo(() => parseMangaIds(inputText), [inputText])
+  const isOverLimit = mangaIds.length > maxCount
+  const isSubmitDisabled = isPending || mangaIds.length === 0 || isOverLimit
 
-      if (successCount > 0) {
-        const failedCount = mangaIds.length - successCount
-        const extraMessage = failedCount > 0 ? ` (중복 ${failedCount}개)` : ''
-        toast.success(`${successCount}개 작품을 가져왔어요${extraMessage}`)
-        handleClose()
-      } else {
-        toast.error(`작품을 가져오는데 실패했어요`)
-      }
-    },
-  })
+  function handleSubmit(event?: SubmitEvent<HTMLFormElement>) {
+    event?.preventDefault()
 
-  function handleClose() {
-    setLibraryId(null)
-    setInputText('')
+    if (isSubmitDisabled) {
+      return
+    }
+
+    onSubmit(mangaIds)
   }
 
-  async function handleImport(e?: SubmitEvent<HTMLFormElement>) {
-    e?.preventDefault()
-
-    if (!libraryId) {
-      toast.warning('서재를 선택해 주세요')
-      return
+  function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !isPending) {
+      event.preventDefault()
+      handleSubmit()
     }
-
-    if (mangaIds.length === 0) {
-      toast.warning('유효한 작품 ID를 입력해 주세요')
-      return
-    }
-
-    if (mangaIds.length > MAX_ITEMS_PER_LIBRARY) {
-      toast.warning(`한 번에 최대 ${MAX_ITEMS_PER_LIBRARY}개까지 가져올 수 있어요`)
-      return
-    }
-
-    bulkImportMutation.mutate({ mangaIds, toLibraryId: libraryId })
   }
+
+  useEffect(() => {
+    if (!open) {
+      setInputText('')
+    }
+  }, [open])
 
   return (
-    <Dialog ariaLabel="작품 가져오기" onClose={handleClose} open={Boolean(libraryId)}>
-      <form className="flex flex-col flex-1 min-h-0" onSubmit={handleImport}>
-        <DialogHeader onClose={handleClose} title="작품 가져오기" />
+    <Dialog ariaLabel={DIALOG_TITLE} onAfterClose={onAfterClose} onClose={onClose} open={open}>
+      <form className="flex flex-col flex-1 min-h-0" onSubmit={handleSubmit}>
+        <DialogHeader onClose={onClose} title={DIALOG_TITLE} />
 
         <DialogBody className="space-y-4">
-          <label className="block text-sm font-medium text-zinc-300 mb-2">
-            작품 ID 입력
-            <span className="ml-2 text-xs text-zinc-500">
+          <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor={inputId}>
+            {INPUT_LABEL}
+            <span aria-hidden="true" className="ml-2 text-xs text-zinc-500">
               {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'}+Enter로 제출 가능
             </span>
           </label>
           <textarea
-            className="w-full min-h-32 max-h-96 px-3 py-2 bg-zinc-800 border-2 border-zinc-700 rounded-lg transition font-mono
+            aria-describedby={helperTextId}
+            aria-label={INPUT_LABEL}
+            className="w-full min-h-32 max-h-96 mb-0 px-3 py-2 border-2 border-zinc-700 rounded-lg transition font-mono
               text-zinc-100 placeholder-zinc-500 focus:border-brand focus:outline-none"
-            disabled={bulkImportMutation.isPending}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyDown={(e) => {
-              if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                if (!bulkImportMutation.isPending) {
-                  handleImport()
-                }
-              }
-            }}
-            placeholder={placeholder}
+            disabled={isPending}
+            id={inputId}
+            onChange={(event) => setInputText(event.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={PLACEHOLDER}
             value={inputText}
           />
+          <p className="sr-only" id={helperTextId}>
+            숫자로 된 작품 ID를 붙여넣으면 자동으로 감지해요.
+          </p>
         </DialogBody>
 
         <DialogFooter className="border-t-2 border-zinc-800">
           <button
-            className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium 
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium
               bg-brand rounded-lg transition hover:bg-brand/90
               disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
-            disabled={bulkImportMutation.isPending || mangaIds.length === 0 || !libraryId}
+            disabled={isSubmitDisabled}
             type="submit"
           >
-            {bulkImportMutation.isPending ? (
-              <>
-                <Loader2 className="size-5 animate-spin" />
-                <span>가져오는 중</span>
-              </>
-            ) : (
-              <>
-                <UploadCloud className="size-5" />
-                <span>{mangaIds.length > 0 ? `${mangaIds.length}개 가져오기` : '가져오기'}</span>
-              </>
-            )}
+            {isPending ? <Loader2 className="size-5 animate-spin" /> : <UploadCloud className="size-5" />}
+            <span>{mangaIds.length > 0 ? `${mangaIds.length.toLocaleString()}개 가져오기` : '가져오기'}</span>
           </button>
         </DialogFooter>
       </form>
     </Dialog>
   )
-}
-
-function parseIDs(text: string): number[] {
-  const idPattern = /\b\d+\b/g
-  const matches = text.match(idPattern)
-
-  if (!matches) {
-    return []
-  }
-
-  const uniqueIds = [...new Set(matches.map(Number))]
-  return uniqueIds
 }

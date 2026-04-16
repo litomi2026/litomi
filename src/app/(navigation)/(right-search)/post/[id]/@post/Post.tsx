@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import 'dayjs/locale/ko'
 import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
@@ -61,7 +62,7 @@ export default function Post({ post }: Props) {
           </Link>
         )}
         <div className="flex items-center gap-1 text-sm text-zinc-500">
-          <span>{dayjs(post.createdAt).format('YYYY년 M월 D일 HH:mm')}</span>
+          <span>{dayjs(post.createdAt).locale('ko').format('YYYY년 M월 D일 A h:mm')}</span>
           {/* <span>·</span>
           <span className="text-sm">
             <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수

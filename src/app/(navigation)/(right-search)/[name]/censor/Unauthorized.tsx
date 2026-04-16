@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import Link from 'next/link'
 
 import LoginButton from '@/components/LoginButton'
@@ -15,21 +15,15 @@ export default function Unauthorized() {
         </h2>
         <ul className="mb-8 space-y-3" role="list">
           <li className="flex justify-center items-center gap-3">
-            <span aria-hidden="true" className="text-brand mt-0.5">
-              ✓
-            </span>
+            <Check aria-hidden className="size-4 shrink-0 text-brand" />
             <span className="text-zinc-300">태그, 작가, 캐릭터별 필터링</span>
           </li>
           <li className="flex justify-center items-center gap-3">
-            <span aria-hidden="true" className="text-brand mt-0.5">
-              ✓
-            </span>
+            <Check aria-hidden className="size-4 shrink-0 text-brand" />
             <span className="text-zinc-300">썸네일 블러 처리 또는 완전히 숨기기</span>
           </li>
           <li className="flex justify-center items-center gap-3">
-            <span aria-hidden="true" className="text-brand mt-0.5">
-              ✓
-            </span>
+            <Check aria-hidden className="size-4 shrink-0 text-brand" />
             <span className="text-zinc-300">모든 기기에서 설정 동기화</span>
           </li>
         </ul>

@@ -1,3 +1,4 @@
+import { type LucideIcon, Target, Users } from 'lucide-react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -44,26 +45,27 @@ export default async function Page({ params }: PageProps<'/posts/[filter]'>) {
   return <PostList filter={postFilter} NotFound={<EmptyState filter={filter} />} showMangaCover />
 }
 
-const emptyStateConfig = {
+const emptyStateConfig: Record<PostFilterParams, { title: string; description: string; icon: LucideIcon }> = {
   [PostFilterParams.FOLLOWING]: {
     title: '팔로우한 사용자의 글이 없어요',
     description: '다른 사용자를 팔로우하거나 모든 글을 확인해보세요',
-    icon: '👥',
+    icon: Users,
   },
   [PostFilterParams.RECOMMEND]: {
     title: '추천 포스트가 없어요',
     description: '잠시 후 다시 확인해 주세요',
-    icon: '🎯',
+    icon: Target,
   },
 }
 
 function EmptyState({ filter }: { filter: PostFilterParams }) {
   const config = emptyStateConfig[filter]
+  const Icon = config.icon
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      <div aria-label="empty state icon" className="text-4xl mb-4" role="img">
-        {config.icon}
+      <div aria-label="empty state icon" className="mb-4" role="img">
+        <Icon aria-hidden className="size-10 text-zinc-500" />
       </div>
       <h3 className="text-lg font-semibold text-zinc-200 mb-2">{config.title}</h3>
       <p className="text-sm text-zinc-500 mb-6 max-w-sm">{config.description}</p>

@@ -3,6 +3,9 @@ import Link from 'next/link'
 
 import Onboarding from '@/app/(navigation)/(right-search)/[name]/settings/Onboarding'
 
+import BookmarkImportButton from './BookmarkImportButton'
+import BookmarkUploadButton from './BookmarkUploadButton'
+
 export default function NotFound() {
   return (
     <div className="flex-1 flex items-center justify-center">
@@ -28,13 +31,17 @@ export default function NotFound() {
         icon={<Bookmark className="size-12 text-brand" />}
         title="북마크가 비어 있어요"
       >
-        <Link
-          className="px-6 py-3 rounded-2xl bg-brand font-semibold text-background hover:opacity-80 transition"
-          href="/new/1"
-          prefetch={false}
-        >
-          작품 둘러보기
-        </Link>
+        <div className="flex w-full max-w-sm flex-col gap-3">
+          <BookmarkImportButton variant="cta" />
+          <BookmarkUploadButton variant="cta" />
+          <Link
+            className="w-full rounded-2xl border-2 border-zinc-800 bg-zinc-900 px-6 py-3 text-center font-semibold text-zinc-100 transition hover:border-zinc-700 hover:bg-zinc-800"
+            href="/library"
+            prefetch={false}
+          >
+            작품 둘러보기
+          </Link>
+        </div>
       </Onboarding>
     </div>
   )
