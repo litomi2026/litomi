@@ -45,9 +45,9 @@ singleBinary:
   resources:
     requests:
       cpu: 25m
-      memory: 448Mi
+      memory: 480Mi
     limits:
-      cpu: 75m
+      cpu: 200m
       memory: 640Mi
   extraArgs:
     # Secret 값을 Loki 설정으로 확장하기 위해 env expansion을 활성화해요.
@@ -71,10 +71,10 @@ sidecar:
   resources:
     requests:
       cpu: 5m
-      memory: 96Mi
-    limits:
-      cpu: 20m
       memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 192Mi
 
 # Single-node(16GiB) 환경에서는 chunks-cache 기본 request가 너무 커 스케줄링 실패가 발생해요.
 chunksCache:
@@ -88,7 +88,7 @@ resultsCache:
       cpu: 5m
       memory: 32Mi
     limits:
-      cpu: 20m
+      cpu: 200m
       memory: 96Mi
 
 memcachedExporter:
@@ -97,17 +97,17 @@ memcachedExporter:
       cpu: 5m
       memory: 32Mi
     limits:
-      cpu: 20m
-      memory: 48Mi
+      cpu: 200m
+      memory: 64Mi
 
 lokiCanary:
   resources:
     requests:
       cpu: 5m
-      memory: 40Mi
+      memory: 64Mi
     limits:
-      cpu: 20m
-      memory: 56Mi
+      cpu: 200m
+      memory: 128Mi
 
 backend:
   replicas: 0

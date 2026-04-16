@@ -39,10 +39,10 @@ ports:
 resources:
   requests:
     cpu: 10m
-    memory: 160Mi
+    memory: 192Mi
   limits:
-    cpu: 50m
-    memory: 224Mi
+    cpu: 200m
+    memory: 256Mi
 
 serviceMonitor:
   enabled: true

@@ -30,9 +30,9 @@ tempo:
   resources:
     requests:
       cpu: 10m
-      memory: 512Mi
+      memory: 544Mi
     limits:
-      cpu: 40m
+      cpu: 200m
       # 14일 p99는 낮지만, WAL/compaction과 chart 기본 메모리 동작을 고려해 limit은 보수적으로 남겨요.
       memory: 1280Mi
   storage:

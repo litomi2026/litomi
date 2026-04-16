@@ -36,10 +36,10 @@ tenant:
       resources:
         requests:
           cpu: 30m
-          memory: 384Mi
+          memory: 416Mi
         limits:
-          cpu: 150m
-          memory: 512Mi
+          cpu: 300m
+          memory: 576Mi
 
   certificate:
     # Velero가 내부 HTTP endpoint로 접근하므로 auto TLS를 끄고 시작해요.

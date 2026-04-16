@@ -15,10 +15,10 @@ spec:
           resources:
             requests:
               cpu: 40m
-              memory: 384Mi
-            limits:
-              cpu: 120m
               memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 640Mi
           env:
             - name: POSTGRES_APPLICATION_NAME
               value: litomi-web-stg
