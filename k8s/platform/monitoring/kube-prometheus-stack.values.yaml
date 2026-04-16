@@ -66,10 +66,19 @@ alertmanager:
     resources:
       requests:
         cpu: 5m
-        memory: 48Mi
-      limits:
-        cpu: 50m
         memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+    containers:
+      - name: config-reloader
+        resources:
+          requests:
+            cpu: 5m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 64Mi
     # Small PVC is enough for silences/inhibitions history.
     storage:
       volumeClaimTemplate:
@@ -88,18 +97,18 @@ grafana:
   resources:
     requests:
       cpu: 20m
-      memory: 224Mi
+      memory: 256Mi
     limits:
-      cpu: 100m
-      memory: 352Mi
+      cpu: 200m
+      memory: 448Mi
   sidecar:
     resources:
       requests:
         cpu: 5m
-        memory: 80Mi
-      limits:
-        cpu: 50m
         memory: 96Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
   additionalDataSources:
     - name: Loki
       uid: loki
@@ -138,10 +147,10 @@ kube-state-metrics:
   resources:
     requests:
       cpu: 5m
-      memory: 56Mi
+      memory: 64Mi
     limits:
-      cpu: 50m
-      memory: 80Mi
+      cpu: 200m
+      memory: 128Mi
 
 prometheus-node-exporter:
   resources:
@@ -149,8 +158,8 @@ prometheus-node-exporter:
       cpu: 5m
       memory: 32Mi
     limits:
-      cpu: 50m
-      memory: 48Mi
+      cpu: 200m
+      memory: 64Mi
 
 prometheusOperator:
   # Kubernetes v1.33+에서 Endpoints(v1)는 deprecated라서, kubelet 대상도 EndpointSlice로 만들어요.
@@ -159,10 +168,10 @@ prometheusOperator:
   resources:
     requests:
       cpu: 10m
-      memory: 64Mi
-    limits:
-      cpu: 50m
       memory: 96Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
   prometheusConfigReloader:
     resources:
       requests:
@@ -189,10 +198,19 @@ prometheus:
     resources:
       requests:
         cpu: 500m
-        memory: 768Mi
+        memory: 1184Mi
       limits:
-        cpu: 2000m
-        memory: 1536Mi
+        cpu: 4
+        memory: 1664Mi
+    containers:
+      - name: config-reloader
+        resources:
+          requests:
+            cpu: 5m
+            memory: 64Mi
+          limits:
+            cpu: 1
+            memory: 128Mi
 
     storageSpec:
       volumeClaimTemplate:

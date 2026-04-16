@@ -15,10 +15,10 @@ spec:
           resources:
             requests:
               cpu: 80m
-              memory: 640Mi
+              memory: 864Mi
             limits:
-              cpu: 240m
-              memory: 896Mi
+              cpu: 500m
+              memory: 1088Mi
           env:
             - name: POSTGRES_APPLICATION_NAME
               value: litomi-backend-stg

@@ -49,10 +49,10 @@ spec:
           resources:
             requests:
               cpu: 80m
-              memory: 640Mi
-            limits:
-              cpu: 400m
               memory: 896Mi
+            limits:
+              cpu: 800m
+              memory: 1152Mi
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

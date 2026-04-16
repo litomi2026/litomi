@@ -5,10 +5,10 @@ kind: DaemonSet
 resources:
   requests:
     cpu: 10m
-    memory: 24Mi
+    memory: 32Mi
   limits:
-    cpu: 30m
-    memory: 40Mi
+    cpu: 200m
+    memory: 64Mi
 
 tolerations:
   - key: node-role.kubernetes.io/control-plane
