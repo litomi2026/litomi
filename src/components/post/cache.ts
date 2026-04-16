@@ -20,6 +20,12 @@ export function applyPostLikeCountDeltaInPostLists(queryClient: QueryClient, pos
   })
 }
 
+export function removeAuthorPostsFromFollowingPostLists(queryClient: QueryClient, authorId: number) {
+  queryClient.setQueriesData<InfiniteData<GETV1PostResponse>>({ queryKey: QueryKeys.followingPosts }, (data) =>
+    removeAuthorPostsFromPostList(data, authorId),
+  )
+}
+
 export function removePostFromPostLists(queryClient: QueryClient, postId: number) {
   queryClient.setQueriesData<InfiniteData<GETV1PostResponse>>({ queryKey: QueryKeys.postsBase }, (data) =>
     removePostFromPostList(data, postId),
@@ -73,6 +79,10 @@ export function setPostLikedInLikedPostIds(queryClient: QueryClient, postId: num
       postIds: previous.postIds.filter((id) => id !== postId),
     }
   })
+}
+
+export function snapshotFollowingPostLists(queryClient: QueryClient): PostListSnapshot {
+  return queryClient.getQueriesData<InfiniteData<GETV1PostResponse>>({ queryKey: QueryKeys.followingPosts })
 }
 
 export function snapshotLikedPostIds(queryClient: QueryClient): LikedPostIdsSnapshot {
@@ -148,6 +158,31 @@ function patchPostLists(queryClient: QueryClient, postId: number, updater: (post
   queryClient.setQueriesData<InfiniteData<GETV1PostResponse>>({ queryKey: QueryKeys.postsBase }, (data) => {
     return patchPostList(data, postId, updater)
   })
+}
+
+function removeAuthorPostsFromPostList(data: InfiniteData<GETV1PostResponse> | undefined, authorId: number) {
+  if (!data) {
+    return data
+  }
+
+  let didChange = false
+
+  const pages = data.pages.map((page) => {
+    const posts = page.posts.filter((post) => post.author?.id !== authorId)
+
+    if (posts.length === page.posts.length) {
+      return page
+    }
+
+    didChange = true
+    return { ...page, posts }
+  })
+
+  if (!didChange) {
+    return data
+  }
+
+  return { ...data, pages }
 }
 
 function removePostFromPostList(data: InfiniteData<GETV1PostResponse> | undefined, postId: number) {
