@@ -29,8 +29,8 @@ export default function NotFound() {
         title="아직 평가한 작품이 없어요"
       >
         <Link
-          className="px-6 py-3 rounded-2xl bg-brand font-semibold text-background hover:opacity-80 transition"
-          href="/new/1"
+          className="w-full px-6 py-3 rounded-2xl bg-brand font-semibold text-background hover:opacity-80 transition"
+          href="/library"
           prefetch={false}
         >
           작품 둘러보기

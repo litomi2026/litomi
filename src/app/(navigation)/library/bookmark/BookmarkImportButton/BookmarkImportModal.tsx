@@ -1,6 +1,7 @@
 'use client'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import type { POSTV1BookmarkResponse } from '@/backend/api/v1/bookmark/POST'
@@ -16,6 +17,7 @@ import { useBookmarkImportModalStore } from './store'
 export default function BookmarkImportModal() {
   const queryClient = useQueryClient()
   const { isOpen, setIsOpen } = useBookmarkImportModalStore()
+  const router = useRouter()
 
   const mutation = useMutation<POSTV1BookmarkResponse, ProblemDetailsError, { mangaIds: number[] }>({
     mutationFn: addBookmarks,
@@ -42,6 +44,7 @@ export default function BookmarkImportModal() {
         const suffix = summary.length > 0 ? ` (${summary.join(', ')})` : ''
         toast.success(`${createdCount}개 작품을 북마크했어요${suffix}`)
         setIsOpen(false)
+        router.refresh()
         return
       }
 

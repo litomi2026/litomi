@@ -65,7 +65,7 @@ export default function LibraryLayout({ children }: Props) {
     isFetchingNextPage: isFetchingNextPinnedPage,
     isPending: isPinnedLibrariesPending,
   } = usePinnedLibraryListInfiniteQuery({
-    enabled: !isMePending && !!userId,
+    enabled: !isMePending && Boolean(userId),
     userId,
   })
 
