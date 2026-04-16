@@ -18,7 +18,7 @@ type Params = {
   postId?: number
   parentPostId?: number
   username?: string
-  followerId?: number
+  currentUserId?: number
 }
 
 export default async function selectPost({
@@ -30,7 +30,7 @@ export default async function selectPost({
   postId,
   parentPostId,
   username,
-  followerId,
+  currentUserId,
 }: Params) {
   const conditions: (SQL | undefined)[] = []
   const commentPosts = alias(postTable, 'comment_posts')
@@ -68,11 +68,11 @@ export default async function selectPost({
   }
 
   if (filter === PostFilter.FOLLOWING) {
-    if (!followerId) {
-      throw new Error('viewerUserId is required for following filter')
+    if (!currentUserId) {
+      throw new Error('currentUserId is required for following filter')
     }
 
-    conditions.push(eq(userFollowTable.followerId, followerId))
+    conditions.push(eq(userFollowTable.followerId, currentUserId))
   }
 
   let baseQuery = db

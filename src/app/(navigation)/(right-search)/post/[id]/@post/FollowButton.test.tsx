@@ -83,13 +83,48 @@ function mockAuthenticatedRequests({ followingUserIds = [] }: { followingUserIds
 }
 
 describe('FollowButton', () => {
-  test('로그인하지 않은 사용자가 누르면 로그인 토스트를 보여준다', async () => {
+  test('로그인하지 않은 사용자에게는 팔로우 버튼을 렌더링하지 않는다', async () => {
     const view = renderWithTestQueryClient(<FollowButton leader={{ id: 10, name: 'leader' }} />)
 
-    fireEvent.click(view.getByRole('button', { name: '팔로우' }))
-
-    expect(showLoginRequiredToastMock).toHaveBeenCalledTimes(1)
+    expect(view.queryByRole('button', { name: '팔로우' })).toBeNull()
+    expect(showLoginRequiredToastMock).not.toHaveBeenCalled()
     expect(fetchController.calls.some((call) => call.url.pathname === '/api/v1/user/10/follow')).toBe(false)
+  })
+
+  test('팔로우 상태를 아직 불러오지 못했으면 버튼을 렌더링하지 않는다', async () => {
+    setAuthHintCookie()
+    fetchRoutes.push(
+      {
+        matcher: ({ url }) => url.pathname === '/api/v1/me',
+        response: () =>
+          jsonResponse({
+            id: 1,
+            imageURL: null,
+            loginId: 'user1',
+            name: 'user1',
+            nickname: 'User One',
+            adultVerification: { required: false, status: 'adult' },
+            settings: {
+              historySyncEnabled: true,
+              adultVerifiedAdVisible: false,
+              autoDeletionDay: 180,
+            },
+          }),
+      },
+      {
+        matcher: ({ url }) => url.pathname === '/api/v1/me/following',
+        response: () => new Promise<Response>(() => {}),
+      },
+    )
+
+    const view = renderWithTestQueryClient(<FollowButton leader={{ id: 10, name: 'leader' }} />)
+
+    await waitFor(() => {
+      expect(fetchController.calls.some((call) => call.url.pathname === '/api/v1/me/following')).toBe(true)
+    })
+
+    expect(view.queryByRole('button', { name: '팔로우 상태 불러오는 중' })).toBeNull()
+    expect(view.queryByRole('button', { name: '팔로우' })).toBeNull()
   })
 
   test('로그인한 사용자가 팔로우하면 PUT 요청과 버튼 상태 갱신이 동작한다', async () => {
@@ -112,6 +147,10 @@ describe('FollowButton', () => {
     const followingRequestCountBeforeClick = fetchController.calls.filter(
       (call) => call.url.pathname === '/api/v1/me/following',
     ).length
+
+    await waitFor(() => {
+      expect(view.getByRole('button', { name: '팔로우' })).toBeTruthy()
+    })
 
     const followButton = view.getByRole('button', { name: '팔로우' })
     fireEvent.click(followButton)

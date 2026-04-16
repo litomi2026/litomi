@@ -1,3 +1,5 @@
+import { getUserIdFromCookie } from '@/utils/cookie'
+
 import { getUserByName } from './common'
 import UserProfileView, { UserType } from './UserProfileView'
 
@@ -13,19 +15,22 @@ export default async function UserProfile({ username }: Readonly<Props>) {
 async function resolveUser(username: string) {
   if (!username) {
     return {
-      type: UserType.GUEST,
+      id: 0,
       name: '',
       nickname: '비회원',
+      type: UserType.GUEST,
     }
   }
 
-  const existingUser = await getUserByName(username)
+  const currentUserId = await getUserIdFromCookie()
+  const existingUser = await getUserByName(username, currentUserId)
 
   if (!existingUser) {
     return {
-      type: UserType.NOT_FOUND,
+      id: 0,
       name: username,
       nickname: '존재하지 않는 사용자',
+      type: UserType.NOT_FOUND,
     }
   }
 

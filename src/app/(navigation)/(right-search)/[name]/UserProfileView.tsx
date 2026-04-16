@@ -13,16 +13,19 @@ export enum UserType {
 
 type Props = {
   user: {
-    id?: number
-    name?: string
+    id: number
+    name: string
     nickname?: string
     imageURL?: string | null
     createdAt?: Date
     type?: UserType
+    followerCount?: number
+    followingCount?: number
+    isFollowedByCurrentUser?: boolean
   }
 }
 
-export default function UserProfileView({ user }: Readonly<Props>) {
+export default function UserProfileView({ user }: Props) {
   return (
     <>
       <div className="relative h-48 w-full shrink-0">
@@ -81,11 +84,11 @@ function UserProfileDescription({ user }: Readonly<Props>) {
       </div>
       <div className="mt-4 flex gap-6">
         <div className="flex gap-2">
-          <span className="font-bold">{123}</span>
+          <span className="font-bold">{user.followingCount ?? '.'}</span>
           <span className="text-zinc-500">팔로우 중</span>
         </div>
         <div className="flex gap-2">
-          <span className="font-bold">{456}</span>
+          <span className="font-bold">{user.followerCount ?? '.'}</span>
           <span className="text-zinc-500">팔로워</span>
         </div>
       </div>
