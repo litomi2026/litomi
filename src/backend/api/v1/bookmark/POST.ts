@@ -7,13 +7,13 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { MAX_MANGA_ID } from '@/constants/policy'
+import { MAX_BOOKMARK_BATCH_SIZE, MAX_MANGA_ID } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 
 import { BookmarkLimitReachedError, saveBookmarks } from './save'
 
 const postBodySchema = z.object({
-  mangaIds: z.array(z.coerce.number().int().positive().max(MAX_MANGA_ID)).min(1).max(100),
+  mangaIds: z.array(z.coerce.number().int().positive().max(MAX_MANGA_ID)).min(1).max(MAX_BOOKMARK_BATCH_SIZE),
 })
 
 export type POSTV1BookmarkBody = z.infer<typeof postBodySchema>

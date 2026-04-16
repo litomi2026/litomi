@@ -124,6 +124,29 @@ describe('POST /api/v1/bookmark', () => {
     )
   })
 
+  test('mangaIds가 101개면 400 invalid-input을 반환한다', async () => {
+    const { auth, user } = await createBookmarkAuthContext()
+
+    const response = await requestBackend({
+      path: '/api/v1/bookmark',
+      method: 'POST',
+      cookies: auth.cookieHeader,
+      json: {
+        mangaIds: Array.from({ length: 101 }, (_, index) => index + 1),
+      },
+    })
+
+    const problem = await expectProblemResponse(response, {
+      status: 400,
+      code: 'invalid-input',
+      detail: '입력을 확인해 주세요',
+      instance: '/api/v1/bookmark',
+    })
+
+    expectInvalidParams(problem, [{ name: 'mangaIds' }])
+    expect(await listBookmarksForUser(user.id)).toEqual([])
+  })
+
   test('이미 한도에 도달했고 확장도 없으면 403을 반환한다', async () => {
     const { auth, user } = await createBookmarkAuthContext()
 

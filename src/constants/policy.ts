@@ -1,4 +1,5 @@
 export const MAX_BOOKMARK_FILE_SIZE = 1024 * 1024 // 1 MiB
+export const MAX_BOOKMARK_BATCH_SIZE = 100
 export const MAX_BOOKMARKS_PER_USER = 500
 export const MAX_CENSORSHIPS_PER_USER = 20
 export const MAX_CREDENTIALS_PER_USER = 10
