@@ -1,6 +1,7 @@
 'use client'
 
 import { captureException } from '@sentry/nextjs'
+import { TriangleAlert } from 'lucide-react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
@@ -38,7 +39,10 @@ export default function ErrorPage({ error, reset }: Readonly<Props>) {
 
   return (
     <main className="flex flex-col grow justify-center items-center gap-6 text-center px-4">
-      <h1 className="text-xl md:text-2xl">⚠️ 검색 중 오류가 발생했어요</h1>
+      <h1 className="flex items-center justify-center gap-2 text-xl md:text-2xl">
+        <TriangleAlert aria-hidden className="size-6 shrink-0 text-amber-400" />
+        검색 중 오류가 발생했어요
+      </h1>
       <div className="grid gap-2 max-w-md">
         {error.digest && <span className="text-sm text-zinc-500">오류 코드: {error.digest}</span>}
         <p className="text-red-400">{getErrorMessage()}</p>

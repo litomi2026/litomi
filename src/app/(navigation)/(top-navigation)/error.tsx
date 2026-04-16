@@ -1,6 +1,7 @@
 'use client'
 
 import { captureException } from '@sentry/nextjs'
+import { TriangleAlert } from 'lucide-react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
@@ -25,7 +26,10 @@ export default function ErrorPage({ error, reset }: Readonly<Props>) {
 
   return (
     <main className="flex flex-col grow justify-center items-center gap-6 text-center">
-      <h1 className="text-xl md:text-2xl">⚠️ 오류가 발생했어요</h1>
+      <h1 className="flex items-center justify-center gap-2 text-xl md:text-2xl">
+        <TriangleAlert aria-hidden className="size-6 shrink-0 text-amber-400" />
+        오류가 발생했어요
+      </h1>
       <div className="grid gap-2">
         <span className="text-sm">{error.digest}</span>
         <p className="text-red-600">{error.message}</p>
