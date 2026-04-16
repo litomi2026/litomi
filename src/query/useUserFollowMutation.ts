@@ -31,7 +31,7 @@ type Context = {
 type FollowingUserIdsSnapshot = GETV1MeFollowingResponse | undefined
 
 type Options = {
-  currentFollowing?: boolean
+  initialFollowing?: boolean
   onError?: (following: boolean) => void
   onOptimisticUpdate?: (following: boolean) => void
   onSuccess?: (following: boolean) => void
@@ -56,7 +56,7 @@ export async function toggleUserFollowing(targetUserId: number, following: boole
 
 export default function useUserFollowMutation(
   targetUserId: number,
-  { currentFollowing, onError, onOptimisticUpdate, onSuccess }: Options = {},
+  { initialFollowing, onError, onOptimisticUpdate, onSuccess }: Options = {},
 ) {
   const { data: me } = useMeQuery()
   const queryClient = useQueryClient()
@@ -70,7 +70,7 @@ export default function useUserFollowMutation(
 
       const followingUserIdsSnapshot = queryClient.getQueryData<GETV1MeFollowingResponse>(QueryKeys.followingUsers)
       const followingPostListsSnapshot = snapshotFollowingPostLists(queryClient)
-      const previousFollowing = currentFollowing ?? followingUserIdsSnapshot?.userIds.includes(targetUserId) ?? false
+      const previousFollowing = initialFollowing ?? followingUserIdsSnapshot?.userIds.includes(targetUserId) ?? false
 
       setUserFollowingInFollowingIds(queryClient, targetUserId, following)
 
