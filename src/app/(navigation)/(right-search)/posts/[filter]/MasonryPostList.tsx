@@ -1,6 +1,6 @@
 'use client'
 
-import { Repeat } from 'lucide-react'
+import { Frown, Repeat } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -71,7 +71,7 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
   }
 
   return (
-    <div className="p-2 md:p-4">
+    <div className="flex-1 p-2 md:p-4">
       <div className="grid grid-cols-1 gap-x-2 md:gap-x-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4" role="feed">
         {masonryColumns.map((columnPosts, columnIndex) => (
           <div className="flex flex-col gap-2 md:gap-4" key={columnIndex}>
@@ -93,10 +93,8 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
       )}
 
       {!hasNextPage && allPosts.length > 0 && (
-        <div className="py-8 text-center text-sm text-zinc-600">모든 글을 확인했어요</div>
+        <div className="py-12 text-center text-sm text-zinc-600">모든 글을 확인했어요</div>
       )}
-
-      <div aria-hidden="true" className="h-20" />
     </div>
   )
 }
@@ -105,9 +103,9 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
   const [hasSystemIssues, setHasSystemIssues] = useState(false)
 
   return (
-    <div className="flex flex-col items-center justify-center py-8 p-4">
-      <div aria-label="error icon" className="text-3xl mb-4" role="img">
-        😔
+    <div className="flex-1 flex flex-col items-center justify-center py-8 p-4">
+      <div aria-label="error icon" className="mb-4" role="img">
+        <Frown aria-hidden className="size-10 text-zinc-500" />
       </div>
       <h3 className="text-lg font-semibold text-zinc-200 mb-2">글을 불러올 수 없어요</h3>
 

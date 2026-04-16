@@ -49,4 +49,31 @@ describe('MasonryPostList', () => {
       expect(view.getByText('팔로잉 탭은 로그인이 필요해요')).toBeTruthy()
     })
   })
+
+  test('일반 오류가 발생하면 오류 상태와 재시도 버튼을 보여준다', async () => {
+    fetchRoutes.push({
+      matcher: ({ url }) => url.pathname === '/api/v1/post' && url.searchParams.get('filter') === PostFilter.RECOMMEND,
+      response: () =>
+        jsonResponse(
+          {
+            detail: '서버 오류가 발생했어요',
+            status: 500,
+            title: 'Internal Server Error',
+            type: 'about:blank',
+          },
+          { status: 500 },
+        ),
+    })
+
+    const view = renderWithTestQueryClient(
+      <MasonryPostList filter={PostFilter.RECOMMEND} NotFound={<div>empty</div>} showMangaCover={false} />,
+    )
+
+    await waitFor(() => {
+      expect(view.getByText('글을 불러올 수 없어요')).toBeTruthy()
+    })
+
+    expect(view.getByLabelText('error icon')).toBeTruthy()
+    expect(view.getByText('다시 시도')).toBeTruthy()
+  })
 })
