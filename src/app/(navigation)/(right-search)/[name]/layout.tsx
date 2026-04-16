@@ -10,12 +10,18 @@ import UserProfileView, { UserType } from './UserProfileView'
 export default async function Layout({ params, children }: LayoutProps<'/[name]'>) {
   const { name } = await params
   const username = getUsernameFromParam(name)
-
   const publicLinks = [{ href: `/@${username}`, label: '이야기' }]
+
+  const loadingUser = {
+    id: 0,
+    name: username,
+    nickname: '...',
+    type: UserType.LOADING,
+  }
 
   return (
     <main className="flex flex-col grow">
-      <Suspense fallback={<UserProfileView user={{ type: UserType.LOADING, name: username, nickname: '...' }} />}>
+      <Suspense fallback={<UserProfileView user={loadingUser} />}>
         <UserProfile username={username} />
       </Suspense>
       <nav

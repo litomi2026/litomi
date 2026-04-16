@@ -4,24 +4,27 @@ import { Suspense } from 'react'
 import LogoutButton from '@/app/(navigation)/LogoutButton'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
+import FollowButton from '../post/[id]/@post/FollowButton'
 import { getMe } from './common'
 import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
 
 type Props = {
-  user: { id?: number }
+  user: {
+    id: number
+    name: string
+    isFollowedByCurrentUser?: boolean
+  }
 }
 
-export default async function MyPageButtons({ user }: Readonly<Props>) {
+export default async function MyPageButtons({ user }: Props) {
   const userId = await getUserIdFromCookie()
 
-  // NOTE: 로그인하지 않은 경우
   if (!userId) {
     return null
   }
 
-  // NOTE: 로그인한 사용자와 name이 다른 경우
   if (user.id !== userId) {
-    return null
+    return <FollowButton initialFollowing={user.isFollowedByCurrentUser} leader={user} />
   }
 
   const loginUser = getMe(userId)
