@@ -13,20 +13,20 @@ type Props = {
 
 export default function UserPostList({ username }: Readonly<Props>) {
   const { data: me } = useMeQuery()
-  const isOwnProfile = me?.name === username
+  const isCurrentUser = me?.name === username
 
   return (
     <PostList
       filter={PostFilter.USER}
-      NotFound={<EmptyState isOwnProfile={isOwnProfile} />}
+      NotFound={<EmptyState isCurrentUser={isCurrentUser} />}
       showMangaCover
       username={username}
     />
   )
 }
 
-function EmptyState({ isOwnProfile }: { isOwnProfile: boolean }) {
-  if (!isOwnProfile) {
+function EmptyState({ isCurrentUser }: { isCurrentUser: boolean }) {
+  if (!isCurrentUser) {
     return <NotFound />
   }
 
