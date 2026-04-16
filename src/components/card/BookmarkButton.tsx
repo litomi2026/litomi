@@ -70,8 +70,6 @@ export default function BookmarkButton({ manga, className }: Props) {
           duration: ms('5 seconds'),
           id: toastId,
         })
-      } else {
-        toast.success('북마크에서 삭제했어요', { action: null, id: toastId })
       }
 
       queryClient.setQueryData<GETV1BookmarkIdResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
