@@ -198,19 +198,19 @@ prometheus:
     resources:
       requests:
         cpu: 200m
-        memory: 1184Mi
+        memory: 832Mi
       limits:
         cpu: 1
-        memory: 1664Mi
+        memory: 1088Mi
     containers:
       - name: config-reloader
         resources:
           requests:
             cpu: 5m
-            memory: 64Mi
+            memory: 32Mi
           limits:
             cpu: 100m
-            memory: 128Mi
+            memory: 64Mi
 
     storageSpec:
       volumeClaimTemplate:
