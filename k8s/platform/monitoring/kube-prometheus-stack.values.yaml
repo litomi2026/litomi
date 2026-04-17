@@ -74,10 +74,10 @@ alertmanager:
       - name: config-reloader
         resources:
           requests:
-            cpu: 5m
+            cpu: 10m
             memory: 32Mi
           limits:
-            cpu: 200m
+            cpu: 400m
             memory: 64Mi
     # Small PVC is enough for silences/inhibitions history.
     storage:
@@ -104,10 +104,10 @@ grafana:
   sidecar:
     resources:
       requests:
-        cpu: 5m
+        cpu: 10m
         memory: 96Mi
       limits:
-        cpu: 200m
+        cpu: 500m
         memory: 128Mi
   additionalDataSources:
     - name: Loki
@@ -155,10 +155,10 @@ kube-state-metrics:
 prometheus-node-exporter:
   resources:
     requests:
-      cpu: 5m
+      cpu: 10m
       memory: 32Mi
     limits:
-      cpu: 200m
+      cpu: 500m
       memory: 64Mi
 
 prometheusOperator:
@@ -197,20 +197,20 @@ prometheus:
 
     resources:
       requests:
-        cpu: 500m
-        memory: 1184Mi
+        cpu: 200m
+        memory: 832Mi
       limits:
-        cpu: 4
-        memory: 1664Mi
+        cpu: 1
+        memory: 1088Mi
     containers:
       - name: config-reloader
         resources:
           requests:
             cpu: 5m
-            memory: 64Mi
+            memory: 32Mi
           limits:
-            cpu: 1
-            memory: 128Mi
+            cpu: 100m
+            memory: 64Mi
 
     storageSpec:
       volumeClaimTemplate:

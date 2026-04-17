@@ -70,10 +70,10 @@ singleBinary:
 sidecar:
   resources:
     requests:
-      cpu: 5m
+      cpu: 10m
       memory: 128Mi
     limits:
-      cpu: 200m
+      cpu: 500m
       memory: 192Mi
 
 # Single-node(16GiB) 환경에서는 chunks-cache 기본 request가 너무 커 스케줄링 실패가 발생해요.
