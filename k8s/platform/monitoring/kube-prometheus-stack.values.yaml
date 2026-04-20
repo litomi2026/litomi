@@ -99,7 +99,7 @@ grafana:
       cpu: 20m
       memory: 256Mi
     limits:
-      cpu: 200m
+      cpu: 400m
       memory: 448Mi
   sidecar:
     resources:
@@ -201,7 +201,7 @@ prometheus:
         memory: 832Mi
       limits:
         cpu: 1
-        memory: 1088Mi
+        memory: 1280Mi
     containers:
       - name: config-reloader
         resources:
@@ -209,7 +209,7 @@ prometheus:
             cpu: 5m
             memory: 32Mi
           limits:
-            cpu: 100m
+            cpu: 200m
             memory: 64Mi
 
     storageSpec:
