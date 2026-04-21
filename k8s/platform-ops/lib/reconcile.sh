@@ -1,17 +1,49 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
 
-force_refresh_argocd_apps() {
+request_argocd_app_refresh() {
+  local app="${1:-}"
+  local refresh_type="${2:-normal}"
+
+  [[ -n "$app" ]] || return
+
+  case "$refresh_type" in
+    normal|hard)
+      ;;
+    *)
+      refresh_type="normal"
+      ;;
+  esac
+
+  k -n argocd annotate applications.argoproj.io "$app" "argocd.argoproj.io/refresh=${refresh_type}" --overwrite >/dev/null 2>&1 || true
+}
+
+list_argocd_app_status_lines() {
+  k -n argocd get applications.argoproj.io \
+    -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.sync.status}{"\t"}{.status.health.status}{"\t"}{.status.operationState.phase}{"\n"}{end}' 2>/dev/null || true
+}
+
+request_refresh_for_argocd_apps_needing_attention() {
+  local lines
   local app
-  local apps
+  local sync
+  local health
+  local phase
 
-  apps="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)"
-  [[ -n "$apps" ]] || return
+  lines="$(list_argocd_app_status_lines)"
+  [[ -n "$lines" ]] || return
 
-  while IFS= read -r app; do
+  while IFS=$'\t' read -r app sync health phase; do
     [[ -z "$app" ]] && continue
-    k -n argocd annotate applications.argoproj.io "$app" argocd.argoproj.io/refresh=hard --overwrite >/dev/null 2>&1 || true
-  done <<< "$apps"
+    if [[ "$sync" == "Synced" && "$health" == "Healthy" && "$phase" != "Failed" ]]; then
+      continue
+    fi
+    if [[ "$phase" == "Running" ]]; then
+      continue
+    fi
+
+    request_argocd_app_refresh "$app"
+  done <<< "$lines"
 }
 
 build_argocd_sync_options_json() {
@@ -47,7 +79,7 @@ force_sync_out_of_sync_argocd_apps() {
   local phase
   local payload
 
-  lines="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.sync.status}{"\t"}{.status.health.status}{"\t"}{.status.operationState.phase}{"\n"}{end}' 2>/dev/null || true)"
+  lines="$(list_argocd_app_status_lines)"
   [[ -n "$lines" ]] || return
 
   while IFS=$'\t' read -r app sync _health phase; do
@@ -67,7 +99,10 @@ force_sync_out_of_sync_argocd_apps() {
 run_reconcile_actions() {
   # Keep Git-managed ESO resources immutable at runtime to avoid Argo CD drift.
   # Vault changes are picked up via each ExternalSecret's periodic refresh interval.
-  force_refresh_argocd_apps
+  # A one-shot root refresh is enough to pick up declarative changes after bootstrap/seeding.
+  # Repeating hard refreshes across every app turns into an expensive manifest-generation loop.
+  request_argocd_app_refresh root
+  request_refresh_for_argocd_apps_needing_attention
   force_sync_out_of_sync_argocd_apps
-  ok "Argo CD refresh requested"
+  ok "Argo CD reconciliation nudged"
 }

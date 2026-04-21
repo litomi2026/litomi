@@ -65,7 +65,6 @@ wait_for_argocd_apps_healthy() {
     fi
 
     if should_emit_wait_log "$waited"; then
-      force_refresh_argocd_apps
       force_sync_out_of_sync_argocd_apps
       log "waiting for Argo CD apps convergence (${first_pending:-pending}, ${waited}s/${max_wait}s)"
     fi
@@ -120,7 +119,6 @@ wait_for_secretstores_ready() {
 
     if should_emit_wait_log "$waited"; then
       sync_vault_ca_configmaps_from_secret "false" "false" >/dev/null 2>&1 || true
-      force_refresh_argocd_apps
       force_sync_out_of_sync_argocd_apps
       log "waiting for Vault SecretStores Ready=True (${pending:-pending}, ${waited}s/${max_wait}s)"
     fi
@@ -161,7 +159,6 @@ wait_for_required_cluster_secrets() {
     fi
 
     if should_emit_wait_log "$waited"; then
-      force_refresh_argocd_apps
       force_sync_out_of_sync_argocd_apps
       log "waiting for required Kubernetes secrets:${missing} (${waited}s/${max_wait}s)"
     fi

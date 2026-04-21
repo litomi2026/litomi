@@ -278,8 +278,13 @@ wait_for_root_app_synced_healthy() {
   local waited=0
   local sync
   local health
+  local refresh_type="normal"
 
-  k -n argocd annotate applications.argoproj.io/root argocd.argoproj.io/refresh=hard --overwrite >/dev/null 2>&1 || true
+  if [[ "${FORCE_ARGOCD_BOOTSTRAP_APPLY:-false}" == "true" ]]; then
+    refresh_type="hard"
+  fi
+
+  request_argocd_app_refresh root "$refresh_type"
 
   while (( waited < BOOT_WAIT_SECONDS )); do
     sync="$(k -n argocd get applications.argoproj.io/root -o jsonpath='{.status.sync.status}' 2>/dev/null || true)"
@@ -291,7 +296,6 @@ wait_for_root_app_synced_healthy() {
     fi
 
     if should_emit_wait_log "$waited"; then
-      k -n argocd annotate applications.argoproj.io/root argocd.argoproj.io/refresh=hard --overwrite >/dev/null 2>&1 || true
       log "waiting for root app sync/health (sync=${sync:-<empty>}, health=${health:-<empty>}, ${waited}s/${BOOT_WAIT_SECONDS}s)"
     fi
 
