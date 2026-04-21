@@ -25,7 +25,7 @@ cd litomi
 # 멀티라인 값은 double quote + \n escape로 넣어요.
 ```
 
-운영 기본값은 `refreshInterval` 기반 주기 동기화예요. 빠른 반영이 필요한 `gtm-server`, `cloudflared`, `litomi-backend-secret`(stg/prod)는 `5m`, 나머지는 `1h`를 사용하고, Argo CD가 관리하는 `ExternalSecret`/`SecretStore`에는 런타임 annotation을 붙여 강제 reconcile 하지 않아요.
+운영 기본값은 `refreshInterval` 기반 주기 동기화예요. 비교적 자주 반영이 필요한 `argocd/github-repo-creds`, `gtm-server`, `cloudflared`, `litomi-backend-secret`(stg/prod)는 `15m`, 나머지는 `1h`를 사용하고, Argo CD가 관리하는 `ExternalSecret`/`SecretStore`에는 런타임 annotation을 붙여 강제 reconcile 하지 않아요.
 
 ## 1) 전제
 

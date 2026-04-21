@@ -151,7 +151,7 @@ kubectl -n litomi-stg get externalsecret litomi-backend-secret \
   -o jsonpath='{.spec.refreshInterval}{"\n"}{.status.refreshTime}{"\n"}{.status.conditions[?(@.type=="Ready")].status}{"\n"}'
 ```
 
-Vault 값을 바꾸면 ESO가 주기적으로 반영해요. 빠른 반영이 필요한 `gtm-server`, `cloudflared`, `litomi-backend-secret`(stg/prod)는 `5m`, 나머지는 `1h` 주기예요.
+Vault 값을 바꾸면 ESO가 주기적으로 반영해요. 비교적 자주 반영이 필요한 `argocd/github-repo-creds`, `gtm-server`, `cloudflared`, `litomi-backend-secret`(stg/prod)는 `15m`, 나머지는 `1h` 주기예요.
 
 ### Monitoring
 
