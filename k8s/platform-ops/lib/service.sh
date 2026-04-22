@@ -37,9 +37,8 @@ EOF_SERVICE
 
   run_root_quiet systemctl daemon-reload
   run_root_quiet systemctl enable "$SERVICE_NAME"
-  # Do not block init completion on reboot service execution.
-  if ! run_root_quiet_or_return systemctl restart --no-block "$SERVICE_NAME"; then
-    warn "failed to restart ${SERVICE_NAME}; continue without blocking"
-  fi
-  ok "reboot service installed/enabled: ${SERVICE_NAME}"
+  # This service is intended for boot-time reconciliation only.
+  # Starting or restarting it from every platform-ops run can overlap with the
+  # current execution and retrigger the whole workflow unnecessarily.
+  ok "reboot service installed/enabled for next boot: ${SERVICE_NAME}"
 }
