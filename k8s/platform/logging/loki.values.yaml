@@ -81,7 +81,7 @@ chunksCache:
   enabled: false
 
 resultsCache:
-  allocatedMemory: 64
+  allocatedMemory: 16
   resources:
     requests:
       cpu: 5m

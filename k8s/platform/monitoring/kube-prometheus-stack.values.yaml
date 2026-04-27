@@ -167,8 +167,8 @@ prometheusOperator:
   kubeletEndpointSliceEnabled: true
   resources:
     requests:
-      memory: 96Mi
       cpu: 5m
+      memory: 80Mi
     limits:
       cpu: 310m
       memory: 88Mi
