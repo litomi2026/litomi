@@ -44,18 +44,18 @@ singleBinary:
     size: 30Gi
   resources:
     requests:
-      cpu: 25m
-      memory: 480Mi
+      cpu: 35m
+      memory: 544Mi
     limits:
-      cpu: 200m
-      memory: 640Mi
+      cpu: 310m
+      memory: 608Mi
   extraArgs:
     # Secret 값을 Loki 설정으로 확장하기 위해 env expansion을 활성화해요.
     - -config.expand-env=true
   extraEnv:
     # Go heap 상한을 cgroup limit보다 조금 낮춰 OOM 리스크를 줄여요.
     - name: GOMEMLIMIT
-      value: 576MiB
+      value: 544MiB
     - name: LOKI_S3_ACCESS_KEY
       valueFrom:
         secretKeyRef:
@@ -70,43 +70,43 @@ singleBinary:
 sidecar:
   resources:
     requests:
-      cpu: 10m
-      memory: 128Mi
+      cpu: 5m
+      memory: 112Mi
     limits:
-      cpu: 500m
-      memory: 192Mi
+      cpu: 750m
+      memory: 120Mi
 
 # Single-node(16GiB) 환경에서는 chunks-cache 기본 request가 너무 커 스케줄링 실패가 발생해요.
 chunksCache:
   enabled: false
 
 resultsCache:
-  allocatedMemory: 64
+  allocatedMemory: 16
   resources:
     requests:
-      cpu: 10m
-      memory: 32Mi
+      cpu: 5m
+      memory: 24Mi
     limits:
       cpu: 50m
-      memory: 96Mi
+      memory: 32Mi
 
 memcachedExporter:
   resources:
     requests:
       cpu: 5m
-      memory: 32Mi
+      memory: 24Mi
     limits:
-      cpu: 200m
-      memory: 64Mi
+      cpu: 310m
+      memory: 24Mi
 
 lokiCanary:
   resources:
     requests:
       cpu: 5m
-      memory: 64Mi
+      memory: 48Mi
     limits:
-      cpu: 200m
-      memory: 128Mi
+      cpu: 310m
+      memory: 56Mi
 
 backend:
   replicas: 0

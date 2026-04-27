@@ -48,11 +48,11 @@ spec:
             failureThreshold: 3
           resources:
             requests:
-              cpu: 80m
-              memory: 1024Mi
+              cpu: 160m
+              memory: 1280Mi
             limits:
-              cpu: 1000m
-              memory: 1408Mi
+              cpu: 1200m
+              memory: 1536Mi
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

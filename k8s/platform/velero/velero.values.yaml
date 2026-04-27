@@ -60,7 +60,7 @@ metrics:
 
 resources:
   requests:
-    cpu: 10m
+    cpu: 20m
     memory: 224Mi
   limits:
     cpu: 500m
@@ -72,8 +72,8 @@ nodeAgent:
       cpu: 5m
       memory: 64Mi
     limits:
-      cpu: 200m
-      memory: 128Mi
+      cpu: 310m
+      memory: 88Mi
 
 # Backup 스케줄은 “복구 리허설 가능”한 단순한 형태로만 시작해요.
 # - GitOps로 리소스는 복원되지만, PV 데이터(Vault/Prometheus 등)는 별도 백업이 필요해요.

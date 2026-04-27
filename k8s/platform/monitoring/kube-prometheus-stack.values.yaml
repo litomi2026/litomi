@@ -66,10 +66,10 @@ alertmanager:
     resources:
       requests:
         cpu: 5m
-        memory: 64Mi
+        memory: 56Mi
       limits:
-        cpu: 200m
-        memory: 128Mi
+        cpu: 310m
+        memory: 64Mi
     containers:
       - name: config-reloader
         resources:
@@ -77,8 +77,8 @@ alertmanager:
             cpu: 10m
             memory: 32Mi
           limits:
-            cpu: 400m
-            memory: 64Mi
+            cpu: 650m
+            memory: 48Mi
     # Small PVC is enough for silences/inhibitions history.
     storage:
       volumeClaimTemplate:
@@ -99,16 +99,16 @@ grafana:
       cpu: 20m
       memory: 256Mi
     limits:
-      cpu: 400m
-      memory: 448Mi
+      cpu: 650m
+      memory: 384Mi
   sidecar:
     resources:
       requests:
-        cpu: 10m
-        memory: 96Mi
+        cpu: 5m
+        memory: 88Mi
       limits:
-        cpu: 500m
-        memory: 128Mi
+        cpu: 750m
+        memory: 96Mi
   additionalDataSources:
     - name: Loki
       uid: loki
@@ -149,8 +149,8 @@ kube-state-metrics:
       cpu: 5m
       memory: 64Mi
     limits:
-      cpu: 200m
-      memory: 128Mi
+      cpu: 310m
+      memory: 88Mi
 
 prometheus-node-exporter:
   resources:
@@ -158,8 +158,8 @@ prometheus-node-exporter:
       cpu: 10m
       memory: 32Mi
     limits:
-      cpu: 500m
-      memory: 64Mi
+      cpu: 750m
+      memory: 40Mi
 
 prometheusOperator:
   # Kubernetes v1.33+에서 Endpoints(v1)는 deprecated라서, kubelet 대상도 EndpointSlice로 만들어요.
@@ -167,11 +167,11 @@ prometheusOperator:
   kubeletEndpointSliceEnabled: true
   resources:
     requests:
-      cpu: 10m
-      memory: 96Mi
+      cpu: 5m
+      memory: 80Mi
     limits:
-      cpu: 200m
-      memory: 128Mi
+      cpu: 310m
+      memory: 88Mi
   prometheusConfigReloader:
     resources:
       requests:
@@ -197,8 +197,8 @@ prometheus:
 
     resources:
       requests:
-        cpu: 200m
         memory: 832Mi
+        cpu: 80m
       limits:
         cpu: 1
         memory: 1280Mi
@@ -209,8 +209,8 @@ prometheus:
             cpu: 5m
             memory: 32Mi
           limits:
-            cpu: 200m
-            memory: 64Mi
+            cpu: 310m
+            memory: 40Mi
 
     storageSpec:
       volumeClaimTemplate:
