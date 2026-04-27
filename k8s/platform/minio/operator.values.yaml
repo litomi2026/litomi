@@ -8,5 +8,5 @@ operator:
       cpu: 10m
       memory: 64Mi
     limits:
-      cpu: 200m
-      memory: 128Mi
+      cpu: 310m
+      memory: 88Mi

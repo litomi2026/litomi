@@ -32,9 +32,9 @@ tempo:
       cpu: 10m
       memory: 544Mi
     limits:
-      cpu: 200m
-      # 14일 p99는 낮지만, WAL/compaction과 chart 기본 메모리 동작을 고려해 limit은 보수적으로 남겨요.
-      memory: 1280Mi
+      cpu: 310m
+      # 최근 p99.9와 WAL/compaction 여유를 함께 반영해요.
+      memory: 768Mi
   storage:
     trace:
       backend: s3
