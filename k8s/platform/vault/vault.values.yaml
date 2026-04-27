@@ -16,6 +16,11 @@ server:
   # Single-node friendly. Scale later when you add more nodes.
   updateStrategyType: RollingUpdate
 
+  readinessProbe:
+    enabled: true
+    path: /v1/sys/health?standbyok=true
+    port: 8200
+
   statefulSet:
     securityContext:
       pod:
