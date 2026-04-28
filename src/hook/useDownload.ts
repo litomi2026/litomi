@@ -7,7 +7,7 @@ import { showAdultVerificationRecommendedToast, showLoginRequiredToast } from '@
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { downloadMultipleImages } from '@/utils/download'
-import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
+import { createLitomiProxyMangaImageURL, createThirdPartyMangaImageURLs } from '@/utils/image-proxy'
 
 // Supported image extensions
 const VALID_IMAGE_EXTENSIONS = new Set(['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
@@ -142,7 +142,7 @@ function getSemanticDownloadCandidates({
 
   const page = imageIndex + 1
 
-  const semanticExternalURLs = createEquivalentMangaImageSourceURLs({
+  const semanticExternalURLs = createThirdPartyMangaImageURLs({
     mangaId,
     page,
     variant: 'original',
@@ -151,7 +151,7 @@ function getSemanticDownloadCandidates({
   const semanticMaterializeURLs = Array.from(new Set([externalImageURL, ...semanticExternalURLs]))
 
   const semanticMaterializeProxyURLs = semanticMaterializeURLs.map((sourceURL) =>
-    createMangaImageProxyRequestURL({
+    createLitomiProxyMangaImageURL({
       sourceURL,
       mangaId,
       page,

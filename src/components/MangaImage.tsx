@@ -5,8 +5,8 @@ import type { ComponentPropsWithRef, SyntheticEvent } from 'react'
 import { useEffect, useState } from 'react'
 
 import {
-  createEquivalentMangaImageSourceURLs,
-  createMangaImageProxyRequestURL,
+  createLitomiProxyMangaImageURL,
+  createThirdPartyMangaImageURLs,
   isMangaImageProxyRequestURL,
 } from '@/utils/image-proxy'
 
@@ -156,22 +156,29 @@ function resolveImageURLs({
     return resolvedSources
   }
 
-  const semanticProbeURL = createMangaImageProxyRequestURL({
+  const thirdPartyURLs = createThirdPartyMangaImageURLs({
     mangaId,
     page,
     variant,
   })
 
-  const semanticSourceURLs = createEquivalentMangaImageSourceURLs({
+  const litomiURL = createLitomiProxyMangaImageURL({
     mangaId,
     page,
     variant,
   })
 
-  resolvedSources.push(...semanticSourceURLs, semanticProbeURL)
+  const litomiProxyURL = createLitomiProxyMangaImageURL({
+    mangaId,
+    page,
+    variant,
+    sourceURL: src,
+  })
+
+  resolvedSources.push(...thirdPartyURLs, litomiURL, litomiProxyURL)
 
   if (variant === 'thumbnail') {
-    const originalFallbackSourceURLs = createEquivalentMangaImageSourceURLs({
+    const originalFallbackSourceURLs = createThirdPartyMangaImageURLs({
       mangaId,
       page,
       variant: 'original',
