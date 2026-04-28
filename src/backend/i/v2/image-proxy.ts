@@ -5,7 +5,7 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { requireAuth } from '@/backend/middleware/require-auth'
+import { createAllowedRequestInitiatorMiddleware } from '@/backend/middleware/allowed-request-initiator'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 import {
@@ -53,10 +53,15 @@ const REFERER_BY_HOST_SUFFIX: ReadonlyArray<{ hostSuffix: string; referer: strin
 const FORWARDED_HEADERS = ['Content-Type', 'Content-Length', 'Last-Modified', 'ETag'] as const
 const ACCEPTED_IMAGE_CONTENT_TYPES = ['application/octet-stream'] as const
 
+const requireAllowedRequestInitiator = createAllowedRequestInitiatorMiddleware({
+  allowedOrigins: ['https://litomi.in', 'https://stg.litomi.in'],
+  allowLocalhostInNonProduction: true,
+})
+
 imageProxyRoutes.on(
   ['GET', 'HEAD'],
   '/manga/:mangaId/:variant/:page',
-  requireAuth,
+  requireAllowedRequestInitiator,
   zNoStoreValidator('param', pathParamSchema),
   zNoStoreValidator('query', querySchema),
   async (c) => {
