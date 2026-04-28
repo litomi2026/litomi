@@ -13,6 +13,13 @@ const K_HENTAI_SOURCE_URL =
   'https://storage-6-10.k-hentai.org/storage/d6/1b/d61b5b1d7e44c074fe7b5f20ffc8d3799c938dfb.webp?md5=2upfzSa8Q67iO8PfKDC0dw&expires=1777507199'
 const K_HENTAI_PROXY_PATH = `/i/v2/manga/3910121/original/13.webp?u=${encodeURIComponent(K_HENTAI_SOURCE_URL)}`
 const IMAGE_EGRESS_PROXY_URL = 'http://litomi-image-egress-proxy:8080'
+const IMAGE_PROXY_UPSTREAM_ENV_KEYS = [
+  'IMAGE_PROXY_UPSTREAM_PROXY_HOST_SUFFIXES',
+  'IMAGE_PROXY_UPSTREAM_PROXY_URL',
+] as const
+const ORIGINAL_IMAGE_PROXY_UPSTREAM_ENV = Object.fromEntries(
+  IMAGE_PROXY_UPSTREAM_ENV_KEYS.map((key) => [key, process.env[key]]),
+)
 
 let externalFetchGuard: ReturnType<typeof installImageFetchGuard> | undefined
 
@@ -20,6 +27,7 @@ afterEach(() => {
   externalFetchGuard?.restore()
   externalFetchGuard = undefined
   setNodeEnv(ORIGINAL_NODE_ENV)
+  restoreImageProxyUpstreamEnv()
 })
 
 describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
@@ -111,6 +119,7 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
   })
 
   test('k-hentai 계열 업스트림에는 이미지 egress proxy를 사용한다', async () => {
+    process.env.IMAGE_PROXY_UPSTREAM_PROXY_URL = IMAGE_EGRESS_PROXY_URL
     externalFetchGuard = installImageFetchGuard(K_HENTAI_SOURCE_URL)
     setNodeEnv('production')
 
@@ -127,6 +136,7 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
   })
 
   test('proxy 미대상 업스트림은 직접 fetch한다', async () => {
+    process.env.IMAGE_PROXY_UPSTREAM_PROXY_URL = IMAGE_EGRESS_PROXY_URL
     externalFetchGuard = installImageFetchGuard()
     setNodeEnv('production')
 
@@ -166,6 +176,18 @@ async function requestBackendWithoutDefaultHeaders(path: string, init: RequestIn
         port: REQUEST_IP_PORT,
       }
     },
+  })
+}
+
+function restoreImageProxyUpstreamEnv() {
+  IMAGE_PROXY_UPSTREAM_ENV_KEYS.forEach((key) => {
+    const value = ORIGINAL_IMAGE_PROXY_UPSTREAM_ENV[key]
+    if (value === undefined) {
+      Reflect.deleteProperty(process.env, key)
+      return
+    }
+
+    process.env[key] = value
   })
 }
 
