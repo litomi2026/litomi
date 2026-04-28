@@ -7,6 +7,7 @@ const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'k-hentai.org',
   'soujpa.in',
   'cdn.imagedeliveries.com',
+  'ehgt.org',
 ] as const
 const IMAGE_PROXY_ROUTE_EXTENSION = '.webp'
 
