@@ -22,18 +22,6 @@ export function createCoverThumbnailURL(mangaId: number): string {
   return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`
 }
 
-export function createEquivalentMangaImageSourceURLs({ mangaId, page, variant }: MangaImageProxyParams): string[] {
-  if (variant === 'thumbnail') {
-    return [page === 1 ? createCoverThumbnailURL(mangaId) : createImageDeliveriesThumbnailURL(mangaId, page)]
-  }
-
-  return [
-    createSoujpaPageURL(mangaId, page, 'avif'),
-    createSoujpaPageURL(mangaId, page, 'webp'),
-    createHentkorPageURL(mangaId, page),
-  ]
-}
-
 export function createFirstPageOriginalFallbackURLs(mangaId: number): string[] {
   return [
     createSoujpaPageURL(mangaId, 1, 'avif'),
@@ -42,7 +30,7 @@ export function createFirstPageOriginalFallbackURLs(mangaId: number): string[] {
   ]
 }
 
-export function createMangaImageProxyRequestURL({
+export function createLitomiProxyMangaImageURL({
   sourceURL,
   mangaId,
   page,
@@ -62,6 +50,18 @@ export function createMangaImageProxyRequestURL({
   }
 
   return proxyURL.toString()
+}
+
+export function createThirdPartyMangaImageURLs({ mangaId, page, variant }: MangaImageProxyParams): string[] {
+  if (variant === 'thumbnail') {
+    return [page === 1 ? createCoverThumbnailURL(mangaId) : createImageDeliveriesThumbnailURL(mangaId, page)]
+  }
+
+  return [
+    createSoujpaPageURL(mangaId, page, 'avif'),
+    createSoujpaPageURL(mangaId, page, 'webp'),
+    createHentkorPageURL(mangaId, page),
+  ]
 }
 
 export function isImageProxySourceURLCompatibleWithRouteParams(
@@ -135,18 +135,6 @@ export function parseImageProxyRoutePageParam(pageParam: string): number {
   return Number(matchedPage.groups.page)
 }
 
-export function parseImageProxySourceURL(sourceURL: string): URL {
-  let parsedURL: URL
-
-  try {
-    parsedURL = new URL(sourceURL)
-  } catch {
-    throw new Error('이미지 URL 형식이 올바르지 않아요')
-  }
-
-  return validateImageSourceURL(parsedURL)
-}
-
 export function validateImageSourceURL(sourceURL: URL): URL {
   const normalizedHost = sourceURL.hostname.toLowerCase()
 
@@ -186,4 +174,16 @@ function createSoujpaPageURL(mangaId: number, page: number, ext: 'avif' | 'webp'
 
 function hasAllowedHostSuffix(hostname: string, hostSuffixes: readonly string[]): boolean {
   return hostSuffixes.some((hostSuffix) => hostname === hostSuffix || hostname.endsWith(`.${hostSuffix}`))
+}
+
+function parseImageProxySourceURL(sourceURL: string): URL {
+  let parsedURL: URL
+
+  try {
+    parsedURL = new URL(sourceURL)
+  } catch {
+    throw new Error('이미지 URL 형식이 올바르지 않아요')
+  }
+
+  return validateImageSourceURL(parsedURL)
 }

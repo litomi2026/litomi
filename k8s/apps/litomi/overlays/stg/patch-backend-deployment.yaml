@@ -14,7 +14,7 @@ spec:
         - name: backend
           resources:
             requests:
-              cpu: 15m
+              cpu: 40m
               memory: 960Mi
             limits:
               cpu: 500m

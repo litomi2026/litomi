@@ -3,11 +3,11 @@ import { toast } from 'sonner'
 
 import type { ImageWithVariants } from '@/types/manga'
 
-import { showAdultVerificationRecommendedToast, showLoginRequiredToast } from '@/lib/toast'
+import { showAdultVerificationRecommendedToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { downloadMultipleImages } from '@/utils/download'
-import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
+import { createLitomiProxyMangaImageURL, createThirdPartyMangaImageURLs } from '@/utils/image-proxy'
 
 // Supported image extensions
 const VALID_IMAGE_EXTENSIONS = new Set(['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
@@ -31,16 +31,12 @@ export function useDownload({ manga }: Props) {
       return
     }
 
-    if (!me) {
-      showLoginRequiredToast()
-      return
-    }
-
     if (!hasAdultAccess(adultState)) {
-      showAdultVerificationRecommendedToast({
-        message: '성인인증 시 다운로드 전 광고가 제거돼요',
-        username: me.name,
-      })
+      const toastOption = me
+        ? { message: '성인인증하면 다운로드 시 광고가 제거돼요', username: me.name }
+        : { message: '로그인하면 다운로드 시 광고가 제거돼요' }
+
+      showAdultVerificationRecommendedToast(toastOption)
     }
 
     setIsDownloading(true)
@@ -142,7 +138,7 @@ function getSemanticDownloadCandidates({
 
   const page = imageIndex + 1
 
-  const semanticExternalURLs = createEquivalentMangaImageSourceURLs({
+  const semanticExternalURLs = createThirdPartyMangaImageURLs({
     mangaId,
     page,
     variant: 'original',
@@ -151,7 +147,7 @@ function getSemanticDownloadCandidates({
   const semanticMaterializeURLs = Array.from(new Set([externalImageURL, ...semanticExternalURLs]))
 
   const semanticMaterializeProxyURLs = semanticMaterializeURLs.map((sourceURL) =>
-    createMangaImageProxyRequestURL({
+    createLitomiProxyMangaImageURL({
       sourceURL,
       mangaId,
       page,
