@@ -43,3 +43,6 @@ images:
   - name: litomi-backend
     newName: ghcr.io/litomi2026/litomi-backend
     digest: sha256:52ee3370324cccdc1f666ef655b71d3523828a96851611feb78706e84dd7d3a8
+  - name: litomi-spoofdpi
+    newName: ghcr.io/litomi2026/litomi-spoofdpi
+    newTag: stage
