@@ -52,6 +52,8 @@ const REFERER_BY_HOST_SUFFIX: ReadonlyArray<{ hostSuffix: string; referer: strin
 
 const FORWARDED_HEADERS = ['Content-Type', 'Content-Length', 'Last-Modified', 'ETag'] as const
 const ACCEPTED_IMAGE_CONTENT_TYPES = ['application/octet-stream'] as const
+const IMAGE_EGRESS_PROXY_URL = 'http://litomi-image-egress-proxy:8080'
+const IMAGE_EGRESS_PROXY_HOST_SUFFIXES = ['k-hentai.org'] as const
 
 const requireAllowedRequestInitiator = createAllowedRequestInitiatorMiddleware({
   allowedOrigins: ['https://litomi.in', 'https://stg.litomi.in'],
@@ -95,6 +97,7 @@ imageProxyRoutes.on(
         method: c.req.method === 'HEAD' ? 'HEAD' : 'GET',
         headers: upstreamHeaders,
         redirect: 'follow',
+        ...createUpstreamProxyFetchInit(sourceURL.hostname),
       })
     } catch (error) {
       console.error('Failed to fetch upstream image:', error)
@@ -141,6 +144,14 @@ function createProxyErrorResponse(message: string, status: number, cacheControl:
   })
 }
 
+function createUpstreamProxyFetchInit(hostname: string): Pick<BunFetchRequestInit, 'proxy'> {
+  if (!shouldUseImageEgressProxy(hostname)) {
+    return {}
+  }
+
+  return { proxy: IMAGE_EGRESS_PROXY_URL }
+}
+
 function isImageContentType(contentType: string | null): boolean {
   if (!contentType) {
     return true
@@ -157,14 +168,21 @@ function isImageContentType(contentType: string | null): boolean {
   )
 }
 
-function resolveReferer(hostname: string): string | undefined {
+function matchesHostSuffix(hostname: string, hostSuffixes: readonly string[]): boolean {
   const normalizedHost = hostname.toLowerCase()
 
-  const matchedRule = REFERER_BY_HOST_SUFFIX.find(
-    ({ hostSuffix }) => normalizedHost === hostSuffix || normalizedHost.endsWith(`.${hostSuffix}`),
-  )
+  return hostSuffixes.some((hostSuffix) => normalizedHost === hostSuffix || normalizedHost.endsWith(`.${hostSuffix}`))
+}
+
+function resolveReferer(hostname: string): string | undefined {
+  const normalizedHost = hostname.toLowerCase()
+  const matchedRule = REFERER_BY_HOST_SUFFIX.find(({ hostSuffix }) => matchesHostSuffix(normalizedHost, [hostSuffix]))
 
   return matchedRule?.referer
+}
+
+function shouldUseImageEgressProxy(hostname: string): boolean {
+  return process.env.NODE_ENV === 'production' && matchesHostSuffix(hostname, IMAGE_EGRESS_PROXY_HOST_SUFFIXES)
 }
 
 function zNoStoreValidator<Target extends keyof ValidationTargets, Schema extends Parameters<typeof zValidator>[1]>(
