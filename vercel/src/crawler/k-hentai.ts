@@ -187,9 +187,19 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
   },
   requestTimeout: ms('5 seconds'),
   defaultHeaders: {
-    'accept-encoding': 'gzip, deflate, br, zstd',
-    origin: 'https://k-hentai.org',
+    accept: '*/*',
+    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+    priority: 'u=1, i',
     referer: 'https://k-hentai.org/',
+    'sec-ch-ua': '"Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"macOS"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'user-agent':
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+    'x-requested-with': 'XMLHttpRequest',
   },
 }
 
