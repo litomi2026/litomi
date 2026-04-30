@@ -879,9 +879,13 @@ const downloadWithRetries = async (params: {
       protocol,
     })
 
-    const result = await runCurl(curl, configPath)
-    if (result.exitCode !== 0) {
-      summarizeCurlStderr(result.stderr)
+    try {
+      const result = await runCurl(curl, configPath)
+      if (result.exitCode !== 0) {
+        summarizeCurlStderr(result.stderr)
+      }
+    } catch (error) {
+      console.warn(`curl execution failed on attempt ${attempt}: ${errorReason(error)}`)
     }
 
     remaining = await missingJobs(remaining)
@@ -960,17 +964,33 @@ const handleGalleryPlans = async (params: {
   }
 
   await mkdir(params.outDir, { recursive: true })
-  await downloadWithRetries({
-    curl: params.curl,
-    initialProtocol: params.protocol,
-    jobs,
-    outDir: params.outDir,
-    parallel: params.parallel,
-    retryRounds: params.retryRounds,
-    skipLogger: params.skipLogger,
-    tempDir: params.tempDir,
-    transport: params.transport,
-  })
+  try {
+    await downloadWithRetries({
+      curl: params.curl,
+      initialProtocol: params.protocol,
+      jobs,
+      outDir: params.outDir,
+      parallel: params.parallel,
+      retryRounds: params.retryRounds,
+      skipLogger: params.skipLogger,
+      tempDir: params.tempDir,
+      transport: params.transport,
+    })
+  } catch (error) {
+    const reason = errorReason(error)
+    console.warn(`download batch skipped: ${reason}`)
+    for (const job of jobs) {
+      if (!(await fileExists(job.output))) {
+        await params.skipLogger.write({
+          candidateUrls: job.candidateUrls,
+          kind: 'download',
+          output: job.output,
+          reason,
+          url: job.url,
+        })
+      }
+    }
+  }
   console.log('download complete')
 }
 
