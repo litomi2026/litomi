@@ -11,7 +11,6 @@ resources:
   - serviceaccount-eso-vault.yaml
   - secretstore-vault.yaml
   - externalsecret-litomi-backend-secret.yaml
-  - service-secondary-postgres.yaml
   - ingress.yaml
   - workload-identity-template/serviceaccount-backend-google-auth.yaml
   - workload-identity-template/configmap-backend-google-credentials.yaml
