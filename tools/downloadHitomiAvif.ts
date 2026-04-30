@@ -12,6 +12,7 @@ type CurlInfo = {
 type CurlRunResult = {
   exitCode: number
   stderr: string
+  timedOutAfterNoProgress: boolean
 }
 
 type DownloadJob = {
@@ -50,6 +51,7 @@ type GgInfo = {
 
 type Options = {
   allowWebpFallback: boolean
+  attemptTimeoutSeconds: number
   curlPath?: string
   dryRun: boolean
   inputFiles: string[]
@@ -116,6 +118,7 @@ Options:
   --parallel <n>             curl transfer concurrency. Default: 4
   --metadata-parallel <n>    Gallery metadata fetch concurrency. Default: 8
   --retry-rounds <n>         Script-level retry rounds with lower concurrency. Default: 4
+  --attempt-timeout <sec>    Kill curl after this many seconds without file progress. Default: 60
   --limit <n>                Download only the first n files per gallery.
   --overwrite                Redownload existing files instead of skipping them.
   --dry-run                  Print planned jobs without downloading.
@@ -196,6 +199,7 @@ const takeValue = (args: string[], index: number, name: string) => {
 const parseArgs = (args: string[]): Options => {
   const options: Options = {
     allowWebpFallback: false,
+    attemptTimeoutSeconds: 60,
     dryRun: false,
     inputFiles: [],
     metadataParallel: 8,
@@ -231,6 +235,9 @@ const parseArgs = (args: string[]): Options => {
       i++
     } else if (arg === '--retry-rounds') {
       options.retryRounds = parsePositiveInt(arg, takeValue(args, i, arg))
+      i++
+    } else if (arg === '--attempt-timeout') {
+      options.attemptTimeoutSeconds = parsePositiveInt(arg, takeValue(args, i, arg))
       i++
     } else if (arg === '--limit') {
       options.limit = parsePositiveInt(arg, takeValue(args, i, arg))
@@ -713,18 +720,102 @@ const writeCurlConfig = async (params: {
   await Bun.write(configPath, `${lines.join('\n')}\n`)
 }
 
-const runCurl = async (curl: CurlInfo, configPath: string): Promise<CurlRunResult> => {
+const countMissingJobs = async (jobs: DownloadJob[]) => {
+  let missing = 0
+  for (const job of jobs) {
+    if (!(await fileExists(job.output))) {
+      missing++
+    }
+  }
+  return missing
+}
+
+const runCurl = async (params: {
+  configPath: string
+  curl: CurlInfo
+  jobs: DownloadJob[]
+  noProgressTimeoutMs: number
+}): Promise<CurlRunResult> => {
+  const { configPath, curl, jobs, noProgressTimeoutMs } = params
   const proc = Bun.spawn([curl.path, '--config', configPath], {
     stderr: 'pipe',
     stdin: 'inherit',
     stdout: 'pipe',
   })
 
-  const [exitCode, stderr] = await Promise.all([proc.exited, new Response(proc.stderr).text()])
+  const stderrPromise = new Response(proc.stderr).text()
+  let monitorDone = false
+  let timedOutAfterNoProgress = false
+
+  const monitorProgress = async (): Promise<'complete' | 'no-progress'> => {
+    let lastMissing = await countMissingJobs(jobs)
+    if (lastMissing === 0) {
+      return 'complete'
+    }
+    let lastProgressAt = Date.now()
+
+    while (!monitorDone) {
+      await sleep(5000)
+      if (monitorDone) {
+        return 'complete'
+      }
+
+      const currentMissing = await countMissingJobs(jobs)
+      if (currentMissing === 0) {
+        return 'complete'
+      }
+
+      if (currentMissing < lastMissing) {
+        lastMissing = currentMissing
+        lastProgressAt = Date.now()
+        continue
+      }
+
+      if (Date.now() - lastProgressAt >= noProgressTimeoutMs) {
+        return 'no-progress'
+      }
+    }
+
+    return 'complete'
+  }
+
+  const monitorPromise = monitorProgress()
+  const exitOrMonitor = await Promise.race([proc.exited, monitorPromise])
+  if (exitOrMonitor === 'no-progress') {
+    timedOutAfterNoProgress = true
+    monitorDone = true
+    proc.kill()
+    const exitCode = await Promise.race([proc.exited, sleep(5000).then(() => -1)])
+    const stderr = await Promise.race([stderrPromise, sleep(1000).then(() => '')])
+    return {
+      exitCode,
+      stderr,
+      timedOutAfterNoProgress,
+    }
+  }
+
+  if (exitOrMonitor === 'complete') {
+    monitorDone = true
+    const exitCode = await Promise.race([proc.exited, sleep(5000).then(() => 0)])
+    if (exitCode === 0) {
+      proc.kill()
+    }
+    const stderr = await Promise.race([stderrPromise, sleep(1000).then(() => '')])
+    return {
+      exitCode,
+      stderr,
+      timedOutAfterNoProgress,
+    }
+  }
+
+  monitorDone = true
+  await monitorPromise
+  const stderr = await Promise.race([stderrPromise, sleep(1000).then(() => '')])
 
   return {
-    exitCode,
+    exitCode: exitOrMonitor,
     stderr,
+    timedOutAfterNoProgress,
   }
 }
 
@@ -834,13 +925,20 @@ const protocolForAttempt = (params: {
   transport: Transport
 }) => {
   const { attemptIndex, curl, initialProtocol, retryRounds, transport } = params
-  if (transport === 'auto' && initialProtocol === 'http3' && curl.hasHttp2 && attemptIndex === retryRounds - 1) {
+  if (
+    retryRounds > 1 &&
+    transport === 'auto' &&
+    initialProtocol === 'http3' &&
+    curl.hasHttp2 &&
+    attemptIndex === retryRounds - 1
+  ) {
     return 'http2'
   }
   return initialProtocol
 }
 
 const downloadWithRetries = async (params: {
+  attemptTimeoutSeconds: number
   curl: CurlInfo
   initialProtocol?: string
   jobs: DownloadJob[]
@@ -880,7 +978,17 @@ const downloadWithRetries = async (params: {
     })
 
     try {
-      const result = await runCurl(curl, configPath)
+      const result = await runCurl({
+        configPath,
+        curl,
+        jobs: remaining,
+        noProgressTimeoutMs: params.attemptTimeoutSeconds * 1000,
+      })
+      if (result.timedOutAfterNoProgress) {
+        console.warn(
+          `curl attempt ${attempt} had no completed files for ${params.attemptTimeoutSeconds}s; retrying missing files`,
+        )
+      }
       if (result.exitCode !== 0) {
         summarizeCurlStderr(result.stderr)
       }
@@ -933,6 +1041,7 @@ const logGalleryPlans = (galleryPlans: Awaited<ReturnType<typeof buildJobsForGal
 }
 
 const handleGalleryPlans = async (params: {
+  attemptTimeoutSeconds: number
   curl: CurlInfo
   dryRun: boolean
   galleryPlans: Awaited<ReturnType<typeof buildJobsForGallery>>[]
@@ -966,6 +1075,7 @@ const handleGalleryPlans = async (params: {
   await mkdir(params.outDir, { recursive: true })
   try {
     await downloadWithRetries({
+      attemptTimeoutSeconds: params.attemptTimeoutSeconds,
       curl: params.curl,
       initialProtocol: params.protocol,
       jobs,
@@ -1032,6 +1142,7 @@ const processReaderIds = async (params: {
   ).filter(isDefined)
 
   await handleGalleryPlans({
+    attemptTimeoutSeconds: params.options.attemptTimeoutSeconds,
     curl: params.curl,
     dryRun: params.options.dryRun,
     galleryPlans,
@@ -1079,6 +1190,7 @@ const processRange = async (params: {
       })
       found++
       await handleGalleryPlans({
+        attemptTimeoutSeconds: params.options.attemptTimeoutSeconds,
         curl: params.curl,
         dryRun: params.options.dryRun,
         galleryPlans: [galleryPlan],
