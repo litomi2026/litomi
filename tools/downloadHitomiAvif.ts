@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, stat } from 'node:fs/promises'
+import { appendFile, mkdir, mkdtemp, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
@@ -75,6 +75,26 @@ type RangeSpec = {
   start: number
 }
 
+type SkipKind = 'download' | 'file' | 'gallery'
+
+type SkipLogEntry = {
+  candidateUrls?: string[]
+  detail?: string
+  hash?: string
+  kind: SkipKind
+  output?: string
+  readerId?: string
+  reason: string
+  source?: string
+  url?: string
+}
+
+type SkipLogger = {
+  count: number
+  path?: string
+  write: (entry: SkipLogEntry) => Promise<void>
+}
+
 type Transport = 'auto' | 'http2' | 'http3-only' | 'http3'
 
 const defaultOutDir = 'downloads/hitomi'
@@ -133,6 +153,37 @@ const parseRange = (value: string): RangeSpec => {
     start,
   }
 }
+
+const createSkipLogger = async (outDir: string, enabled: boolean): Promise<SkipLogger> => {
+  const path = enabled ? join(outDir, `hitomi-skipped-${Date.now()}.txt`) : undefined
+  if (path) {
+    await mkdir(outDir, { recursive: true })
+    await appendFile(path, `# Hitomi skipped entries\n# ${new Date().toISOString()}\n`)
+  }
+
+  const logger: SkipLogger = {
+    count: 0,
+    path,
+    write: async (entry) => {
+      logger.count++
+      if (!path) {
+        return
+      }
+
+      await appendFile(
+        path,
+        `${JSON.stringify({
+          timestamp: new Date().toISOString(),
+          ...entry,
+        })}\n`,
+      )
+    },
+  }
+
+  return logger
+}
+
+const errorReason = (error: unknown) => (error instanceof Error ? error.message : String(error))
 
 const takeValue = (args: string[], index: number, name: string) => {
   const value = args[index + 1]
@@ -475,6 +526,7 @@ const buildJobsForGallery = async (params: {
   outDir: string
   overwrite: boolean
   readerId: string
+  skipLogger: SkipLogger
 }) => {
   const { allowWebpFallback, gg, limit, outDir, overwrite, readerId } = params
   const galleryScript = await fetchText(`${galleryHost}/galleries/${readerId}.js`)
@@ -501,6 +553,13 @@ const buildJobsForGallery = async (params: {
     const format = file.hasavif ? 'avif' : allowWebpFallback ? 'webp' : undefined
     if (!format) {
       skippedNoAvif++
+      await params.skipLogger.write({
+        hash: file.hash,
+        kind: 'file',
+        readerId,
+        reason: 'no AVIF available and --allow-webp-fallback was not enabled',
+        source: file.name,
+      })
       continue
     }
 
@@ -781,15 +840,6 @@ const protocolForAttempt = (params: {
   return initialProtocol
 }
 
-const writeFailureManifest = async (outDir: string, jobs: DownloadJob[]) => {
-  const manifestPath = join(outDir, `hitomi-failed-${Date.now()}.txt`)
-  await Bun.write(
-    manifestPath,
-    jobs.map((job) => `${job.url}\tcandidates=${job.candidateUrls?.length ?? 1}\t${job.output}`).join('\n') + '\n',
-  )
-  return manifestPath
-}
-
 const downloadWithRetries = async (params: {
   curl: CurlInfo
   initialProtocol?: string
@@ -797,10 +847,11 @@ const downloadWithRetries = async (params: {
   outDir: string
   parallel: number
   retryRounds: number
+  skipLogger: SkipLogger
   tempDir: string
   transport: Transport
 }) => {
-  const { curl, initialProtocol, outDir, retryRounds, tempDir, transport } = params
+  const { curl, initialProtocol, retryRounds, tempDir, transport } = params
   let remaining = params.jobs
 
   for (let attemptIndex = 0; attemptIndex < retryRounds; attemptIndex++) {
@@ -845,8 +896,19 @@ const downloadWithRetries = async (params: {
     }
   }
 
-  const manifestPath = await writeFailureManifest(outDir, remaining)
-  throw new Error(`${remaining.length} files failed after ${retryRounds} attempts. Failed list: ${manifestPath}`)
+  for (const job of remaining) {
+    await params.skipLogger.write({
+      candidateUrls: job.candidateUrls,
+      kind: 'download',
+      output: job.output,
+      reason: `download failed after ${retryRounds} attempts; output file was not created`,
+      url: job.url,
+    })
+  }
+
+  console.warn(
+    `${remaining.length} files skipped after ${retryRounds} attempts. Reason log: ${params.skipLogger.path ?? 'disabled'}`,
+  )
 }
 
 const logGalleryPlans = (galleryPlans: Awaited<ReturnType<typeof buildJobsForGallery>>[]) => {
@@ -874,6 +936,7 @@ const handleGalleryPlans = async (params: {
   parallel: number
   protocol?: string
   retryRounds: number
+  skipLogger: SkipLogger
   tempDir?: string
   transport: Transport
 }) => {
@@ -904,11 +967,14 @@ const handleGalleryPlans = async (params: {
     outDir: params.outDir,
     parallel: params.parallel,
     retryRounds: params.retryRounds,
+    skipLogger: params.skipLogger,
     tempDir: params.tempDir,
     transport: params.transport,
   })
   console.log('download complete')
 }
+
+const isDefined = <T>(value: T | undefined): value is T => value !== undefined
 
 const processReaderIds = async (params: {
   curl: CurlInfo
@@ -917,18 +983,33 @@ const processReaderIds = async (params: {
   outDir: string
   protocol?: string
   readerIds: string[]
+  skipLogger: SkipLogger
   tempDir?: string
 }) => {
-  const galleryPlans = await mapLimit(params.readerIds, params.options.metadataParallel, (readerId) =>
-    buildJobsForGallery({
-      allowWebpFallback: params.options.allowWebpFallback,
-      gg: params.gg,
-      limit: params.options.limit,
-      outDir: params.outDir,
-      overwrite: params.options.overwrite,
-      readerId,
-    }),
-  )
+  const galleryPlans = (
+    await mapLimit(params.readerIds, params.options.metadataParallel, async (readerId) => {
+      try {
+        return await buildJobsForGallery({
+          allowWebpFallback: params.options.allowWebpFallback,
+          gg: params.gg,
+          limit: params.options.limit,
+          outDir: params.outDir,
+          overwrite: params.options.overwrite,
+          readerId,
+          skipLogger: params.skipLogger,
+        })
+      } catch (error) {
+        const reason = errorReason(error)
+        console.warn(`${readerId}: skipped, ${reason}`)
+        await params.skipLogger.write({
+          kind: 'gallery',
+          readerId,
+          reason,
+        })
+        return undefined
+      }
+    })
+  ).filter(isDefined)
 
   await handleGalleryPlans({
     curl: params.curl,
@@ -938,6 +1019,7 @@ const processReaderIds = async (params: {
     parallel: params.options.parallel,
     protocol: params.protocol,
     retryRounds: params.options.retryRounds,
+    skipLogger: params.skipLogger,
     tempDir: params.tempDir,
     transport: params.options.transport,
   })
@@ -952,9 +1034,11 @@ const processRange = async (params: {
   outDir: string
   protocol?: string
   range: RangeSpec
+  skipLogger: SkipLogger
   tempDir?: string
 }) => {
   const total = rangeLength(params.range)
+  let errored = 0
   let found = 0
   let missing = 0
   let processed = 0
@@ -971,6 +1055,7 @@ const processRange = async (params: {
         outDir: params.outDir,
         overwrite: params.options.overwrite,
         readerId: String(id),
+        skipLogger: params.skipLogger,
       })
       found++
       await handleGalleryPlans({
@@ -981,23 +1066,39 @@ const processRange = async (params: {
         parallel: params.options.parallel,
         protocol: params.protocol,
         retryRounds: params.options.retryRounds,
+        skipLogger: params.skipLogger,
         tempDir: params.tempDir,
         transport: params.options.transport,
       })
     } catch (error) {
       if (isFetchTextError(error) && error.status === 404) {
         missing++
+        await params.skipLogger.write({
+          kind: 'gallery',
+          readerId: String(id),
+          reason: 'metadata not found (404)',
+          url: error.url,
+        })
       } else {
-        throw error
+        errored++
+        const reason = errorReason(error)
+        console.warn(`${id}: skipped, ${reason}`)
+        await params.skipLogger.write({
+          kind: 'gallery',
+          readerId: String(id),
+          reason,
+        })
       }
     }
 
     if (processed % 1000 === 0 || processed === total) {
-      console.log(`range progress ${processed}/${total}: found=${found}, missing=${missing}`)
+      console.log(`range progress ${processed}/${total}: found=${found}, missing=${missing}, errors=${errored}`)
     }
   }
 
-  console.log(`range ${params.range.start}:${params.range.end} complete: found=${found}, missing=${missing}`)
+  console.log(
+    `range ${params.range.start}:${params.range.end} complete: found=${found}, missing=${missing}, errors=${errored}`,
+  )
 }
 
 const main = async () => {
@@ -1016,6 +1117,7 @@ const main = async () => {
   let ggFetchedAt = Date.now()
   const curl = detectCurl(options.curlPath)
   const protocol = transportOption(curl, options.transport)
+  const skipLogger = await createSkipLogger(outDir, !options.dryRun)
   const totalRangeIds = options.ranges.reduce((sum, range) => sum + rangeLength(range), 0)
 
   console.log(`curl: ${curl.path}`)
@@ -1024,6 +1126,9 @@ const main = async () => {
   console.log(
     `metadata: ${readerIds.length} explicit galleries, ${totalRangeIds} range ids, explicit parallel=${options.metadataParallel}, range sequential`,
   )
+  if (skipLogger.path) {
+    console.log(`skip log: ${skipLogger.path}`)
+  }
 
   const getGg = async () => {
     if (Date.now() - ggFetchedAt > 30 * 60 * 1000) {
@@ -1045,6 +1150,7 @@ const main = async () => {
         outDir,
         protocol,
         readerIds,
+        skipLogger,
         tempDir,
       })
     }
@@ -1057,6 +1163,7 @@ const main = async () => {
         outDir,
         protocol,
         range,
+        skipLogger,
         tempDir,
       })
     }
@@ -1066,6 +1173,9 @@ const main = async () => {
         force: true,
         recursive: true,
       })
+    }
+    if (skipLogger.path && skipLogger.count > 0) {
+      console.log(`skipped entries: ${skipLogger.count}. See ${skipLogger.path}`)
     }
   }
 }
