@@ -1,11 +1,10 @@
 import { CircuitBreaker, type CircuitBreakerConfig } from '@/crawler/CircuitBreaker'
-import { NotFoundError, UpstreamServerError } from '@/crawler/errors'
+import { NetworkError, NotFoundError, UpstreamServerError } from '@/crawler/errors'
 
 import { RetryConfig, retryWithBackoff } from './retry'
 
 export const PROXY_HEADERS = {
   'accept-language': 'ko-KR,ko;q=0.9',
-  connection: 'keep-alive',
   priority: 'u=0, i',
   'sec-ch-ua': '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
   'sec-ch-ua-mobile': '?0',
@@ -56,16 +55,29 @@ export class ProxyClient {
         signal = options.signal
       }
 
-      const response = await fetch(url, {
-        ...options,
-        signal,
-        headers: {
-          ...PROXY_HEADERS,
-          ...this.config.defaultHeaders,
-          ...options.headers,
-        },
-        redirect: options.redirect || 'follow',
-      })
+      let response: Response
+
+      try {
+        response = await fetch(url, {
+          ...options,
+          signal,
+          headers: {
+            ...PROXY_HEADERS,
+            ...this.config.defaultHeaders,
+            ...options.headers,
+          },
+          redirect: options.redirect || 'follow',
+        })
+      } catch (error) {
+        if (isAbortLikeError(error)) {
+          throw error
+        }
+
+        throw new NetworkError('외부 서비스에 연결할 수 없어요', {
+          url,
+          cause: serializeFetchError(error),
+        })
+      }
 
       if (response.status === 404) {
         throw new NotFoundError(undefined, { url })
@@ -109,4 +121,39 @@ function abortSignalAny(signals: AbortSignal[]): AbortSignal {
   }
 
   return controller.signal
+}
+
+function isAbortLikeError(error: unknown): boolean {
+  return error instanceof Error && (error.name === 'AbortError' || error.name === 'TimeoutError')
+}
+
+function serializeErrorCause(cause: unknown): unknown {
+  if (!cause) {
+    return undefined
+  }
+
+  if (cause instanceof Error) {
+    return {
+      name: cause.name,
+      message: cause.message,
+    }
+  }
+
+  if (typeof cause === 'object') {
+    return cause
+  }
+
+  return String(cause)
+}
+
+function serializeFetchError(error: unknown): Record<string, unknown> {
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+      message: error.message,
+      cause: serializeErrorCause(error.cause),
+    }
+  }
+
+  return { message: String(error) }
 }

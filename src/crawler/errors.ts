@@ -136,6 +136,7 @@ export function isRetryableError(error: unknown): boolean {
     return (
       message.includes('network') ||
       message.includes('fetch') ||
+      message === 'internal error' ||
       message.includes('timeout') ||
       message.includes('econnreset') ||
       message.includes('econnrefused') ||
