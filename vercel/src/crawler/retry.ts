@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { isRetryableError, ProxyError, UpstreamServerError } from '@/crawler/errors'
+import { isRetryableError, UpstreamServerError } from '@/crawler/errors'
 
 // Configuration for retry logic
 export interface RetryConfig {
@@ -45,12 +45,7 @@ export async function retryWithBackoff<T>(
           captureException(error, {
             level: 'warning',
             tags: { retry_attempt: attempt + 1 },
-            extra: {
-              ...context,
-              delay,
-              cause: error.cause,
-              ...(error instanceof ProxyError && error.context),
-            },
+            extra: { ...context, delay, cause: error.cause },
           })
         }
         break

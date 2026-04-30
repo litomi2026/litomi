@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { NetworkError, normalizeError, UpstreamServerError } from '@/crawler/errors'
+import { normalizeError, UpstreamServerError } from '@/crawler/errors'
 import { env } from '@/env/client'
 import { type CacheControlOptions, createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
@@ -177,10 +177,6 @@ export function isUpstreamServer4XXError(error: unknown): boolean {
 }
 
 export function isUpstreamServerError(error: unknown): boolean {
-  if (error instanceof NetworkError) {
-    return true
-  }
-
   if (error instanceof UpstreamServerError) {
     return error.statusCode >= 500
   }
