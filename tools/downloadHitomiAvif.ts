@@ -22,6 +22,11 @@ type DownloadJob = {
   url: string
 }
 
+type FetchTextError = Error & {
+  status: number
+  url: string
+}
+
 type GalleryFile = {
   hasavif?: boolean | number
   hash: string
@@ -53,6 +58,7 @@ type Options = {
   outDir: string
   overwrite: boolean
   parallel: number
+  ranges: RangeSpec[]
   retryRounds: number
   targets: string[]
   transport: Transport
@@ -63,6 +69,11 @@ type PendingDownloadJob = Omit<DownloadJob, 'url'> & {
 }
 
 type ProbeResult = 'found' | 'missing' | 'unknown'
+
+type RangeSpec = {
+  end: number
+  start: number
+}
 
 type Transport = 'auto' | 'http2' | 'http3-only' | 'http3'
 
@@ -80,6 +91,7 @@ const usage = () => {
 
 Options:
   --input <file>             Read reader URLs/ids from a newline-delimited file. Use - for stdin.
+  --range <start:end>        Process reader ids inclusively without expanding them in memory.
   --out <dir>                Output directory. Default: ${defaultOutDir}
   --parallel <n>             curl transfer concurrency. Default: 4
   --metadata-parallel <n>    Gallery metadata fetch concurrency. Default: 8
@@ -104,6 +116,24 @@ const parsePositiveInt = (name: string, value: string) => {
   return parsed
 }
 
+const parseRange = (value: string): RangeSpec => {
+  const match = /^(\d+):(\d+)$/.exec(value)
+  if (!match) {
+    throw new Error(`--range must be in start:end format: ${value}`)
+  }
+
+  const start = parsePositiveInt('--range start', match[1])
+  const end = parsePositiveInt('--range end', match[2])
+  if (start > end) {
+    throw new Error(`--range start must be <= end: ${value}`)
+  }
+
+  return {
+    end,
+    start,
+  }
+}
+
 const takeValue = (args: string[], index: number, name: string) => {
   const value = args[index + 1]
   if (!value || value.startsWith('--')) {
@@ -121,6 +151,7 @@ const parseArgs = (args: string[]): Options => {
     outDir: defaultOutDir,
     overwrite: false,
     parallel: 4,
+    ranges: [],
     retryRounds: 4,
     targets: [],
     transport: 'auto',
@@ -134,6 +165,9 @@ const parseArgs = (args: string[]): Options => {
       process.exit(0)
     } else if (arg === '--input') {
       options.inputFiles.push(takeValue(args, i, arg))
+      i++
+    } else if (arg === '--range') {
+      options.ranges.push(parseRange(takeValue(args, i, arg)))
       i++
     } else if (arg === '--out') {
       options.outDir = takeValue(args, i, arg)
@@ -210,9 +244,20 @@ const fetchText = async (url: string) => {
     },
   })
   if (!response.ok) {
-    throw new Error(`GET ${url} failed: ${response.status} ${response.statusText}`)
+    throw Object.assign(new Error(`GET ${url} failed: ${response.status} ${response.statusText}`), {
+      status: response.status,
+      url,
+    })
   }
   return response.text()
+}
+
+const isFetchTextError = (error: unknown): error is FetchTextError => {
+  if (!(error instanceof Error)) {
+    return false
+  }
+  const candidate = error as Partial<FetchTextError>
+  return typeof candidate.status === 'number' && typeof candidate.url === 'string'
 }
 
 const parseGalleryInfo = (script: string) => {
@@ -804,38 +849,7 @@ const downloadWithRetries = async (params: {
   throw new Error(`${remaining.length} files failed after ${retryRounds} attempts. Failed list: ${manifestPath}`)
 }
 
-const main = async () => {
-  const options = parseArgs(Bun.argv.slice(2))
-  options.targets.push(...(await readInputTargets(options.inputFiles)))
-  options.targets = [...new Set(options.targets.map((target) => target.trim()).filter(Boolean))]
-
-  if (!options.targets.length) {
-    usage()
-    throw new Error('No reader URLs or ids were provided')
-  }
-
-  const outDir = resolve(options.outDir)
-  const readerIds = options.targets.map(readerIdFromTarget)
-  const gg = parseGgInfo(await fetchText(`${galleryHost}/gg.js`))
-  const curl = detectCurl(options.curlPath)
-  const protocol = transportOption(curl, options.transport)
-
-  console.log(`curl: ${curl.path}`)
-  console.log(curl.version.split('\n').slice(0, 3).join('\n'))
-  console.log(`transport: ${protocol ?? 'curl default'}`)
-  console.log(`metadata: ${readerIds.length} galleries, parallel=${options.metadataParallel}`)
-
-  const galleryPlans = await mapLimit(readerIds, options.metadataParallel, (readerId) =>
-    buildJobsForGallery({
-      allowWebpFallback: options.allowWebpFallback,
-      gg,
-      limit: options.limit,
-      outDir,
-      overwrite: options.overwrite,
-      readerId,
-    }),
-  )
-
+const logGalleryPlans = (galleryPlans: Awaited<ReturnType<typeof buildJobsForGallery>>[]) => {
   const jobs = galleryPlans.flatMap((plan) => plan.jobs)
   const skippedExisting = galleryPlans.reduce((sum, plan) => sum + plan.skippedExisting, 0)
   const skippedNoAvif = galleryPlans.reduce((sum, plan) => sum + plan.skippedNoAvif, 0)
@@ -849,11 +863,26 @@ const main = async () => {
 
   console.log(`total queued: ${jobs.length}, skipped existing: ${skippedExisting}, skipped no-avif: ${skippedNoAvif}`)
 
+  return jobs
+}
+
+const handleGalleryPlans = async (params: {
+  curl: CurlInfo
+  dryRun: boolean
+  galleryPlans: Awaited<ReturnType<typeof buildJobsForGallery>>[]
+  outDir: string
+  parallel: number
+  protocol?: string
+  retryRounds: number
+  tempDir?: string
+  transport: Transport
+}) => {
+  const jobs = logGalleryPlans(params.galleryPlans)
   if (!jobs.length) {
     return
   }
 
-  if (options.dryRun) {
+  if (params.dryRun) {
     for (const job of jobs.slice(0, 10)) {
       console.log(`${job.format} ${job.url} -> ${job.output}`)
     }
@@ -863,26 +892,181 @@ const main = async () => {
     return
   }
 
-  await mkdir(outDir, { recursive: true })
-  const tempDir = await mkdtemp(join(tmpdir(), 'hitomi-avif-'))
+  if (!params.tempDir) {
+    throw new Error('Temporary directory is required for downloads')
+  }
+
+  await mkdir(params.outDir, { recursive: true })
+  await downloadWithRetries({
+    curl: params.curl,
+    initialProtocol: params.protocol,
+    jobs,
+    outDir: params.outDir,
+    parallel: params.parallel,
+    retryRounds: params.retryRounds,
+    tempDir: params.tempDir,
+    transport: params.transport,
+  })
+  console.log('download complete')
+}
+
+const processReaderIds = async (params: {
+  curl: CurlInfo
+  gg: GgInfo
+  options: Options
+  outDir: string
+  protocol?: string
+  readerIds: string[]
+  tempDir?: string
+}) => {
+  const galleryPlans = await mapLimit(params.readerIds, params.options.metadataParallel, (readerId) =>
+    buildJobsForGallery({
+      allowWebpFallback: params.options.allowWebpFallback,
+      gg: params.gg,
+      limit: params.options.limit,
+      outDir: params.outDir,
+      overwrite: params.options.overwrite,
+      readerId,
+    }),
+  )
+
+  await handleGalleryPlans({
+    curl: params.curl,
+    dryRun: params.options.dryRun,
+    galleryPlans,
+    outDir: params.outDir,
+    parallel: params.options.parallel,
+    protocol: params.protocol,
+    retryRounds: params.options.retryRounds,
+    tempDir: params.tempDir,
+    transport: params.options.transport,
+  })
+}
+
+const rangeLength = (range: RangeSpec) => range.end - range.start + 1
+
+const processRange = async (params: {
+  curl: CurlInfo
+  getGg: () => Promise<GgInfo>
+  options: Options
+  outDir: string
+  protocol?: string
+  range: RangeSpec
+  tempDir?: string
+}) => {
+  const total = rangeLength(params.range)
+  let found = 0
+  let missing = 0
+  let processed = 0
+
+  console.log(`range ${params.range.start}:${params.range.end}: ${total} ids, sequential metadata`)
+
+  for (let id = params.range.start; id <= params.range.end; id++) {
+    processed++
+    try {
+      const galleryPlan = await buildJobsForGallery({
+        allowWebpFallback: params.options.allowWebpFallback,
+        gg: await params.getGg(),
+        limit: params.options.limit,
+        outDir: params.outDir,
+        overwrite: params.options.overwrite,
+        readerId: String(id),
+      })
+      found++
+      await handleGalleryPlans({
+        curl: params.curl,
+        dryRun: params.options.dryRun,
+        galleryPlans: [galleryPlan],
+        outDir: params.outDir,
+        parallel: params.options.parallel,
+        protocol: params.protocol,
+        retryRounds: params.options.retryRounds,
+        tempDir: params.tempDir,
+        transport: params.options.transport,
+      })
+    } catch (error) {
+      if (isFetchTextError(error) && error.status === 404) {
+        missing++
+      } else {
+        throw error
+      }
+    }
+
+    if (processed % 1000 === 0 || processed === total) {
+      console.log(`range progress ${processed}/${total}: found=${found}, missing=${missing}`)
+    }
+  }
+
+  console.log(`range ${params.range.start}:${params.range.end} complete: found=${found}, missing=${missing}`)
+}
+
+const main = async () => {
+  const options = parseArgs(Bun.argv.slice(2))
+  options.targets.push(...(await readInputTargets(options.inputFiles)))
+  options.targets = [...new Set(options.targets.map((target) => target.trim()).filter(Boolean))]
+
+  if (!options.targets.length && !options.ranges.length) {
+    usage()
+    throw new Error('No reader URLs, ids, or ranges were provided')
+  }
+
+  const outDir = resolve(options.outDir)
+  const readerIds = options.targets.map(readerIdFromTarget)
+  let gg = parseGgInfo(await fetchText(`${galleryHost}/gg.js`))
+  let ggFetchedAt = Date.now()
+  const curl = detectCurl(options.curlPath)
+  const protocol = transportOption(curl, options.transport)
+  const totalRangeIds = options.ranges.reduce((sum, range) => sum + rangeLength(range), 0)
+
+  console.log(`curl: ${curl.path}`)
+  console.log(curl.version.split('\n').slice(0, 3).join('\n'))
+  console.log(`transport: ${protocol ?? 'curl default'}`)
+  console.log(
+    `metadata: ${readerIds.length} explicit galleries, ${totalRangeIds} range ids, explicit parallel=${options.metadataParallel}, range sequential`,
+  )
+
+  const getGg = async () => {
+    if (Date.now() - ggFetchedAt > 30 * 60 * 1000) {
+      gg = parseGgInfo(await fetchText(`${galleryHost}/gg.js`))
+      ggFetchedAt = Date.now()
+      console.log(`refreshed gg.js: base=${gg.b}`)
+    }
+    return gg
+  }
+
+  const tempDir = options.dryRun ? undefined : await mkdtemp(join(tmpdir(), 'hitomi-avif-'))
 
   try {
-    await downloadWithRetries({
-      curl,
-      initialProtocol: protocol,
-      jobs,
-      outDir,
-      parallel: options.parallel,
-      retryRounds: options.retryRounds,
-      tempDir,
-      transport: options.transport,
-    })
-    console.log('download complete')
+    if (readerIds.length) {
+      await processReaderIds({
+        curl,
+        gg: await getGg(),
+        options,
+        outDir,
+        protocol,
+        readerIds,
+        tempDir,
+      })
+    }
+
+    for (const range of options.ranges) {
+      await processRange({
+        curl,
+        getGg,
+        options,
+        outDir,
+        protocol,
+        range,
+        tempDir,
+      })
+    }
   } finally {
-    await rm(tempDir, {
-      force: true,
-      recursive: true,
-    })
+    if (tempDir) {
+      await rm(tempDir, {
+        force: true,
+        recursive: true,
+      })
+    }
   }
 }
 
