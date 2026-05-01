@@ -11,7 +11,7 @@ mock.module('sonner', () => ({
 }))
 
 const { default: useImageNavigation } = await import('./useImageNavigation')
-const { useImageIndexStore } = await import('./store/imageIndex')
+const { useImageIndexStore } = await import('../store/imageIndex')
 
 function TestHarness() {
   useImageNavigation({ maxIndex: 9, offset: 1 })
