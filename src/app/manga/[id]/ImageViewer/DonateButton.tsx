@@ -1,6 +1,5 @@
 'use client'
 
-import { Heart } from 'lucide-react'
 import ms from 'ms'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'
@@ -137,7 +136,7 @@ export default function DonateButton({ manga, ...props }: Props) {
   return (
     <>
       <button aria-label="후원하기" onClick={() => setOpen(true)} {...props}>
-        <Heart className="size-6" />
+        후원
       </button>
       <Dialog ariaLabel="후원하기" onClose={close} open={open}>
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>

@@ -36,7 +36,7 @@ suggestionRoutes.get('/', zProblemValidator('query', querySchema), async (c) => 
   const cacheControl = createCacheControl({
     public: true,
     maxAge: 3,
-    sMaxAge: sec('30 days'),
+    sMaxAge: sec('90 days'),
     swr: sec('1 day'),
   })
 

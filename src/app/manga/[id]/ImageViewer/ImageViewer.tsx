@@ -10,7 +10,6 @@ import { toast } from 'sonner'
 import BackButton from '@/components/BackButton'
 import { type Manga } from '@/types/manga'
 
-import DonateButton from './DonateButton'
 import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
 import { getNavigatorLowDataSnapshot, type LowDataReason, type LowDataSnapshot, resolveLowDataState } from './lowData'
@@ -163,7 +162,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             >
               <MessageCircle className="size-6" />
             </Link>
-            <DonateButton className={topButtonClassName} manga={manga} />
             <ShareButton className={topButtonClassName} manga={manga} />
           </div>
         </div>

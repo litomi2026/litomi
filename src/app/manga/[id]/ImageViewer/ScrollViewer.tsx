@@ -30,6 +30,7 @@ const screenFitStyle: Record<ScreenFit, string> = {
 type LastPageProps = {
   manga: {
     id: number
+    title: string
   }
   style: CSSProperties
 }

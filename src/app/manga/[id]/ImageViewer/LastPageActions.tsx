@@ -9,8 +9,13 @@ import MangaReportButton from '@/components/report/MangaReportButton'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 
+import DonateButton from './DonateButton'
+
 type Props = {
-  manga: { id: number }
+  manga: {
+    id: number
+    title: string
+  }
 }
 
 export default function LastPageActions({ manga }: Readonly<Props>) {
@@ -64,11 +69,15 @@ export default function LastPageActions({ manga }: Readonly<Props>) {
           작품 후기
         </Link>
       </div>
-      <div className="flex justify-center">
+      <div className="grid grid-cols-2 justify-center gap-2">
         <MangaReportButton
           className="w-auto border-0 px-2 py-1 text-xs text-zinc-500 hover:bg-transparent hover:text-foreground [&>svg]:hidden"
           mangaId={mangaId}
           variant="full"
+        />
+        <DonateButton
+          className="w-auto border-0 px-2 py-1 text-xs text-zinc-500 hover:bg-transparent hover:text-foreground"
+          manga={manga}
         />
       </div>
     </div>

@@ -178,7 +178,7 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   if (nextId) {
     return createCacheControlHeaders({
       vercel: {
-        maxAge: sec('30 days'),
+        maxAge: sec('90 days'),
       },
       browser: {
         public: true,
