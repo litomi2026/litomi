@@ -13,14 +13,17 @@ type Store = {
 export const DEFAULT_ZOOM = 1
 export const MAX_ZOOM = 10
 
+export function clampZoomLevel(zoom: number) {
+  return Math.min(Math.max(DEFAULT_ZOOM, zoom), MAX_ZOOM)
+}
+
 export const useZoomStore = create<Store>()(
   persist(
     (set, get) => ({
       zoomLevel: DEFAULT_ZOOM,
       getZoomLevel: () => get().zoomLevel,
       setZoomLevel: (zoom: number) => {
-        const clampedZoom = Math.min(Math.max(DEFAULT_ZOOM, zoom), MAX_ZOOM)
-        set({ zoomLevel: clampedZoom })
+        set({ zoomLevel: clampZoomLevel(zoom) })
       },
       resetZoom: () => set({ zoomLevel: DEFAULT_ZOOM }),
     }),
