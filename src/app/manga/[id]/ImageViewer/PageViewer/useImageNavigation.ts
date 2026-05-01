@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 
-import { useImageIndexStore } from './store/imageIndex'
+import { useImageIndexStore } from '../store/imageIndex'
 
 const PREV_PAGE_CODES = new Set(['ArrowLeft', 'AudioVolumeUp', 'PageUp'])
 const NEXT_PAGE_CODES = new Set(['ArrowRight', 'AudioVolumeDown', 'PageDown'])

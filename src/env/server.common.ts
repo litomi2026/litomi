@@ -13,6 +13,7 @@ export const env = createEnv({
     JWT_SECRET_REFRESH_TOKEN: z.string().default('456'),
     JWT_SECRET_TRUSTED_DEVICE: z.string().default('789'),
     POSTGRES_URL: z.string().default('postgresql://test_user:test_password@localhost:5434/test_db'),
+    SECONDARY_POSTGRES_URL: z.string().default('postgresql://test_user:test_password@localhost:5434/secondary_test_db'),
     POSTGRES_POOL_MAX: z.coerce.number().int().positive().default(2),
     POSTGRES_IDLE_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(20),
     POSTGRES_CONNECT_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(10),

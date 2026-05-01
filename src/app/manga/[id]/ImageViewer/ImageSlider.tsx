@@ -1,5 +1,5 @@
 import { Loader2 } from 'lucide-react'
-import { memo, useCallback } from 'react'
+import { useCallback } from 'react'
 
 import Slider from '@/components/ui/Slider'
 
@@ -11,9 +11,7 @@ type Props = {
   maxImageIndex: number
 }
 
-export default memo(ImageSlider)
-
-function ImageSlider({ maxImageIndex }: Readonly<Props>) {
+export default function ImageSlider({ maxImageIndex }: Readonly<Props>) {
   const { imageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)

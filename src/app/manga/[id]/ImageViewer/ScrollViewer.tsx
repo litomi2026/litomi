@@ -12,9 +12,9 @@ import RatingInput from './RatingInput'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
 import { useImageWidthStore } from './store/imageWidth'
-import { PageView } from './store/pageView'
-import { ReadingDirection } from './store/readingDirection'
-import { ScreenFit } from './store/screenFit'
+import { usePageViewStore } from './store/pageView'
+import { useReadingDirectionStore } from './store/readingDirection'
+import { ScreenFit, useScreenFitStore } from './store/screenFit'
 import { useVirtualScrollStore } from './store/virtualizer'
 import { useZoomStore } from './store/zoom'
 import { getResponsivePictureSources } from './util'
@@ -38,32 +38,33 @@ type Props = {
   isLowDataMode: boolean
   manga: Manga
   onClick: () => void
-  pageView: PageView
-  readingDirection: ReadingDirection
-  screenFit: ScreenFit
 }
 
 type RowProps = {
   isLowDataMode: boolean
   manga: Manga
-  pageView: PageView
-  readingDirection: ReadingDirection
-  screenFit: ScreenFit
 }
 
-export default function ScrollViewer({ isLowDataMode, manga, onClick, pageView, readingDirection, screenFit }: Props) {
-  const { images = [] } = manga
+type ScrollViewerRowItemProps = RowProps & {
+  index: number
+  style: CSSProperties
+}
+
+export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
   const listRef = useListRef(null)
   const brightness = useBrightnessStore((state) => state.brightness)
   const imageWidth = useImageWidthStore((state) => state.imageWidth)
   const zoomLevel = useZoomStore((state) => state.zoomLevel)
   const setListRef = useVirtualScrollStore((state) => state.setListRef)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
-  const isDoublePage = pageView === 'double'
+  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
+  const screenFit = useScreenFitStore((state) => state.screenFit)
+  const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
+
+  const { images = [] } = manga
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const overscanCount = isLowDataMode ? 1 : 2
   const totalItemCount = imagePageCount + 1 // +1 for rating page
-  const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
 
   const dynamicStyle = {
     '--image-width': `${imageWidth}%`,
@@ -107,7 +108,7 @@ export default function ScrollViewer({ isLowDataMode, manga, onClick, pageView, 
         rowComponent={ScrollViewerRow}
         rowCount={totalItemCount}
         rowHeight={rowHeight}
-        rowProps={{ isLowDataMode, manga, pageView, readingDirection, screenFit }}
+        rowProps={{ isLowDataMode, manga }}
       />
     </div>
   )
@@ -126,31 +127,25 @@ function LastPage({ manga, style }: LastPageProps) {
   )
 }
 
-function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponentProps<RowProps>) {
+function ScrollViewerRow({ index, isLowDataMode, style, manga }: RowComponentProps<RowProps>) {
+  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
   const { images = [] } = manga
-  const isDoublePage = pageView === 'double'
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
 
   if (index === imagePageCount) {
     return <LastPage manga={manga} style={style} />
   }
 
-  return <ScrollViewerRowItem index={index} manga={manga} pageView={pageView} style={style} {...rest} />
+  return <ScrollViewerRowItem index={index} isLowDataMode={isLowDataMode} manga={manga} style={style} />
 }
 
-function ScrollViewerRowItem({
-  index,
-  isLowDataMode,
-  manga,
-  pageView,
-  readingDirection,
-  style,
-}: RowComponentProps<RowProps>) {
+function ScrollViewerRowItem({ index, isLowDataMode, manga, style }: ScrollViewerRowItemProps) {
   const currentImageIndex = useImageIndexStore((state) => state.imageIndex)
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
+  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
+  const isRTL = useReadingDirectionStore((state) => state.readingDirection === 'rtl')
+
   const { images = [] } = manga
-  const isDoublePage = pageView === 'double'
-  const isRTL = readingDirection === 'rtl'
   const firstImageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = firstImageIndex + 1
   const firstImage = images[firstImageIndex]
