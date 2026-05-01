@@ -42,7 +42,7 @@ export function calculateOptimalCacheDuration(images: string[]): number {
   }
 
   if (!nearestExpiration) {
-    return sec('30 days')
+    return sec('90 days')
   }
 
   // Apply a small buffer (5 minutes) for:

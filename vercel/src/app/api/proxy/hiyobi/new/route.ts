@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     const headers = new Headers(
       createCacheControlHeaders({
         vercel: {
-          maxAge: sec('30 minutes'),
+          maxAge: sec('1 hour'),
         },
         browser: {
           public: true,

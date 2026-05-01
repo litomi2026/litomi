@@ -45,7 +45,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   if (BLACKLISTED_MANGA_IDS.includes(id)) {
     const forbiddenHeaders = createCacheControlHeaders({
       vercel: {
-        maxAge: sec('30 days'),
+        maxAge: sec('90 days'),
       },
       browser: {
         public: true,
@@ -83,7 +83,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
       const notFoundHeaders = createCacheControlHeaders({
         vercel: {
-          maxAge: isPermanentlyMissing ? sec('30 days') : sec('10 minutes'),
+          maxAge: isPermanentlyMissing ? sec('90 days') : sec('10 minutes'),
         },
         browser: {
           public: true,
