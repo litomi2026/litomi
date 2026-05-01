@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { parse } from 'node-html-parser'
+import { appendFileSync, mkdirSync } from 'node:fs'
 import { mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from 'node:fs/promises'
 import { dirname, extname, resolve } from 'node:path'
 import sharp from 'sharp'
@@ -25,6 +26,7 @@ type Args = {
   indexUrl?: string
   keepOriginal: boolean
   limit?: number
+  logDir: string | null
   maxGalleries?: number
   mode: Mode
   out?: string
@@ -41,6 +43,7 @@ type DownloadPipeline = {
   enqueueEntry: (params: {
     entry: OutputEntry
     indexUrl?: string
+    progress: ProgressContext
     target: ResolvedTarget
     waitForDownload?: boolean
   }) => Promise<boolean>
@@ -55,6 +58,7 @@ type DownloadTask = {
   originalPath: string
   progress: ProgressContext
   resolveDownload: (success: boolean) => void
+  sourceUrl: string
 }
 
 type GalleryDownloadState = {
@@ -113,6 +117,13 @@ type ProgressContext = {
   imagePage?: number
   imageTotal?: number
   indexUrl?: string
+}
+
+type ProgressCounter = {
+  completedLogged: boolean
+  done: number
+  error: number
+  ok: number
 }
 
 type ResolvedTarget = {
@@ -174,8 +185,11 @@ const defaultApiUrl = 'https://s.exhentai.org/api.php'
 const defaultDelayMs = 100
 const defaultTimeoutMs = 10_000
 const ignorableEmptyDirFiles = new Set(['.DS_Store', '.localized'])
+const progressCounters = new Map<string, ProgressCounter>()
 const userAgent =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0 Safari/537.36'
+
+let progressLineOpen = false
 
 const usage = `
 ExHentai fullimg 링크 추출 스크립트
@@ -199,7 +213,9 @@ Options:
   --mode <mode>         showpage 또는 direct. Default: showpage
   --format <format>     text, jsonl, json. Default: text
   --out <file>          결과를 파일로 저장. 없으면 stdout
-  --links-only          다운로드/변환 없이 fullimg 링크만 출력
+  --log-dir <dir>       완료/오류 로그 폴더. Default: downloads/exhentai/logs
+  --no-log-files        completed.log/errors.log 파일 기록 비활성화
+  --links-only          다운로드/변환 없이 fullimg 링크를 출력. 없으면 img 링크 출력
   --download-avif       fullimg 원본을 내려받고 AVIF로 변환. 기본값이라 생략 가능
   --download-dir <dir>  다운로드 폴더. Default: downloads/exhentai/{gid}
   --keep-original       AVIF 변환 후 원본 파일 유지
@@ -220,12 +236,43 @@ Options:
 Notes:
   - 쿠키는 코드에 저장하지 않습니다. EXHENTAI_COOKIE나 --cookie-file로만 전달하세요.
   - gid만으로는 fullimg 링크를 만들 수 없고 gallery_token이 필요합니다.
-  - 기본 동작은 fullimg 다운로드 후 AVIF 변환입니다. 링크만 필요하면 --links-only를 사용하세요.
-  - --verbose가 없으면 진행 상태는 stderr에 index/gid/image만 표시합니다.
+  - 기본 동작은 fullimg 다운로드 후 AVIF 변환입니다. fullimg가 없으면 img 주소를 사용합니다.
+  - --verbose가 없으면 갤러리 시작 줄을 남기고, 이미지 완료 상태는 한 줄로 갱신합니다.
   - fullimg 요청 자체는 이미지 제한/포인트를 소모할 수 있습니다.
 `.trim()
 
 await main()
+
+function appendPersistentLog(args: Args, name: 'completed.log' | 'errors.log', line: string) {
+  if (!args.logDir) {
+    return
+  }
+
+  const logPath = resolve(process.cwd(), args.logDir, name)
+  mkdirSync(dirname(logPath), { recursive: true })
+  appendFileSync(logPath, `${line}\n`)
+}
+
+function appendProgressEventLog(args: Args, progress: ProgressContext, line: string, status: 'error' | 'ok') {
+  if (status === 'error') {
+    appendPersistentLog(args, 'errors.log', line)
+  }
+
+  if (typeof progress.imagePage !== 'number') {
+    return
+  }
+
+  const total = progress.imageTotal
+  if (typeof total !== 'number') {
+    return
+  }
+
+  const counter = getProgressCounter(progress)
+  if (!counter.completedLogged && counter.done >= total && counter.error === 0) {
+    counter.completedLogged = true
+    appendPersistentLog(args, 'completed.log', formatProgressPrefix(progress))
+  }
+}
 
 async function cleanupEmptyGalleryDir(params: { args: Args; target: ResolvedTarget }) {
   const { args, target } = params
@@ -245,7 +292,7 @@ async function collectGalleryEntries(params: {
 }) {
   const { args, cookie, pipeline, target } = params
   const progress = { ...params.progress, gid: target.gid }
-  showProgress(args, progress)
+  showGalleryProgress(args, progress)
 
   const meta = await fetchGalleryMeta({ args, cookie, target })
   const endPage = Math.min(args.endPage ?? meta.filecount, meta.filecount)
@@ -364,7 +411,7 @@ async function collectViaDirectPages(params: {
       continue
     }
 
-    showProgress(args, { ...progress, imagePage: page })
+    const pageProgress = { ...progress, imagePage: page }
     const html = await fetchText({ args, cookie, referer: galleryUrl(target), url: link.url })
     const fullimgUrl = extractFullimgUrl(html)
     const imageUrl = extractImageUrl(html)
@@ -386,7 +433,7 @@ async function collectViaDirectPages(params: {
     entries.push(entry)
 
     log(args, `page ${page}: ${fullimgUrl ? 'fullimg ok' : 'fullimg missing'}`)
-    if (!(await enqueueCollectedEntry({ args, entry, pipeline, progress, target }))) {
+    if (!(await enqueueCollectedEntry({ args, entry, pipeline, progress: pageProgress, target }))) {
       break
     }
 
@@ -421,7 +468,7 @@ async function collectViaShowpage(params: {
   }
 
   while (current && current.page <= endPage && !isLimitReached(args, entries)) {
-    showProgress(args, { ...progress, imagePage: current.page })
+    const pageProgress = { ...progress, imagePage: current.page }
     const response: ShowPageResponse = await fetchJson<ShowPageResponse>({
       args,
       body: {
@@ -468,7 +515,7 @@ async function collectViaShowpage(params: {
       `page ${current.page}: ${fullimgUrl ? 'fullimg ok' : 'fullimg missing'} (${Object.keys(response).join(', ')})`,
     )
 
-    if (!(await enqueueCollectedEntry({ args, entry, pipeline, progress, target }))) {
+    if (!(await enqueueCollectedEntry({ args, entry, pipeline, progress: pageProgress, target }))) {
       break
     }
 
@@ -512,6 +559,7 @@ async function convertDownloadedImage(params: { args: Args; task: DownloadTask; 
   entry.avifPath = avifPath
   entry.avifBytes = avifBytes
   log(args, `page ${entry.page}: saved ${avifPath} (${formatBytes(originalBytes)} -> ${formatBytes(avifBytes)})`)
+  showProgressResult(args, task.progress, 'ok')
 }
 
 async function crawlIndexGalleries(params: { args: Args; cookie: string }) {
@@ -529,7 +577,6 @@ async function crawlIndexGalleries(params: { args: Args; cookie: string }) {
   try {
     while (currentUrl && !isMaxGalleryReached(args, processed)) {
       log(args, `index: ${currentUrl}`)
-      showProgress(args, { indexUrl: currentUrl })
       const html = await fetchText({ args, cookie, referer: baseUrl, url: currentUrl })
       const galleries = extractGalleryLinks(html).filter((gallery) => {
         const key = `${gallery.gid}/${gallery.token}`
@@ -558,6 +605,7 @@ async function crawlIndexGalleries(params: { args: Args; cookie: string }) {
           galleryEntries = await collectGalleryEntries({ args, cookie, pipeline, progress, target: gallery })
         } catch (error) {
           log(args, `crawl gallery failed ${gallery.gid}: ${formatErrorForLog(error)}`)
+          showProgressResult(args, progress, 'error', formatErrorOneLine(error))
           await sleep(args.delayMs)
           continue
         }
@@ -617,7 +665,7 @@ function createDownloadConvertPipeline(params: { args: Args; cookie: string }): 
             cookie,
             outputPath: originalPath,
             referer: entry.pageUrl,
-            url: entry.fullimgUrl!,
+            url: task.sourceUrl,
           })
         } else {
           log(args, `page ${entry.page}: 기존 원본을 사용합니다 (${originalPath})`)
@@ -629,6 +677,7 @@ function createDownloadConvertPipeline(params: { args: Args; cookie: string }): 
       } catch (error) {
         entry.error = formatErrorForLog(error)
         log(args, `page ${entry.page}: download failed: ${entry.error}`)
+        showProgressResult(args, task.progress, 'error', `download failed: ${formatErrorOneLine(error)}`)
         await rm(originalPath, { force: true })
         recordGalleryProbe({ args, state, success: false, task })
         task.resolveDownload(false)
@@ -650,6 +699,7 @@ function createDownloadConvertPipeline(params: { args: Args; cookie: string }): 
       } catch (error) {
         task.entry.error = formatErrorForLog(error)
         log(args, `page ${task.entry.page}: convert failed: ${task.entry.error}`)
+        showProgressResult(args, task.progress, 'error', `convert failed: ${formatErrorOneLine(error)}`)
       }
     }
   })
@@ -679,25 +729,29 @@ function createDownloadConvertPipeline(params: { args: Args; cookie: string }): 
     enqueueEntry: async (params: {
       entry: OutputEntry
       indexUrl?: string
+      progress: ProgressContext
       target: ResolvedTarget
       waitForDownload?: boolean
     }) => {
       const { entry, indexUrl, target, waitForDownload = false } = params
       const downloadDir = getDownloadDir(args, target)
       const originalDir = resolve(process.cwd(), downloadDir, '.original')
-      const progress: ProgressContext = { gid: target.gid, ...(indexUrl ? { indexUrl } : {}) }
+      const progress: ProgressContext = { ...params.progress, gid: target.gid, ...(indexUrl ? { indexUrl } : {}) }
       const state = getGalleryDownloadState(galleryStates, target.gid)
       galleryTargets.set(target.gid, target)
 
       if (state.disabled) {
         entry.error = `gallery skipped after ${args.galleryFailureThreshold} initial failures`
         log(args, `[${target.gid}] page ${entry.page}: ${entry.error}`)
+        showProgressResult(args, progress, 'error', entry.error)
         return false
       }
 
-      if (!entry.fullimgUrl) {
-        entry.error = 'fullimg link missing'
-        log(args, `[${target.gid}] page ${entry.page}: fullimg 링크가 없어서 다운로드를 건너뜁니다`)
+      const sourceUrl = getDownloadSourceUrl(entry)
+      if (!sourceUrl) {
+        entry.error = 'download image link missing'
+        log(args, `[${target.gid}] page ${entry.page}: fullimg/img 링크가 없어서 다운로드를 건너뜁니다`)
+        showProgressResult(args, progress, 'error', 'fullimg/img link missing')
         recordGalleryProbe({
           args,
           state,
@@ -710,7 +764,11 @@ function createDownloadConvertPipeline(params: { args: Args; cookie: string }): 
       await mkdir(downloadDir, { recursive: true })
       await mkdir(originalDir, { recursive: true })
 
-      const originalExt = getImageExtension(entry.fullimgUrl)
+      if (!entry.fullimgUrl) {
+        log(args, `[${target.gid}] page ${entry.page}: fullimg 링크가 없어 img 주소로 다운로드합니다`)
+      }
+
+      const originalExt = getImageExtension(sourceUrl)
       const originalPath = `${originalDir}/${entry.page}${originalExt}`
       const avifPath = `${downloadDir}/${entry.page}.avif`
 
@@ -720,6 +778,7 @@ function createDownloadConvertPipeline(params: { args: Args; cookie: string }): 
         entry.avifPath = avifPath
         entry.avifBytes = await fileSize(avifPath)
         log(args, `[${target.gid}] page ${entry.page}: 기존 AVIF가 있어서 건너뜁니다 (${avifPath})`)
+        showProgressResult(args, progress, 'ok')
         recordGalleryProbe({ args, state, success: true, task: { entry, gid: target.gid } })
         return true
       }
@@ -729,7 +788,7 @@ function createDownloadConvertPipeline(params: { args: Args; cookie: string }): 
         resolveDownload = resolve
       })
 
-      downloadQueue.push({ avifPath, entry, gid: target.gid, originalPath, progress, resolveDownload })
+      downloadQueue.push({ avifPath, entry, gid: target.gid, originalPath, progress, resolveDownload, sourceUrl })
       return waitForDownload ? await downloadDone : true
     },
     isGalleryDisabled: (gid: number) => {
@@ -786,6 +845,12 @@ async function enqueueCollectedEntry(params: {
 }) {
   const { args, entry, pipeline, progress, target } = params
   if (!pipeline) {
+    showProgressResult(
+      args,
+      progress,
+      getDownloadSourceUrl(entry) ? 'ok' : 'error',
+      getDownloadSourceUrl(entry) ? undefined : 'fullimg/img link missing',
+    )
     return true
   }
 
@@ -793,6 +858,7 @@ async function enqueueCollectedEntry(params: {
   await pipeline.enqueueEntry({
     entry,
     ...(progress.indexUrl ? { indexUrl: progress.indexUrl } : {}),
+    progress,
     target,
     waitForDownload,
   })
@@ -1058,6 +1124,15 @@ async function fileSize(path: string) {
   return (await stat(path)).size
 }
 
+function finishProgressLine() {
+  if (!progressLineOpen) {
+    return
+  }
+
+  process.stderr.write('\n')
+  progressLineOpen = false
+}
+
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes}B`
   const mib = bytes / 1024 / 1024
@@ -1067,6 +1142,10 @@ function formatBytes(bytes: number) {
 
 function formatErrorForLog(error: unknown) {
   return error instanceof Error ? error.message : String(error)
+}
+
+function formatErrorOneLine(error: unknown) {
+  return formatErrorForLog(error).replace(/\s*\n\s*/g, ' | ')
 }
 
 function formatGalleryProgress(args: Args, processed: number) {
@@ -1089,6 +1168,32 @@ function formatIndexProgress(indexUrl: string) {
   }
 }
 
+function formatProgressCounter(progress: ProgressContext, status: 'error' | 'ok', message?: string) {
+  const counter = getProgressCounter(progress)
+  counter.done += 1
+  counter[status] += 1
+
+  const fields = [
+    formatProgressPrefix(progress),
+    `images=${counter.done}/${progress.imageTotal ?? '?'}`,
+    `ok=${counter.ok}`,
+    `error=${counter.error}`,
+    `status=${status}`,
+    message ? `message=${message}` : null,
+  ].filter((field): field is string => Boolean(field))
+
+  return fields.join(' ')
+}
+
+function formatProgressPrefix(progress: ProgressContext) {
+  return [
+    progress.indexUrl ? formatIndexProgress(progress.indexUrl) : null,
+    typeof progress.gid === 'number' ? `gallery=${progress.gid}` : null,
+  ]
+    .filter((field): field is string => Boolean(field))
+    .join(' ')
+}
+
 function galleryUrl(target: ResolvedTarget) {
   return `${baseUrl}/g/${target.gid}/${target.token}/`
 }
@@ -1100,6 +1205,10 @@ function getAvifOptions(args: Args): sharp.AvifOptions {
 function getDownloadDir(args: Args, target?: ResolvedTarget) {
   const baseDir = args.downloadDir ?? 'downloads/exhentai'
   return target ? `${baseDir}/${target.gid}` : baseDir
+}
+
+function getDownloadSourceUrl(entry: OutputEntry) {
+  return entry.fullimgUrl ?? entry.imageUrl
 }
 
 function getGalleryDownloadState(states: Map<number, GalleryDownloadState>, gid: number) {
@@ -1122,6 +1231,19 @@ function getImageExtension(url: string) {
 
 function getLastRequestedPage(args: Args, endPage: number) {
   return args.limit ? Math.min(endPage, args.startPage + args.limit - 1) : endPage
+}
+
+function getProgressCounter(progress: ProgressContext) {
+  const key = [
+    progress.indexUrl ? formatIndexProgress(progress.indexUrl) : 'index=?',
+    typeof progress.gid === 'number' ? `gallery=${progress.gid}` : 'gallery=?',
+  ].join('|')
+  let counter = progressCounters.get(key)
+  if (!counter) {
+    counter = { completedLogged: false, done: 0, error: 0, ok: 0 }
+    progressCounters.set(key, counter)
+  }
+  return counter
 }
 
 function hasAllPages(map: Map<number, GalleryImagePage>, startPage: number, endPage: number, limit?: number) {
@@ -1172,6 +1294,7 @@ async function main() {
 
     await writeOutput(args, entries)
   } catch (error) {
+    finishProgressLine()
     console.error(error instanceof Error ? error.message : String(error))
     process.exit(1)
   }
@@ -1197,6 +1320,7 @@ function parseArgs(argv: string[]): Args {
     galleryFailureThreshold: 3,
     help: false,
     keepOriginal: false,
+    logDir: 'downloads/exhentai/logs',
     mode: 'showpage',
     overwrite: false,
     startPage: 1,
@@ -1245,6 +1369,11 @@ function parseArgs(argv: string[]): Args {
     } else if (arg === '--out') {
       args.out = takeValue(argv, i, arg)
       i += 1
+    } else if (arg === '--log-dir') {
+      args.logDir = takeValue(argv, i, arg)
+      i += 1
+    } else if (arg === '--no-log-files') {
+      args.logDir = null
     } else if (arg === '--download-avif') {
       args.downloadAvif = true
     } else if (arg === '--links-only') {
@@ -1518,19 +1647,40 @@ async function safeErrorBody(response: Response) {
   }
 }
 
-function showProgress(args: Args, progress: ProgressContext) {
+function showGalleryProgress(args: Args, progress: ProgressContext) {
   if (args.verbose) {
     return
   }
 
-  const fields = [
-    progress.indexUrl ? formatIndexProgress(progress.indexUrl) : null,
-    typeof progress.gid === 'number' ? `gallery=${progress.gid}` : null,
-    typeof progress.imagePage === 'number' ? `image=${formatImageProgress(progress)}` : null,
-  ].filter((field): field is string => Boolean(field))
+  writePermanentProgressLine(formatProgressPrefix(progress))
+}
 
-  if (fields.length > 0) {
-    console.error(fields.join(' '))
+function showProgressResult(args: Args, progress: ProgressContext, status: 'error' | 'ok', message?: string) {
+  const line =
+    typeof progress.imagePage === 'number'
+      ? formatProgressCounter(progress, status, message)
+      : [
+          progress.indexUrl ? formatIndexProgress(progress.indexUrl) : null,
+          typeof progress.gid === 'number' ? `gallery=${progress.gid}` : null,
+          `status=${status}`,
+          message ? `message=${message}` : null,
+        ]
+          .filter((field): field is string => Boolean(field))
+          .join(' ')
+
+  if (!line) {
+    return
+  }
+
+  appendProgressEventLog(args, progress, line, status)
+
+  if (args.verbose) {
+    return
+  }
+
+  if (typeof progress.imagePage === 'number') {
+    writeProgressLine(line)
+    return
   }
 }
 
@@ -1557,6 +1707,8 @@ async function writeDebugResponse(args: Args, page: number, response: ShowPageRe
 }
 
 async function writeOutput(args: Args, entries: OutputEntry[]) {
+  finishProgressLine()
+
   const body =
     args.format === 'json'
       ? `${JSON.stringify(entries, null, 2)}\n`
@@ -1566,7 +1718,7 @@ async function writeOutput(args: Args, entries: OutputEntry[]) {
             .flatMap((entry) => {
               if (args.downloadAvif)
                 return entry.avifPath ? [entry.avifPath] : entry.originalPath ? [entry.originalPath] : []
-              return entry.fullimgUrl ? [entry.fullimgUrl] : []
+              return getDownloadSourceUrl(entry) ? [getDownloadSourceUrl(entry)!] : []
             })
             .join('\n')}\n`
 
@@ -1579,4 +1731,23 @@ async function writeOutput(args: Args, entries: OutputEntry[]) {
   await mkdir(dirname(outPath), { recursive: true })
   await writeFile(outPath, body)
   console.error(`saved: ${outPath}`)
+}
+
+function writePermanentProgressLine(line: string) {
+  if (!line) {
+    return
+  }
+
+  if (progressLineOpen) {
+    process.stderr.write(`\r\x1b[2K${line}\n`)
+    progressLineOpen = false
+    return
+  }
+
+  console.error(line)
+}
+
+function writeProgressLine(line: string) {
+  process.stderr.write(`\r\x1b[2K${line}`)
+  progressLineOpen = true
 }

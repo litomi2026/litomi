@@ -39,7 +39,6 @@ type GalleryFile = {
 type GalleryInfo = {
   files: GalleryFile[]
   id?: number | string
-  title?: string
 }
 
 type GgInfo = {
@@ -199,7 +198,7 @@ const takeValue = (args: string[], index: number, name: string) => {
 const parseArgs = (args: string[]): Options => {
   const options: Options = {
     allowWebpFallback: false,
-    attemptTimeoutSeconds: 60,
+    attemptTimeoutSeconds: 10,
     dryRun: false,
     inputFiles: [],
     metadataParallel: 8,
@@ -486,19 +485,6 @@ const cdnUrlCandidatesFromFile = (params: {
   return [...new Set(candidates)]
 }
 
-const sanitizePathSegment = (segment: string, fallback: string, maxLength = 140) => {
-  const invalidPathChars = new Set(['"', '*', '/', ':', '<', '>', '?', '\\', '|'])
-  const withoutInvalidChars = Array.from(segment, (char) =>
-    invalidPathChars.has(char) || char.charCodeAt(0) < 32 ? '_' : char,
-  ).join('')
-  const sanitized = withoutInvalidChars
-    .replace(/\s+/g, ' ')
-    .replace(/\.+$/g, '')
-    .trim()
-
-  return (sanitized || fallback).slice(0, maxLength)
-}
-
 const fileExists = async (path: string) => {
   try {
     const current = await stat(path)
@@ -528,6 +514,7 @@ const mapLimit = async <T, R>(items: T[], limit: number, mapper: (item: T, index
 
 const buildJobsForGallery = async (params: {
   allowWebpFallback: boolean
+  dryRun: boolean
   gg: GgInfo
   limit?: number
   outDir: string
@@ -535,25 +522,52 @@ const buildJobsForGallery = async (params: {
   readerId: string
   skipLogger: SkipLogger
 }) => {
-  const { allowWebpFallback, gg, limit, outDir, overwrite, readerId } = params
+  const { allowWebpFallback, dryRun, gg, limit, outDir, overwrite, readerId } = params
   const galleryScript = await fetchText(`${galleryHost}/galleries/${readerId}.js`)
   const gallery = parseGalleryInfo(galleryScript)
+  const actualId = String(gallery.id ?? readerId)
+  const folderId = actualId === readerId ? readerId : `${readerId}-${actualId}`
+  const galleryDir = join(outDir, folderId)
+  const files = typeof limit === 'number' ? gallery.files.slice(0, limit) : gallery.files
+  const jobs: DownloadJob[] = []
+  const pendingJobs: PendingDownloadJob[] = []
+  let skippedExisting = 0
+  let skippedNoAvif = 0
+
+  if (actualId !== readerId) {
+    if (!dryRun) {
+      await mkdir(galleryDir, { recursive: true })
+    }
+    await params.skipLogger.write({
+      detail: `${readerId} aliases canonical gallery ${actualId}; ${
+        dryRun ? `would create ${galleryDir}` : `created ${galleryDir}`
+      } and skipped ${files.length} files`,
+      kind: 'gallery',
+      readerId,
+      reason: 'alias reader id; canonical gallery id will be downloaded separately',
+      url: readerUrlFromId(readerId),
+    })
+
+    return {
+      actualId,
+      aliasSkipped: true,
+      base: gg.b,
+      galleryDir,
+      jobs,
+      readerId,
+      skippedExisting,
+      skippedNoAvif,
+      totalFiles: files.length,
+    }
+  }
+
   const workingGg = await resolveGgForGallery({
     allowWebpFallback,
     gallery,
     gg,
     readerId,
   })
-  const actualId = String(gallery.id ?? readerId)
-  const title = sanitizePathSegment(gallery.title ?? `gallery-${actualId}`, `gallery-${actualId}`)
-  const folderId = actualId === readerId ? readerId : `${readerId}-${actualId}`
-  const galleryDir = join(outDir, `${folderId}-${title}`)
-  const files = typeof limit === 'number' ? gallery.files.slice(0, limit) : gallery.files
-  const jobs: DownloadJob[] = []
-  const pendingJobs: PendingDownloadJob[] = []
   const baseCandidates = [...new Set([workingGg.b, ...ggBaseCandidates(gg.b), ...ggBaseCandidates(workingGg.b)])]
-  let skippedExisting = 0
-  let skippedNoAvif = 0
 
   for (let index = 0; index < files.length; index++) {
     const file = files[index]
@@ -603,12 +617,13 @@ const buildJobsForGallery = async (params: {
 
   return {
     actualId,
+    aliasSkipped: false,
     base: workingGg.b,
+    galleryDir,
     jobs,
     readerId,
     skippedExisting,
     skippedNoAvif,
-    title,
     totalFiles: files.length,
   }
 }
@@ -1030,8 +1045,9 @@ const logGalleryPlans = (galleryPlans: Awaited<ReturnType<typeof buildJobsForGal
 
   for (const plan of galleryPlans) {
     const idLabel = plan.actualId === plan.readerId ? plan.readerId : `${plan.readerId}/${plan.actualId}`
+    const aliasLabel = plan.aliasSkipped ? `, alias skipped ${plan.totalFiles}` : ''
     console.log(
-      `${idLabel}: ${plan.jobs.length} queued, ${plan.skippedExisting} existing, ${plan.skippedNoAvif} no-avif, base=${plan.base}, title=${plan.title}`,
+      `${idLabel}: ${plan.jobs.length} queued, ${plan.skippedExisting} existing, ${plan.skippedNoAvif} no-avif${aliasLabel}, base=${plan.base}, dir=${plan.galleryDir}`,
     )
   }
 
@@ -1121,6 +1137,7 @@ const processReaderIds = async (params: {
       try {
         return await buildJobsForGallery({
           allowWebpFallback: params.options.allowWebpFallback,
+          dryRun: params.options.dryRun,
           gg: params.gg,
           limit: params.options.limit,
           outDir: params.outDir,
@@ -1181,6 +1198,7 @@ const processRange = async (params: {
     try {
       const galleryPlan = await buildJobsForGallery({
         allowWebpFallback: params.options.allowWebpFallback,
+        dryRun: params.options.dryRun,
         gg: await params.getGg(),
         limit: params.options.limit,
         outDir: params.outDir,
