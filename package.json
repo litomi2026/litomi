@@ -42,7 +42,8 @@
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
     "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts",
-    "grant:libo": "bun --conditions=react-server tools/grantLibo.ts"
+    "grant:libo": "bun --conditions=react-server tools/grantLibo.ts",
+    "exhentai:fullimg": "bun tools/exhentaiFullimgLinks.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.39.0",
