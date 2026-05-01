@@ -87,11 +87,11 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
 
   if (isInitialLoading) {
     return (
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+      <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
         {Array.from({ length: 6 }).map((_, i) => (
           <MangaCardSkeleton key={i} variant={view} />
         ))}
-      </ul>
+      </div>
     )
   }
 
@@ -113,7 +113,7 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         <ViewToggle initialView={initialView} />
       </div>
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+      <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
         {items.map(({ library, mangaId }, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
@@ -134,7 +134,7 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
           )
         })}
         {isFetchingNextPage && <MangaCardSkeleton variant={view} />}
-      </ul>
+      </div>
       {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
       {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
     </>

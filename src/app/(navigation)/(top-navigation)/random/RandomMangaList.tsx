@@ -13,14 +13,14 @@ export default function RandomMangaList() {
 
   if (isLoading) {
     return (
-      <ul className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+      <div className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
-      </ul>
+      </div>
     )
   }
 
@@ -34,12 +34,10 @@ export default function RandomMangaList() {
 
   return (
     <>
-      <div className="flex-1">
-        <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2`}>
-          {mangas.map((manga, i) => (
-            <MangaCard index={i} key={manga.id} manga={manga} />
-          ))}
-        </ul>
+      <div className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2`}>
+        {mangas.map((manga, i) => (
+          <MangaCard index={i} key={manga.id} manga={manga} />
+        ))}
       </div>
       <div className="flex justify-center items-center">
         <RandomMangaLink timer={20} />

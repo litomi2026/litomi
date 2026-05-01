@@ -169,7 +169,7 @@ export default function RatingPageClient({ initialData, initialSort, initialView
 
 function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchingNextPage, view }: MangaListProps) {
   return (
-    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+    <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
       {items.map(({ mangaId, rating }) => {
         const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
         const index = ratingIndexMap.get(mangaId) ?? 0
@@ -189,7 +189,7 @@ function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchin
         return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
       })}
       {isFetchingNextPage && <MangaCardSkeleton variant={view} />}
-    </ul>
+    </div>
   )
 }
 

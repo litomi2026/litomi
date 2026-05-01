@@ -15,14 +15,14 @@ export default function NewMangaList({ page }: Props) {
 
   if (isLoading) {
     return (
-      <ul className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+      <div className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
-      </ul>
+      </div>
     )
   }
 
@@ -35,13 +35,11 @@ export default function NewMangaList({ page }: Props) {
   }
 
   return (
-    <div className="flex-1">
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
-        {mangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} />
-        ))}
-        <MangaCardDonation />
-      </ul>
+    <div className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+      {mangas.map((manga, i) => (
+        <MangaCard index={i} key={manga.id} manga={manga} />
+      ))}
+      <MangaCardDonation />
     </div>
   )
 }

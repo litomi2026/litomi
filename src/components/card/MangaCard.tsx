@@ -67,14 +67,13 @@ export default function MangaCard({
   const scrollAnchorProps = createScrollAnchorAttributes(id, index)
 
   return (
-    <li
+    <article
       className={twMerge(
         'border-2 rounded-xl overflow-hidden bg-zinc-900 relative',
         config.containerClassName,
         className,
       )}
       data-manga-card
-      key={id}
       {...scrollAnchorProps}
     >
       <MangaCardImage manga={manga} mangaIndex={index} rank={rank} variant={variant} />
@@ -174,13 +173,13 @@ export default function MangaCard({
           </div>
         </div>
       )}
-    </li>
+    </article>
   )
 }
 
 export function MangaCardSkeleton({ children, className = '', variant = View.CARD }: SkeletonProps) {
   return (
-    <li
+    <article
       className={twMerge(
         'animate-fade-in rounded-xl bg-zinc-900 border-2 w-full h-full flex flex-col justify-center items-center gap-1',
         SKELETON_VARIANT_CLASS_NAMES[variant],
@@ -188,6 +187,6 @@ export function MangaCardSkeleton({ children, className = '', variant = View.CAR
       )}
     >
       {children}
-    </li>
+    </article>
   )
 }

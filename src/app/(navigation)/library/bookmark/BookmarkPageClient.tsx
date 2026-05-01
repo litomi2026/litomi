@@ -96,7 +96,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
           <BookmarkUploadButton />
         </div>
       </div>
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+      <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
         {bookmarkIds.map((mangaId, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
@@ -107,7 +107,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
           return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
         })}
         {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
-      </ul>
+      </div>
       {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
       {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
     </>

@@ -60,7 +60,7 @@ export default function HistoryPageClient(props: Props) {
             <h4 className="bg-background border-b border-white/5 px-4 py-2 text-sm font-medium text-zinc-400">
               {DATE_GROUP_LABELS[dateGroup]}
             </h4>
-            <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
+            <div className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
               {items.map(({ mangaId, lastPage }) => {
                 const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
                 const index = historyItems.findIndex((item) => item.mangaId === mangaId)
@@ -87,13 +87,13 @@ export default function HistoryPageClient(props: Props) {
 
                 return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={View.CARD} />
               })}
-            </ul>
+            </div>
           </div>
         ))}
         {isFetchingNextPage && (
-          <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
+          <div className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
             <MangaCardSkeleton />
-          </ul>
+          </div>
         )}
       </div>
       {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}

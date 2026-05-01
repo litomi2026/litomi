@@ -145,7 +145,7 @@ export default function LibraryItemsClient({
         )}
         <ViewToggle initialView={initialView} />
       </div>
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+      <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
         {items.map(({ mangaId }, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
@@ -158,7 +158,7 @@ export default function LibraryItemsClient({
         {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
         {canAutoLoadMore && <div className="w-full p-4" ref={infiniteScrollTriggerRef} />}
         {!shouldBlockPrivate && isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
-      </ul>
+      </div>
     </>
   )
 }

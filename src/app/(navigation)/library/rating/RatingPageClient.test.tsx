@@ -125,7 +125,7 @@ describe('RatingPageClient', () => {
     expect(view.queryByText('selectable-card-card')).toBeNull()
     expect(window.location.search).toBe(`?sort=${RatingSort.MANGA_ID_ASC}`)
     expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
-    expect(view.container.querySelectorAll('ul > li')).toHaveLength(1)
+    expect(view.container.querySelectorAll('article')).toHaveLength(1)
 
     await waitFor(() => {
       const ratingRequests = fetchController.calls
@@ -166,7 +166,7 @@ describe('RatingPageClient', () => {
     })
 
     expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
-    expect(view.container.querySelectorAll('ul > li')).toHaveLength(1)
+    expect(view.container.querySelectorAll('article')).toHaveLength(1)
 
     resolveResponse(jsonResponse(basePage))
 
