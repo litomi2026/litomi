@@ -50,8 +50,8 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
   const view = getViewFromSearchParams(params)
   const hasActiveFilters = Boolean(Object.values(filters).some(Boolean))
 
-  return (
-    <>
+  const header = (
+    <div className="flex flex-col gap-2 pt-2 pb-1">
       {hasActiveFilters ? (
         <div className="gap-2 pb-2 hidden sm:grid">
           <div className="flex items-center justify-between">
@@ -64,8 +64,13 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
         <TrendingKeywords view={view} />
       )}
       <NonAdultJuicyAdsBanner />
+    </div>
+  )
+
+  return (
+    <>
       <Suspense fallback={<SearchResultLoading view={view} />}>
-        <SearchResult />
+        <SearchResult header={header} />
       </Suspense>
     </>
   )

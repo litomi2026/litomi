@@ -7,7 +7,7 @@ import SearchForm from './SearchForm'
 
 export default async function Layout({ children }: LayoutProps<'/search'>) {
   return (
-    <main className="flex flex-col grow">
+    <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <h1 className="sr-only">작품 검색</h1>
       <header
         className="fixed top-0 z-20 w-full pt-safe px-safe border-b border-zinc-800 bg-background/95 shadow transition
@@ -23,7 +23,7 @@ export default async function Layout({ children }: LayoutProps<'/search'>) {
         </div>
       </header>
       <div className="h-[100px] md:h-[56px]" />
-      <div className="flex flex-col gap-2 p-2 grow">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col gap-2 px-2">{children}</div>
     </main>
   )
 }
