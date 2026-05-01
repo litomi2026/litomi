@@ -177,20 +177,10 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           isLowDataMode={isLowDataMode}
           manga={manga}
           onClick={toggleController}
-          pageView={pageView}
-          readingDirection={readingDirection}
-          screenFit={screenFit}
           showController={showController}
         />
       ) : (
-        <ScrollViewer
-          isLowDataMode={isLowDataMode}
-          manga={manga}
-          onClick={toggleController}
-          pageView={pageView}
-          readingDirection={readingDirection}
-          screenFit={screenFit}
-        />
+        <ScrollViewer isLowDataMode={isLowDataMode} manga={manga} onClick={toggleController} />
       )}
       <div
         aria-current={showController}
@@ -253,7 +243,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                 >
                   보기 조절
                 </button>
-                {showViewControl && <ViewControlPanel screenFit={screenFit} />}
+                {showViewControl && <ViewControlPanel />}
               </div>
             )}
             <SlideshowButton

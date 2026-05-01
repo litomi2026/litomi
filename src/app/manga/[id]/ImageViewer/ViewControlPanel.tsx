@@ -7,23 +7,20 @@ import Slider from '@/components/ui/Slider'
 
 import { useBrightnessStore } from './store/brightness'
 import { useImageWidthStore } from './store/imageWidth'
+import { useScreenFitStore } from './store/screenFit'
 import { DEFAULT_ZOOM, MAX_ZOOM, useZoomStore } from './store/zoom'
-
-type Props = {
-  screenFit: 'all' | 'height' | 'width'
-}
 
 const CONTROL_ICONS_CLASS = 'size-4 text-zinc-400'
 const CONTROL_LABEL_CLASS = 'text-xs text-zinc-400 font-medium min-w-8 text-right'
 
-export default function ViewControlPanel({ screenFit }: Readonly<Props>) {
+export default function ViewControlPanel() {
   const { brightness, setBrightness } = useBrightnessStore()
   const { imageWidth, setImageWidth } = useImageWidthStore()
   const { zoomLevel, setZoomLevel } = useZoomStore()
+  const isWidthControlEnabled = useScreenFitStore((state) => ['all', 'width'].includes(state.screenFit))
   const [localBrightness, setLocalBrightness] = useState(brightness)
   const [localWidth, setLocalWidth] = useState(imageWidth)
   const [localZoom, setLocalZoom] = useState(zoomLevel)
-  const isWidthControlEnabled = screenFit === 'width' || screenFit === 'all'
 
   const handleBrightnessCommit = useCallback(
     (value: number) => {
