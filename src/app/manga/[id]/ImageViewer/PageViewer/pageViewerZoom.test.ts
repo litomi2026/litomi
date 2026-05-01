@@ -2,7 +2,13 @@ import '@test/setup.dom'
 import { describe, expect, test } from 'bun:test'
 
 import { DEFAULT_ZOOM, MAX_ZOOM } from '../store/zoom'
-import { captureCursorZoomAnchor, getCursorAnchoredScrollPosition, getNextWheelZoomLevel } from './pageViewerZoom'
+import {
+  captureCursorZoomAnchor,
+  getAdaptiveWheelZoomSpeed,
+  getCursorAnchoredScrollPosition,
+  getNextWheelZoomLevel,
+  getNormalizedWheelDeltaY,
+} from './pageViewerZoom'
 
 function getAnchoredClientPosition({
   contentLeft,
@@ -90,7 +96,26 @@ describe('pageViewerZoom', () => {
   })
 
   test('휠 줌 계산은 기본/최대 줌 범위로 clamp한다', () => {
-    expect(getNextWheelZoomLevel(DEFAULT_ZOOM, 500)).toBe(DEFAULT_ZOOM)
-    expect(getNextWheelZoomLevel(MAX_ZOOM, -500)).toBe(MAX_ZOOM)
+    expect(getNextWheelZoomLevel(DEFAULT_ZOOM, { deltaMode: 0, deltaY: 500 })).toBe(DEFAULT_ZOOM)
+    expect(getNextWheelZoomLevel(MAX_ZOOM, { deltaMode: 0, deltaY: -500 })).toBe(MAX_ZOOM)
+  })
+
+  test('deltaMode를 pixel 기준으로 정규화한다', () => {
+    expect(getNormalizedWheelDeltaY({ deltaMode: 0, deltaY: 2 })).toBe(2)
+    expect(getNormalizedWheelDeltaY({ deltaMode: 1, deltaY: 2 })).toBe(32)
+    expect(getNormalizedWheelDeltaY({ deltaMode: 2, deltaY: 2 })).toBe(1600)
+  })
+
+  test('작은 wheel delta는 큰 wheel delta보다 pixel당 민감하다', () => {
+    expect(getAdaptiveWheelZoomSpeed(5)).toBeGreaterThan(getAdaptiveWheelZoomSpeed(100))
+  })
+
+  test('작은 delta는 빠르게, 큰 delta는 clamp 후 완만하게 줌한다', () => {
+    const smallDeltaZoom = getNextWheelZoomLevel(DEFAULT_ZOOM, { deltaMode: 0, deltaY: -5 })
+    const largeDeltaZoom = getNextWheelZoomLevel(DEFAULT_ZOOM, { deltaMode: 0, deltaY: -100 })
+
+    expect(smallDeltaZoom).toBeCloseTo(1.054, 3)
+    expect(largeDeltaZoom).toBeCloseTo(1.051, 3)
+    expect(smallDeltaZoom).toBeGreaterThan(largeDeltaZoom)
   })
 })

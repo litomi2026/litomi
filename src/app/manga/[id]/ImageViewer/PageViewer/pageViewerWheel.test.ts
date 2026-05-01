@@ -4,19 +4,19 @@ import { checkNavigatePageFromWheelBoundary, getWheelNavigationIntent, getWheelP
 
 describe('pageViewerWheel', () => {
   it('dominant wheel 축과 방향을 계산한다', () => {
-    expect(getWheelNavigationIntent({ deltaX: 0, deltaY: 2 })).toEqual({
+    expect(getWheelNavigationIntent({ deltaX: 0, deltaY: 13 })).toEqual({
       axis: 'vertical',
       direction: 'positive',
     })
-    expect(getWheelNavigationIntent({ deltaX: -3, deltaY: 1 })).toEqual({
+    expect(getWheelNavigationIntent({ deltaX: -13, deltaY: 1 })).toEqual({
       axis: 'horizontal',
       direction: 'negative',
     })
   })
 
   it('threshold 이하의 wheel 입력은 페이지 이동으로 보지 않는다', () => {
-    expect(getWheelNavigationIntent({ deltaX: 0, deltaY: 1 })).toBeNull()
-    expect(getWheelNavigationIntent({ deltaX: -1, deltaY: 0 })).toBeNull()
+    expect(getWheelNavigationIntent({ deltaX: 0, deltaY: 12 })).toBeNull()
+    expect(getWheelNavigationIntent({ deltaX: -12, deltaY: 0 })).toBeNull()
   })
 
   it('기본 방향에서는 positive wheel을 다음 페이지로 해석한다', () => {
