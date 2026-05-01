@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import {
-  canNavigatePageFromWheelBoundary,
-  getWheelNavigationIntent,
-  getWheelPageNavigation,
-} from './pageViewerWheel'
+import { checkNavigatePageFromWheelBoundary, getWheelNavigationIntent, getWheelPageNavigation } from './pageViewerWheel'
 
 describe('pageViewerWheel', () => {
   it('dominant wheel 축과 방향을 계산한다', () => {
@@ -35,7 +31,7 @@ describe('pageViewerWheel', () => {
 
   it('scroll 가능한 축의 중간에서는 페이지 이동을 막는다', () => {
     expect(
-      canNavigatePageFromWheelBoundary(
+      checkNavigatePageFromWheelBoundary(
         { axis: 'vertical', direction: 'positive' },
         {
           clientHeight: 100,
@@ -49,7 +45,7 @@ describe('pageViewerWheel', () => {
     ).toBe(false)
 
     expect(
-      canNavigatePageFromWheelBoundary(
+      checkNavigatePageFromWheelBoundary(
         { axis: 'horizontal', direction: 'negative' },
         {
           clientHeight: 100,
@@ -65,7 +61,7 @@ describe('pageViewerWheel', () => {
 
   it('scroll 경계에서는 페이지 이동을 허용한다', () => {
     expect(
-      canNavigatePageFromWheelBoundary(
+      checkNavigatePageFromWheelBoundary(
         { axis: 'vertical', direction: 'positive' },
         {
           clientHeight: 100,
@@ -79,7 +75,7 @@ describe('pageViewerWheel', () => {
     ).toBe(true)
 
     expect(
-      canNavigatePageFromWheelBoundary(
+      checkNavigatePageFromWheelBoundary(
         { axis: 'horizontal', direction: 'negative' },
         {
           clientHeight: 100,
