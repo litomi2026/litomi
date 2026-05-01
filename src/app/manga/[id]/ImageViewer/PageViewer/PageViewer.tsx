@@ -41,6 +41,7 @@ const screenFitContentStyle: Record<ScreenFit, string> = {
 type LastPageProps = {
   manga: {
     id: number
+    title: string
   }
   isHidden?: boolean
 }
@@ -49,6 +50,7 @@ type PageViewerItemProps = {
   isLowDataMode: boolean
   manga: {
     id: number
+    title: string
     images?: ImageWithVariants[]
   }
   offset: number
