@@ -1,4 +1,5 @@
 const DEFAULT_OVERSCAN_COUNT = 3
+const DEFAULT_PRELOAD_ROW_COUNT = 2
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 export default function VirtualMangaGrid<T>(props: VirtualMangaGridProps<T>) {
   const { className = '', view } = props
