@@ -61,7 +61,7 @@ describe('AllLibraryMangaView', () => {
     expect(card).toBeTruthy()
     expect(card?.className).toContain('flex-col')
     expect(view.getByText('Manga 101')).toBeTruthy()
-    expect(list?.classList.contains('[--manga-list-grid-min-column-width:250px]')).toBe(true)
+    expect(list?.classList.contains('[--manga-grid-column-min-width:250px]')).toBe(true)
   })
 
   test('initialView가 그림이면 그림 토글과 그림 그리드를 초기값으로 사용한다', () => {
@@ -81,12 +81,12 @@ describe('AllLibraryMangaView', () => {
     expect(card).toBeTruthy()
     expect(card?.className).not.toContain('flex-col')
     expect(view.queryByText('Manga 101')).toBeNull()
-    expect(list?.classList.contains('[--manga-list-grid-min-column-width:160px]')).toBe(true)
+    expect(list?.classList.contains('[--manga-grid-column-min-width:160px]')).toBe(true)
   })
 })
 
 function getMangaListGridElement(container: HTMLElement) {
   return Array.from(container.querySelectorAll<HTMLElement>('[class*="grid-cols-"]')).find((element) =>
-    element.className.includes('--manga-list-grid-min-column-width'),
+    element.className.includes('--manga-grid-column-min-width'),
   )
 }

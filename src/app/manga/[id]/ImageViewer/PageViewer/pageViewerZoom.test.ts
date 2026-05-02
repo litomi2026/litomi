@@ -110,12 +110,13 @@ describe('pageViewerZoom', () => {
     expect(getAdaptiveWheelZoomSpeed(5)).toBeGreaterThan(getAdaptiveWheelZoomSpeed(100))
   })
 
-  test('작은 delta는 빠르게, 큰 delta는 clamp 후 완만하게 줌한다', () => {
+  test('작은 delta는 빠르게 반응하고 큰 delta는 clamp 후 줌한다', () => {
     const smallDeltaZoom = getNextWheelZoomLevel(DEFAULT_ZOOM, { deltaMode: 0, deltaY: -5 })
     const largeDeltaZoom = getNextWheelZoomLevel(DEFAULT_ZOOM, { deltaMode: 0, deltaY: -100 })
+    const veryLargeDeltaZoom = getNextWheelZoomLevel(DEFAULT_ZOOM, { deltaMode: 0, deltaY: -1000 })
 
-    expect(smallDeltaZoom).toBeCloseTo(1.054, 3)
-    expect(largeDeltaZoom).toBeCloseTo(1.051, 3)
-    expect(smallDeltaZoom).toBeGreaterThan(largeDeltaZoom)
+    expect(smallDeltaZoom).toBeCloseTo(1.083, 3)
+    expect(largeDeltaZoom).toBeCloseTo(1.105, 3)
+    expect(veryLargeDeltaZoom).toBeCloseTo(largeDeltaZoom)
   })
 })
