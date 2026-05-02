@@ -38,7 +38,7 @@ export default function MangaCardPromotion({ promotion }: Props) {
   }
 
   return (
-    <li className="relative" ref={cardRef}>
+    <article className="relative" ref={cardRef}>
       <a
         className="block p-4 rounded-xl border-2 border-brand/40 bg-linear-to-br from-brand/5 to-transparent hover:border-brand/60 hover:from-brand/10 transition group"
         href={promotion.url}
@@ -65,6 +65,6 @@ export default function MangaCardPromotion({ promotion }: Props) {
           </div>
         </div>
       </a>
-    </li>
+    </article>
   )
 }

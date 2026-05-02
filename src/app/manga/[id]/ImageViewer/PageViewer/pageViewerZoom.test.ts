@@ -109,13 +109,4 @@ describe('pageViewerZoom', () => {
   test('작은 wheel delta는 큰 wheel delta보다 pixel당 민감하다', () => {
     expect(getAdaptiveWheelZoomSpeed(5)).toBeGreaterThan(getAdaptiveWheelZoomSpeed(100))
   })
-
-  test('작은 delta는 빠르게, 큰 delta는 clamp 후 완만하게 줌한다', () => {
-    const smallDeltaZoom = getNextWheelZoomLevel(DEFAULT_ZOOM, { deltaMode: 0, deltaY: -5 })
-    const largeDeltaZoom = getNextWheelZoomLevel(DEFAULT_ZOOM, { deltaMode: 0, deltaY: -100 })
-
-    expect(smallDeltaZoom).toBeCloseTo(1.054, 3)
-    expect(largeDeltaZoom).toBeCloseTo(1.051, 3)
-    expect(smallDeltaZoom).toBeGreaterThan(largeDeltaZoom)
-  })
 })

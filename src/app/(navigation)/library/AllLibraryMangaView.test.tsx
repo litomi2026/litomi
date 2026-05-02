@@ -4,7 +4,6 @@ import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import { View } from '@/utils/param'
-import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 mock.module('@/hook/useMangaListCachedQuery', () => ({
   default: () => ({
@@ -56,13 +55,13 @@ describe('AllLibraryMangaView', () => {
     })
 
     const card = view.container.querySelector('[data-manga-card]')
-    const list = view.container.querySelector('ul')
+    const list = getMangaListGridElement(view.container)
 
     expect(view.getByRole('radio', { name: '카드' }).getAttribute('aria-checked')).toBe('true')
     expect(card).toBeTruthy()
     expect(card?.className).toContain('flex-col')
     expect(view.getByText('Manga 101')).toBeTruthy()
-    expect(list?.className).toContain(MANGA_LIST_GRID_COLUMNS[View.CARD])
+    expect(list?.classList.contains('[--manga-grid-column-min-width:250px]')).toBe(true)
   })
 
   test('initialView가 그림이면 그림 토글과 그림 그리드를 초기값으로 사용한다', () => {
@@ -76,12 +75,18 @@ describe('AllLibraryMangaView', () => {
     })
 
     const card = view.container.querySelector('[data-manga-card]')
-    const list = view.container.querySelector('ul')
+    const list = getMangaListGridElement(view.container)
 
     expect(view.getByRole('radio', { name: '그림' }).getAttribute('aria-checked')).toBe('true')
     expect(card).toBeTruthy()
     expect(card?.className).not.toContain('flex-col')
     expect(view.queryByText('Manga 101')).toBeNull()
-    expect(list?.className).toContain(MANGA_LIST_GRID_COLUMNS[View.IMAGE])
+    expect(list?.classList.contains('[--manga-grid-column-min-width:160px]')).toBe(true)
   })
 })
+
+function getMangaListGridElement(container: HTMLElement) {
+  return Array.from(container.querySelectorAll<HTMLElement>('[class*="grid-cols-"]')).find((element) =>
+    element.className.includes('--manga-grid-column-min-width'),
+  )
+}

@@ -99,4 +99,57 @@ class TestIntersectionObserver implements IntersectionObserver {
   }
 }
 
+class TestResizeObserver implements ResizeObserver {
+  static instances = new Set<TestResizeObserver>()
+
+  private readonly callback: ResizeObserverCallback
+  private readonly elements = new Set<Element>()
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback
+    TestResizeObserver.instances.add(this)
+  }
+
+  static trigger(target: Element) {
+    for (const observer of TestResizeObserver.instances) {
+      if (!observer.elements.has(target)) {
+        continue
+      }
+
+      const rect = target.getBoundingClientRect()
+      const size = {
+        blockSize: rect.height,
+        inlineSize: rect.width,
+      }
+
+      observer.callback(
+        [
+          {
+            borderBoxSize: [size],
+            contentBoxSize: [size],
+            contentRect: rect,
+            devicePixelContentBoxSize: [size],
+            target,
+          },
+        ] satisfies ResizeObserverEntry[],
+        observer,
+      )
+    }
+  }
+
+  disconnect() {
+    this.elements.clear()
+    TestResizeObserver.instances.delete(this)
+  }
+
+  observe(element: Element) {
+    this.elements.add(element)
+  }
+
+  unobserve(element: Element) {
+    this.elements.delete(element)
+  }
+}
+
 testGlobal.IntersectionObserver = TestIntersectionObserver
+testGlobal.ResizeObserver = TestResizeObserver

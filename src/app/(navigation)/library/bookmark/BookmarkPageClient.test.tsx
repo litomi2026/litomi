@@ -110,7 +110,7 @@ describe('BookmarkPageClient', () => {
     })
 
     expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
-    expect(view.container.querySelectorAll('ul > li')).toHaveLength(1)
+    expect(view.container.querySelectorAll('article')).toHaveLength(1)
     expect(window.location.search).toBe(`?view=${View.IMAGE}&sort=${CollectionItemSort.MANGA_ID_ASC}`)
 
     await waitFor(() => {
