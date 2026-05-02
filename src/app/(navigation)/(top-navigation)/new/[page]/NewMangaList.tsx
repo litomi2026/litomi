@@ -2,7 +2,7 @@
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
-import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { useNewMangaQuery } from './useNewMangaQuery'
 
@@ -15,7 +15,7 @@ export default function NewMangaList({ page }: Props) {
 
   if (isLoading) {
     return (
-      <div className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+      <div className={`flex-1 grid ${MANGA_GRID_COLUMN.card} gap-2`}>
         <MangaCardSkeleton />
         <MangaCardSkeleton />
         <MangaCardSkeleton />
@@ -35,7 +35,7 @@ export default function NewMangaList({ page }: Props) {
   }
 
   return (
-    <div className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+    <div className={`flex-1 grid ${MANGA_GRID_COLUMN.card} gap-2`}>
       {mangas.map((manga, i) => (
         <MangaCard index={i} key={manga.id} manga={manga} />
       ))}

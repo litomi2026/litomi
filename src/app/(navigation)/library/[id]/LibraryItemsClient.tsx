@@ -22,7 +22,7 @@ import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { getViewFromSearchParams, View } from '@/utils/param'
-import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -145,7 +145,7 @@ export default function LibraryItemsClient({
         )}
         <ViewToggle initialView={initialView} />
       </div>
-      <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+      <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
         {items.map(({ mangaId }, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 

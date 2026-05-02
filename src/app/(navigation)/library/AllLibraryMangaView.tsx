@@ -15,7 +15,7 @@ import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestor
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { getViewFromSearchParams, View } from '@/utils/param'
-import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import CensoredManga from './CensoredManga'
 import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
@@ -87,7 +87,7 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
 
   if (isInitialLoading) {
     return (
-      <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+      <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
         {Array.from({ length: 6 }).map((_, i) => (
           <MangaCardSkeleton key={i} variant={view} />
         ))}
@@ -113,7 +113,7 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         <ViewToggle initialView={initialView} />
       </div>
-      <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+      <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
         {items.map(({ library, mangaId }, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 

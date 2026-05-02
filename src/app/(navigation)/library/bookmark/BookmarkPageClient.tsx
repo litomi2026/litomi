@@ -14,7 +14,7 @@ import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestor
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { getViewFromSearchParams, View } from '@/utils/param'
-import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -96,7 +96,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
           <BookmarkUploadButton />
         </div>
       </div>
-      <div className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 p-2`}>
+      <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
         {bookmarkIds.map((mangaId, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
