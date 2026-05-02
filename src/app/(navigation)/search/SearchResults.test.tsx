@@ -115,6 +115,6 @@ describe('SearchResultLoading', () => {
   test('그림 보기에서는 image skeleton을 12개 렌더링한다', () => {
     const view = renderWithTestQueryClient(<SearchResultLoading view={View.IMAGE} />)
 
-    expect(view.container.querySelectorAll('ul > li')).toHaveLength(12)
+    expect(view.container.querySelectorAll('div > article')).toHaveLength(12)
   })
 })
