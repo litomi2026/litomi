@@ -1,0 +1,53 @@
+import type { Key, ReactNode } from 'react'
+
+import type { View } from '@/utils/param'
+
+export type VirtualMangaGridItem = {
+  key: Key
+}
+
+export type VirtualMangaGridPositionedItem<TItem extends VirtualMangaGridItem> = {
+  item: TItem
+  itemIndex: number
+}
+
+export type VirtualMangaGridProps<TItem extends VirtualMangaGridItem> = {
+  className?: string
+  fetchNextPage?: () => Promise<unknown> | void
+  footer?: ReactNode
+  hasNextPage?: boolean
+  header?: ReactNode
+  isFetchingNextPage?: boolean
+  items: readonly TItem[]
+  measurementKey: number | string
+  overscanCount?: number
+  preloadRowCount?: number
+  renderItem: (item: TItem, index: number) => ReactNode
+  scrollToTopBehavior?: ScrollBehavior
+  scrollToTopSignal: number
+  view: View
+}
+
+export type VirtualMangaGridRow<TItem extends VirtualMangaGridItem> =
+  | {
+      items: VirtualMangaGridPositionedItem<TItem>[]
+      type: 'items'
+    }
+  | { type: 'footer' }
+  | { type: 'header' }
+
+export type VirtualMangaGridRowProps<TItem extends VirtualMangaGridItem> = {
+  columnCount: number
+  footer?: ReactNode
+  gapPx: number
+  header?: ReactNode
+  itemCount: number
+  renderItem: (item: TItem, index: number) => ReactNode
+  rows: VirtualMangaGridRow<TItem>[]
+}
+
+export type VirtualMangaGridSize = {
+  height: number
+  minColumnWidth: number
+  width: number
+}

@@ -1,19 +1,18 @@
 import type { RowComponentProps } from 'react-window'
 
-import type { VirtualMangaGridRowProps } from './VirtualMangaGrid.types'
+import type { VirtualMangaGridItem, VirtualMangaGridRowProps } from './VirtualMangaGrid.types'
 
-export default function VirtualMangaGridRow<T>({
+export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>({
   index,
   style,
   columnCount,
   footer,
   gapPx,
-  getItemKey,
   header,
   itemCount,
   renderItem,
   rows,
-}: RowComponentProps<VirtualMangaGridRowProps<T>>) {
+}: RowComponentProps<VirtualMangaGridRowProps<TItem>>) {
   const row = rows[index]
 
   if (!row) {
@@ -43,18 +42,17 @@ export default function VirtualMangaGridRow<T>({
       role="presentation"
       style={{
         ...style,
-        boxSizing: 'border-box',
         gap: `${gapPx}px`,
         gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
         paddingBlock: gapPx / 2,
       }}
     >
-      {row.cells.map(({ item, itemIndex }) => (
+      {row.items.map(({ item, itemIndex }) => (
         <div
           aria-posinset={itemIndex + 1}
           aria-setsize={itemCount}
           className="min-w-0 h-full *:h-full"
-          key={getItemKey(item, itemIndex)}
+          key={item.key}
           role="listitem"
         >
           {renderItem(item, itemIndex)}

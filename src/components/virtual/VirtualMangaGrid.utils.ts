@@ -1,0 +1,33 @@
+import type { VirtualMangaGridItem, VirtualMangaGridRow } from './VirtualMangaGrid.types'
+
+export const VIRTUAL_MANGA_GRID_GAP_PX = 8
+
+export function chunkVirtualMangaGridItems<TItem extends VirtualMangaGridItem>(
+  items: readonly TItem[],
+  columnCount: number,
+) {
+  const safeColumnCount = Math.max(1, columnCount)
+  const rows: VirtualMangaGridRow<TItem>[] = []
+
+  for (let itemIndex = 0; itemIndex < items.length; itemIndex += safeColumnCount) {
+    rows.push({
+      items: items.slice(itemIndex, itemIndex + safeColumnCount).map((item, offset) => ({
+        item,
+        itemIndex: itemIndex + offset,
+      })),
+      type: 'items',
+    })
+  }
+
+  return rows
+}
+
+export function getVirtualMangaGridColumnCount(containerWidth: number, minColumnWidth: number) {
+  const safeContainerWidth = Math.max(1, containerWidth)
+  const safeMinColumnWidth = Math.max(1, minColumnWidth)
+
+  return Math.max(
+    1,
+    Math.floor((safeContainerWidth + VIRTUAL_MANGA_GRID_GAP_PX) / (safeMinColumnWidth + VIRTUAL_MANGA_GRID_GAP_PX)),
+  )
+}

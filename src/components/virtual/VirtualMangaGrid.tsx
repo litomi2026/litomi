@@ -1,7 +1,42 @@
+'use client'
+
+import type { ListImperativeAPI } from 'react-window'
+
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { List, useDynamicRowHeight } from 'react-window'
+import { twMerge } from 'tailwind-merge'
+
+import { View } from '@/utils/param'
+import { MANGA_GRID_COLUMN_MIN_WIDTH_CLASS, readMangaGridColumnMinWidth } from '@/utils/style'
+
+import type {
+  VirtualMangaGridItem,
+  VirtualMangaGridProps,
+  VirtualMangaGridRow as VirtualMangaGridRowData,
+  VirtualMangaGridRowProps,
+  VirtualMangaGridSize,
+} from './VirtualMangaGrid.types'
+
+import {
+  chunkVirtualMangaGridItems,
+  getVirtualMangaGridColumnCount,
+  VIRTUAL_MANGA_GRID_GAP_PX,
+} from './VirtualMangaGrid.utils'
+import VirtualMangaGridRow from './VirtualMangaGridRow'
+
 const DEFAULT_OVERSCAN_COUNT = 3
 const DEFAULT_PRELOAD_ROW_COUNT = 2
+const DEFAULT_HEIGHT = 640
+const IMAGE_ITEM_ASPECT_HEIGHT_RATIO = 7 / 5
+const CARD_THUMBNAIL_ASPECT_HEIGHT_RATIO = 4 / 3
+const ESTIMATED_CARD_BODY_HEIGHT_PX = 420
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
-export default function VirtualMangaGrid<T>(props: VirtualMangaGridProps<T>) {
+
+type VirtualMangaGridBodyProps<TItem extends VirtualMangaGridItem> = VirtualMangaGridProps<TItem> & {
+  size: VirtualMangaGridSize
+}
+
+export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>(props: VirtualMangaGridProps<TItem>) {
   const { className = '', view } = props
   const outerRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState<VirtualMangaGridSize | null>(null)
@@ -48,9 +83,92 @@ export default function VirtualMangaGrid<T>(props: VirtualMangaGridProps<T>) {
   )
 }
 
+function measureVirtualMangaGridElement(element: HTMLElement): VirtualMangaGridSize {
+  const rect = element.getBoundingClientRect()
+  const width = Math.round(rect.width || element.clientWidth || window.innerWidth || 1)
+  const viewportHeight = window.innerHeight || DEFAULT_HEIGHT
+  const height = Math.round(rect.height || element.clientHeight || Math.max(320, viewportHeight - rect.top))
+  const minColumnWidth = readMangaGridColumnMinWidth(element) ?? width
+
+  return {
+    height: Math.max(1, height),
+    minColumnWidth,
+    width: Math.max(1, width),
+  }
+}
+
+function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
+  fetchNextPage,
+  footer,
+  hasNextPage,
+  header,
+  isFetchingNextPage,
+  items,
+  measurementKey,
+  overscanCount = DEFAULT_OVERSCAN_COUNT,
+  preloadRowCount = DEFAULT_PRELOAD_ROW_COUNT,
+  renderItem,
+  scrollToTopBehavior = 'auto',
+  scrollToTopSignal,
+  size,
+  view,
+}: VirtualMangaGridBodyProps<TItem>) {
   const listRef = useRef<ListImperativeAPI | null>(null)
   const fetchInFlightRef = useRef(false)
   const lastScrollToTopSignalRef = useRef(scrollToTopSignal)
+
+  const itemRowStartIndex = header ? 1 : 0
+  const minColumnWidth = size.minColumnWidth
+  const columnCount = getVirtualMangaGridColumnCount(size.width, minColumnWidth)
+
+  const columnWidth = Math.max(
+    minColumnWidth,
+    (size.width - VIRTUAL_MANGA_GRID_GAP_PX * (columnCount - 1)) / Math.max(1, columnCount),
+  )
+
+  const estimatedItemRowHeight =
+    view === View.IMAGE
+      ? Math.round(columnWidth * IMAGE_ITEM_ASPECT_HEIGHT_RATIO + VIRTUAL_MANGA_GRID_GAP_PX)
+      : Math.round(
+          columnWidth * CARD_THUMBNAIL_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX + VIRTUAL_MANGA_GRID_GAP_PX,
+        )
+
+  const itemRows = useMemo(() => chunkVirtualMangaGridItems(items, columnCount), [items, columnCount])
+
+  const rows = useMemo<VirtualMangaGridRowData<TItem>[]>(() => {
+    const nextRows: VirtualMangaGridRowData<TItem>[] = []
+
+    if (header) {
+      nextRows.push({ type: 'header' })
+    }
+
+    nextRows.push(...itemRows)
+
+    if (footer) {
+      nextRows.push({ type: 'footer' })
+    }
+
+    return nextRows
+  }, [footer, header, itemRows])
+
+  const rowHeight = useDynamicRowHeight({
+    defaultRowHeight: estimatedItemRowHeight,
+    key: `${view}:${columnCount}:${size.width}:${estimatedItemRowHeight}:${measurementKey}`,
+  })
+
+  const rowProps = useMemo<VirtualMangaGridRowProps<TItem>>(
+    () => ({
+      columnCount,
+      footer,
+      gapPx: VIRTUAL_MANGA_GRID_GAP_PX,
+      header,
+      itemCount: items.length,
+      renderItem,
+      rows,
+    }),
+    [items.length, columnCount, footer, header, renderItem, rows],
+  )
+
   const handleVisibleRowsRendered = useCallback(
     async ({ stopIndex }: { stopIndex: number }) => {
       if (!fetchNextPage || !hasNextPage || isFetchingNextPage || fetchInFlightRef.current) {
@@ -95,6 +213,18 @@ export default function VirtualMangaGrid<T>(props: VirtualMangaGridProps<T>) {
   return (
     <List
       className="[scrollbar-gutter:stable]"
+      defaultHeight={DEFAULT_HEIGHT}
       listRef={listRef}
+      onRowsRendered={handleVisibleRowsRendered}
       overscanCount={overscanCount}
-      rowComponent={VirtualMangaGridRow<T>}
+      rowComponent={VirtualMangaGridRow<TItem>}
+      rowCount={rows.length}
+      rowHeight={rowHeight}
+      rowProps={rowProps}
+      style={{
+        height: size.height,
+        width: size.width,
+      }}
+    />
+  )
+}
