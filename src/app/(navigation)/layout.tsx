@@ -93,7 +93,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         </Suspense>
       </header>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
-      <div className="flex flex-col grow min-w-0">
+      <div className="flex min-h-0 flex-col grow min-w-0">
         {children}
         <p className="h-0 overflow-hidden tracking-widest invisible">
           <SEOText />
