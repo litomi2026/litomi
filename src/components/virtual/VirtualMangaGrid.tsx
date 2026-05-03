@@ -17,11 +17,7 @@ import type {
   VirtualMangaGridSize,
 } from './VirtualMangaGrid.types'
 
-import {
-  chunkVirtualMangaGridItems,
-  getVirtualMangaGridColumnCount,
-  VIRTUAL_MANGA_GRID_GAP_PX,
-} from './VirtualMangaGrid.utils'
+import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './VirtualMangaGrid.utils'
 import VirtualMangaGridRow from './VirtualMangaGridRow'
 
 const DEFAULT_OVERSCAN_COUNT = 3
@@ -121,18 +117,12 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   const itemRowStartIndex = header ? 1 : 0
   const minColumnWidth = size.minColumnWidth
   const columnCount = getVirtualMangaGridColumnCount(size.width, minColumnWidth)
-
-  const columnWidth = Math.max(
-    minColumnWidth,
-    (size.width - VIRTUAL_MANGA_GRID_GAP_PX * (columnCount - 1)) / Math.max(1, columnCount),
-  )
+  const columnWidth = Math.max(minColumnWidth, size.width / Math.max(1, columnCount))
 
   const estimatedItemRowHeight =
     view === View.IMAGE
-      ? Math.round(columnWidth * IMAGE_ITEM_ASPECT_HEIGHT_RATIO + VIRTUAL_MANGA_GRID_GAP_PX)
-      : Math.round(
-          columnWidth * CARD_THUMBNAIL_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX + VIRTUAL_MANGA_GRID_GAP_PX,
-        )
+      ? Math.round(columnWidth * IMAGE_ITEM_ASPECT_HEIGHT_RATIO)
+      : Math.round(columnWidth * CARD_THUMBNAIL_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX)
 
   const itemRows = useMemo(() => chunkVirtualMangaGridItems(items, columnCount), [items, columnCount])
 
@@ -161,13 +151,11 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     () => ({
       columnCount,
       footer,
-      gapPx: VIRTUAL_MANGA_GRID_GAP_PX,
       header,
-      itemCount: items.length,
       renderItem,
       rows,
     }),
-    [items.length, columnCount, footer, header, renderItem, rows],
+    [columnCount, footer, header, renderItem, rows],
   )
 
   const handleVisibleRowsRendered = useCallback(

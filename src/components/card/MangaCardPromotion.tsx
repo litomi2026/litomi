@@ -2,6 +2,7 @@
 
 import { ExternalLink } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { twMerge } from 'tailwind-merge'
 
 import type { KeywordPromotion } from '@/sponsor'
 
@@ -9,10 +10,11 @@ import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'
 
 type Props = {
+  className?: string
   promotion: KeywordPromotion
 }
 
-export default function MangaCardPromotion({ promotion }: Props) {
+export default function MangaCardPromotion({ className, promotion }: Props) {
   const pathname = usePathname()
 
   const { ref: cardRef } = useGAViewEvent({
@@ -38,7 +40,7 @@ export default function MangaCardPromotion({ promotion }: Props) {
   }
 
   return (
-    <article className="relative" ref={cardRef}>
+    <article className={twMerge('relative', className)} ref={cardRef}>
       <a
         className="block p-4 rounded-xl border-2 border-brand/40 bg-linear-to-br from-brand/5 to-transparent hover:border-brand/60 hover:from-brand/10 transition group"
         href={promotion.url}
