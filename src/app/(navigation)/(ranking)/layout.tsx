@@ -1,4 +1,4 @@
-import AutoHideNavigation from '../AutoHideNavigation'
+import AutoHideHeader from '../AutoHideHeader'
 import { metricInfo, MetricParam } from './common'
 import DonationLink from './DonationLink'
 import MetricLink from './MetricLink'
@@ -13,11 +13,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
       <p className="p-1 px-4 text-xs text-zinc-500">
         리토미 작품 인기 순위는 이용자가 많아져야 더 정확해져요. 주변에 많이 알려주세요.
       </p>
-      <header
-        className="sticky top-0 z-20 grid gap-1 bg-background/90 backdrop-blur border-b p-2 transition aria-busy:opacity-50"
-        data-navigation-header
-      >
-        <AutoHideNavigation selector="[data-navigation-header]" />
+      <AutoHideHeader className="sticky top-0 z-20 grid gap-1 bg-background/90 backdrop-blur border-b p-2 transition">
         <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap overscroll-none">
           {Object.keys(metricInfo).map((value) => (
             <MetricLink key={value} value={value as MetricParam} />
@@ -26,7 +22,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <RealtimeLink />
         </nav>
         <PeriodNavigation />
-      </header>
+      </AutoHideHeader>
       {children}
     </main>
   )

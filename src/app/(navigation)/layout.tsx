@@ -5,10 +5,9 @@ import { Suspense } from 'react'
 import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
 import IconLogo from '@/components/icons/LogoLitomi'
-import SEOText from '@/components/SEOText'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
-import AutoHideNavigation from './AutoHideNavigation'
+import AutoHideHeader from './AutoHideHeader'
 import NotificationCount from './NotificationCount'
 import Profile, { ProfileSkeleton } from './Profile'
 import ProfileLink from './ProfileLink'
@@ -17,13 +16,11 @@ import SelectableLink from './SelectableLink'
 export default async function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="flex flex-col min-h-full mx-auto p-safe max-w-screen-2xl sm:flex-row">
-      <header
+      <AutoHideHeader
         className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t bg-background/80 backdrop-blur transition
           sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-2 2xl:w-3xs
-          aria-busy:max-sm:opacity-50"
-        data-navigation-header
+          sm:data-[auto-hide=true]:opacity-100"
       >
-        <AutoHideNavigation selector="[data-navigation-header]" />
         <nav className="grid grid-cols-4 select-none whitespace-nowrap overflow-y-auto scrollbar-hidden sm:grid-cols-none sm:gap-2 xl:text-xl xl:leading-6">
           <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/" prefetch={false}>
             <IconLogo className="w-8" priority />
@@ -91,7 +88,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         <Suspense fallback={<ProfileSkeleton />}>
           <Profile />
         </Suspense>
-      </header>
+      </AutoHideHeader>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
       {children}
     </div>
