@@ -22,8 +22,7 @@ export default async function Layout({ children }: LayoutProps<'/search'>) {
           <FilterButton />
         </div>
       </header>
-      <div className="h-[100px] md:h-[56px]" />
-      <div className="flex min-h-0 flex-1 flex-col gap-2 px-2">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col px-2">{children}</div>
     </main>
   )
 }
