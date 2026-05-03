@@ -19,7 +19,7 @@ export default function AutoHideHeader({ children, className, onClick, ...props 
   return (
     <header
       {...props}
-      className={twMerge('data-[auto-hide=true]:opacity-50', className)}
+      className={twMerge('data-[auto-hide=true]:opacity-30', className)}
       data-auto-hide={isNavigationHidden || undefined}
       onClick={handleClick}
     >
