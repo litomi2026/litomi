@@ -2,12 +2,12 @@ import { Bookmark, Bot, Clover, FileText, Flame, LibraryBig, PiggyBank, Search, 
 import Link from 'next/link'
 import { Suspense } from 'react'
 
+import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
 import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
 import IconLogo from '@/components/icons/LogoLitomi'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
-import AutoHideHeader from './AutoHideHeader'
 import NotificationCount from './NotificationCount'
 import Profile, { ProfileSkeleton } from './Profile'
 import ProfileLink from './ProfileLink'

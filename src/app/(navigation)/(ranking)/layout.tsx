@@ -1,4 +1,5 @@
-import AutoHideHeader from '../AutoHideHeader'
+import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
+
 import { metricInfo, MetricParam } from './common'
 import DonationLink from './DonationLink'
 import MetricLink from './MetricLink'

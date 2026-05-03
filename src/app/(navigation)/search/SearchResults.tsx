@@ -11,6 +11,7 @@ import type { KeywordPromotion } from '@/sponsor'
 import type { Manga } from '@/types/manga'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
+import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -20,7 +21,6 @@ import { ProblemDetailsError } from '@/utils/react-query-error'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
-import { useNavigationAutoHideScrollElement } from '../navigationAutoHide'
 import { SearchHeaderSpacer, SearchMobileNavigationSpacer } from './SearchScrollSpacers'
 
 const Error400 = dynamic(() => import('./Error400'))

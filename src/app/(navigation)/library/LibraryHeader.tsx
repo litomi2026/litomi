@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 import LibraryItemImportButton from '@/app/(navigation)/library/LibraryItemImportButton'
+import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
 
 import type { BulkActionDescriptor, BulkTargetLibrary } from './bulkActionTypes'
 import type { ReadingHistorySource } from './history/common'
 
-import AutoHideHeader from '../AutoHideHeader'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
 import BookmarkImportButton from './bookmark/BookmarkImportButton'
 import useBulkDeleteBookmarkAction from './bookmark/useBulkDeleteBookmarkAction'

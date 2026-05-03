@@ -1,6 +1,6 @@
+import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
 import ViewToggle from '@/components/ViewToggle'
 
-import AutoHideHeader from '../AutoHideHeader'
 import FilterButton from './FilterButton'
 import KeywordSubscriptionButton from './KeywordSubscriptionButton'
 import SearchForm from './SearchForm'
