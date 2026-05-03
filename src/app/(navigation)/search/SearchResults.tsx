@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 import type { KeywordPromotion } from '@/sponsor'
@@ -101,27 +101,24 @@ export default function SearchResult({ header }: Props) {
     return nextItems
   }, [isFetchingNextPage, mangas, promotion, view])
 
-  const renderItem = useCallback(
-    (item: SearchResultItem) => {
-      switch (item.type) {
-        case 'loading':
-          return <MangaCardSkeleton className="m-1" variant={view} />
-        case 'manga':
-          return (
-            <MangaCard
-              className="m-1 first:ml-2 last:mr-2"
-              index={item.mangaIndex}
-              manga={item.manga}
-              showSearchFromNextButton={view === View.CARD}
-              variant={view}
-            />
-          )
-        case 'promotion':
-          return <MangaCardPromotion className="m-1" promotion={item.promotion} />
-      }
-    },
-    [view],
-  )
+  function renderItem(item: SearchResultItem) {
+    switch (item.type) {
+      case 'loading':
+        return <MangaCardSkeleton className="m-1" variant={view} />
+      case 'manga':
+        return (
+          <MangaCard
+            className="m-1 first:ml-2 last:mr-2"
+            index={item.mangaIndex}
+            manga={item.manga}
+            showSearchFromNextButton={view === View.CARD}
+            variant={view}
+          />
+        )
+      case 'promotion':
+        return <MangaCardPromotion className="m-1" promotion={item.promotion} />
+    }
+  }
 
   const headerWithSpacer = useMemo(
     () => (
