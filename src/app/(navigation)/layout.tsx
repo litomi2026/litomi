@@ -94,9 +94,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
       </header>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
       {children}
-      <p className="h-0 overflow-hidden tracking-widest invisible">
-        <SEOText />
-      </p>
     </div>
   )
 }
