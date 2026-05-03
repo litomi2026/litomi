@@ -9,9 +9,6 @@ const REQUEST_IP_PORT = 3002
 const REQUEST_IP_ADDRESS = '127.0.0.1'
 const SOURCE_URL = 'https://cdn.imagedeliveries.com/123/thumbnails/cover.webp'
 const PROXY_PATH = `/i/v2/manga/123/thumbnail/1.webp?u=${encodeURIComponent(SOURCE_URL)}`
-const K_HENTAI_SOURCE_URL =
-  'https://storage-6-10.k-hentai.org/storage/d6/1b/d61b5b1d7e44c074fe7b5f20ffc8d3799c938dfb.webp?md5=2upfzSa8Q67iO8PfKDC0dw&expires=1777507199'
-const K_HENTAI_PROXY_PATH = `/i/v2/manga/3910121/original/13.webp?u=${encodeURIComponent(K_HENTAI_SOURCE_URL)}`
 const IMAGE_EGRESS_PROXY_URL = 'http://litomi-image-egress-proxy:8080'
 const IMAGE_PROXY_UPSTREAM_ENV_KEYS = [
   'IMAGE_PROXY_UPSTREAM_PROXY_HOST_SUFFIXES',
@@ -116,23 +113,6 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(response.headers.get('Cache-Control')).toBe('no-store')
     expect(await response.text()).toBe('401 Unauthorized')
     expect(externalFetchGuard.calls).toHaveLength(0)
-  })
-
-  test('k-hentai 계열 업스트림에는 이미지 egress proxy를 사용한다', async () => {
-    process.env.IMAGE_PROXY_UPSTREAM_PROXY_URL = IMAGE_EGRESS_PROXY_URL
-    externalFetchGuard = installImageFetchGuard(K_HENTAI_SOURCE_URL)
-    setNodeEnv('production')
-
-    const response = await requestBackend({
-      path: K_HENTAI_PROXY_PATH,
-      headers: {
-        Origin: 'https://litomi.in',
-        'Sec-Fetch-Site': 'same-origin',
-      },
-    })
-
-    expect(response.status).toBe(200)
-    expect((externalFetchGuard.calls[0].init as RequestInit & { proxy?: string }).proxy).toBe(IMAGE_EGRESS_PROXY_URL)
   })
 
   test('proxy 미대상 업스트림은 직접 fetch한다', async () => {

@@ -1,7 +1,5 @@
 import type { VirtualMangaGridItem, VirtualMangaGridRow } from './VirtualMangaGrid.types'
 
-export const VIRTUAL_MANGA_GRID_GAP_PX = 8
-
 export function chunkVirtualMangaGridItems<TItem extends VirtualMangaGridItem>(
   items: readonly TItem[],
   columnCount: number,
@@ -26,8 +24,5 @@ export function getVirtualMangaGridColumnCount(containerWidth: number, minColumn
   const safeContainerWidth = Math.max(1, containerWidth)
   const safeMinColumnWidth = Math.max(1, minColumnWidth)
 
-  return Math.max(
-    1,
-    Math.floor((safeContainerWidth + VIRTUAL_MANGA_GRID_GAP_PX) / (safeMinColumnWidth + VIRTUAL_MANGA_GRID_GAP_PX)),
-  )
+  return Math.max(1, Math.floor(safeContainerWidth / safeMinColumnWidth))
 }

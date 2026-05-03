@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 import LibraryItemImportButton from '@/app/(navigation)/library/LibraryItemImportButton'
+import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
 
 import type { BulkActionDescriptor, BulkTargetLibrary } from './bulkActionTypes'
 import type { ReadingHistorySource } from './history/common'
 
-import AutoHideNavigation from '../AutoHideNavigation'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
 import BookmarkImportButton from './bookmark/BookmarkImportButton'
 import useBulkDeleteBookmarkAction from './bookmark/useBulkDeleteBookmarkAction'
@@ -240,11 +240,7 @@ export default function LibraryHeader({
 
   return (
     <>
-      <header
-        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-2.5 sm:p-3 border-b border-zinc-800 transition bg-background aria-busy:opacity-50"
-        data-header
-      >
-        <AutoHideNavigation selector="[data-header]" />
+      <AutoHideHeader className="sticky top-0 z-40 flex justify-between items-center gap-3 p-2.5 sm:p-3 border-b border-zinc-800 transition bg-background">
         <div className="flex items-center gap-3">
           <button
             aria-label="library-menu"
@@ -301,7 +297,7 @@ export default function LibraryHeader({
             <LibraryManagementMenu className="-mr-1 p-3" library={currentLibrary} />
           )}
         </div>
-      </header>
+      </AutoHideHeader>
       {isDrawerOpen && (
         <>
           <div className="fixed inset-0 z-50 bg-background/50 animate-fade-in-fast sm:hidden" onClick={closeDrawer} />

@@ -20,11 +20,12 @@ export type VirtualMangaGridProps<TItem extends VirtualMangaGridItem> = {
   isFetchingNextPage?: boolean
   items: readonly TItem[]
   measurementKey: number | string
+  onScrollElementChange?: (element: HTMLElement | null) => void
   overscanCount?: number
   preloadRowCount?: number
   renderItem: (item: TItem, index: number) => ReactNode
   scrollToTopBehavior?: ScrollBehavior
-  scrollToTopSignal: number
+  scrollToTopSignal?: number
   view: View
 }
 
@@ -39,9 +40,7 @@ export type VirtualMangaGridRow<TItem extends VirtualMangaGridItem> =
 export type VirtualMangaGridRowProps<TItem extends VirtualMangaGridItem> = {
   columnCount: number
   footer?: ReactNode
-  gapPx: number
   header?: ReactNode
-  itemCount: number
   renderItem: (item: TItem, index: number) => ReactNode
   rows: VirtualMangaGridRow<TItem>[]
 }

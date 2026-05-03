@@ -7,9 +7,7 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
   style,
   columnCount,
   footer,
-  gapPx,
   header,
-  itemCount,
   renderItem,
   rows,
 }: RowComponentProps<VirtualMangaGridRowProps<TItem>>) {
@@ -37,27 +35,12 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
 
   return (
     <div
-      className="grid items-stretch"
+      className="grid"
       data-virtual-manga-row-index={index}
       role="presentation"
-      style={{
-        ...style,
-        gap: `${gapPx}px`,
-        gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
-        paddingBlock: gapPx / 2,
-      }}
+      style={{ ...style, gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
     >
-      {row.items.map(({ item, itemIndex }) => (
-        <div
-          aria-posinset={itemIndex + 1}
-          aria-setsize={itemCount}
-          className="min-w-0 h-full *:h-full"
-          key={item.key}
-          role="listitem"
-        >
-          {renderItem(item, itemIndex)}
-        </div>
-      ))}
+      {row.items.map(({ item, itemIndex }) => renderItem(item, itemIndex))}
     </div>
   )
 }
