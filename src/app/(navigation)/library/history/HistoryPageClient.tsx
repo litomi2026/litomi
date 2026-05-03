@@ -4,7 +4,6 @@ import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/histo
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
-import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestoration'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { View } from '@/utils/param'
@@ -36,13 +35,6 @@ export default function HistoryPageClient(props: Props) {
     hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
-  })
-
-  useInfiniteListScrollRestoration({
-    fetchNextPage,
-    hasNextPage: canAutoLoadMore,
-    isFetchingNextPage,
-    restoreKey: `library-history-${props.source}`,
   })
 
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: historyItems.map((item) => item.mangaId) })

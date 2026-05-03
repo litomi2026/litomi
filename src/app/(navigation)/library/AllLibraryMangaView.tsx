@@ -11,7 +11,6 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
-import useInfiniteListScrollRestoration from '@/hook/useInfiniteListScrollRestoration'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { getViewFromSearchParams, View } from '@/utils/param'
@@ -69,13 +68,6 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
     hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
-  })
-
-  useInfiniteListScrollRestoration({
-    fetchNextPage,
-    hasNextPage: canAutoLoadMore,
-    isFetchingNextPage,
-    restoreKey: 'library-all',
   })
 
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
