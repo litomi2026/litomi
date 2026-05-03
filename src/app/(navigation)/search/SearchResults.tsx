@@ -20,6 +20,7 @@ import { ProblemDetailsError } from '@/utils/react-query-error'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
+import { useNavigationAutoHideScrollElement } from '../navigationAutoHide'
 import { SearchHeaderSpacer, SearchMobileNavigationSpacer } from './SearchScrollSpacers'
 
 const Error400 = dynamic(() => import('./Error400'))
@@ -47,6 +48,7 @@ export default function SearchResult({ header }: Props) {
   const searchParams = useSearchParams()
   const view = getViewFromSearchParams(searchParams)
   const [scrollToTopSignal, setScrollToTopSignal] = useState(0)
+  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
 
   const {
     data,
@@ -207,6 +209,7 @@ export default function SearchResult({ header }: Props) {
       isFetchingNextPage={isFetchingNextPage}
       items={items}
       measurementKey={measurementKey}
+      onScrollElementChange={setNavigationAutoHideScrollElement}
       renderItem={renderItem}
       scrollToTopSignal={scrollToTopSignal}
       view={view}

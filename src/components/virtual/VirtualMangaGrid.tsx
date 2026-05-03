@@ -105,6 +105,7 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   isFetchingNextPage,
   items,
   measurementKey,
+  onScrollElementChange,
   overscanCount = DEFAULT_OVERSCAN_COUNT,
   preloadRowCount = DEFAULT_PRELOAD_ROW_COUNT,
   renderItem,
@@ -193,6 +194,22 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     [fetchNextPage, hasNextPage, isFetchingNextPage, itemRows.length, itemRowStartIndex, preloadRowCount],
   )
 
+  const setListRef = useCallback(
+    (list: ListImperativeAPI | null) => {
+      const previousElement = listRef.current?.element ?? null
+      const element = list?.element ?? null
+
+      listRef.current = list
+
+      if (previousElement === element) {
+        return
+      }
+
+      onScrollElementChange?.(element)
+    },
+    [onScrollElementChange],
+  )
+
   // NOTE: scrollToTopSignal 값이 바뀔 때 상단으로 스크롤해요
   useEffect(() => {
     if (lastScrollToTopSignalRef.current === scrollToTopSignal) {
@@ -214,7 +231,7 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     <List
       className="[scrollbar-gutter:stable]"
       defaultHeight={DEFAULT_HEIGHT}
-      listRef={listRef}
+      listRef={setListRef}
       onRowsRendered={handleVisibleRowsRendered}
       overscanCount={overscanCount}
       rowComponent={VirtualMangaGridRow<TItem>}
