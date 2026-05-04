@@ -1,7 +1,7 @@
 import { Calendar, Clock, TrendingUp, Trophy } from 'lucide-react'
 import Link from 'next/link'
 
-import Onboarding from '@/app/(navigation)/(right-search)/[name]/settings/Onboarding'
+import Onboarding from '@/app/(navigation)/(right-aside)/[name]/settings/Onboarding'
 
 export default function NotFound() {
   return (

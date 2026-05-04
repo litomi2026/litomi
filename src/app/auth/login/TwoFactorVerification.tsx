@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
-import OneTimeCodeInput from '@/app/(navigation)/(right-search)/[name]/settings/two-factor/components/OneTimeCodeInput'
+import OneTimeCodeInput from '@/app/(navigation)/(right-aside)/[name]/settings/two-factor/components/OneTimeCodeInput'
 import Toggle from '@/components/ui/Toggle'
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
 import { PKCEChallenge } from '@/utils/pkce-browser'

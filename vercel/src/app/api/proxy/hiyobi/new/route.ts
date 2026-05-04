@@ -54,7 +54,7 @@ export async function GET(request: Request) {
         browser: {
           public: true,
           maxAge: 3,
-          sMaxAge: sec('3 hours'),
+          sMaxAge: sec('4 hours'),
           swr: sec('30 minutes'),
         },
       }),

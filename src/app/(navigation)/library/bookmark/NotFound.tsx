@@ -1,7 +1,7 @@
 import { Bookmark, Clock, Download, Search } from 'lucide-react'
 import Link from 'next/link'
 
-import Onboarding from '@/app/(navigation)/(right-search)/[name]/settings/Onboarding'
+import Onboarding from '@/app/(navigation)/(right-aside)/[name]/settings/Onboarding'
 
 import BookmarkImportButton from './BookmarkImportButton'
 import BookmarkUploadButton from './BookmarkUploadButton'

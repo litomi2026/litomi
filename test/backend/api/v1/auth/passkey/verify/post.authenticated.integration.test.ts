@@ -12,7 +12,7 @@ import {
 } from '@test/backend/setup/db'
 import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/common'
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-aside)/[name]/settings/passkey/common'
 import { CookieKey } from '@/constants/storage'
 
 import { AUTH_TEST_SAFARI_USER_AGENT, buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'

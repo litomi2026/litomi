@@ -1,7 +1,7 @@
 import { MessageCircleHeart, PenSquare, Users } from 'lucide-react'
 import Link from 'next/link'
 
-import Onboarding from '@/app/(navigation)/(right-search)/[name]/settings/Onboarding'
+import Onboarding from '@/app/(navigation)/(right-aside)/[name]/settings/Onboarding'
 import LoginButton from '@/components/LoginButton'
 
 export default function FollowingUnauthorized() {
@@ -33,7 +33,11 @@ export default function FollowingUnauthorized() {
           <LoginButton>로그인하기</LoginButton>
           <p className="text-sm text-zinc-500">
             처음이신가요?{' '}
-            <Link className="text-zinc-300 underline hover:text-zinc-100 transition" href="/auth/signup" prefetch={false}>
+            <Link
+              className="text-zinc-300 underline hover:text-zinc-100 transition"
+              href="/auth/signup"
+              prefetch={false}
+            >
               회원가입
             </Link>
           </p>

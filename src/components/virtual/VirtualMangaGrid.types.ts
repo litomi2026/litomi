@@ -25,7 +25,6 @@ export type VirtualMangaGridProps<TItem extends VirtualMangaGridItem> = {
   overscanCount?: number
   preloadRowCount?: number
   renderItem: (item: TItem, index: number) => ReactNode
-  scrollToTopBehavior?: ScrollBehavior
   scrollToTopSignal?: number
   view: View
 }

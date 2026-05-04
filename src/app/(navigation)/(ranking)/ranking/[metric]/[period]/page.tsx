@@ -4,12 +4,13 @@ import z from 'zod'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/constants'
+import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
 import RankingList from './RankingList'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 86400
 
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),
@@ -39,6 +40,20 @@ export async function generateMetadata({ params }: PageProps<'/ranking/[metric]/
   }
 }
 
+export function generateStaticParams() {
+  const metrics = [MetricParam.VIEW, MetricParam.BOOKMARK, MetricParam.LIBRARY, MetricParam.RATING]
+  const periods = [PeriodParam.DAY, PeriodParam.WEEK, PeriodParam.MONTH, PeriodParam.QUARTER, PeriodParam.YEAR]
+  const params = []
+
+  for (const metric of metrics) {
+    for (const period of periods) {
+      params.push({ metric, period })
+    }
+  }
+
+  return params
+}
+
 export default async function Page({ params }: PageProps<'/ranking/[metric]/[period]'>) {
   const validation = mangasRankingSchema.safeParse(await params)
 
@@ -56,7 +71,7 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
   return (
     <>
       <NonAdultJuicyAdsBanner className="mt-2 mx-2" />
-      <RankingList rankings={rankings} />
+      <RankingList className={MANGA_GRID_COLUMN.card} rankings={rankings} />
     </>
   )
 }

@@ -5,7 +5,7 @@ import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 import { z } from 'zod'
 
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/common'
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-aside)/[name]/settings/passkey/common'
 import { Env } from '@/backend'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/backend/api/v1/auth/query'
 import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
