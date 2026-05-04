@@ -4,7 +4,7 @@ import { generateAuthenticationOptions } from '@simplewebauthn/server'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 
-import { WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/common'
+import { WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-aside)/[name]/settings/passkey/common'
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { ChallengeType } from '@/database/enum'

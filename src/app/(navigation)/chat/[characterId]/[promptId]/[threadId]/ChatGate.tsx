@@ -7,7 +7,7 @@ import { Bot, Cpu, Download, LockKeyhole, MessageCircle, Smartphone } from 'luci
 import LoginButton from '@/components/LoginButton'
 import useMeQuery from '@/query/useMeQuery'
 
-import Onboarding from '../../../../(right-search)/[name]/settings/Onboarding'
+import Onboarding from '../../../../(right-aside)/[name]/settings/Onboarding'
 import { useSingleTabLock } from './hook/useSingleTabLock'
 import { useWebGPUReady } from './hook/useWebGPUReady'
 
