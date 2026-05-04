@@ -1,4 +1,3 @@
-import ms from 'ms'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
@@ -11,7 +10,7 @@ import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../com
 import { getRankingData } from './query'
 import RankingList from './RankingList'
 
-export const revalidate = ms('1 day')
+export const revalidate = 86400
 
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),
