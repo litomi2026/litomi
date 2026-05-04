@@ -96,7 +96,7 @@ jobs:
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
-            SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
+            "SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}"
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
 
@@ -118,7 +118,7 @@ jobs:
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
-            SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
+            "SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}"
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
 
