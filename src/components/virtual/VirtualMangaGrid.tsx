@@ -99,6 +99,7 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   hasNextPage,
   header,
   isFetchingNextPage,
+  itemGap = 0,
   items,
   measurementKey,
   onScrollElementChange,
@@ -116,8 +117,8 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
 
   const itemRowStartIndex = header ? 1 : 0
   const minColumnWidth = size.minColumnWidth
-  const columnCount = getVirtualMangaGridColumnCount(size.width, minColumnWidth)
-  const columnWidth = Math.max(minColumnWidth, size.width / Math.max(1, columnCount))
+  const columnCount = getVirtualMangaGridColumnCount(size.width, minColumnWidth, itemGap)
+  const columnWidth = Math.max(minColumnWidth, size.width / Math.max(1, columnCount) - itemGap)
 
   const estimatedItemRowHeight =
     view === View.IMAGE

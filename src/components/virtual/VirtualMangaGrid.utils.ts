@@ -20,9 +20,10 @@ export function chunkVirtualMangaGridItems<TItem extends VirtualMangaGridItem>(
   return rows
 }
 
-export function getVirtualMangaGridColumnCount(containerWidth: number, minColumnWidth: number) {
+export function getVirtualMangaGridColumnCount(containerWidth: number, minColumnWidth: number, itemGap = 0) {
   const safeContainerWidth = Math.max(1, containerWidth)
   const safeMinColumnWidth = Math.max(1, minColumnWidth)
+  const safeItemInlineMarginWidth = Math.max(0, itemGap)
 
-  return Math.max(1, Math.floor(safeContainerWidth / safeMinColumnWidth))
+  return Math.max(1, Math.floor(safeContainerWidth / (safeMinColumnWidth + safeItemInlineMarginWidth)))
 }
