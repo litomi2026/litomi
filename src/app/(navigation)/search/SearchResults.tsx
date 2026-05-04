@@ -108,7 +108,7 @@ export default function SearchResult({ header }: Props) {
       case 'manga':
         return (
           <MangaCard
-            className="m-1 mt-0 sm:mt-1 sm:first:ml-2 sm:last:mr-2"
+            className="mx-2 mb-2 sm:m-1 sm:first:ml-2 sm:last:mr-2"
             index={item.mangaIndex}
             manga={item.manga}
             showSearchFromNextButton={view === View.CARD}
