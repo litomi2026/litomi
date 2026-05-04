@@ -10,8 +10,6 @@ import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../com
 import { getRankingData } from './query'
 import RankingList from './RankingList'
 
-export const dynamic = 'force-dynamic'
-
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),
   period: z.enum(PeriodParam),
