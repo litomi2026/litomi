@@ -4,6 +4,7 @@ import z from 'zod'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/constants'
+import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
@@ -56,7 +57,7 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
   return (
     <>
       <NonAdultJuicyAdsBanner className="mt-2 mx-2" />
-      <RankingList rankings={rankings} />
+      <RankingList className={MANGA_GRID_COLUMN.card} rankings={rankings} />
     </>
   )
 }

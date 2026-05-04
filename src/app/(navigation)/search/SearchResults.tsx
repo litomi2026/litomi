@@ -14,6 +14,7 @@ import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardPromotion from '@/components/card/MangaCardPromotion'
+import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import { getViewFromSearchParams, View } from '@/utils/param'
@@ -21,7 +22,6 @@ import { ProblemDetailsError } from '@/utils/react-query-error'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
-import { SearchHeaderSpacer, SearchMobileNavigationSpacer } from './SearchScrollSpacers'
 
 const Error400 = dynamic(() => import('./Error400'))
 const SearchResultError = dynamic(() => import('./SearchResultError'))
@@ -160,7 +160,7 @@ export default function SearchResult({ header }: Props) {
     () => (
       <>
         {footer}
-        <SearchMobileNavigationSpacer />
+        <MobileNavigationSpacer />
       </>
     ),
     [footer],
@@ -219,7 +219,7 @@ export default function SearchResult({ header }: Props) {
 export function SearchResultLoading({ view }: { view: View }) {
   return (
     <SearchSpacer>
-      <div className={`py-2 grid ${MANGA_GRID_COLUMN[view]} gap-2 grow`}>
+      <div className={`p-2 grid ${MANGA_GRID_COLUMN[view]} gap-2 grow`}>
         {Array.from({ length: view === View.IMAGE ? 12 : 6 }).map((_, i) => (
           <MangaCardSkeleton key={i} variant={view} />
         ))}
@@ -233,7 +233,7 @@ function SearchSpacer({ children }: { children: ReactNode }) {
     <>
       <SearchHeaderSpacer />
       {children}
-      <SearchMobileNavigationSpacer />
+      <MobileNavigationSpacer />
     </>
   )
 }

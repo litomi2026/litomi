@@ -5,9 +5,8 @@ import { TriangleAlert } from 'lucide-react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
+import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
 import useCooldown from '@/hook/useCooldown'
-
-import { SearchHeaderSpacer, SearchMobileNavigationSpacer } from './SearchScrollSpacers'
 
 type Props = {
   error: Error & { digest?: string }
@@ -67,7 +66,7 @@ export default function ErrorPage({ error, reset }: Readonly<Props>) {
           </button>
         </div>
       </main>
-      <SearchMobileNavigationSpacer />
+      <MobileNavigationSpacer />
     </>
   )
 }
