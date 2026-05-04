@@ -8,6 +8,7 @@ const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'soujpa.in',
   'cdn.imagedeliveries.com',
   'ehgt.org',
+  'siam-cdn.net',
 ] as const
 const IMAGE_PROXY_ROUTE_EXTENSION = '.webp'
 

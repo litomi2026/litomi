@@ -1,5 +1,7 @@
 import type { RowComponentProps } from 'react-window'
 
+import { Fragment } from 'react'
+
 import type { VirtualMangaGridItem, VirtualMangaGridRowProps } from './VirtualMangaGrid.types'
 
 export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>({
@@ -40,7 +42,9 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
       role="presentation"
       style={{ ...style, gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
     >
-      {row.items.map(({ item, itemIndex }) => renderItem(item, itemIndex))}
+      {row.items.map(({ item, itemIndex }) => (
+        <Fragment key={item.key}>{renderItem(item, itemIndex)}</Fragment>
+      ))}
     </div>
   )
 }

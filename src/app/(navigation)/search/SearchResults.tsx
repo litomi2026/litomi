@@ -205,6 +205,7 @@ export default function SearchResult({ header }: Props) {
       hasNextPage={canAutoLoadMore}
       header={headerWithSpacer}
       isFetchingNextPage={isFetchingNextPage}
+      itemGap={8}
       items={items}
       measurementKey={measurementKey}
       onScrollElementChange={setNavigationAutoHideScrollElement}

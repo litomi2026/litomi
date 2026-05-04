@@ -4,7 +4,6 @@ import { ReactNode, Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { Manga } from '@/types/manga'
-import { createScrollAnchorAttributes } from '@/utils/history-scroll-restoration'
 import { getViewerLink } from '@/utils/manga'
 import { View } from '@/utils/param'
 
@@ -64,7 +63,6 @@ export default function MangaCard({
   const { id, artists, characters, date, group, series, images, tags, title, type, count, languages, uploader } = manga
   const viewerLink = getViewerLink(id)
   const config = VARIANT_CONFIG[variant]
-  const scrollAnchorProps = createScrollAnchorAttributes(id, index)
 
   return (
     <article
@@ -74,7 +72,6 @@ export default function MangaCard({
         className,
       )}
       data-manga-card
-      {...scrollAnchorProps}
     >
       <MangaCardImage manga={manga} mangaIndex={index} rank={rank} variant={variant} />
       {config.showBody && (

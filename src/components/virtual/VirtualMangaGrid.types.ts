@@ -18,6 +18,7 @@ export type VirtualMangaGridProps<TItem extends VirtualMangaGridItem> = {
   hasNextPage?: boolean
   header?: ReactNode
   isFetchingNextPage?: boolean
+  itemGap?: number
   items: readonly TItem[]
   measurementKey: number | string
   onScrollElementChange?: (element: HTMLElement | null) => void
