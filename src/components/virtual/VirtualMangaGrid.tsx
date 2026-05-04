@@ -106,7 +106,6 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   overscanCount = DEFAULT_OVERSCAN_COUNT,
   preloadRowCount = DEFAULT_PRELOAD_ROW_COUNT,
   renderItem,
-  scrollToTopBehavior = 'auto',
   scrollToTopSignal,
   size,
   view,
@@ -213,8 +212,8 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
       return
     }
 
-    element.scrollTo({ behavior: scrollToTopBehavior, top: 0 })
-  }, [scrollToTopBehavior, scrollToTopSignal])
+    element.scrollTo({ behavior: 'auto', top: 0 })
+  }, [scrollToTopSignal])
 
   return (
     <List
