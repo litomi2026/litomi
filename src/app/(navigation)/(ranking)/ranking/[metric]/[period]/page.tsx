@@ -1,3 +1,4 @@
+import ms from 'ms'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
@@ -9,6 +10,8 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
 import RankingList from './RankingList'
+
+export const revalidate = ms('1 day')
 
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),
@@ -36,6 +39,20 @@ export async function generateMetadata({ params }: PageProps<'/ranking/[metric]/
       languages: { ko: `/ranking/${metric}/${period}` },
     },
   }
+}
+
+export function generateStaticParams() {
+  const metrics = [MetricParam.VIEW, MetricParam.BOOKMARK, MetricParam.LIBRARY, MetricParam.RATING]
+  const periods = [PeriodParam.DAY, PeriodParam.WEEK, PeriodParam.MONTH, PeriodParam.QUARTER, PeriodParam.YEAR]
+  const params = []
+
+  for (const metric of metrics) {
+    for (const period of periods) {
+      params.push({ metric, period })
+    }
+  }
+
+  return params
 }
 
 export default async function Page({ params }: PageProps<'/ranking/[metric]/[period]'>) {

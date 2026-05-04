@@ -140,7 +140,6 @@ function getPeriodStart(period: PeriodParam): Date | null {
       return new Date(now.getTime() - ms('1 week'))
     case PeriodParam.YEAR:
       return new Date(now.getTime() - ms('1 year'))
-    // TODO: 지금은 데이터가 부족해서 추후 추가하기
     default:
       return null
   }
