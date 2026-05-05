@@ -9,7 +9,7 @@ export type UserSettingsPatch = Partial<UserSettings>
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   historySyncEnabled: true,
   adultVerifiedAdVisible: false,
-  autoDeletionDay: 180,
+  autoDeletionDay: 90,
 }
 
 export type UserSettingsSignal = {

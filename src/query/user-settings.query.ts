@@ -12,9 +12,6 @@ export async function readUserSettings(userId: number): Promise<UserSettings> {
       historySyncEnabled: userSettingsTable.historySyncEnabled,
       adultVerifiedAdVisible: userSettingsTable.adultVerifiedAdVisible,
       autoDeletionDay: userSettingsTable.autoDeletionDay,
-
-      // TODO(2026-04-02): 마이그레이션 후 fallbackAutoDeletionDay 컬럼 삭제
-      fallbackAutoDeletionDay: userTable.autoDeletionDays,
     })
     .from(userTable)
     .leftJoin(userSettingsTable, eq(userSettingsTable.userId, userTable.id))
@@ -27,8 +24,6 @@ export async function readUserSettings(userId: number): Promise<UserSettings> {
   return resolveUserSettings({
     historySyncEnabled: row.historySyncEnabled ?? undefined,
     adultVerifiedAdVisible: row.adultVerifiedAdVisible ?? undefined,
-
-    // TODO(2026-04-02): 마이그레이션 후 fallbackAutoDeletionDay 컬럼 삭제
-    autoDeletionDay: row.autoDeletionDay ?? row.fallbackAutoDeletionDay ?? undefined,
+    autoDeletionDay: row.autoDeletionDay ?? undefined,
   })
 }

@@ -53,7 +53,7 @@ describe('PATCH /api/v1/me/settings', () => {
       settings: {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
-        autoDeletionDay: 180,
+        autoDeletionDay: 90,
       },
     })
   })
@@ -106,7 +106,7 @@ describe('PATCH /api/v1/me/settings', () => {
   })
 
   test('설정 행이 없어도 기본 설정을 기준으로 upsert한다', async () => {
-    const { auth, user } = await createMeAuthContext({ autoDeletionDays: 45 })
+    const { auth, user } = await createMeAuthContext()
 
     const response = await requestBackend({
       path: '/api/v1/me/settings',
@@ -122,7 +122,7 @@ describe('PATCH /api/v1/me/settings', () => {
       userId: user.id,
       historySyncEnabled: false,
       adultVerifiedAdVisible: false,
-      autoDeletionDay: 45,
+      autoDeletionDay: 90,
     })
 
     const meResponse = await requestBackend({
@@ -135,7 +135,7 @@ describe('PATCH /api/v1/me/settings', () => {
       settings: {
         historySyncEnabled: false,
         adultVerifiedAdVisible: false,
-        autoDeletionDay: 45,
+        autoDeletionDay: 90,
       },
     })
   })

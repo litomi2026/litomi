@@ -293,7 +293,6 @@ export async function seedUser({ password = TEST_LOGIN_PASSWORD, passwordHash, .
       ...(overrides.loginAt && { loginAt: overrides.loginAt }),
       ...(overrides.logoutAt && { logoutAt: overrides.logoutAt }),
       ...(overrides.imageURL !== undefined && { imageURL: overrides.imageURL }),
-      ...(overrides.autoDeletionDays !== undefined && { autoDeletionDays: overrides.autoDeletionDays }),
     })
     .returning()
 
@@ -334,7 +333,7 @@ export async function seedUserSettings({ userId, ...overrides }: SeedUserSetting
       userId,
       historySyncEnabled: overrides.historySyncEnabled ?? true,
       adultVerifiedAdVisible: overrides.adultVerifiedAdVisible ?? false,
-      autoDeletionDay: overrides.autoDeletionDay ?? 180,
+      autoDeletionDay: overrides.autoDeletionDay ?? 90,
     })
     .returning()
 
