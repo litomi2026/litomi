@@ -9,7 +9,7 @@ type Props = {
 export default function CensoredManga({ mangaId, className = '' }: Readonly<Props>) {
   return (
     <Link
-      className={`absolute inset-0 flex flex-col items-center justify-center p-4 rounded-t-xl animate-fade-in-fast bg-zinc-900 text-zinc-400 hover:underline ${className}`}
+      className={`absolute inset-0 flex flex-col items-center justify-center p-4 rounded-t-xl bg-zinc-900 text-zinc-400 hover:underline ${className}`}
       href={`/manga/${mangaId}`}
       prefetch={false}
     >

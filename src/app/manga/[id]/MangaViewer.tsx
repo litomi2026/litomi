@@ -27,16 +27,11 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const unlockTimeoutRef = useRef<number>(null)
   const { data: me } = useMeQuery()
-
   const status = getAdultState(me)
-  const shouldFetch = (initialManga?.images?.length ?? 0) === 0
-  const isWaitingForAdClick = shouldFetch && !me && !hasClickedAd
-  const actualShouldFetch = shouldFetch && !isWaitingForAdClick
-  const mangaIds = actualShouldFetch ? [id] : []
+  const isWaitingForAdClick = !me && !hasClickedAd
+  const mangaIds = isWaitingForAdClick ? [] : [id]
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
-
-  const fetchedManga = mangaMap.get(id) // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
-  const data = fetchedManga ?? (actualShouldFetch && !initialManga ? { id, title: '불러오는 중' } : undefined)
+  const data = mangaMap.get(id) ?? (!isWaitingForAdClick && !initialManga ? { id, title: '불러오는 중' } : undefined)
   const manga = prepareManga(data, initialManga)
   const metadata = prepareMetadata(manga)
 

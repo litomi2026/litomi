@@ -57,7 +57,7 @@ export default function MangaCardCensorship({ manga }: Props) {
   return (
     <div
       aria-current={!isBlurDisabled}
-      className="absolute inset-0 animate-fade-in-fast flex items-center justify-center text-center p-4 pointer-events-none transition aria-current:bg-background/80 aria-current:backdrop-blur"
+      className="absolute inset-0 flex items-center justify-center text-center p-4 pointer-events-none transition aria-current:bg-background/80 aria-current:backdrop-blur"
     >
       <button
         className="absolute top-2 right-2 p-2.5 rounded-full bg-background/90 hover:bg-background border border-zinc-700 pointer-events-auto transition"

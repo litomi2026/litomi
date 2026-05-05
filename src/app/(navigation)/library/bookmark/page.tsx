@@ -3,8 +3,6 @@ import { z } from 'zod'
 
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@/backend/api/v1/library/item-sort'
 import { getNextCollectionItemCursor } from '@/backend/api/v1/library/item-sort.server'
-import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
-import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { selectBookmark } from '@/sql/selectBookmark'
@@ -73,9 +71,7 @@ export default async function BookmarkPage({ searchParams }: PageProps<'/library
   }
 
   return (
-    <main className="flex-1 flex flex-col">
-      <h1 className="sr-only">북마크</h1>
-      <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
+    <main className="flex min-h-0 flex-1 flex-col">
       <BookmarkPageClient initialData={initialData} initialSort={sort} initialView={view} />
     </main>
   )
