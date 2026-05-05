@@ -152,7 +152,7 @@ function getProgressText({
   }
 
   if (progress >= 100) {
-    return '압축 중'
+    return '저장 중'
   }
 
   return totalCount > 20 ? `${throttledCount}/${totalCount}` : `${progress}%`

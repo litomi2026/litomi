@@ -9,14 +9,6 @@ const REQUEST_IP_PORT = 3002
 const REQUEST_IP_ADDRESS = '127.0.0.1'
 const SOURCE_URL = 'https://cdn.imagedeliveries.com/123/thumbnails/cover.webp'
 const PROXY_PATH = `/i/v2/manga/123/thumbnail/1.webp?u=${encodeURIComponent(SOURCE_URL)}`
-const IMAGE_EGRESS_PROXY_URL = 'http://litomi-image-egress-proxy:8080'
-const IMAGE_PROXY_UPSTREAM_ENV_KEYS = [
-  'IMAGE_PROXY_UPSTREAM_PROXY_HOST_SUFFIXES',
-  'IMAGE_PROXY_UPSTREAM_PROXY_URL',
-] as const
-const ORIGINAL_IMAGE_PROXY_UPSTREAM_ENV = Object.fromEntries(
-  IMAGE_PROXY_UPSTREAM_ENV_KEYS.map((key) => [key, process.env[key]]),
-)
 
 let externalFetchGuard: ReturnType<typeof installImageFetchGuard> | undefined
 
@@ -24,7 +16,6 @@ afterEach(() => {
   externalFetchGuard?.restore()
   externalFetchGuard = undefined
   setNodeEnv(ORIGINAL_NODE_ENV)
-  restoreImageProxyUpstreamEnv()
 })
 
 describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
@@ -115,8 +106,7 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(externalFetchGuard.calls).toHaveLength(0)
   })
 
-  test('proxy 미대상 업스트림은 직접 fetch한다', async () => {
-    process.env.IMAGE_PROXY_UPSTREAM_PROXY_URL = IMAGE_EGRESS_PROXY_URL
+  test('업스트림 이미지는 직접 fetch한다', async () => {
     externalFetchGuard = installImageFetchGuard()
     setNodeEnv('production')
 
@@ -156,18 +146,6 @@ async function requestBackendWithoutDefaultHeaders(path: string, init: RequestIn
         port: REQUEST_IP_PORT,
       }
     },
-  })
-}
-
-function restoreImageProxyUpstreamEnv() {
-  IMAGE_PROXY_UPSTREAM_ENV_KEYS.forEach((key) => {
-    const value = ORIGINAL_IMAGE_PROXY_UPSTREAM_ENV[key]
-    if (value === undefined) {
-      Reflect.deleteProperty(process.env, key)
-      return
-    }
-
-    process.env[key] = value
   })
 }
 
