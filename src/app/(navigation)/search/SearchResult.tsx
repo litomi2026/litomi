@@ -71,7 +71,6 @@ export default function SearchResult({ header }: Props) {
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
   const shouldShowPromotion = view === View.CARD && promotion
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
-  const showAnyFooterAction = showRetry || showRefreshButton
   const items: SearchResultItem[] = []
 
   for (const [mangaIndex, manga] of mangas.entries()) {
@@ -105,28 +104,22 @@ export default function SearchResult({ header }: Props) {
     </>
   )
 
-  const footer = showAnyFooterAction ? (
-    <div className="flex flex-col items-center gap-2 py-4">
-      {showRetry && <LoadMoreRetryButton onRetry={isFetchNextPageError ? fetchNextPage : refetch} />}
-      {showRefreshButton && (
-        <RandomRefreshButton
-          className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition"
-          isLoading={isRefetching}
-          onClick={async () => {
-            await refetch()
-            setScrollToOptions({ top: 0 })
-          }}
-          timer={1}
-        />
-      )}
-    </div>
-  ) : (
-    <div aria-hidden className="hidden h-4 sm:block" />
-  )
-
-  const footerWithSpacer = (
+  const footer = (
     <>
-      {footer}
+      <div className="flex flex-col items-center gap-2 py-4">
+        {showRetry && <LoadMoreRetryButton onRetry={isFetchNextPageError ? fetchNextPage : refetch} />}
+        {showRefreshButton && (
+          <RandomRefreshButton
+            className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition"
+            isLoading={isRefetching}
+            onClick={async () => {
+              await refetch()
+              setScrollToOptions({ top: 0 })
+            }}
+            timer={1}
+          />
+        )}
+      </div>
       <MobileNavigationSpacer />
     </>
   )
@@ -177,7 +170,7 @@ export default function SearchResult({ header }: Props) {
   return (
     <VirtualMangaGrid
       fetchNextPage={fetchNextPage}
-      footer={footerWithSpacer}
+      footer={footer}
       hasNextPage={canAutoLoadMore}
       header={headerWithSpacer}
       isFetchingNextPage={isFetchingNextPage}
