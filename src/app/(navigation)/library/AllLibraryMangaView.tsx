@@ -3,21 +3,34 @@
 import { Library } from 'lucide-react'
 import Link from 'next/link'
 import { ReadonlyURLSearchParams } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+
+import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
+import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
-import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { getViewFromSearchParams, View } from '@/utils/param'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import CensoredManga from './CensoredManga'
 import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
+
+type AllLibraryMangaItem =
+  | (VirtualMangaGridItem & {
+      libraryItem: LibraryItem
+      type: 'manga'
+    })
+  | (VirtualMangaGridItem & {
+      type: 'loading'
+    })
 
 type Library = {
   id: number
@@ -38,6 +51,7 @@ type Props = {
 
 export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
   const [view, setView] = useState<View>(initialView)
+  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
 
   const {
     data,
@@ -45,33 +59,72 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
     hasNextPage,
     isFetchingNextPage,
     isFetchNextPageError,
-    isPending: isMangaPending,
+    isPending: isLibraryPending,
   } = useAllLibraryMangaInfiniteQuery()
 
-  const items = useMemo(() => {
-    const map = new Map<number, LibraryItem>()
-
-    data?.pages.forEach((page) => {
-      page.items.forEach((item) => {
-        if (!map.has(item.mangaId)) {
-          map.set(item.mangaId, item)
-        }
-      })
-    })
-
-    return Array.from(map.values())
-  }, [data])
-
+  const libraryItems = mergeUniqueLibraryItems(data?.pages)
+  const mangaIds = libraryItems.map((item) => item.mangaId)
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds })
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
+  const isInitialLoading = libraryItems.length === 0 && isLibraryPending
 
-  const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage: canAutoLoadMore,
-    isFetchingNextPage,
-    fetchNextPage,
-  })
+  const items: AllLibraryMangaItem[] = libraryItems.map((libraryItem) => ({
+    key: `manga-${libraryItem.mangaId}`,
+    libraryItem,
+    type: 'manga',
+  }))
 
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
-  const isInitialLoading = items.length === 0 && isMangaPending
+  if (isFetchingNextPage) {
+    items.push({
+      key: 'loading-skeleton',
+      type: 'loading',
+    })
+  }
+
+  const header = (
+    <>
+      <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
+      <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
+        <ViewToggle initialView={initialView} />
+      </div>
+    </>
+  )
+
+  const footer = (
+    <>
+      {isFetchNextPageError && (
+        <div className="flex justify-center py-4">
+          <LoadMoreRetryButton onRetry={fetchNextPage} />
+        </div>
+      )}
+      <MobileNavigationSpacer />
+    </>
+  )
+
+  function renderItem(item: AllLibraryMangaItem, index: number) {
+    if (item.type === 'loading') {
+      return <MangaCardSkeleton className="m-1 w-[calc(100%-0.5rem)]" variant={view} />
+    }
+
+    const { library, mangaId } = item.libraryItem
+    const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
+
+    return (
+      <div className="relative m-1 rounded-xl overflow-hidden">
+        <CensoredManga mangaId={mangaId} />
+        <MangaCard className="h-full" index={index} manga={manga} variant={view} />
+        <Link
+          className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-900/90 border border-zinc-700 shadow hover:bg-zinc-800 transition"
+          href={`/library/${library.id}`}
+          prefetch={false}
+          style={{ borderColor: library.color ?? '' }}
+        >
+          {library.icon && <span className="text-xs">{library.icon}</span>}
+          <span className="text-xs font-medium truncate max-w-[100px]">{library.name}</span>
+        </Link>
+      </div>
+    )
+  }
 
   function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
     setView(getViewFromSearchParams(searchParams))
@@ -87,7 +140,7 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
     )
   }
 
-  if (items.length === 0) {
+  if (libraryItems.length === 0) {
     return (
       <div className="h-full flex-1 flex flex-col items-center justify-center text-center px-4">
         <h1 className="sr-only">공개 서재 둘러보기</h1>
@@ -101,34 +154,38 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
   return (
     <>
       <SearchParamsSync onUpdate={handleViewUpdate} />
-      <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
-      <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
-        <ViewToggle initialView={initialView} />
-      </div>
-      <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
-        {items.map(({ library, mangaId }, index) => {
-          const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
-
-          return (
-            <div className="relative rounded-xl overflow-hidden" key={mangaId}>
-              <CensoredManga mangaId={mangaId} />
-              <MangaCard className="h-full" index={index} manga={manga} variant={view} />
-              <Link
-                className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-900/90 border border-zinc-700 shadow-lg hover:bg-zinc-800 transition"
-                href={`/library/${library.id}`}
-                prefetch={false}
-                style={{ borderColor: library.color ?? '' }}
-              >
-                {library.icon && <span className="text-xs">{library.icon}</span>}
-                <span className="text-xs font-medium truncate max-w-[100px]">{library.name}</span>
-              </Link>
-            </div>
-          )
-        })}
-        {isFetchingNextPage && <MangaCardSkeleton variant={view} />}
-      </div>
-      {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
-      {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
+      <VirtualMangaGrid
+        fetchNextPage={fetchNextPage}
+        footer={footer}
+        hasNextPage={canAutoLoadMore}
+        header={header}
+        isFetchingNextPage={isFetchingNextPage}
+        itemGap={8}
+        items={items}
+        measurementKey={view}
+        onScrollElementChange={setNavigationAutoHideScrollElement}
+        renderItem={renderItem}
+        scrollRestorationKey={`library:public:${view}`}
+        view={view}
+      />
     </>
   )
+}
+
+function mergeUniqueLibraryItems(pages?: { items: LibraryItem[] }[]) {
+  const seen = new Set<number>()
+  const items: LibraryItem[] = []
+
+  for (const page of pages ?? []) {
+    for (const item of page.items) {
+      if (seen.has(item.mangaId)) {
+        continue
+      }
+
+      seen.add(item.mangaId)
+      items.push(item)
+    }
+  }
+
+  return items
 }
