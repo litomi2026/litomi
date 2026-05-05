@@ -6,7 +6,7 @@ import type { ImageWithVariants } from '@/types/manga'
 import { showAdultVerificationRecommendedToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { downloadMultipleImages, DownloadNotSupportedError } from '@/utils/download'
+import { downloadMultipleImages } from '@/utils/download'
 import { createLitomiProxyMangaImageURL, createThirdPartyMangaImageURLs } from '@/utils/image-proxy'
 
 // Supported image extensions
@@ -69,8 +69,6 @@ export function useDownload({ manga }: Props) {
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         toast.info('다운로드가 취소됐어요')
-      } else if (error instanceof DownloadNotSupportedError) {
-        toast.error(error.message)
       } else if (navigator.onLine === false) {
         toast.error('네트워크 연결을 확인해 주세요')
       } else {

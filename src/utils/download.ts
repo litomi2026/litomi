@@ -24,14 +24,26 @@ type Options = {
   onProgress?: (completed: number) => void
 }
 
+type ZipArchiveWriter = {
+  add(filename: string, reader: ReadableStream<Uint8Array>, options: { signal: AbortSignal }): Promise<unknown>
+  close(): Promise<unknown>
+}
+
 const MAX_DOWNLOAD_CONCURRENT_REQUESTS = 4
 const MAX_DOWNLOAD_REQUESTS_PER_SECOND = 4
 const DOWNLOAD_REQUEST_INTERVAL_MS = 1000
 const DEFAULT_429_RETRY_DELAY_MS = 1000
 const MAX_429_RETRIES = 3
 
+const ZIP_OPTIONS: ZipWriterConstructorOptions = {
+  level: 0,
+  useWebWorkers: false,
+  zip64: true,
+}
+
 const downloadConcurrencyLimit = pLimit(MAX_DOWNLOAD_CONCURRENT_REQUESTS)
 const importZipWriter = () => import('@zip.js/zip.js/lib/zip-core-writer.js')
+const importBlobFallback = () => import('./download-blob-fallback')
 
 const downloadThrottle = pThrottle({
   limit: MAX_DOWNLOAD_REQUESTS_PER_SECOND,
@@ -62,14 +74,6 @@ type SaveFilePicker = (options?: {
   }>
 }) => Promise<FileSystemFileHandle>
 
-export class DownloadNotSupportedError extends Error {
-  readonly name = 'DownloadNotSupportedError'
-
-  constructor() {
-    super('현재 브라우저는 대용량 ZIP 다운로드를 지원하지 않아요. Chrome 또는 Edge에서 다시 시도해 주세요.')
-  }
-}
-
 export function downloadBlob(blob: Blob, filename: string) {
   const blobURL = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -80,10 +84,31 @@ export function downloadBlob(blob: Blob, filename: string) {
 }
 
 export async function downloadMultipleImages({ filename, images, onProgress }: Options) {
+  const downloadFilename = `${sanitizeDownloadFilename(filename)}.zip`
   const saveFilePicker = getSaveFilePicker()
 
+  if (!saveFilePicker) {
+    const { createBlobFallbackZipWriter } = await importBlobFallback()
+
+    const zip = await createBlobFallbackZipWriter({
+      filename: downloadFilename,
+      options: ZIP_OPTIONS,
+    })
+
+    const abortController = new AbortController()
+
+    try {
+      await downloadImagesToZip({ abortController, images, onProgress, zip })
+    } catch (error) {
+      abortController.abort(error)
+      throw error
+    }
+
+    return
+  }
+
   const zipFileHandle = await saveFilePicker({
-    suggestedName: `${sanitizeDownloadFilename(filename)}.zip`,
+    suggestedName: downloadFilename,
     types: [
       {
         description: 'ZIP archive',
@@ -92,72 +117,87 @@ export async function downloadMultipleImages({ filename, images, onProgress }: O
     ],
   })
 
-  const zipOptions: ZipWriterConstructorOptions = {
-    level: 0,
-    useWebWorkers: false,
-    zip64: images.length > 100,
-  }
-
   const writable = await zipFileHandle.createWritable()
   const abortController = new AbortController()
 
+  try {
+    const { ZipWriter } = await importZipWriter()
+    const zip = new ZipWriter(writable, ZIP_OPTIONS)
+    await downloadImagesToZip({ abortController, images, onProgress, zip })
+  } catch (error) {
+    abortController.abort(error)
+    await writable.abort(error).catch(() => undefined)
+    throw error
+  }
+}
+
+async function downloadImage(image: Options['images'][number], signal: AbortSignal): Promise<DownloadResult> {
+  try {
+    const response = await fetchDownloadResponse(image.urls?.length ? image.urls : (image.url ?? ''), signal)
+    const blob = await response.blob()
+    return { blob, image, ok: true }
+  } catch (error) {
+    return { error, image, ok: false }
+  }
+}
+
+async function downloadImagesToZip({
+  abortController,
+  images,
+  onProgress,
+  zip,
+}: Pick<Options, 'images' | 'onProgress'> & {
+  abortController: AbortController
+  zip: ZipArchiveWriter
+}) {
   let completed = 0
   let successCount = 0
   let nextDownloadIndex = 0
   let nextWriteIndex = 0
   const inFlightDownloads = new Map<number, Promise<DownloadResult>>()
 
-  try {
-    const { ZipWriter } = await importZipWriter()
-    const zip = new ZipWriter(writable, zipOptions)
+  startDownloads()
+
+  while (nextWriteIndex < images.length) {
+    const download = inFlightDownloads.get(nextWriteIndex)
+    if (!download) {
+      break
+    }
+
+    const result = await download
+    inFlightDownloads.delete(nextWriteIndex)
+    nextWriteIndex++
+
+    if (!result.ok) {
+      toast.error(
+        `다운로드 실패: ${result.image.filename}: ${result.error instanceof Error ? result.error.message : result.error}`,
+      )
+
+      completed++
+      onProgress?.(completed)
+      startDownloads()
+      continue
+    }
+
+    try {
+      await zip.add(result.image.filename, result.blob.stream(), { signal: abortController.signal })
+      successCount++
+    } catch (error) {
+      abortController.abort(error)
+      throw new Error(`ZIP 저장 실패: ${result.image.filename}: ${error instanceof Error ? error.message : error}`)
+    } finally {
+      completed++
+      onProgress?.(completed)
+    }
 
     startDownloads()
-
-    while (nextWriteIndex < images.length) {
-      const download = inFlightDownloads.get(nextWriteIndex)
-      if (!download) {
-        break
-      }
-
-      const result = await download
-      inFlightDownloads.delete(nextWriteIndex)
-      nextWriteIndex++
-
-      if (!result.ok) {
-        toast.error(
-          `다운로드 실패: ${result.image.filename}: ${result.error instanceof Error ? result.error.message : result.error}`,
-        )
-
-        completed++
-        onProgress?.(completed)
-        startDownloads()
-        continue
-      }
-
-      try {
-        await zip.add(result.image.filename, result.blob.stream(), { signal: abortController.signal })
-        successCount++
-      } catch (error) {
-        abortController.abort(error)
-        throw new Error(`ZIP 저장 실패: ${result.image.filename}: ${error instanceof Error ? error.message : error}`)
-      } finally {
-        completed++
-        onProgress?.(completed)
-      }
-
-      startDownloads()
-    }
-
-    if (successCount === 0) {
-      throw new Error('모든 이미지를 다운로드할 수 없어요')
-    }
-
-    await zip.close()
-  } catch (error) {
-    abortController.abort(error)
-    await writable.abort(error).catch(() => undefined)
-    throw error
   }
+
+  if (successCount === 0) {
+    throw new Error('모든 이미지를 다운로드할 수 없어요')
+  }
+
+  await zip.close()
 
   function startDownloads() {
     while (
@@ -173,16 +213,6 @@ export async function downloadMultipleImages({ filename, images, onProgress }: O
         downloadConcurrencyLimit(() => downloadImage(image, abortController.signal)),
       )
     }
-  }
-}
-
-async function downloadImage(image: Options['images'][number], signal: AbortSignal): Promise<DownloadResult> {
-  try {
-    const response = await fetchDownloadResponse(image.urls?.length ? image.urls : (image.url ?? ''), signal)
-    const blob = await response.blob()
-    return { blob, image, ok: true }
-  } catch (error) {
-    return { error, image, ok: false }
   }
 }
 
@@ -257,11 +287,11 @@ function getRetryAfterMs(retryAfterHeader: string | null): number {
   return Math.max(0, retryAfterDate - Date.now())
 }
 
-function getSaveFilePicker(): SaveFilePicker {
+function getSaveFilePicker(): SaveFilePicker | undefined {
   const saveFilePicker = (window as Window & { showSaveFilePicker?: SaveFilePicker }).showSaveFilePicker
 
   if (!window.isSecureContext || !saveFilePicker) {
-    throw new DownloadNotSupportedError()
+    return
   }
 
   return saveFilePicker.bind(window)
