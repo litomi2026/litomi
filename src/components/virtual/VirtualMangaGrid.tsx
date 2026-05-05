@@ -2,10 +2,11 @@
 
 import type { ListImperativeAPI } from 'react-window'
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { List, useDynamicRowHeight } from 'react-window'
 import { twMerge } from 'tailwind-merge'
 
+import { useIsomorphicLayoutEffect } from '@/hook/useIsomorphicLayoutEffect'
 import { View } from '@/utils/param'
 import { MANGA_GRID_COLUMN_MIN_WIDTH_CLASS, readMangaGridColumnMinWidth } from '@/utils/style'
 
@@ -25,12 +26,11 @@ import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './Vi
 import VirtualMangaGridRow from './VirtualMangaGridRow'
 
 const DEFAULT_OVERSCAN_COUNT = 3
-const DEFAULT_PRELOAD_ROW_COUNT = 2
+const DEFAULT_PRELOAD_ROW_COUNT = 1
 const DEFAULT_HEIGHT = 640
 const IMAGE_ITEM_ASPECT_HEIGHT_RATIO = 7 / 5
-const CARD_THUMBNAIL_ASPECT_HEIGHT_RATIO = 4 / 3
+const CARD_ITEM_ASPECT_HEIGHT_RATIO = 4 / 3
 const ESTIMATED_CARD_BODY_HEIGHT_PX = 420
-const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 type VirtualMangaGridBodyProps<TItem extends VirtualMangaGridItem> = VirtualMangaGridProps<TItem> & {
   size: VirtualMangaGridSize
@@ -126,7 +126,7 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   const estimatedItemRowHeight =
     view === View.IMAGE
       ? Math.round(columnWidth * IMAGE_ITEM_ASPECT_HEIGHT_RATIO)
-      : Math.round(columnWidth * CARD_THUMBNAIL_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX)
+      : Math.round(columnWidth * CARD_ITEM_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX)
 
   const itemRows = useMemo(() => chunkVirtualMangaGridItems(items, columnCount), [items, columnCount])
 
