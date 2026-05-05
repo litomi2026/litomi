@@ -18,10 +18,7 @@ import type {
   VirtualMangaGridSize,
 } from './VirtualMangaGrid.types'
 
-import {
-  useVirtualMangaGridScrollRestoration,
-  type VirtualMangaGridScrollAnchor,
-} from './VirtualMangaGrid.scrollRestoration'
+import { useVirtualScrollRestoration, type VirtualScrollAnchor } from './VirtualMangaGrid.scrollRestoration'
 import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './VirtualMangaGrid.utils'
 import VirtualMangaGridRow from './VirtualMangaGridRow'
 
@@ -162,8 +159,8 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     [columnCount, footer, header, renderItem, rows],
   )
 
-  const scrollAnchors = useMemo<VirtualMangaGridScrollAnchor[]>(() => {
-    const anchors: VirtualMangaGridScrollAnchor[] = []
+  const scrollAnchors = useMemo<VirtualScrollAnchor[]>(() => {
+    const anchors: VirtualScrollAnchor[] = []
 
     rows.forEach((row, rowIndex) => {
       if (row.type !== 'items') {
@@ -181,7 +178,7 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     return anchors
   }, [rows])
 
-  const { saveScrollSnapshot } = useVirtualMangaGridScrollRestoration({
+  const { saveScrollSnapshot } = useVirtualScrollRestoration({
     anchors: scrollAnchors,
     list,
     restorationKey: scrollRestorationKey,

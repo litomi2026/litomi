@@ -6,31 +6,31 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 
 import { useIsomorphicLayoutEffect } from '@/hook/useIsomorphicLayoutEffect'
 
-const ROW_INDEX_ATTRIBUTE = 'data-virtual-manga-row-index'
-const STORAGE_PREFIX = 'manga-grid-scroll'
+const ROW_INDEX_ATTRIBUTE = 'data-virtual-row-index'
+const STORAGE_PREFIX = 'virtual-scroll'
 const RESTORE_MAX_DURATION_MS = 1200
 const RESTORE_STABLE_FRAME_COUNT = 6
 const SCROLL_SNAPSHOT_SAVE_INTERVAL_MS = 250
 
-export type VirtualMangaGridScrollAnchor = {
+export type VirtualScrollAnchor = {
   itemKey: string
   rowIndex: number
 }
 
 type Options = {
-  anchors: readonly VirtualMangaGridScrollAnchor[]
+  anchors: readonly VirtualScrollAnchor[]
   list: ListImperativeAPI | null
   restorationKey: string
 }
 
-type VirtualMangaGridScrollSnapshot = {
+type VirtualScrollSnapshot = {
   itemKey: string | null
   itemOffset: number
   scrollTop: number
 }
 
-export function useVirtualMangaGridScrollRestoration({ anchors, list, restorationKey }: Options) {
-  const latestSnapshotRef = useRef<VirtualMangaGridScrollSnapshot | null>(null)
+export function useVirtualScrollRestoration({ anchors, list, restorationKey }: Options) {
+  const pendingSnapshotRef = useRef<VirtualScrollSnapshot | null>(null)
   const restoredStorageKeyRef = useRef<string | null>(null)
 
   const scrollElement = list?.element ?? null
@@ -60,30 +60,24 @@ export function useVirtualMangaGridScrollRestoration({ anchors, list, restoratio
   )
 
   const saveSnapshot = useCallback(
-    (snapshot: VirtualMangaGridScrollSnapshot | null) => {
+    (snapshot: VirtualScrollSnapshot | null) => {
       if (!snapshot) {
         return
       }
 
-      latestSnapshotRef.current = snapshot
-      writeVirtualMangaGridScrollSnapshot(storageKey, snapshot)
+      pendingSnapshotRef.current = snapshot
+      writeVirtualScrollSnapshot(storageKey, snapshot)
     },
     [storageKey],
   )
 
   const saveScrollSnapshot = useCallback(
-    (targetElement?: HTMLElement | null) => {
-      const snapshot = targetElement
-        ? getVirtualMangaGridScrollSnapshot(targetElement, getItemKeyByRowIndex)
-        : latestSnapshotRef.current
-
-      saveSnapshot(snapshot)
-    },
+    (targetElement: HTMLElement) => saveSnapshot(getVirtualScrollSnapshot(targetElement, getItemKeyByRowIndex)),
     [getItemKeyByRowIndex, saveSnapshot],
   )
 
   useEffect(() => {
-    latestSnapshotRef.current = null
+    pendingSnapshotRef.current = null
   }, [storageKey])
 
   useEffect(() => {
@@ -109,12 +103,12 @@ export function useVirtualMangaGridScrollRestoration({ anchors, list, restoratio
     }
 
     function captureLatestSnapshot() {
-      latestSnapshotRef.current = getVirtualMangaGridScrollSnapshot(element, getItemKeyByRowIndex)
+      pendingSnapshotRef.current = getVirtualScrollSnapshot(element, getItemKeyByRowIndex)
     }
 
     function saveNowFromElement() {
       lastSavedAt = Date.now()
-      saveSnapshot(getVirtualMangaGridScrollSnapshot(element, getItemKeyByRowIndex))
+      saveSnapshot(getVirtualScrollSnapshot(element, getItemKeyByRowIndex))
     }
 
     function scheduleSave() {
@@ -150,7 +144,7 @@ export function useVirtualMangaGridScrollRestoration({ anchors, list, restoratio
 
     return () => {
       cancelScheduledSave()
-      saveSnapshot(latestSnapshotRef.current)
+      saveSnapshot(pendingSnapshotRef.current)
       element.removeEventListener('scroll', scheduleSave)
       window.removeEventListener('pagehide', saveNowFromElement)
     }
@@ -161,7 +155,7 @@ export function useVirtualMangaGridScrollRestoration({ anchors, list, restoratio
       return
     }
 
-    const snapshot = readVirtualMangaGridScrollSnapshot(storageKey)
+    const snapshot = readVirtualScrollSnapshot(storageKey)
 
     if (!snapshot) {
       restoredStorageKeyRef.current = storageKey
@@ -176,29 +170,30 @@ export function useVirtualMangaGridScrollRestoration({ anchors, list, restoratio
 
     restoredStorageKeyRef.current = storageKey
 
-    function getRowIndexByItemKey(itemKey: string) {
-      return rowIndexByItemKey.get(itemKey) ?? null
-    }
-
-    return restoreVirtualMangaGridScrollSnapshot({ element, getRowIndexByItemKey, list, snapshot })
+    return restoreVirtualScrollSnapshot({
+      element,
+      getRowIndexByItemKey: (itemKey: string) => rowIndexByItemKey.get(itemKey) ?? null,
+      list,
+      snapshot,
+    })
   }, [list, rowIndexByItemKey, scrollElement, storageKey])
 
   return { saveScrollSnapshot }
 }
 
-function getFirstVisibleVirtualMangaGridRow(element: HTMLElement) {
+function getFirstVisibleVirtualRow(element: HTMLElement) {
   const scrollTop = Math.max(0, element.scrollTop)
   const rows = element.querySelectorAll<HTMLElement>(`[${ROW_INDEX_ATTRIBUTE}]`)
 
   for (const row of rows) {
-    const index = getVirtualMangaGridRowIndex(row)
+    const index = getVirtualRowIndex(row)
 
     if (index === null) {
       continue
     }
 
-    const top = getVirtualMangaGridRowTop(row)
-    const height = getVirtualMangaGridRowHeight(row)
+    const top = getVirtualRowTop(row)
+    const height = getVirtualRowHeight(row)
 
     if (top + height > scrollTop) {
       return { index, top }
@@ -208,29 +203,29 @@ function getFirstVisibleVirtualMangaGridRow(element: HTMLElement) {
   return null
 }
 
-function getVirtualMangaGridRow(element: HTMLElement, rowIndex: number) {
+function getVirtualRow(element: HTMLElement, rowIndex: number) {
   return element.querySelector<HTMLElement>(`[${ROW_INDEX_ATTRIBUTE}="${rowIndex}"]`)
 }
 
-function getVirtualMangaGridRowHeight(row: HTMLElement) {
+function getVirtualRowHeight(row: HTMLElement) {
   return row.offsetHeight || row.getBoundingClientRect().height
 }
 
-function getVirtualMangaGridRowIndex(row: HTMLElement) {
+function getVirtualRowIndex(row: HTMLElement) {
   const index = Number(row.getAttribute(ROW_INDEX_ATTRIBUTE))
   return Number.isSafeInteger(index) && index >= 0 ? index : null
 }
 
-function getVirtualMangaGridRowTop(row: HTMLElement) {
+function getVirtualRowTop(row: HTMLElement) {
   return parseTranslateYPixelValue(row.style.transform) ?? row.offsetTop
 }
 
-function getVirtualMangaGridScrollSnapshot(
+function getVirtualScrollSnapshot(
   element: HTMLElement,
   getItemKeyByRowIndex: (rowIndex: number) => string | null,
-): VirtualMangaGridScrollSnapshot {
+): VirtualScrollSnapshot {
   const scrollTop = Math.max(0, element.scrollTop)
-  const row = getFirstVisibleVirtualMangaGridRow(element)
+  const row = getFirstVisibleVirtualRow(element)
 
   return {
     itemKey: row ? getItemKeyByRowIndex(row.index) : null,
@@ -254,13 +249,13 @@ function parseTranslateYPixelValue(value: string) {
   return Number.isFinite(parsed) ? parsed : null
 }
 
-function parseVirtualMangaGridScrollSnapshot(raw: string | null): VirtualMangaGridScrollSnapshot | null {
+function parseVirtualScrollSnapshot(raw: string | null): VirtualScrollSnapshot | null {
   if (!raw) {
     return null
   }
 
   try {
-    const parsed = JSON.parse(raw) as Partial<VirtualMangaGridScrollSnapshot>
+    const parsed = JSON.parse(raw) as Partial<VirtualScrollSnapshot>
     const itemKey = parsed.itemKey
 
     if (!isSafeScrollNumber(parsed.scrollTop) || !isSafeScrollNumber(parsed.itemOffset)) {
@@ -277,15 +272,15 @@ function parseVirtualMangaGridScrollSnapshot(raw: string | null): VirtualMangaGr
   }
 }
 
-function readVirtualMangaGridScrollSnapshot(storageKey: string) {
+function readVirtualScrollSnapshot(storageKey: string) {
   try {
-    return parseVirtualMangaGridScrollSnapshot(window.sessionStorage.getItem(storageKey))
+    return parseVirtualScrollSnapshot(window.sessionStorage.getItem(storageKey))
   } catch {
     return null
   }
 }
 
-function restoreVirtualMangaGridScrollSnapshot({
+function restoreVirtualScrollSnapshot({
   element,
   getRowIndexByItemKey,
   list,
@@ -294,7 +289,7 @@ function restoreVirtualMangaGridScrollSnapshot({
   element: HTMLElement
   getRowIndexByItemKey: (itemKey: string) => number | null
   list: ListImperativeAPI
-  snapshot: VirtualMangaGridScrollSnapshot
+  snapshot: VirtualScrollSnapshot
 }) {
   const startedAt = performance.now()
   let frameId: number | null = null
@@ -326,13 +321,13 @@ function restoreVirtualMangaGridScrollSnapshot({
       return snapshot.scrollTop
     }
 
-    const row = getVirtualMangaGridRow(element, rowIndex)
+    const row = getVirtualRow(element, rowIndex)
 
     if (!row) {
       return null
     }
 
-    return Math.max(0, getVirtualMangaGridRowTop(row) + snapshot.itemOffset)
+    return Math.max(0, getVirtualRowTop(row) + snapshot.itemOffset)
   }
 
   function scrollAnchorRowIntoView() {
@@ -391,7 +386,7 @@ function restoreVirtualMangaGridScrollSnapshot({
   }
 }
 
-function writeVirtualMangaGridScrollSnapshot(storageKey: string, snapshot: VirtualMangaGridScrollSnapshot) {
+function writeVirtualScrollSnapshot(storageKey: string, snapshot: VirtualScrollSnapshot) {
   try {
     window.sessionStorage.setItem(storageKey, JSON.stringify(snapshot))
   } catch {
