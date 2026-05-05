@@ -22,7 +22,7 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
 
   return (
     <>
-      <NavigationWithMobileMenu className="fixed sm:sticky top-0 left-0 right-0 z-10 border-b-2 sm:backdrop-blur bg-background sm:bg-background/75">
+      <NavigationWithMobileMenu className="fixed sm:sticky top-0 left-0 right-0 z-10 border-b sm:backdrop-blur bg-background sm:bg-background/75">
         <div
           className="grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground
            sm:[&_a]:bg-background/50 sm:[&_a]:hover:bg-foreground/10"
@@ -39,7 +39,7 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
       </NavigationWithMobileMenu>
       <div className="h-26 sm:hidden" />
       <h2 className="sr-only">이야기 목록</h2>
-      <PostCreationForm className="flex p-4 border-b-2" placeholder="무슨 일이 일어나고 있나요?" />
+      <PostCreationForm className="flex p-4 border-b" placeholder="무슨 일이 일어나고 있나요?" />
       {children}
     </>
   )

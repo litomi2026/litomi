@@ -71,10 +71,10 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
   }
 
   return (
-    <div className="flex-1 p-2 md:p-4">
-      <div className="grid grid-cols-1 gap-x-2 md:gap-x-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4" role="feed">
+    <div className="flex-1 p-2 md:p-3">
+      <div className="grid grid-cols-1 gap-x-2 sm:grid-cols-2 md:gap-x-3 md:grid-cols-3 xl:grid-cols-4" role="feed">
         {masonryColumns.map((columnPosts, columnIndex) => (
-          <div className="flex flex-col gap-2 md:gap-4" key={columnIndex}>
+          <div className="flex flex-col gap-2 md:gap-3" key={columnIndex}>
             {columnPosts.map((post) => (
               <PostCard key={post.id} post={post} showMangaCover={showMangaCover} />
             ))}

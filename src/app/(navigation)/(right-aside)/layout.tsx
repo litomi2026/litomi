@@ -11,10 +11,10 @@ export default function Layout({ children }: LayoutProps<'/'>) {
 
   return (
     <div className="grid min-h-full grow lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="flex min-w-0 flex-col lg:border-r-2">{children}</div>
+      <div className="flex min-w-0 flex-col lg:border-r">{children}</div>
       <aside aria-label="일간 조회 순위" className="hidden min-w-0 lg:block">
         <div className="sticky top-0 flex h-dvh flex-col overflow-y-auto scrollbar-hidden">
-          <div className="sticky top-0 z-20 border-b-2 bg-background/85 px-3 py-3 backdrop-blur">
+          <div className="sticky top-0 z-20 border-b bg-background/85 px-3 py-3 backdrop-blur">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
                 <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-zinc-700/80 bg-zinc-900/80 text-brand shadow-sm">
