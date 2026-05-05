@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 import type { KeywordPromotion } from '@/sponsor'
@@ -63,44 +63,73 @@ export default function SearchResult({ header }: Props) {
     error,
   } = useSearchQuery()
 
-  const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
-  const promotion = useMemo(() => data?.pages[0]?.promotion, [data])
-
+  const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
+  const promotion = data?.pages[0]?.promotion
   const measurementKey = searchParams.toString()
   const scrollRestorationKey = `search-results:${measurementKey}`
   const showRefreshButton = searchParams.get('sort') === 'random'
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
+  const shouldShowPromotion = view === View.CARD && promotion
+  const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
+  const showAnyFooterAction = showRetry || showRefreshButton
+  const items: SearchResultItem[] = []
 
-  const items = useMemo<SearchResultItem[]>(() => {
-    const nextItems: SearchResultItem[] = []
-    const shouldShowPromotion = view === View.CARD && promotion
-
-    for (const [mangaIndex, manga] of mangas.entries()) {
-      if (shouldShowPromotion && mangaIndex === (promotion.position ?? 0)) {
-        nextItems.push({
-          key: `promotion-${promotion.id}`,
-          promotion,
-          type: 'promotion',
-        })
-      }
-
-      nextItems.push({
-        key: `manga-${manga.id}`,
-        manga,
-        mangaIndex,
-        type: 'manga',
+  for (const [mangaIndex, manga] of mangas.entries()) {
+    if (shouldShowPromotion && mangaIndex === (promotion.position ?? 0)) {
+      items.push({
+        key: `promotion-${promotion.id}`,
+        promotion,
+        type: 'promotion',
       })
     }
 
-    if (isFetchingNextPage) {
-      nextItems.push({
-        key: 'loading-skeleton',
-        type: 'loading',
-      })
-    }
+    items.push({
+      key: `manga-${manga.id}`,
+      manga,
+      mangaIndex,
+      type: 'manga',
+    })
+  }
 
-    return nextItems
-  }, [isFetchingNextPage, mangas, promotion, view])
+  if (isFetchingNextPage) {
+    items.push({
+      key: 'loading-skeleton',
+      type: 'loading',
+    })
+  }
+
+  const headerWithSpacer = (
+    <>
+      <SearchHeaderSpacer />
+      {header}
+    </>
+  )
+
+  const footer = showAnyFooterAction ? (
+    <div className="flex flex-col items-center gap-2 py-4">
+      {showRetry && <LoadMoreRetryButton onRetry={isFetchNextPageError ? fetchNextPage : refetch} />}
+      {showRefreshButton && (
+        <RandomRefreshButton
+          className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition"
+          isLoading={isRefetching}
+          onClick={async () => {
+            await refetch()
+            setScrollToOptions({ top: 0 })
+          }}
+          timer={1}
+        />
+      )}
+    </div>
+  ) : (
+    <div aria-hidden className="hidden h-4 sm:block" />
+  )
+
+  const footerWithSpacer = (
+    <>
+      {footer}
+      <MobileNavigationSpacer />
+    </>
+  )
 
   function renderItem(item: SearchResultItem) {
     switch (item.type) {
@@ -112,52 +141,6 @@ export default function SearchResult({ header }: Props) {
         return <MangaCardPromotion promotion={item.promotion} />
     }
   }
-
-  const headerWithSpacer = useMemo(
-    () => (
-      <>
-        <SearchHeaderSpacer />
-        {header}
-      </>
-    ),
-    [header],
-  )
-
-  const footer = useMemo(() => {
-    const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
-    const showAnyFooterAction = showRetry || showRefreshButton
-
-    if (!showAnyFooterAction) {
-      return <div aria-hidden className="hidden h-4 sm:block" />
-    }
-
-    return (
-      <div className="flex flex-col items-center gap-2 py-4">
-        {showRetry && <LoadMoreRetryButton onRetry={isFetchNextPageError ? fetchNextPage : refetch} />}
-        {showRefreshButton && (
-          <RandomRefreshButton
-            className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition"
-            isLoading={isRefetching}
-            onClick={async () => {
-              await refetch()
-              setScrollToOptions({ top: 0 })
-            }}
-            timer={1}
-          />
-        )}
-      </div>
-    )
-  }, [fetchNextPage, isFetchNextPageError, isRefetchError, isRefetching, mangas.length, refetch, showRefreshButton])
-
-  const footerWithSpacer = useMemo(
-    () => (
-      <>
-        {footer}
-        <MobileNavigationSpacer />
-      </>
-    ),
-    [footer],
-  )
 
   if (isLoading) {
     return <SearchResultLoading view={view} />
