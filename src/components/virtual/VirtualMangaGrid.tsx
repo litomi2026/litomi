@@ -106,11 +106,12 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   overscanCount = DEFAULT_OVERSCAN_COUNT,
   preloadRowCount = DEFAULT_PRELOAD_ROW_COUNT,
   renderItem,
+  scrollRestorationKey,
   scrollToTopSignal,
   size,
   view,
 }: VirtualMangaGridBodyProps<TItem>) {
-  const listRef = useRef<ListImperativeAPI | null>(null)
+  const [list, setList] = useState<ListImperativeAPI | null>(null)
   const fetchInFlightRef = useRef(false)
   const lastScrollToTopSignalRef = useRef(scrollToTopSignal)
 
@@ -184,16 +185,8 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
 
   const setListRef = useCallback(
     (list: ListImperativeAPI | null) => {
-      const previousElement = listRef.current?.element ?? null
-      const element = list?.element ?? null
-
-      listRef.current = list
-
-      if (previousElement === element) {
-        return
-      }
-
-      onScrollElementChange?.(element)
+      setList(list)
+      onScrollElementChange?.(list?.element ?? null)
     },
     [onScrollElementChange],
   )
@@ -206,7 +199,7 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
 
     lastScrollToTopSignalRef.current = scrollToTopSignal
 
-    const element = listRef.current?.element
+    const element = list?.element
 
     if (!element) {
       return
