@@ -19,7 +19,7 @@ export default async function PublicLibrarySection({ mangaId }: Props) {
   }
 
   return (
-    <div className="border-b-2 p-4">
+    <div className="border-b p-4">
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
         <Library className="size-4" />이 작품이 포함된 공개 서재
       </h3>
