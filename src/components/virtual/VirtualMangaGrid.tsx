@@ -118,12 +118,12 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   const itemRowStartIndex = header ? 1 : 0
   const minColumnWidth = size.minColumnWidth
   const columnCount = getVirtualMangaGridColumnCount(size.width, minColumnWidth, itemGap)
-  const columnWidth = Math.max(minColumnWidth, size.width / Math.max(1, columnCount) - itemGap)
+  const columnWidth = Math.max(1, (size.width - itemGap * (columnCount + 1)) / Math.max(1, columnCount))
 
   const estimatedItemRowHeight =
-    view === View.IMAGE
+    (view === View.IMAGE
       ? Math.round(columnWidth * IMAGE_ITEM_ASPECT_HEIGHT_RATIO)
-      : Math.round(columnWidth * CARD_ITEM_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX)
+      : Math.round(columnWidth * CARD_ITEM_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX)) + itemGap
 
   const itemRows = useMemo(() => chunkVirtualMangaGridItems(items, columnCount), [items, columnCount])
 
@@ -153,10 +153,11 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
       columnCount,
       footer,
       header,
+      itemGap,
       renderItem,
       rows,
     }),
-    [columnCount, footer, header, renderItem, rows],
+    [columnCount, footer, header, itemGap, renderItem, rows],
   )
 
   const scrollAnchors = useMemo<VirtualScrollAnchor[]>(() => {

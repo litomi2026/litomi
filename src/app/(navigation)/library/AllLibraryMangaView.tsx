@@ -103,14 +103,14 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
 
   function renderItem(item: AllLibraryMangaItem, index: number) {
     if (item.type === 'loading') {
-      return <MangaCardSkeleton className="m-1 w-[calc(100%-0.5rem)]" variant={view} />
+      return <MangaCardSkeleton variant={view} />
     }
 
     const { library, mangaId } = item.libraryItem
     const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
     return (
-      <div className="relative m-1 rounded-xl overflow-hidden">
+      <div className="relative h-full rounded-xl overflow-hidden">
         <CensoredManga mangaId={mangaId} />
         <MangaCard className="h-full" index={index} manga={manga} variant={view} />
         <Link

@@ -124,16 +124,16 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
 
   function renderItem(item: BookmarkGridItem, index: number) {
     if (item.type === 'loading') {
-      return <MangaCardSkeleton className="m-1 w-[calc(100%-0.5rem)]" variant={view} />
+      return <MangaCardSkeleton variant={view} />
     }
 
     const manga = mangaMap.get(item.mangaId) ?? { id: item.mangaId, title: '불러오는 중', images: [] }
 
     if (!isSelectionMode) {
-      return <MangaCard className="m-1" index={index} manga={manga} variant={view} />
+      return <MangaCard index={index} manga={manga} variant={view} />
     }
 
-    return <SelectableMangaCard className="m-1" index={index} manga={manga} variant={view} />
+    return <SelectableMangaCard index={index} manga={manga} variant={view} />
   }
 
   if (data && bookmarkIds.length === 0 && !hasNextPage && !isFetchingNextPage && !isLoading) {
