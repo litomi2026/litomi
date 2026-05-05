@@ -12,6 +12,7 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 import type { ReadingHistorySource } from './common'
 
 import CensoredManga from '../CensoredManga'
+import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import NotFound from './NotFound'
@@ -46,6 +47,7 @@ export default function HistoryPageClient(props: Props) {
 
   return (
     <>
+      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <div className="grid gap-4">
         {groupedHistory?.map(([dateGroup, items]) => (
           <div key={dateGroup}>

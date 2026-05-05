@@ -1,9 +1,10 @@
 'use client'
 
 import { ReadonlyURLSearchParams } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
+import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 
 import {
   COLLECTION_ITEM_SORT_OPTIONS,
@@ -11,20 +12,31 @@ import {
   DEFAULT_COLLECTION_ITEM_SORT,
 } from '@/backend/api/v1/library/item-sort'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
+import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
+import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
-import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { getViewFromSearchParams, View } from '@/utils/param'
-import { MANGA_GRID_COLUMN } from '@/utils/style'
 
+import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
+
+type LibraryGridItem =
+  | (VirtualMangaGridItem & {
+      mangaId: number
+      type: 'manga'
+    })
+  | (VirtualMangaGridItem & {
+      type: 'loading'
+    })
 
 type Props = {
   library: {
@@ -47,8 +59,10 @@ export default function LibraryItemsClient({
 }: Props) {
   const [sort, setSort] = useState<CollectionItemSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
-  const { exit, isSelectionMode } = useLibrarySelection()
+  const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { data: me } = useMeQuery()
+  const { exit, isSelectionMode } = useLibrarySelection()
+  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
 
   const adultState = getAdultState(me)
   const canAccess = hasAdultAccess(adultState)
@@ -74,16 +88,23 @@ export default function LibraryItemsClient({
     sort: effectiveSort,
   })
 
-  const items = useMemo(() => itemsData?.pages.flatMap((page) => page.items) ?? [], [itemsData])
-  const canAutoLoadMore = !shouldBlockPrivate && hasNextPage && !isFetchNextPageError
-  const showLoadingSkeleton = (isLoading && items.length === 0) || isFetchingNextPage
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
+  const libraryItems = itemsData?.pages.flatMap((page) => page.items) ?? []
+  const canAutoLoadMore = !shouldBlockPrivate && Boolean(hasNextPage) && !isFetchNextPageError
+  const showLoadingSkeleton = (isLoading && libraryItems.length === 0) || isFetchingNextPage
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds: libraryItems.map((item) => item.mangaId) })
 
-  const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage: canAutoLoadMore,
-    isFetchingNextPage,
-    fetchNextPage,
-  })
+  const items = libraryItems.map<LibraryGridItem>(({ mangaId }) => ({
+    key: `manga-${mangaId}`,
+    mangaId,
+    type: 'manga',
+  }))
+
+  if (showLoadingSkeleton) {
+    items.push({
+      key: 'loading-skeleton',
+      type: 'loading',
+    })
+  }
 
   function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
     setView(getViewFromSearchParams(searchParams))
@@ -96,30 +117,13 @@ export default function LibraryItemsClient({
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
       window.history.replaceState(window.history.state, '', url)
+      setScrollToOptions({ top: 0 })
     }
   }
 
-  if (shouldBlockPrivate) {
-    return (
-      <AdultVerificationGate
-        description={`비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.`}
-        title="성인인증이 필요해요"
-        username={me?.name}
-      />
-    )
-  }
-
-  if (items.length === 0 && !isFetchingNextPage && !isLoading) {
-    return (
-      <div className="flex-1 flex flex-col justify-center items-center">
-        <p className="text-zinc-500">{`${libraryName} 서재가 비어 있어요`}</p>
-      </div>
-    )
-  }
-
-  return (
+  const header = (
     <>
-      <SearchParamsSync onUpdate={handleViewUpdate} />
+      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         {isOwner && (
           <select
@@ -136,20 +140,76 @@ export default function LibraryItemsClient({
         )}
         <ViewToggle initialView={initialView} />
       </div>
-      <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
-        {items.map(({ mangaId }, index) => {
-          const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
+    </>
+  )
 
-          if (!isSelectionMode) {
-            return <MangaCard index={index} key={mangaId} manga={manga} variant={view} />
-          }
+  const footer = (
+    <>
+      {isFetchNextPageError && (
+        <div className="flex justify-center py-4">
+          <LoadMoreRetryButton onRetry={fetchNextPage} />
+        </div>
+      )}
+      <MobileNavigationSpacer />
+    </>
+  )
 
-          return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
-        })}
-        {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
-        {canAutoLoadMore && <div className="w-full p-4" ref={infiniteScrollTriggerRef} />}
-        {!shouldBlockPrivate && isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
-      </div>
+  function renderItem(item: LibraryGridItem, index: number) {
+    if (item.type === 'loading') {
+      return <MangaCardSkeleton variant={view} />
+    }
+
+    const manga = mangaMap.get(item.mangaId) ?? { id: item.mangaId, title: '불러오는 중', images: [] }
+
+    if (!isSelectionMode) {
+      return <MangaCard index={index} manga={manga} variant={view} />
+    }
+
+    return <SelectableMangaCard index={index} manga={manga} variant={view} />
+  }
+
+  if (shouldBlockPrivate) {
+    return (
+      <>
+        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <AdultVerificationGate
+          description={`비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.`}
+          title="성인인증이 필요해요"
+          username={me?.name}
+        />
+      </>
+    )
+  }
+
+  if (libraryItems.length === 0 && !isFetchingNextPage && !isLoading) {
+    return (
+      <>
+        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <div className="flex-1 flex flex-col justify-center items-center">
+          <p className="text-zinc-500">{`${libraryName} 서재가 비어 있어요`}</p>
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <SearchParamsSync onUpdate={handleViewUpdate} />
+      <VirtualMangaGrid
+        fetchNextPage={fetchNextPage}
+        footer={footer}
+        hasNextPage={canAutoLoadMore}
+        header={header}
+        isFetchingNextPage={isFetchingNextPage}
+        itemGap={8}
+        items={items}
+        measurementKey={`${libraryId}:${effectiveSort}:${view}`}
+        onScrollElementChange={setNavigationAutoHideScrollElement}
+        renderItem={renderItem}
+        scrollRestorationKey={`library:${libraryId}:${scope}:${effectiveSort}:${view}`}
+        scrollToOptions={scrollToOptions}
+        view={view}
+      />
     </>
   )
 }

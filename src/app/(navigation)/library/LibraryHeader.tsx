@@ -240,62 +240,69 @@ export default function LibraryHeader({
 
   return (
     <>
-      <AutoHideHeader className="sticky top-0 z-40 flex justify-between items-center gap-3 p-2.5 sm:p-3 border-b border-zinc-800 transition bg-background">
-        <div className="flex items-center gap-3">
-          <button
-            aria-label="library-menu"
-            className="p-3 -mx-2 hover:bg-zinc-800 rounded-lg transition sm:hidden"
-            onClick={openDrawer}
-            type="button"
-          >
-            <Menu className="size-5" />
-          </button>
-          {!isSelectionMode && currentLibrary && (
-            <div
-              className="hidden size-10 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
-              style={{ backgroundColor: currentLibrary.color ?? '' }}
-            >
-              {currentLibrary.icon?.slice(0, 2) ?? currentLibrary.name[0]}
-            </div>
-          )}
-          {!isSelectionMode && (
-            <div className="grid flex-1 break-all">
-              <h1 className="text-base font-medium line-clamp-1 sm:text-lg sm:font-bold" title={headerTitle}>
-                {headerTitle}
-              </h1>
-              {currentLibrary?.description && (
-                <p className="max-sm:hidden text-xs text-zinc-400 line-clamp-1">{currentLibrary.description}</p>
-              )}
-            </div>
-          )}
-        </div>
-        {isSelectionMode && <BulkOperationsToolbar actions={bulkActions} />}
-        <div className="flex items-center">
-          {!isSelectionMode && pageKind === 'history' && (userId || historySource === 'local') && (
-            <HistoryClearAllButton historyCount={historyCount} source={historySource} />
-          )}
-          {!isSelectionMode && pageKind === 'bookmark' && Boolean(userId) && <BookmarkImportButton variant="icon" />}
-          {!isSelectionMode && isPublicLibrary && currentLibrary && (
-            <>
-              <PinLibraryButton className="p-3" library={currentLibrary} libraryId={currentLibrary.id} />
-              <ShareLibraryButton className="p-3" library={currentLibrary} />
-            </>
-          )}
-          {!isSelectionMode && isOwner && currentLibrary && <LibraryItemImportButton libraryId={currentLibrary.id} />}
-          {permissions.canSelectItems && (
+      <AutoHideHeader
+        className="fixed top-0 left-0 right-0 z-40 border-b border-zinc-800 bg-background transition
+          sm:left-[calc(5rem+67px)]
+          lg:left-72
+          2xl:left-[calc((100vw-1536px)/2+29rem)] 2xl:right-[calc((100vw-1536px)/2)]"
+      >
+        <div className="flex min-h-(--library-header-height) items-center justify-between gap-3 py-2.5 pl-[calc(0.625rem+var(--safe-area-left))] pr-[calc(0.625rem+var(--safe-area-right))] sm:pl-2.5 sm:pr-[calc(0.75rem+var(--safe-area-right))]">
+          <div className="flex items-center gap-3">
             <button
-              className="p-3 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
-              disabled={isEmpty}
-              onClick={handleSelectionModeChange}
-              title={isEmpty ? '작품이 없어요' : '선택 모드 전환'}
+              aria-label="library-menu"
+              className="p-3 -mx-2 hover:bg-zinc-800 rounded-lg transition sm:hidden"
+              onClick={openDrawer}
               type="button"
             >
-              {isSelectionMode ? <X className="size-5" /> : <Edit className="size-5" />}
+              <Menu className="size-5" />
             </button>
-          )}
-          {!isSelectionMode && isOwner && currentLibrary && (
-            <LibraryManagementMenu className="-mr-1 p-3" library={currentLibrary} />
-          )}
+            {!isSelectionMode && currentLibrary && (
+              <div
+                className="hidden size-10 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
+                style={{ backgroundColor: currentLibrary.color ?? '' }}
+              >
+                {currentLibrary.icon?.slice(0, 2) ?? currentLibrary.name[0]}
+              </div>
+            )}
+            {!isSelectionMode && (
+              <div className="grid flex-1 break-all">
+                <h1 className="text-base font-medium line-clamp-1 sm:text-lg sm:font-bold" title={headerTitle}>
+                  {headerTitle}
+                </h1>
+                {currentLibrary?.description && (
+                  <p className="max-sm:hidden text-xs text-zinc-400 line-clamp-1">{currentLibrary.description}</p>
+                )}
+              </div>
+            )}
+          </div>
+          {isSelectionMode && <BulkOperationsToolbar actions={bulkActions} />}
+          <div className="flex items-center">
+            {!isSelectionMode && pageKind === 'history' && (userId || historySource === 'local') && (
+              <HistoryClearAllButton historyCount={historyCount} source={historySource} />
+            )}
+            {!isSelectionMode && pageKind === 'bookmark' && Boolean(userId) && <BookmarkImportButton variant="icon" />}
+            {!isSelectionMode && isPublicLibrary && currentLibrary && (
+              <>
+                <PinLibraryButton className="p-3" library={currentLibrary} libraryId={currentLibrary.id} />
+                <ShareLibraryButton className="p-3" library={currentLibrary} />
+              </>
+            )}
+            {!isSelectionMode && isOwner && currentLibrary && <LibraryItemImportButton libraryId={currentLibrary.id} />}
+            {permissions.canSelectItems && (
+              <button
+                className="p-3 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
+                disabled={isEmpty}
+                onClick={handleSelectionModeChange}
+                title={isEmpty ? '작품이 없어요' : '선택 모드 전환'}
+                type="button"
+              >
+                {isSelectionMode ? <X className="size-5" /> : <Edit className="size-5" />}
+              </button>
+            )}
+            {!isSelectionMode && isOwner && currentLibrary && (
+              <LibraryManagementMenu className="-mr-1 p-3" library={currentLibrary} />
+            )}
+          </div>
         </div>
       </AutoHideHeader>
       {isDrawerOpen && (

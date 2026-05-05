@@ -6,7 +6,7 @@ import { generateOpenGraphMetadata } from '@/constants'
 import { getViewFromSearchParams } from '@/utils/param'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
-import SearchResult, { SearchResultLoading } from './SearchResults'
+import SearchResult, { SearchResultLoading } from './SearchResult'
 import TrendingKeywords from './TrendingKeywords'
 
 export const metadata: Metadata = {
