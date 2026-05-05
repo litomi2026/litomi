@@ -10,6 +10,7 @@ import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 
 import useLocalReadingHistorySummaryQuery from './history/useLocalReadingHistorySummaryQuery'
 import LibraryHeader from './LibraryHeader'
+import { LIBRARY_HEADER_LAYOUT_CLASS_NAME } from './libraryHeaderLayout'
 import { LibrarySelectionProvider } from './librarySelection'
 import LibrarySidebar from './LibrarySidebar'
 import useLibraryListInfiniteQuery from './useLibraryListInfiniteQuery'
