@@ -46,8 +46,8 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
   const { id } = validation.data
 
   return (
-    <>
-      <div className="fixed top-0 w-full z-20 flex items-center gap-4 bg-background/90 backdrop-blur border-b-2 p-4 sm:max-w-[calc(100vw-5rem)] 2xl:max-w-7xl">
+    <main className="flex min-w-0 flex-1 flex-col">
+      <div className="sticky top-0 z-20 flex items-center gap-4 bg-background/90 backdrop-blur border-b-2 p-4">
         <BackButton
           className="hover:bg-zinc-500/20 focus-visible:outline-zinc-500 rounded-full p-2 -m-2 transition"
           fallbackUrl={`/manga/${id}`}
@@ -57,7 +57,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
           <MangaReportButton mangaId={id} />
         </div>
       </div>
-      <div className="flex flex-col flex-1 pt-16">
+      <div className="flex min-w-0 flex-col flex-1">
         <RelatedMangaSection mangaId={id} />
         <RecommendedByUsersSection mangaId={id} />
         <AlsoViewedSection mangaId={id} />
@@ -69,7 +69,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
         <PostCreationForm className="flex p-4 border-b" mangaId={id} placeholder="이 작품은 어땠나요?" />
         <PostList filter={PostFilter.MANGA} mangaId={id} NotFound={<EmptyState />} />
       </div>
-    </>
+    </main>
   )
 }
 
