@@ -111,13 +111,12 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   preloadRowCount = DEFAULT_PRELOAD_ROW_COUNT,
   renderItem,
   scrollRestorationKey,
-  scrollToTopOptions,
+  scrollToOptions,
   size,
   view,
 }: VirtualMangaGridBodyProps<TItem>) {
   const [list, setList] = useState<ListImperativeAPI | null>(null)
   const fetchInFlightRef = useRef(false)
-  const lastScrollToTopOptionsRef = useRef(scrollToTopOptions)
 
   const itemRowStartIndex = header ? 1 : 0
   const minColumnWidth = size.minColumnWidth
@@ -222,29 +221,15 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
 
   // NOTE: scrollToTopOptions 객체가 바뀔 때 전달된 옵션으로 상단으로 스크롤해요
   useEffect(() => {
-    if (lastScrollToTopOptionsRef.current === scrollToTopOptions) {
-      return
-    }
-
-    lastScrollToTopOptionsRef.current = scrollToTopOptions
-
-    if (!scrollToTopOptions) {
-      return
-    }
-
     const element = list?.element
 
     if (!element) {
       return
     }
 
-    element.scrollTo({
-      ...scrollToTopOptions,
-      behavior: scrollToTopOptions.behavior ?? 'auto',
-      top: scrollToTopOptions.top ?? 0,
-    })
+    element.scrollTo(scrollToOptions)
     saveScrollSnapshot(element)
-  }, [list, saveScrollSnapshot, scrollToTopOptions])
+  }, [list, saveScrollSnapshot, scrollToOptions])
 
   return (
     <List

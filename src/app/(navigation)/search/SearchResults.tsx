@@ -47,7 +47,7 @@ type SearchResultItem =
 export default function SearchResult({ header }: Props) {
   const searchParams = useSearchParams()
   const view = getViewFromSearchParams(searchParams)
-  const [scrollToTopSignal, setScrollToTopSignal] = useState(0)
+  const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
 
   const {
@@ -148,7 +148,7 @@ export default function SearchResult({ header }: Props) {
             isLoading={isRefetching}
             onClick={async () => {
               await refetch()
-              setScrollToTopSignal((value) => value + 1)
+              setScrollToOptions({ top: 0 })
             }}
             timer={1}
           />
@@ -212,7 +212,7 @@ export default function SearchResult({ header }: Props) {
       onScrollElementChange={setNavigationAutoHideScrollElement}
       renderItem={renderItem}
       scrollRestorationKey={scrollRestorationKey}
-      scrollToTopSignal={scrollToTopSignal}
+      scrollToOptions={scrollToOptions}
       view={view}
     />
   )
