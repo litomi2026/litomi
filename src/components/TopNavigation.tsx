@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
 
+import AutoHideHeader from './auto-hide/AutoHideHeader'
 import IconLogo from './icons/LogoLitomi'
 
 type Props = {
@@ -13,9 +14,9 @@ type Props = {
   onMenuClick?: () => void
 }
 
-export default function TopNavigation({ children, className, onMenuClick }: Readonly<Props>) {
+export default function TopNavigation({ children, className, onMenuClick }: Props) {
   return (
-    <nav className={className} role="navigation">
+    <AutoHideHeader className={className} role="navigation">
       <div className="flex items-center justify-between gap-2 px-2 sm:hidden">
         <button
           aria-label="메뉴 열기"
@@ -31,6 +32,6 @@ export default function TopNavigation({ children, className, onMenuClick }: Read
         <div className="w-12" />
       </div>
       {children}
-    </nav>
+    </AutoHideHeader>
   )
 }
