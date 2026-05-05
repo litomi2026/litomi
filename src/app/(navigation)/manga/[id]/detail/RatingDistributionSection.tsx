@@ -27,7 +27,7 @@ export default async function RatingDistributionSection({ mangaId }: Props) {
   const maxCount = Math.max(...distribution.map((d) => d.count))
 
   return (
-    <details className="group border-b-2 p-4">
+    <details className="group border-b p-4">
       <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-zinc-400 flex items-center gap-2">

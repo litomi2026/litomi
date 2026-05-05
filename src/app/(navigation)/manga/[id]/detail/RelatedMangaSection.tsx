@@ -20,7 +20,7 @@ export default function RelatedMangaSection({ mangaId }: Props) {
   }
 
   return (
-    <div className="border-b-2 p-4">
+    <div className="border-b p-4">
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
         <Link2 className="size-4" />
         이런 작품 찾으세요?
