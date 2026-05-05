@@ -23,7 +23,6 @@ export const userTable = pgTable('user', {
   passwordHash: text('password_hash').notNull(),
   nickname: varchar({ length: 32 }).notNull(),
   imageURL: varchar('image_url', { length: 256 }),
-  autoDeletionDays: smallint('auto_deletion_days').notNull().default(180), // 0 = disabled
 }).enableRLS()
 
 export const userSettingsTable = pgTable('user_settings', {
@@ -33,7 +32,7 @@ export const userSettingsTable = pgTable('user_settings', {
     .primaryKey(),
   historySyncEnabled: boolean('history_sync_enabled').notNull().default(true),
   adultVerifiedAdVisible: boolean('adult_verified_ad_visible').notNull().default(false),
-  autoDeletionDay: smallint('auto_deletion_day').notNull().default(180), // 0 = disabled
+  autoDeletionDay: smallint('auto_deletion_day').notNull().default(90), // 0 = disabled
 }).enableRLS()
 
 export const userFollowTable = pgTable(

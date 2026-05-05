@@ -120,13 +120,13 @@ describe('GET /api/v1/me', () => {
       settings: {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
-        autoDeletionDay: 180,
+        autoDeletionDay: 90,
       },
     })
   })
 
-  test('user_settings가 없어도 legacy autoDeletionDays 값을 기본 설정으로 사용한다', async () => {
-    const user = await seedUser({ autoDeletionDays: 45 })
+  test('user_settings가 없으면 기본 autoDeletionDay를 사용한다', async () => {
+    const user = await seedUser()
     const auth = await createAccessTokenCookies({ userId: user.id, adult: false })
 
     const response = await requestBackend({
@@ -151,7 +151,7 @@ describe('GET /api/v1/me', () => {
       settings: {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
-        autoDeletionDay: 45,
+        autoDeletionDay: 90,
       },
     })
   })
@@ -182,7 +182,7 @@ describe('GET /api/v1/me', () => {
       settings: {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
-        autoDeletionDay: 180,
+        autoDeletionDay: 90,
       },
     })
   })
@@ -213,7 +213,7 @@ describe('GET /api/v1/me', () => {
       settings: {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
-        autoDeletionDay: 180,
+        autoDeletionDay: 90,
       },
     })
 

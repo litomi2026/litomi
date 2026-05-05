@@ -286,7 +286,8 @@ export default function SignupForm() {
             <div className="text-zinc-400">
               <p className="text-sm font-medium text-zinc-200 mb-1">자동 삭제 안내</p>
               <p className="text-xs">
-                개인정보 보호를 위해 6개월 동안 활동이 없으면 계정이 자동으로 삭제돼요. 기간은 설정에서 바꿀 수 있어요.
+                개인정보 보호를 위해 3개월 동안 활동이 없으면 계정이 자동으로 삭제돼요. 원하면 설정에서 해당 기간을
+                변경할 수 있어요.
               </p>
             </div>
           </div>

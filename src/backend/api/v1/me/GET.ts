@@ -44,9 +44,6 @@ route.get('/', async (c) => {
         historySyncEnabled: userSettingsTable.historySyncEnabled,
         adultVerifiedAdVisible: userSettingsTable.adultVerifiedAdVisible,
         autoDeletionDay: userSettingsTable.autoDeletionDay,
-
-        // TODO(2026-04-02): 마이그레이션 후 autoDeletionDays 컬럼 삭제
-        fallbackAutoDeletionDay: userTable.autoDeletionDays,
       })
       .from(userTable)
       .leftJoin(bbatonVerificationTable, eq(bbatonVerificationTable.userId, userTable.id))
@@ -66,9 +63,7 @@ route.get('/', async (c) => {
     const settings = resolveUserSettings({
       historySyncEnabled: user.historySyncEnabled ?? undefined,
       adultVerifiedAdVisible: user.adultVerifiedAdVisible ?? undefined,
-
-      // TODO(2026-04-02): 마이그레이션 후 autoDeletionDays 컬럼 삭제
-      autoDeletionDay: user.autoDeletionDay ?? user.fallbackAutoDeletionDay ?? undefined,
+      autoDeletionDay: user.autoDeletionDay ?? undefined,
     })
 
     const result: GETV1MeResponse = {

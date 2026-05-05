@@ -46,7 +46,7 @@ begin
           coalesce(u.login_at, u.created_at),
           coalesce(session_activity.last_session_used_at, '-infinity'::timestamptz)
         ) as effective_last_activity_at,
-        coalesce(settings.auto_deletion_day, u.auto_deletion_days)::integer as effective_auto_deletion_day
+        coalesce(settings.auto_deletion_day, 90)::integer as effective_auto_deletion_day
     ) as candidate on true
     where candidate.effective_auto_deletion_day > 0
       and candidate.effective_last_activity_at
@@ -91,7 +91,7 @@ begin
         coalesce(u.login_at, u.created_at),
         coalesce(session_activity.last_session_used_at, '-infinity'::timestamptz)
       ) as effective_last_activity_at,
-      coalesce(settings.auto_deletion_day, u.auto_deletion_days)::integer as effective_auto_deletion_day
+      coalesce(settings.auto_deletion_day, 90)::integer as effective_auto_deletion_day
   ) as candidate on true
   where candidate.effective_auto_deletion_day > 0
     and candidate.effective_last_activity_at

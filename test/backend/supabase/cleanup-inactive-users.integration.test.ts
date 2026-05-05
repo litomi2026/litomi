@@ -112,10 +112,9 @@ describe('cleanup_inactive_users()', () => {
     expect(await readUserById(user.id)).not.toBeNull()
   })
 
-  test('user_settings가 없어도 legacy autoDeletionDays로 삭제한다', async () => {
+  test('user_settings가 없어도 기본 autoDeletionDay로 삭제한다', async () => {
     const user = await seedUser({
-      autoDeletionDays: 30,
-      loginAt: daysAgo(75),
+      loginAt: daysAgo(125),
     })
 
     const deletedCount = await cleanupInactiveUsers()
@@ -126,8 +125,7 @@ describe('cleanup_inactive_users()', () => {
 
   test('login_at이 null이면 created_at을 기준으로 삭제한다', async () => {
     const user = await seedUser({
-      autoDeletionDays: 30,
-      createdAt: daysAgo(75),
+      createdAt: daysAgo(125),
     })
 
     const deletedCount = await cleanupInactiveUsers()
