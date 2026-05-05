@@ -73,9 +73,7 @@ export default async function BookmarkPage({ searchParams }: PageProps<'/library
   }
 
   return (
-    <main className="flex-1 flex flex-col">
-      <h1 className="sr-only">북마크</h1>
-      <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
+    <main className="flex min-h-0 flex-1 flex-col">
       <BookmarkPageClient initialData={initialData} initialSort={sort} initialView={view} />
     </main>
   )

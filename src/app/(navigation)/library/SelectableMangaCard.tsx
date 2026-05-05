@@ -1,6 +1,7 @@
 'use client'
 
 import { Check } from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 import MangaCard from '@/components/card/MangaCard'
 import { Manga } from '@/types/manga'
@@ -10,19 +11,23 @@ import CensoredManga from './CensoredManga'
 import { useLibrarySelection } from './librarySelection'
 
 type Props = {
+  className?: string
   index: number
   manga: Manga
   variant: View
 }
 
-export default function SelectableMangaCard({ index, manga, variant }: Readonly<Props>) {
+export default function SelectableMangaCard({ className, index, manga, variant }: Readonly<Props>) {
   const { selectedIds, toggle } = useLibrarySelection()
   const isSelected = selectedIds.has(manga.id)
 
   return (
     <div
       aria-selected={isSelected}
-      className="relative select-none cursor-pointer aria-selected:ring-2 aria-selected:ring-brand rounded-xl overflow-hidden"
+      className={twMerge(
+        'relative select-none cursor-pointer aria-selected:ring-2 aria-selected:ring-brand rounded-xl overflow-hidden',
+        className,
+      )}
       onClick={() => toggle(manga.id)}
     >
       <CensoredManga className="pointer-events-none" mangaId={manga.id} />

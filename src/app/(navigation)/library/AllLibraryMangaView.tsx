@@ -143,7 +143,6 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
   if (libraryItems.length === 0) {
     return (
       <div className="h-full flex-1 flex flex-col items-center justify-center text-center px-4">
-        <h1 className="sr-only">공개 서재 둘러보기</h1>
         <Library className="size-24 sm:size-32 mx-auto mb-4 sm:mb-6 text-zinc-700" />
         <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">공개된 서재가 없어요</h2>
         <p className="text-sm sm:text-base text-zinc-500 mb-6 sm:mb-8">다른 사용자들이 공개한 서재가 아직 없어요</p>
