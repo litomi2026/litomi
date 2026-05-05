@@ -17,6 +17,10 @@ import type {
   VirtualMangaGridSize,
 } from './VirtualMangaGrid.types'
 
+import {
+  useVirtualMangaGridScrollRestoration,
+  type VirtualMangaGridScrollAnchor,
+} from './VirtualMangaGrid.scrollRestoration'
 import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './VirtualMangaGrid.utils'
 import VirtualMangaGridRow from './VirtualMangaGridRow'
 
@@ -107,13 +111,13 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   preloadRowCount = DEFAULT_PRELOAD_ROW_COUNT,
   renderItem,
   scrollRestorationKey,
-  scrollToTopSignal,
+  scrollToTopOptions,
   size,
   view,
 }: VirtualMangaGridBodyProps<TItem>) {
   const [list, setList] = useState<ListImperativeAPI | null>(null)
   const fetchInFlightRef = useRef(false)
-  const lastScrollToTopSignalRef = useRef(scrollToTopSignal)
+  const lastScrollToTopOptionsRef = useRef(scrollToTopOptions)
 
   const itemRowStartIndex = header ? 1 : 0
   const minColumnWidth = size.minColumnWidth
@@ -159,6 +163,31 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     [columnCount, footer, header, renderItem, rows],
   )
 
+  const scrollAnchors = useMemo<VirtualMangaGridScrollAnchor[]>(() => {
+    const anchors: VirtualMangaGridScrollAnchor[] = []
+
+    rows.forEach((row, rowIndex) => {
+      if (row.type !== 'items') {
+        return
+      }
+
+      for (const { item } of row.items) {
+        anchors.push({
+          itemKey: String(item.key),
+          rowIndex,
+        })
+      }
+    })
+
+    return anchors
+  }, [rows])
+
+  const { saveScrollSnapshot } = useVirtualMangaGridScrollRestoration({
+    anchors: scrollAnchors,
+    list,
+    restorationKey: scrollRestorationKey,
+  })
+
   const handleVisibleRowsRendered = useCallback(
     async ({ stopIndex }: { stopIndex: number }) => {
       if (!fetchNextPage || !hasNextPage || isFetchingNextPage || fetchInFlightRef.current) {
@@ -191,13 +220,17 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     [onScrollElementChange],
   )
 
-  // NOTE: scrollToTopSignal 값이 바뀔 때 상단으로 스크롤해요
+  // NOTE: scrollToTopOptions 객체가 바뀔 때 전달된 옵션으로 상단으로 스크롤해요
   useEffect(() => {
-    if (lastScrollToTopSignalRef.current === scrollToTopSignal) {
+    if (lastScrollToTopOptionsRef.current === scrollToTopOptions) {
       return
     }
 
-    lastScrollToTopSignalRef.current = scrollToTopSignal
+    lastScrollToTopOptionsRef.current = scrollToTopOptions
+
+    if (!scrollToTopOptions) {
+      return
+    }
 
     const element = list?.element
 
@@ -205,8 +238,13 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
       return
     }
 
-    element.scrollTo({ behavior: 'auto', top: 0 })
-  }, [scrollToTopSignal])
+    element.scrollTo({
+      ...scrollToTopOptions,
+      behavior: scrollToTopOptions.behavior ?? 'auto',
+      top: scrollToTopOptions.top ?? 0,
+    })
+    saveScrollSnapshot(element)
+  }, [list, saveScrollSnapshot, scrollToTopOptions])
 
   return (
     <List
