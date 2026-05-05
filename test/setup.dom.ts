@@ -38,6 +38,21 @@ testGlobal.cancelAnimationFrame = (id: number) => {
   return window.clearTimeout(id as unknown as ReturnType<typeof window.setTimeout>)
 }
 
+window.Element.prototype.scrollTo = function scrollTo(optionsOrX?: number | ScrollToOptions, y?: number) {
+  if (typeof optionsOrX === 'number') {
+    this.scrollLeft = optionsOrX
+    this.scrollTop = y ?? this.scrollTop
+    return
+  }
+
+  if (!optionsOrX) {
+    return
+  }
+
+  this.scrollLeft = optionsOrX.left ?? this.scrollLeft
+  this.scrollTop = optionsOrX.top ?? this.scrollTop
+}
+
 class TestIntersectionObserver implements IntersectionObserver {
   static instances = new Set<TestIntersectionObserver>()
 
