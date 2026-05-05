@@ -105,19 +105,11 @@ export default function SearchResult({ header }: Props) {
   function renderItem(item: SearchResultItem) {
     switch (item.type) {
       case 'loading':
-        return <MangaCardSkeleton className="m-1 w-[calc(100%-0.5rem)]" variant={view} />
+        return <MangaCardSkeleton variant={view} />
       case 'manga':
-        return (
-          <MangaCard
-            className="mx-2 mb-2 sm:m-1 sm:first:ml-2 sm:last:mr-2"
-            index={item.mangaIndex}
-            manga={item.manga}
-            showSearchFromNextButton={view === View.CARD}
-            variant={view}
-          />
-        )
+        return <MangaCard index={item.mangaIndex} manga={item.manga} showSearchFromNextButton variant={view} />
       case 'promotion':
-        return <MangaCardPromotion className="m-1" promotion={item.promotion} />
+        return <MangaCardPromotion promotion={item.promotion} />
     }
   }
 

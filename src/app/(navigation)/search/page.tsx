@@ -51,7 +51,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
   const hasActiveFilters = Boolean(Object.values(filters).some(Boolean))
 
   const header = (
-    <div className="flex flex-col gap-2 p-2 pb-1">
+    <div className="flex flex-col gap-2 p-2 pb-0">
       {hasActiveFilters ? (
         <div className="gap-2 pb-2 hidden sm:grid">
           <div className="flex items-center justify-between">

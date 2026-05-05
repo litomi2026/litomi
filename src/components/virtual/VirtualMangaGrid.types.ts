@@ -42,6 +42,7 @@ export type VirtualMangaGridRowProps<TItem extends VirtualMangaGridItem> = {
   columnCount: number
   footer?: ReactNode
   header?: ReactNode
+  itemGap: number
   renderItem: (item: TItem, index: number) => ReactNode
   rows: VirtualMangaGridRow<TItem>[]
 }

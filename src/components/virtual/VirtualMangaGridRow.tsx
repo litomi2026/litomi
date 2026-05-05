@@ -10,6 +10,7 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
   columnCount,
   footer,
   header,
+  itemGap,
   renderItem,
   rows,
 }: RowComponentProps<VirtualMangaGridRowProps<TItem>>) {
@@ -18,6 +19,9 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
   if (!row) {
     return null
   }
+
+  const previousRow = rows[index - 1]
+  const isFirstItemRow = previousRow?.type !== 'items'
 
   if (row.type === 'footer') {
     return (
@@ -40,7 +44,14 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
       className="grid"
       data-virtual-row-index={index}
       role="presentation"
-      style={{ ...style, gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+      style={{
+        ...style,
+        gap: itemGap,
+        gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+        paddingBottom: itemGap,
+        paddingInline: itemGap,
+        paddingTop: isFirstItemRow ? itemGap : 0,
+      }}
     >
       {row.items.map(({ item, itemIndex }) => (
         <Fragment key={item.key}>{renderItem(item, itemIndex)}</Fragment>
