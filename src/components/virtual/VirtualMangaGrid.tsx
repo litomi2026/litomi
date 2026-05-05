@@ -2,10 +2,11 @@
 
 import type { ListImperativeAPI } from 'react-window'
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { List, useDynamicRowHeight } from 'react-window'
 import { twMerge } from 'tailwind-merge'
 
+import { useIsomorphicLayoutEffect } from '@/hook/useIsomorphicLayoutEffect'
 import { View } from '@/utils/param'
 import { MANGA_GRID_COLUMN_MIN_WIDTH_CLASS, readMangaGridColumnMinWidth } from '@/utils/style'
 
@@ -17,16 +18,16 @@ import type {
   VirtualMangaGridSize,
 } from './VirtualMangaGrid.types'
 
+import { useVirtualScrollRestoration, type VirtualScrollAnchor } from './VirtualMangaGrid.scrollRestoration'
 import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './VirtualMangaGrid.utils'
 import VirtualMangaGridRow from './VirtualMangaGridRow'
 
 const DEFAULT_OVERSCAN_COUNT = 3
-const DEFAULT_PRELOAD_ROW_COUNT = 2
+const DEFAULT_PRELOAD_ROW_COUNT = 1
 const DEFAULT_HEIGHT = 640
 const IMAGE_ITEM_ASPECT_HEIGHT_RATIO = 7 / 5
-const CARD_THUMBNAIL_ASPECT_HEIGHT_RATIO = 4 / 3
+const CARD_ITEM_ASPECT_HEIGHT_RATIO = 4 / 3
 const ESTIMATED_CARD_BODY_HEIGHT_PX = 420
-const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 type VirtualMangaGridBodyProps<TItem extends VirtualMangaGridItem> = VirtualMangaGridProps<TItem> & {
   size: VirtualMangaGridSize
@@ -106,13 +107,13 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   overscanCount = DEFAULT_OVERSCAN_COUNT,
   preloadRowCount = DEFAULT_PRELOAD_ROW_COUNT,
   renderItem,
-  scrollToTopSignal,
+  scrollRestorationKey,
+  scrollToOptions,
   size,
   view,
 }: VirtualMangaGridBodyProps<TItem>) {
-  const listRef = useRef<ListImperativeAPI | null>(null)
+  const [list, setList] = useState<ListImperativeAPI | null>(null)
   const fetchInFlightRef = useRef(false)
-  const lastScrollToTopSignalRef = useRef(scrollToTopSignal)
 
   const itemRowStartIndex = header ? 1 : 0
   const minColumnWidth = size.minColumnWidth
@@ -122,7 +123,7 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   const estimatedItemRowHeight =
     view === View.IMAGE
       ? Math.round(columnWidth * IMAGE_ITEM_ASPECT_HEIGHT_RATIO)
-      : Math.round(columnWidth * CARD_THUMBNAIL_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX)
+      : Math.round(columnWidth * CARD_ITEM_ASPECT_HEIGHT_RATIO + ESTIMATED_CARD_BODY_HEIGHT_PX)
 
   const itemRows = useMemo(() => chunkVirtualMangaGridItems(items, columnCount), [items, columnCount])
 
@@ -158,6 +159,31 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     [columnCount, footer, header, renderItem, rows],
   )
 
+  const scrollAnchors = useMemo<VirtualScrollAnchor[]>(() => {
+    const anchors: VirtualScrollAnchor[] = []
+
+    rows.forEach((row, rowIndex) => {
+      if (row.type !== 'items') {
+        return
+      }
+
+      for (const { item } of row.items) {
+        anchors.push({
+          itemKey: String(item.key),
+          rowIndex,
+        })
+      }
+    })
+
+    return anchors
+  }, [rows])
+
+  const { saveScrollSnapshot } = useVirtualScrollRestoration({
+    anchors: scrollAnchors,
+    list,
+    restorationKey: scrollRestorationKey,
+  })
+
   const handleVisibleRowsRendered = useCallback(
     async ({ stopIndex }: { stopIndex: number }) => {
       if (!fetchNextPage || !hasNextPage || isFetchingNextPage || fetchInFlightRef.current) {
@@ -184,36 +210,23 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
 
   const setListRef = useCallback(
     (list: ListImperativeAPI | null) => {
-      const previousElement = listRef.current?.element ?? null
-      const element = list?.element ?? null
-
-      listRef.current = list
-
-      if (previousElement === element) {
-        return
-      }
-
-      onScrollElementChange?.(element)
+      setList(list)
+      onScrollElementChange?.(list?.element ?? null)
     },
     [onScrollElementChange],
   )
 
-  // NOTE: scrollToTopSignal 값이 바뀔 때 상단으로 스크롤해요
+  // NOTE: scrollToTopOptions 객체가 바뀔 때 전달된 옵션으로 상단으로 스크롤해요
   useEffect(() => {
-    if (lastScrollToTopSignalRef.current === scrollToTopSignal) {
-      return
-    }
-
-    lastScrollToTopSignalRef.current = scrollToTopSignal
-
-    const element = listRef.current?.element
+    const element = list?.element
 
     if (!element) {
       return
     }
 
-    element.scrollTo({ behavior: 'auto', top: 0 })
-  }, [scrollToTopSignal])
+    element.scrollTo(scrollToOptions)
+    saveScrollSnapshot(element)
+  }, [list, saveScrollSnapshot, scrollToOptions])
 
   return (
     <List

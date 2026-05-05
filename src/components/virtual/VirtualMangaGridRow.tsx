@@ -21,7 +21,7 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
 
   if (row.type === 'footer') {
     return (
-      <div data-virtual-manga-row-index={index} role="presentation" style={style}>
+      <div data-virtual-row-index={index} role="presentation" style={style}>
         {footer}
       </div>
     )
@@ -29,7 +29,7 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
 
   if (row.type === 'header') {
     return (
-      <div data-virtual-manga-row-index={index} role="presentation" style={style}>
+      <div data-virtual-row-index={index} role="presentation" style={style}>
         {header}
       </div>
     )
@@ -38,7 +38,7 @@ export default function VirtualMangaGridRow<TItem extends VirtualMangaGridItem>(
   return (
     <div
       className="grid"
-      data-virtual-manga-row-index={index}
+      data-virtual-row-index={index}
       role="presentation"
       style={{ ...style, gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
     >

@@ -219,7 +219,7 @@ class HiyobiClient {
     const millions = Math.floor(id / 1_000_000)
     const thousands = Math.floor((id % 1_000_000) / 1_000)
     const remainder = id % 1000
-    return `https://thumb.k-hentai.org/${millions}/${thousands}/${remainder}`
+    return `https://khentai-t.siam-cdn.net/${millions}/${thousands}/${remainder}`
   }
 }
 

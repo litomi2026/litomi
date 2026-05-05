@@ -10,7 +10,7 @@ import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../com
 import { getRankingData } from './query'
 import RankingList from './RankingList'
 
-export const revalidate = 86400
+export const revalidate = 21600 // 6 hours
 
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),

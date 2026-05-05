@@ -10,6 +10,7 @@ const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'ehgt.org',
   'siam-cdn.net',
 ] as const
+
 const IMAGE_PROXY_ROUTE_EXTENSION = '.webp'
 
 export type MangaImageProxyParams = {
@@ -19,10 +20,6 @@ export type MangaImageProxyParams = {
 }
 
 export type MangaImageProxyVariant = 'original' | 'thumbnail'
-
-export function createCoverThumbnailURL(mangaId: number): string {
-  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`
-}
 
 export function createFirstPageOriginalFallbackURLs(mangaId: number): string[] {
   return [
@@ -56,7 +53,9 @@ export function createLitomiProxyMangaImageURL({
 
 export function createThirdPartyMangaImageURLs({ mangaId, page, variant }: MangaImageProxyParams): string[] {
   if (variant === 'thumbnail') {
-    return [page === 1 ? createCoverThumbnailURL(mangaId) : createImageDeliveriesThumbnailURL(mangaId, page)]
+    return page === 1
+      ? [getKHentaiThumbnailURL(mangaId), createCoverThumbnailURL(mangaId)]
+      : [createImageDeliveriesThumbnailURL(mangaId, page)]
   }
 
   return [
@@ -162,6 +161,10 @@ export function validateImageSourceURL(sourceURL: URL): URL {
   return sourceURL
 }
 
+function createCoverThumbnailURL(mangaId: number): string {
+  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`
+}
+
 function createHentkorPageURL(mangaId: number, page: number): string {
   return `https://cdn.hentkor.net/pages/${mangaId}/${page}.avif`
 }
@@ -172,6 +175,13 @@ function createImageDeliveriesThumbnailURL(mangaId: number, page: number): strin
 
 function createSoujpaPageURL(mangaId: number, page: number, ext: 'avif' | 'webp'): string {
   return `https://soujpa.in/start/${mangaId}/${mangaId}_${page - 1}.${ext}`
+}
+
+function getKHentaiThumbnailURL(id: number): string {
+  const millions = Math.floor(id / 1_000_000)
+  const thousands = Math.floor((id % 1_000_000) / 1_000)
+  const remainder = id % 1000
+  return `https://khentai-t.siam-cdn.net/${millions}/${thousands}/${remainder}`
 }
 
 function hasAllowedHostSuffix(hostname: string, hostSuffixes: readonly string[]): boolean {

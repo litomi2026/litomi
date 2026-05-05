@@ -75,13 +75,16 @@ describe('만화 이미지 프록시 유틸', () => {
     ).toEqual(['https://cdn.imagedeliveries.com/456/thumbnails/3.webp'])
   })
 
-  test('thumbnail 1페이지는 cover.webp를 대표 원본으로 사용한다', () => {
+  test('thumbnail 1페이지는 k-hentai 썸네일 다음 cover.webp를 사용한다', () => {
     expect(
       createThirdPartyMangaImageURLs({
         mangaId: 456,
         page: 1,
         variant: 'thumbnail',
       }),
-    ).toEqual(['https://cdn.imagedeliveries.com/456/thumbnails/cover.webp'])
+    ).toEqual([
+      'https://khentai-t.siam-cdn.net/0/0/456',
+      'https://cdn.imagedeliveries.com/456/thumbnails/cover.webp',
+    ])
   })
 })

@@ -64,10 +64,13 @@ describe('MangaImage 대체 경로', () => {
     expect(image.getAttribute('crossorigin')).toBeNull()
   })
 
-  test('첫 번째 썸네일은 cover 뒤에 쿼리 없는 확인 경로와 같은 페이지 원본 대체 경로를 순서대로 시도한다', () => {
+  test('첫 번째 썸네일은 k-hentai와 cover 뒤에 쿼리 없는 확인 경로와 같은 페이지 원본 대체 경로를 순서대로 시도한다', () => {
     const { getByAltText } = render(<MangaImage imageIndex={0} mangaId={123} variant="thumbnail" />)
     const image = getByAltText('manga-image-1')
 
+    expect(image.getAttribute('src')).toBe('https://khentai-t.siam-cdn.net/0/0/123')
+
+    fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://cdn.imagedeliveries.com/123/thumbnails/cover.webp')
 
     fireEvent.error(image)

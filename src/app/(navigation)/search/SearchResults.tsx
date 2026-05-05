@@ -47,7 +47,7 @@ type SearchResultItem =
 export default function SearchResult({ header }: Props) {
   const searchParams = useSearchParams()
   const view = getViewFromSearchParams(searchParams)
-  const [scrollToTopSignal, setScrollToTopSignal] = useState(0)
+  const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
 
   const {
@@ -66,7 +66,8 @@ export default function SearchResult({ header }: Props) {
   const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
   const promotion = useMemo(() => data?.pages[0]?.promotion, [data])
 
-  const measurementKey = searchParams.toString() || 'default'
+  const measurementKey = searchParams.toString()
+  const scrollRestorationKey = `search-results:${measurementKey}`
   const showRefreshButton = searchParams.get('sort') === 'random'
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
 
@@ -147,7 +148,7 @@ export default function SearchResult({ header }: Props) {
             isLoading={isRefetching}
             onClick={async () => {
               await refetch()
-              setScrollToTopSignal((value) => value + 1)
+              setScrollToOptions({ top: 0 })
             }}
             timer={1}
           />
@@ -210,7 +211,8 @@ export default function SearchResult({ header }: Props) {
       measurementKey={measurementKey}
       onScrollElementChange={setNavigationAutoHideScrollElement}
       renderItem={renderItem}
-      scrollToTopSignal={scrollToTopSignal}
+      scrollRestorationKey={scrollRestorationKey}
+      scrollToOptions={scrollToOptions}
       view={view}
     />
   )
