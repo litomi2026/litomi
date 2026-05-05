@@ -187,55 +187,12 @@ jobs:
           tags: ${{ steps.metadata_backend.outputs.tags }}
           labels: ${{ steps.metadata_backend.outputs.labels }}
 
-  build-and-publish-spoofdpi-image:
-    name: Build and publish SpoofDPI image
-    if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
-    runs-on: ubuntu-24.04-arm
-    outputs:
-      digest: ${{ steps.build_spoofdpi_image.outputs.digest }}
-    env:
-      IMAGE_SPOOFDPI: ghcr.io/${{ github.repository_owner }}/litomi-spoofdpi
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Generate SpoofDPI image metadata
-        id: metadata_spoofdpi
-        uses: docker/metadata-action@v6
-        with:
-          images: ${{ env.IMAGE_SPOOFDPI }}
-          tags: |
-            type=raw,value=${{ github.sha }}
-            type=ref,event=branch
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Authenticate to GHCR
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and publish SpoofDPI image
-        id: build_spoofdpi_image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: Dockerfile.spoofdpi
-          platforms: linux/arm64
-          push: true
-          tags: ${{ steps.metadata_spoofdpi.outputs.tags }}
-          labels: ${{ steps.metadata_spoofdpi.outputs.labels }}
-
   update-staging-image-digests:
     name: Update staging image digests
     if: ${{ github.ref_name == 'stage' && github.event_name != 'pull_request' }}
     needs:
       - build-and-publish-web-image
       - build-and-publish-backend-image
-      - build-and-publish-spoofdpi-image
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -243,7 +200,6 @@ jobs:
       OVERLAY_FILE: k8s/apps/litomi/overlays/stg/kustomization.yaml
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
       IMAGE_BACKEND_DIGEST: ${{ needs.build-and-publish-backend-image.outputs.digest }}
-      IMAGE_SPOOFDPI_DIGEST: ${{ needs.build-and-publish-spoofdpi-image.outputs.digest }}
     steps:
       - name: Checkout staging branch
         uses: actions/checkout@v6
@@ -267,7 +223,6 @@ jobs:
           replacements = {
               "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
               "litomi-backend": os.environ["IMAGE_BACKEND_DIGEST"],
-              "litomi-spoofdpi": os.environ["IMAGE_SPOOFDPI_DIGEST"],
           }
 
           for name, digest in replacements.items():
@@ -301,7 +256,6 @@ jobs:
     needs:
       - build-and-publish-web-image
       - build-and-publish-backend-image
-      - build-and-publish-spoofdpi-image
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -310,10 +264,8 @@ jobs:
       OVERLAY_FILE: k8s/apps/litomi/overlays/prod/kustomization.yaml
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
       IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
-      IMAGE_SPOOFDPI: ghcr.io/${{ github.repository_owner }}/litomi-spoofdpi
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
       IMAGE_BACKEND_DIGEST: ${{ needs.build-and-publish-backend-image.outputs.digest }}
-      IMAGE_SPOOFDPI_DIGEST: ${{ needs.build-and-publish-spoofdpi-image.outputs.digest }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v6
@@ -337,7 +289,6 @@ jobs:
           replacements = {
               "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
               "litomi-backend": os.environ["IMAGE_BACKEND_DIGEST"],
-              "litomi-spoofdpi": os.environ["IMAGE_SPOOFDPI_DIGEST"],
           }
 
           for name, digest in replacements.items():
@@ -363,7 +314,6 @@ jobs:
 
             - Web: `${{ env.IMAGE_WEB }}@${{ env.IMAGE_WEB_DIGEST }}`
             - Backend: `${{ env.IMAGE_BACKEND }}@${{ env.IMAGE_BACKEND_DIGEST }}`
-            - SpoofDPI: `${{ env.IMAGE_SPOOFDPI }}@${{ env.IMAGE_SPOOFDPI_DIGEST }}`
             - Source commit: `${{ github.sha }}`
             - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           base: main

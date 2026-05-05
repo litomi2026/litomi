@@ -36,8 +36,6 @@ configMapGenerator:
       - OTEL_TRACES_SAMPLER_ARG=0.3
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=litomi,deployment.environment=stg,k8s.cluster.name=litomi-k3s
-      - IMAGE_PROXY_UPSTREAM_PROXY_URL=http://litomi-image-egress-proxy:8080
-      - IMAGE_PROXY_UPSTREAM_PROXY_HOST_SUFFIXES=k-hentai.org
 images:
   - name: litomi-web
     newName: ghcr.io/litomi2026/litomi-web
@@ -45,6 +43,3 @@ images:
   - name: litomi-backend
     newName: ghcr.io/litomi2026/litomi-backend
     digest: sha256:ca257b6720301a793151cbbc0119058504f5dea0921dc5d19f9d06fdf73bff78
-  - name: litomi-spoofdpi
-    newName: ghcr.io/litomi2026/litomi-spoofdpi
-    digest: sha256:01219a6b9c12a28678b6d4b5d4eabd7027be11a5cdb833c9d2d4fd5dae5f193b

@@ -6,7 +6,6 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { createAllowedRequestInitiatorMiddleware } from '@/backend/middleware/allowed-request-initiator'
-import { env } from '@/env/server.hono'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 import {
@@ -53,7 +52,6 @@ const REFERER_BY_HOST_SUFFIX: ReadonlyArray<{ hostSuffix: string; referer: strin
 
 const FORWARDED_HEADERS = ['Content-Type', 'Content-Length', 'Last-Modified', 'ETag'] as const
 const ACCEPTED_IMAGE_CONTENT_TYPES = ['application/octet-stream'] as const
-const DEFAULT_IMAGE_EGRESS_PROXY_HOST_SUFFIXES = ['k-hentai.org'] as const
 
 const requireAllowedRequestInitiator = createAllowedRequestInitiatorMiddleware({
   allowedOrigins: ['https://litomi.in', 'https://stg.litomi.in'],
@@ -97,7 +95,6 @@ imageProxyRoutes.on(
         method: c.req.method === 'HEAD' ? 'HEAD' : 'GET',
         headers: upstreamHeaders,
         redirect: 'follow',
-        ...createUpstreamProxyFetchInit(sourceURL.hostname),
       })
     } catch (error) {
       console.error('Failed to fetch upstream image:', error)
@@ -144,31 +141,6 @@ function createProxyErrorResponse(message: string, status: number, cacheControl:
   })
 }
 
-function createUpstreamProxyFetchInit(hostname: string): Pick<BunFetchRequestInit, 'proxy'> {
-  const proxyURL = resolveImageEgressProxyURL(hostname)
-
-  if (!proxyURL) {
-    return {}
-  }
-
-  return { proxy: proxyURL }
-}
-
-function getImageEgressProxyHostSuffixes(): readonly string[] {
-  const rawValue = env.IMAGE_PROXY_UPSTREAM_PROXY_HOST_SUFFIXES
-
-  if (!rawValue) {
-    return DEFAULT_IMAGE_EGRESS_PROXY_HOST_SUFFIXES
-  }
-
-  const hostSuffixes = rawValue
-    .split(',')
-    .map((hostSuffix) => hostSuffix.trim().toLowerCase())
-    .filter(Boolean)
-
-  return hostSuffixes.length > 0 ? hostSuffixes : DEFAULT_IMAGE_EGRESS_PROXY_HOST_SUFFIXES
-}
-
 function isImageContentType(contentType: string | null): boolean {
   if (!contentType) {
     return true
@@ -189,18 +161,6 @@ function matchesHostSuffix(hostname: string, hostSuffixes: readonly string[]): b
   const normalizedHost = hostname.toLowerCase()
 
   return hostSuffixes.some((hostSuffix) => normalizedHost === hostSuffix || normalizedHost.endsWith(`.${hostSuffix}`))
-}
-
-function resolveImageEgressProxyURL(hostname: string): string | undefined {
-  if (process.env.NODE_ENV !== 'production') {
-    return undefined
-  }
-
-  if (!matchesHostSuffix(hostname, getImageEgressProxyHostSuffixes())) {
-    return undefined
-  }
-
-  return env.IMAGE_PROXY_UPSTREAM_PROXY_URL
 }
 
 function resolveReferer(hostname: string): string | undefined {
