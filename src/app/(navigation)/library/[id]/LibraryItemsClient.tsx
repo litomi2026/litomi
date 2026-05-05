@@ -25,6 +25,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { getViewFromSearchParams, View } from '@/utils/param'
 
+import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 
@@ -121,22 +122,25 @@ export default function LibraryItemsClient({
   }
 
   const header = (
-    <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
-      {isOwner && (
-        <select
-          className="bg-zinc-900 text-sm px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
-          onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
-          value={sort}
-        >
-          {COLLECTION_ITEM_SORT_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      )}
-      <ViewToggle initialView={initialView} />
-    </div>
+    <>
+      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
+        {isOwner && (
+          <select
+            className="bg-zinc-900 text-sm px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
+            onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
+            value={sort}
+          >
+            {COLLECTION_ITEM_SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        )}
+        <ViewToggle initialView={initialView} />
+      </div>
+    </>
   )
 
   const footer = (
@@ -166,19 +170,25 @@ export default function LibraryItemsClient({
 
   if (shouldBlockPrivate) {
     return (
-      <AdultVerificationGate
-        description={`비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.`}
-        title="성인인증이 필요해요"
-        username={me?.name}
-      />
+      <>
+        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <AdultVerificationGate
+          description={`비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.`}
+          title="성인인증이 필요해요"
+          username={me?.name}
+        />
+      </>
     )
   }
 
   if (libraryItems.length === 0 && !isFetchingNextPage && !isLoading) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center">
-        <p className="text-zinc-500">{`${libraryName} 서재가 비어 있어요`}</p>
-      </div>
+      <>
+        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <div className="flex-1 flex flex-col justify-center items-center">
+          <p className="text-zinc-500">{`${libraryName} 서재가 비어 있어요`}</p>
+        </div>
+      </>
     )
   }
 

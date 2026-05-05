@@ -19,6 +19,7 @@ import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { getViewFromSearchParams, View } from '@/utils/param'
 
+import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import BookmarkDownloadButton from './BookmarkDownloadButton'
@@ -94,6 +95,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
 
   const header = (
     <>
+      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 pb-0">
         <div className="flex flex-wrap items-center gap-2">
