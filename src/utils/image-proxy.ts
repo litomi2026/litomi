@@ -9,6 +9,7 @@ const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'cdn.imagedeliveries.com',
   'ehgt.org',
   'siam-cdn.net',
+  'litomi.in',
 ] as const
 
 const IMAGE_PROXY_ROUTE_EXTENSION = '.webp'

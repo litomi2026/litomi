@@ -3,8 +3,6 @@ import { z } from 'zod'
 
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@/backend/api/v1/library/item-sort'
 import { getNextCollectionItemCursor } from '@/backend/api/v1/library/item-sort.server'
-import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
-import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { selectBookmark } from '@/sql/selectBookmark'
