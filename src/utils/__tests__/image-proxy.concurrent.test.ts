@@ -4,7 +4,7 @@ import { env } from '@/env/client'
 import {
   createLitomiProxyMangaImageURL,
   createThirdPartyMangaImageURLs,
-  isMangaImageProxyRequestURL,
+  isLitomiImageProxyURL,
 } from '@/utils/image-proxy'
 
 const proxyOrigin = new URL(env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN).origin
@@ -39,16 +39,12 @@ describe('만화 이미지 프록시 유틸', () => {
   })
 
   test('프록시 요청 URL만 프록시 URL로 판별한다', () => {
-    expect(isMangaImageProxyRequestURL('https://soujpa.in/start/123/123_4.avif')).toBe(false)
-    expect(isMangaImageProxyRequestURL('/image/fallback.svg')).toBe(false)
+    expect(isLitomiImageProxyURL('https://soujpa.in/start/123/123_4.avif')).toBe(false)
+    expect(isLitomiImageProxyURL('/image/fallback.svg')).toBe(false)
     expect(
-      isMangaImageProxyRequestURL(
-        'https://not-proxy.example.com/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in',
-      ),
+      isLitomiImageProxyURL('https://not-proxy.example.com/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in'),
     ).toBe(false)
-    expect(isMangaImageProxyRequestURL(`${proxyOrigin}/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in`)).toBe(
-      true,
-    )
+    expect(isLitomiImageProxyURL(`${proxyOrigin}/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in`)).toBe(true)
   })
 
   test('1-based 페이지 번호로 동등 원본 fallback 소스를 만든다', () => {

@@ -10,6 +10,7 @@ const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'ehgt.org',
   'siam-cdn.net',
   'litomi.in',
+  'zrocdn.xyz',
 ] as const
 
 const IMAGE_PROXY_ROUTE_EXTENSION = '.webp'
@@ -22,7 +23,7 @@ export type MangaImageProxyParams = {
 
 export type MangaImageProxyVariant = 'original' | 'thumbnail'
 
-export function createKHentaiThumbnailURL(id: number): string {
+export function createKHentaiThumbnailCoverURL(id: number): string {
   const millions = Math.floor(id / 1_000_000)
   const thousands = Math.floor((id % 1_000_000) / 1_000)
   const remainder = id % 1000
@@ -54,18 +55,15 @@ export function createLitomiProxyMangaImageURL({
 export function createThirdPartyMangaImageURLs({ mangaId, page, variant }: MangaImageProxyParams): string[] {
   if (variant === 'thumbnail') {
     return page === 1
-      ? [
-          createKHentaiThumbnailURL(mangaId),
-          createCoverThumbnailURL(mangaId),
-          createImageDeliveriesThumbnailURL(mangaId, 1),
-        ]
-      : [createImageDeliveriesThumbnailURL(mangaId, page)]
+      ? [createKHentaiThumbnailCoverURL(mangaId), createHentaiPawThumbnailCoverURL(mangaId)]
+      : [createHentaiPawThumbnailPageURL(mangaId, page)]
   }
 
   return [
-    createSoujpaPageURL(mangaId, page, 'avif'),
-    createSoujpaPageURL(mangaId, page, 'webp'),
+    createHarpiPageURL(mangaId, page, 'avif'),
+    createHarpiPageURL(mangaId, page, 'webp'),
     createHentkorPageURL(mangaId, page),
+    createNHentaiPageURL(mangaId, page),
   ]
 }
 
@@ -113,10 +111,19 @@ export function isImageProxySourceURLCompatibleWithRouteParams(
     return match.groups.page === 'cover' ? page === 1 : match.groups.page === page.toString()
   }
 
+  if (normalizedHost === 'zrocdn.xyz') {
+    const match = /^\/(?<mangaId>\d+)\/(?<page>\d+)\.jpg$/u.exec(sourceURL.pathname)
+    if (!match?.groups) {
+      return false
+    }
+
+    return match.groups.mangaId === mangaId.toString() && match.groups.page === page.toString()
+  }
+
   return true
 }
 
-export function isMangaImageProxyRequestURL(requestURL: string): boolean {
+export function isLitomiImageProxyURL(requestURL: string): boolean {
   let parsedRequestURL: URL
 
   try {
@@ -165,20 +172,24 @@ export function validateImageSourceURL(sourceURL: URL): URL {
   return sourceURL
 }
 
-function createCoverThumbnailURL(mangaId: number): string {
+function createHarpiPageURL(mangaId: number, page: number, ext: 'avif' | 'webp'): string {
+  return `https://soujpa.in/start/${mangaId}/${mangaId}_${page - 1}.${ext}`
+}
+
+function createHentaiPawThumbnailCoverURL(mangaId: number): string {
   return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`
+}
+
+function createHentaiPawThumbnailPageURL(mangaId: number, page: number): string {
+  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/${page}.webp`
 }
 
 function createHentkorPageURL(mangaId: number, page: number): string {
   return `https://cdn.hentkor.net/pages/${mangaId}/${page}.avif`
 }
 
-function createImageDeliveriesThumbnailURL(mangaId: number, page: number): string {
-  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/${page}.webp`
-}
-
-function createSoujpaPageURL(mangaId: number, page: number, ext: 'avif' | 'webp'): string {
-  return `https://soujpa.in/start/${mangaId}/${mangaId}_${page - 1}.${ext}`
+function createNHentaiPageURL(mangaId: number, page: number): string {
+  return `https://zrocdn.xyz/galleries/${mangaId}/${page}.jpg`
 }
 
 function hasAllowedHostSuffix(hostname: string, hostSuffixes: readonly string[]): boolean {
