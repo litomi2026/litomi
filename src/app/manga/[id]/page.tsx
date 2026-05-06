@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 
 import { APP_ORIGIN, generateOpenGraphMetadata } from '@/constants'
 import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
-import { createKHentaiThumbnailURL } from '@/utils/image-proxy'
+import { createKHentaiThumbnailCoverURL } from '@/utils/image-proxy'
 import { toAbsoluteUrl } from '@/utils/url'
 
 import { getManga } from './common.server'
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
     ...generateOpenGraphMetadata({
       title: slicedTitle,
       description: slicedDescription,
-      images: manga?.images?.[0]?.original?.url ?? createKHentaiThumbnailURL(id),
+      images: manga?.images?.[0]?.original?.url ?? createKHentaiThumbnailCoverURL(id),
       url: `/manga/${id}`,
     }),
     alternates: {
@@ -72,7 +72,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
     url: pageURL,
     name: manga?.title ?? '작품',
     inLanguage: 'ko',
-    image: [toAbsoluteUrl(manga?.images?.[0]?.original?.url ?? createKHentaiThumbnailURL(id))],
+    image: [toAbsoluteUrl(manga?.images?.[0]?.original?.url ?? createKHentaiThumbnailCoverURL(id))],
     isAccessibleForFree: true,
     potentialAction: {
       '@type': 'ReadAction',

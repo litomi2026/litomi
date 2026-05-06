@@ -30,6 +30,9 @@ describe('MangaImage 대체 경로', () => {
     expect(image.getAttribute('src')).toBe('https://cdn.hentkor.net/pages/123/5.avif')
 
     fireEvent.error(image)
+    expect(image.getAttribute('src')).toBe('https://zrocdn.xyz/galleries/123/5.jpg')
+
+    fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/original/5.webp')
 
     fireEvent.error(image)
@@ -50,6 +53,11 @@ describe('MangaImage 대체 경로', () => {
     fireEvent.error(image)
     fireEvent.error(image)
 
+    expect(image.getAttribute('src')).toBe('https://zrocdn.xyz/galleries/123/5.jpg')
+    expect(image.getAttribute('crossorigin')).toBeNull()
+
+    fireEvent.error(image)
+
     expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/original/5.webp')
     expect(image.getAttribute('crossorigin')).toBe('anonymous')
 
@@ -64,7 +72,7 @@ describe('MangaImage 대체 경로', () => {
     expect(image.getAttribute('crossorigin')).toBeNull()
   })
 
-  test('첫 번째 썸네일은 k-hentai, cover, 번호 썸네일 뒤에 쿼리 없는 확인 경로와 원본 대체 경로를 순서대로 시도한다', () => {
+  test('첫 번째 썸네일은 k-hentai와 cover 뒤에 쿼리 없는 확인 경로와 원본 대체 경로를 순서대로 시도한다', () => {
     const { getByAltText } = render(<MangaImage imageIndex={0} mangaId={123} variant="thumbnail" />)
     const image = getByAltText('manga-image-1')
 
@@ -72,9 +80,6 @@ describe('MangaImage 대체 경로', () => {
 
     fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://cdn.imagedeliveries.com/123/thumbnails/cover.webp')
-
-    fireEvent.error(image)
-    expect(image.getAttribute('src')).toBe('https://cdn.imagedeliveries.com/123/thumbnails/1.webp')
 
     fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/thumbnail/1.webp')
@@ -87,6 +92,9 @@ describe('MangaImage 대체 경로', () => {
 
     fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://cdn.hentkor.net/pages/123/1.avif')
+
+    fireEvent.error(image)
+    expect(image.getAttribute('src')).toBe('https://zrocdn.xyz/galleries/123/1.jpg')
   })
 
   test('썸네일 대체 경로의 soujpa 원본 URL은 요청한 page 값을 사용한다', () => {
