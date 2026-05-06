@@ -22,14 +22,6 @@ export type MangaImageProxyParams = {
 
 export type MangaImageProxyVariant = 'original' | 'thumbnail'
 
-export function createFirstPageOriginalFallbackURLs(mangaId: number): string[] {
-  return [
-    createSoujpaPageURL(mangaId, 1, 'avif'),
-    createSoujpaPageURL(mangaId, 1, 'webp'),
-    createHentkorPageURL(mangaId, 1),
-  ]
-}
-
 export function createLitomiProxyMangaImageURL({
   sourceURL,
   mangaId,
@@ -55,7 +47,11 @@ export function createLitomiProxyMangaImageURL({
 export function createThirdPartyMangaImageURLs({ mangaId, page, variant }: MangaImageProxyParams): string[] {
   if (variant === 'thumbnail') {
     return page === 1
-      ? [getKHentaiThumbnailURL(mangaId), createCoverThumbnailURL(mangaId)]
+      ? [
+          getKHentaiThumbnailURL(mangaId),
+          createCoverThumbnailURL(mangaId),
+          createImageDeliveriesThumbnailURL(mangaId, 1),
+        ]
       : [createImageDeliveriesThumbnailURL(mangaId, page)]
   }
 
