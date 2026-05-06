@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import { isSingleEmoji } from '@/utils/emoji'
 import { normalizeString } from '@/utils/string'
 
-export function getValidLibraryIcon(value: string): string | null {
+export function getValidLibraryIcon(value: string | undefined): string | null {
   const icon = normalizeString(value)
 
   if (!icon || !isSingleEmoji(icon)) {

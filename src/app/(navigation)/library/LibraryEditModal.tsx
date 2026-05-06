@@ -2,7 +2,7 @@
 
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check, Loader2 } from 'lucide-react'
-import { type SubmitEvent, useRef } from 'react'
+import { type SubmitEvent, useId, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { PATCHV1LibraryIdBody } from '@/backend/api/v1/library/[id]/PATCH'
@@ -13,16 +13,17 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
+import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
+import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { ProblemDetailsError } from '@/utils/react-query-error'
+import { normalizeString } from '@/utils/string'
 
 import { updateLibrary } from './api'
-
-const DEFAULT_ICONS = ['📚', '❤️', '⭐', '📖', '🔖', '📌', '💾', '🗂️']
+import { getValidLibraryIcon } from './libraryIconInput'
 
 type Library = {
   id: number
@@ -40,7 +41,8 @@ type Props = {
 }
 
 export default function LibraryEditModal({ library, open, onOpenChange }: Readonly<Props>) {
-  const formRef = useRef<HTMLFormElement>(null)
+  const [isPublic, setIsPublic] = useState(library.isPublic)
+  const iconInputId = useId()
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const adultState = getAdultState(me)
@@ -55,7 +57,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     },
     onSuccess: ({ id: updatedLibraryId }, { body }) => {
       const nextName = body.name.trim()
-      const nextDescription = body.description?.trim() || null
+      const nextDescription = normalizeString(body.description)
       const nextColor = body.color || null
       const nextIcon = body.icon || null
       const nextIsPublic = body.isPublic
@@ -112,8 +114,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   })
 
   const colorValue = library.color || '#6366f1'
-  const iconValue = library.icon || '📚'
-  const isPublic = library.isPublic
+  const iconValue = library.icon || DEFAULT_LIBRARY_ICON
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -126,47 +127,36 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     const name = formData.get('name')?.toString().trim() ?? ''
     const description = formData.get('description')?.toString() ?? null
     const color = formData.get('color')?.toString() ?? null
-    const icon = formData.get('icon')?.toString() ?? null
+    const icon = getValidLibraryIcon(formData.get('icon')?.toString())
+
+    if (!icon) {
+      return
+    }
 
     const body: PATCHV1LibraryIdBody = {
       name,
-      description: description?.trim() || null,
+      description: normalizeString(description),
       color: color || null,
-      icon: icon || null,
-      isPublic: formData.get('is-public') === 'on',
+      icon,
+      isPublic,
     }
 
     updateLibraryMutation.mutate({ body, libraryId: library.id })
   }
 
-  function handleIconClick(emoji: string) {
-    if (!formRef.current) {
-      return
-    }
-
-    formRef.current.icon.value = emoji
-    const buttons = formRef.current.querySelectorAll('[name="icon-button"]')
-
-    for (const button of buttons) {
-      const buttonElement = button as HTMLButtonElement
-      buttonElement.setAttribute('aria-pressed', buttonElement.dataset.icon === emoji ? 'true' : 'false')
-    }
-  }
-
   function handleTogglePublic(next: boolean) {
     if (!next && !hasAdultAccess(adultState)) {
       showAdultVerificationRequiredToast({ username: me?.name })
-      const input = formRef.current?.querySelector<HTMLInputElement>('input[name="is-public"]')
-
-      if (input) {
-        input.checked = true
-      }
+      setIsPublic(true)
+      return
     }
+
+    setIsPublic(next)
   }
 
   return (
     <Dialog ariaLabel="서재 수정" onClose={() => onOpenChange(false)} open={open}>
-      <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit} ref={formRef}>
+      <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
         <DialogHeader onClose={() => onOpenChange(false)} title="서재 수정" />
         <DialogBody className="grid gap-4">
           <div>
@@ -222,24 +212,24 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-400 mb-1.5">아이콘</label>
-            <input defaultValue={iconValue} name="icon" type="hidden" />
-            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-              {DEFAULT_ICONS.map((emoji) => (
-                <button
-                  aria-pressed={emoji === iconValue}
-                  className="p-1 rounded-lg flex items-center justify-center text-lg transition aria-pressed:bg-zinc-700 aria-pressed:ring-2 aria-pressed:ring-zinc-500 bg-zinc-800 hover:bg-zinc-700"
-                  data-icon={emoji}
-                  disabled={updateLibraryMutation.isPending}
-                  key={emoji}
-                  name="icon-button"
-                  onClick={() => handleIconClick(emoji)}
-                  type="button"
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
+            <label className="block text-sm text-zinc-400 mb-1.5" htmlFor={iconInputId}>
+              아이콘
+            </label>
+            <input
+              autoCapitalize="off"
+              autoComplete="off"
+              className="h-10 w-16 rounded-lg border border-zinc-700 bg-zinc-800 text-center text-xl outline-none transition
+                focus:border-transparent focus:ring-2 focus:ring-zinc-600 disabled:cursor-not-allowed disabled:opacity-50"
+              defaultValue={iconValue}
+              disabled={updateLibraryMutation.isPending}
+              id={iconInputId}
+              maxLength={MAX_LIBRARY_ICON_LENGTH}
+              name="icon"
+              placeholder={DEFAULT_LIBRARY_ICON}
+              required
+              spellCheck={false}
+              type="text"
+            />
           </div>
 
           <div className="flex items-center justify-between mt-2">
@@ -249,8 +239,8 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             </div>
             <Toggle
               aria-label="서재 공개 설정"
+              checked={isPublic}
               className="w-12 peer-checked:bg-brand/80"
-              defaultChecked={isPublic}
               disabled={updateLibraryMutation.isPending}
               name="is-public"
               onToggle={handleTogglePublic}
