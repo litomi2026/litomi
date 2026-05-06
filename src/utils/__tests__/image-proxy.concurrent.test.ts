@@ -58,6 +58,7 @@ describe('만화 이미지 프록시 유틸', () => {
       'https://soujpa.in/start/123/123_4.avif',
       'https://soujpa.in/start/123/123_4.webp',
       'https://cdn.hentkor.net/pages/123/5.avif',
+      'https://zrocdn.xyz/galleries/123/5.jpg',
     ])
   })
 
@@ -71,7 +72,7 @@ describe('만화 이미지 프록시 유틸', () => {
     ).toEqual(['https://cdn.imagedeliveries.com/456/thumbnails/3.webp'])
   })
 
-  test('thumbnail 1페이지는 k-hentai, cover.webp, 1.webp를 순서대로 사용한다', () => {
+  test('thumbnail 1페이지는 k-hentai 썸네일 다음 cover.webp를 사용한다', () => {
     expect(
       createThirdPartyMangaImageURLs({
         mangaId: 456,
@@ -81,7 +82,6 @@ describe('만화 이미지 프록시 유틸', () => {
     ).toEqual([
       'https://khentai-t.siam-cdn.net/0/0/456',
       'https://cdn.imagedeliveries.com/456/thumbnails/cover.webp',
-      'https://cdn.imagedeliveries.com/456/thumbnails/1.webp',
     ])
   })
 })
