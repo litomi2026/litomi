@@ -12,6 +12,7 @@ import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/const
 import { db } from '@/database/supabase/drizzle'
 import { libraryTable } from '@/database/supabase/library'
 import { hexColorToInt } from '@/utils/color'
+import { normalizeString } from '@/utils/string'
 
 import { libraryIconSchema } from '../schema'
 
@@ -62,7 +63,7 @@ route.patch(
         .update(libraryTable)
         .set({
           name: name.trim(),
-          description: description?.trim() || null,
+          description: normalizeString(description),
           color: color ? hexColorToInt(color) : null,
           icon: icon || null,
           isPublic,

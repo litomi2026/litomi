@@ -15,6 +15,7 @@ import { db } from '@/database/supabase/drizzle'
 import { libraryTable } from '@/database/supabase/library'
 import { userExpansionTable } from '@/database/supabase/points'
 import { hexColorToInt } from '@/utils/color'
+import { normalizeString } from '@/utils/string'
 
 import { libraryIconSchema } from './schema'
 
@@ -86,7 +87,7 @@ route.post('/', requireAuth, zProblemValidator('json', postBodySchema), async (c
         .values({
           userId,
           name,
-          description: description?.trim() || null,
+          description: normalizeString(description),
           color: color ? hexColorToInt(color) : null,
           icon: icon || null,
           isPublic,
