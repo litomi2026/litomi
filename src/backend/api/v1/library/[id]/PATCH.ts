@@ -13,11 +13,13 @@ import { db } from '@/database/supabase/drizzle'
 import { libraryTable } from '@/database/supabase/library'
 import { hexColorToInt } from '@/utils/color'
 
-const paramsSchema = z.object({
+import { libraryIconSchema } from '../schema'
+
+const paramSchema = z.object({
   id: z.coerce.number().int().positive(),
 })
 
-const patchBodySchema = z.object({
+const bodySchema = z.object({
   name: z
     .string()
     .min(1, '서재 이름을 입력해 주세요')
@@ -32,46 +34,52 @@ const patchBodySchema = z.object({
     .regex(/^#[0-9A-F]{6}$/i, '올바른 색상 코드를 입력해 주세요')
     .nullable()
     .optional(),
-  icon: z.string().max(4, '이모지는 하나만 입력할 수 있어요').nullable().optional(),
+  icon: libraryIconSchema,
   isPublic: z.boolean().optional().default(false),
 })
 
-export type PATCHV1LibraryIdBody = z.infer<typeof patchBodySchema>
+export type PATCHV1LibraryIdBody = z.infer<typeof bodySchema>
 export type PATCHV1LibraryIdResponse = { id: number }
 
 const route = new Hono<Env>()
 
-route.patch('/', requireAuth, zProblemValidator('param', paramsSchema), zProblemValidator('json', patchBodySchema), async (c) => {
-  const userId = c.get('userId')!
-  const { id: libraryId } = c.req.valid('param')
-  const { name, description, color, icon, isPublic } = c.req.valid('json')
+route.patch(
+  '/',
+  requireAuth,
+  zProblemValidator('param', paramSchema),
+  zProblemValidator('json', bodySchema),
+  async (c) => {
+    const userId = c.get('userId')!
+    const { id: libraryId } = c.req.valid('param')
+    const { name, description, color, icon, isPublic } = c.req.valid('json')
 
-  if (isPublic === false && shouldBlockAdultGate(c)) {
-    return adultVerificationRequiredResponse(c)
-  }
-
-  try {
-    const [updatedLibrary] = await db
-      .update(libraryTable)
-      .set({
-        name: name.trim(),
-        description: description?.trim() || null,
-        color: color ? hexColorToInt(color) : null,
-        icon: icon || null,
-        isPublic,
-      })
-      .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId)))
-      .returning({ id: libraryTable.id })
-
-    if (!updatedLibrary) {
-      return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
+    if (isPublic === false && shouldBlockAdultGate(c)) {
+      return adultVerificationRequiredResponse(c)
     }
 
-    return c.json<PATCHV1LibraryIdResponse>({ id: updatedLibrary.id })
-  } catch (error) {
-    console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재를 수정하지 못했어요' })
-  }
-})
+    try {
+      const [updatedLibrary] = await db
+        .update(libraryTable)
+        .set({
+          name: name.trim(),
+          description: description?.trim() || null,
+          color: color ? hexColorToInt(color) : null,
+          icon: icon || null,
+          isPublic,
+        })
+        .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId)))
+        .returning({ id: libraryTable.id })
+
+      if (!updatedLibrary) {
+        return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
+      }
+
+      return c.json<PATCHV1LibraryIdResponse>({ id: updatedLibrary.id })
+    } catch (error) {
+      console.error(error)
+      return problemResponse(c, { status: 500, detail: '서재를 수정하지 못했어요' })
+    }
+  },
+)
 
 export default route

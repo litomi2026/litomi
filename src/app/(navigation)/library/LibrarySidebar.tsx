@@ -3,6 +3,7 @@
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 import { type RefObject, useRef } from 'react'
 
+import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { formatNumber } from '@/utils/format/number'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
@@ -134,7 +135,7 @@ export default function LibrarySidebar({
                 href={`/library/${library.id}`}
                 icon={
                   <>
-                    <span className="text-sm sm:hidden lg:inline">{library.icon || '📚'}</span>
+                    <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
                     <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
                       {library.name.slice(0, 1)}
                     </span>
@@ -162,7 +163,7 @@ export default function LibrarySidebar({
                 href={`/library/${library.id}`}
                 icon={
                   <>
-                    <span className="text-sm sm:hidden lg:inline">{library.icon || '📚'}</span>
+                    <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
                     <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
                       {library.name.slice(0, 1)}
                     </span>
@@ -191,7 +192,7 @@ export default function LibrarySidebar({
                 href={`/library/${library.id}`}
                 icon={
                   <>
-                    <span className="text-sm sm:hidden lg:inline">{library.icon || '📚'}</span>
+                    <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
                     <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
                       {library.name.slice(0, 1)}
                     </span>

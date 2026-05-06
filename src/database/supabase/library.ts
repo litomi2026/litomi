@@ -1,7 +1,7 @@
 import { bigint, boolean, index, integer, pgTable, primaryKey, timestamp, varchar } from 'drizzle-orm/pg-core'
 import 'server-only'
 
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
+import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 
 import { userTable } from './user'
 
@@ -16,7 +16,7 @@ export const libraryTable = pgTable(
     name: varchar('name', { length: MAX_LIBRARY_NAME_LENGTH }).notNull(),
     description: varchar('description', { length: MAX_LIBRARY_DESCRIPTION_LENGTH }),
     color: integer('color'),
-    icon: varchar('icon', { length: 4 }), // Emoji
+    icon: varchar('icon', { length: MAX_LIBRARY_ICON_LENGTH }),
     isPublic: boolean('is_public').default(false).notNull(),
   },
   (table) => [index('idx_library_user_id').on(table.userId)],

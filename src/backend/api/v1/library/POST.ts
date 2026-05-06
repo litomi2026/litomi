@@ -16,6 +16,8 @@ import { libraryTable } from '@/database/supabase/library'
 import { userExpansionTable } from '@/database/supabase/points'
 import { hexColorToInt } from '@/utils/color'
 
+import { libraryIconSchema } from './schema'
+
 export type POSTV1LibraryResponse = {
   id: number
   createdAt: number
@@ -40,7 +42,7 @@ const postBodySchema = z.object({
     .regex(/^#[0-9A-F]{6}$/i, '올바른 색상 코드를 입력해 주세요')
     .nullable()
     .optional(),
-  icon: z.string().max(4, '이모지는 하나만 입력할 수 있어요').nullable().optional(),
+  icon: libraryIconSchema,
   isPublic: z.boolean().optional().default(false),
 })
 

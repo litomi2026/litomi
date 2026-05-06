@@ -4,6 +4,7 @@ import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
+import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
 
 import type { BulkTargetLibrary } from './bulkActionTypes'
 
@@ -49,7 +50,7 @@ export default function BulkLibrarySelectDialog({
                 className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
                 style={{ backgroundColor: library.color ?? '#3B82F6' }}
               >
-                <span className="text-lg">{library.icon || '📚'}</span>
+                <span className="text-lg">{library.icon || DEFAULT_LIBRARY_ICON}</span>
               </div>
               <div className="flex-1">
                 <h3 className="font-medium text-zinc-100 line-clamp-1 break-all">{library.name}</h3>
