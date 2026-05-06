@@ -12,6 +12,7 @@ import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
+import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
 import { QueryKeys } from '@/constants/query'
 
 import useLibrariesQuery from './useLibrariesQuery'
@@ -162,7 +163,7 @@ export default function LibraryModal() {
                   className="size-10 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
                   style={{ backgroundColor: typeof library.color === 'string' ? library.color : '#3B82F6' }}
                 >
-                  <span className="text-lg">{library.icon || '📚'}</span>
+                  <span className="text-lg">{library.icon || DEFAULT_LIBRARY_ICON}</span>
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium break-all line-clamp-1 text-zinc-100">{library.name}</h3>

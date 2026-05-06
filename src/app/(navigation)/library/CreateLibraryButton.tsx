@@ -2,7 +2,7 @@
 
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
-import { type SubmitEvent, useEffect, useRef, useState } from 'react'
+import { type ChangeEvent, type SubmitEvent, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
@@ -13,13 +13,17 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
+import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
+import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
+import { normalizeString } from '@/utils/string'
+
+import { getValidLibraryIcon } from './libraryIconInput'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -33,8 +37,6 @@ const DEFAULT_COLORS = [
   '#6366F1', // Indigo
   '#14B8A6', // Teal
 ]
-
-const DEFAULT_ICONS = ['📚', '❤️', '⭐', '📖', '🔖', '📌', '💾', '🗂️']
 
 type CreateLibraryPayload = {
   name: string
@@ -51,11 +53,12 @@ type Props = {
 export default function CreateLibraryButton({ className = '' }: Readonly<Props>) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedColor, setSelectedColor] = useState(DEFAULT_COLORS[0])
-  const [selectedIcon, setSelectedIcon] = useState(DEFAULT_ICONS[0])
+  const [selectedIcon, setSelectedIcon] = useState(DEFAULT_LIBRARY_ICON)
   const [isPublic, setIsPublic] = useState(true)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const nameInputRef = useRef<HTMLInputElement>(null)
+  const iconInputId = useId()
   const adultState = getAdultState(me)
 
   const createMutation = useMutation<POSTV1LibraryResponse, ProblemDetailsError, CreateLibraryPayload>({
@@ -126,7 +129,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   function handleClose() {
     setIsModalOpen(false)
     setSelectedColor(DEFAULT_COLORS[0])
-    setSelectedIcon(DEFAULT_ICONS[0])
+    setSelectedIcon(DEFAULT_LIBRARY_ICON)
   }
 
   function handleOpen() {
@@ -160,15 +163,28 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
 
     const formData = new FormData(event.currentTarget)
     const name = formData.get('name')?.toString() ?? ''
-    const description = (formData.get('description')?.toString() ?? '').trim() || null
+    const description = normalizeString(formData.get('description')?.toString())
+    const icon = getValidLibraryIcon(selectedIcon)
+
+    if (!icon) {
+      return
+    }
 
     createMutation.mutate({
       name,
       description,
       color: selectedColor ?? null,
-      icon: selectedIcon ?? null,
+      icon,
       isPublic,
     })
+  }
+
+  function handleIconChange(event: ChangeEvent<HTMLInputElement>) {
+    setSelectedIcon(event.currentTarget.value)
+  }
+
+  function handleIconBlur() {
+    setSelectedIcon(normalizeString(selectedIcon) ?? '')
   }
 
   useEffect(() => {
@@ -198,27 +214,32 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 className="size-20 rounded-2xl flex items-center justify-center text-3xl shadow-lg transition"
                 style={{ backgroundColor: selectedColor }}
               >
-                {selectedIcon}
+                <span className="max-w-full overflow-hidden">
+                  {normalizeString(selectedIcon) || DEFAULT_LIBRARY_ICON}
+                </span>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">아이콘</label>
-              <div className="grid grid-cols-4 gap-2">
-                {DEFAULT_ICONS.map((icon) => (
-                  <button
-                    aria-pressed={selectedIcon === icon}
-                    className="p-3 rounded-lg border-2 text-2xl transition flex items-center justify-center
-                      aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:hover:bg-zinc-700
-                      border-zinc-700 hover:bg-zinc-800 disabled:opacity-50"
-                    disabled={isPending}
-                    key={icon}
-                    onClick={() => setSelectedIcon(icon)}
-                    type="button"
-                  >
-                    {icon}
-                  </button>
-                ))}
-              </div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor={iconInputId}>
+                아이콘
+              </label>
+              <input
+                autoCapitalize="off"
+                autoComplete="off"
+                className="h-12 w-20 rounded-lg border-2 border-zinc-700 bg-zinc-800 text-center text-2xl outline-none transition
+                  focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={isPending}
+                id={iconInputId}
+                maxLength={MAX_LIBRARY_ICON_LENGTH}
+                name="icon"
+                onBlur={handleIconBlur}
+                onChange={handleIconChange}
+                placeholder={DEFAULT_LIBRARY_ICON}
+                required
+                spellCheck={false}
+                type="text"
+                value={selectedIcon}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">색상</label>
@@ -296,10 +317,6 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 </div>
               </label>
             </div>
-
-            {/* Hidden inputs */}
-            <input name="color" type="hidden" value={selectedColor} />
-            <input name="icon" type="hidden" value={selectedIcon} />
           </DialogBody>
 
           {/* Footer */}

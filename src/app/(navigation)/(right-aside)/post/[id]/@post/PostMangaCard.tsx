@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge'
 
 import MangaImage from '@/components/MangaImage'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 
 type Props = {
   mangaId: number
@@ -14,15 +15,18 @@ type Props = {
 
 export default function PostMangaCard({ mangaId, variant = 'inline', imageClassName = '' }: Props) {
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: [mangaId] })
-  const manga = mangaMap.get(mangaId)
-  const title = manga?.title ?? '불러오는 중'
-  const thumbnailUrl = manga?.images?.[0]?.thumbnail?.url ?? manga?.images?.[0]?.original?.url
+  const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
+  const title = manga.title
+  const thumbnailUrl = manga.images?.[0]?.original?.url ?? manga.images?.[0]?.thumbnail?.url
 
   if (variant === 'cover') {
     return (
       <MangaImage
         alt={title}
-        className={twMerge('block w-full h-auto bg-zinc-900 aspect-[auto_5/7]', imageClassName)}
+        className={twMerge(
+          'block w-full h-auto bg-zinc-900 aspect-7/5 object-contain sm:aspect-[auto_5/7]',
+          imageClassName,
+        )}
         mangaId={mangaId}
         src={thumbnailUrl}
         variant="thumbnail"

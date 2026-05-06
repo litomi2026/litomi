@@ -12,6 +12,7 @@ import {
   dmcaNoticeTargetTable,
 } from '@/database/supabase/dmca'
 import { db } from '@/database/supabase/drizzle'
+import { normalizeString } from '@/utils/string'
 
 const langSchema = z.enum(['ko', 'en']).default('ko')
 type Lang = z.infer<typeof langSchema>
@@ -59,9 +60,9 @@ export async function submitDmcaCounterNotice(formData: FormData) {
     claimantEmail: String(formData.get('claimant-email') ?? ''),
     claimantAddress: String(formData.get('claimant-address') ?? ''),
     claimantPhone: String(formData.get('claimant-phone') ?? ''),
-    relatedNoticeId: normalizeOptionalText(String(formData.get('related-notice-id') ?? '')) ?? undefined,
+    relatedNoticeId: normalizeString(String(formData.get('related-notice-id') ?? '')) ?? undefined,
     claimDetails: String(formData.get('claim-details') ?? ''),
-    evidenceLinks: normalizeOptionalText(String(formData.get('evidence-links') ?? '')) ?? undefined,
+    evidenceLinks: normalizeString(String(formData.get('evidence-links') ?? '')) ?? undefined,
     infringingReferencesRaw: String(formData.get('infringing-references') ?? ''),
     goodFaithConfirmed: formData.get('good-faith-confirmed') === 'on',
     perjuryConfirmed: formData.get('perjury-confirmed') === 'on',
@@ -93,7 +94,7 @@ export async function submitDmcaCounterNotice(formData: FormData) {
         claimantPhone: data.claimantPhone,
         relatedNoticeId: data.relatedNoticeId,
         claimDetails: data.claimDetails,
-        evidenceLinks: normalizeOptionalText(data.evidenceLinks ?? undefined),
+        evidenceLinks: normalizeString(data.evidenceLinks ?? undefined),
         infringingReferencesRaw: data.infringingReferencesRaw,
         signature: data.signature,
         goodFaithConfirmed: data.goodFaithConfirmed,
@@ -127,7 +128,7 @@ export async function submitDmcaNotice(formData: FormData) {
     reporterPhone: String(formData.get('reporter-phone') ?? ''),
     reporterRole: String(formData.get('reporter-role') ?? ''),
     copyrightedWorkDescription: String(formData.get('copyrighted-work-description') ?? ''),
-    copyrightedWorkURL: normalizeOptionalText(String(formData.get('copyrighted-work-url') ?? '')) ?? undefined,
+    copyrightedWorkURL: normalizeString(String(formData.get('copyrighted-work-url') ?? '')) ?? undefined,
     infringingReferencesRaw: String(formData.get('infringing-references') ?? ''),
     goodFaithConfirmed: formData.get('good-faith-confirmed') === 'on',
     perjuryConfirmed: formData.get('perjury-confirmed') === 'on',
@@ -159,7 +160,7 @@ export async function submitDmcaNotice(formData: FormData) {
         reporterPhone: data.reporterPhone,
         reporterRole: data.reporterRole,
         copyrightedWorkDescription: data.copyrightedWorkDescription,
-        copyrightedWorkURL: normalizeOptionalText(data.copyrightedWorkURL ?? undefined),
+        copyrightedWorkURL: normalizeString(data.copyrightedWorkURL ?? undefined),
         infringingReferencesRaw: data.infringingReferencesRaw,
         goodFaithConfirmed: data.goodFaithConfirmed,
         perjuryConfirmed: data.perjuryConfirmed,
@@ -208,9 +209,4 @@ function extractMangaIdsFromText(text: string): number[] {
 function getLangFromFormData(formData: FormData): Lang {
   const raw = formData.get('lang')
   return langSchema.parse(typeof raw === 'string' ? raw : undefined)
-}
-
-function normalizeOptionalText(value: string | undefined): string | null {
-  const trimmed = value?.trim() ?? ''
-  return trimmed ? trimmed : null
 }

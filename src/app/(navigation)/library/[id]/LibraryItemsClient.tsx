@@ -23,6 +23,7 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 import { getViewFromSearchParams, View } from '@/utils/param'
 
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
@@ -159,7 +160,7 @@ export default function LibraryItemsClient({
       return <MangaCardSkeleton variant={view} />
     }
 
-    const manga = mangaMap.get(item.mangaId) ?? { id: item.mangaId, title: '불러오는 중', images: [] }
+    const manga = mangaMap.get(item.mangaId) ?? createLoadingManga(item.mangaId)
 
     if (!isSelectionMode) {
       return <MangaCard index={index} manga={manga} variant={view} />

@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge'
 
 import MangaCard from '@/components/card/MangaCard'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 
 type Props = {
   className?: string
@@ -21,7 +22,8 @@ export default function RankingList({ className, rankings }: Props) {
   return (
     <div className={twMerge(`grid gap-2 p-2`, className)}>
       {rankings.map((ranking, i) => {
-        const manga = mangaMap.get(ranking.mangaId) ?? { id: ranking.mangaId, title: '불러오는 중', images: [] }
+        const manga = mangaMap.get(ranking.mangaId) ?? createLoadingManga(ranking.mangaId)
+
         return <MangaCard index={i} key={ranking.mangaId} manga={manga} rank={i + 1} />
       })}
     </div>

@@ -14,6 +14,7 @@ import ViewToggle from '@/components/ViewToggle'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { Manga } from '@/types/manga'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 import { getViewFromSearchParams, View } from '@/utils/param'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -165,7 +166,7 @@ function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchin
   return (
     <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
       {items.map(({ mangaId, rating }) => {
-        const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
+        const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
         const index = ratingIndexMap.get(mangaId) ?? 0
 
         if (!isSelectionMode) {
