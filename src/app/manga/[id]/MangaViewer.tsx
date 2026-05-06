@@ -11,6 +11,7 @@ import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { AdultState, getAdultState } from '@/utils/adult-verification'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import ImageViewer from './ImageViewer/ImageViewer'
 import usePageMetadata from './usePageMetadata'
@@ -31,7 +32,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const isWaitingForAdClick = !me && !hasClickedAd
   const mangaIds = isWaitingForAdClick ? [] : [id]
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
-  const data = mangaMap.get(id) ?? (!isWaitingForAdClick && !initialManga ? { id, title: '불러오는 중' } : undefined)
+  const data = mangaMap.get(id) ?? (!isWaitingForAdClick && !initialManga ? createLoadingManga(id) : undefined)
   const manga = prepareManga(data, initialManga)
   const metadata = prepareMetadata(manga)
 

@@ -17,6 +17,7 @@ import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 import { getViewFromSearchParams, View } from '@/utils/param'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -109,7 +110,7 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
     }
 
     const { library, mangaId } = item.libraryItem
-    const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
+    const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
 
     return (
       <div className="relative h-full rounded-xl overflow-hidden">

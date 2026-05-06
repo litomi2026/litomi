@@ -17,6 +17,7 @@ import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 import { getViewFromSearchParams, View } from '@/utils/param'
 
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
@@ -129,7 +130,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
       return <MangaCardSkeleton variant={view} />
     }
 
-    const manga = mangaMap.get(item.mangaId) ?? { id: item.mangaId, title: '불러오는 중', images: [] }
+    const manga = mangaMap.get(item.mangaId) ?? createLoadingManga(item.mangaId)
 
     if (!isSelectionMode) {
       return <MangaCard index={index} manga={manga} variant={view} />

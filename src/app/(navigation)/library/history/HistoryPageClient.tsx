@@ -6,6 +6,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 import { View } from '@/utils/param'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -56,7 +57,7 @@ export default function HistoryPageClient(props: Props) {
             </h4>
             <div className={`grid ${MANGA_GRID_COLUMN[View.CARD]} gap-2 p-2`}>
               {items.map(({ mangaId, lastPage }) => {
-                const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
+                const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
                 const index = historyItems.findIndex((item) => item.mangaId === mangaId)
 
                 if (!isSelectionMode) {
