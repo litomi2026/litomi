@@ -22,6 +22,13 @@ export type MangaImageProxyParams = {
 
 export type MangaImageProxyVariant = 'original' | 'thumbnail'
 
+export function createKHentaiThumbnailURL(id: number): string {
+  const millions = Math.floor(id / 1_000_000)
+  const thousands = Math.floor((id % 1_000_000) / 1_000)
+  const remainder = id % 1000
+  return `https://khentai-t.siam-cdn.net/${millions}/${thousands}/${remainder}`
+}
+
 export function createLitomiProxyMangaImageURL({
   sourceURL,
   mangaId,
@@ -48,7 +55,7 @@ export function createThirdPartyMangaImageURLs({ mangaId, page, variant }: Manga
   if (variant === 'thumbnail') {
     return page === 1
       ? [
-          getKHentaiThumbnailURL(mangaId),
+          createKHentaiThumbnailURL(mangaId),
           createCoverThumbnailURL(mangaId),
           createImageDeliveriesThumbnailURL(mangaId, 1),
         ]
@@ -172,13 +179,6 @@ function createImageDeliveriesThumbnailURL(mangaId: number, page: number): strin
 
 function createSoujpaPageURL(mangaId: number, page: number, ext: 'avif' | 'webp'): string {
   return `https://soujpa.in/start/${mangaId}/${mangaId}_${page - 1}.${ext}`
-}
-
-function getKHentaiThumbnailURL(id: number): string {
-  const millions = Math.floor(id / 1_000_000)
-  const thousands = Math.floor((id % 1_000_000) / 1_000)
-  const remainder = id % 1000
-  return `https://khentai-t.siam-cdn.net/${millions}/${thousands}/${remainder}`
 }
 
 function hasAllowedHostSuffix(hostname: string, hostSuffixes: readonly string[]): boolean {
