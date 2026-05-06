@@ -15,6 +15,7 @@ import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { ScreenFit, useScreenFitStore } from '../store/screenFit'
 import { DEFAULT_ZOOM } from '../store/zoom'
+import { getResponsivePictureSources } from '../util'
 import useImageNavigation from './useImageNavigation'
 import usePageViewerInitialPage from './usePageViewerInitialPage'
 import usePageViewerPointerNavigation from './usePageViewerPointerNavigation'
@@ -32,10 +33,10 @@ const screenFitViewportStyle: Record<ScreenFit, string> = {
 
 const screenFitContentStyle: Record<ScreenFit, string> = {
   width:
-    'flex justify-center items-center [&_li]:w-fit [&_li]:max-w-full [&_li]:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
+    'flex justify-center items-center [&_li]:w-fit [&_li]:max-w-full [&_li]:h-full [&_picture]:contents [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
   height:
-    '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
-  all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
+    '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
+  all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
 }
 
 type LastPageProps = {
@@ -178,11 +179,9 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
       fetchPriority={fetchPriority}
       imageIndex={imageIndex}
       mangaId={manga.id}
-      src={firstImage?.original?.url}
-      // TODO: picture/source 기반으로 변경하기
-      // pictures={getResponsivePictureSources(firstImage)}
-      // src={firstImage?.thumbnail?.url}
-      // variant="thumbnail"
+      pictures={getResponsivePictureSources(firstImage)}
+      src={firstImage?.thumbnail?.url}
+      variant="thumbnail"
     />
   )
 
@@ -191,11 +190,9 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
       fetchPriority={fetchPriority}
       imageIndex={nextImageIndex}
       mangaId={manga.id}
-      src={secondImage?.original?.url}
-      // TODO: picture/source 기반으로 변경하기
-      // pictures={getResponsivePictureSources(secondImage)}
-      // src={secondImage?.thumbnail?.url}
-      // variant="thumbnail"
+      pictures={getResponsivePictureSources(secondImage)}
+      src={secondImage?.thumbnail?.url}
+      variant="thumbnail"
     />
   )
 

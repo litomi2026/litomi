@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import {
   createLitomiProxyMangaImageURL,
   createThirdPartyMangaImageURLs,
-  isMangaImageProxyRequestURL,
+  isLitomiImageProxyURL,
 } from '@/utils/image-proxy'
 
 const INITIAL_DISPLAYED_IMAGE = 5
@@ -38,7 +38,6 @@ export default function MangaImage({
   pictures = [],
   src = '',
   variant = 'original',
-  crossOrigin,
   onError,
   ...props
 }: Props) {
@@ -59,7 +58,7 @@ export default function MangaImage({
 
   const activePicture = displayedPictures.find(({ media }) => !media || window.matchMedia(media).matches)
   const activeURL = activePicture ? activePicture.srcSet : displayedURL
-  const resolvedCrossOrigin = crossOrigin ?? (isMangaImageProxyRequestURL(activeURL) ? 'anonymous' : undefined)
+  const crossOrigin = isLitomiImageProxyURL(activeURL) ? 'anonymous' : undefined
 
   function handleError(event: SyntheticEvent<HTMLImageElement, Event>) {
     onError?.(event)
@@ -97,7 +96,7 @@ export default function MangaImage({
   const imageElement = (
     <img
       alt={`manga-image-${imageIndex + 1}`}
-      crossOrigin={resolvedCrossOrigin}
+      crossOrigin={crossOrigin}
       draggable={false}
       fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
       onError={handleError}
