@@ -223,7 +223,7 @@ export default function NotificationList() {
         <div
           aria-current={selectionMode}
           aria-disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-          className="grid gap-6 py-4 transition aria-disabled:opacity-70 aria-disabled:pointer-events-none"
+          className="grid gap-6 p-3 transition aria-disabled:opacity-70 aria-disabled:pointer-events-none sm:p-4"
         >
           {Object.entries(groupedNotifications).map(([dateGroup, groupNotifications]) => (
             <div key={dateGroup}>
