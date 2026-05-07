@@ -18,11 +18,11 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
     <div className="flex flex-col min-h-full mx-auto px-safe max-w-screen-2xl sm:flex-row">
       <AutoHideHeader
         className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t bg-background/80 backdrop-blur transition
-          sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-safe 2xl:w-3xs
-          sm:data-[auto-hide=true]:opacity-100"
+          sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-safe sm:data-[auto-hide=true]:opacity-100
+          2xl:w-3xs"
       >
-        <nav className="grid grid-cols-4 select-none whitespace-nowrap overflow-y-auto scrollbar-hidden sm:grid-cols-none sm:gap-2 xl:text-xl xl:leading-6">
-          <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/" prefetch={false}>
+        <nav className="grid grid-cols-4 select-none whitespace-nowrap overflow-y-auto scrollbar-hidden sm:grid-cols-none sm:gap-2 xl:text-xl xl:leading-6 2xl:p-2">
+          <Link className="p-3 w-fit mx-auto hidden sm:block 2xl:m-0" href="/" prefetch={false}>
             <IconLogo className="w-8" priority />
           </Link>
           <SelectableLink href="/new/1" icon={<IconHome />} selectedIconStyle="fill">
