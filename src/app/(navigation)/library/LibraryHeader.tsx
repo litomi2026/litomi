@@ -246,7 +246,7 @@ export default function LibraryHeader({
           lg:left-72
           2xl:left-[calc((100vw-1536px)/2+29rem)] 2xl:right-[calc((100vw-1536px)/2)]"
       >
-        <div className="flex min-h-(--library-header-height) items-center justify-between gap-3 py-2.5 pl-[calc(0.625rem+var(--safe-area-left))] pr-[calc(0.625rem+var(--safe-area-right))] sm:pl-2.5 sm:pr-[calc(0.75rem+var(--safe-area-right))]">
+        <div className="flex min-h-(--library-header-height) items-center justify-between gap-3 pb-2.5 pt-[calc(0.625rem+var(--safe-area-top))] pl-[calc(0.625rem+var(--safe-area-left))] pr-[calc(0.625rem+var(--safe-area-right))] sm:py-2.5 sm:pl-2.5 sm:pr-[calc(0.75rem+var(--safe-area-right))]">
           <div className="flex items-center gap-3">
             <button
               aria-label="library-menu"
@@ -309,7 +309,7 @@ export default function LibraryHeader({
         <>
           <div className="fixed inset-0 z-50 bg-background/50 animate-fade-in-fast sm:hidden" onClick={closeDrawer} />
           <div
-            className="fixed top-0 left-0 z-50 h-full w-3xs bg-background border-r shadow-xl animate-fade-in-fast sm:hidden overflow-y-auto"
+            className="fixed top-0 left-0 z-50 h-full w-3xs bg-background border-r shadow-xl pt-safe animate-fade-in-fast sm:hidden overflow-y-auto"
             ref={drawerScrollContainerRef}
           >
             <div className="sticky top-0 bg-background flex items-center justify-between p-4 border-b border-zinc-800">

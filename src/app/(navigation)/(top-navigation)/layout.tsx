@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import LinkPending from '@/components/LinkPending'
 import ScrollButtons from '@/components/ScrollButtons'
+import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { SHORT_NAME } from '@/constants'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
@@ -64,6 +65,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </Link>
         </div>
       </footer>
+      <MobileNavigationSpacer />
       <ScrollButtons />
     </div>
   )
