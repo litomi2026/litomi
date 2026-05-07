@@ -17,7 +17,7 @@ type Props = {
 export default function TopNavigation({ children, className, onMenuClick }: Props) {
   return (
     <AutoHideHeader className={className} role="navigation">
-      <div className="flex items-center justify-between gap-2 px-2 sm:hidden">
+      <div className="flex items-center justify-between gap-2 px-2 pt-safe sm:hidden">
         <button
           aria-label="메뉴 열기"
           className="relative hover:bg-zinc-800 rounded-lg transition"

@@ -13,7 +13,7 @@ import RandomMangaLink from './RandomMangaLink'
 
 export default async function Layout({ children }: LayoutProps<'/'>) {
   return (
-    <div className="flex flex-col flex-1 gap-2 p-2">
+    <div className="flex flex-col flex-1 gap-2 px-2 pb-2 pt-[calc(0.5rem+var(--safe-area-top))]">
       <div className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end sm:text-base">
         <MobileNavigationButton />
         <Link
@@ -24,7 +24,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <LinkPending className="size-5">
             <Flame className="size-5" />
           </LinkPending>{' '}
-          인기
+          <span className="hidden sm:inline">인기</span>
         </Link>
         <NewMangaLink />
         <RandomMangaLink timer={20} />

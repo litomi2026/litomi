@@ -85,9 +85,9 @@ export default function LibraryLayout({ children }: Props) {
   }
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col sm:flex-row">
+    <>
       <LibrarySidebar
-        className="fixed top-0 bottom-0 z-20 hidden flex-col bg-background overflow-y-auto scrollbar-hidden sm:flex lg:w-52"
+        className="fixed top-0 bottom-0 z-20 pt-safe hidden flex-col bg-background overflow-y-auto scrollbar-hidden sm:flex lg:w-52"
         libraries={libraries}
         pagination={sidebarPagination}
         pinnedLibraries={pinnedLibraries}
@@ -108,7 +108,7 @@ export default function LibraryLayout({ children }: Props) {
           {children}
         </LibrarySelectionProvider>
       </div>
-    </div>
+    </>
   )
 }
 

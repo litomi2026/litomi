@@ -93,7 +93,7 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
       )}
 
       {!hasNextPage && allPosts.length > 0 && (
-        <div className="py-12 text-center text-sm text-zinc-600">모든 글을 확인했어요</div>
+        <div className="py-8 text-center text-sm text-zinc-600 sm:py-12">모든 글을 확인했어요</div>
       )}
     </div>
   )

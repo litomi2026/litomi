@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { NotificationFilter } from '@/backend/api/v1/notification/types'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import IconBell from '@/components/icons/IconBell'
+import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -121,7 +122,8 @@ export default function NotificationList() {
 
   return (
     <>
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-zinc-800 -mx-4 px-3 py-2 sm:-mx-6 sm:px-4 sm:py-3">
+      <TopStickySafeAreaSurface />
+      <div className="sticky top-(--safe-area-top) min-h-(--safe-area-top) z-20 bg-background/95 backdrop-blur-sm border-b border-zinc-800 px-3 py-2 sm:px-4 sm:py-3">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
           <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hidden">
             <FilterButton

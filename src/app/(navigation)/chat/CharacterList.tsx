@@ -17,7 +17,7 @@ export default function CharacterList() {
     : CHARACTERS
 
   return (
-    <div className="flex flex-col gap-6 p-4 sm:p-6 max-w-4xl w-full mx-auto">
+    <div className="flex flex-col gap-6 p-4 pt-safe max-w-4xl w-full mx-auto">
       <header className="flex flex-col gap-2">
         <h1 className="text-lg font-semibold">캐릭터 선택</h1>
         <p className="text-sm text-zinc-400">대화할 캐릭터와 성격을 골라 주세요</p>
