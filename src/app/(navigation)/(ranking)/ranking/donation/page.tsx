@@ -1,3 +1,4 @@
+import { Heart } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -25,6 +26,16 @@ export default async function Page() {
   return (
     <div className="p-2">
       <NonAdultJuicyAdsBanner className="mb-2" />
+      <details className="max-w-3xl mx-auto m-4 rounded-xl bg-white/4 border border-white/7">
+        <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
+          <Heart className="size-4 text-zinc-400" />
+          <span className="font-medium">후원한 만큼 작가에게 돌아가요</span>
+          <span className="ml-auto text-xs text-zinc-500">자세히</span>
+        </summary>
+        <div className="px-4 pb-4 text-sm text-zinc-400">
+          후원해주신 리보는 모두 작가님을 응원하는 데 사용돼요. 획득한 리보로 좋아하는 작품의 창작자를 후원해보세요.
+        </div>
+      </details>
       <div className="max-w-3xl mx-auto grid gap-4 overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800">
         <table className="w-full">
           <thead className="border-b border-zinc-800 whitespace-nowrap">
