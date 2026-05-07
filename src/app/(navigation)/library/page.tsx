@@ -32,9 +32,5 @@ export default async function LibraryPage({ searchParams }: PageProps<'/library'
 
   const { view } = validation.data
 
-  return (
-    <main className="flex min-h-0 flex-1 flex-col">
-      <AllLibraryMangaView initialView={view} />
-    </main>
-  )
+  return <AllLibraryMangaView initialView={view} />
 }

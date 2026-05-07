@@ -40,7 +40,7 @@ export default function RandomRefreshButton({ timer, className = '', isLoading =
       title={showLoading ? '로딩 중...' : cooldown > 0 ? `잠시 후에 시도해 주세요` : '새로고침'}
     >
       {showLoading ? <Loader2 className="size-5 animate-spin" /> : <Dices className="size-5" />}
-      <span className="min-w-9 tabular-nums text-center">
+      <span className="min-w-9 tabular-nums text-center hidden sm:inline">
         {showLoading ? '로딩' : cooldown > 0 ? `${cooldown}초` : '갱신'}
       </span>
     </button>

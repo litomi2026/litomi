@@ -9,6 +9,7 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 import BackButton from '@/components/BackButton'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import MangaReportButton from '@/components/report/MangaReportButton'
+import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import AlsoViewedSection from './AlsoViewedSection'
@@ -47,7 +48,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
-      <div className="sticky top-0 z-20 flex items-center gap-4 bg-background/90 backdrop-blur border-b p-4">
+      <div className="sticky top-0 z-20 flex items-center gap-4 bg-background/90 backdrop-blur border-b px-4 pb-4 pt-[calc(1rem+var(--safe-area-top))]">
         <BackButton
           className="hover:bg-zinc-500/20 focus-visible:outline-zinc-500 rounded-full p-2 -m-2 transition"
           fallbackUrl={`/manga/${id}`}
@@ -69,6 +70,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
         <PostCreationForm className="flex p-4 border-b" mangaId={id} placeholder="이 작품은 어땠나요?" />
         <PostList filter={PostFilter.MANGA} mangaId={id} NotFound={<EmptyState />} />
       </div>
+      <MobileNavigationSpacer />
     </main>
   )
 }

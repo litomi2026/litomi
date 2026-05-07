@@ -63,8 +63,8 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
         className="fixed top-0 left-0 z-60 h-full w-3xs bg-background border-r-2 shadow-xl pt-safe animate-fade-in-fast overflow-y-auto"
         role="navigation"
       >
-        <div className="sticky top-0 bg-background flex items-center justify-between p-4 pl-[max(1rem,var(--safe-area-left))] border-b-2 border-zinc-800">
-          <h2 className="text-lg font-bold">메뉴</h2>
+        <div className="sticky top-0 bg-background flex items-center justify-between p-4 pl-safe border-b-2 border-zinc-800">
+          <h2 className="text-lg font-bold pl-4">메뉴</h2>
           <button
             aria-label="메뉴 닫기"
             className="p-2 -m-2 hover:bg-zinc-800 rounded-lg transition"
@@ -74,7 +74,7 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             <X className="size-5" />
           </button>
         </div>
-        <div className="flex flex-col gap-1 p-3 pl-[max(0.75rem,var(--safe-area-left))] pb-safe">
+        <div className="flex flex-col gap-1 p-3 pl-[calc(0.75rem+var(--safe-area-left))] pb-safe">
           <MobileMenuLink
             href="/library/bookmark"
             icon={<Bookmark />}

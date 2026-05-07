@@ -21,7 +21,7 @@ export default function NewMangaLink() {
       <LinkPending className="size-5">
         <Rabbit className="size-5" />
       </LinkPending>{' '}
-      신작
+      <span className="hidden sm:inline">신작</span>
     </Link>
   )
 }

@@ -70,9 +70,5 @@ export default async function BookmarkPage({ searchParams }: PageProps<'/library
     nextCursor: hasNextPage ? getNextCollectionItemCursor(bookmarks[bookmarks.length - 1]) : null,
   }
 
-  return (
-    <main className="flex min-h-0 flex-1 flex-col">
-      <BookmarkPageClient initialData={initialData} initialSort={sort} initialView={view} />
-    </main>
-  )
+  return <BookmarkPageClient initialData={initialData} initialSort={sort} initialView={view} />
 }

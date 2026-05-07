@@ -2,6 +2,8 @@ import { ChevronRight, Flame } from 'lucide-react'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
+import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
+
 import { MetricParam, PeriodParam } from '../(ranking)/common'
 import { getRankingData } from '../(ranking)/ranking/[metric]/[period]/query'
 import RankingList from '../(ranking)/ranking/[metric]/[period]/RankingList'
@@ -14,8 +16,8 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       <div className="flex min-w-0 flex-col lg:border-r">{children}</div>
       <aside aria-label="일간 조회 순위" className="hidden min-w-0 lg:block">
         <div className="sticky top-0 flex h-dvh flex-col overflow-y-auto scrollbar-hidden">
-          <div className="sticky top-0 z-20 border-b bg-background/85 px-3 py-3 backdrop-blur">
-            <div className="flex items-center justify-between gap-3">
+          <div className="sticky top-0 z-20 border-b bg-background/85 pt-safe backdrop-blur">
+            <div className="flex items-center justify-between gap-3 p-3">
               <div className="flex min-w-0 items-center gap-2">
                 <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-zinc-700/80 bg-zinc-900/80 text-brand shadow-sm">
                   <Flame aria-hidden className="size-4 fill-current" />
@@ -37,6 +39,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
           </Suspense>
         </div>
       </aside>
+      <MobileNavigationSpacer />
     </div>
   )
 }

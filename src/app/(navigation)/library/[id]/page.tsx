@@ -101,15 +101,13 @@ export default async function LibraryDetailPage({ params, searchParams }: PagePr
   const view = searchValidation.data.view
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col">
-      <LibraryItemsClient
-        initialItems={{ items, nextCursor }}
-        initialSort={sort}
-        initialView={view}
-        isOwner={isOwner}
-        library={library}
-      />
-    </main>
+    <LibraryItemsClient
+      initialItems={{ items, nextCursor }}
+      initialSort={sort}
+      initialView={view}
+      isOwner={isOwner}
+      library={library}
+    />
   )
 }
 
