@@ -25,8 +25,8 @@ export default function Profile() {
 
   return (
     <TooltipPopover
-      buttonClassName="w-full pointer-events-none rounded-full transition sm:hover:bg-zinc-800 sm:active:bg-zinc-900 sm:pointer-events-auto"
-      className="flex justify-center"
+      buttonClassName="w-full pointer-events-none rounded-full transition sm:hover:bg-zinc-900 sm:active:bg-zinc-900 sm:pointer-events-auto"
+      className="px-2 flex justify-center"
       position="top-right"
       type="popover"
     >

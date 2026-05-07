@@ -116,16 +116,30 @@ export default function RewardedAdSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* 작가 후원 안내 (상시 노출, 컴팩트) */}
-      <details className="rounded-xl bg-white/4 border border-white/7">
-        <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
-          <Heart className="size-4 text-zinc-400" />
-          <span className="font-medium">광고 수익은 작가에게 돌아가요</span>
-          <span className="ml-auto text-xs text-zinc-500">자세히</span>
+      {/* 안내 문구 */}
+      <details className="text-xs text-zinc-500 rounded-xl bg-white/4 border border-white/7">
+        <summary className="cursor-pointer list-none p-3 flex items-center gap-2 text-zinc-300 [&::-webkit-details-marker]:hidden">
+          <HelpCircle className="size-4 text-zinc-400" />
+          <span className="font-medium">안내</span>
         </summary>
-        <div className="px-4 pb-4 text-sm text-zinc-400">
-          광고 수익은 서버 운영비를 제외하고 모두 작가 후원에 사용할 예정이에요. 광고를 한 번 봐주시면 좋아하는 작품의
-          창작자를 응원하는 데 도움이 돼요.
+        <div className="px-3 pb-3 space-y-4">
+          <div className="space-y-1">
+            <p className="text-zinc-400 font-medium">리보란?</p>
+            <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
+              <li>광고 클릭 시 {POINT_CONSTANTS.AD_CLICK_REWARD} 리보가 적립돼요</li>
+              <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
+            </ul>
+          </div>
+          <div className="space-y-1">
+            <p className="text-zinc-400 font-medium">적립 주의사항</p>
+            <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
+              <li>광고 클릭 시 새 탭에서 광고 페이지가 열려요</li>
+              <li>같은 광고: 1분 후 다시 클릭 가능</li>
+              <li>
+                하루 최대 {POINT_CONSTANTS.AD_CLICK_REWARD * POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT} 리보 적립 가능
+              </li>
+            </ul>
+          </div>
         </div>
       </details>
 
@@ -174,33 +188,6 @@ export default function RewardedAdSection() {
         <MousePointerClick className="size-3 text-zinc-500" />
         <span className="text-zinc-500">{getRewardedAdStatus(me, isVerified)}</span>
       </div>
-
-      {/* 안내 문구 */}
-      <details className="text-xs text-zinc-500 rounded-xl bg-white/4 border border-white/7">
-        <summary className="cursor-pointer list-none p-3 flex items-center gap-2 text-zinc-300 [&::-webkit-details-marker]:hidden">
-          <HelpCircle className="size-4 text-zinc-400" />
-          <span className="font-medium">안내</span>
-        </summary>
-        <div className="px-3 pb-3 space-y-4">
-          <div className="space-y-1">
-            <p className="text-zinc-400 font-medium">리보란?</p>
-            <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
-              <li>광고 클릭 시 {POINT_CONSTANTS.AD_CLICK_REWARD} 리보가 적립돼요</li>
-              <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
-            </ul>
-          </div>
-          <div className="space-y-1">
-            <p className="text-zinc-400 font-medium">적립 주의사항</p>
-            <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
-              <li>광고 클릭 시 새 탭에서 광고 페이지가 열려요</li>
-              <li>같은 광고: 1분 후 다시 클릭 가능</li>
-              <li>
-                하루 최대 {POINT_CONSTANTS.AD_CLICK_REWARD * POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT} 리보 적립 가능
-              </li>
-            </ul>
-          </div>
-        </div>
-      </details>
 
       {/* Cloudflare 보안 검증 */}
       {me && (

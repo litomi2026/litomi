@@ -140,8 +140,9 @@ export default function DonateButton({ manga, ...props }: Props) {
       </button>
       <Dialog ariaLabel="후원하기" onClose={close} open={open}>
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
-          <DialogHeader onClose={close} title="후원하기" />
+          <DialogHeader onClose={close} title="작가 후원하기" />
           <DialogBody className="flex flex-col gap-4 sm:p-6">
+            획득한 리보로 좋아하는 작품의 창작자를 후원해보세요.
             <div className="rounded-xl bg-zinc-900 p-4 border border-zinc-800">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm text-zinc-400">현재 리보</p>
@@ -160,7 +161,6 @@ export default function DonateButton({ manga, ...props }: Props) {
               )}
               {pointsErrorMessage && <p className="mt-2 text-xs text-red-400">{pointsErrorMessage}</p>}
             </div>
-
             <div className="grid gap-2">
               <p className="text-sm font-semibold text-foreground">대상</p>
               {recipients.length === 0 ? (
@@ -191,7 +191,6 @@ export default function DonateButton({ manga, ...props }: Props) {
                 </div>
               )}
             </div>
-
             <div className="grid gap-2">
               <p className="text-sm font-semibold text-foreground">금액</p>
               <div className="flex flex-wrap gap-2">
@@ -230,7 +229,6 @@ export default function DonateButton({ manga, ...props }: Props) {
                 />
               </label>
             </div>
-
             {localMessage && <p className="text-sm text-red-400">{localMessage}</p>}
           </DialogBody>
           <DialogFooter className="flex gap-2">
