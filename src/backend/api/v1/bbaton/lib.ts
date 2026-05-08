@@ -94,9 +94,53 @@ export async function fetchBBatonProfile(accessToken: string, tokenType = 'Beare
 
   const parsed = profileSchema.safeParse(json)
   if (!parsed.success) {
-    console.error('bbaton profile response invalid:', parsed.error)
+    console.error('bbaton profile response invalid:', {
+      issues: parsed.error.issues,
+      payload: getProfileValidationDiagnostic(json, parsed.error.issues),
+    })
     throw new Error('BBATON_PROFILE_RESPONSE_INVALID')
   }
 
   return parsed.data
+}
+
+function getProfileValidationDiagnostic(json: unknown, issues: readonly { path: readonly unknown[] }[]) {
+  const payload = isRecord(json) ? json : null
+  const invalidFields: Record<string, unknown> = {}
+
+  if (payload) {
+    for (const issue of issues) {
+      const field = issue.path.length === 1 && typeof issue.path[0] === 'string' ? issue.path[0] : null
+      if (!field || field === 'user_id') {
+        continue
+      }
+
+      invalidFields[field] = {
+        type: getValueType(payload[field]),
+        value: payload[field],
+      }
+    }
+  }
+
+  return {
+    invalidFields,
+    keys: payload ? Object.keys(payload) : [],
+    payloadType: getValueType(json),
+  }
+}
+
+function getValueType(value: unknown): string {
+  if (value === null) {
+    return 'null'
+  }
+
+  if (Array.isArray(value)) {
+    return 'array'
+  }
+
+  return typeof value
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
