@@ -5,28 +5,46 @@ import { env } from '@/env/server.hono'
 
 const { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET } = env
 
-type BBatonProfile = {
-  userId: string
-  adultFlag: 'N' | 'Y'
-  birthYear: string
-  gender: 'F' | 'M'
-  income: string
-  student: string
-}
-
-type ExchangedToken = {
-  accessToken: string
-}
-
 type Params = {
   code: string
   redirectURI: string
 }
 
-const tokenSchema = z.object({
-  access_token: z.string().min(1),
-  token_type: z.string().min(1),
-})
+const tokenSchema = z
+  .object({
+    access_token: z.string().min(1),
+    expires_in: z.number().int().positive(),
+    scope: z.string().min(1),
+    token_type: z.string().regex(/^bearer$/i),
+  })
+  .transform(({ access_token, expires_in, scope }) => ({
+    accessToken: access_token,
+    expiresIn: expires_in,
+    scope,
+    tokenType: 'Bearer' as const,
+  }))
+
+type ExchangedToken = z.infer<typeof tokenSchema>
+
+const profileSchema = z
+  .object({
+    adult_flag: z.enum(['N', 'Y']),
+    birth_year: z.string().regex(/^\d+$/),
+    gender: z.enum(['F', 'M']),
+    income: z.string().min(1),
+    student: z.string().min(1),
+    user_id: z.string().min(1),
+  })
+  .transform(({ adult_flag, birth_year, gender, income, student, user_id }) => ({
+    adultFlag: adult_flag,
+    birthYear: birth_year,
+    gender,
+    income,
+    student,
+    userId: user_id,
+  }))
+
+type BBatonProfile = z.infer<typeof profileSchema>
 
 export async function exchangeAuthorizationCode({ code, redirectURI }: Params): Promise<ExchangedToken> {
   const url = 'https://bauth.bbaton.com/oauth/token'
@@ -58,22 +76,13 @@ export async function exchangeAuthorizationCode({ code, redirectURI }: Params): 
     throw new Error('BBATON_TOKEN_RESPONSE_INVALID')
   }
 
-  return { accessToken: parsed.data.access_token }
+  return parsed.data
 }
 
-const schema = z.object({
-  user_id: z.string().min(1),
-  adult_flag: z.enum(['N', 'Y']),
-  birth_year: z.string().min(1).max(16),
-  gender: z.enum(['F', 'M']),
-  income: z.string().default('N/A'),
-  student: z.string().default('N/A'),
-})
-
-export async function fetchBBatonProfile(accessToken: string): Promise<BBatonProfile> {
+export async function fetchBBatonProfile(accessToken: string, tokenType = 'Bearer'): Promise<BBatonProfile> {
   const response = await fetch('https://bapi.bbaton.com/v2/user/me', {
     method: 'GET',
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: { Authorization: `${tokenType} ${accessToken}` },
   })
 
   const json = await response.json().catch(() => null)
@@ -83,20 +92,11 @@ export async function fetchBBatonProfile(accessToken: string): Promise<BBatonPro
     throw new Error('BBATON_PROFILE_REQUEST_FAILED')
   }
 
-  const parsed = schema.safeParse(json)
+  const parsed = profileSchema.safeParse(json)
   if (!parsed.success) {
     console.error('bbaton profile response invalid:', parsed.error)
     throw new Error('BBATON_PROFILE_RESPONSE_INVALID')
   }
 
-  const { user_id, adult_flag, birth_year, gender, income, student } = parsed.data
-
-  return {
-    userId: user_id,
-    adultFlag: adult_flag,
-    birthYear: birth_year,
-    gender,
-    income,
-    student,
-  }
+  return parsed.data
 }
