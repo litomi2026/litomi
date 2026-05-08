@@ -10,6 +10,12 @@ type Params = {
   redirectURI: string
 }
 
+const bbatonGenderSchema = z
+  .string()
+  .transform((value) => value.trim().toLowerCase())
+  .pipe(z.enum(['f', 'female', 'm', 'male']))
+  .transform(normalizeBBatonGender)
+
 const tokenSchema = z
   .object({
     access_token: z.string().min(1),
@@ -30,7 +36,7 @@ const profileSchema = z
   .object({
     adult_flag: z.enum(['N', 'Y']),
     birth_year: z.string().regex(/^\d+$/),
-    gender: z.enum(['F', 'M']),
+    gender: bbatonGenderSchema,
     income: z.string().min(1),
     student: z.string().min(1),
     user_id: z.string().min(1),
@@ -94,70 +100,13 @@ export async function fetchBBatonProfile(accessToken: string, tokenType = 'Beare
 
   const parsed = profileSchema.safeParse(json)
   if (!parsed.success) {
-    console.error(
-      'bbaton profile response invalid:',
-      JSON.stringify(
-        {
-          issues: parsed.error.issues,
-          payload: getProfileValidationDiagnostic(json, parsed.error.issues),
-        },
-        null,
-        2,
-      ),
-    )
+    console.error('bbaton profile response invalid:', parsed.error)
     throw new Error('BBATON_PROFILE_RESPONSE_INVALID')
   }
 
   return parsed.data
 }
 
-function getDiagnosticValue(value: unknown) {
-  return {
-    type: getValueType(value),
-    value,
-  }
-}
-
-function getProfileValidationDiagnostic(json: unknown, issues: readonly { path: readonly unknown[] }[]) {
-  const payload = isRecord(json) ? json : null
-  const invalidFields: Record<string, unknown> = {}
-
-  if (payload) {
-    for (const issue of issues) {
-      const field = issue.path.length === 1 && typeof issue.path[0] === 'string' ? issue.path[0] : null
-      if (!field || field === 'user_id') {
-        continue
-      }
-
-      invalidFields[field] = getDiagnosticValue(payload[field])
-    }
-  }
-
-  return {
-    apiResult: payload
-      ? {
-          result_code: getDiagnosticValue(payload.result_code),
-          result_message: getDiagnosticValue(payload.result_message),
-        }
-      : null,
-    invalidFields,
-    keys: payload ? Object.keys(payload) : [],
-    payloadType: getValueType(json),
-  }
-}
-
-function getValueType(value: unknown): string {
-  if (value === null) {
-    return 'null'
-  }
-
-  if (Array.isArray(value)) {
-    return 'array'
-  }
-
-  return typeof value
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
+function normalizeBBatonGender(value: 'f' | 'female' | 'm' | 'male'): 'F' | 'M' {
+  return value === 'f' || value === 'female' ? 'F' : 'M'
 }
