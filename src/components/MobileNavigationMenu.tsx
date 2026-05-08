@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { ReactNode, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import OverlayHost from '@/components/ui/OverlayHost'
 import useMeQuery from '@/query/useMeQuery'
 
 import LinkPending from './LinkPending'
@@ -40,11 +41,13 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
       }
     }
 
+    const previousBodyOverflow = document.body.style.overflow
+
     document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = previousBodyOverflow
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [onClose])
@@ -57,13 +60,20 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
   }, [onClose, pathname])
 
   return (
-    <>
-      <div className="fixed inset-0 z-60 bg-background/50 animate-fade-in-fast" onClick={onClose} />
-      <nav
-        className="fixed top-0 left-0 z-60 h-full w-3xs bg-background border-r-2 shadow-xl pt-safe animate-fade-in-fast overflow-y-auto"
-        role="navigation"
+    <OverlayHost>
+      <div className="pointer-events-auto fixed inset-0 animate-fade-in-fast">
+        <button
+          aria-label="메뉴 닫기"
+          className="absolute inset-0 bg-background/50"
+          onClick={onClose}
+          type="button"
+        />
+      </div>
+      <aside
+        aria-label="모바일 메뉴"
+        className="pointer-events-auto fixed inset-y-0 left-0 flex w-[min(20rem,calc(100vw-2rem))] flex-col border-r-2 bg-background shadow-xl animate-fade-in-fast"
       >
-        <div className="sticky top-0 bg-background flex items-center justify-between p-4 pl-safe border-b-2 border-zinc-800">
+        <div className="flex items-center justify-between border-b-2 border-zinc-800 p-4 pl-[calc(1rem+var(--safe-area-left))] pt-[calc(1rem+var(--safe-area-top))]">
           <h2 className="text-lg font-bold pl-4">메뉴</h2>
           <button
             aria-label="메뉴 닫기"
@@ -74,7 +84,10 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             <X className="size-5" />
           </button>
         </div>
-        <div className="flex flex-col gap-1 p-3 pl-[calc(0.75rem+var(--safe-area-left))] pb-safe">
+        <nav
+          aria-label="모바일 보조 메뉴"
+          className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3 pl-[calc(0.75rem+var(--safe-area-left))] pb-[calc(0.75rem+var(--safe-area-bottom))]"
+        >
           <MobileMenuLink
             href="/library/bookmark"
             icon={<Bookmark />}
@@ -150,9 +163,9 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             selectedIconStyle="fill-soft"
             title="설정"
           />
-        </div>
-      </nav>
-    </>
+        </nav>
+      </aside>
+    </OverlayHost>
   )
 }
 
