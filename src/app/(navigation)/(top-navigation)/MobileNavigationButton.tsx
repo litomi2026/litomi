@@ -5,6 +5,8 @@ import { useCallback, useState } from 'react'
 
 import MobileNavigationMenu from '@/components/MobileNavigationMenu'
 
+import { topNavigationActionClassName } from './topNavigationActionConfig'
+
 export default function MobileNavigationButton() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -20,7 +22,7 @@ export default function MobileNavigationButton() {
     <>
       <button
         aria-label="메뉴 열기"
-        className="sm:hidden p-2 px-3 rounded-xl transition border-2 text-foreground hover:bg-zinc-900"
+        className={`${topNavigationActionClassName} sm:hidden`}
         onClick={handleMenuClick}
         type="button"
       >
