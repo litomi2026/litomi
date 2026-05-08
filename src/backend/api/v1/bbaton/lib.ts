@@ -94,14 +94,28 @@ export async function fetchBBatonProfile(accessToken: string, tokenType = 'Beare
 
   const parsed = profileSchema.safeParse(json)
   if (!parsed.success) {
-    console.error('bbaton profile response invalid:', {
-      issues: parsed.error.issues,
-      payload: getProfileValidationDiagnostic(json, parsed.error.issues),
-    })
+    console.error(
+      'bbaton profile response invalid:',
+      JSON.stringify(
+        {
+          issues: parsed.error.issues,
+          payload: getProfileValidationDiagnostic(json, parsed.error.issues),
+        },
+        null,
+        2,
+      ),
+    )
     throw new Error('BBATON_PROFILE_RESPONSE_INVALID')
   }
 
   return parsed.data
+}
+
+function getDiagnosticValue(value: unknown) {
+  return {
+    type: getValueType(value),
+    value,
+  }
 }
 
 function getProfileValidationDiagnostic(json: unknown, issues: readonly { path: readonly unknown[] }[]) {
@@ -115,14 +129,17 @@ function getProfileValidationDiagnostic(json: unknown, issues: readonly { path: 
         continue
       }
 
-      invalidFields[field] = {
-        type: getValueType(payload[field]),
-        value: payload[field],
-      }
+      invalidFields[field] = getDiagnosticValue(payload[field])
     }
   }
 
   return {
+    apiResult: payload
+      ? {
+          result_code: getDiagnosticValue(payload.result_code),
+          result_message: getDiagnosticValue(payload.result_message),
+        }
+      : null,
     invalidFields,
     keys: payload ? Object.keys(payload) : [],
     payloadType: getValueType(json),
