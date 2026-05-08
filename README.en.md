@@ -152,7 +152,6 @@ UPSTASH_KV_REST_API_TOKEN="local_dev_token"
 JWT_SECRET_ACCESS_TOKEN="dev-access"
 JWT_SECRET_REFRESH_TOKEN="dev-refresh"
 JWT_SECRET_TRUSTED_DEVICE="dev-trusted-device"
-JWT_SECRET_BBATON_ATTEMPT="dev-bbaton-attempt"
 
 # Must be a 64-character hex string
 # bun run tools/generateEncryptionKey.ts

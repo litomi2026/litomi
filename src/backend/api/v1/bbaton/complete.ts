@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import { deleteCookie, getCookie } from 'hono/cookie'
 import 'server-only'
 import { z } from 'zod'
 
@@ -7,8 +6,6 @@ import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { COOKIE_DOMAIN } from '@/constants'
-import { CookieKey } from '@/constants/storage'
 import { isPostgresError } from '@/database/error'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
@@ -16,27 +13,22 @@ import { db } from '@/database/supabase/drizzle'
 import { exchangeAuthorizationCode, fetchBBatonProfile } from './lib'
 import { reissueAuthCookies } from './query'
 import { checkBBatonRateLimit } from './rate-limit'
-import { getBBatonRedirectURI, parseBirthYear, verifyBBatonAttemptToken } from './utils'
+import { consumeBBatonOAuthAttempt } from './state'
+import { getBBatonRedirectURI, parseBirthYear } from './utils'
 
 const completeSchema = z.object({
   code: z.string().min(1).max(2048),
+  state: z.string().regex(/^[0-9a-f]{64}$/),
 })
 
 const route = new Hono<Env>()
 
 route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c) => {
-  const attemptToken = getCookie(c, CookieKey.BBATON_ATTEMPT_ID)
-  if (!attemptToken) {
-    return problemResponse(c, {
-      status: 400,
-      detail: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
-    })
-  }
-
   const userId = c.get('userId')!
 
   try {
     const rateLimit = await checkBBatonRateLimit('complete', userId)
+
     if (!rateLimit.allowed) {
       const minutes = Math.max(1, Math.ceil(rateLimit.retryAfterSeconds / 60))
       return problemResponse(c, {
@@ -45,18 +37,26 @@ route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c
       })
     }
 
-    const attempt = await verifyBBatonAttemptToken(attemptToken)
-    if (!attempt || attempt.userId !== userId) {
+    const { code, state } = c.req.valid('json')
+    const attempt = await consumeBBatonOAuthAttempt(state)
+
+    if (!attempt) {
       return problemResponse(c, {
         status: 400,
         detail: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
       })
     }
 
-    const { code } = c.req.valid('json')
+    if (attempt.userId !== userId) {
+      return problemResponse(c, {
+        status: 400,
+        detail: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
+      })
+    }
+
     const redirectURI = getBBatonRedirectURI()
-    const { accessToken } = await exchangeAuthorizationCode({ code, redirectURI })
-    const profile = await fetchBBatonProfile(accessToken)
+    const { accessToken, tokenType } = await exchangeAuthorizationCode({ code, redirectURI })
+    const profile = await fetchBBatonProfile(accessToken, tokenType)
     const now = new Date()
     const birthYear = parseBirthYear(profile.birthYear)
     const student = profile.student === 'Y'
@@ -109,8 +109,6 @@ route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c
     }
 
     return problemResponse(c, { status: 500, detail: '비바톤 인증 정보를 저장하지 못했어요' })
-  } finally {
-    deleteCookie(c, CookieKey.BBATON_ATTEMPT_ID, { domain: COOKIE_DOMAIN, path: '/api/v1/bbaton' })
   }
 })
 

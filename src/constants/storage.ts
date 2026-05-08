@@ -5,7 +5,6 @@ export enum CookieKey {
   PASSKEY_AUTHENTICATION_ATTEMPT = 'pkai',
   TRUSTED_BROWSER_TOKEN = 'tbt',
   LOCALE = 'locale',
-  BBATON_ATTEMPT_ID = 'bbai',
   POINTS_TURNSTILE = 'ptt',
 }
 
