@@ -1,7 +1,6 @@
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { deleteCookie } from 'hono/cookie'
 import 'server-only'
 import { z } from 'zod'
 
@@ -9,8 +8,6 @@ import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { COOKIE_DOMAIN } from '@/constants'
-import { CookieKey } from '@/constants/storage'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { twoFactorTable } from '@/database/supabase/two-factor'
@@ -69,7 +66,6 @@ route.post('/', requireAuth, zProblemValidator('json', schema), async (c) => {
 
     await db.delete(bbatonVerificationTable).where(eq(bbatonVerificationTable.userId, userId))
 
-    deleteCookie(c, CookieKey.BBATON_ATTEMPT_ID, { domain: COOKIE_DOMAIN, path: '/api/v1/bbaton' })
     await reissueAuthCookies(c, { userId, adult: false })
 
     return c.json<POSTV1BBatonUnlinkResponse>({ ok: true })

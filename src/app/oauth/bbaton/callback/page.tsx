@@ -15,15 +15,15 @@ export default function BBatonCallbackPage() {
   const [state, setState] = useState<CallbackState>({ type: 'loading' })
   const didRunRef = useRef(false)
 
-  const completeMutation = useMutation<void, unknown, { code: string }>({
-    mutationFn: async ({ code }) => {
+  const completeMutation = useMutation<void, unknown, { code: string; state: string }>({
+    mutationFn: async ({ code, state }) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bbaton/complete`
 
       await fetchWithErrorHandling<void>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, state }),
       })
     },
     onSuccess: () => {
@@ -54,22 +54,23 @@ export default function BBatonCallbackPage() {
 
     const params = new URLSearchParams(window.location.search)
     const code = params.get('code')
+    const oauthState = params.get('state')
     const error = params.get('error') ?? params.get('error_description')
 
     if (window.location.search) {
       window.history.replaceState(window.history.state, '', window.location.pathname)
     }
 
-    if (!code) {
+    if (!code || !oauthState) {
       const message = error
         ? '인증을 완료하지 못했어요. 다시 시도해 주세요.'
-        : '인증 코드를 찾을 수 없어요. 다시 시도해 주세요.'
+        : '인증 정보를 찾을 수 없어요. 다시 시도해 주세요.'
 
       setState({ type: 'error', message })
       return
     }
 
-    completeMutation.mutate({ code })
+    completeMutation.mutate({ code, state: oauthState })
   }, [completeMutation])
 
   return (
