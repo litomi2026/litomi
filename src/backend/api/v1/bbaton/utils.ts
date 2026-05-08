@@ -21,7 +21,9 @@ export function buildAuthorizeUrl(state: string): string {
 }
 
 export function createBBatonState(): string {
-  return generateRandomHex(32)
+  const array = new Uint8Array(32)
+  crypto.getRandomValues(array)
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
 export function getBBatonRedirectURI(): string {
@@ -32,10 +34,4 @@ export function getBBatonRedirectURI(): string {
 export function parseBirthYear(value: string): number {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : 0
-}
-
-function generateRandomHex(byteLength: number): string {
-  const array = new Uint8Array(byteLength)
-  crypto.getRandomValues(array)
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
 }

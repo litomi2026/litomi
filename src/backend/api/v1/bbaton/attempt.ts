@@ -1,15 +1,13 @@
 import { Hono } from 'hono'
-import { setCookie } from 'hono/cookie'
 import 'server-only'
 
 import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
-import { COOKIE_DOMAIN } from '@/constants'
-import { CookieKey } from '@/constants/storage'
 
 import { checkBBatonRateLimit } from './rate-limit'
-import { BBATON_ATTEMPT_TTL_SECONDS, buildAuthorizeUrl, signBBatonAttemptToken } from './utils'
+import { storeBBatonOAuthAttempt } from './state'
+import { BBATON_ATTEMPT_TTL_SECONDS, buildAuthorizeUrl, createBBatonState } from './utils'
 
 export type POSTV1BBatonAttemptResponse = {
   authorizeUrl: string
@@ -23,6 +21,7 @@ route.post('/', requireAuth, async (c) => {
 
   try {
     const rateLimit = await checkBBatonRateLimit('attempt', userId)
+
     if (!rateLimit.allowed) {
       const minutes = Math.max(1, Math.ceil(rateLimit.retryAfterSeconds / 60))
       return problemResponse(c, {
@@ -31,19 +30,11 @@ route.post('/', requireAuth, async (c) => {
       })
     }
 
-    const attemptToken = await signBBatonAttemptToken(userId)
-
-    setCookie(c, CookieKey.BBATON_ATTEMPT_ID, attemptToken, {
-      domain: COOKIE_DOMAIN,
-      httpOnly: true,
-      maxAge: BBATON_ATTEMPT_TTL_SECONDS,
-      path: '/api/v1/bbaton',
-      sameSite: 'strict',
-      secure: true,
-    })
+    const state = createBBatonState()
+    await storeBBatonOAuthAttempt(state, { userId })
 
     return c.json<POSTV1BBatonAttemptResponse>({
-      authorizeUrl: buildAuthorizeUrl(),
+      authorizeUrl: buildAuthorizeUrl(state),
       expiresIn: BBATON_ATTEMPT_TTL_SECONDS,
     })
   } catch (error) {
