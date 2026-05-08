@@ -9,8 +9,7 @@ import { twMerge } from 'tailwind-merge'
 import { QueryKeys } from '@/constants/query'
 
 import RandomRefreshButton from './RandomRefreshButton'
-
-const className = 'flex gap-1 items-center border-2 px-3 py-2 rounded-xl transition'
+import { topNavigationActionClassName } from './topNavigationActionConfig'
 
 type Props = {
   timer?: number
@@ -24,7 +23,11 @@ export default function RandomMangaLink({ timer }: Props) {
 
   if (!isRandomPage) {
     return (
-      <Link className={twMerge('hover:bg-zinc-900 active:bg-background', className)} href="/random" prefetch={false}>
+      <Link
+        className={twMerge('hover:bg-zinc-900 active:bg-background', topNavigationActionClassName)}
+        href="/random"
+        prefetch={false}
+      >
         <Dices className="size-5" />
         <span className="min-w-9 text-center hidden sm:inline">랜덤</span>
       </Link>
@@ -33,7 +36,7 @@ export default function RandomMangaLink({ timer }: Props) {
 
   return (
     <RandomRefreshButton
-      className={className}
+      className={topNavigationActionClassName}
       isLoading={isFetchingRandom}
       onClick={() => queryClient.refetchQueries({ queryKey: QueryKeys.proxyKRandom, exact: true })}
       timer={timer}
