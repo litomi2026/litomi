@@ -48,8 +48,8 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
 
   if (isLoading) {
     return (
-      <div className="p-2 md:p-4">
-        <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      <div className="p-2 md:p-3">
+        <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {[...Array(6)].map((_, i) => (
             <PostSkeleton key={i} showMangaCover={showMangaCover} />
           ))}
