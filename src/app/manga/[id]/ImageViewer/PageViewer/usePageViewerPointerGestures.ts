@@ -10,7 +10,7 @@ const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 화면 3등분 시의 경계값
 const SCREEN_EDGE_THRESHOLD = 40 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
 const TAP_MOVE_THRESHOLD = 10
-const DOUBLE_TAP_DELAY = 280
+const DOUBLE_TAP_DELAY = 220
 const DOUBLE_TAP_DISTANCE_THRESHOLD = 36
 const ONE_FINGER_ZOOM_ACTIVATION_THRESHOLD = 8
 const CLICK_SUPPRESSION_TIMEOUT = 1_000
@@ -53,6 +53,8 @@ type PreviousTouchTap = {
   x: number
   y: number
 }
+
+type TapAction = 'center' | 'next' | 'prev'
 
 export default function usePageViewerPointerGestures({
   captureZoomAnchorAtClientPoint,
@@ -146,6 +148,44 @@ export default function usePageViewerPointerGestures({
     return elapsed <= DOUBLE_TAP_DELAY && distance <= DOUBLE_TAP_DISTANCE_THRESHOLD
   }
 
+  function getTapAction(clientX: number, clientY: number, target: HTMLElement): TapAction {
+    const rect = target.getBoundingClientRect()
+    const orientation = getOrientation()
+
+    if (orientation === 'horizontal') {
+      const clickX = clientX - rect.left
+      if (clickX < rect.width * EDGE_CLICK_THRESHOLD) return 'prev'
+      if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) return 'next'
+      return 'center'
+    }
+
+    if (orientation === 'horizontal-reverse') {
+      const clickX = clientX - rect.left
+      if (clickX < rect.width * EDGE_CLICK_THRESHOLD) return 'next'
+      if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) return 'prev'
+      return 'center'
+    }
+
+    if (orientation === 'vertical') {
+      const clickY = clientY - rect.top
+      if (clickY < rect.height * EDGE_CLICK_THRESHOLD) return 'prev'
+      if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) return 'next'
+      return 'center'
+    }
+
+    if (orientation === 'vertical-reverse') {
+      const clickY = clientY - rect.top
+      if (clickY < rect.height * EDGE_CLICK_THRESHOLD) return 'next'
+      if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) return 'prev'
+    }
+
+    return 'center'
+  }
+
+  function isCenterTap(clientX: number, clientY: number, target: HTMLElement) {
+    return getTapAction(clientX, clientY, target) === 'center'
+  }
+
   function runTapAction({ clientX, clientY, target }: Omit<PendingTouchTap, 'timeoutId'>) {
     if (!target.isConnected) {
       return
@@ -157,46 +197,26 @@ export default function usePageViewerPointerGestures({
       return
     }
 
-    const rect = target.getBoundingClientRect()
-    const orientation = getOrientation()
+    const tapAction = getTapAction(clientX, clientY, target)
 
-    if (orientation === 'horizontal') {
-      const clickX = clientX - rect.left
-      if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
-        prevPage()
-      } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
-        nextPage()
-      } else {
-        onClick()
-      }
-    } else if (orientation === 'horizontal-reverse') {
-      const clickX = clientX - rect.left
-      if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
-        nextPage()
-      } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
-        prevPage()
-      } else {
-        onClick()
-      }
-    } else if (orientation === 'vertical') {
-      const clickY = clientY - rect.top
-      if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
-        prevPage()
-      } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
-        nextPage()
-      } else {
-        onClick()
-      }
-    } else if (orientation === 'vertical-reverse') {
-      const clickY = clientY - rect.top
-      if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
-        nextPage()
-      } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
-        prevPage()
-      } else {
-        onClick()
-      }
+    if (tapAction === 'prev') {
+      prevPage()
+    } else if (tapAction === 'next') {
+      nextPage()
+    } else {
+      onClick()
     }
+  }
+
+  function runTouchTap(clientX: number, clientY: number, target: HTMLElement) {
+    if (isCenterTap(clientX, clientY, target)) {
+      queueTouchTap(clientX, clientY, target)
+      return
+    }
+
+    clearPendingTouchTap()
+    suppressNextClick()
+    runTapAction({ clientX, clientY, target })
   }
 
   function queueTouchTap(clientX: number, clientY: number, target: HTMLElement) {
@@ -284,7 +304,7 @@ export default function usePageViewerPointerGestures({
     const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
     if (isEdgeSwipe) return
 
-    if (isTouchPointer(e) && isDoubleTapStart(e)) {
+    if (isTouchPointer(e) && isCenterTap(e.clientX, e.clientY, e.currentTarget) && isDoubleTapStart(e)) {
       if (startOneFingerZoom(e)) {
         return
       }
@@ -376,7 +396,7 @@ export default function usePageViewerPointerGestures({
     if (getZoomLevel() > DEFAULT_ZOOM) {
       pointerStartRef.current = null
       if (isTouchTap) {
-        queueTouchTap(e.clientX, e.clientY, e.currentTarget)
+        runTouchTap(e.clientX, e.clientY, e.currentTarget)
       }
       return
     }
@@ -386,7 +406,7 @@ export default function usePageViewerPointerGestures({
     if (isHorizontalScrollable) {
       pointerStartRef.current = null
       if (isTouchTap) {
-        queueTouchTap(e.clientX, e.clientY, e.currentTarget)
+        runTouchTap(e.clientX, e.clientY, e.currentTarget)
       }
       return
     }
@@ -421,7 +441,7 @@ export default function usePageViewerPointerGestures({
     pointerStartRef.current = null
 
     if (isTouchTap) {
-      queueTouchTap(e.clientX, e.clientY, e.currentTarget)
+      runTouchTap(e.clientX, e.clientY, e.currentTarget)
     }
   }
 
