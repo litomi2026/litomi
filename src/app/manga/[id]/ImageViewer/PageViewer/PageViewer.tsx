@@ -84,7 +84,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
   })
 
   const {
-    captureClientZoomAnchor,
+    captureZoomAnchorAtClientPoint,
     contentRef,
     handleCursorZoomWheel,
     measureZoomLayout,
@@ -97,11 +97,10 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
 
   const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
     usePageViewerPointerGestures({
-      captureClientZoomAnchor,
+      captureZoomAnchorAtClientPoint,
       nextPage,
       onClick,
       prevPage,
-      scrollRef,
       zoomToAnchor,
     })
 

@@ -13,11 +13,10 @@ import {
   getNextWheelZoomLevel,
 } from './pageViewerZoom'
 
-type CaptureClientZoomAnchorParams = {
+type CaptureZoomAnchorAtClientPointParams = {
   clientX: number
   clientY: number
   currentZoom?: number
-  scrollElement: HTMLDivElement
 }
 
 type Params = {
@@ -81,11 +80,12 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     })
   }, [])
 
-  const captureClientZoomAnchor = useCallback(
-    ({ clientX, clientY, currentZoom = getZoomLevel(), scrollElement }: CaptureClientZoomAnchorParams) => {
+  const captureZoomAnchorAtClientPoint = useCallback(
+    ({ clientX, clientY, currentZoom = getZoomLevel() }: CaptureZoomAnchorAtClientPointParams) => {
+      const scroll = scrollRef.current
       const content = contentRef.current
 
-      if (!content) {
+      if (!scroll || !content) {
         return null
       }
 
@@ -94,9 +94,9 @@ export default function usePageViewerZoom({ imageCount }: Params) {
         clientY,
         contentRect: content.getBoundingClientRect(),
         currentZoom,
-        scrollLeft: scrollElement.scrollLeft,
-        scrollTop: scrollElement.scrollTop,
-        viewportRect: scrollElement.getBoundingClientRect(),
+        scrollLeft: scroll.scrollLeft,
+        scrollTop: scroll.scrollTop,
+        viewportRect: scroll.getBoundingClientRect(),
       })
     },
     [getZoomLevel],
@@ -119,7 +119,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   )
 
   const handleCursorZoomWheel = useCallback(
-    (event: WheelEvent, scrollElement: HTMLDivElement): WheelHandlerResult => {
+    (event: WheelEvent): WheelHandlerResult => {
       const { ctrlKey, metaKey, clientX, clientY } = event
 
       if (!ctrlKey && !metaKey) {
@@ -131,11 +131,10 @@ export default function usePageViewerZoom({ imageCount }: Params) {
       const currentZoom = getZoomLevel()
       const nextZoom = getNextWheelZoomLevel(currentZoom, event)
 
-      const anchor = captureClientZoomAnchor({
+      const anchor = captureZoomAnchorAtClientPoint({
         clientX,
         clientY,
         currentZoom,
-        scrollElement,
       })
 
       if (anchor) {
@@ -144,7 +143,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
 
       return WHEEL_EVENT_HANDLED
     },
-    [captureClientZoomAnchor, getZoomLevel, zoomToAnchor],
+    [captureZoomAnchorAtClientPoint, getZoomLevel, zoomToAnchor],
   )
 
   const zoomScrollAreaStyle = {
@@ -221,7 +220,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   }, [resetZoom])
 
   return {
-    captureClientZoomAnchor,
+    captureZoomAnchorAtClientPoint,
     handleCursorZoomWheel,
     measureZoomLayout,
     zoomToAnchor,

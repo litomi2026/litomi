@@ -1,4 +1,4 @@
-import { type MouseEvent, type PointerEvent, type RefObject, useEffect, useRef } from 'react'
+import { type MouseEvent, type PointerEvent, useEffect, useRef } from 'react'
 
 import { useBrightnessStore } from '../store/brightness'
 import { useOrientationStore } from '../store/orientation'
@@ -24,16 +24,14 @@ type OneFingerZoomState = {
 }
 
 type Params = {
-  captureClientZoomAnchor: (params: {
+  captureZoomAnchorAtClientPoint: (params: {
     clientX: number
     clientY: number
     currentZoom?: number
-    scrollElement: HTMLDivElement
   }) => CursorZoomAnchor | null
   nextPage: () => void
   onClick: () => void
   prevPage: () => void
-  scrollRef: RefObject<HTMLDivElement | null>
   zoomToAnchor: (anchor: CursorZoomAnchor, nextZoom: number) => boolean
 }
 
@@ -57,11 +55,10 @@ type PreviousTouchTap = {
 }
 
 export default function usePageViewerPointerGestures({
-  captureClientZoomAnchor,
+  captureZoomAnchorAtClientPoint,
   nextPage,
   onClick,
   prevPage,
-  scrollRef,
   zoomToAnchor,
 }: Params) {
   const getOrientation = useOrientationStore((state) => state.getOrientation)
@@ -233,18 +230,12 @@ export default function usePageViewerPointerGestures({
   }
 
   function startOneFingerZoom(e: PointerEvent<HTMLDivElement>) {
-    const scrollElement = scrollRef.current
-
-    if (!scrollElement) {
-      return false
-    }
-
     const startZoom = getZoomLevel()
-    const anchor = captureClientZoomAnchor({
+
+    const anchor = captureZoomAnchorAtClientPoint({
       clientX: e.clientX,
       clientY: e.clientY,
       currentZoom: startZoom,
-      scrollElement,
     })
 
     if (!anchor) {
@@ -252,6 +243,7 @@ export default function usePageViewerPointerGestures({
     }
 
     clearPendingTouchTap()
+
     oneFingerZoomRef.current = {
       active: false,
       anchor,
@@ -259,6 +251,7 @@ export default function usePageViewerPointerGestures({
       startY: e.clientY,
       startZoom,
     }
+
     pointerStartRef.current = null
     suppressNextClick()
     capturePointer(e)
@@ -336,7 +329,7 @@ export default function usePageViewerPointerGestures({
     const isPinching = activePointers.current.size > 1
     if (isPinching) return
 
-    const isVerticalScrollable = scrollRef.current && scrollRef.current.scrollHeight > scrollRef.current.clientHeight
+    const isVerticalScrollable = e.currentTarget.scrollHeight > e.currentTarget.clientHeight
     if (isVerticalScrollable) return
 
     const diffX = e.clientX - pointerStartRef.current.x
@@ -388,7 +381,7 @@ export default function usePageViewerPointerGestures({
       return
     }
 
-    const isHorizontalScrollable = scrollRef.current && scrollRef.current.scrollHeight < scrollRef.current.clientHeight
+    const isHorizontalScrollable = e.currentTarget.scrollHeight < e.currentTarget.clientHeight
 
     if (isHorizontalScrollable) {
       pointerStartRef.current = null
