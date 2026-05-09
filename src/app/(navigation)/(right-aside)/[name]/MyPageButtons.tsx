@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import LogoutButton from '@/app/(navigation)/LogoutButton'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
-import FollowButton from '../post/[id]/@post/FollowButton'
+import FollowButton from '../post/[id]/FollowButton'
 import { getMe } from './common'
 import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
 import { UserType } from './UserProfileView'

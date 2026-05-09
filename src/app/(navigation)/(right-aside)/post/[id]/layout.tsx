@@ -1,6 +1,6 @@
 import BackButton from '@/components/BackButton'
 
-export default function Layout({ post }: LayoutProps<'/post/[id]'>) {
+export default function Layout({ children }: LayoutProps<'/post/[id]'>) {
   return (
     <>
       <div className="sticky top-0 z-10 flex items-center justify-between gap-2 px-2 pb-2 pt-[calc(0.5rem+var(--safe-area-top))] backdrop-blur whitespace-nowrap bg-background/70 border-background border-b sm:p-2">
@@ -13,7 +13,7 @@ export default function Layout({ post }: LayoutProps<'/post/[id]'>) {
         </div>
         <button className="rounded-full border-2 border-zinc-600 px-4 py-1 text-sm font-bold mx-2">답글</button>
       </div>
-      {post}
+      {children}
       <div aria-hidden className="h-dvh shrink-0" />
     </>
   )

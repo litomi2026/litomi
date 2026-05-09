@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation'
 
 import { generateOpenGraphMetadata } from '@/constants'
 
-import { getPost, getPostComment, getPostConversation, postParamsSchema } from '../common.server'
 import CommentList from './CommentList'
+import { getPost, getPostComment, getPostConversation, postParamsSchema } from './common.server'
 import ParentPost from './ParentPost'
 import Post from './Post'
 

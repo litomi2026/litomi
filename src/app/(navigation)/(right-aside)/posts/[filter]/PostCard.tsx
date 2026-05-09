@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
 import Link from 'next/link'
 
-import PostMangaCard from '@/app/(navigation)/(right-aside)/post/[id]/@post/PostMangaCard'
+import PostMangaCard from '@/app/(navigation)/(right-aside)/post/[id]/PostMangaCard'
 import { Post } from '@/backend/api/v1/post/GET'
 import { getPostDetailHref } from '@/components/post/postHref'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
