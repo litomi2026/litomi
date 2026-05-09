@@ -8,7 +8,7 @@ import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
 import MobileNavigationButton from './MobileNavigationButton'
 import NewMangaLink from './NewMangaLink'
 import RandomMangaLink from './RandomMangaLink'
-import { LIVE_CAM_AD_URL, NORDVPN_AFFILIATE_URL, topNavigationActionClassName } from './topNavigationActionConfig'
+import { LIVE_CAM_AD_URL, NORDVPN_URL, topNavigationActionClassName } from './topNavigationActionConfig'
 
 export default function TopNavigationActions() {
   return (
@@ -39,17 +39,17 @@ export default function TopNavigationActions() {
         </a> */}
         <a
           className={`${topNavigationActionClassName} relative`}
-          href={NORDVPN_AFFILIATE_URL}
+          href={NORDVPN_URL}
           rel="noopener noreferrer sponsored"
           target="_blank"
-          title="[광고] 이 콘텐츠는 NordVPN 제휴 링크를 포함하고 있으며, 가입이 발생하면 일정 수수료를 지급받을 수 있습니다."
+          // title="[광고] 이 콘텐츠는 NordVPN 제휴 링크를 포함하고 있으며, 가입이 발생하면 일정 수수료를 지급받을 수 있습니다."
         >
-          <span
+          {/* <span
             aria-hidden="true"
             className="pointer-events-none absolute -top-2 -right-1 rounded-full border border-zinc-700 bg-background/95 px-1.5 text-[10px] leading-4 font-medium text-zinc-400"
           >
             제휴
-          </span>
+          </span> */}
           <ShieldCheck className="size-5" />
           <span className="hidden sm:inline">NordVPN</span>
         </a>
