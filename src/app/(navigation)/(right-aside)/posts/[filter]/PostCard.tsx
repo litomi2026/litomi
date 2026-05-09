@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 import PostMangaCard from '@/app/(navigation)/(right-aside)/post/[id]/@post/PostMangaCard'
 import { Post } from '@/backend/api/v1/post/GET'
+import { getPostDetailHref } from '@/components/post/postHref'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
 import Squircle from '@/components/ui/Squircle'
 import { formatDistanceToNow } from '@/utils/format/date'
@@ -67,14 +68,14 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
             </p>
             <Link
               className="mt-2 inline-block text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-200"
-              href={`/post/${post.id}`}
+              href={getPostDetailHref(post.id)}
               prefetch={false}
             >
               자세히 보기
             </Link>
           </div>
         ) : (
-          <Link className="block p-3" href={`/post/${post.id}`} prefetch={false}>
+          <Link className="block p-3" href={getPostDetailHref(post.id)} prefetch={false}>
             <p className="min-w-0 whitespace-pre-wrap break-all text-sm leading-relaxed line-clamp-4 text-zinc-100">
               {content || <span className="text-zinc-400">삭제된 글이에요</span>}
             </p>
@@ -98,7 +99,7 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
         {hasSocialStats && (
           <Link
             className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 pb-3 text-xs text-zinc-500"
-            href={`/post/${post.id}`}
+            href={getPostDetailHref(post.id)}
             prefetch={false}
           >
             {socialStats.map(({ Icon, label, value }) => (
