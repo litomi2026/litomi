@@ -41,6 +41,7 @@ export type Post = {
     imageURL: string | null
   } | null
   mangaId: number | null
+  parentPostId: number | null
   likeCount: number
   commentCount: number
   repostCount: number

@@ -16,6 +16,7 @@ type Params = {
   mangaId?: number
   filter?: PostFilter
   postId?: number
+  postIds?: number[]
   parentPostId?: number
   username?: string
   currentUserId?: number
@@ -28,10 +29,15 @@ export default async function selectPost({
   mangaId,
   filter,
   postId,
+  postIds,
   parentPostId,
   username,
   currentUserId,
 }: Params) {
+  if (postIds?.length === 0) {
+    return []
+  }
+
   const conditions: (SQL | undefined)[] = []
   const commentPosts = alias(postTable, 'comment_posts')
   const repostPosts = alias(postTable, 'repost_posts')
@@ -53,6 +59,10 @@ export default async function selectPost({
 
   if (postId) {
     conditions.push(eq(postTable.id, postId))
+  }
+
+  if (postIds) {
+    conditions.push(inArray(postTable.id, postIds))
   }
 
   if (filter === PostFilter.MANGA) {
@@ -143,6 +153,7 @@ export default async function selectPost({
       content: postTable.content,
       type: postTable.type,
       mangaId: postTable.mangaId,
+      parentPostId: postTable.parentPostId,
       referredPostId: postTable.referredPostId,
       authorId: userTable.id,
       authorName: userTable.name,
