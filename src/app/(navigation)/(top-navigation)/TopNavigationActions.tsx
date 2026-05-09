@@ -15,6 +15,28 @@ export default function TopNavigationActions() {
     <AutoHideHeader className="sticky top-0 z-40 -mx-2 border-b border-background bg-background/90 px-2 pt-[calc(0.5rem+var(--safe-area-top))] pb-2 backdrop-blur">
       <nav aria-label="빠른 이동" className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end md:text-base">
         <MobileNavigationButton />
+        <NewMangaLink />
+        <Link
+          className={topNavigationActionClassName}
+          href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
+          prefetch={false}
+        >
+          <LinkPending className="size-5">
+            <Flame className="size-5" />
+          </LinkPending>{' '}
+          <span className="hidden sm:inline">인기</span>
+        </Link>
+        <RandomMangaLink timer={20} />
+        <a
+          className={topNavigationActionClassName}
+          href={LIVE_CAM_AD_URL}
+          rel="noopener sponsored"
+          target="_blank"
+          title="라이브 섹스 캠"
+        >
+          <Webcam className="size-5 hidden sm:block" />
+          라이브 섹스 캠
+        </a>
         <a
           className={`${topNavigationActionClassName} relative`}
           href={NORDVPN_AFFILIATE_URL}
@@ -31,28 +53,6 @@ export default function TopNavigationActions() {
           <ShieldCheck className="size-5" />
           <span className="hidden sm:inline">NordVPN</span>
         </a>
-        <a
-          className={topNavigationActionClassName}
-          href={LIVE_CAM_AD_URL}
-          rel="noopener sponsored"
-          target="_blank"
-          title="라이브 섹스 캠"
-        >
-          <Webcam className="size-5 hidden sm:block" />
-          라이브 섹스 캠
-        </a>
-        <Link
-          className={topNavigationActionClassName}
-          href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
-          prefetch={false}
-        >
-          <LinkPending className="size-5">
-            <Flame className="size-5" />
-          </LinkPending>{' '}
-          <span className="hidden sm:inline">인기</span>
-        </Link>
-        <NewMangaLink />
-        <RandomMangaLink timer={20} />
       </nav>
     </AutoHideHeader>
   )
