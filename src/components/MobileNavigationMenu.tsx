@@ -1,11 +1,12 @@
 'use client'
 
-import { Bookmark, Bot, Clover, FileText, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
+import { Bookmark, Bot, Clover, FileText, Flame, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactNode, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import { DEFAULT_METRIC, DEFAULT_PERIOD } from '@/app/(navigation)/(ranking)/common'
 import OverlayHost from '@/components/ui/OverlayHost'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -62,16 +63,11 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
   return (
     <OverlayHost>
       <div className="pointer-events-auto fixed inset-0 animate-fade-in-fast">
-        <button
-          aria-label="메뉴 닫기"
-          className="absolute inset-0 bg-background/50"
-          onClick={onClose}
-          type="button"
-        />
+        <button aria-label="메뉴 닫기" className="absolute inset-0 bg-background/50" onClick={onClose} type="button" />
       </div>
       <aside
         aria-label="모바일 메뉴"
-        className="pointer-events-auto fixed inset-y-0 left-0 flex w-[min(20rem,calc(100vw-2rem))] flex-col border-r-2 bg-background shadow-xl animate-fade-in-fast"
+        className="pointer-events-auto fixed inset-y-0 left-0 flex max-w-3xs w-full flex-col border-r-2 bg-background shadow animate-fade-in-fast"
       >
         <div className="flex items-center justify-between border-b-2 border-zinc-800 p-4 pl-[calc(1rem+var(--safe-area-left))] pt-[calc(1rem+var(--safe-area-top))]">
           <h2 className="text-lg font-bold pl-4">메뉴</h2>
@@ -88,6 +84,14 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
           aria-label="모바일 보조 메뉴"
           className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3 pl-[calc(0.75rem+var(--safe-area-left))] pb-[calc(0.75rem+var(--safe-area-bottom))]"
         >
+          <MobileMenuLink
+            href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
+            icon={<Flame />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill"
+            title="인기"
+          />
           <MobileMenuLink
             href="/library/bookmark"
             icon={<Bookmark />}
