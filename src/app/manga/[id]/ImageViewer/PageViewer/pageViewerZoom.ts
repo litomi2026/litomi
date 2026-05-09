@@ -8,6 +8,9 @@ const FINE_WHEEL_ZOOM_SPEED = 0.04
 const COARSE_WHEEL_ZOOM_SPEED = 0.002
 const COARSE_WHEEL_DELTA = 10
 const MAX_NORMALIZED_WHEEL_DELTA = 50
+const ONE_FINGER_ZOOM_SPEED = 0.004
+
+export const DOUBLE_TAP_ZOOM_LEVEL = 2
 
 export type CursorZoomAnchor = {
   contentLeft: number
@@ -71,6 +74,10 @@ export function getCursorAnchoredScrollPosition({ anchor, nextZoom }: GetCursorA
     left: Math.max(0, anchor.contentLeft + anchor.contentX * nextZoom - anchor.viewportX),
     top: Math.max(0, anchor.contentTop + anchor.contentY * nextZoom - anchor.viewportY),
   }
+}
+
+export function getNextOneFingerZoomLevel(startZoom: number, dragDeltaY: number) {
+  return clampZoomLevel(startZoom * Math.exp(dragDeltaY * ONE_FINGER_ZOOM_SPEED))
 }
 
 export function getNextWheelZoomLevel(currentZoom: number, wheel: WheelZoomParams) {

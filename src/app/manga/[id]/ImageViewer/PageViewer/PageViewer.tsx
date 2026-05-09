@@ -18,7 +18,7 @@ import { DEFAULT_ZOOM } from '../store/zoom'
 import { getResponsivePictureSources } from '../util'
 import useImageNavigation from './useImageNavigation'
 import usePageViewerInitialPage from './usePageViewerInitialPage'
-import usePageViewerPointerNavigation from './usePageViewerPointerNavigation'
+import usePageViewerPointerGestures from './usePageViewerPointerGestures'
 import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
 import usePageViewerWheel from './usePageViewerWheel'
 import usePageViewerZoom from './usePageViewerZoom'
@@ -84,17 +84,26 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
   })
 
   const {
+    captureClientZoomAnchor,
     contentRef,
     handleCursorZoomWheel,
     measureZoomLayout,
     scrollRef,
+    zoomToAnchor,
     zoomContentStyle,
     zoomLevel,
     zoomScrollAreaStyle,
   } = usePageViewerZoom({ imageCount })
 
   const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
-    usePageViewerPointerNavigation({ nextPage, onClick, prevPage, scrollRef })
+    usePageViewerPointerGestures({
+      captureClientZoomAnchor,
+      nextPage,
+      onClick,
+      prevPage,
+      scrollRef,
+      zoomToAnchor,
+    })
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
