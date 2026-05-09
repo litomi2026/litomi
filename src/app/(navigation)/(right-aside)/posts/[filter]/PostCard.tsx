@@ -25,6 +25,7 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
   const authorNickname = author?.nickname
   const content = post.content ?? ''
   const hasInternalURL = checkInternalURL(content)
+
   const socialStats = [
     { Icon: MessageCircle, label: '댓글', value: post.commentCount },
     { Icon: Repeat, label: '리포스트', value: post.repostCount },
@@ -125,13 +126,17 @@ export function PostSkeleton({ showMangaCover }: { showMangaCover?: boolean }) {
 
 function checkInternalURL(text: string): boolean {
   for (const match of text.matchAll(urlMatchRegex)) {
-    const parsedURL = safeParseURL(match[0])
-    if (parsedURL?.hostname.endsWith('litomi.in')) {
+    if (safeParseURL(match[0])?.hostname.endsWith('litomi.in')) {
       return true
     }
   }
 
   return false
+}
+
+function parsePostIdPathname(pathname: string) {
+  const match = /^\/post\/(\d+)$/.exec(pathname)
+  return match ? Number(match[1]) : null
 }
 
 function renderTextWithLinks(text: string) {
@@ -149,6 +154,7 @@ function renderTextWithLinks(text: string) {
 
     const { url, trailing } = splitTrailingPunctuation(raw)
     nodes.push(renderURL(url, `url-${index}-${matchCount}`))
+
     if (trailing) {
       nodes.push(trailing)
     }
@@ -166,15 +172,19 @@ function renderTextWithLinks(text: string) {
 
 function renderURL(url: string, key: string) {
   const parsedURL = safeParseURL(url)
+
   if (!parsedURL) {
     return url
   }
 
   if (parsedURL.hostname.endsWith('litomi.in')) {
+    const postId = parsePostIdPathname(parsedURL.pathname)
+    const href = postId ? getPostDetailHref(postId) : parsedURL
+
     return (
       <Link
         className="text-sky-400 underline underline-offset-2 hover:text-sky-300 transition"
-        href={parsedURL}
+        href={href}
         key={key}
         prefetch={false}
         title={url}
