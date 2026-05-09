@@ -3,7 +3,7 @@ import BackButton from '@/components/BackButton'
 export default function Layout({ children }: LayoutProps<'/post/[id]'>) {
   return (
     <>
-      <div className="sticky top-0 z-10 flex items-center justify-between gap-2 px-2 pb-2 pt-[calc(0.5rem+var(--safe-area-top))] backdrop-blur whitespace-nowrap bg-background/70 border-background border-b sm:p-2">
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-2 px-2 pb-2 pt-[calc(0.5rem+var(--safe-area-top))] backdrop-blur whitespace-nowrap bg-background/80 border-background border-b-2 sm:p-2">
         <div className="flex items-center gap-8">
           <BackButton
             className="hover:bg-zinc-500/50 focus-visible:outline-zinc-500 rounded-full p-2 transition"

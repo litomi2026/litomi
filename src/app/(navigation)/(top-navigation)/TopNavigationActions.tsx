@@ -12,7 +12,7 @@ import { LIVE_CAM_AD_URL, NORDVPN_AFFILIATE_URL, topNavigationActionClassName } 
 
 export default function TopNavigationActions() {
   return (
-    <AutoHideHeader className="sticky top-0 z-40 -mx-2 border-b border-background bg-background/90 px-2 pt-[calc(0.5rem+var(--safe-area-top))] pb-2 backdrop-blur">
+    <AutoHideHeader className="sticky top-0 z-40 -mx-2 border-b-2 border-background bg-background/90 px-2 pt-[calc(0.5rem+var(--safe-area-top))] pb-2 backdrop-blur">
       <nav aria-label="빠른 이동" className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end md:text-base">
         <MobileNavigationButton />
         <NewMangaLink />
