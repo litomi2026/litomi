@@ -184,14 +184,14 @@
   },
   "female:lolicon": {
     "en": "young girl",
-    "ko": "로리콘",
+    "ko": "로리",
     "ja": "ロリ",
     "zh-CN": "萝莉",
     "zh-TW": "蘿莉"
   },
   "female:low_lolicon": {
     "en": "young girl",
-    "ko": "약간 로리콘"
+    "ko": "약간 로리"
   },
   "female:male_on_dickgirl": {
     "en": "male on dickgirl",
@@ -407,11 +407,7 @@
   },
   "female:yuri": {
     "en": "girls love",
-    "ko": [
-      "백합",
-      "GL",
-      "보지x보지"
-    ],
+    "ko": ["백합", "GL", "보지x보지"],
     "ja": "百合",
     "zh-CN": "百合",
     "zh-TW": "百合"
@@ -554,7 +550,7 @@
   },
   "male:low_shotacon": {
     "en": "low shotacon",
-    "ko": "약간 쇼타콘",
+    "ko": "약간 쇼타",
     "ja": "軽度ショタ",
     "zh-CN": "轻度正太"
   },
@@ -656,7 +652,7 @@
   },
   "male:shotacon": {
     "en": "young boy",
-    "ko": "쇼타콘",
+    "ko": "쇼타",
     "ja": "ショタ",
     "zh-CN": "正太",
     "zh-TW": "正太"

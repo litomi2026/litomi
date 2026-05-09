@@ -16,16 +16,6 @@ export default function TopNavigationActions() {
       <nav aria-label="빠른 이동" className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end md:text-base">
         <MobileNavigationButton />
         <NewMangaLink />
-        <Link
-          className={topNavigationActionClassName}
-          href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
-          prefetch={false}
-        >
-          <LinkPending className="size-5">
-            <Flame className="size-5" />
-          </LinkPending>{' '}
-          <span className="hidden sm:inline">인기</span>
-        </Link>
         <RandomMangaLink timer={20} />
         {/* <a
           className={topNavigationActionClassName}

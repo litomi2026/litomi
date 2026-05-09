@@ -14,7 +14,7 @@ import {
 const WHEEL_NAVIGATION_THROTTLE = 500
 
 type Params = {
-  handleCursorZoomWheel: (event: WheelEvent, scrollElement: HTMLDivElement) => WheelHandlerResult
+  handleCursorZoomWheel: (event: WheelEvent) => WheelHandlerResult
   nextPage: () => void
   prevPage: () => void
   scrollRef: RefObject<HTMLDivElement | null>
@@ -97,7 +97,7 @@ export default function usePageViewerWheel({ handleCursorZoomWheel, nextPage, pr
     const wheelTarget = scrollElement
 
     function handleWheel(event: WheelEvent) {
-      if (handleCursorZoomWheel(event, wheelTarget) === WHEEL_EVENT_HANDLED) {
+      if (handleCursorZoomWheel(event) === WHEEL_EVENT_HANDLED) {
         return
       }
 

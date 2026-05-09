@@ -41,6 +41,7 @@
     "test:backend:integration": "bun tools/setupBackendIntegrationDb.ts && bun test ./test/backend --max-concurrency 1",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
+    "generate:emoji": "bun tools/generateEmojiList.ts",
     "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts",
     "grant:libo": "bun --conditions=react-server tools/grantLibo.ts",
     "exhentai:fullimg": "bun tools/exhentaiFullimgLinks.ts"

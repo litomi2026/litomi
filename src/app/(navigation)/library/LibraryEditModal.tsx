@@ -1,8 +1,8 @@
 'use client'
 
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Check, Loader2 } from 'lucide-react'
-import { type SubmitEvent, useId, useState } from 'react'
+import { Check, Loader2, Shuffle } from 'lucide-react'
+import { type SubmitEvent, useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { PATCHV1LibraryIdBody } from '@/backend/api/v1/library/[id]/PATCH'
@@ -13,7 +13,7 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
-import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
+import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@/constants/library'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
@@ -23,7 +23,8 @@ import { ProblemDetailsError } from '@/utils/react-query-error'
 import { normalizeString } from '@/utils/string'
 
 import { updateLibrary } from './api'
-import { getValidLibraryIcon } from './libraryIconInput'
+import { getRandomLibraryColor } from './libraryColorInput'
+import { getRandomLibraryIcon, getValidLibraryIcon, preloadLibraryEmojiList } from './libraryIconInput'
 
 type Library = {
   id: number
@@ -42,6 +43,10 @@ type Props = {
 
 export default function LibraryEditModal({ library, open, onOpenChange }: Readonly<Props>) {
   const [isPublic, setIsPublic] = useState(library.isPublic)
+  const [selectedColor, setSelectedColor] = useState(library.color || DEFAULT_LIBRARY_COLOR)
+  const [selectedIcon, setSelectedIcon] = useState(library.icon || DEFAULT_LIBRARY_ICON)
+  const [isRandomIconPending, setIsRandomIconPending] = useState(false)
+  const colorInputId = useId()
   const iconInputId = useId()
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
@@ -113,9 +118,6 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     },
   })
 
-  const colorValue = library.color || '#6366f1'
-  const iconValue = library.icon || DEFAULT_LIBRARY_ICON
-
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -126,8 +128,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     const formData = new FormData(event.currentTarget)
     const name = formData.get('name')?.toString().trim() ?? ''
     const description = formData.get('description')?.toString() ?? null
-    const color = formData.get('color')?.toString() ?? null
-    const icon = getValidLibraryIcon(formData.get('icon')?.toString())
+    const icon = getValidLibraryIcon(selectedIcon)
 
     if (!icon) {
       return
@@ -136,7 +137,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     const body: PATCHV1LibraryIdBody = {
       name,
       description: normalizeString(description),
-      color: color || null,
+      color: selectedColor || null,
       icon,
       isPublic,
     }
@@ -154,11 +155,114 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     setIsPublic(next)
   }
 
+  async function updateRandomIcon(excludedIcon?: string) {
+    setIsRandomIconPending(true)
+
+    try {
+      const nextIcon = await getRandomLibraryIcon(excludedIcon)
+      setSelectedIcon(nextIcon)
+    } catch {
+      toast.warning('랜덤 아이콘을 불러오지 못했어요')
+    } finally {
+      setIsRandomIconPending(false)
+    }
+  }
+
+  useEffect(() => {
+    setIsRandomIconPending(false)
+
+    if (open) {
+      setIsPublic(library.isPublic)
+      setSelectedColor(library.color || DEFAULT_LIBRARY_COLOR)
+      setSelectedIcon(library.icon || DEFAULT_LIBRARY_ICON)
+    }
+  }, [library.color, library.icon, library.isPublic, open])
+
   return (
     <Dialog ariaLabel="서재 수정" onClose={() => onOpenChange(false)} open={open}>
       <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
         <DialogHeader onClose={() => onOpenChange(false)} title="서재 수정" />
         <DialogBody className="grid gap-4">
+          <div className="flex items-center justify-center p-4">
+            <div
+              className="size-20 rounded-2xl flex items-center justify-center text-3xl shadow-lg transition"
+              style={{ backgroundColor: selectedColor }}
+            >
+              <span className="max-w-full overflow-hidden">{normalizeString(selectedIcon) || DEFAULT_LIBRARY_ICON}</span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm text-zinc-400 mb-1.5" htmlFor={iconInputId}>
+              아이콘
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                autoCapitalize="off"
+                autoComplete="off"
+                className="h-10 w-16 rounded-lg border border-zinc-700 bg-zinc-800 text-center text-xl outline-none transition
+                  focus:border-transparent focus:ring-2 focus:ring-zinc-600 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={updateLibraryMutation.isPending}
+                id={iconInputId}
+                maxLength={MAX_LIBRARY_ICON_LENGTH}
+                name="icon"
+                onBlur={() => setSelectedIcon(normalizeString(selectedIcon) ?? '')}
+                onChange={(e) => setSelectedIcon(e.currentTarget.value)}
+                placeholder={DEFAULT_LIBRARY_ICON}
+                required
+                spellCheck={false}
+                type="text"
+                value={selectedIcon}
+              />
+              <button
+                aria-label="랜덤 아이콘으로 변경"
+                className="inline-flex size-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900
+                  text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
+                  disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={updateLibraryMutation.isPending || isRandomIconPending}
+                onClick={() => updateRandomIcon(selectedIcon)}
+                onFocus={preloadLibraryEmojiList}
+                onMouseEnter={preloadLibraryEmojiList}
+                title="랜덤 아이콘으로 변경"
+                type="button"
+              >
+                {isRandomIconPending ? <Loader2 className="size-4 animate-spin" /> : <Shuffle className="size-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm text-zinc-400 mb-1.5" htmlFor={colorInputId}>
+              색상
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                className="h-10 w-20 overflow-hidden rounded-lg border border-zinc-700 bg-zinc-800 p-0 outline-none transition
+                  focus:border-transparent focus:ring-2 focus:ring-zinc-600 disabled:cursor-not-allowed disabled:opacity-50
+                  [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:border-0
+                  [&::-webkit-color-swatch-wrapper]:p-0"
+                disabled={updateLibraryMutation.isPending}
+                id={colorInputId}
+                name="color"
+                onChange={(event) => setSelectedColor(event.currentTarget.value)}
+                type="color"
+                value={selectedColor}
+              />
+              <button
+                aria-label="랜덤 색상으로 변경"
+                className="inline-flex size-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900
+                  text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
+                  disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={updateLibraryMutation.isPending}
+                onClick={() => setSelectedColor(getRandomLibraryColor())}
+                title="랜덤 색상으로 변경"
+                type="button"
+              >
+                <Shuffle className="size-4" />
+              </button>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5" htmlFor="library-name">
               이름
@@ -194,42 +298,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
               placeholder="서재 설명"
               rows={3}
             />
-            <p className="text-xs mt-1 text-zinc-500">{`서재에 대한 설명을 추가할 수 있어요 (최대 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자)`}</p>
-          </div>
-
-          <div>
-            <label className="block text-sm text-zinc-400 mb-1.5" htmlFor="library-color">
-              색상
-            </label>
-            <input
-              className="h-10 w-20 p-1 bg-zinc-800 border border-zinc-700 rounded cursor-pointer"
-              defaultValue={colorValue}
-              disabled={updateLibraryMutation.isPending}
-              id="library-color"
-              name="color"
-              type="color"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-zinc-400 mb-1.5" htmlFor={iconInputId}>
-              아이콘
-            </label>
-            <input
-              autoCapitalize="off"
-              autoComplete="off"
-              className="h-10 w-16 rounded-lg border border-zinc-700 bg-zinc-800 text-center text-xl outline-none transition
-                focus:border-transparent focus:ring-2 focus:ring-zinc-600 disabled:cursor-not-allowed disabled:opacity-50"
-              defaultValue={iconValue}
-              disabled={updateLibraryMutation.isPending}
-              id={iconInputId}
-              maxLength={MAX_LIBRARY_ICON_LENGTH}
-              name="icon"
-              placeholder={DEFAULT_LIBRARY_ICON}
-              required
-              spellCheck={false}
-              type="text"
-            />
+            <p className="text-xs text-zinc-500">{`서재에 대한 설명을 추가할 수 있어요 (최대 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자)`}</p>
           </div>
 
           <div className="flex items-center justify-between mt-2">

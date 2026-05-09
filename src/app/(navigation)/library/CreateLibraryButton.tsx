@@ -1,8 +1,8 @@
 'use client'
 
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus } from 'lucide-react'
-import { type ChangeEvent, type SubmitEvent, useEffect, useId, useRef, useState } from 'react'
+import { Loader2, Plus, Shuffle } from 'lucide-react'
+import { type SubmitEvent, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
@@ -13,7 +13,7 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
-import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
+import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@/constants/library'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -23,20 +23,10 @@ import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 import { normalizeString } from '@/utils/string'
 
-import { getValidLibraryIcon } from './libraryIconInput'
+import { getRandomLibraryColor } from './libraryColorInput'
+import { getRandomLibraryIcon, getValidLibraryIcon, preloadLibraryEmojiList } from './libraryIconInput'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
-
-const DEFAULT_COLORS = [
-  '#3B82F6', // Blue
-  '#EF4444', // Red
-  '#10B981', // Green
-  '#F59E0B', // Yellow
-  '#8B5CF6', // Purple
-  '#EC4899', // Pink
-  '#6366F1', // Indigo
-  '#14B8A6', // Teal
-]
 
 type CreateLibraryPayload = {
   name: string
@@ -52,13 +42,16 @@ type Props = {
 
 export default function CreateLibraryButton({ className = '' }: Readonly<Props>) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedColor, setSelectedColor] = useState(DEFAULT_COLORS[0])
+  const [selectedColor, setSelectedColor] = useState(DEFAULT_LIBRARY_COLOR)
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_LIBRARY_ICON)
+  const [isRandomIconPending, setIsRandomIconPending] = useState(false)
   const [isPublic, setIsPublic] = useState(true)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const nameInputRef = useRef<HTMLInputElement>(null)
+  const colorInputId = useId()
   const iconInputId = useId()
+
   const adultState = getAdultState(me)
 
   const createMutation = useMutation<POSTV1LibraryResponse, ProblemDetailsError, CreateLibraryPayload>({
@@ -128,8 +121,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
 
   function handleClose() {
     setIsModalOpen(false)
-    setSelectedColor(DEFAULT_COLORS[0])
-    setSelectedIcon(DEFAULT_LIBRARY_ICON)
+    setIsRandomIconPending(false)
   }
 
   function handleOpen() {
@@ -179,12 +171,17 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
     })
   }
 
-  function handleIconChange(event: ChangeEvent<HTMLInputElement>) {
-    setSelectedIcon(event.currentTarget.value)
-  }
+  async function updateRandomIcon(excludedIcon?: string) {
+    setIsRandomIconPending(true)
 
-  function handleIconBlur() {
-    setSelectedIcon(normalizeString(selectedIcon) ?? '')
+    try {
+      const nextIcon = await getRandomLibraryIcon(excludedIcon)
+      setSelectedIcon(nextIcon)
+    } catch {
+      toast.warning('랜덤 아이콘을 불러오지 못했어요')
+    } finally {
+      setIsRandomIconPending(false)
+    }
   }
 
   useEffect(() => {
@@ -199,6 +196,8 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         className={`flex w-full items-center gap-3 p-3 bg-zinc-800/50 hover:bg-zinc-700/50 rounded-lg transition
           sm:rounded sm:p-1.5 sm:hover:bg-zinc-800 sm:w-auto ${className}`}
         onClick={handleOpen}
+        onFocus={preloadLibraryEmojiList}
+        onMouseEnter={preloadLibraryEmojiList}
         title="서재 만들기"
         type="button"
       >
@@ -223,39 +222,69 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor={iconInputId}>
                 아이콘
               </label>
-              <input
-                autoCapitalize="off"
-                autoComplete="off"
-                className="h-12 w-20 rounded-lg border-2 border-zinc-700 bg-zinc-800 text-center text-2xl outline-none transition
-                  focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={isPending}
-                id={iconInputId}
-                maxLength={MAX_LIBRARY_ICON_LENGTH}
-                name="icon"
-                onBlur={handleIconBlur}
-                onChange={handleIconChange}
-                placeholder={DEFAULT_LIBRARY_ICON}
-                required
-                spellCheck={false}
-                type="text"
-                value={selectedIcon}
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  autoCapitalize="off"
+                  autoComplete="off"
+                  className="h-12 w-20 rounded-lg border-2 border-zinc-700 bg-zinc-800 text-center text-2xl outline-none transition
+                    focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={isPending}
+                  id={iconInputId}
+                  maxLength={MAX_LIBRARY_ICON_LENGTH}
+                  name="icon"
+                  onBlur={() => setSelectedIcon(normalizeString(selectedIcon) ?? '')}
+                  onChange={(e) => setSelectedIcon(e.currentTarget.value)}
+                  placeholder={DEFAULT_LIBRARY_ICON}
+                  required
+                  spellCheck={false}
+                  type="text"
+                  value={selectedIcon}
+                />
+                <button
+                  aria-label="랜덤 아이콘으로 변경"
+                  className="inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900
+                    text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
+                    disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={isPending || isRandomIconPending}
+                  onClick={() => updateRandomIcon(selectedIcon)}
+                  onFocus={preloadLibraryEmojiList}
+                  onMouseEnter={preloadLibraryEmojiList}
+                  title="랜덤 아이콘으로 변경"
+                  type="button"
+                >
+                  {isRandomIconPending ? <Loader2 className="size-4 animate-spin" /> : <Shuffle className="size-4" />}
+                </button>
+              </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">색상</label>
-              <div className="grid grid-cols-4 gap-2">
-                {DEFAULT_COLORS.map((color) => (
-                  <button
-                    aria-pressed={selectedColor === color}
-                    className="h-12 rounded-lg border-2 border-background transition aria-pressed:ring-2 aria-pressed:ring-foreground
-                      disabled:opacity-50"
-                    disabled={isPending}
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    style={{ backgroundColor: color }}
-                    type="button"
-                  />
-                ))}
+              <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor={colorInputId}>
+                색상
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  className="h-12 w-20 overflow-hidden rounded-lg border-2 border-zinc-700 bg-zinc-800 p-0 outline-none transition
+                    focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50
+                    [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:border-0
+                    [&::-webkit-color-swatch-wrapper]:p-0"
+                  disabled={isPending}
+                  id={colorInputId}
+                  name="color"
+                  onChange={(event) => setSelectedColor(event.currentTarget.value)}
+                  type="color"
+                  value={selectedColor}
+                />
+                <button
+                  aria-label="랜덤 색상으로 변경"
+                  className="inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900
+                    text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
+                    disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={isPending}
+                  onClick={() => setSelectedColor(getRandomLibraryColor())}
+                  title="랜덤 색상으로 변경"
+                  type="button"
+                >
+                  <Shuffle className="size-4" />
+                </button>
               </div>
             </div>
 
