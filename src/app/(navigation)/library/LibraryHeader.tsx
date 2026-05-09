@@ -261,7 +261,7 @@ export default function LibraryHeader({
                 className="hidden size-10 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
                 style={{ backgroundColor: currentLibrary.color ?? '' }}
               >
-                {currentLibrary.icon?.slice(0, 2) ?? currentLibrary.name[0]}
+                {currentLibrary.icon ?? currentLibrary.name[0]}
               </div>
             )}
             {!isSelectionMode && (
