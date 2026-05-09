@@ -13,7 +13,7 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
-import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
+import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@/constants/library'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -23,20 +23,10 @@ import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 import { normalizeString } from '@/utils/string'
 
+import { getRandomLibraryColor } from './libraryColorInput'
 import { getRandomLibraryIcon, getValidLibraryIcon, preloadLibraryEmojiList } from './libraryIconInput'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
-
-const DEFAULT_COLORS = [
-  '#3B82F6', // Blue
-  '#EF4444', // Red
-  '#10B981', // Green
-  '#F59E0B', // Yellow
-  '#8B5CF6', // Purple
-  '#EC4899', // Pink
-  '#6366F1', // Indigo
-  '#14B8A6', // Teal
-]
 
 type CreateLibraryPayload = {
   name: string
@@ -52,14 +42,16 @@ type Props = {
 
 export default function CreateLibraryButton({ className = '' }: Readonly<Props>) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedColor, setSelectedColor] = useState(DEFAULT_COLORS[0])
+  const [selectedColor, setSelectedColor] = useState(DEFAULT_LIBRARY_COLOR)
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_LIBRARY_ICON)
   const [isRandomIconPending, setIsRandomIconPending] = useState(false)
   const [isPublic, setIsPublic] = useState(true)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const nameInputRef = useRef<HTMLInputElement>(null)
+  const colorInputId = useId()
   const iconInputId = useId()
+
   const adultState = getAdultState(me)
 
   const createMutation = useMutation<POSTV1LibraryResponse, ProblemDetailsError, CreateLibraryPayload>({
@@ -265,20 +257,34 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">색상</label>
-              <div className="grid grid-cols-4 gap-2">
-                {DEFAULT_COLORS.map((color) => (
-                  <button
-                    aria-pressed={selectedColor === color}
-                    className="h-12 rounded-lg border-2 border-background transition aria-pressed:ring-2 aria-pressed:ring-foreground
-                      disabled:opacity-50"
-                    disabled={isPending}
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    style={{ backgroundColor: color }}
-                    type="button"
-                  />
-                ))}
+              <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor={colorInputId}>
+                색상
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  className="h-12 w-20 overflow-hidden rounded-lg border-2 border-zinc-700 bg-zinc-800 p-0 outline-none transition
+                    focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50
+                    [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:border-0
+                    [&::-webkit-color-swatch-wrapper]:p-0"
+                  disabled={isPending}
+                  id={colorInputId}
+                  name="color"
+                  onChange={(event) => setSelectedColor(event.currentTarget.value)}
+                  type="color"
+                  value={selectedColor}
+                />
+                <button
+                  aria-label="랜덤 색상으로 변경"
+                  className="inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900
+                    text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
+                    disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={isPending}
+                  onClick={() => setSelectedColor(getRandomLibraryColor())}
+                  title="랜덤 색상으로 변경"
+                  type="button"
+                >
+                  <Shuffle className="size-4" />
+                </button>
               </div>
             </div>
 
