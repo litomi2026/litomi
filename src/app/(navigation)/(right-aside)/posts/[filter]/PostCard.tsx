@@ -4,8 +4,9 @@ import dayjs from 'dayjs'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
 import Link from 'next/link'
 
-import PostMangaCard from '@/app/(navigation)/(right-aside)/post/[id]/@post/PostMangaCard'
+import PostMangaCard from '@/app/(navigation)/(right-aside)/post/[id]/PostMangaCard'
 import { Post } from '@/backend/api/v1/post/GET'
+import { getPostDetailHref } from '@/components/post/postHref'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
 import Squircle from '@/components/ui/Squircle'
 import { formatDistanceToNow } from '@/utils/format/date'
@@ -24,6 +25,7 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
   const authorNickname = author?.nickname
   const content = post.content ?? ''
   const hasInternalURL = checkInternalURL(content)
+
   const socialStats = [
     { Icon: MessageCircle, label: '댓글', value: post.commentCount },
     { Icon: Repeat, label: '리포스트', value: post.repostCount },
@@ -67,14 +69,14 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
             </p>
             <Link
               className="mt-2 inline-block text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-200"
-              href={`/post/${post.id}`}
+              href={getPostDetailHref(post.id)}
               prefetch={false}
             >
               자세히 보기
             </Link>
           </div>
         ) : (
-          <Link className="block p-3" href={`/post/${post.id}`} prefetch={false}>
+          <Link className="block p-3" href={getPostDetailHref(post.id)} prefetch={false}>
             <p className="min-w-0 whitespace-pre-wrap break-all text-sm leading-relaxed line-clamp-4 text-zinc-100">
               {content || <span className="text-zinc-400">삭제된 글이에요</span>}
             </p>
@@ -98,7 +100,7 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
         {hasSocialStats && (
           <Link
             className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 pb-3 text-xs text-zinc-500"
-            href={`/post/${post.id}`}
+            href={getPostDetailHref(post.id)}
             prefetch={false}
           >
             {socialStats.map(({ Icon, label, value }) => (
@@ -124,13 +126,17 @@ export function PostSkeleton({ showMangaCover }: { showMangaCover?: boolean }) {
 
 function checkInternalURL(text: string): boolean {
   for (const match of text.matchAll(urlMatchRegex)) {
-    const parsedURL = safeParseURL(match[0])
-    if (parsedURL?.hostname.endsWith('litomi.in')) {
+    if (safeParseURL(match[0])?.hostname.endsWith('litomi.in')) {
       return true
     }
   }
 
   return false
+}
+
+function parsePostIdPathname(pathname: string) {
+  const match = /^\/post\/(\d+)$/.exec(pathname)
+  return match ? Number(match[1]) : null
 }
 
 function renderTextWithLinks(text: string) {
@@ -148,6 +154,7 @@ function renderTextWithLinks(text: string) {
 
     const { url, trailing } = splitTrailingPunctuation(raw)
     nodes.push(renderURL(url, `url-${index}-${matchCount}`))
+
     if (trailing) {
       nodes.push(trailing)
     }
@@ -165,15 +172,19 @@ function renderTextWithLinks(text: string) {
 
 function renderURL(url: string, key: string) {
   const parsedURL = safeParseURL(url)
+
   if (!parsedURL) {
     return url
   }
 
   if (parsedURL.hostname.endsWith('litomi.in')) {
+    const postId = parsePostIdPathname(parsedURL.pathname)
+    const href = postId ? getPostDetailHref(postId) : parsedURL
+
     return (
       <Link
         className="text-sky-400 underline underline-offset-2 hover:text-sky-300 transition"
-        href={parsedURL}
+        href={href}
         key={key}
         prefetch={false}
         title={url}

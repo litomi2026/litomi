@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { formatDistanceToNow } from '@/utils/format/date'
 
 import Squircle from '../ui/Squircle'
+import { getPostDetailHref } from './postHref'
 import PostImages from './PostImages'
 
 export type DeletedReferredPost = {
@@ -47,7 +48,7 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
   return (
     <Link
       className={`grid min-w-0 cursor-pointer overflow-hidden rounded-2xl border-2 transition border-zinc-600 hover:bg-zinc-900`}
-      href={`/post/${id}`}
+      href={getPostDetailHref(id)}
       prefetch={false}
     >
       <div className="grid gap-1 p-3">

@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import type { PostComment } from '@/sql/selectPostComment'
 
+import { getPostDetailHref } from '@/components/post/postHref'
 import Squircle from '@/components/ui/Squircle'
 import { formatDistanceToNow } from '@/utils/format/date'
 
@@ -71,7 +72,7 @@ export default function CommentList({ comments }: Props) {
                 </div>
                 <Link
                   className="min-w-0 whitespace-pre-wrap break-all text-[1.02rem] text-zinc-100 transition hover:text-zinc-200"
-                  href={`/post/${comment.id}`}
+                  href={getPostDetailHref(comment.id)}
                   prefetch={false}
                 >
                   {comment.content ?? '삭제된 답글이에요'}

@@ -39,7 +39,6 @@ export default async function Layout({ params, children }: LayoutProps<'/[name]'
         </div>
       </nav>
       {children}
-      <MobileNavigationSpacer />
     </main>
   )
 }

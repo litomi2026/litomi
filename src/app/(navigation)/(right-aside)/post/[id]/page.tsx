@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation'
 
 import { generateOpenGraphMetadata } from '@/constants'
 
-import { getPost, postParamsSchema } from '../common.server'
+import CommentList from './CommentList'
+import { getPost, getPostComment, getPostConversation, postParamsSchema } from './common.server'
+import ParentPost from './ParentPost'
 import Post from './Post'
 
 export async function generateMetadata({ params }: PageProps<'/post/[id]'>): Promise<Metadata> {
@@ -43,11 +45,23 @@ export default async function Page({ params }: PageProps<'/post/[id]'>) {
   }
 
   const { id } = validation.data
-  const post = await getPost(id)
+  const [conversation, comments] = await Promise.all([getPostConversation(id), getPostComment(id)])
 
-  if (!post) {
+  if (!conversation) {
     notFound()
   }
 
-  return <Post post={post} />
+  return (
+    <>
+      {conversation.parentPosts.length > 0 && (
+        <section aria-label="상위 글">
+          {conversation.parentPosts.map((parentPost) => (
+            <ParentPost key={parentPost.id} post={parentPost} />
+          ))}
+        </section>
+      )}
+      <Post post={conversation.post} />
+      <CommentList comments={comments} />
+    </>
+  )
 }

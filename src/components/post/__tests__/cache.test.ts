@@ -33,6 +33,7 @@ function createInfiniteData(postIds: number[]): InfiniteData<GETV1PostResponse> 
           type: PostType.TEXT,
           author: { id: 1, imageURL: null, name: 'user1', nickname: 'User One' },
           mangaId: null,
+          parentPostId: null,
           likeCount: 0,
           commentCount: 0,
           repostCount: 0,
