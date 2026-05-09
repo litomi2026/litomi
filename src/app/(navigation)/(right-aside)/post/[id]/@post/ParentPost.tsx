@@ -1,0 +1,86 @@
+import dayjs from 'dayjs'
+import Link from 'next/link'
+
+import type { Post as TPost } from '@/backend/api/v1/post/GET'
+
+import { getPostDetailHref } from '@/components/post/postHref'
+import ReferredPostCard from '@/components/post/ReferredPostCard'
+import Squircle from '@/components/ui/Squircle'
+import { formatDistanceToNow } from '@/utils/format/date'
+
+type Props = {
+  post: TPost
+}
+
+export default function ParentPost({ post }: Readonly<Props>) {
+  const author = post.author
+  const referredPost = post.referredPost
+
+  const avatar = (
+    <Squircle className="w-10 shrink-0" src={author?.imageURL}>
+      {(author?.nickname ?? '탈퇴').slice(0, 2)}
+    </Squircle>
+  )
+
+  return (
+    <article className="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-3 px-4 pt-3">
+      <div className="flex flex-col items-center self-stretch">
+        {author ? (
+          <Link aria-label={`${author.nickname} 프로필`} href={`/@${author.name}`} prefetch={false}>
+            {avatar}
+          </Link>
+        ) : (
+          <div>{avatar}</div>
+        )}
+        <div aria-hidden className="mt-2 w-0.5 flex-1 rounded-full bg-zinc-800" />
+      </div>
+
+      <div className="min-w-0 pb-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm leading-5">
+          {author ? (
+            <Link
+              className="min-w-0 font-bold text-zinc-100 transition hover:text-zinc-200"
+              href={`/@${author.name}`}
+              prefetch={false}
+            >
+              <span className="break-all">{author.nickname}</span>
+            </Link>
+          ) : (
+            <span className="font-bold text-zinc-500">탈퇴한 사용자예요</span>
+          )}
+          {author && <span className="min-w-0 break-all text-zinc-500">@{author.name}</span>}
+          <span className="text-zinc-500">·</span>
+          <span className="shrink-0 text-xs text-zinc-500" title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}>
+            {formatDistanceToNow(new Date(post.createdAt))}
+          </span>
+        </div>
+
+        <Link
+          className="mt-1 block min-w-0 rounded-md outline-offset-4 transition hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700/70"
+          href={getPostDetailHref(post.id)}
+          prefetch={false}
+        >
+          <p className="min-w-0 whitespace-pre-wrap break-all text-[0.98rem] leading-relaxed text-zinc-100">
+            {post.content || <span className="text-zinc-500">삭제된 글이에요</span>}
+          </p>
+        </Link>
+
+        {referredPost && (
+          <div className="mt-2">
+            <ReferredPostCard referredPost={referredPost} />
+          </div>
+        )}
+
+        {post.mangaId && (
+          <Link
+            className="mt-2 inline-flex rounded-full border border-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-400 transition hover:border-zinc-600 hover:bg-zinc-900 hover:text-zinc-200"
+            href={`/manga/${post.mangaId}`}
+            prefetch={false}
+          >
+            관련 작품 보기
+          </Link>
+        )}
+      </div>
+    </article>
+  )
+}
