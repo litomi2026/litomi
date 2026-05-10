@@ -108,6 +108,7 @@ export default function useViewerPointerGestures({
 
   const activePointersRef = useRef(new Map<number, GesturePointer>())
   const clickSuppressionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const consumedPointerIdsRef = useRef(new Set<number>())
   const ignoredPointerIdsRef = useRef(new Set<number>())
   const initialBrightnessRef = useRef(100)
   const oneFingerZoomRef = useRef<OneFingerZoomState | null>(null)
@@ -126,6 +127,12 @@ export default function useViewerPointerGestures({
 
     clearTimeout(clickSuppressionTimeoutRef.current)
     clickSuppressionTimeoutRef.current = null
+  }
+
+  function consumePointerIds(pointerIds: readonly number[]) {
+    for (const pointerId of pointerIds) {
+      consumedPointerIdsRef.current.add(pointerId)
+    }
   }
 
   function suppressNextClick() {
@@ -362,8 +369,9 @@ export default function useViewerPointerGestures({
       startDistance,
       startZoom,
     }
-    setIsNativeTouchActionBlocked(true)
 
+    consumePointerIds([firstId, secondId])
+    setIsNativeTouchActionBlocked(true)
     capturePointer(e.currentTarget, firstId)
     capturePointer(e.currentTarget, secondId)
     suppressNextClick()
@@ -593,7 +601,7 @@ export default function useViewerPointerGestures({
     }
 
     activePointersRef.current.delete(e.pointerId)
-
+    const wasPointerConsumed = consumedPointerIdsRef.current.delete(e.pointerId)
     const oneFingerZoom = oneFingerZoomRef.current
 
     if (oneFingerZoom?.pointerId === e.pointerId) {
@@ -658,7 +666,7 @@ export default function useViewerPointerGestures({
       const isTouchTap = pointerStartRef.current?.pointerType === 'touch' && isTapMovement(diffX, diffY)
       pointerStartRef.current = null
 
-      if (pan.active) {
+      if (pan.active || wasPointerConsumed) {
         suppressNextClick()
         claimPointerEvent(e)
       } else if (isTouchTap) {
@@ -669,6 +677,11 @@ export default function useViewerPointerGestures({
     }
 
     if (!pointerStartRef.current) {
+      if (wasPointerConsumed) {
+        suppressNextClick()
+        claimPointerEvent(e)
+      }
+
       return
     }
 
@@ -676,6 +689,13 @@ export default function useViewerPointerGestures({
     const diffY = e.clientY - pointerStartRef.current.y
     const isTouchTap = pointerStartRef.current.pointerType === 'touch' && isTapMovement(diffX, diffY)
     const isDirectManipulation = isDirectManipulationPointer(pointerStartRef.current.pointerType)
+
+    if (wasPointerConsumed) {
+      pointerStartRef.current = null
+      suppressNextClick()
+      claimPointerEvent(e)
+      return
+    }
 
     if (pointerStartRef.current.nativeScrollAxis) {
       pointerStartRef.current = null
@@ -744,6 +764,7 @@ export default function useViewerPointerGestures({
   function handlePointerCancel(e: PointerEvent<HTMLDivElement>) {
     ignoredPointerIdsRef.current.delete(e.pointerId)
     activePointersRef.current.delete(e.pointerId)
+    consumedPointerIdsRef.current.delete(e.pointerId)
     cancelOneFingerZoom(e)
 
     const pinch = pinchRef.current
