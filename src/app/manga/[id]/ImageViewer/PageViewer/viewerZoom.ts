@@ -37,6 +37,13 @@ type GetCursorAnchoredScrollPositionParams = {
   nextZoom: number
 }
 
+type MoveZoomAnchorToClientPointParams = {
+  anchor: CursorZoomAnchor
+  clientX: number
+  clientY: number
+  viewportRect: RectLike
+}
+
 type PinchZoomParams = {
   currentDistance: number
   startDistance: number
@@ -132,6 +139,19 @@ export function getNormalizedWheelDelta({ delta, deltaMode }: WheelDeltaParams) 
   }
 
   return delta
+}
+
+export function moveZoomAnchorToClientPoint({
+  anchor,
+  clientX,
+  clientY,
+  viewportRect,
+}: MoveZoomAnchorToClientPointParams): CursorZoomAnchor {
+  return {
+    ...anchor,
+    viewportX: clientX - viewportRect.left,
+    viewportY: clientY - viewportRect.top,
+  }
 }
 
 function getAdaptiveWheelZoomSpeed(deltaY: number) {

@@ -30,10 +30,6 @@ type ZoomLayout = {
   viewportWidth: number
 }
 
-type ZoomToAnchorOptions = {
-  allowScrollWithoutZoom?: boolean
-}
-
 const INITIAL_ZOOM_LAYOUT: ZoomLayout = {
   contentHeight: 0,
   contentWidth: 0,
@@ -121,17 +117,12 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   }, [])
 
   const zoomToAnchor = useCallback(
-    (anchor: CursorZoomAnchor, nextZoom: number, options: ZoomToAnchorOptions = {}) => {
+    (anchor: CursorZoomAnchor, nextZoom: number) => {
       const clampedNextZoom = clampZoomLevel(nextZoom)
 
       if (clampedNextZoom === getZoomLevel()) {
         pendingCursorZoomAnchorRef.current = null
-
-        if (options.allowScrollWithoutZoom) {
-          applyAnchoredScroll(anchor, clampedNextZoom)
-          return true
-        }
-
+        applyAnchoredScroll(anchor, clampedNextZoom)
         return false
       }
 
