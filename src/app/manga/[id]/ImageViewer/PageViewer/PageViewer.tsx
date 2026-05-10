@@ -39,6 +39,12 @@ const screenFitContentStyle: Record<ScreenFit, string> = {
   all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
 }
 
+type DoubleTapGestureGuardProps = {
+  radius: number
+  x: number
+  y: number
+}
+
 type LastPageProps = {
   manga: {
     id: number
@@ -95,14 +101,20 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     zoomScrollAreaStyle,
   } = usePageViewerZoom({ imageCount })
 
-  const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
-    usePageViewerPointerGestures({
-      captureZoomAnchorAtClientPoint,
-      nextPage,
-      onClick,
-      prevPage,
-      zoomToAnchor,
-    })
+  const {
+    doubleTapGestureGuard,
+    handleClick,
+    handlePointerCancel,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+  } = usePageViewerPointerGestures({
+    captureZoomAnchorAtClientPoint,
+    nextPage,
+    onClick,
+    prevPage,
+    zoomToAnchor,
+  })
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
@@ -121,6 +133,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
         onPointerUp={handlePointerUp}
         ref={scrollRef}
       >
+        {doubleTapGestureGuard && <DoubleTapGestureGuard {...doubleTapGestureGuard} />}
         <div className="relative min-h-full min-w-full" style={zoomScrollAreaStyle}>
           <ul
             className={`absolute left-0 top-0 h-dvh [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${screenFitContentStyle[screenFit]}`}
@@ -141,6 +154,24 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
         </div>
       </div>
     </>
+  )
+}
+
+function DoubleTapGestureGuard({ radius, x, y }: DoubleTapGestureGuardProps) {
+  const size = radius * 2
+
+  return (
+    <div
+      aria-hidden
+      className="fixed z-10 pointer-events-auto"
+      style={{
+        height: size,
+        left: x - radius,
+        top: y - radius,
+        touchAction: 'pinch-zoom',
+        width: size,
+      }}
+    />
   )
 }
 
