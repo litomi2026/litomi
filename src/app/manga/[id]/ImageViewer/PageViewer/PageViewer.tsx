@@ -1,5 +1,7 @@
 'use client'
 
+import type { CSSProperties } from 'react'
+
 import { Loader2 } from 'lucide-react'
 
 import MangaImage from '@/components/MangaImage'
@@ -22,6 +24,7 @@ import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
 import usePageViewerWheelNavigation from './usePageViewerWheelNavigation'
 import usePageViewerZoom from './usePageViewerZoom'
 import useViewerPointerGestures from './useViewerPointerGestures'
+import { getTouchActionForScrollableAxes } from './viewerGesturePolicy'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 
@@ -83,20 +86,31 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     measureZoomLayout,
     scrollRef,
     styles,
+    viewerScrollableAxes,
     zoomToAnchor,
     zoomLevel,
   } = usePageViewerZoom({ imageCount })
 
-  const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
-    useViewerPointerGestures({
-      captureZoomAnchorAtClientPoint,
-      enableBrightnessSwipe: true,
-      enableSwipeNavigation: true,
-      nextPage,
-      onCenterTap: onClick,
-      prevPage,
-      zoomToAnchor,
-    })
+  const {
+    handleClick,
+    handlePointerCancel,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    isNativeTouchActionBlocked,
+  } = useViewerPointerGestures({
+    captureZoomAnchorAtClientPoint,
+    enableBrightnessSwipe: true,
+    enableSwipeNavigation: true,
+    nextPage,
+    onCenterTap: onClick,
+    prevPage,
+    zoomToAnchor,
+  })
+
+  const viewerStyle = {
+    touchAction: isNativeTouchActionBlocked ? 'none' : getTouchActionForScrollableAxes(viewerScrollableAxes, zoomLevel),
+  } satisfies CSSProperties
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
@@ -114,7 +128,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         ref={scrollRef}
-        style={styles.viewer}
+        style={viewerStyle}
       >
         <div className="relative min-h-full min-w-full" style={styles.zoomScrollArea}>
           <ul

@@ -5,7 +5,7 @@ import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { useScreenFitStore } from '../store/screenFit'
 import { clampZoomLevel, DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
-import { getTouchActionForScrollableAxes, shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
+import { shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
 import {
   captureCursorZoomAnchor,
   type CursorZoomAnchor,
@@ -171,10 +171,6 @@ export default function usePageViewerZoom({ imageCount }: Params) {
       zoomLayout.contentHeight * zoomLevel - zoomLayout.viewportHeight > SCROLL_OVERFLOW_EPSILON,
   }
 
-  const viewer = {
-    touchAction: getTouchActionForScrollableAxes(viewerScrollableAxes, zoomLevel),
-  } satisfies CSSProperties
-
   // NOTE: 페이지 구성이나 보기 옵션이 바뀌면 화면에 그리기 전에 줌 기준 크기를 다시 재요
   useLayoutEffect(() => {
     measureZoomLayout()
@@ -260,11 +256,11 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     zoomToAnchor,
     contentRef,
     scrollRef,
+    viewerScrollableAxes,
     zoomLevel,
     styles: {
       zoomContent,
       zoomScrollArea,
-      viewer,
     },
   }
 }

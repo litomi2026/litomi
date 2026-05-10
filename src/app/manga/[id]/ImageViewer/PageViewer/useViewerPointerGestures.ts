@@ -1,4 +1,4 @@
-import { type MouseEvent, type PointerEvent, useEffect, useRef } from 'react'
+import { type MouseEvent, type PointerEvent, useEffect, useRef, useState } from 'react'
 
 import { useBrightnessStore } from '../store/brightness'
 import { useOrientationStore } from '../store/orientation'
@@ -108,6 +108,7 @@ export default function useViewerPointerGestures({
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
   const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
+  const [isNativeTouchActionBlocked, setIsNativeTouchActionBlocked] = useState(false)
 
   const activePointersRef = useRef(new Map<number, GesturePointer>())
   const clickSuppressionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -141,13 +142,17 @@ export default function useViewerPointerGestures({
     }, CLICK_SUPPRESSION_TIMEOUT)
   }
 
-  function clearPendingTouchTap() {
+  function clearPendingTouchTap({ releaseTouchAction = true } = {}) {
     if (pendingTouchTapRef.current) {
       clearTimeout(pendingTouchTapRef.current.timeoutId)
       pendingTouchTapRef.current = null
     }
 
     previousTouchTapRef.current = null
+
+    if (releaseTouchAction) {
+      setIsNativeTouchActionBlocked(false)
+    }
   }
 
   function capturePointer(target: HTMLDivElement, pointerId: number) {
@@ -249,6 +254,7 @@ export default function useViewerPointerGestures({
   function queueTouchTap(clientX: number, clientY: number, target: HTMLElement) {
     clearPendingTouchTap()
     suppressNextClick()
+    setIsNativeTouchActionBlocked(true)
 
     previousTouchTapRef.current = {
       time: performance.now(),
@@ -260,6 +266,7 @@ export default function useViewerPointerGestures({
       const pendingTouchTap = pendingTouchTapRef.current
       pendingTouchTapRef.current = null
       previousTouchTapRef.current = null
+      setIsNativeTouchActionBlocked(false)
 
       if (!pendingTouchTap) {
         return
@@ -289,7 +296,8 @@ export default function useViewerPointerGestures({
       return false
     }
 
-    clearPendingTouchTap()
+    clearPendingTouchTap({ releaseTouchAction: false })
+    setIsNativeTouchActionBlocked(true)
 
     oneFingerZoomRef.current = {
       active: false,
@@ -317,6 +325,7 @@ export default function useViewerPointerGestures({
     }
 
     oneFingerZoomRef.current = null
+    setIsNativeTouchActionBlocked(false)
     releasePointerCapture(e.currentTarget, oneFingerZoom.pointerId)
   }
 
@@ -346,7 +355,7 @@ export default function useViewerPointerGestures({
       return false
     }
 
-    clearPendingTouchTap()
+    clearPendingTouchTap({ releaseTouchAction: false })
     cancelOneFingerZoom(e)
     panRef.current = null
     pointerStartRef.current = null
@@ -357,6 +366,7 @@ export default function useViewerPointerGestures({
       startDistance,
       startZoom,
     }
+    setIsNativeTouchActionBlocked(true)
 
     capturePointer(e.currentTarget, firstId)
     capturePointer(e.currentTarget, secondId)
@@ -597,6 +607,7 @@ export default function useViewerPointerGestures({
       releasePointerCapture(e.currentTarget, e.pointerId)
       oneFingerZoomRef.current = null
       pointerStartRef.current = null
+      setIsNativeTouchActionBlocked(false)
       suppressNextClick()
 
       if (!oneFingerZoom.active) {
@@ -614,6 +625,7 @@ export default function useViewerPointerGestures({
       releasePointerCapture(e.currentTarget, pinch.pointerIds[0])
       releasePointerCapture(e.currentTarget, pinch.pointerIds[1])
       pointerStartRef.current = null
+      setIsNativeTouchActionBlocked(false)
       suppressNextClick()
       claimPointerEvent(e)
 
@@ -745,6 +757,7 @@ export default function useViewerPointerGestures({
     const pinch = pinchRef.current
     if (pinch?.pointerIds.includes(e.pointerId)) {
       pinchRef.current = null
+      setIsNativeTouchActionBlocked(false)
     }
 
     if (panRef.current?.pointerId === e.pointerId) {
@@ -801,5 +814,6 @@ export default function useViewerPointerGestures({
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
+    isNativeTouchActionBlocked,
   }
 }
