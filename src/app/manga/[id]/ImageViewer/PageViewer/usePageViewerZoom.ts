@@ -10,9 +10,6 @@ import {
   type CursorZoomAnchor,
   getCursorAnchoredScrollPosition,
   getNextWheelZoomLevel,
-  WHEEL_EVENT_HANDLED,
-  WHEEL_EVENT_IGNORED,
-  type WheelHandlerResult,
 } from './viewerZoom'
 
 type CaptureZoomAnchorAtClientPointParams = {
@@ -48,6 +45,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
   const setZoomLevel = useZoomStore((state) => state.setZoomLevel)
   const resetZoom = useZoomStore((state) => state.resetZoom)
+
   const scrollRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLUListElement>(null)
   const pendingCursorZoomAnchorRef = useRef<CursorZoomAnchor | null>(null)
@@ -121,11 +119,11 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   )
 
   const handleCursorZoomWheel = useCallback(
-    (event: WheelEvent): WheelHandlerResult => {
+    (event: WheelEvent) => {
       const { ctrlKey, metaKey, clientX, clientY } = event
 
       if (!ctrlKey && !metaKey) {
-        return WHEEL_EVENT_IGNORED
+        return
       }
 
       event.preventDefault()
@@ -142,8 +140,6 @@ export default function usePageViewerZoom({ imageCount }: Params) {
       if (anchor) {
         zoomToAnchor(anchor, nextZoom)
       }
-
-      return WHEEL_EVENT_HANDLED
     },
     [captureZoomAnchorAtClientPoint, getZoomLevel, zoomToAnchor],
   )
@@ -210,6 +206,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
         resetZoom()
 
         const scroll = scrollRef.current
+
         if (scroll) {
           scroll.scrollLeft = 0
           scroll.scrollTop = 0
@@ -218,12 +215,29 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [resetZoom])
+
+  // NOTE: ctrl/cmd + wheel은 브라우저 페이지 확대 대신 뷰어 내부 확대에 사용해요
+  useEffect(() => {
+    const scroll = scrollRef.current
+
+    if (!scroll) {
+      return
+    }
+
+    scroll.addEventListener('wheel', handleCursorZoomWheel, { passive: false })
+
+    return () => {
+      scroll.removeEventListener('wheel', handleCursorZoomWheel)
+    }
+  }, [handleCursorZoomWheel])
 
   return {
     captureZoomAnchorAtClientPoint,
-    handleCursorZoomWheel,
     measureZoomLayout,
     zoomToAnchor,
     contentRef,

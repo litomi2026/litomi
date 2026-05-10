@@ -12,8 +12,6 @@ const ONE_FINGER_ZOOM_SPEED = 0.01
 const MIN_PINCH_DISTANCE = 24
 
 export const DOUBLE_TAP_ZOOM_LEVEL = 2
-export const WHEEL_EVENT_HANDLED = 'handled'
-export const WHEEL_EVENT_IGNORED = 'ignored'
 
 export type CursorZoomAnchor = {
   contentLeft: number
@@ -23,8 +21,6 @@ export type CursorZoomAnchor = {
   viewportX: number
   viewportY: number
 }
-
-export type WheelHandlerResult = typeof WHEEL_EVENT_HANDLED | typeof WHEEL_EVENT_IGNORED
 
 type CaptureCursorZoomAnchorParams = {
   clientX: number
@@ -120,6 +116,7 @@ export function getNextWheelZoomLevel(currentZoom: number, wheel: WheelZoomParam
     delta: wheel.deltaY,
     deltaMode: wheel.deltaMode,
   })
+
   const clampedDeltaY = Math.max(-MAX_NORMALIZED_WHEEL_DELTA, Math.min(normalizedDeltaY, MAX_NORMALIZED_WHEEL_DELTA))
   const speed = getAdaptiveWheelZoomSpeed(clampedDeltaY)
   return clampZoomLevel(currentZoom * Math.exp(-clampedDeltaY * speed))

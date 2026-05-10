@@ -22,7 +22,6 @@ import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
 import usePageViewerWheelNavigation from './usePageViewerWheelNavigation'
 import usePageViewerZoom from './usePageViewerZoom'
 import useViewerPointerGestures from './useViewerPointerGestures'
-import useViewerWheel from './useViewerWheel'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 
@@ -81,7 +80,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
   const {
     captureZoomAnchorAtClientPoint,
     contentRef,
-    handleCursorZoomWheel,
     measureZoomLayout,
     scrollRef,
     zoomToAnchor,
@@ -103,7 +101,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
-  useViewerWheel({ handleCursorZoomWheel, scrollRef })
   usePageViewerWheelNavigation({ nextPage, prevPage, scrollRef })
 
   return (
