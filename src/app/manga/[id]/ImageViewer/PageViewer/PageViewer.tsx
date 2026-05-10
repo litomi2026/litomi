@@ -118,7 +118,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
-  usePageViewerWheel({ handleCursorZoomWheel, nextPage, prevPage, scrollRef })
+  usePageViewerWheel({ handleCursorZoomWheel, scrollRef })
 
   return (
     <>
