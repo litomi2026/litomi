@@ -17,7 +17,7 @@ import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { ScreenFit, useScreenFitStore } from '../store/screenFit'
 import { getResponsivePictureSources } from '../util'
-import { NATIVE_GESTURE_BLOCK_CSS, preventNativeViewerContextMenu } from '../viewerGesturePolicy'
+import { NATIVE_GESTURE_BLOCK_CSS } from '../viewerGesturePolicy'
 import useImageNavigation from './useImageNavigation'
 import usePageViewerInitialPage from './usePageViewerInitialPage'
 import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
@@ -119,7 +119,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
       <div
         className={`h-dvh overflow-auto overscroll-none ${NATIVE_GESTURE_BLOCK_CSS}`}
         onClick={handleClick}
-        onContextMenu={preventNativeViewerContextMenu}
         onDragStart={(e) => e.preventDefault()}
         onPointerCancel={handlePointerCancel}
         onPointerDown={handlePointerDown}

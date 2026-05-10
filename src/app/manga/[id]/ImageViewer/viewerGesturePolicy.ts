@@ -1,4 +1,4 @@
-import type { CSSProperties, MouseEvent } from 'react'
+import type { CSSProperties } from 'react'
 
 import { DEFAULT_ZOOM } from './store/zoom'
 
@@ -30,7 +30,8 @@ const VIEWER_GESTURE_IGNORE_SELECTOR = [
   '[role="slider"]',
 ].join(', ')
 
-export const NATIVE_GESTURE_BLOCK_CSS = 'select-none [&_img]:[-webkit-touch-callout:none]'
+export const NATIVE_GESTURE_BLOCK_CSS =
+  'select-none [-webkit-touch-callout:none] [&_img]:pointer-events-none'
 
 export function canScrollAxis(axes: ScrollableAxes, axis: GestureAxis) {
   return axis === 'x' ? axes.x : axes.y
@@ -86,14 +87,6 @@ export function getTouchActionForScrollableAxes(axes: ScrollableAxes, zoomLevel:
 
 export function isScreenEdge(clientX: number, viewportWidth = window.innerWidth) {
   return clientX < SCREEN_EDGE_THRESHOLD || clientX > viewportWidth - SCREEN_EDGE_THRESHOLD
-}
-
-export function preventNativeViewerContextMenu(e: MouseEvent<HTMLElement>) {
-  if (shouldIgnoreViewerGestureTarget(e.target)) {
-    return
-  }
-
-  e.preventDefault()
 }
 
 export function shouldIgnoreViewerGestureTarget(target: EventTarget | null) {
