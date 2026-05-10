@@ -5,13 +5,15 @@ import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { useScreenFitStore } from '../store/screenFit'
 import { clampZoomLevel, DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
-import { WHEEL_EVENT_HANDLED, WHEEL_EVENT_IGNORED, type WheelHandlerResult } from './pageViewerWheel'
 import {
   captureCursorZoomAnchor,
   type CursorZoomAnchor,
   getCursorAnchoredScrollPosition,
   getNextWheelZoomLevel,
-} from './pageViewerZoom'
+  WHEEL_EVENT_HANDLED,
+  WHEEL_EVENT_IGNORED,
+  type WheelHandlerResult,
+} from '../viewerZoom'
 
 type CaptureZoomAnchorAtClientPointParams = {
   clientX: number
