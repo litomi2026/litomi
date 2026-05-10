@@ -39,6 +39,12 @@ const screenFitContentStyle: Record<ScreenFit, string> = {
   all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
 }
 
+type DoubleTapGestureGuardProps = {
+  radius: number
+  x: number
+  y: number
+}
+
 type LastPageProps = {
   manga: {
     id: number
@@ -95,14 +101,20 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     zoomScrollAreaStyle,
   } = usePageViewerZoom({ imageCount })
 
-  const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
-    usePageViewerPointerGestures({
-      captureZoomAnchorAtClientPoint,
-      nextPage,
-      onClick,
-      prevPage,
-      zoomToAnchor,
-    })
+  const {
+    doubleTapGestureGuard,
+    handleClick,
+    handlePointerCancel,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+  } = usePageViewerPointerGestures({
+    captureZoomAnchorAtClientPoint,
+    nextPage,
+    onClick,
+    prevPage,
+    zoomToAnchor,
+  })
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
@@ -112,14 +124,16 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     <>
       {zoomLevel === DEFAULT_ZOOM && <TouchAreaOverlay showController={showController} />}
       <div
-        className={`h-dvh overflow-auto select-none overscroll-none touch-pinch-zoom ${screenFitViewportStyle[screenFit]}`}
+        className={`h-dvh overflow-auto select-none overscroll-none touch-pinch-zoom **:select-none [&_img]:[-webkit-user-drag:none] ${screenFitViewportStyle[screenFit]}`}
         onClick={handleClick}
+        onDragStart={(e) => e.preventDefault()}
         onPointerCancel={handlePointerCancel}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         ref={scrollRef}
       >
+        {doubleTapGestureGuard && <DoubleTapGestureGuard {...doubleTapGestureGuard} />}
         <div className="relative min-h-full min-w-full" style={zoomScrollAreaStyle}>
           <ul
             className={`absolute left-0 top-0 h-dvh [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${screenFitContentStyle[screenFit]}`}
@@ -143,12 +157,30 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
   )
 }
 
+function DoubleTapGestureGuard({ radius, x, y }: DoubleTapGestureGuardProps) {
+  const size = radius * 2
+
+  return (
+    <div
+      aria-hidden
+      className="fixed z-10 pointer-events-auto"
+      style={{
+        height: size,
+        left: x - radius,
+        top: y - radius,
+        touchAction: 'pinch-zoom',
+        width: size,
+      }}
+    />
+  )
+}
+
 function LastPage({ manga, isHidden = false }: LastPageProps) {
   const { id } = manga
 
   return (
     <li aria-hidden={isHidden} className="flex flex-col items-center justify-center gap-4 p-4 aria-hidden:hidden">
-      <RatingInput className="select-text" mangaId={id} />
+      <RatingInput mangaId={id} />
       <LastPageActions manga={manga} />
     </li>
   )
@@ -230,7 +262,7 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
     <div
       aria-hidden={!showController}
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="fixed inset-0 z-10 pointer-events-none flex transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+      className="fixed inset-0 z-10 pointer-events-none flex select-none transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
     >
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">

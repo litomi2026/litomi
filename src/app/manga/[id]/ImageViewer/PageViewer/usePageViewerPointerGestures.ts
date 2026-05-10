@@ -1,4 +1,4 @@
-import { type MouseEvent, type PointerEvent, useEffect, useRef } from 'react'
+import { type MouseEvent, type PointerEvent, useEffect, useRef, useState } from 'react'
 
 import { useBrightnessStore } from '../store/brightness'
 import { useOrientationStore } from '../store/orientation'
@@ -14,6 +14,12 @@ const DOUBLE_TAP_DELAY = 200
 const DOUBLE_TAP_DISTANCE_THRESHOLD = 36
 const ONE_FINGER_ZOOM_ACTIVATION_THRESHOLD = 8
 const CLICK_SUPPRESSION_TIMEOUT = 1_000
+
+export type DoubleTapGestureGuard = {
+  radius: number
+  x: number
+  y: number
+}
 
 type OneFingerZoomState = {
   active: boolean
@@ -61,6 +67,7 @@ export default function usePageViewerPointerGestures({
   prevPage,
   zoomToAnchor,
 }: Params) {
+  const [doubleTapGestureGuard, setDoubleTapGestureGuard] = useState<DoubleTapGestureGuard | null>(null)
   const getOrientation = useOrientationStore((state) => state.getOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
@@ -100,6 +107,7 @@ export default function usePageViewerPointerGestures({
     }
 
     previousTouchTapRef.current = null
+    setDoubleTapGestureGuard(null)
   }
 
   function releasePointerCapture(target: HTMLDivElement, pointerId: number) {
@@ -209,10 +217,14 @@ export default function usePageViewerPointerGestures({
       y: clientY,
     }
 
+    const isEdgeTap = clientX < SCREEN_EDGE_THRESHOLD || clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
+    setDoubleTapGestureGuard(isEdgeTap ? null : { radius: DOUBLE_TAP_DISTANCE_THRESHOLD, x: clientX, y: clientY })
+
     const timeoutId = setTimeout(() => {
       const pendingTouchTap = pendingTouchTapRef.current
       pendingTouchTapRef.current = null
       previousTouchTapRef.current = null
+      setDoubleTapGestureGuard(null)
 
       if (!pendingTouchTap) {
         return
@@ -465,6 +477,7 @@ export default function usePageViewerPointerGestures({
   }, [])
 
   return {
+    doubleTapGestureGuard,
     handleClick,
     handlePointerCancel,
     handlePointerDown,
