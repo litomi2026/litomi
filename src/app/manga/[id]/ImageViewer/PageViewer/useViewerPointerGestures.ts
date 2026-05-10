@@ -1,11 +1,10 @@
-import { type MouseEvent, type PointerEvent, useEffect, useRef, useState } from 'react'
+import { type MouseEvent, type PointerEvent, useEffect, useRef } from 'react'
 
 import { useBrightnessStore } from '../store/brightness'
 import { useOrientationStore } from '../store/orientation'
 import { DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
 import {
   canScrollAxis,
-  type GestureAxis,
   getScrollableAxesInPath,
   isScreenEdge,
   type ScrollableAxes,
@@ -26,6 +25,7 @@ const VERTICAL_BRIGHTNESS_THRESHOLD = 24
 const DIRECTION_LOCK_RATIO = 1.4
 const TAP_MOVE_THRESHOLD = 10
 const PAN_ACTIVATION_THRESHOLD = 4
+const SCROLL_PAN_INTENT_THRESHOLD = 6
 const DOUBLE_TAP_DELAY = 220
 const DOUBLE_TAP_DISTANCE_THRESHOLD = 36
 const ONE_FINGER_ZOOM_ACTIVATION_THRESHOLD = 8
@@ -49,6 +49,7 @@ type OneFingerZoomState = {
 
 type PanState = {
   active: boolean
+  axes: ScrollableAxes
   lastX: number
   lastY: number
   pointerId: number
@@ -81,7 +82,6 @@ type PinchState = {
 }
 
 type PointerStart = {
-  nativeScrollAxis: GestureAxis | null
   pointerType: string
   scrollableAxes: ScrollableAxes
   x: number
@@ -105,7 +105,6 @@ export default function useViewerPointerGestures({
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
   const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
-  const [isNativeTouchActionBlocked, setIsNativeTouchActionBlocked] = useState(false)
 
   const activePointersRef = useRef(new Map<number, GesturePointer>())
   const clickSuppressionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -146,17 +145,13 @@ export default function useViewerPointerGestures({
     }, CLICK_SUPPRESSION_TIMEOUT)
   }
 
-  function clearPendingTouchTap({ releaseTouchAction = true } = {}) {
+  function clearPendingTouchTap() {
     if (pendingTouchTapRef.current) {
       clearTimeout(pendingTouchTapRef.current.timeoutId)
       pendingTouchTapRef.current = null
     }
 
     previousTouchTapRef.current = null
-
-    if (releaseTouchAction) {
-      setIsNativeTouchActionBlocked(false)
-    }
   }
 
   function capturePointer(target: HTMLDivElement, pointerId: number) {
@@ -188,6 +183,31 @@ export default function useViewerPointerGestures({
 
   function isDirectManipulationPointer(pointerType: string) {
     return pointerType === 'pen' || pointerType === 'touch'
+  }
+
+  function getScrollPanAxes(scrollableAxes: ScrollableAxes, diffX: number, diffY: number): ScrollableAxes | null {
+    const absX = Math.abs(diffX)
+    const absY = Math.abs(diffY)
+    const canScrollX = canScrollAxis(scrollableAxes, 'x')
+    const canScrollY = canScrollAxis(scrollableAxes, 'y')
+
+    if (absX < SCROLL_PAN_INTENT_THRESHOLD && absY < SCROLL_PAN_INTENT_THRESHOLD) {
+      return null
+    }
+
+    if (canScrollX && canScrollY) {
+      return { x: true, y: true }
+    }
+
+    if (canScrollX && absX >= SCROLL_PAN_INTENT_THRESHOLD && absX > absY * DIRECTION_LOCK_RATIO) {
+      return { x: true, y: false }
+    }
+
+    if (canScrollY && absY >= SCROLL_PAN_INTENT_THRESHOLD && absY > absX * DIRECTION_LOCK_RATIO) {
+      return { x: false, y: true }
+    }
+
+    return null
   }
 
   function isDoubleTapStart(e: PointerEvent<HTMLDivElement>) {
@@ -258,7 +278,6 @@ export default function useViewerPointerGestures({
   function queueTouchTap(clientX: number, clientY: number, target: HTMLElement) {
     clearPendingTouchTap()
     suppressNextClick()
-    setIsNativeTouchActionBlocked(true)
 
     previousTouchTapRef.current = {
       time: performance.now(),
@@ -270,7 +289,6 @@ export default function useViewerPointerGestures({
       const pendingTouchTap = pendingTouchTapRef.current
       pendingTouchTapRef.current = null
       previousTouchTapRef.current = null
-      setIsNativeTouchActionBlocked(false)
 
       if (!pendingTouchTap) {
         return
@@ -300,8 +318,7 @@ export default function useViewerPointerGestures({
       return false
     }
 
-    clearPendingTouchTap({ releaseTouchAction: false })
-    setIsNativeTouchActionBlocked(true)
+    clearPendingTouchTap()
 
     oneFingerZoomRef.current = {
       active: false,
@@ -329,7 +346,6 @@ export default function useViewerPointerGestures({
     }
 
     oneFingerZoomRef.current = null
-    setIsNativeTouchActionBlocked(false)
     releasePointerCapture(e.currentTarget, oneFingerZoom.pointerId)
   }
 
@@ -359,7 +375,7 @@ export default function useViewerPointerGestures({
       return false
     }
 
-    clearPendingTouchTap({ releaseTouchAction: false })
+    clearPendingTouchTap()
     cancelOneFingerZoom(e)
     panRef.current = null
     pointerStartRef.current = null
@@ -372,7 +388,6 @@ export default function useViewerPointerGestures({
     }
 
     consumePointerIds([firstId, secondId])
-    setIsNativeTouchActionBlocked(true)
     capturePointer(e.currentTarget, firstId)
     capturePointer(e.currentTarget, secondId)
     suppressNextClick()
@@ -430,7 +445,7 @@ export default function useViewerPointerGestures({
     return true
   }
 
-  function handleZoomPanMove(e: PointerEvent<HTMLDivElement>) {
+  function handleScrollPanMove(e: PointerEvent<HTMLDivElement>) {
     const pan = panRef.current
 
     if (!pan || pan.pointerId !== e.pointerId) {
@@ -445,8 +460,14 @@ export default function useViewerPointerGestures({
     }
 
     pan.active = true
-    e.currentTarget.scrollLeft -= diffX
-    e.currentTarget.scrollTop -= diffY
+    if (pan.axes.x) {
+      e.currentTarget.scrollLeft -= diffX
+    }
+
+    if (pan.axes.y) {
+      e.currentTarget.scrollTop -= diffY
+    }
+
     pan.lastX = e.clientX
     pan.lastY = e.clientY
     claimPointerEvent(e)
@@ -488,13 +509,13 @@ export default function useViewerPointerGestures({
     if (getZoomLevel() > DEFAULT_ZOOM) {
       panRef.current = {
         active: false,
+        axes: getScrollableAxesInPath(e.target, e.currentTarget),
         lastX: e.clientX,
         lastY: e.clientY,
         pointerId: e.pointerId,
       }
 
       pointerStartRef.current = {
-        nativeScrollAxis: null,
         pointerType: e.pointerType,
         scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
         x: e.clientX,
@@ -509,7 +530,6 @@ export default function useViewerPointerGestures({
     panRef.current = null
 
     pointerStartRef.current = {
-      nativeScrollAxis: null,
       pointerType: e.pointerType,
       scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
       x: e.clientX,
@@ -551,7 +571,7 @@ export default function useViewerPointerGestures({
       return
     }
 
-    if (getZoomLevel() > DEFAULT_ZOOM && handleZoomPanMove(e)) {
+    if (handleScrollPanMove(e)) {
       return
     }
 
@@ -569,16 +589,21 @@ export default function useViewerPointerGestures({
 
     const diffX = e.clientX - pointerStartRef.current.x
     const diffY = e.clientY - pointerStartRef.current.y
+    const scrollPanAxes = getScrollPanAxes(pointerStartRef.current.scrollableAxes, diffX, diffY)
 
-    const isHorizontalScrollIntent =
-      Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD &&
-      Math.abs(diffX) > Math.abs(diffY) * DIRECTION_LOCK_RATIO &&
-      canScrollAxis(pointerStartRef.current.scrollableAxes, 'x')
+    if (scrollPanAxes) {
+      panRef.current = {
+        active: false,
+        axes: scrollPanAxes,
+        lastX: pointerStartRef.current.x,
+        lastY: pointerStartRef.current.y,
+        pointerId: e.pointerId,
+      }
 
-    if (isHorizontalScrollIntent) {
-      pointerStartRef.current.nativeScrollAxis = 'x'
-      swipeDetectedRef.current = true
       clearPendingTouchTap()
+      swipeDetectedRef.current = true
+      capturePointer(e.currentTarget, e.pointerId)
+      handleScrollPanMove(e)
       return
     }
 
@@ -586,13 +611,6 @@ export default function useViewerPointerGestures({
       Math.abs(diffY) > VERTICAL_BRIGHTNESS_THRESHOLD && Math.abs(diffY) > Math.abs(diffX) * DIRECTION_LOCK_RATIO
 
     if (!isVerticalSwipe) {
-      return
-    }
-
-    if (canScrollAxis(pointerStartRef.current.scrollableAxes, 'y')) {
-      pointerStartRef.current.nativeScrollAxis = 'y'
-      swipeDetectedRef.current = true
-      clearPendingTouchTap()
       return
     }
 
@@ -617,7 +635,6 @@ export default function useViewerPointerGestures({
       releasePointerCapture(e.currentTarget, e.pointerId)
       oneFingerZoomRef.current = null
       pointerStartRef.current = null
-      setIsNativeTouchActionBlocked(false)
       suppressNextClick()
 
       if (!oneFingerZoom.active) {
@@ -635,7 +652,6 @@ export default function useViewerPointerGestures({
       releasePointerCapture(e.currentTarget, pinch.pointerIds[0])
       releasePointerCapture(e.currentTarget, pinch.pointerIds[1])
       pointerStartRef.current = null
-      setIsNativeTouchActionBlocked(false)
       suppressNextClick()
       claimPointerEvent(e)
 
@@ -644,13 +660,13 @@ export default function useViewerPointerGestures({
         const [pointerId, pointer] = remainingPointer
         panRef.current = {
           active: false,
+          axes: getScrollableAxesInPath(e.target, e.currentTarget),
           lastX: pointer.clientX,
           lastY: pointer.clientY,
           pointerId,
         }
 
         pointerStartRef.current = {
-          nativeScrollAxis: null,
           pointerType: pointer.pointerType,
           scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
           x: pointer.clientX,
@@ -702,11 +718,6 @@ export default function useViewerPointerGestures({
       pointerStartRef.current = null
       suppressNextClick()
       claimPointerEvent(e)
-      return
-    }
-
-    if (pointerStartRef.current.nativeScrollAxis) {
-      pointerStartRef.current = null
       return
     }
 
@@ -778,7 +789,6 @@ export default function useViewerPointerGestures({
     const pinch = pinchRef.current
     if (pinch?.pointerIds.includes(e.pointerId)) {
       pinchRef.current = null
-      setIsNativeTouchActionBlocked(false)
     }
 
     if (panRef.current?.pointerId === e.pointerId) {
@@ -835,6 +845,5 @@ export default function useViewerPointerGestures({
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
-    isNativeTouchActionBlocked,
   }
 }

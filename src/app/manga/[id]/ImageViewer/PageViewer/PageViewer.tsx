@@ -86,7 +86,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     measureZoomLayout,
     scrollRef,
     styles,
-    touchAction,
     zoomToAnchor,
   } = usePageViewerZoom({ imageCount })
 
@@ -96,7 +95,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
-    isNativeTouchActionBlocked,
   } = useViewerPointerGestures({
     captureZoomAnchorAtClientPoint,
     nextPage,
@@ -105,8 +103,9 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     zoomToAnchor,
   })
 
+  // NOTE: 핀치가 네이티브 스크롤에 선점되지 않도록 포인터 스트림을 뷰어가 먼저 소유해요.
   const viewerStyle = {
-    touchAction: isNativeTouchActionBlocked ? 'none' : touchAction,
+    touchAction: 'none',
   } satisfies CSSProperties
 
   usePageViewerInitialPage({ imageCount })
