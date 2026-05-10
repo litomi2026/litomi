@@ -15,21 +15,15 @@ import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { ScreenFit, useScreenFitStore } from '../store/screenFit'
 import { DEFAULT_ZOOM } from '../store/zoom'
+import useViewerPointerGestures from '../useViewerPointerGestures'
+import useViewerWheel from '../useViewerWheel'
 import { getResponsivePictureSources } from '../util'
 import useImageNavigation from './useImageNavigation'
 import usePageViewerInitialPage from './usePageViewerInitialPage'
-import usePageViewerPointerGestures from './usePageViewerPointerGestures'
 import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
-import usePageViewerWheel from './usePageViewerWheel'
 import usePageViewerZoom from './usePageViewerZoom'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
-
-const screenFitViewportStyle: Record<ScreenFit, string> = {
-  width: 'touch-pan-y',
-  height: 'touch-pan-x',
-  all: '',
-}
 
 const screenFitContentStyle: Record<ScreenFit, string> = {
   width:
@@ -37,12 +31,6 @@ const screenFitContentStyle: Record<ScreenFit, string> = {
   height:
     '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
   all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
-}
-
-type DoubleTapGestureGuardProps = {
-  radius: number
-  x: number
-  y: number
 }
 
 type LastPageProps = {
@@ -101,30 +89,26 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     zoomScrollAreaStyle,
   } = usePageViewerZoom({ imageCount })
 
-  const {
-    doubleTapGestureGuard,
-    handleClick,
-    handlePointerCancel,
-    handlePointerDown,
-    handlePointerMove,
-    handlePointerUp,
-  } = usePageViewerPointerGestures({
-    captureZoomAnchorAtClientPoint,
-    nextPage,
-    onClick,
-    prevPage,
-    zoomToAnchor,
-  })
+  const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
+    useViewerPointerGestures({
+      captureZoomAnchorAtClientPoint,
+      enableBrightnessSwipe: true,
+      enableSwipeNavigation: true,
+      nextPage,
+      onCenterTap: onClick,
+      prevPage,
+      zoomToAnchor,
+    })
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
-  usePageViewerWheel({ handleCursorZoomWheel, scrollRef })
+  useViewerWheel({ handleCursorZoomWheel, scrollRef })
 
   return (
     <>
       {zoomLevel === DEFAULT_ZOOM && <TouchAreaOverlay showController={showController} />}
       <div
-        className={`h-dvh overflow-auto select-none overscroll-none touch-pinch-zoom **:select-none [&_img]:[-webkit-user-drag:none] ${screenFitViewportStyle[screenFit]}`}
+        className="h-dvh overflow-auto select-none overscroll-none touch-none **:select-none [&_img]:[-webkit-user-drag:none]"
         onClick={handleClick}
         onDragStart={(e) => e.preventDefault()}
         onPointerCancel={handlePointerCancel}
@@ -133,7 +117,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
         onPointerUp={handlePointerUp}
         ref={scrollRef}
       >
-        {doubleTapGestureGuard && <DoubleTapGestureGuard {...doubleTapGestureGuard} />}
         <div className="relative min-h-full min-w-full" style={zoomScrollAreaStyle}>
           <ul
             className={`absolute left-0 top-0 h-dvh [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${screenFitContentStyle[screenFit]}`}
@@ -154,24 +137,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
         </div>
       </div>
     </>
-  )
-}
-
-function DoubleTapGestureGuard({ radius, x, y }: DoubleTapGestureGuardProps) {
-  const size = radius * 2
-
-  return (
-    <div
-      aria-hidden
-      className="fixed z-10 pointer-events-auto"
-      style={{
-        height: size,
-        left: x - radius,
-        top: y - radius,
-        touchAction: 'pinch-zoom',
-        width: size,
-      }}
-    />
   )
 }
 
