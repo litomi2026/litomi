@@ -1,4 +1,4 @@
-import { clampZoomLevel } from './store/zoom'
+import { clampZoomLevel } from '../store/zoom'
 
 const DOM_DELTA_LINE = 1
 const DOM_DELTA_PAGE = 2

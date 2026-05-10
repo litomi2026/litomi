@@ -1,8 +1,8 @@
 import { type MouseEvent, type PointerEvent, useEffect, useRef } from 'react'
 
-import { useBrightnessStore } from './store/brightness'
-import { useOrientationStore } from './store/orientation'
-import { DEFAULT_ZOOM, useZoomStore } from './store/zoom'
+import { useBrightnessStore } from '../store/brightness'
+import { useOrientationStore } from '../store/orientation'
+import { DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
 import {
   type CursorZoomAnchor,
   DOUBLE_TAP_ZOOM_LEVEL,

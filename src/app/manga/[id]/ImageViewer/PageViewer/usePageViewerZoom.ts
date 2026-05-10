@@ -13,7 +13,7 @@ import {
   WHEEL_EVENT_HANDLED,
   WHEEL_EVENT_IGNORED,
   type WheelHandlerResult,
-} from '../viewerZoom'
+} from './viewerZoom'
 
 type CaptureZoomAnchorAtClientPointParams = {
   clientX: number
