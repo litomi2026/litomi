@@ -82,10 +82,9 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     contentRef,
     measureZoomLayout,
     scrollRef,
+    styles,
     zoomToAnchor,
-    zoomContentStyle,
     zoomLevel,
-    zoomScrollAreaStyle,
   } = usePageViewerZoom({ imageCount })
 
   const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
@@ -107,7 +106,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     <>
       {zoomLevel === DEFAULT_ZOOM && <TouchAreaOverlay showController={showController} />}
       <div
-        className="h-dvh overflow-auto select-none overscroll-none touch-none **:select-none [&_img]:[-webkit-user-drag:none]"
+        className="h-dvh overflow-auto select-none overscroll-none **:select-none [&_img]:[-webkit-user-drag:none]"
         onClick={handleClick}
         onDragStart={(e) => e.preventDefault()}
         onPointerCancel={handlePointerCancel}
@@ -115,13 +114,14 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         ref={scrollRef}
+        style={styles.viewer}
       >
-        <div className="relative min-h-full min-w-full" style={zoomScrollAreaStyle}>
+        <div className="relative min-h-full min-w-full" style={styles.zoomScrollArea}>
           <ul
             className={`absolute left-0 top-0 h-dvh [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${screenFitContentStyle[screenFit]}`}
             onLoadCapture={measureZoomLayout}
             ref={contentRef}
-            style={zoomContentStyle}
+            style={styles.zoomContent}
           >
             {imageCount === 0 ? (
               <li className="flex items-center justify-center h-full animate-fade-in">

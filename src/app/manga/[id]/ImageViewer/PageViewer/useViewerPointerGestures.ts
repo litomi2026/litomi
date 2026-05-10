@@ -4,6 +4,14 @@ import { useBrightnessStore } from '../store/brightness'
 import { useOrientationStore } from '../store/orientation'
 import { DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
 import {
+  canScrollAxis,
+  type GestureAxis,
+  getScrollableAxesInPath,
+  isScreenEdge,
+  type ScrollableAxes,
+  shouldIgnoreViewerGestureTarget,
+} from './viewerGesturePolicy'
+import {
   type CursorZoomAnchor,
   DOUBLE_TAP_ZOOM_LEVEL,
   getDistance,
@@ -15,7 +23,6 @@ import {
 const HORIZONTAL_SWIPE_THRESHOLD = 50
 const VERTICAL_BRIGHTNESS_THRESHOLD = 24
 const DIRECTION_LOCK_RATIO = 1.4
-const SCREEN_EDGE_THRESHOLD = 40
 const TAP_MOVE_THRESHOLD = 10
 const PAN_ACTIVATION_THRESHOLD = 4
 const DOUBLE_TAP_DELAY = 220
@@ -75,7 +82,9 @@ type PinchState = {
 }
 
 type PointerStart = {
+  nativeScrollAxis: GestureAxis | null
   pointerType: string
+  scrollableAxes: ScrollableAxes
   x: number
   y: number
 }
@@ -162,10 +171,6 @@ export default function useViewerPointerGestures({
   function claimPointerEvent(e: PointerEvent<HTMLDivElement>) {
     e.preventDefault()
     e.stopPropagation()
-  }
-
-  function isScreenEdge(clientX: number) {
-    return clientX < SCREEN_EDGE_THRESHOLD || clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
   }
 
   function isTapMovement(diffX: number, diffY: number) {
@@ -428,7 +433,7 @@ export default function useViewerPointerGestures({
   }
 
   function handlePointerDown(e: PointerEvent<HTMLDivElement>) {
-    if (isScreenEdge(e.clientX)) {
+    if (isScreenEdge(e.clientX) || shouldIgnoreViewerGestureTarget(e.target)) {
       ignoredPointerIdsRef.current.add(e.pointerId)
       clearPendingTouchTap()
       return
@@ -465,14 +470,30 @@ export default function useViewerPointerGestures({
         lastY: e.clientY,
         pointerId: e.pointerId,
       }
-      pointerStartRef.current = { pointerType: e.pointerType, x: e.clientX, y: e.clientY }
+
+      pointerStartRef.current = {
+        nativeScrollAxis: null,
+        pointerType: e.pointerType,
+        scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
+        x: e.clientX,
+        y: e.clientY,
+      }
+
       capturePointer(e.currentTarget, e.pointerId)
       return
     }
 
     initialBrightnessRef.current = getBrightness()
     panRef.current = null
-    pointerStartRef.current = { pointerType: e.pointerType, x: e.clientX, y: e.clientY }
+
+    pointerStartRef.current = {
+      nativeScrollAxis: null,
+      pointerType: e.pointerType,
+      scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
+      x: e.clientX,
+      y: e.clientY,
+    }
+
     swipeDetectedRef.current = false
   }
 
@@ -527,10 +548,31 @@ export default function useViewerPointerGestures({
 
     const diffX = e.clientX - pointerStartRef.current.x
     const diffY = e.clientY - pointerStartRef.current.y
+
+    const isHorizontalScrollIntent =
+      enableSwipeNavigation &&
+      Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD &&
+      Math.abs(diffX) > Math.abs(diffY) * DIRECTION_LOCK_RATIO &&
+      canScrollAxis(pointerStartRef.current.scrollableAxes, 'x')
+
+    if (isHorizontalScrollIntent) {
+      pointerStartRef.current.nativeScrollAxis = 'x'
+      swipeDetectedRef.current = true
+      clearPendingTouchTap()
+      return
+    }
+
     const isVerticalSwipe =
       Math.abs(diffY) > VERTICAL_BRIGHTNESS_THRESHOLD && Math.abs(diffY) > Math.abs(diffX) * DIRECTION_LOCK_RATIO
 
     if (!isVerticalSwipe) {
+      return
+    }
+
+    if (canScrollAxis(pointerStartRef.current.scrollableAxes, 'y')) {
+      pointerStartRef.current.nativeScrollAxis = 'y'
+      swipeDetectedRef.current = true
+      clearPendingTouchTap()
       return
     }
 
@@ -584,11 +626,15 @@ export default function useViewerPointerGestures({
           lastY: pointer.clientY,
           pointerId,
         }
+
         pointerStartRef.current = {
+          nativeScrollAxis: null,
           pointerType: pointer.pointerType,
+          scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
           x: pointer.clientX,
           y: pointer.clientY,
         }
+
         capturePointer(e.currentTarget, pointerId)
       }
 
@@ -596,6 +642,7 @@ export default function useViewerPointerGestures({
     }
 
     const pan = panRef.current
+
     if (pan?.pointerId === e.pointerId) {
       panRef.current = null
       releasePointerCapture(e.currentTarget, e.pointerId)
@@ -623,6 +670,11 @@ export default function useViewerPointerGestures({
     const diffY = e.clientY - pointerStartRef.current.y
     const isTouchTap = pointerStartRef.current.pointerType === 'touch' && isTapMovement(diffX, diffY)
     const isDirectManipulation = isDirectManipulationPointer(pointerStartRef.current.pointerType)
+
+    if (pointerStartRef.current.nativeScrollAxis) {
+      pointerStartRef.current = null
+      return
+    }
 
     if (getZoomLevel() > DEFAULT_ZOOM) {
       pointerStartRef.current = null
@@ -656,6 +708,11 @@ export default function useViewerPointerGestures({
       Math.abs(diffX) > Math.abs(diffY) * DIRECTION_LOCK_RATIO
 
     if (isHorizontalPageSwipe) {
+      if (canScrollAxis(pointerStartRef.current.scrollableAxes, 'x')) {
+        pointerStartRef.current = null
+        return
+      }
+
       swipeDetectedRef.current = true
       const orientation = getOrientation()
       const isReversed = orientation === 'horizontal-reverse' || orientation === 'vertical-reverse'
@@ -694,6 +751,10 @@ export default function useViewerPointerGestures({
       panRef.current = null
     }
 
+    if (pointerStartRef.current) {
+      swipeDetectedRef.current = true
+    }
+
     pointerStartRef.current = null
   }
 
@@ -709,7 +770,7 @@ export default function useViewerPointerGestures({
       return
     }
 
-    if (isScreenEdge(e.clientX)) {
+    if (isScreenEdge(e.clientX) || shouldIgnoreViewerGestureTarget(e.target)) {
       return
     }
 

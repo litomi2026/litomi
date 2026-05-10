@@ -2,12 +2,12 @@ import { type RefObject, useEffect, useRef } from 'react'
 
 import { type Orientation, useOrientationStore } from '../store/orientation'
 import { DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
+import { getScrollableAxesInPath, shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
 import { getNormalizedWheelDelta } from './viewerZoom'
 
 const WHEEL_PAGE_NAVIGATION_THRESHOLD = 80
 const WHEEL_PAGE_NAVIGATION_COOLDOWN_MS = 420
 const WHEEL_PAGE_NAVIGATION_RESET_MS = 180
-const SCROLL_OVERFLOW_EPSILON = 1
 
 type Params = {
   nextPage: () => void
@@ -32,6 +32,8 @@ export default function usePageViewerWheelNavigation({ nextPage, prevPage, scrol
       return
     }
 
+    const wheelTarget = element
+
     function clearResetTimeout() {
       if (!resetTimeoutRef.current) {
         return
@@ -53,7 +55,7 @@ export default function usePageViewerWheelNavigation({ nextPage, prevPage, scrol
     }
 
     function handleWheel(event: WheelEvent) {
-      const { currentTarget, defaultPrevented, ctrlKey, metaKey, altKey, shiftKey, target } = event
+      const { defaultPrevented, ctrlKey, metaKey, altKey, shiftKey, target } = event
 
       if (
         defaultPrevented ||
@@ -62,12 +64,14 @@ export default function usePageViewerWheelNavigation({ nextPage, prevPage, scrol
         altKey ||
         shiftKey ||
         getZoomLevel() > DEFAULT_ZOOM ||
-        shouldIgnoreWheelTarget(target)
+        shouldIgnoreViewerGestureTarget(target)
       ) {
         return
       }
 
-      if (!(currentTarget instanceof HTMLElement) || hasScrollableOverflow(currentTarget)) {
+      const scrollableAxes = getScrollableAxesInPath(target, wheelTarget)
+
+      if (scrollableAxes.x || scrollableAxes.y) {
         resetWheelIntent()
         return
       }
@@ -112,10 +116,10 @@ export default function usePageViewerWheelNavigation({ nextPage, prevPage, scrol
       }
     }
 
-    element.addEventListener('wheel', handleWheel, { passive: false })
+    wheelTarget.addEventListener('wheel', handleWheel, { passive: false })
 
     return () => {
-      element.removeEventListener('wheel', handleWheel)
+      wheelTarget.removeEventListener('wheel', handleWheel)
       clearResetTimeout()
     }
   }, [getOrientation, getZoomLevel, nextPage, prevPage, scrollRef])
@@ -139,23 +143,4 @@ function getPageNavigationWheelDelta(event: WheelEvent, orientation: Orientation
   }
 
   return normalizedDeltaY || normalizedDeltaX
-}
-
-function hasScrollableOverflow(element: HTMLElement) {
-  return (
-    element.scrollWidth - element.clientWidth > SCROLL_OVERFLOW_EPSILON ||
-    element.scrollHeight - element.clientHeight > SCROLL_OVERFLOW_EPSILON
-  )
-}
-
-function shouldIgnoreWheelTarget(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) {
-    return false
-  }
-
-  return Boolean(
-    target.closest(
-      'a, button, input, textarea, select, [contenteditable="true"], [role="button"], [role="dialog"], [role="slider"]',
-    ),
-  )
 }
