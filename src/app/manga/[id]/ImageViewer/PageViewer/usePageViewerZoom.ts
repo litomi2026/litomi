@@ -5,7 +5,7 @@ import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { useScreenFitStore } from '../store/screenFit'
 import { clampZoomLevel, DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
-import { getTouchActionForScrollableAxes, shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
+import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
 import {
   captureCursorZoomAnchor,
   type CursorZoomAnchor,
@@ -36,8 +36,6 @@ const INITIAL_ZOOM_LAYOUT: ZoomLayout = {
   viewportHeight: 0,
   viewportWidth: 0,
 }
-
-const SCROLL_OVERFLOW_EPSILON = 1
 
 export default function usePageViewerZoom({ imageCount }: Params) {
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
@@ -172,19 +170,6 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     willChange: zoomLevel > DEFAULT_ZOOM ? 'transform' : undefined,
   } satisfies CSSProperties
 
-  const viewerScrollableAxes = {
-    x:
-      zoomLayout.contentWidth > 0 &&
-      zoomLayout.viewportWidth > 0 &&
-      zoomLayout.contentWidth * zoomLevel - zoomLayout.viewportWidth > SCROLL_OVERFLOW_EPSILON,
-    y:
-      zoomLayout.contentHeight > 0 &&
-      zoomLayout.viewportHeight > 0 &&
-      zoomLayout.contentHeight * zoomLevel - zoomLayout.viewportHeight > SCROLL_OVERFLOW_EPSILON,
-  }
-
-  const touchAction = getTouchActionForScrollableAxes(viewerScrollableAxes, zoomLevel)
-
   // NOTE: 페이지 구성이나 보기 옵션이 바뀌면 화면에 그리기 전에 줌 기준 크기를 다시 재요
   useLayoutEffect(() => {
     measureZoomLayout()
@@ -264,7 +249,6 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     zoomToAnchor,
     contentRef,
     scrollRef,
-    touchAction,
     styles: {
       zoomContent,
       zoomScrollArea,

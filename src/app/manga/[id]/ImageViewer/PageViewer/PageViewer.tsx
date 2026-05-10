@@ -1,7 +1,5 @@
 'use client'
 
-import type { CSSProperties } from 'react'
-
 import { Loader2 } from 'lucide-react'
 
 import MangaImage from '@/components/MangaImage'
@@ -86,28 +84,17 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     measureZoomLayout,
     scrollRef,
     styles,
-    touchAction,
     zoomToAnchor,
   } = usePageViewerZoom({ imageCount })
 
-  const {
-    handleClick,
-    handlePointerCancel,
-    handlePointerDown,
-    handlePointerMove,
-    handlePointerUp,
-    isNativeTouchActionBlocked,
-  } = useViewerPointerGestures({
-    captureZoomAnchorAtClientPoint,
-    nextPage,
-    onCenterTap: onClick,
-    prevPage,
-    zoomToAnchor,
-  })
-
-  const viewerStyle = {
-    touchAction: isNativeTouchActionBlocked ? 'none' : touchAction,
-  } satisfies CSSProperties
+  const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
+    useViewerPointerGestures({
+      captureZoomAnchorAtClientPoint,
+      nextPage,
+      onCenterTap: onClick,
+      prevPage,
+      zoomToAnchor,
+    })
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
@@ -117,7 +104,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     <>
       {isDefaultZoom && <TouchAreaOverlay showController={showController} />}
       <div
-        className={`h-dvh overflow-auto overscroll-none ${NATIVE_GESTURE_BLOCK_CSS}`}
+        className={`h-dvh overflow-auto overscroll-none touch-none ${NATIVE_GESTURE_BLOCK_CSS}`}
         onClick={handleClick}
         onDragStart={(e) => e.preventDefault()}
         onPointerCancel={handlePointerCancel}
@@ -125,7 +112,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         ref={scrollRef}
-        style={viewerStyle}
       >
         <div className="relative min-h-full min-w-full" style={styles.zoomScrollArea}>
           <ul

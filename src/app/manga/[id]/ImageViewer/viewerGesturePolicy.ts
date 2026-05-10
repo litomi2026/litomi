@@ -1,7 +1,3 @@
-import type { CSSProperties } from 'react'
-
-import { DEFAULT_ZOOM } from './store/zoom'
-
 const SCREEN_EDGE_THRESHOLD = 40
 const SCROLL_OVERFLOW_EPSILON = 1
 
@@ -62,26 +58,6 @@ export function getScrollableAxesInPath(target: EventTarget | null, boundary: HT
   }
 
   return axes
-}
-
-export function getTouchActionForScrollableAxes(axes: ScrollableAxes, zoomLevel: number): CSSProperties['touchAction'] {
-  if (zoomLevel > DEFAULT_ZOOM) {
-    return 'none'
-  }
-
-  if (axes.x && axes.y) {
-    return 'pan-x pan-y'
-  }
-
-  if (axes.x) {
-    return 'pan-x'
-  }
-
-  if (axes.y) {
-    return 'pan-y'
-  }
-
-  return 'none'
 }
 
 export function isScreenEdge(clientX: number, viewportWidth = window.innerWidth) {
