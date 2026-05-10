@@ -30,6 +30,10 @@ type ZoomLayout = {
   viewportWidth: number
 }
 
+type ZoomToAnchorOptions = {
+  allowScrollWithoutZoom?: boolean
+}
+
 const INITIAL_ZOOM_LAYOUT: ZoomLayout = {
   contentHeight: 0,
   contentWidth: 0,
@@ -105,12 +109,29 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     [getZoomLevel],
   )
 
+  const applyAnchoredScroll = useCallback((anchor: CursorZoomAnchor, nextZoom: number) => {
+    const scroll = scrollRef.current
+    if (!scroll) {
+      return
+    }
+
+    const { left, top } = getCursorAnchoredScrollPosition({ anchor, nextZoom })
+    scroll.scrollLeft = left
+    scroll.scrollTop = top
+  }, [])
+
   const zoomToAnchor = useCallback(
-    (anchor: CursorZoomAnchor, nextZoom: number) => {
+    (anchor: CursorZoomAnchor, nextZoom: number, options: ZoomToAnchorOptions = {}) => {
       const clampedNextZoom = clampZoomLevel(nextZoom)
 
       if (clampedNextZoom === getZoomLevel()) {
         pendingCursorZoomAnchorRef.current = null
+
+        if (options.allowScrollWithoutZoom) {
+          applyAnchoredScroll(anchor, clampedNextZoom)
+          return true
+        }
+
         return false
       }
 
@@ -118,7 +139,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
       setZoomLevel(clampedNextZoom)
       return true
     },
-    [getZoomLevel, setZoomLevel],
+    [applyAnchoredScroll, getZoomLevel, setZoomLevel],
   )
 
   const handleCursorZoomWheel = useCallback(
@@ -204,15 +225,8 @@ export default function usePageViewerZoom({ imageCount }: Params) {
 
     pendingCursorZoomAnchorRef.current = null
 
-    const scroll = scrollRef.current
-    if (!scroll) {
-      return
-    }
-
-    const { left, top } = getCursorAnchoredScrollPosition({ anchor, nextZoom: zoomLevel })
-    scroll.scrollLeft = left
-    scroll.scrollTop = top
-  }, [zoomLevel])
+    applyAnchoredScroll(anchor, zoomLevel)
+  }, [applyAnchoredScroll, zoomLevel])
 
   // NOTE: ctrl/cmd + 0 키로 확대/축소를 초기화해요
   useEffect(() => {

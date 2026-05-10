@@ -62,7 +62,13 @@ type Params = {
   nextPage: () => void
   onCenterTap: () => void
   prevPage: () => void
-  zoomToAnchor: (anchor: CursorZoomAnchor, nextZoom: number) => boolean
+  zoomToAnchor: (
+    anchor: CursorZoomAnchor,
+    nextZoom: number,
+    options?: {
+      allowScrollWithoutZoom?: boolean
+    },
+  ) => boolean
 }
 
 type PendingTouchTap = {
@@ -70,6 +76,11 @@ type PendingTouchTap = {
   clientY: number
   target: HTMLElement
   timeoutId: ReturnType<typeof setTimeout>
+}
+
+type PinchCenter = {
+  clientX: number
+  clientY: number
 }
 
 type PinchState = {
@@ -410,13 +421,16 @@ export default function useViewerPointerGestures({
 
     claimPointerEvent(e)
 
+    const center = getMidpoint(first, second)
+
     zoomToAnchor(
-      pinch.anchor,
+      getMovingPinchAnchor(pinch, center, e.currentTarget),
       getNextPinchZoomLevel({
         currentDistance: getDistance(first, second),
         startDistance: pinch.startDistance,
         startZoom: pinch.startZoom,
       }),
+      { allowScrollWithoutZoom: true },
     )
 
     return true
@@ -828,5 +842,15 @@ export default function useViewerPointerGestures({
     handlePointerMove,
     handlePointerUp,
     isNativeTouchActionBlocked,
+  }
+}
+
+function getMovingPinchAnchor(pinch: PinchState, center: PinchCenter, viewport: HTMLElement): CursorZoomAnchor {
+  const viewportRect = viewport.getBoundingClientRect()
+
+  return {
+    ...pinch.anchor,
+    viewportX: center.clientX - viewportRect.left,
+    viewportY: center.clientY - viewportRect.top,
   }
 }
