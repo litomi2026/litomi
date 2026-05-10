@@ -30,8 +30,7 @@ const VIEWER_GESTURE_IGNORE_SELECTOR = [
   '[role="slider"]',
 ].join(', ')
 
-export const NATIVE_GESTURE_BLOCK_CSS =
-  'select-none [-webkit-touch-callout:none] [&_img]:pointer-events-none'
+export const NATIVE_GESTURE_BLOCK_CSS = 'select-none [-webkit-touch-callout:none]'
 
 export function canScrollAxis(axes: ScrollableAxes, axis: GestureAxis) {
   return axis === 'x' ? axes.x : axes.y
