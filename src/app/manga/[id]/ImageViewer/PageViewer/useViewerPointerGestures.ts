@@ -59,8 +59,6 @@ type Params = {
     clientY: number
     currentZoom?: number
   }) => CursorZoomAnchor | null
-  enableBrightnessSwipe?: boolean
-  enableSwipeNavigation?: boolean
   nextPage: () => void
   onCenterTap: () => void
   prevPage: () => void
@@ -97,8 +95,6 @@ type PreviousTouchTap = {
 
 export default function useViewerPointerGestures({
   captureZoomAnchorAtClientPoint,
-  enableBrightnessSwipe = false,
-  enableSwipeNavigation = false,
   nextPage,
   onCenterTap,
   prevPage,
@@ -544,7 +540,6 @@ export default function useViewerPointerGestures({
     }
 
     if (
-      !enableBrightnessSwipe ||
       !pointerStartRef.current ||
       !isDirectManipulationPointer(pointerStartRef.current.pointerType) ||
       getZoomLevel() > DEFAULT_ZOOM
@@ -560,7 +555,6 @@ export default function useViewerPointerGestures({
     const diffY = e.clientY - pointerStartRef.current.y
 
     const isHorizontalScrollIntent =
-      enableSwipeNavigation &&
       Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD &&
       Math.abs(diffX) > Math.abs(diffY) * DIRECTION_LOCK_RATIO &&
       canScrollAxis(pointerStartRef.current.scrollableAxes, 'x')
@@ -703,7 +697,6 @@ export default function useViewerPointerGestures({
     }
 
     const isVerticalBrightnessSwipe =
-      enableBrightnessSwipe &&
       isDirectManipulation &&
       Math.abs(diffY) > VERTICAL_BRIGHTNESS_THRESHOLD &&
       Math.abs(diffY) > Math.abs(diffX) * DIRECTION_LOCK_RATIO
@@ -714,7 +707,6 @@ export default function useViewerPointerGestures({
     }
 
     const isHorizontalPageSwipe =
-      enableSwipeNavigation &&
       isDirectManipulation &&
       Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD &&
       Math.abs(diffX) > Math.abs(diffY) * DIRECTION_LOCK_RATIO

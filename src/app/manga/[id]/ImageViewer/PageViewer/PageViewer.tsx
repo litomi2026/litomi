@@ -16,7 +16,6 @@ import { useOrientationStore } from '../store/orientation'
 import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { ScreenFit, useScreenFitStore } from '../store/screenFit'
-import { DEFAULT_ZOOM } from '../store/zoom'
 import { getResponsivePictureSources } from '../util'
 import useImageNavigation from './useImageNavigation'
 import usePageViewerInitialPage from './usePageViewerInitialPage'
@@ -24,7 +23,6 @@ import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
 import usePageViewerWheelNavigation from './usePageViewerWheelNavigation'
 import usePageViewerZoom from './usePageViewerZoom'
 import useViewerPointerGestures from './useViewerPointerGestures'
-import { getTouchActionForScrollableAxes } from './viewerGesturePolicy'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 
@@ -83,12 +81,12 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
   const {
     captureZoomAnchorAtClientPoint,
     contentRef,
+    isDefaultZoom,
     measureZoomLayout,
     scrollRef,
     styles,
-    viewerScrollableAxes,
+    touchAction,
     zoomToAnchor,
-    zoomLevel,
   } = usePageViewerZoom({ imageCount })
 
   const {
@@ -100,8 +98,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     isNativeTouchActionBlocked,
   } = useViewerPointerGestures({
     captureZoomAnchorAtClientPoint,
-    enableBrightnessSwipe: true,
-    enableSwipeNavigation: true,
     nextPage,
     onCenterTap: onClick,
     prevPage,
@@ -109,7 +105,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
   })
 
   const viewerStyle = {
-    touchAction: isNativeTouchActionBlocked ? 'none' : getTouchActionForScrollableAxes(viewerScrollableAxes, zoomLevel),
+    touchAction: isNativeTouchActionBlocked ? 'none' : touchAction,
   } satisfies CSSProperties
 
   usePageViewerInitialPage({ imageCount })
@@ -118,7 +114,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
 
   return (
     <>
-      {zoomLevel === DEFAULT_ZOOM && <TouchAreaOverlay showController={showController} />}
+      {isDefaultZoom && <TouchAreaOverlay showController={showController} />}
       <div
         className="h-dvh overflow-auto select-none overscroll-none **:select-none [&_img]:[-webkit-user-drag:none]"
         onClick={handleClick}
