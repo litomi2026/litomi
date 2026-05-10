@@ -35,24 +35,41 @@ type GesturePointer = {
   clientX: number
   clientY: number
   pointerType: string
+}
+
+type IdleGestureState = {
+  mode: 'idle'
+}
+
+type ObservingGestureState = {
+  initialBrightness: number
+  mode: 'observing'
+  pointerId: number
+  pointerType: string
+  scrollableAxes: ScrollableAxes
   startX: number
   startY: number
 }
 
-type OneFingerZoomState = {
+type OneFingerZoomGestureState = {
   active: boolean
   anchor: CursorZoomAnchor
+  mode: 'one-finger-zoom'
   pointerId: number
   startY: number
   startZoom: number
 }
 
-type PanState = {
+type PanGestureState = {
   active: boolean
   axes: ScrollableAxes
   lastX: number
   lastY: number
+  mode: 'pan'
   pointerId: number
+  pointerType: string
+  startX: number
+  startY: number
 }
 
 type Params = {
@@ -74,18 +91,12 @@ type PendingTouchTap = {
   timeoutId: ReturnType<typeof setTimeout>
 }
 
-type PinchState = {
+type PinchGestureState = {
   anchor: CursorZoomAnchor
+  mode: 'pinch'
   pointerIds: [number, number]
   startDistance: number
   startZoom: number
-}
-
-type PointerStart = {
-  pointerType: string
-  scrollableAxes: ScrollableAxes
-  x: number
-  y: number
 }
 
 type PreviousTouchTap = {
@@ -93,6 +104,15 @@ type PreviousTouchTap = {
   x: number
   y: number
 }
+
+type ViewerGestureState =
+  | IdleGestureState
+  | ObservingGestureState
+  | OneFingerZoomGestureState
+  | PanGestureState
+  | PinchGestureState
+
+const IDLE_GESTURE_STATE: IdleGestureState = { mode: 'idle' }
 
 export default function useViewerPointerGestures({
   captureZoomAnchorAtClientPoint,
@@ -109,16 +129,16 @@ export default function useViewerPointerGestures({
   const activePointersRef = useRef(new Map<number, GesturePointer>())
   const clickSuppressionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const consumedPointerIdsRef = useRef(new Set<number>())
+  const gestureRef = useRef<ViewerGestureState>(IDLE_GESTURE_STATE)
   const ignoredPointerIdsRef = useRef(new Set<number>())
-  const initialBrightnessRef = useRef(100)
-  const oneFingerZoomRef = useRef<OneFingerZoomState | null>(null)
-  const panRef = useRef<PanState | null>(null)
   const pendingTouchTapRef = useRef<PendingTouchTap | null>(null)
-  const pinchRef = useRef<PinchState | null>(null)
-  const pointerStartRef = useRef<PointerStart | null>(null)
   const previousTouchTapRef = useRef<PreviousTouchTap | null>(null)
   const suppressClickRef = useRef(false)
   const swipeDetectedRef = useRef(false)
+
+  function resetGesture() {
+    gestureRef.current = IDLE_GESTURE_STATE
+  }
 
   function clearClickSuppressionTimeout() {
     if (!clickSuppressionTimeoutRef.current) {
@@ -320,17 +340,15 @@ export default function useViewerPointerGestures({
 
     clearPendingTouchTap()
 
-    oneFingerZoomRef.current = {
+    gestureRef.current = {
       active: false,
       anchor,
+      mode: 'one-finger-zoom',
       pointerId: e.pointerId,
       startY: e.clientY,
       startZoom,
     }
 
-    panRef.current = null
-    pinchRef.current = null
-    pointerStartRef.current = null
     suppressNextClick()
     capturePointer(e.currentTarget, e.pointerId)
     claimPointerEvent(e)
@@ -339,14 +357,14 @@ export default function useViewerPointerGestures({
   }
 
   function cancelOneFingerZoom(e: PointerEvent<HTMLDivElement>) {
-    const oneFingerZoom = oneFingerZoomRef.current
+    const gesture = gestureRef.current
 
-    if (!oneFingerZoom) {
+    if (gesture.mode !== 'one-finger-zoom') {
       return
     }
 
-    oneFingerZoomRef.current = null
-    releasePointerCapture(e.currentTarget, oneFingerZoom.pointerId)
+    resetGesture()
+    releasePointerCapture(e.currentTarget, gesture.pointerId)
   }
 
   function startPinch(e: PointerEvent<HTMLDivElement>) {
@@ -377,11 +395,10 @@ export default function useViewerPointerGestures({
 
     clearPendingTouchTap()
     cancelOneFingerZoom(e)
-    panRef.current = null
-    pointerStartRef.current = null
 
-    pinchRef.current = {
+    gestureRef.current = {
       anchor,
+      mode: 'pinch',
       pointerIds: [firstId, secondId],
       startDistance,
       startZoom,
@@ -411,14 +428,14 @@ export default function useViewerPointerGestures({
   }
 
   function handlePinchMove(e: PointerEvent<HTMLDivElement>) {
-    const pinch = pinchRef.current
+    const gesture = gestureRef.current
 
-    if (!pinch || !pinch.pointerIds.includes(e.pointerId)) {
+    if (gesture.mode !== 'pinch' || !gesture.pointerIds.includes(e.pointerId)) {
       return false
     }
 
-    const first = activePointersRef.current.get(pinch.pointerIds[0])
-    const second = activePointersRef.current.get(pinch.pointerIds[1])
+    const first = activePointersRef.current.get(gesture.pointerIds[0])
+    const second = activePointersRef.current.get(gesture.pointerIds[1])
 
     if (!first || !second) {
       return false
@@ -430,15 +447,15 @@ export default function useViewerPointerGestures({
 
     zoomToAnchor(
       moveZoomAnchorToClientPoint({
-        anchor: pinch.anchor,
+        anchor: gesture.anchor,
         clientX: center.clientX,
         clientY: center.clientY,
         viewportRect: e.currentTarget.getBoundingClientRect(),
       }),
       getNextPinchZoomLevel({
         currentDistance: getDistance(first, second),
-        startDistance: pinch.startDistance,
-        startZoom: pinch.startZoom,
+        startDistance: gesture.startDistance,
+        startZoom: gesture.startZoom,
       }),
     )
 
@@ -446,30 +463,34 @@ export default function useViewerPointerGestures({
   }
 
   function handleScrollPanMove(e: PointerEvent<HTMLDivElement>) {
-    const pan = panRef.current
+    const gesture = gestureRef.current
 
-    if (!pan || pan.pointerId !== e.pointerId) {
+    if (gesture.mode !== 'pan' || gesture.pointerId !== e.pointerId) {
       return false
     }
 
-    const diffX = e.clientX - pan.lastX
-    const diffY = e.clientY - pan.lastY
+    const diffX = e.clientX - gesture.lastX
+    const diffY = e.clientY - gesture.lastY
 
-    if (!pan.active && Math.hypot(e.clientX - pan.lastX, e.clientY - pan.lastY) < PAN_ACTIVATION_THRESHOLD) {
+    if (!gesture.active && Math.hypot(diffX, diffY) < PAN_ACTIVATION_THRESHOLD) {
       return true
     }
 
-    pan.active = true
-    if (pan.axes.x) {
+    gestureRef.current = {
+      ...gesture,
+      active: true,
+      lastX: e.clientX,
+      lastY: e.clientY,
+    }
+
+    if (gesture.axes.x) {
       e.currentTarget.scrollLeft -= diffX
     }
 
-    if (pan.axes.y) {
+    if (gesture.axes.y) {
       e.currentTarget.scrollTop -= diffY
     }
 
-    pan.lastX = e.clientX
-    pan.lastY = e.clientY
     claimPointerEvent(e)
 
     return true
@@ -486,8 +507,6 @@ export default function useViewerPointerGestures({
       clientX: e.clientX,
       clientY: e.clientY,
       pointerType: e.pointerType,
-      startX: e.clientX,
-      startY: e.clientY,
     })
 
     if (e.pointerType === 'touch' && isDoubleTapStart(e)) {
@@ -507,33 +526,30 @@ export default function useViewerPointerGestures({
     }
 
     if (getZoomLevel() > DEFAULT_ZOOM) {
-      panRef.current = {
+      gestureRef.current = {
         active: false,
         axes: getScrollableAxesInPath(e.target, e.currentTarget),
         lastX: e.clientX,
         lastY: e.clientY,
+        mode: 'pan',
         pointerId: e.pointerId,
-      }
-
-      pointerStartRef.current = {
         pointerType: e.pointerType,
-        scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
-        x: e.clientX,
-        y: e.clientY,
+        startX: e.clientX,
+        startY: e.clientY,
       }
 
       capturePointer(e.currentTarget, e.pointerId)
       return
     }
 
-    initialBrightnessRef.current = getBrightness()
-    panRef.current = null
-
-    pointerStartRef.current = {
+    gestureRef.current = {
+      initialBrightness: getBrightness(),
+      mode: 'observing',
+      pointerId: e.pointerId,
       pointerType: e.pointerType,
       scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
-      x: e.clientX,
-      y: e.clientY,
+      startX: e.clientX,
+      startY: e.clientY,
     }
 
     swipeDetectedRef.current = false
@@ -546,9 +562,9 @@ export default function useViewerPointerGestures({
 
     updatePointer(e)
 
-    const oneFingerZoom = oneFingerZoomRef.current
+    const gesture = gestureRef.current
 
-    if (oneFingerZoom?.pointerId === e.pointerId) {
+    if (gesture.mode === 'one-finger-zoom' && gesture.pointerId === e.pointerId) {
       claimPointerEvent(e)
 
       if (activePointersRef.current.size > 1) {
@@ -556,14 +572,18 @@ export default function useViewerPointerGestures({
         return
       }
 
-      const dragDeltaY = e.clientY - oneFingerZoom.startY
+      const dragDeltaY = e.clientY - gesture.startY
 
-      if (!oneFingerZoom.active && Math.abs(dragDeltaY) < ONE_FINGER_ZOOM_ACTIVATION_THRESHOLD) {
+      if (!gesture.active && Math.abs(dragDeltaY) < ONE_FINGER_ZOOM_ACTIVATION_THRESHOLD) {
         return
       }
 
-      oneFingerZoom.active = true
-      zoomToAnchor(oneFingerZoom.anchor, getNextOneFingerZoomLevel(oneFingerZoom.startZoom, dragDeltaY))
+      gestureRef.current = {
+        ...gesture,
+        active: true,
+      }
+
+      zoomToAnchor(gesture.anchor, getNextOneFingerZoomLevel(gesture.startZoom, dragDeltaY))
       return
     }
 
@@ -575,9 +595,12 @@ export default function useViewerPointerGestures({
       return
     }
 
+    const nextGesture = gestureRef.current
+
     if (
-      !pointerStartRef.current ||
-      !isDirectManipulationPointer(pointerStartRef.current.pointerType) ||
+      nextGesture.mode !== 'observing' ||
+      nextGesture.pointerId !== e.pointerId ||
+      !isDirectManipulationPointer(nextGesture.pointerType) ||
       getZoomLevel() > DEFAULT_ZOOM
     ) {
       return
@@ -587,17 +610,21 @@ export default function useViewerPointerGestures({
       return
     }
 
-    const diffX = e.clientX - pointerStartRef.current.x
-    const diffY = e.clientY - pointerStartRef.current.y
-    const scrollPanAxes = getScrollPanAxes(pointerStartRef.current.scrollableAxes, diffX, diffY)
+    const diffX = e.clientX - nextGesture.startX
+    const diffY = e.clientY - nextGesture.startY
+    const scrollPanAxes = getScrollPanAxes(nextGesture.scrollableAxes, diffX, diffY)
 
     if (scrollPanAxes) {
-      panRef.current = {
+      gestureRef.current = {
         active: false,
         axes: scrollPanAxes,
-        lastX: pointerStartRef.current.x,
-        lastY: pointerStartRef.current.y,
+        lastX: nextGesture.startX,
+        lastY: nextGesture.startY,
+        mode: 'pan',
         pointerId: e.pointerId,
+        pointerType: nextGesture.pointerType,
+        startX: nextGesture.startX,
+        startY: nextGesture.startY,
       }
 
       clearPendingTouchTap()
@@ -617,7 +644,7 @@ export default function useViewerPointerGestures({
     swipeDetectedRef.current = true
     const rect = e.currentTarget.getBoundingClientRect()
     const deltaBrightness = (diffY / (rect.height / 2)) * 90
-    setBrightness(initialBrightnessRef.current - deltaBrightness)
+    setBrightness(nextGesture.initialBrightness - deltaBrightness)
     claimPointerEvent(e)
   }
 
@@ -628,49 +655,44 @@ export default function useViewerPointerGestures({
 
     activePointersRef.current.delete(e.pointerId)
     const wasPointerConsumed = consumedPointerIdsRef.current.delete(e.pointerId)
-    const oneFingerZoom = oneFingerZoomRef.current
+    const gesture = gestureRef.current
 
-    if (oneFingerZoom?.pointerId === e.pointerId) {
+    if (gesture.mode === 'one-finger-zoom' && gesture.pointerId === e.pointerId) {
       claimPointerEvent(e)
       releasePointerCapture(e.currentTarget, e.pointerId)
-      oneFingerZoomRef.current = null
-      pointerStartRef.current = null
+      resetGesture()
       suppressNextClick()
 
-      if (!oneFingerZoom.active) {
+      if (!gesture.active) {
         const nextZoom = getZoomLevel() > DEFAULT_ZOOM ? DEFAULT_ZOOM : DOUBLE_TAP_ZOOM_LEVEL
-        zoomToAnchor(oneFingerZoom.anchor, nextZoom)
+        zoomToAnchor(gesture.anchor, nextZoom)
       }
 
       return
     }
 
-    const pinch = pinchRef.current
-
-    if (pinch?.pointerIds.includes(e.pointerId)) {
-      pinchRef.current = null
-      releasePointerCapture(e.currentTarget, pinch.pointerIds[0])
-      releasePointerCapture(e.currentTarget, pinch.pointerIds[1])
-      pointerStartRef.current = null
+    if (gesture.mode === 'pinch' && gesture.pointerIds.includes(e.pointerId)) {
+      resetGesture()
+      releasePointerCapture(e.currentTarget, gesture.pointerIds[0])
+      releasePointerCapture(e.currentTarget, gesture.pointerIds[1])
       suppressNextClick()
       claimPointerEvent(e)
 
       const remainingPointer = [...activePointersRef.current.entries()][0]
+
       if (remainingPointer && getZoomLevel() > DEFAULT_ZOOM) {
         const [pointerId, pointer] = remainingPointer
-        panRef.current = {
+
+        gestureRef.current = {
           active: false,
           axes: getScrollableAxesInPath(e.target, e.currentTarget),
           lastX: pointer.clientX,
           lastY: pointer.clientY,
+          mode: 'pan',
           pointerId,
-        }
-
-        pointerStartRef.current = {
           pointerType: pointer.pointerType,
-          scrollableAxes: getScrollableAxesInPath(e.target, e.currentTarget),
-          x: pointer.clientX,
-          y: pointer.clientY,
+          startX: pointer.clientX,
+          startY: pointer.clientY,
         }
 
         capturePointer(e.currentTarget, pointerId)
@@ -679,18 +701,15 @@ export default function useViewerPointerGestures({
       return
     }
 
-    const pan = panRef.current
-
-    if (pan?.pointerId === e.pointerId) {
-      panRef.current = null
+    if (gesture.mode === 'pan' && gesture.pointerId === e.pointerId) {
+      resetGesture()
       releasePointerCapture(e.currentTarget, e.pointerId)
 
-      const diffX = e.clientX - (pointerStartRef.current?.x ?? e.clientX)
-      const diffY = e.clientY - (pointerStartRef.current?.y ?? e.clientY)
-      const isTouchTap = pointerStartRef.current?.pointerType === 'touch' && isTapMovement(diffX, diffY)
-      pointerStartRef.current = null
+      const diffX = e.clientX - gesture.startX
+      const diffY = e.clientY - gesture.startY
+      const isTouchTap = gesture.pointerType === 'touch' && isTapMovement(diffX, diffY)
 
-      if (pan.active || wasPointerConsumed) {
+      if (gesture.active || wasPointerConsumed) {
         suppressNextClick()
         claimPointerEvent(e)
       } else if (isTouchTap) {
@@ -700,7 +719,7 @@ export default function useViewerPointerGestures({
       return
     }
 
-    if (!pointerStartRef.current) {
+    if (gesture.mode !== 'observing' || gesture.pointerId !== e.pointerId) {
       if (wasPointerConsumed) {
         suppressNextClick()
         claimPointerEvent(e)
@@ -709,20 +728,20 @@ export default function useViewerPointerGestures({
       return
     }
 
-    const diffX = e.clientX - pointerStartRef.current.x
-    const diffY = e.clientY - pointerStartRef.current.y
-    const isTouchTap = pointerStartRef.current.pointerType === 'touch' && isTapMovement(diffX, diffY)
-    const isDirectManipulation = isDirectManipulationPointer(pointerStartRef.current.pointerType)
+    const diffX = e.clientX - gesture.startX
+    const diffY = e.clientY - gesture.startY
+    const isTouchTap = gesture.pointerType === 'touch' && isTapMovement(diffX, diffY)
+    const isDirectManipulation = isDirectManipulationPointer(gesture.pointerType)
 
     if (wasPointerConsumed) {
-      pointerStartRef.current = null
+      resetGesture()
       suppressNextClick()
       claimPointerEvent(e)
       return
     }
 
     if (getZoomLevel() > DEFAULT_ZOOM) {
-      pointerStartRef.current = null
+      resetGesture()
       if (isTouchTap) {
         queueTouchTap(e.clientX, e.clientY, e.currentTarget)
       }
@@ -730,7 +749,7 @@ export default function useViewerPointerGestures({
     }
 
     if (!isDirectManipulation && !isTapMovement(diffX, diffY)) {
-      pointerStartRef.current = null
+      resetGesture()
       swipeDetectedRef.current = true
       return
     }
@@ -741,7 +760,8 @@ export default function useViewerPointerGestures({
       Math.abs(diffY) > Math.abs(diffX) * DIRECTION_LOCK_RATIO
 
     if (isVerticalBrightnessSwipe) {
-      pointerStartRef.current = null
+      resetGesture()
+      swipeDetectedRef.current = true
       return
     }
 
@@ -751,8 +771,8 @@ export default function useViewerPointerGestures({
       Math.abs(diffX) > Math.abs(diffY) * DIRECTION_LOCK_RATIO
 
     if (isHorizontalPageSwipe) {
-      if (canScrollAxis(pointerStartRef.current.scrollableAxes, 'x')) {
-        pointerStartRef.current = null
+      if (canScrollAxis(gesture.scrollableAxes, 'x')) {
+        resetGesture()
         return
       }
 
@@ -773,7 +793,7 @@ export default function useViewerPointerGestures({
       }
     }
 
-    pointerStartRef.current = null
+    resetGesture()
 
     if (isTouchTap) {
       queueTouchTap(e.clientX, e.clientY, e.currentTarget)
@@ -784,22 +804,33 @@ export default function useViewerPointerGestures({
     ignoredPointerIdsRef.current.delete(e.pointerId)
     activePointersRef.current.delete(e.pointerId)
     consumedPointerIdsRef.current.delete(e.pointerId)
-    cancelOneFingerZoom(e)
 
-    const pinch = pinchRef.current
-    if (pinch?.pointerIds.includes(e.pointerId)) {
-      pinchRef.current = null
+    const gesture = gestureRef.current
+
+    if (gesture.mode === 'one-finger-zoom' && gesture.pointerId === e.pointerId) {
+      releasePointerCapture(e.currentTarget, gesture.pointerId)
+      resetGesture()
+      return
     }
 
-    if (panRef.current?.pointerId === e.pointerId) {
-      panRef.current = null
+    if (gesture.mode === 'pinch' && gesture.pointerIds.includes(e.pointerId)) {
+      releasePointerCapture(e.currentTarget, gesture.pointerIds[0])
+      releasePointerCapture(e.currentTarget, gesture.pointerIds[1])
+      resetGesture()
+      return
     }
 
-    if (pointerStartRef.current) {
+    if (gesture.mode === 'pan' && gesture.pointerId === e.pointerId) {
+      releasePointerCapture(e.currentTarget, gesture.pointerId)
       swipeDetectedRef.current = true
+      resetGesture()
+      return
     }
 
-    pointerStartRef.current = null
+    if (gesture.mode === 'observing' && gesture.pointerId === e.pointerId) {
+      swipeDetectedRef.current = true
+      resetGesture()
+    }
   }
 
   function handleClick(e: MouseEvent<HTMLDivElement>) {
