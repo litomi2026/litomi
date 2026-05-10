@@ -5,13 +5,13 @@ import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { useScreenFitStore } from '../store/screenFit'
 import { clampZoomLevel, DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
-import { WHEEL_EVENT_HANDLED, WHEEL_EVENT_IGNORED, type WheelHandlerResult } from './pageViewerWheel'
+import { getTouchActionForScrollableAxes, shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
 import {
   captureCursorZoomAnchor,
   type CursorZoomAnchor,
   getCursorAnchoredScrollPosition,
   getNextWheelZoomLevel,
-} from './pageViewerZoom'
+} from './viewerZoom'
 
 type CaptureZoomAnchorAtClientPointParams = {
   clientX: number
@@ -37,6 +37,8 @@ const INITIAL_ZOOM_LAYOUT: ZoomLayout = {
   viewportWidth: 0,
 }
 
+const SCROLL_OVERFLOW_EPSILON = 1
+
 export default function usePageViewerZoom({ imageCount }: Params) {
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
@@ -46,6 +48,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
   const setZoomLevel = useZoomStore((state) => state.setZoomLevel)
   const resetZoom = useZoomStore((state) => state.resetZoom)
+
   const scrollRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLUListElement>(null)
   const pendingCursorZoomAnchorRef = useRef<CursorZoomAnchor | null>(null)
@@ -102,12 +105,24 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     [getZoomLevel],
   )
 
+  const applyAnchoredScroll = useCallback((anchor: CursorZoomAnchor, nextZoom: number) => {
+    const scroll = scrollRef.current
+    if (!scroll) {
+      return
+    }
+
+    const { left, top } = getCursorAnchoredScrollPosition({ anchor, nextZoom })
+    scroll.scrollLeft = left
+    scroll.scrollTop = top
+  }, [])
+
   const zoomToAnchor = useCallback(
     (anchor: CursorZoomAnchor, nextZoom: number) => {
       const clampedNextZoom = clampZoomLevel(nextZoom)
 
       if (clampedNextZoom === getZoomLevel()) {
         pendingCursorZoomAnchorRef.current = null
+        applyAnchoredScroll(anchor, clampedNextZoom)
         return false
       }
 
@@ -115,15 +130,15 @@ export default function usePageViewerZoom({ imageCount }: Params) {
       setZoomLevel(clampedNextZoom)
       return true
     },
-    [getZoomLevel, setZoomLevel],
+    [applyAnchoredScroll, getZoomLevel, setZoomLevel],
   )
 
   const handleCursorZoomWheel = useCallback(
-    (event: WheelEvent): WheelHandlerResult => {
-      const { ctrlKey, metaKey, clientX, clientY } = event
+    (event: WheelEvent) => {
+      const { ctrlKey, metaKey, clientX, clientY, target } = event
 
-      if (!ctrlKey && !metaKey) {
-        return WHEEL_EVENT_IGNORED
+      if ((!ctrlKey && !metaKey) || shouldIgnoreViewerGestureTarget(target)) {
+        return
       }
 
       event.preventDefault()
@@ -140,24 +155,35 @@ export default function usePageViewerZoom({ imageCount }: Params) {
       if (anchor) {
         zoomToAnchor(anchor, nextZoom)
       }
-
-      return WHEEL_EVENT_HANDLED
     },
     [captureZoomAnchorAtClientPoint, getZoomLevel, zoomToAnchor],
   )
 
-  const zoomScrollAreaStyle = {
+  const zoomScrollArea = {
     height: zoomLayout.contentHeight > 0 ? zoomLayout.contentHeight * zoomLevel : undefined,
     width: zoomLayout.contentWidth > 0 ? zoomLayout.contentWidth * zoomLevel : undefined,
   } satisfies CSSProperties
 
-  const zoomContentStyle = {
+  const zoomContent = {
     minHeight: zoomLayout.viewportHeight > 0 ? zoomLayout.viewportHeight : undefined,
     transform: `scale(${zoomLevel})`,
     transformOrigin: 'top left',
     width: zoomLayout.viewportWidth > 0 ? zoomLayout.viewportWidth : '100%',
     willChange: zoomLevel > DEFAULT_ZOOM ? 'transform' : undefined,
   } satisfies CSSProperties
+
+  const viewerScrollableAxes = {
+    x:
+      zoomLayout.contentWidth > 0 &&
+      zoomLayout.viewportWidth > 0 &&
+      zoomLayout.contentWidth * zoomLevel - zoomLayout.viewportWidth > SCROLL_OVERFLOW_EPSILON,
+    y:
+      zoomLayout.contentHeight > 0 &&
+      zoomLayout.viewportHeight > 0 &&
+      zoomLayout.contentHeight * zoomLevel - zoomLayout.viewportHeight > SCROLL_OVERFLOW_EPSILON,
+  }
+
+  const touchAction = getTouchActionForScrollableAxes(viewerScrollableAxes, zoomLevel)
 
   // NOTE: 페이지 구성이나 보기 옵션이 바뀌면 화면에 그리기 전에 줌 기준 크기를 다시 재요
   useLayoutEffect(() => {
@@ -190,15 +216,8 @@ export default function usePageViewerZoom({ imageCount }: Params) {
 
     pendingCursorZoomAnchorRef.current = null
 
-    const scroll = scrollRef.current
-    if (!scroll) {
-      return
-    }
-
-    const { left, top } = getCursorAnchoredScrollPosition({ anchor, nextZoom: zoomLevel })
-    scroll.scrollLeft = left
-    scroll.scrollTop = top
-  }, [zoomLevel])
+    applyAnchoredScroll(anchor, zoomLevel)
+  }, [applyAnchoredScroll, zoomLevel])
 
   // NOTE: ctrl/cmd + 0 키로 확대/축소를 초기화해요
   useEffect(() => {
@@ -208,6 +227,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
         resetZoom()
 
         const scroll = scrollRef.current
+
         if (scroll) {
           scroll.scrollLeft = 0
           scroll.scrollTop = 0
@@ -216,18 +236,38 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [resetZoom])
+
+  // NOTE: ctrl/cmd + wheel은 브라우저 페이지 확대 대신 뷰어 내부 확대에 사용해요
+  useEffect(() => {
+    const scroll = scrollRef.current
+
+    if (!scroll) {
+      return
+    }
+
+    scroll.addEventListener('wheel', handleCursorZoomWheel, { passive: false })
+
+    return () => {
+      scroll.removeEventListener('wheel', handleCursorZoomWheel)
+    }
+  }, [handleCursorZoomWheel])
 
   return {
     captureZoomAnchorAtClientPoint,
-    handleCursorZoomWheel,
+    isDefaultZoom: zoomLevel === DEFAULT_ZOOM,
     measureZoomLayout,
     zoomToAnchor,
     contentRef,
     scrollRef,
-    zoomLevel,
-    zoomContentStyle,
-    zoomScrollAreaStyle,
+    touchAction,
+    styles: {
+      zoomContent,
+      zoomScrollArea,
+    },
   }
 }

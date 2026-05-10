@@ -8,9 +8,9 @@ import { toast } from 'sonner'
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
 
-import { useImageIndexStore } from './store/imageIndex'
-import { usePageViewStore } from './store/pageView'
-import { useVirtualScrollStore } from './store/virtualizer'
+import { useImageIndexStore } from '../store/imageIndex'
+import { usePageViewStore } from '../store/pageView'
+import { useVirtualScrollStore } from '../store/virtualizer'
 import useReadingHistory from './useReadingHistory'
 
 type Props = {

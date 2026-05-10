@@ -9,6 +9,7 @@ const COARSE_WHEEL_ZOOM_SPEED = 0.002
 const COARSE_WHEEL_DELTA = 10
 const MAX_NORMALIZED_WHEEL_DELTA = 50
 const ONE_FINGER_ZOOM_SPEED = 0.01
+const MIN_PINCH_DISTANCE = 24
 
 export const DOUBLE_TAP_ZOOM_LEVEL = 2
 
@@ -36,7 +37,30 @@ type GetCursorAnchoredScrollPositionParams = {
   nextZoom: number
 }
 
+type MoveZoomAnchorToClientPointParams = {
+  anchor: CursorZoomAnchor
+  clientX: number
+  clientY: number
+  viewportRect: RectLike
+}
+
+type PinchZoomParams = {
+  currentDistance: number
+  startDistance: number
+  startZoom: number
+}
+
+type PointerLike = {
+  clientX: number
+  clientY: number
+}
+
 type RectLike = Pick<DOMRectReadOnly, 'left' | 'top'>
+
+type WheelDeltaParams = Pick<WheelEvent, 'deltaMode'> & {
+  delta: number
+}
+
 type WheelZoomParams = Pick<WheelEvent, 'deltaMode' | 'deltaY'>
 
 export function captureCursorZoomAnchor({
@@ -64,11 +88,6 @@ export function captureCursorZoomAnchor({
   }
 }
 
-export function getAdaptiveWheelZoomSpeed(deltaY: number) {
-  const normalizedMagnitude = Math.min(Math.abs(deltaY), COARSE_WHEEL_DELTA) / COARSE_WHEEL_DELTA
-  return FINE_WHEEL_ZOOM_SPEED + (COARSE_WHEEL_ZOOM_SPEED - FINE_WHEEL_ZOOM_SPEED) * normalizedMagnitude
-}
-
 export function getCursorAnchoredScrollPosition({ anchor, nextZoom }: GetCursorAnchoredScrollPositionParams) {
   return {
     left: Math.max(0, anchor.contentLeft + anchor.contentX * nextZoom - anchor.viewportX),
@@ -76,25 +95,66 @@ export function getCursorAnchoredScrollPosition({ anchor, nextZoom }: GetCursorA
   }
 }
 
+export function getDistance(first: PointerLike, second: PointerLike) {
+  return Math.hypot(first.clientX - second.clientX, first.clientY - second.clientY)
+}
+
+export function getMidpoint(first: PointerLike, second: PointerLike) {
+  return {
+    clientX: (first.clientX + second.clientX) / 2,
+    clientY: (first.clientY + second.clientY) / 2,
+  }
+}
+
 export function getNextOneFingerZoomLevel(startZoom: number, dragDeltaY: number) {
   return clampZoomLevel(startZoom * Math.exp(dragDeltaY * ONE_FINGER_ZOOM_SPEED))
 }
 
+export function getNextPinchZoomLevel({ currentDistance, startDistance, startZoom }: PinchZoomParams) {
+  if (startDistance < MIN_PINCH_DISTANCE) {
+    return clampZoomLevel(startZoom)
+  }
+
+  return clampZoomLevel(startZoom * (currentDistance / startDistance))
+}
+
 export function getNextWheelZoomLevel(currentZoom: number, wheel: WheelZoomParams) {
-  const normalizedDeltaY = getNormalizedWheelDeltaY(wheel)
+  const normalizedDeltaY = getNormalizedWheelDelta({
+    delta: wheel.deltaY,
+    deltaMode: wheel.deltaMode,
+  })
+
   const clampedDeltaY = Math.max(-MAX_NORMALIZED_WHEEL_DELTA, Math.min(normalizedDeltaY, MAX_NORMALIZED_WHEEL_DELTA))
   const speed = getAdaptiveWheelZoomSpeed(clampedDeltaY)
   return clampZoomLevel(currentZoom * Math.exp(-clampedDeltaY * speed))
 }
 
-export function getNormalizedWheelDeltaY({ deltaMode, deltaY }: WheelZoomParams) {
+export function getNormalizedWheelDelta({ delta, deltaMode }: WheelDeltaParams) {
   if (deltaMode === DOM_DELTA_LINE) {
-    return deltaY * LINE_DELTA_PIXELS
+    return delta * LINE_DELTA_PIXELS
   }
 
   if (deltaMode === DOM_DELTA_PAGE) {
-    return deltaY * PAGE_DELTA_PIXELS
+    return delta * PAGE_DELTA_PIXELS
   }
 
-  return deltaY
+  return delta
+}
+
+export function moveZoomAnchorToClientPoint({
+  anchor,
+  clientX,
+  clientY,
+  viewportRect,
+}: MoveZoomAnchorToClientPointParams): CursorZoomAnchor {
+  return {
+    ...anchor,
+    viewportX: clientX - viewportRect.left,
+    viewportY: clientY - viewportRect.top,
+  }
+}
+
+function getAdaptiveWheelZoomSpeed(deltaY: number) {
+  const normalizedMagnitude = Math.min(Math.abs(deltaY), COARSE_WHEEL_DELTA) / COARSE_WHEEL_DELTA
+  return FINE_WHEEL_ZOOM_SPEED + (COARSE_WHEEL_ZOOM_SPEED - FINE_WHEEL_ZOOM_SPEED) * normalizedMagnitude
 }

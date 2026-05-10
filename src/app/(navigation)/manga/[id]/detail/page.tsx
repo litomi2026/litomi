@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import PostList from '@/app/(navigation)/(right-aside)/posts/[filter]/MasonryPostList'
-import RatingInput from '@/app/manga/[id]/ImageViewer/RatingInput'
+import RatingInput from '@/app/manga/[id]/ImageViewer/RatingInput/RatingInput'
 import { mangaSchema } from '@/app/manga/[id]/schema'
 import { PostFilter } from '@/backend/api/v1/post/constant'
 import BackButton from '@/components/BackButton'

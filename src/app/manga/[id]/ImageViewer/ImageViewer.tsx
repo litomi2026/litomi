@@ -15,8 +15,8 @@ import ImageSlider from './ImageSlider'
 import { getNavigatorLowDataSnapshot, type LowDataReason, type LowDataSnapshot, resolveLowDataState } from './lowData'
 import MangaDetailButton from './MangaDetailButton'
 import PageViewer from './PageViewer/PageViewer'
-import ReadingProgressSaver from './ReadingProgressSaver'
-import ResumeReadingToast from './ResumeReadingToast'
+import ReadingProgressSaver from './ReadingProgress/ReadingProgressSaver'
+import ResumeReadingToast from './ReadingProgress/ResumeReadingToast'
 import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
@@ -31,7 +31,7 @@ import ThumbnailStrip from './ThumbnailStrip'
 import useAutoHideCursor from './useAutoHideCursor'
 import ViewControlPanel from './ViewControlPanel'
 
-const ScrollViewer = dynamic(() => import('./ScrollViewer'))
+const ScrollViewer = dynamic(() => import('./ScrollViewer/ScrollViewer'))
 
 type Props = {
   manga: Manga

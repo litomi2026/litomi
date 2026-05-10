@@ -12,7 +12,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 
-import { useImageIndexStore } from './store/imageIndex'
+import { useImageIndexStore } from '../store/imageIndex'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 const SEND_INTERVAL_MS = ms('1 minute')
