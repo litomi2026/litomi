@@ -21,6 +21,7 @@ import { getResponsivePictureSources } from '../util'
 import useImageNavigation from './useImageNavigation'
 import usePageViewerInitialPage from './usePageViewerInitialPage'
 import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
+import usePageViewerWheelNavigation from './usePageViewerWheelNavigation'
 import usePageViewerZoom from './usePageViewerZoom'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
@@ -103,6 +104,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
   useViewerWheel({ handleCursorZoomWheel, scrollRef })
+  usePageViewerWheelNavigation({ nextPage, prevPage, scrollRef })
 
   return (
     <>
