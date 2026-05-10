@@ -5,7 +5,7 @@ import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { useScreenFitStore } from '../store/screenFit'
 import { clampZoomLevel, DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
-import { getTouchActionForScrollableAxes, shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
+import { getTouchActionForScrollableAxes, shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
 import {
   captureCursorZoomAnchor,
   type CursorZoomAnchor,

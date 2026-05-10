@@ -18,6 +18,7 @@ import { ScreenFit, useScreenFitStore } from '../store/screenFit'
 import { useVirtualScrollStore } from '../store/virtualizer'
 import { useZoomStore } from '../store/zoom'
 import { getResponsivePictureSources } from '../util'
+import { NATIVE_GESTURE_BLOCK_CSS, preventNativeViewerContextMenu } from '../viewerGesturePolicy'
 
 const screenFitStyle: Record<ScreenFit, string> = {
   width:
@@ -101,7 +102,12 @@ export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
   }
 
   return (
-    <div className={`overflow-hidden h-dvh select-none contain-strict`} onClick={onClick} style={dynamicStyle}>
+    <div
+      className={`overflow-hidden h-dvh contain-strict ${NATIVE_GESTURE_BLOCK_CSS}`}
+      onClick={onClick}
+      onContextMenu={preventNativeViewerContextMenu}
+      style={dynamicStyle}
+    >
       <List
         className={`overscroll-none ${screenFitStyle[screenFit]}`}
         listRef={listRef}

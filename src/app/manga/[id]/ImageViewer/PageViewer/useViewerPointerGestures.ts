@@ -10,7 +10,7 @@ import {
   isScreenEdge,
   type ScrollableAxes,
   shouldIgnoreViewerGestureTarget,
-} from './viewerGesturePolicy'
+} from '../viewerGesturePolicy'
 import {
   type CursorZoomAnchor,
   DOUBLE_TAP_ZOOM_LEVEL,
