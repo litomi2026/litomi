@@ -17,6 +17,7 @@ import MangaMetadataListWithLink from '@/components/card/MangaMetadataListWithLi
 import MangaTagList from '@/components/card/MangaTagList'
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@/constants/policy'
 import { Manga } from '@/types/manga'
@@ -90,7 +91,16 @@ export function MangaDetailModal() {
       ? description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH) + '...'
       : description
 
-  const commonButtonStyle = 'flex-1 bg-zinc-900 rounded-lg p-1 px-2 border-2 h-full w-full'
+  const actionButtonBaseClassName =
+    'inline-flex w-full items-center justify-center gap-2 rounded-xl p-3 py-2 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-0'
+
+  const primaryButtonClassName = `${actionButtonBaseClassName}
+    bg-foreground text-background hover:bg-foreground/90 active:bg-foreground/80
+    disabled:bg-foreground disabled:text-background disabled:opacity-50 disabled:pointer-events-none`
+
+  const secondaryButtonClassName = `${actionButtonBaseClassName}
+    border border-foreground/15 bg-transparent text-foreground hover:bg-foreground/10 active:bg-foreground/15
+    disabled:border-foreground/10 disabled:bg-zinc-900 disabled:text-zinc-500`
 
   // NOTE: 페이지 이동 시 모달 닫기
   useEffect(() => {
@@ -242,18 +252,19 @@ export function MangaDetailModal() {
             </div>
           )}
         </div>
-
-        <div className="grid sm:flex gap-3 text-sm">
-          <ErrorBoundary fallback={BookmarkButtonError}>
-            <BookmarkButton className={commonButtonStyle} manga={manga} />
-          </ErrorBoundary>
-          {isDownloadable && (
-            <ErrorBoundary fallback={DownloadButtonError}>
-              <DownloadButton className={commonButtonStyle} manga={manga} />
-            </ErrorBoundary>
-          )}
-        </div>
       </DialogBody>
+      <DialogFooter className="grid gap-2 text-sm">
+        <ErrorBoundary fallback={BookmarkButtonError}>
+          <BookmarkButton className={primaryButtonClassName} manga={manga} />
+        </ErrorBoundary>
+        {isDownloadable && (
+          <div className="grid gap-2 text-sm sm:grid-cols-2">
+            <ErrorBoundary fallback={DownloadButtonError}>
+              <DownloadButton className={secondaryButtonClassName} manga={manga} />
+            </ErrorBoundary>
+          </div>
+        )}
+      </DialogFooter>
     </Dialog>
   )
 }
