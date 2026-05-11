@@ -215,8 +215,8 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   }, [existingRating])
 
   return (
-    <div className={`flex flex-col items-center justify-center gap-4 ${className}`}>
-      <div className="grid gap-2 text-center">
+    <div className={`flex min-w-0 flex-col items-center justify-center gap-4 ${className}`}>
+      <div className="grid min-w-0 gap-2 text-center">
         <h2 className="text-xl font-semibold text-foreground">작품이 어떠셨나요?</h2>
         <p className="text-zinc-400 text-sm max-w-sm mx-auto">
           별점을 드래그하거나 클릭해서 {existingRating?.rating ? '수정' : '평가'}해주세요
@@ -228,7 +228,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         aria-valuemax={MAX_RATING}
         aria-valuemin={MIN_RATING}
         aria-valuenow={rating}
-        className="flex gap-1 sm:gap-2 select-none cursor-pointer outline-none touch-pan-y aria-current:cursor-grabbing py-2"
+        className="grid w-full max-w-xs grid-cols-5 gap-1 sm:gap-2 select-none cursor-pointer outline-none touch-pan-y aria-current:cursor-grabbing py-2"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
         onPointerDown={handlePointerDown}
@@ -243,7 +243,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
             aria-busy={justSaved && value <= rating}
             aria-current={value <= displayRating}
             aria-label={`${value}점`}
-            className="transition pointer-events-none aria-current:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out] p-1"
+            className="aspect-square min-w-0 transition pointer-events-none aria-current:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out] p-1"
             disabled={isPending}
             key={value}
             style={{ animationDelay: `${i * 50}ms` }}
@@ -252,7 +252,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
             <Star
               aria-current={value <= displayRating}
               aria-pressed={hoveredRating > 0 && value === displayRating}
-              className="size-10 sm:size-12 transition text-zinc-600 aria-current:fill-brand aria-current:text-brand aria-pressed:scale-125 aria-pressed:rotate-12"
+              className="size-full transition text-zinc-600 aria-current:fill-brand aria-current:text-brand aria-pressed:scale-125 aria-pressed:rotate-12"
             />
           </button>
         ))}

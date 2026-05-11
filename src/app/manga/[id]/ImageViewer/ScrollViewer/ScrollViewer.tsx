@@ -6,8 +6,7 @@ import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-
 import MangaImage from '@/components/MangaImage'
 import { Manga } from '@/types/manga'
 
-import LastPageActions from '../LastPageActions'
-import RatingInput from '../RatingInput/RatingInput'
+import LastPage from '../LastPage'
 import { useBrightnessStore } from '../store/brightness'
 import { useImageWidthStore } from '../store/imageWidth'
 import { usePageNavigationStore } from '../store/pageNavigation'
@@ -26,13 +25,6 @@ const screenFitStyle: Record<ScreenFit, string> = {
   all: 'pt-safe px-safe [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
   height:
     '[&_li]:flex [&_li]:items-center [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
-}
-
-type LastPageProps = {
-  manga: {
-    id: number
-    title: string
-  }
 }
 
 type Props = {
@@ -99,15 +91,6 @@ export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
         rowHeight={rowHeight}
         rowProps={{ isLowDataMode, manga }}
       />
-    </div>
-  )
-}
-
-function LastPage({ manga }: LastPageProps) {
-  return (
-    <div className="flex h-full min-w-72 flex-col items-center justify-center gap-4 p-4">
-      <RatingInput className="flex-1" mangaId={manga.id} />
-      <LastPageActions manga={manga} />
     </div>
   )
 }

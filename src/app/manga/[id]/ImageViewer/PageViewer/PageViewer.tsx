@@ -6,8 +6,7 @@ import MangaImage from '@/components/MangaImage'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import { ImageWithVariants, Manga } from '@/types/manga'
 
-import LastPageActions from '../LastPageActions'
-import RatingInput from '../RatingInput/RatingInput'
+import LastPage from '../LastPage'
 import { useBrightnessStore } from '../store/brightness'
 import { useOrientationStore } from '../store/orientation'
 import { usePageNavigationStore } from '../store/pageNavigation'
@@ -31,13 +30,6 @@ const screenFitContentStyle: Record<ScreenFit, string> = {
   height:
     '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
   all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
-}
-
-type LastPageProps = {
-  manga: {
-    id: number
-    title: string
-  }
 }
 
 type PageViewerItemProps = {
@@ -133,15 +125,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
         </div>
       </div>
     </>
-  )
-}
-
-function LastPage({ manga }: LastPageProps) {
-  return (
-    <div className="flex h-full min-w-72 flex-col items-center justify-center gap-4 p-4">
-      <RatingInput mangaId={manga.id} />
-      <LastPageActions manga={manga} />
-    </div>
   )
 }
 
