@@ -24,7 +24,7 @@ export default function FullscreenButton(props: ComponentProps<'button'>) {
   }
 
   return (
-    <button aria-label="전체화면" onClick={toggleFullScreen} {...props}>
+    <button aria-label="전체화면" onClick={toggleFullScreen} title="전체화면" type="button" {...props}>
       <Maximize className="size-6" />
     </button>
   )

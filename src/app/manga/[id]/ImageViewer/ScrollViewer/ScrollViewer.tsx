@@ -95,7 +95,12 @@ export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
 
   if (images.length === 0) {
     return (
-      <div className="flex items-center justify-center h-dvh animate-fade-in" onClick={onClick}>
+      <div
+        aria-label="이미지 불러오는 중"
+        className="flex items-center justify-center h-dvh animate-fade-in"
+        onClick={onClick}
+        role="status"
+      >
         <Loader2 className="size-8 animate-spin" />
       </div>
     )
@@ -172,6 +177,7 @@ function ScrollViewerRowItem({ index, isLowDataMode, manga, style }: ScrollViewe
 
   const first = (
     <MangaImage
+      alt={`${manga.title} ${firstImageIndex + 1}페이지`}
       fetchPriority={fetchPriority}
       imageIndex={firstImageIndex}
       mangaId={manga.id}
@@ -184,6 +190,7 @@ function ScrollViewerRowItem({ index, isLowDataMode, manga, style }: ScrollViewe
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
+      alt={`${manga.title} ${nextImageIndex + 1}페이지`}
       fetchPriority={fetchPriority}
       imageIndex={nextImageIndex}
       mangaId={manga.id}

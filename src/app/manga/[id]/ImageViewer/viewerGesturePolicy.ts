@@ -19,6 +19,7 @@ const VIEWER_GESTURE_IGNORE_SELECTOR = [
   'input',
   'textarea',
   'select',
+  'dialog',
   '[contenteditable="true"]',
   '[data-viewer-gesture-ignore]',
   '[role="button"]',
