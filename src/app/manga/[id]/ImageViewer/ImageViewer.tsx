@@ -64,10 +64,11 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const isPageMode = viewerMode === 'page'
   const isWidthFit = screenFit === 'width'
   const { enabled: isLowDataMode } = resolveLowDataState(preference, lowDataSnapshot)
-  const topButtonClassName = 'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2'
+  const topButtonClassName =
+    'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70'
 
   const bottomButtonClassName =
-    'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition'
+    'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
   const handleIntervalChange = useCallback(
     (index: number) => {
@@ -141,6 +142,8 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       onPointerDown={registerActivity}
       onPointerMove={registerActivity}
       onWheel={registerActivity}
+      role="region"
+      tabIndex={0}
     >
       <ResumeReadingToast manga={manga} />
       <ReadingProgressSaver mangaId={manga.id} />
@@ -193,10 +196,12 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       ) : (
         <ScrollViewer isLowDataMode={isLowDataMode} manga={manga} onClick={toggleController} />
       )}
-      <div
-        aria-current={showController}
+      <footer
+        aria-hidden={!showController}
         className="fixed bottom-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
-        aria-current:opacity-100 aria-current:pointer-events-auto"
+        data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto"
+        data-visible={showController ? 'true' : 'false'}
+        inert={!showController}
       >
         <div className="p-3 grid gap-1.5 select-none">
           {showThumbnails && <ThumbnailStrip images={thumbnailImages} mangaId={manga.id} />}
@@ -263,6 +268,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             {!isPageMode && (
               <div className="relative" ref={viewControlRef}>
                 <button
+                  aria-expanded={showViewControl}
                   className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
                   onClick={() => setShowViewControl((prev) => !prev)}
                   type="button"
@@ -279,6 +285,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               onIntervalChange={handleIntervalChange}
             />
             <button
+              aria-expanded={showThumbnails}
               className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
               onClick={() => setShowThumbnails((prev) => !prev)}
               title="미리보기"
