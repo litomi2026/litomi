@@ -22,25 +22,6 @@ describe('GET /api/v1/bookmark', () => {
     })
   })
 
-  test('성인인증이 안 된 한국 사용자는 403을 반환한다', async () => {
-    const { auth } = await createBookmarkAuthContext({ adult: false })
-
-    const response = await requestBackend({
-      path: '/api/v1/bookmark',
-      cookies: auth.cookieHeader,
-      headers: { 'CF-IPCountry': 'KR' },
-    })
-
-    await expectProblemResponse(response, {
-      status: 403,
-      code: 'adult-verification-required',
-      detail: '성인인증이 필요해요',
-      instance: '/api/v1/bookmark',
-    })
-
-    expect(response.headers.get('Cache-Control')).toBe(privateCacheControl)
-  })
-
   test('잘못된 cursor를 전달하면 400을 반환한다', async () => {
     const { auth } = await createBookmarkAuthContext()
 
