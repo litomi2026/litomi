@@ -134,7 +134,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
 
   return (
     <div
-      className="relative data-[cursor-hidden=true]:cursor-none"
+      aria-keyshortcuts="Enter Escape"
+      aria-label="이미지 뷰어"
+      className="relative data-[cursor-hidden=true]:cursor-none focus:outline-none"
       data-cursor-hidden={isCursorHidden ? 'true' : 'false'}
       onPointerDown={registerActivity}
       onPointerMove={registerActivity}
@@ -142,12 +144,18 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
     >
       <ResumeReadingToast manga={manga} />
       <ReadingProgressSaver mangaId={manga.id} />
-      <div
-        aria-current={showController}
+      <header
+        aria-hidden={!showController}
         className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 pt-safe px-safe transition opacity-0 pointer-events-none
-        aria-current:opacity-100 aria-current:pointer-events-auto"
+        data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto"
+        data-visible={showController ? 'true' : 'false'}
+        inert={!showController}
       >
-        <div className="flex gap-2 items-center justify-between p-3 select-none">
+        <div
+          aria-label="뷰어 상단 도구"
+          className="flex gap-2 items-center justify-between p-3 select-none"
+          role="toolbar"
+        >
           <div className="flex gap-1">
             <BackButton className={topButtonClassName} fallbackUrl="/" />
             <FullscreenButton className={topButtonClassName} />
@@ -159,15 +167,20 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               className={topButtonClassName}
               href={`/manga/${manga.id}/detail`}
               prefetch={false}
+              title="리뷰 보기"
             >
               <MessageCircle className="size-6" />
             </Link>
             <ShareButton className={topButtonClassName} manga={manga} />
           </div>
         </div>
-      </div>
+      </header>
       {!isLowDataReady ? (
-        <div className="flex items-center justify-center h-dvh animate-fade-in">
+        <div
+          aria-label="이미지 불러오는 중"
+          className="flex items-center justify-center h-dvh animate-fade-in"
+          role="status"
+        >
           <Loader2 className="size-8 animate-spin" />
         </div>
       ) : isPageMode ? (
@@ -188,22 +201,34 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         <div className="p-3 grid gap-1.5 select-none">
           {showThumbnails && <ThumbnailStrip images={thumbnailImages} mangaId={manga.id} />}
           <ImageSlider maxImageIndex={imageCount} />
-          <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background">
-            <button className={bottomButtonClassName} onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}>
+          <div
+            aria-label="뷰어 보기 설정"
+            className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background"
+            role="toolbar"
+          >
+            <button
+              aria-pressed={isPageMode}
+              className={bottomButtonClassName}
+              onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}
+              type="button"
+            >
               {isPageMode ? '페이지' : '스크롤'}보기
             </button>
             <button
+              aria-pressed={isDoublePage}
               className={bottomButtonClassName}
               onClick={() => {
                 correctImageIndex()
                 setPageView(isDoublePage ? 'single' : 'double')
               }}
+              type="button"
             >
               {isDoublePage ? '두 쪽' : '한 쪽'} 보기
             </button>
             <button
               className={bottomButtonClassName}
               onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}
+              type="button"
             >
               {screenFit === 'all' ? '화면' : isWidthFit ? '가로' : '세로'} 맞춤
             </button>
@@ -211,6 +236,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               <button
                 className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
                 onClick={toggleReadingDirection}
+                type="button"
               >
                 좌 {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}{' '}
                 우
@@ -225,6 +251,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                     const nextIndex = (currentIndex + 1) % orientations.length
                     setOrientation(orientations[nextIndex])
                   }}
+                  type="button"
                 >
                   {orientation === 'horizontal' && '좌우 넘기기'}
                   {orientation === 'vertical' && '상하 넘기기'}
@@ -238,6 +265,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                 <button
                   className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
                   onClick={() => setShowViewControl((prev) => !prev)}
+                  type="button"
                 >
                   보기 조절
                 </button>
@@ -254,15 +282,16 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
               onClick={() => setShowThumbnails((prev) => !prev)}
               title="미리보기"
+              type="button"
             >
               미리보기
             </button>
-            <button className={bottomButtonClassName} onClick={cyclePreference}>
+            <button className={bottomButtonClassName} onClick={cyclePreference} type="button">
               {getLowDataPreferenceLabel(preference)}
             </button>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
