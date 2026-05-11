@@ -1,10 +1,7 @@
-import { Flame, ShieldCheck, Webcam } from 'lucide-react'
-import Link from 'next/link'
+import { ShieldCheck, Webcam } from 'lucide-react'
 
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
-import LinkPending from '@/components/LinkPending'
 
-import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
 import MobileNavigationButton from './MobileNavigationButton'
 import NewMangaLink from './NewMangaLink'
 import RandomMangaLink from './RandomMangaLink'
@@ -17,7 +14,7 @@ export default function TopNavigationActions() {
         <MobileNavigationButton />
         <NewMangaLink />
         <RandomMangaLink timer={20} />
-        {/* <a
+        <a
           className={topNavigationActionClassName}
           href={LIVE_CAM_AD_URL}
           rel="noopener sponsored"
@@ -26,7 +23,7 @@ export default function TopNavigationActions() {
         >
           <Webcam className="size-5 hidden sm:block" />
           라이브 섹스 캠
-        </a> */}
+        </a>
         <a
           className={`${topNavigationActionClassName} relative`}
           href={NORDVPN_URL}
