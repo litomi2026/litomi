@@ -16,7 +16,7 @@ export const config = {
   matcher: [
     {
       source:
-        '/((?!_next/static/|_next/image|cdn-cgi/challenge-platform/|\\.well-known/|image/|favicon\\.ico$|icon\\.png$|apple-icon\\.png$|manifest\\.webmanifest$|robots\\.txt$|sitemap\\.xml$|sw\\.js$|offline\\.html$|ads\\.txt$|og-image\\.avif$|og-image\\.webp$|web-app-manifest-144x144\\.png$|web-app-manifest-192x192\\.png$|web-app-manifest-512x512\\.png$).*)',
+        '/((?!_next/static/|_next/image|cdn-cgi/challenge-platform/|\\.well-known/|image/|favicon\\.ico$|icon\\.png$|apple-icon\\.png$|manifest\\.webmanifest$|robots\\.txt$|sitemap\\.xml$|sw\\.js$|ads\\.txt$|og-image\\.avif$|og-image\\.webp$|web-app-manifest-144x144\\.png$|web-app-manifest-192x192\\.png$|web-app-manifest-512x512\\.png$).*)',
       missing: [
         { type: 'header', key: 'next-router-prefetch' },
         { type: 'header', key: 'purpose', value: 'prefetch' },
