@@ -1,5 +1,3 @@
-import './src/env/server.next.build'
-
 import type { NextConfig } from 'next'
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
@@ -8,18 +6,23 @@ import { withSentryConfig } from '@sentry/nextjs'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
+import { nextBuildEnv } from './src/env/server.next.build'
+
 const isProduction = process.env.NODE_ENV === 'production'
 const commitSHA = process.env.COMMIT_SHA
 const sentryDeployEnv = process.env.NEXT_PUBLIC_APP_ENV
+const appEnv = nextBuildEnv.NEXT_PUBLIC_APP_ENV
+const apiOrigin = nextBuildEnv.NEXT_PUBLIC_API_ORIGIN
+const imageProxyOrigin = nextBuildEnv.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN
 
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https:;
   worker-src 'self' blob:;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https: http:;
+  img-src 'self' blob: data: https:;
   object-src 'none';
-  connect-src 'self' https: http:;
+  connect-src 'self' https:;
   frame-src 'self' https:;
   frame-ancestors 'none';
   ${isProduction ? 'upgrade-insecure-requests;' : ''}
@@ -37,15 +40,19 @@ const cacheControlHeaders = [
 ]
 
 const bbatonCallbackCspHeader = `
-  default-src 'self';
+  default-src 'none';
   script-src 'self' 'unsafe-inline';
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https:;
-  object-src 'none';
-  connect-src 'self' https: http:;
-  frame-src 'self' https:;
-  frame-ancestors 'none';
-  upgrade-insecure-requests;
+  img-src 'self' data:;
+  font-src 'self';
+  connect-src 'self' ${apiOrigin};
+  manifest-src 'self';
+  ${appEnv !== 'local' ? 'upgrade-insecure-requests;' : ''}
+`
+
+const serviceWorkerCspHeader = `
+  default-src 'self';
+  connect-src 'self' ${imageProxyOrigin};
 `
 
 const nextConfig: NextConfig = {
@@ -83,7 +90,10 @@ const nextConfig: NextConfig = {
       headers: [
         ...cacheControlHeaders,
         { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
-        { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self'" },
+        {
+          key: 'Content-Security-Policy',
+          value: serviceWorkerCspHeader.replace(/\s{2,}/g, ' ').trim(),
+        },
       ],
     },
   ],

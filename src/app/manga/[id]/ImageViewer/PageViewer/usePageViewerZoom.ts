@@ -6,12 +6,7 @@ import { useReadingDirectionStore } from '../store/readingDirection'
 import { useScreenFitStore } from '../store/screenFit'
 import { clampZoomLevel, DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
 import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
-import {
-  captureCursorZoomAnchor,
-  type CursorZoomAnchor,
-  getCursorAnchoredScrollPosition,
-  getNextWheelZoomLevel,
-} from './viewerZoom'
+import { captureCursorZoomAnchor, type CursorZoomAnchor, getNextWheelZoomLevel } from './viewerZoom'
 
 type CaptureZoomAnchorAtClientPointParams = {
   clientX: number
@@ -105,13 +100,11 @@ export default function usePageViewerZoom({ imageCount }: Params) {
 
   const applyAnchoredScroll = useCallback((anchor: CursorZoomAnchor, nextZoom: number) => {
     const scroll = scrollRef.current
-    if (!scroll) {
-      return
-    }
 
-    const { left, top } = getCursorAnchoredScrollPosition({ anchor, nextZoom })
-    scroll.scrollLeft = left
-    scroll.scrollTop = top
+    if (scroll) {
+      scroll.scrollLeft = Math.max(0, anchor.contentLeft + anchor.contentX * nextZoom - anchor.viewportX)
+      scroll.scrollTop = Math.max(0, anchor.contentTop + anchor.contentY * nextZoom - anchor.viewportY)
+    }
   }, [])
 
   const zoomToAnchor = useCallback(
