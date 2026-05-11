@@ -7,7 +7,7 @@ import { useInView } from 'react-intersection-observer'
 import MangaImage from '@/components/MangaImage'
 import { ImageVariant } from '@/types/manga'
 
-import { useImageIndexStore } from './store/imageIndex'
+import { usePageNavigationStore } from './store/pageNavigation'
 import { usePageViewStore } from './store/pageView'
 
 type Props = {
@@ -16,15 +16,16 @@ type Props = {
 }
 
 export default function ThumbnailStrip({ images, mangaId }: Props) {
-  const { imageIndex, navigateToImageIndex } = useImageIndexStore()
+  const { navigateToPageIndex, pageIndex } = usePageNavigationStore()
   const pageView = usePageViewStore((state) => state.pageView)
   const isDoublePage = pageView === 'double'
+  const activeImageIndex = isDoublePage ? Math.floor(pageIndex / 2) * 2 : pageIndex
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const { ref: firstImageRef, inView: isFirstImageInView } = useInView()
   const { ref: lastImageRef, inView: isLastImageInView } = useInView()
 
   function handleThumbnailClick(index: number) {
-    navigateToImageIndex(index, { maxIndex: images.length })
+    navigateToPageIndex(index, { maxIndex: images.length })
   }
 
   function scrollLeft() {
@@ -49,17 +50,17 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
     }
   }
 
-  // NOTE: 현재 이미지 인덱스에 해당하는 썸네일을 가운데 정렬
+  // NOTE: 현재 페이지에 해당하는 썸네일을 가운데 정렬
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
     const thumbnailElements = container.querySelectorAll('button')
-    const activeThumbnail = thumbnailElements[imageIndex]
+    const activeThumbnail = thumbnailElements[activeImageIndex]
     if (!activeThumbnail) return
 
     activeThumbnail.scrollIntoView({ inline: 'center' })
-  }, [imageIndex])
+  }, [activeImageIndex])
 
   return (
     <div className="relative overflow-hidden flex justify-center">
@@ -91,8 +92,8 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
         ref={scrollContainerRef}
       >
         {images.map((image, i) => {
-          const isActive = i === imageIndex
-          const isSecondaryActive = isDoublePage && i === imageIndex + 1
+          const isActive = i === activeImageIndex
+          const isSecondaryActive = isDoublePage && i === activeImageIndex + 1
 
           return (
             <button
@@ -108,7 +109,7 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
               <MangaImage
                 alt={`${i + 1}페이지 미리보기`}
                 className="w-full h-full object-cover"
-                fetchPriority={i > imageIndex - 3 && i <= imageIndex + 3 ? undefined : 'low'}
+                fetchPriority={i > activeImageIndex - 3 && i <= activeImageIndex + 3 ? undefined : 'low'}
                 imageIndex={i}
                 mangaId={mangaId}
                 src={image?.url}

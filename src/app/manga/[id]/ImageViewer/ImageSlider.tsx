@@ -3,28 +3,29 @@ import { useCallback } from 'react'
 
 import Slider from '@/components/ui/Slider'
 
-import { useImageIndexStore } from './store/imageIndex'
+import { usePageNavigationStore } from './store/pageNavigation'
 import { usePageViewStore } from './store/pageView'
 
 type Props = {
-  maxImageIndex: number
+  maxPageIndex: number
 }
 
-export default function ImageSlider({ maxImageIndex }: Readonly<Props>) {
-  const { imageIndex, navigateToImageIndex } = useImageIndexStore()
+export default function ImageSlider({ maxPageIndex }: Readonly<Props>) {
+  const { navigateToPageIndex, pageIndex } = usePageNavigationStore()
   const pageView = usePageViewStore((state) => state.pageView)
   const isDoublePage = pageView === 'double'
-  const currentPage = imageIndex + 1
-  const maxPage = maxImageIndex + 1
+  const visibleStartPageIndex = isDoublePage ? Math.floor(pageIndex / 2) * 2 : pageIndex
+  const currentPage = visibleStartPageIndex + 1
+  const maxPage = maxPageIndex + 1
   const startPage = Math.max(1, currentPage)
   const endPage = isDoublePage ? Math.max(startPage, Math.min(currentPage + 1, maxPage)) : startPage
   const currentPageText = startPage === endPage ? startPage : `${startPage}-${endPage}`
 
   const handleValueCommit = useCallback(
     (value: number) => {
-      navigateToImageIndex(value, { completionIndex: maxImageIndex, maxIndex: maxImageIndex })
+      navigateToPageIndex(value, { maxIndex: maxPageIndex })
     },
-    [maxImageIndex, navigateToImageIndex],
+    [maxPageIndex, navigateToPageIndex],
   )
 
   return (
@@ -34,9 +35,9 @@ export default function ImageSlider({ maxImageIndex }: Readonly<Props>) {
           aria-label="페이지 이동"
           aria-valuetext={`${currentPageText} / ${maxPage}`}
           className="h-6"
-          max={maxImageIndex}
+          max={maxPageIndex}
           onValueCommit={handleValueCommit}
-          value={imageIndex}
+          value={pageIndex}
         />
       </div>
       <div aria-atomic="true" aria-live="polite" className="flex justify-center gap-1 text-xs">
