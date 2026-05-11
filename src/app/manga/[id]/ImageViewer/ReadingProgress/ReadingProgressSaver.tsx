@@ -12,32 +12,34 @@ import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 
-import { useImageIndexStore } from '../store/imageIndex'
+import { usePageNavigationStore } from '../store/pageNavigation'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 const SEND_INTERVAL_MS = ms('1 minute')
 
 type Props = {
+  imageCount: number
   mangaId: number
 }
 
-export default function ReadingProgressSaver({ mangaId }: Props) {
+export default function ReadingProgressSaver({ imageCount, mangaId }: Props) {
   const { data: me } = useMeQuery()
   const adultState = getAdultState(me)
   const canSyncReadingProgress = hasAdultAccess(adultState) && me?.settings.historySyncEnabled === true
-  const imageIndex = useImageIndexStore((state) => state.imageIndex)
+  const pageIndex = usePageNavigationStore((state) => state.pageIndex)
   const isRequestPendingRef = useRef(false)
   const queryClient = useQueryClient()
 
   const sendCurrentPage = useEffectEvent((options?: { keepalive?: boolean }) => {
-    if (!canSyncReadingProgress || isRequestPendingRef.current || imageIndex <= 0) {
+    if (!canSyncReadingProgress || isRequestPendingRef.current || pageIndex <= 0 || imageCount <= 0) {
       return
     }
 
     const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/history`
+    const lastReadablePage = Math.min(pageIndex + 1, imageCount)
 
     const body: POSTV1MangaIdHistoryBody = {
-      lastPage: imageIndex + 1,
+      lastPage: lastReadablePage,
     }
 
     isRequestPendingRef.current = true
@@ -61,15 +63,15 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
 
   // NOTE: 로컬 기록은 항상 최신으로 유지해요.
   useEffect(() => {
-    if (imageIndex <= 0) {
+    if (pageIndex <= 0 || imageCount <= 0) {
       return
     }
 
-    setLocalReadingHistoryEntry(mangaId, imageIndex + 1)
+    setLocalReadingHistoryEntry(mangaId, Math.min(pageIndex + 1, imageCount))
 
     queryClient.invalidateQueries({ queryKey: QueryKeys.localReadingHistorySummary })
     queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteReadingHistory('local') })
-  }, [imageIndex, mangaId, queryClient])
+  }, [imageCount, mangaId, pageIndex, queryClient])
 
   // NOTE: 감상 기록 자동 저장이 켜져 있으면 1분마다 최신 페이지를 서버에 보내요.
   useEffect(() => {

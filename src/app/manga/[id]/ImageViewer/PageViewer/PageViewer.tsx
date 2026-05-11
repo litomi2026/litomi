@@ -6,18 +6,17 @@ import MangaImage from '@/components/MangaImage'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import { ImageWithVariants, Manga } from '@/types/manga'
 
-import LastPageActions from '../LastPageActions'
-import RatingInput from '../RatingInput/RatingInput'
+import LastPage from '../LastPage'
 import { useBrightnessStore } from '../store/brightness'
-import { useImageIndexStore } from '../store/imageIndex'
 import { useOrientationStore } from '../store/orientation'
+import { usePageNavigationStore } from '../store/pageNavigation'
 import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { ScreenFit, useScreenFitStore } from '../store/screenFit'
+import useInitialViewerPage from '../useInitialViewerPage'
 import { getResponsivePictureSources } from '../util'
 import { NATIVE_GESTURE_BLOCK_CSS } from '../viewerGesturePolicy'
-import useImageNavigation from './useImageNavigation'
-import usePageViewerInitialPage from './usePageViewerInitialPage'
+import usePageNavigation from './usePageNavigation'
 import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
 import usePageViewerWheelNavigation from './usePageViewerWheelNavigation'
 import usePageViewerZoom from './usePageViewerZoom'
@@ -31,14 +30,6 @@ const screenFitContentStyle: Record<ScreenFit, string> = {
   height:
     '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
   all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
-}
-
-type LastPageProps = {
-  manga: {
-    id: number
-    title: string
-  }
-  isHidden?: boolean
 }
 
 type PageViewerItemProps = {
@@ -72,7 +63,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     ? [0, 1]
     : Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }, (_, i) => i - 1)
 
-  const { prevPage, nextPage } = useImageNavigation({
+  const { prevPage, nextPage } = usePageNavigation({
     maxIndex: images.length,
     offset: isDoublePage ? 2 : 1,
   })
@@ -95,7 +86,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     zoomToAnchor,
   })
 
-  usePageViewerInitialPage({ imageCount })
+  useInitialViewerPage({ maxIndex: imageCount })
   usePageViewerScrollRestoration({ scrollRef })
   usePageViewerWheelNavigation({ nextPage, prevPage, scrollRef })
 
@@ -137,36 +128,18 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
   )
 }
 
-function LastPage({ manga, isHidden = false }: LastPageProps) {
-  const { id } = manga
-
-  return (
-    <li aria-hidden={isHidden} className="flex flex-col items-center justify-center gap-4 p-4 aria-hidden:hidden">
-      <RatingInput mangaId={id} />
-      <LastPageActions manga={manga} />
-    </li>
-  )
-}
-
 function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
   const { images = [] } = manga
-  const currentIndex = useImageIndexStore((state) => state.imageIndex)
-  const imageIndex = currentIndex + offset
+  const currentPageIndex = usePageNavigationStore((state) => state.pageIndex)
   const brightness = useBrightnessStore((state) => state.brightness)
-  const isDoublePage = usePageViewStore((state) => state.pageView === 'double') && offset === 0
+  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
+  const pageIndex = (isDoublePage ? Math.floor(currentPageIndex / 2) * 2 : currentPageIndex) + offset
+  const isDoublePageSpread = isDoublePage && offset === 0
   const isRTL = useReadingDirectionStore((state) => state.readingDirection === 'rtl')
 
-  if (imageIndex < 0 || imageIndex >= images.length + 1) {
+  if (pageIndex < 0 || pageIndex > images.length) {
     return null
   }
-
-  if (imageIndex === images.length) {
-    return <LastPage isHidden={offset !== 0} manga={manga} />
-  }
-
-  const nextImageIndex = imageIndex + 1
-  const firstImage = images[imageIndex]
-  const secondImage = images[nextImageIndex]
 
   const fetchPriority = isLowDataMode
     ? offset === 0
@@ -176,29 +149,32 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
       ? 'high'
       : 'low'
 
-  const first = imageIndex >= 0 && (
-    <MangaImage
-      alt={`${manga.title} ${imageIndex + 1}페이지`}
-      fetchPriority={fetchPriority}
-      imageIndex={imageIndex}
-      mangaId={manga.id}
-      pictures={getResponsivePictureSources(firstImage)}
-      src={firstImage?.thumbnail?.url}
-      variant="thumbnail"
-    />
-  )
+  function renderPage(pageIndex: number) {
+    if (pageIndex < 0 || pageIndex > images.length) {
+      return null
+    }
 
-  const second = isDoublePage && nextImageIndex < images.length && (
-    <MangaImage
-      alt={`${manga.title} ${nextImageIndex + 1}페이지`}
-      fetchPriority={fetchPriority}
-      imageIndex={nextImageIndex}
-      mangaId={manga.id}
-      pictures={getResponsivePictureSources(secondImage)}
-      src={secondImage?.thumbnail?.url}
-      variant="thumbnail"
-    />
-  )
+    if (pageIndex === images.length) {
+      return <LastPage manga={manga} />
+    }
+
+    const image = images[pageIndex]
+
+    return (
+      <MangaImage
+        alt={`${manga.title} ${pageIndex + 1}페이지`}
+        fetchPriority={fetchPriority}
+        imageIndex={pageIndex}
+        mangaId={manga.id}
+        pictures={getResponsivePictureSources(image)}
+        src={image?.thumbnail?.url}
+        variant="thumbnail"
+      />
+    )
+  }
+
+  const first = renderPage(pageIndex)
+  const second = isDoublePageSpread ? renderPage(pageIndex + 1) : null
 
   return (
     <li aria-hidden={offset !== 0} style={{ filter: `brightness(${brightness}%)` }}>

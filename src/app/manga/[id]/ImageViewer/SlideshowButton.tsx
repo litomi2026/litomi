@@ -10,17 +10,17 @@ import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 
-import { useImageIndexStore } from './store/imageIndex'
+import { usePageNavigationStore } from './store/pageNavigation'
 
 type Props = {
   className?: string
   offset: number
-  maxImageIndex: number
+  maxPageIndex: number
   onIntervalChange?: (index: number) => void
 }
 
-export default function SlideshowButton({ className = '', maxImageIndex, offset, onIntervalChange }: Readonly<Props>) {
-  const imageIndex = useImageIndexStore((state) => state.imageIndex)
+export default function SlideshowButton({ className = '', maxPageIndex, offset, onIntervalChange }: Readonly<Props>) {
+  const pageIndex = usePageNavigationStore((state) => state.pageIndex)
   const [isRunning, setIsRunning] = useState(false)
   const [isOpened, setIsOpened] = useState(false)
   const intervalSecondsRef = useRef(10)
@@ -45,12 +45,12 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
     setIsRunning(true)
   }
 
+  // NOTE: 페이지 전환 시 타이머를 초기화하기 위해 pageIndex를 구독하고 변경될 때마다 타이머를 다시 예약해요.
   useEffect(() => {
     if (!isRunning) {
       return
     }
 
-    // NOTE: 페이지 전환 시 타이머를 초기화하기 위해 imageIndex를 구독하고 변경될 때마다 타이머를 다시 예약해요.
     if (timeoutIdRef.current) {
       window.clearTimeout(timeoutIdRef.current)
       timeoutIdRef.current = null
@@ -59,10 +59,10 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
     timeoutIdRef.current = window.setTimeout(
       () => {
         timeoutIdRef.current = null
-        const nextImageIndex = imageIndex + offset
+        const nextPageIndex = pageIndex + offset
 
-        if (nextImageIndex <= maxImageIndex) {
-          onIntervalChange?.(nextImageIndex)
+        if (nextPageIndex <= maxPageIndex) {
+          onIntervalChange?.(nextPageIndex)
           return
         }
 
@@ -71,7 +71,7 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
           return
         }
 
-        toast.info('마지막 이미지예요')
+        toast.info('마지막 페이지예요')
         setIsRunning(false)
       },
       ms(`${intervalSecondsRef.current}s`),
@@ -83,7 +83,7 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
         timeoutIdRef.current = null
       }
     }
-  }, [imageIndex, isRunning, maxImageIndex, offset, onIntervalChange])
+  }, [isRunning, maxPageIndex, offset, onIntervalChange, pageIndex])
 
   return (
     <>

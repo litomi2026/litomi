@@ -1,6 +1,6 @@
 import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-import { useImageIndexStore } from '../store/imageIndex'
+import { usePageNavigationStore } from '../store/pageNavigation'
 import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { useScreenFitStore } from '../store/screenFit'
@@ -38,7 +38,7 @@ const INITIAL_ZOOM_LAYOUT: ZoomLayout = {
 }
 
 export default function usePageViewerZoom({ imageCount }: Params) {
-  const currentIndex = useImageIndexStore((state) => state.imageIndex)
+  const currentIndex = usePageNavigationStore((state) => state.pageIndex)
   const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
   const isRTL = useReadingDirectionStore((state) => state.readingDirection === 'rtl')
   const screenFit = useScreenFitStore((state) => state.screenFit)

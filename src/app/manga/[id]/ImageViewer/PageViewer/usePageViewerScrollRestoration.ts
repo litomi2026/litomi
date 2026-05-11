@@ -1,7 +1,7 @@
 import { type RefObject, useEffect, useRef } from 'react'
 
-import { useImageIndexStore } from '../store/imageIndex'
 import { useOrientationStore } from '../store/orientation'
+import { usePageNavigationStore } from '../store/pageNavigation'
 
 type Params = {
   scrollRef: RefObject<HTMLDivElement | null>
@@ -9,7 +9,7 @@ type Params = {
 
 export default function usePageViewerScrollRestoration({ scrollRef }: Params) {
   const getOrientation = useOrientationStore((state) => state.getOrientation)
-  const currentIndex = useImageIndexStore((state) => state.imageIndex)
+  const currentIndex = usePageNavigationStore((state) => state.pageIndex)
   const previousIndexRef = useRef(currentIndex)
 
   // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
