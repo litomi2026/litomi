@@ -34,8 +34,11 @@ export default function Slider({
   const ratioPercentage = Math.max(0, ratio * 100).toFixed(2)
 
   // clientX 좌표를 기반으로 새로운 값을 계산 및 업데이트
-  const updateValueFromEvent = (clientX: number): number => {
-    if (!sliderRef.current) return value
+  function updateValueFromEvent(clientX: number): number {
+    if (!sliderRef.current) {
+      return value
+    }
+
     const rect = sliderRef.current.getBoundingClientRect()
     const newRatio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1)
     const newValue = min + newRatio * (max - min)
@@ -48,15 +51,15 @@ export default function Slider({
   }
 
   // 컨테이너에서 pointer down 발생 시 드래그 시작(트랙이나 thumb 모두 해당)
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
     e.preventDefault()
     updateValueFromEvent(e.clientX)
 
-    const onPointerMove = (e: PointerEvent) => {
+    function onPointerMove(e: PointerEvent) {
       updateValueFromEvent(e.clientX)
     }
 
-    const onPointerUp = (e: PointerEvent) => {
+    function onPointerUp(e: PointerEvent) {
       const finalValue = updateValueFromEvent(e.clientX)
       document.removeEventListener('pointermove', onPointerMove)
       document.removeEventListener('pointerup', onPointerUp)
