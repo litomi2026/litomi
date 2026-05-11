@@ -61,12 +61,11 @@ export default function ViewControlPanel({ id }: Props) {
   }, [zoomLevel])
 
   return (
-    <div
-      aria-label="보기 조절"
-      className="fixed sm:absolute bottom-20 sm:bottom-full inset-x-4 sm:inset-x-auto sm:mb-2 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-2rem)] max-w-sm"
+    <fieldset
+      className="fixed sm:absolute bottom-20 sm:bottom-full inset-x-4 sm:inset-x-auto sm:mb-2 left-1/2 -translate-x-1/2 z-30 m-0 min-w-0 w-[calc(100vw-2rem)] max-w-sm border-0 p-0"
       id={id}
-      role="group"
     >
+      <legend className="sr-only">보기 조절</legend>
       <div className="bg-zinc-900/95 border border-zinc-700 rounded-xl shadow-xl p-3 sm:p-4">
         <div className="grid gap-3 sm:gap-4">
           {/* Brightness Control */}
@@ -165,6 +164,6 @@ export default function ViewControlPanel({ id }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </fieldset>
   )
 }
