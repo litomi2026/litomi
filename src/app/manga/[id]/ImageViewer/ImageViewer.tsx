@@ -12,7 +12,13 @@ import { type Manga } from '@/types/manga'
 
 import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
-import { getNavigatorLowDataSnapshot, type LowDataReason, type LowDataSnapshot, resolveLowDataState } from './lowData'
+import {
+  getAutoLowDataNoticeMessage,
+  getLowDataPreferenceLabel,
+  getNavigatorLowDataSnapshot,
+  type LowDataSnapshot,
+  resolveLowDataState,
+} from './lowData'
 import MangaDetailButton from './MangaDetailButton'
 import PageViewer from './PageViewer/PageViewer'
 import ReadingProgressSaver from './ReadingProgress/ReadingProgressSaver'
@@ -20,7 +26,7 @@ import ResumeReadingToast from './ReadingProgress/ResumeReadingToast'
 import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
-import { LowDataPreference, useLowDataModeStore, useLowDataPreferenceHydrated } from './store/lowDataMode'
+import { useLowDataModeStore, useLowDataPreferenceHydrated } from './store/lowDataMode'
 import { orientations, useOrientationStore } from './store/orientation'
 import { usePageViewStore } from './store/pageView'
 import { useReadingDirectionStore } from './store/readingDirection'
@@ -30,6 +36,7 @@ import { useVirtualScrollStore } from './store/virtualizer'
 import ThumbnailStrip from './ThumbnailStrip'
 import useAutoHideCursor from './useAutoHideCursor'
 import ViewControlPanel from './ViewControlPanel'
+import { shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
 
 const ScrollViewer = dynamic(() => import('./ScrollViewer/ScrollViewer'))
 
@@ -116,6 +123,47 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       setImageIndex(0)
     }
   }, [setImageIndex])
+
+  // NOTE: 뷰어 표면 탭/클릭과 같은 컨트롤 토글을 키보드로도 사용할 수 있게 해요
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      const { altKey, ctrlKey, defaultPrevented, key, metaKey, target } = event
+
+      if (defaultPrevented || altKey || ctrlKey || metaKey || document.querySelector('dialog[open]')) {
+        return
+      }
+
+      if (key === 'Enter' && !shouldIgnoreViewerGestureTarget(target)) {
+        event.preventDefault()
+        setShowController((prev) => !prev)
+        return
+      }
+
+      if (key !== 'Escape') {
+        return
+      }
+
+      if (showViewControl) {
+        event.preventDefault()
+        setShowViewControl(false)
+        return
+      }
+
+      if (showThumbnails) {
+        event.preventDefault()
+        setShowThumbnails(false)
+        return
+      }
+
+      if (showController) {
+        event.preventDefault()
+        setShowController(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showController, showThumbnails, showViewControl])
 
   // NOTE: 컨트롤 팝업 외부 클릭 시 닫기
   useEffect(() => {
@@ -296,28 +344,4 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       </footer>
     </section>
   )
-}
-
-function getAutoLowDataNoticeMessage(reason: LowDataReason): string | null {
-  if (reason === 'auto-save-data') {
-    return '데이터 절약 모드가 켜졌어요'
-  }
-
-  if (reason === 'auto-slow-network') {
-    return '느린 네트워크가 감지됐어요'
-  }
-
-  return null
-}
-
-function getLowDataPreferenceLabel(preference: LowDataPreference): string {
-  if (preference === 'off') {
-    return '저데이터 꺼짐'
-  }
-
-  if (preference === 'on') {
-    return '저데이터 켜짐'
-  }
-
-  return '저데이터 자동'
 }
