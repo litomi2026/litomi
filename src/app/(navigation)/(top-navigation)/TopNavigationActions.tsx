@@ -14,7 +14,7 @@ export default function TopNavigationActions() {
         <MobileNavigationButton />
         <NewMangaLink />
         <RandomMangaLink timer={20} />
-        <a
+        {/* <a
           className={topNavigationActionClassName}
           href={LIVE_CAM_AD_URL}
           rel="noopener sponsored"
@@ -23,7 +23,7 @@ export default function TopNavigationActions() {
         >
           <Webcam className="size-5 hidden sm:block" />
           라이브 섹스 캠
-        </a>
+        </a> */}
         <a
           className={`${topNavigationActionClassName} relative`}
           href={NORDVPN_URL}

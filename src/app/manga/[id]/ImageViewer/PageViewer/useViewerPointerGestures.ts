@@ -537,7 +537,6 @@ export default function useViewerPointerGestures({
       startX: e.clientX,
       startY: e.clientY,
     }
-
   }
 
   function handlePointerMove(e: PointerEvent<HTMLDivElement>) {

@@ -32,11 +32,6 @@ type CaptureCursorZoomAnchorParams = {
   viewportRect: RectLike
 }
 
-type GetCursorAnchoredScrollPositionParams = {
-  anchor: CursorZoomAnchor
-  nextZoom: number
-}
-
 type MoveZoomAnchorToClientPointParams = {
   anchor: CursorZoomAnchor
   clientX: number
@@ -85,13 +80,6 @@ export function captureCursorZoomAnchor({
     contentY: (scrollTop + viewportY - contentTop) / zoom,
     viewportX,
     viewportY,
-  }
-}
-
-export function getCursorAnchoredScrollPosition({ anchor, nextZoom }: GetCursorAnchoredScrollPositionParams) {
-  return {
-    left: Math.max(0, anchor.contentLeft + anchor.contentX * nextZoom - anchor.viewportX),
-    top: Math.max(0, anchor.contentTop + anchor.contentY * nextZoom - anchor.viewportY),
   }
 }
 
