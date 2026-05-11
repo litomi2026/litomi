@@ -17,7 +17,7 @@ type Props = {
 }
 
 export default function ThumbnailStrip({ images, mangaId }: Props) {
-  const { imageIndex, getImageIndex, navigateToImageIndex } = useImageIndexStore()
+  const { imageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isDoublePage = pageView === 'double'
@@ -58,28 +58,33 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
     if (!container) return
 
     const thumbnailElements = container.querySelectorAll('button')
-    const currentImageIndex = getImageIndex()
-    const activeThumbnail = thumbnailElements[currentImageIndex]
+    const activeThumbnail = thumbnailElements[imageIndex]
     if (!activeThumbnail) return
 
     activeThumbnail.scrollIntoView({ inline: 'center' })
-  }, [getImageIndex])
+  }, [imageIndex])
 
   return (
     <div className="relative overflow-hidden flex justify-center">
       <button
-        aria-hidden={isFirstImageInView}
+        aria-label="이전 미리보기"
         className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-r-lg bg-background/90 transition hover:bg-background
-        aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
+        disabled={isFirstImageInView}
         onClick={scrollLeft}
+        title="이전 미리보기"
+        type="button"
       >
         <ChevronLeft className="size-5 stroke-3" />
       </button>
       <button
-        aria-hidden={isLastImageInView}
+        aria-label="다음 미리보기"
         className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-l-lg bg-background/90 transition hover:bg-background
-        aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
+        disabled={isLastImageInView}
         onClick={scrollRight}
+        title="다음 미리보기"
+        type="button"
       >
         <ChevronRight className="size-5 stroke-3" />
       </button>
@@ -94,14 +99,17 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
 
           return (
             <button
-              aria-current={isActive || isSecondaryActive}
+              aria-current={isActive || isSecondaryActive ? 'page' : undefined}
+              aria-label={`${i + 1}페이지로 이동`}
               className="relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition 
-              aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2"
+              aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
               key={i}
               onClick={() => handleThumbnailClick(i)}
               ref={i === 0 ? firstImageRef : i === images.length - 1 ? lastImageRef : undefined}
+              type="button"
             >
               <MangaImage
+                alt={`${i + 1}페이지 미리보기`}
                 className="w-full h-full object-cover"
                 fetchPriority={i > imageIndex - 3 && i <= imageIndex + 3 ? undefined : 'low'}
                 imageIndex={i}

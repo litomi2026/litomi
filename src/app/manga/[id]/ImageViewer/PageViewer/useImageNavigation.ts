@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { useImageIndexStore } from '../store/imageIndex'
+import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
 
 const PREV_PAGE_CODES = new Set(['ArrowLeft', 'AudioVolumeUp', 'PageUp'])
 const NEXT_PAGE_CODES = new Set(['ArrowRight', 'AudioVolumeDown', 'PageDown'])
@@ -64,8 +65,10 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
 
   // NOTE: 키보드 이벤트 핸들러
   useEffect(() => {
-    function handleKeyDown({ code, key, metaKey }: KeyboardEvent) {
-      if (metaKey && (code === 'ArrowLeft' || code === 'ArrowRight')) {
+    function handleKeyDown(event: KeyboardEvent) {
+      const { altKey, code, ctrlKey, defaultPrevented, key, metaKey, target } = event
+
+      if (defaultPrevented || altKey || ctrlKey || metaKey || shouldIgnoreViewerGestureTarget(target)) {
         return
       }
 
