@@ -26,8 +26,8 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
       return
     }
 
-    navigateToImageIndex(prevImageIndex)
-  }, [getImageIndex, offset, navigateToImageIndex])
+    navigateToImageIndex(prevImageIndex, { maxIndex: maxIndex })
+  }, [getImageIndex, maxIndex, offset, navigateToImageIndex])
 
   const nextPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
@@ -38,7 +38,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
       return
     }
 
-    navigateToImageIndex(nextImageIndex)
+    navigateToImageIndex(nextImageIndex, { maxIndex: maxIndex })
   }, [getImageIndex, maxIndex, offset, navigateToImageIndex])
 
   const firstPage = useCallback(() => {
@@ -49,8 +49,8 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
       return
     }
 
-    navigateToImageIndex(0)
-  }, [getImageIndex, navigateToImageIndex])
+    navigateToImageIndex(0, { maxIndex: maxIndex })
+  }, [getImageIndex, maxIndex, navigateToImageIndex])
 
   const lastPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
@@ -60,7 +60,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
       return
     }
 
-    navigateToImageIndex(maxIndex)
+    navigateToImageIndex(maxIndex, { maxIndex: maxIndex })
   }, [getImageIndex, maxIndex, navigateToImageIndex])
 
   // NOTE: 키보드 이벤트 핸들러

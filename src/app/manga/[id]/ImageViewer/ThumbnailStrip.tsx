@@ -9,7 +9,6 @@ import { ImageVariant } from '@/types/manga'
 
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
-import { useVirtualScrollStore } from './store/virtualizer'
 
 type Props = {
   images: (ImageVariant | undefined)[]
@@ -19,15 +18,13 @@ type Props = {
 export default function ThumbnailStrip({ images, mangaId }: Props) {
   const { imageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
-  const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isDoublePage = pageView === 'double'
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const { ref: firstImageRef, inView: isFirstImageInView } = useInView()
   const { ref: lastImageRef, inView: isLastImageInView } = useInView()
 
   function handleThumbnailClick(index: number) {
-    navigateToImageIndex(index)
-    scrollToRow(isDoublePage ? Math.floor(index / 2) : index)
+    navigateToImageIndex(index, { maxIndex: images.length })
   }
 
   function scrollLeft() {

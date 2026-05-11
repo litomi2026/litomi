@@ -5,7 +5,6 @@ import Slider from '@/components/ui/Slider'
 
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
-import { useVirtualScrollStore } from './store/virtualizer'
 
 type Props = {
   maxImageIndex: number
@@ -14,7 +13,6 @@ type Props = {
 export default function ImageSlider({ maxImageIndex }: Readonly<Props>) {
   const { imageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
-  const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isDoublePage = pageView === 'double'
   const currentPage = imageIndex + 1
   const maxPage = maxImageIndex + 1
@@ -24,10 +22,9 @@ export default function ImageSlider({ maxImageIndex }: Readonly<Props>) {
 
   const handleValueCommit = useCallback(
     (value: number) => {
-      navigateToImageIndex(value)
-      scrollToRow(isDoublePage ? Math.floor(value / 2) : value)
+      navigateToImageIndex(value, { completionIndex: maxImageIndex, maxIndex: maxImageIndex })
     },
-    [isDoublePage, navigateToImageIndex, scrollToRow],
+    [maxImageIndex, navigateToImageIndex],
   )
 
   return (

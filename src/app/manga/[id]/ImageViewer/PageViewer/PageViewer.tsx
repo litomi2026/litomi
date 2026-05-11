@@ -14,10 +14,10 @@ import { useOrientationStore } from '../store/orientation'
 import { usePageViewStore } from '../store/pageView'
 import { useReadingDirectionStore } from '../store/readingDirection'
 import { ScreenFit, useScreenFitStore } from '../store/screenFit'
+import useInitialViewerPage from '../useInitialViewerPage'
 import { getResponsivePictureSources } from '../util'
 import { NATIVE_GESTURE_BLOCK_CSS } from '../viewerGesturePolicy'
 import useImageNavigation from './useImageNavigation'
-import usePageViewerInitialPage from './usePageViewerInitialPage'
 import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
 import usePageViewerWheelNavigation from './usePageViewerWheelNavigation'
 import usePageViewerZoom from './usePageViewerZoom'
@@ -95,7 +95,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     zoomToAnchor,
   })
 
-  usePageViewerInitialPage({ imageCount })
+  useInitialViewerPage({ maxIndex: imageCount })
   usePageViewerScrollRestoration({ scrollRef })
   usePageViewerWheelNavigation({ nextPage, prevPage, scrollRef })
 
