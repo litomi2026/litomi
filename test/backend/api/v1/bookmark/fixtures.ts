@@ -5,9 +5,13 @@ import { asc, eq } from 'drizzle-orm'
 import { bookmarkTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 
-export async function createBookmarkAuthContext() {
+type BookmarkAuthContextInput = {
+  adult?: boolean
+}
+
+export async function createBookmarkAuthContext({ adult = true }: BookmarkAuthContextInput = {}) {
   const user = await seedUser()
-  const auth = await createAccessTokenCookies({ userId: user.id })
+  const auth = await createAccessTokenCookies({ adult, userId: user.id })
 
   return { auth, user }
 }

@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
@@ -30,7 +31,7 @@ export type PUTV1BookmarkIdResponse = {
 
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, zProblemValidator('param', paramSchema), async (c) => {
+route.put('/', requireAuth, requireAdult, zProblemValidator('param', paramSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: mangaId } = c.req.valid('param')
 
