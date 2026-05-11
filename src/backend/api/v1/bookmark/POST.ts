@@ -3,6 +3,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
@@ -26,7 +27,7 @@ export type POSTV1BookmarkResponse = {
 
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, zProblemValidator('json', postBodySchema), async (c) => {
+route.post('/', requireAuth, requireAdult, zProblemValidator('json', postBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { mangaIds } = c.req.valid('json')
 
