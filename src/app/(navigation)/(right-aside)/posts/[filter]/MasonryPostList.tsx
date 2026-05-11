@@ -84,12 +84,9 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
       </div>
 
       {hasNextPage && (
-        <div
-          aria-label={isFetchingNextPage ? '글을 가져오는 중' : '글을 더 가져오기'}
-          className="py-4"
-          ref={ref}
-          role="status"
-        />
+        <output className="block py-4" ref={ref}>
+          {isFetchingNextPage && <span className="sr-only">글을 가져오는 중</span>}
+        </output>
       )}
 
       {!hasNextPage && allPosts.length > 0 && (

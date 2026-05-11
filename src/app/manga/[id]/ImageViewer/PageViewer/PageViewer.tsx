@@ -121,12 +121,11 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
             style={styles.zoomContent}
           >
             {imageCount === 0 ? (
-              <li
-                aria-label="이미지 불러오는 중"
-                className="flex items-center justify-center h-full animate-fade-in"
-                role="status"
-              >
-                <Loader2 className="size-8 animate-spin" />
+              <li className="flex items-center justify-center h-full animate-fade-in">
+                <output className="flex items-center justify-center">
+                  <Loader2 aria-hidden="true" className="size-8 animate-spin" />
+                  <span className="sr-only">이미지 불러오는 중</span>
+                </output>
               </li>
             ) : (
               pageViewerOffsets.map((offset) => (

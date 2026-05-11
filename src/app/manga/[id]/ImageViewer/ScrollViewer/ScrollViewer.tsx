@@ -95,14 +95,13 @@ export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
 
   if (images.length === 0) {
     return (
-      <div
-        aria-label="이미지 불러오는 중"
+      <output
         className="flex items-center justify-center h-dvh animate-fade-in"
         onClick={onClick}
-        role="status"
       >
-        <Loader2 className="size-8 animate-spin" />
-      </div>
+        <Loader2 aria-hidden="true" className="size-8 animate-spin" />
+        <span className="sr-only">이미지 불러오는 중</span>
+      </output>
     )
   }
 

@@ -52,6 +52,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isLowDataPreferenceHydrated = useLowDataPreferenceHydrated()
+  const viewControlRef = useRef<HTMLDivElement>(null)
 
   const { images = [] } = manga
   const thumbnailImages = images.map((image) => image.thumbnail)
@@ -178,13 +179,10 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         </div>
       </header>
       {!isLowDataReady ? (
-        <div
-          aria-label="이미지 불러오는 중"
-          className="flex items-center justify-center h-dvh animate-fade-in"
-          role="status"
-        >
-          <Loader2 className="size-8 animate-spin" />
-        </div>
+        <output className="flex items-center justify-center h-dvh animate-fade-in">
+          <Loader2 aria-hidden="true" className="size-8 animate-spin" />
+          <span className="sr-only">이미지 불러오는 중</span>
+        </output>
       ) : isPageMode ? (
         <PageViewer
           isLowDataMode={isLowDataMode}
