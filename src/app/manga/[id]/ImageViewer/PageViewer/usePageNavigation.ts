@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 
-import { useImageIndexStore } from '../store/imageIndex'
+import { usePageNavigationStore } from '../store/pageNavigation'
 import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
 
 const PREV_PAGE_CODES = new Set(['ArrowLeft', 'AudioVolumeUp', 'PageUp'])
@@ -14,54 +14,62 @@ type Params = {
   offset: number
 }
 
-export default function useImageNavigation({ maxIndex, offset }: Params) {
-  const { getImageIndex, navigateToImageIndex } = useImageIndexStore()
+export default function usePageNavigation({ maxIndex, offset }: Params) {
+  const { getPageIndex, navigateToPageIndex } = usePageNavigationStore()
 
   const prevPage = useCallback(() => {
-    const currentImageIndex = getImageIndex()
-    const prevImageIndex = Math.max(0, currentImageIndex - offset)
+    const currentPageIndex = getPageIndex()
+    const prevPageIndex = Math.max(0, currentPageIndex - offset)
 
-    if (currentImageIndex === 0 && prevImageIndex === 0) {
+    const isSameVisiblePageGroup =
+      prevPageIndex === currentPageIndex ||
+      (offset > 1 && Math.floor(prevPageIndex / offset) === Math.floor(currentPageIndex / offset))
+
+    if (isSameVisiblePageGroup) {
       toast.warning('첫번째 페이지예요')
       return
     }
 
-    navigateToImageIndex(prevImageIndex, { maxIndex: maxIndex })
-  }, [getImageIndex, maxIndex, offset, navigateToImageIndex])
+    navigateToPageIndex(prevPageIndex, { maxIndex })
+  }, [getPageIndex, maxIndex, offset, navigateToPageIndex])
 
   const nextPage = useCallback(() => {
-    const currentImageIndex = getImageIndex()
-    const nextImageIndex = Math.min(currentImageIndex + offset, maxIndex)
+    const currentPageIndex = getPageIndex()
+    const nextPageIndex = Math.min(currentPageIndex + offset, maxIndex)
 
-    if (currentImageIndex === maxIndex && nextImageIndex === maxIndex) {
+    const isSameVisiblePageGroup =
+      nextPageIndex === currentPageIndex ||
+      (offset > 1 && Math.floor(nextPageIndex / offset) === Math.floor(currentPageIndex / offset))
+
+    if (isSameVisiblePageGroup) {
       toast.warning('마지막 페이지예요')
       return
     }
 
-    navigateToImageIndex(nextImageIndex, { maxIndex: maxIndex })
-  }, [getImageIndex, maxIndex, offset, navigateToImageIndex])
+    navigateToPageIndex(nextPageIndex, { maxIndex })
+  }, [getPageIndex, maxIndex, offset, navigateToPageIndex])
 
   const firstPage = useCallback(() => {
-    const currentImageIndex = getImageIndex()
+    const currentPageIndex = getPageIndex()
 
-    if (currentImageIndex === 0) {
+    if (currentPageIndex === 0) {
       toast.warning('첫번째 페이지예요')
       return
     }
 
-    navigateToImageIndex(0, { maxIndex: maxIndex })
-  }, [getImageIndex, maxIndex, navigateToImageIndex])
+    navigateToPageIndex(0, { maxIndex })
+  }, [getPageIndex, maxIndex, navigateToPageIndex])
 
   const lastPage = useCallback(() => {
-    const currentImageIndex = getImageIndex()
+    const currentPageIndex = getPageIndex()
 
-    if (currentImageIndex === maxIndex) {
+    if (currentPageIndex === maxIndex) {
       toast.warning('마지막 페이지예요')
       return
     }
 
-    navigateToImageIndex(maxIndex, { maxIndex: maxIndex })
-  }, [getImageIndex, maxIndex, navigateToImageIndex])
+    navigateToPageIndex(maxIndex, { maxIndex })
+  }, [getPageIndex, maxIndex, navigateToPageIndex])
 
   // NOTE: 키보드 이벤트 핸들러
   useEffect(() => {

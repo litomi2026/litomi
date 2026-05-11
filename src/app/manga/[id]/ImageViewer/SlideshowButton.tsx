@@ -45,12 +45,12 @@ export default function SlideshowButton({ className = '', maxPageIndex, offset, 
     setIsRunning(true)
   }
 
+  // NOTE: 페이지 전환 시 타이머를 초기화하기 위해 pageIndex를 구독하고 변경될 때마다 타이머를 다시 예약해요.
   useEffect(() => {
     if (!isRunning) {
       return
     }
 
-    // NOTE: 페이지 전환 시 타이머를 초기화하기 위해 pageIndex를 구독하고 변경될 때마다 타이머를 다시 예약해요.
     if (timeoutIdRef.current) {
       window.clearTimeout(timeoutIdRef.current)
       timeoutIdRef.current = null

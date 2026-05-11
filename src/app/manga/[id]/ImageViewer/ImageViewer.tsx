@@ -25,14 +25,13 @@ import ReadingProgressSaver from './ReadingProgress/ReadingProgressSaver'
 import ResumeReadingToast from './ReadingProgress/ResumeReadingToast'
 import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
-import { useImageIndexStore } from './store/imageIndex'
 import { useLowDataModeStore, useLowDataPreferenceHydrated } from './store/lowDataMode'
 import { orientations, useOrientationStore } from './store/orientation'
+import { usePageNavigationStore } from './store/pageNavigation'
 import { usePageViewStore } from './store/pageView'
 import { useReadingDirectionStore } from './store/readingDirection'
 import { useScreenFitStore } from './store/screenFit'
 import { useViewerModeStore } from './store/viewerMode'
-import { useVirtualScrollStore } from './store/virtualizer'
 import ThumbnailStrip from './ThumbnailStrip'
 import useAutoHideCursor from './useAutoHideCursor'
 import ViewControlPanel from './ViewControlPanel'
@@ -55,16 +54,14 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const { orientation, setOrientation } = useOrientationStore()
   const { pageView, setPageView } = usePageViewStore()
   const { readingDirection, toggleReadingDirection } = useReadingDirectionStore()
-  const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
-  const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
-  const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
+  const navigateToPageIndex = usePageNavigationStore((state) => state.navigateToPageIndex)
+  const resetPageIndex = usePageNavigationStore((state) => state.resetPageIndex)
   const isLowDataPreferenceHydrated = useLowDataPreferenceHydrated()
   const viewControlRef = useRef<HTMLDivElement>(null)
 
   const { images = [] } = manga
   const thumbnailImages = images.map((image) => image.thumbnail)
   const imageCount = images.length
-  const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
   const isLowDataReady = isLowDataPreferenceHydrated && lowDataSnapshot !== null
   const isPageMode = viewerMode === 'page'
@@ -79,10 +76,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
 
   const handleIntervalChange = useCallback(
     (index: number) => {
-      setImageIndex(index)
-      scrollToRow(isDoublePage ? Math.floor(index / 2) : index)
+      navigateToPageIndex(index, { maxIndex: imageCount })
     },
-    [setImageIndex, isDoublePage, scrollToRow],
+    [imageCount, navigateToPageIndex],
   )
 
   const { isCursorHidden, registerActivity } = useAutoHideCursor({
@@ -120,9 +116,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   // NOTE: 뷰어를 벗어나면 페이지 초기화
   useEffect(() => {
     return () => {
-      setImageIndex(0)
+      resetPageIndex()
     }
-  }, [setImageIndex])
+  }, [resetPageIndex])
 
   // NOTE: 뷰어 표면 탭/클릭과 같은 컨트롤 토글을 키보드로도 사용할 수 있게 해요
   useEffect(() => {
@@ -192,7 +188,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       onWheel={registerActivity}
     >
       <ResumeReadingToast manga={manga} />
-      <ReadingProgressSaver mangaId={manga.id} />
+      <ReadingProgressSaver imageCount={imageCount} mangaId={manga.id} />
       <header
         aria-hidden={!showController}
         className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 pt-safe px-safe transition opacity-0 pointer-events-none
@@ -248,7 +244,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       >
         <div className="p-3 grid gap-1.5 select-none">
           {showThumbnails && <ThumbnailStrip images={thumbnailImages} mangaId={manga.id} />}
-          <ImageSlider maxImageIndex={imageCount} />
+          <ImageSlider maxPageIndex={imageCount} />
           <div
             aria-label="뷰어 보기 설정"
             className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background"
@@ -265,10 +261,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             <button
               aria-pressed={isDoublePage}
               className={bottomButtonClassName}
-              onClick={() => {
-                correctImageIndex()
-                setPageView(isDoublePage ? 'single' : 'double')
-              }}
+              onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
               type="button"
             >
               {isDoublePage ? '두 쪽' : '한 쪽'} 보기
@@ -323,7 +316,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             )}
             <SlideshowButton
               className={bottomButtonClassName}
-              maxImageIndex={maxImageIndex}
+              maxPageIndex={imageCount}
               offset={isDoublePage ? 2 : 1}
               onIntervalChange={handleIntervalChange}
             />
