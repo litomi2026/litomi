@@ -1,4 +1,4 @@
-import { type MouseEvent, type PointerEvent, useEffect, useRef } from 'react'
+import { type PointerEvent, useEffect, useRef } from 'react'
 
 import { useBrightnessStore } from '../store/brightness'
 import { useOrientationStore } from '../store/orientation'
@@ -29,7 +29,6 @@ const SCROLL_PAN_INTENT_THRESHOLD = 6
 const DOUBLE_TAP_DELAY = 220
 const DOUBLE_TAP_DISTANCE_THRESHOLD = 36
 const ONE_FINGER_ZOOM_ACTIVATION_THRESHOLD = 8
-const CLICK_SUPPRESSION_TIMEOUT = 1_000
 
 type GesturePointer = {
   clientX: number
@@ -127,42 +126,20 @@ export default function useViewerPointerGestures({
   const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
 
   const activePointersRef = useRef(new Map<number, GesturePointer>())
-  const clickSuppressionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const consumedPointerIdsRef = useRef(new Set<number>())
   const gestureRef = useRef<ViewerGestureState>(IDLE_GESTURE_STATE)
   const ignoredPointerIdsRef = useRef(new Set<number>())
   const pendingTouchTapRef = useRef<PendingTouchTap | null>(null)
   const previousTouchTapRef = useRef<PreviousTouchTap | null>(null)
-  const suppressClickRef = useRef(false)
-  const swipeDetectedRef = useRef(false)
 
   function resetGesture() {
     gestureRef.current = IDLE_GESTURE_STATE
-  }
-
-  function clearClickSuppressionTimeout() {
-    if (!clickSuppressionTimeoutRef.current) {
-      return
-    }
-
-    clearTimeout(clickSuppressionTimeoutRef.current)
-    clickSuppressionTimeoutRef.current = null
   }
 
   function consumePointerIds(pointerIds: readonly number[]) {
     for (const pointerId of pointerIds) {
       consumedPointerIdsRef.current.add(pointerId)
     }
-  }
-
-  function suppressNextClick() {
-    clearClickSuppressionTimeout()
-    suppressClickRef.current = true
-
-    clickSuppressionTimeoutRef.current = setTimeout(() => {
-      suppressClickRef.current = false
-      clickSuppressionTimeoutRef.current = null
-    }, CLICK_SUPPRESSION_TIMEOUT)
   }
 
   function clearPendingTouchTap() {
@@ -297,7 +274,6 @@ export default function useViewerPointerGestures({
 
   function queueTouchTap(clientX: number, clientY: number, target: HTMLElement) {
     clearPendingTouchTap()
-    suppressNextClick()
 
     previousTouchTapRef.current = {
       time: performance.now(),
@@ -325,6 +301,14 @@ export default function useViewerPointerGestures({
     }
   }
 
+  function runPointerTap(e: PointerEvent<HTMLDivElement>) {
+    runTapAction({
+      clientX: e.clientX,
+      clientY: e.clientY,
+      target: e.currentTarget,
+    })
+  }
+
   function startOneFingerZoom(e: PointerEvent<HTMLDivElement>) {
     const startZoom = getZoomLevel()
 
@@ -349,7 +333,6 @@ export default function useViewerPointerGestures({
       startZoom,
     }
 
-    suppressNextClick()
     capturePointer(e.currentTarget, e.pointerId)
     claimPointerEvent(e)
 
@@ -407,7 +390,6 @@ export default function useViewerPointerGestures({
     consumePointerIds([firstId, secondId])
     capturePointer(e.currentTarget, firstId)
     capturePointer(e.currentTarget, secondId)
-    suppressNextClick()
     claimPointerEvent(e)
 
     return true
@@ -497,7 +479,12 @@ export default function useViewerPointerGestures({
   }
 
   function handlePointerDown(e: PointerEvent<HTMLDivElement>) {
-    if (isScreenEdge(e.clientX) || shouldIgnoreViewerGestureTarget(e.target)) {
+    if (
+      !e.isPrimary ||
+      (e.pointerType === 'mouse' && e.button !== 0) ||
+      isScreenEdge(e.clientX) ||
+      shouldIgnoreViewerGestureTarget(e.target)
+    ) {
       ignoredPointerIdsRef.current.add(e.pointerId)
       clearPendingTouchTap()
       return
@@ -515,7 +502,6 @@ export default function useViewerPointerGestures({
       }
 
       clearPendingTouchTap()
-      suppressNextClick()
       claimPointerEvent(e)
       return
     }
@@ -552,7 +538,6 @@ export default function useViewerPointerGestures({
       startY: e.clientY,
     }
 
-    swipeDetectedRef.current = false
   }
 
   function handlePointerMove(e: PointerEvent<HTMLDivElement>) {
@@ -628,7 +613,6 @@ export default function useViewerPointerGestures({
       }
 
       clearPendingTouchTap()
-      swipeDetectedRef.current = true
       capturePointer(e.currentTarget, e.pointerId)
       handleScrollPanMove(e)
       return
@@ -641,7 +625,6 @@ export default function useViewerPointerGestures({
       return
     }
 
-    swipeDetectedRef.current = true
     const rect = e.currentTarget.getBoundingClientRect()
     const deltaBrightness = (diffY / (rect.height / 2)) * 90
     setBrightness(nextGesture.initialBrightness - deltaBrightness)
@@ -661,7 +644,6 @@ export default function useViewerPointerGestures({
       claimPointerEvent(e)
       releasePointerCapture(e.currentTarget, e.pointerId)
       resetGesture()
-      suppressNextClick()
 
       if (!gesture.active) {
         const nextZoom = getZoomLevel() > DEFAULT_ZOOM ? DEFAULT_ZOOM : DOUBLE_TAP_ZOOM_LEVEL
@@ -675,7 +657,6 @@ export default function useViewerPointerGestures({
       resetGesture()
       releasePointerCapture(e.currentTarget, gesture.pointerIds[0])
       releasePointerCapture(e.currentTarget, gesture.pointerIds[1])
-      suppressNextClick()
       claimPointerEvent(e)
 
       const remainingPointer = [...activePointersRef.current.entries()][0]
@@ -710,10 +691,11 @@ export default function useViewerPointerGestures({
       const isTouchTap = gesture.pointerType === 'touch' && isTapMovement(diffX, diffY)
 
       if (gesture.active || wasPointerConsumed) {
-        suppressNextClick()
         claimPointerEvent(e)
       } else if (isTouchTap) {
         queueTouchTap(e.clientX, e.clientY, e.currentTarget)
+      } else if (isTapMovement(diffX, diffY)) {
+        runPointerTap(e)
       }
 
       return
@@ -721,7 +703,6 @@ export default function useViewerPointerGestures({
 
     if (gesture.mode !== 'observing' || gesture.pointerId !== e.pointerId) {
       if (wasPointerConsumed) {
-        suppressNextClick()
         claimPointerEvent(e)
       }
 
@@ -735,7 +716,6 @@ export default function useViewerPointerGestures({
 
     if (wasPointerConsumed) {
       resetGesture()
-      suppressNextClick()
       claimPointerEvent(e)
       return
     }
@@ -750,7 +730,6 @@ export default function useViewerPointerGestures({
 
     if (!isDirectManipulation && !isTapMovement(diffX, diffY)) {
       resetGesture()
-      swipeDetectedRef.current = true
       return
     }
 
@@ -761,7 +740,6 @@ export default function useViewerPointerGestures({
 
     if (isVerticalBrightnessSwipe) {
       resetGesture()
-      swipeDetectedRef.current = true
       return
     }
 
@@ -776,7 +754,6 @@ export default function useViewerPointerGestures({
         return
       }
 
-      swipeDetectedRef.current = true
       const orientation = getOrientation()
       const isReversed = orientation === 'horizontal-reverse' || orientation === 'vertical-reverse'
 
@@ -797,6 +774,8 @@ export default function useViewerPointerGestures({
 
     if (isTouchTap) {
       queueTouchTap(e.clientX, e.clientY, e.currentTarget)
+    } else if (isTapMovement(diffX, diffY)) {
+      runPointerTap(e)
     }
   }
 
@@ -822,38 +801,13 @@ export default function useViewerPointerGestures({
 
     if (gesture.mode === 'pan' && gesture.pointerId === e.pointerId) {
       releasePointerCapture(e.currentTarget, gesture.pointerId)
-      swipeDetectedRef.current = true
       resetGesture()
       return
     }
 
     if (gesture.mode === 'observing' && gesture.pointerId === e.pointerId) {
-      swipeDetectedRef.current = true
       resetGesture()
     }
-  }
-
-  function handleClick(e: MouseEvent<HTMLDivElement>) {
-    if (suppressClickRef.current) {
-      suppressClickRef.current = false
-      clearClickSuppressionTimeout()
-      return
-    }
-
-    if (swipeDetectedRef.current) {
-      swipeDetectedRef.current = false
-      return
-    }
-
-    if (isScreenEdge(e.clientX) || shouldIgnoreViewerGestureTarget(e.target)) {
-      return
-    }
-
-    runTapAction({
-      clientX: e.clientX,
-      clientY: e.clientY,
-      target: e.currentTarget,
-    })
   }
 
   useEffect(() => {
@@ -862,16 +816,10 @@ export default function useViewerPointerGestures({
         clearTimeout(pendingTouchTapRef.current.timeoutId)
         pendingTouchTapRef.current = null
       }
-
-      if (clickSuppressionTimeoutRef.current) {
-        clearTimeout(clickSuppressionTimeoutRef.current)
-        clickSuppressionTimeoutRef.current = null
-      }
     }
   }, [])
 
   return {
-    handleClick,
     handlePointerCancel,
     handlePointerDown,
     handlePointerMove,

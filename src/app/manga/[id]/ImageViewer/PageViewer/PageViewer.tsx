@@ -87,14 +87,13 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     zoomToAnchor,
   } = usePageViewerZoom({ imageCount })
 
-  const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
-    useViewerPointerGestures({
-      captureZoomAnchorAtClientPoint,
-      nextPage,
-      onCenterTap: onClick,
-      prevPage,
-      zoomToAnchor,
-    })
+  const { handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } = useViewerPointerGestures({
+    captureZoomAnchorAtClientPoint,
+    nextPage,
+    onCenterTap: onClick,
+    prevPage,
+    zoomToAnchor,
+  })
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
@@ -105,7 +104,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
       {isDefaultZoom && <TouchAreaOverlay showController={showController} />}
       <div
         className={`h-dvh overflow-auto overscroll-none touch-none ${NATIVE_GESTURE_BLOCK_CSS}`}
-        onClick={handleClick}
         onDragStart={(e) => e.preventDefault()}
         onPointerCancel={handlePointerCancel}
         onPointerDown={handlePointerDown}
