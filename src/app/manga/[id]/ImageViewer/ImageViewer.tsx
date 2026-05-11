@@ -134,7 +134,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   }, [showViewControl])
 
   return (
-    <div
+    <section
       aria-keyshortcuts="Enter Escape"
       aria-label="이미지 뷰어"
       className="relative data-[cursor-hidden=true]:cursor-none focus:outline-none"
@@ -142,8 +142,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       onPointerDown={registerActivity}
       onPointerMove={registerActivity}
       onWheel={registerActivity}
-      role="region"
-      tabIndex={0}
     >
       <ResumeReadingToast manga={manga} />
       <ReadingProgressSaver mangaId={manga.id} />
@@ -296,7 +294,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           </div>
         </div>
       </footer>
-    </div>
+    </section>
   )
 }
 
