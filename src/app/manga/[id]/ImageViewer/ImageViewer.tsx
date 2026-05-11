@@ -42,7 +42,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showThumbnails, setShowThumbnails] = useState(false)
   const [showViewControl, setShowViewControl] = useState(false)
   const [lowDataSnapshot, setLowDataSnapshot] = useState<LowDataSnapshot | null>(null)
-  const viewControlRef = useRef<HTMLDivElement>(null)
   const { preference, cyclePreference } = useLowDataModeStore()
   const { viewerMode, setViewerMode } = useViewerModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
@@ -53,7 +52,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isLowDataPreferenceHydrated = useLowDataPreferenceHydrated()
-  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
 
   const { images = [] } = manga
   const thumbnailImages = images.map((image) => image.thumbnail)
@@ -64,6 +62,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const isPageMode = viewerMode === 'page'
   const isWidthFit = screenFit === 'width'
   const { enabled: isLowDataMode } = resolveLowDataState(preference, lowDataSnapshot)
+
   const topButtonClassName =
     'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70'
 
@@ -190,11 +189,11 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         <PageViewer
           isLowDataMode={isLowDataMode}
           manga={manga}
-          onClick={toggleController}
+          onClick={() => setShowController((prev) => !prev)}
           showController={showController}
         />
       ) : (
-        <ScrollViewer isLowDataMode={isLowDataMode} manga={manga} onClick={toggleController} />
+        <ScrollViewer isLowDataMode={isLowDataMode} manga={manga} onClick={() => setShowController((prev) => !prev)} />
       )}
       <footer
         aria-hidden={!showController}
