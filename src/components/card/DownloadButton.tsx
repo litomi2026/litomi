@@ -84,7 +84,7 @@ export default function DownloadButton({ manga, className = '' }: Props) {
       ) : (
         <Download className="relative z-10 size-4" />
       )}
-      <span aria-busy={isDownloading} className="relative z-10 truncate text-sm text-foreground aria-busy:font-mono">
+      <span aria-busy={isDownloading} className="relative z-10 truncate text-sm text-current aria-busy:font-mono">
         {label}
       </span>
     </button>

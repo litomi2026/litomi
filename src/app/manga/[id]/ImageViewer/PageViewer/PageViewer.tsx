@@ -46,14 +46,10 @@ type Props = {
   isLowDataMode: boolean
   manga: Manga
   onClick: () => void
-  showController: boolean
+  showTouchAreaOverlay: boolean
 }
 
-type TouchAreaOverlayProps = {
-  showController: boolean
-}
-
-export default function PageViewer({ isLowDataMode, manga, onClick, showController }: Props) {
+export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAreaOverlay }: Props) {
   const { images = [] } = manga
   const imageCount = images.length
   const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
@@ -92,7 +88,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
 
   return (
     <>
-      {isDefaultZoom && <TouchAreaOverlay showController={showController} />}
+      {isDefaultZoom && showTouchAreaOverlay && <TouchAreaOverlay />}
       <div
         className={`h-dvh overflow-auto overscroll-none touch-none ${NATIVE_GESTURE_BLOCK_CSS}`}
         onDragStart={(e) => e.preventDefault()}
@@ -193,7 +189,7 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
   )
 }
 
-function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
+function TouchAreaOverlay() {
   const orientation = useOrientationStore((state) => state.orientation)
   const isHorizontal = orientation === 'horizontal' || orientation === 'horizontal-reverse'
   const isReversed = orientation === 'horizontal-reverse' || orientation === 'vertical-reverse'
@@ -202,8 +198,7 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
     <div
       aria-hidden="true"
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="fixed inset-0 z-10 pointer-events-none flex select-none transition text-foreground text-xs font-medium opacity-0 data-[visible=true]:opacity-100 aria-[orientation=vertical]:flex-col"
-      data-visible={showController ? 'true' : 'false'}
+      className="fixed inset-0 z-10 pointer-events-none flex select-none transition text-foreground text-xs font-medium aria-[orientation=vertical]:flex-col"
     >
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">

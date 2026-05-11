@@ -230,7 +230,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           isLowDataMode={isLowDataMode}
           manga={manga}
           onClick={() => setShowController((prev) => !prev)}
-          showController={showController}
+          showTouchAreaOverlay={showController}
         />
       ) : (
         <ScrollViewer isLowDataMode={isLowDataMode} manga={manga} onClick={() => setShowController((prev) => !prev)} />

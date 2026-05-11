@@ -30,13 +30,14 @@ type Props = {
 }
 
 export default function BookmarkButton({ manga, className }: Props) {
-  const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarkQuery()
-  const bookmarkIds = useMemo(() => new Set(bookmarks?.mangaIds), [bookmarks])
-  const isBookmarked = bookmarkIds.has(mangaId)
-  const queryClient = useQueryClient()
   const { open: openLibraryModal } = useLibraryModal()
+  const queryClient = useQueryClient()
+
+  const bookmarkIds = useMemo(() => new Set(bookmarks?.mangaIds), [bookmarks])
+  const { id: mangaId } = manga
+  const isBookmarked = bookmarkIds.has(mangaId)
 
   const saveMutation = useMutation<void, unknown, { mangaId: number; shouldBookmark: boolean }>({
     mutationFn: async ({ mangaId, shouldBookmark }) => {

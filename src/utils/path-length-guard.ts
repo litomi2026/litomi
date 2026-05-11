@@ -16,7 +16,6 @@ const excludedPaths = [
   '/robots.txt',
   '/sitemap.xml',
   '/sw.js',
-  '/offline.html',
   '/ads.txt',
   '/og-image.avif',
   '/og-image.webp',
