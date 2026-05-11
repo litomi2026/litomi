@@ -19,7 +19,7 @@ type Props = {
   }
 }
 
-export default function LastPage({ manga }: Readonly<Props>) {
+export default function LastPage({ manga }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { open: openLibraryModal } = useLibraryModal()
