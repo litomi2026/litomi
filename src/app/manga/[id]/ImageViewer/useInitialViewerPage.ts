@@ -23,7 +23,6 @@ export default function useInitialViewerPage({ maxIndex }: Params) {
     navigateToImageIndex(parsedPage - 1, {
       completionIndex: maxIndex,
       maxIndex,
-      syncURL: false,
     })
   }, [maxIndex, navigateToImageIndex])
 }
