@@ -87,14 +87,13 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
     zoomToAnchor,
   } = usePageViewerZoom({ imageCount })
 
-  const { handleClick, handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } =
-    useViewerPointerGestures({
-      captureZoomAnchorAtClientPoint,
-      nextPage,
-      onCenterTap: onClick,
-      prevPage,
-      zoomToAnchor,
-    })
+  const { handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } = useViewerPointerGestures({
+    captureZoomAnchorAtClientPoint,
+    nextPage,
+    onCenterTap: onClick,
+    prevPage,
+    zoomToAnchor,
+  })
 
   usePageViewerInitialPage({ imageCount })
   usePageViewerScrollRestoration({ scrollRef })
@@ -105,7 +104,6 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
       {isDefaultZoom && <TouchAreaOverlay showController={showController} />}
       <div
         className={`h-dvh overflow-auto overscroll-none touch-none ${NATIVE_GESTURE_BLOCK_CSS}`}
-        onClick={handleClick}
         onDragStart={(e) => e.preventDefault()}
         onPointerCancel={handlePointerCancel}
         onPointerDown={handlePointerDown}
@@ -122,7 +120,10 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showControll
           >
             {imageCount === 0 ? (
               <li className="flex items-center justify-center h-full animate-fade-in">
-                <Loader2 className="size-8 animate-spin" />
+                <output className="flex items-center justify-center">
+                  <Loader2 aria-hidden="true" className="size-8 animate-spin" />
+                  <span className="sr-only">이미지 불러오는 중</span>
+                </output>
               </li>
             ) : (
               pageViewerOffsets.map((offset) => (
@@ -177,6 +178,7 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
 
   const first = imageIndex >= 0 && (
     <MangaImage
+      alt={`${manga.title} ${imageIndex + 1}페이지`}
       fetchPriority={fetchPriority}
       imageIndex={imageIndex}
       mangaId={manga.id}
@@ -188,6 +190,7 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
+      alt={`${manga.title} ${nextImageIndex + 1}페이지`}
       fetchPriority={fetchPriority}
       imageIndex={nextImageIndex}
       mangaId={manga.id}
@@ -221,9 +224,10 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
 
   return (
     <div
-      aria-hidden={!showController}
+      aria-hidden="true"
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="fixed inset-0 z-10 pointer-events-none flex select-none transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+      className="fixed inset-0 z-10 pointer-events-none flex select-none transition text-foreground text-xs font-medium opacity-0 data-[visible=true]:opacity-100 aria-[orientation=vertical]:flex-col"
+      data-visible={showController ? 'true' : 'false'}
     >
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">

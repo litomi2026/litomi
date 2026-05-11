@@ -13,7 +13,11 @@ import { DEFAULT_ZOOM, MAX_ZOOM, useZoomStore } from './store/zoom'
 const CONTROL_ICONS_CLASS = 'size-4 text-zinc-400'
 const CONTROL_LABEL_CLASS = 'text-xs text-zinc-400 font-medium min-w-8 text-right'
 
-export default function ViewControlPanel() {
+type Props = {
+  id?: string
+}
+
+export default function ViewControlPanel({ id }: Props) {
   const { brightness, setBrightness } = useBrightnessStore()
   const { imageWidth, setImageWidth } = useImageWidthStore()
   const { zoomLevel, setZoomLevel } = useZoomStore()
@@ -57,13 +61,19 @@ export default function ViewControlPanel() {
   }, [zoomLevel])
 
   return (
-    <div className="fixed sm:absolute bottom-20 sm:bottom-full inset-x-4 sm:inset-x-auto sm:mb-2 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-2rem)] max-w-sm">
+    <fieldset
+      className="fixed sm:absolute bottom-20 sm:bottom-full inset-x-4 sm:inset-x-auto sm:mb-2 left-1/2 -translate-x-1/2 z-30 m-0 min-w-0 w-[calc(100vw-2rem)] max-w-sm border-0 p-0"
+      id={id}
+    >
+      <legend className="sr-only">보기 조절</legend>
       <div className="bg-zinc-900/95 border border-zinc-700 rounded-xl shadow-xl p-3 sm:p-4">
         <div className="grid gap-3 sm:gap-4">
           {/* Brightness Control */}
           <div className="flex items-center gap-3.5">
             <Palette className={CONTROL_ICONS_CLASS} />
             <Slider
+              aria-label="밝기"
+              aria-valuetext={`${localBrightness}%`}
               className="flex-1 h-4"
               max={100}
               min={10}
@@ -80,6 +90,8 @@ export default function ViewControlPanel() {
             <div className="flex items-center gap-3.5">
               <Monitor className={CONTROL_ICONS_CLASS} />
               <Slider
+                aria-label="이미지 너비"
+                aria-valuetext={`${localWidth}%`}
                 className="flex-1 h-4"
                 max={100}
                 min={10}
@@ -96,6 +108,8 @@ export default function ViewControlPanel() {
           <div className="flex items-center gap-3.5">
             <ZoomIn className={CONTROL_ICONS_CLASS} />
             <Slider
+              aria-label="확대"
+              aria-valuetext={`${localZoom.toFixed(1)}배`}
               className="flex-1 h-4"
               max={MAX_ZOOM * 10}
               min={DEFAULT_ZOOM * 10}
@@ -117,6 +131,7 @@ export default function ViewControlPanel() {
                 setBrightness(100)
                 setLocalBrightness(100)
               }}
+              type="button"
             >
               밝게
             </button>
@@ -126,6 +141,7 @@ export default function ViewControlPanel() {
                 setBrightness(50)
                 setLocalBrightness(50)
               }}
+              type="button"
             >
               어둡게
             </button>
@@ -141,12 +157,13 @@ export default function ViewControlPanel() {
                 setZoomLevel(DEFAULT_ZOOM)
                 setLocalZoom(DEFAULT_ZOOM)
               }}
+              type="button"
             >
               초기화
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </fieldset>
   )
 }

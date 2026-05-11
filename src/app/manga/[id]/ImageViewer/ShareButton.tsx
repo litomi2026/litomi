@@ -70,7 +70,7 @@ export default function ShareButton({ manga, ...props }: Props) {
 
   return (
     <>
-      <button aria-label="공유하기" onClick={() => setIsOpened(true)} {...props}>
+      <button aria-label="공유하기" onClick={() => setIsOpened(true)} title="공유하기" {...props}>
         <Share2 className="size-6" />
       </button>
       <Dialog ariaLabel="공유하기" onClose={() => setIsOpened(false)} open={isOpened}>

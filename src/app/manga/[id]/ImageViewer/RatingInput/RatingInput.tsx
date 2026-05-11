@@ -13,7 +13,6 @@ import { useUserRatingQuery } from './useUserRatingQuery'
 type Props = {
   mangaId: number
   className?: string
-  onClick?: (e: React.MouseEvent) => void
 }
 
 const MIN_RATING = 1
@@ -22,7 +21,7 @@ const HORIZONTAL_THRESHOLD = 5
 const VERTICAL_THRESHOLD = 10
 const DIRECTION_DETERMINATION_THRESHOLD = 15
 
-export default function RatingInput({ mangaId, className = '', onClick }: Props) {
+export default function RatingInput({ mangaId, className = '' }: Props) {
   const { data: existingRating } = useUserRatingQuery(mangaId)
   const { data: me } = useMeQuery()
   const { mutate: saveRating, isPending } = useSaveRatingMutation()
@@ -216,7 +215,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
   }, [existingRating])
 
   return (
-    <div className={`flex flex-col items-center justify-center gap-4 ${className}`} onClick={onClick}>
+    <div className={`flex flex-col items-center justify-center gap-4 ${className}`}>
       <div className="grid gap-2 text-center">
         <h2 className="text-xl font-semibold text-foreground">작품이 어떠셨나요?</h2>
         <p className="text-zinc-400 text-sm max-w-sm mx-auto">

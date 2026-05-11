@@ -88,6 +88,8 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
   return (
     <>
       <button
+        aria-expanded={isRunning ? undefined : isOpened}
+        aria-haspopup={isRunning ? undefined : 'dialog'}
         className={className}
         onClick={() => {
           if (isRunning) {
@@ -100,6 +102,7 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
           }
           setIsOpened(true)
         }}
+        type="button"
       >
         {isRunning ? '중지' : '자동 넘기기'}
       </button>
