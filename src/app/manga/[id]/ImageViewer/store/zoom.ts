@@ -22,9 +22,7 @@ export const useZoomStore = create<Store>()(
     (set, get) => ({
       zoomLevel: DEFAULT_ZOOM,
       getZoomLevel: () => get().zoomLevel,
-      setZoomLevel: (zoom: number) => {
-        set({ zoomLevel: clampZoomLevel(zoom) })
-      },
+      setZoomLevel: (zoom: number) => set({ zoomLevel: zoom }),
       resetZoom: () => set({ zoomLevel: DEFAULT_ZOOM }),
     }),
     {
