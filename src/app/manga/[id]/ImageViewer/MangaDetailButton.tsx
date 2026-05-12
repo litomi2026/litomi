@@ -1,6 +1,6 @@
 'use client'
 
-import { ComponentProps, memo } from 'react'
+import { ComponentProps } from 'react'
 
 import { useMangaDetailModal } from '@/components/MangaDetailModal'
 import { Manga } from '@/types/manga'
@@ -9,9 +9,7 @@ interface Props extends ComponentProps<'button'> {
   manga: Manga
 }
 
-export default memo(MangaDetailButton)
-
-function MangaDetailButton({ manga, ...props }: Props) {
+export default function MangaDetailButton({ manga, ...props }: Props) {
   const { title } = manga
   const { open } = useMangaDetailModal()
 

@@ -125,17 +125,16 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAre
 }
 
 function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
-  const { images = [] } = manga
   const currentPageIndex = usePageNavigationStore((state) => state.pageIndex)
   const brightness = useBrightnessStore((state) => state.brightness)
   const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
+  const isLTR = useReadingDirectionStore((state) => state.readingDirection === 'ltr')
+
+  const { images = [] } = manga
   const pageIndex = (isDoublePage ? Math.floor(currentPageIndex / 2) * 2 : currentPageIndex) + offset
   const isDoublePageSpread = isDoublePage && offset === 0
-  const isRTL = useReadingDirectionStore((state) => state.readingDirection === 'rtl')
-
-  if (pageIndex < 0 || pageIndex > images.length) {
-    return null
-  }
+  const first = renderPage(pageIndex)
+  const second = isDoublePageSpread ? renderPage(pageIndex + 1) : null
 
   const fetchPriority = isLowDataMode
     ? offset === 0
@@ -146,10 +145,6 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
       : 'low'
 
   function renderPage(pageIndex: number) {
-    if (pageIndex < 0 || pageIndex > images.length) {
-      return null
-    }
-
     if (pageIndex === images.length) {
       return <LastPage manga={manga} />
     }
@@ -169,20 +164,17 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
     )
   }
 
-  const first = renderPage(pageIndex)
-  const second = isDoublePageSpread ? renderPage(pageIndex + 1) : null
-
   return (
     <li aria-hidden={offset !== 0} style={{ filter: `brightness(${brightness}%)` }}>
-      {isRTL ? (
+      {isLTR ? (
         <>
-          {second}
           {first}
+          {second}
         </>
       ) : (
         <>
-          {first}
           {second}
+          {first}
         </>
       )}
     </li>
