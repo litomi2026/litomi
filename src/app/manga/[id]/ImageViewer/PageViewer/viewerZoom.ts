@@ -11,7 +11,7 @@ const MIN_PINCH_DISTANCE = 24
 
 export const DOUBLE_TAP_ZOOM_LEVEL = 2
 
-export type CursorZoomAnchor = {
+export type ZoomAnchor = {
   contentLeft: number
   contentTop: number
   contentX: number
@@ -20,7 +20,7 @@ export type CursorZoomAnchor = {
   viewportY: number
 }
 
-type CaptureCursorZoomAnchorParams = {
+type CaptureZoomAnchorParams = {
   clientX: number
   clientY: number
   contentRect: RectLike
@@ -31,7 +31,7 @@ type CaptureCursorZoomAnchorParams = {
 }
 
 type MoveZoomAnchorToClientPointParams = {
-  anchor: CursorZoomAnchor
+  anchor: ZoomAnchor
   clientX: number
   clientY: number
   viewportRect: RectLike
@@ -56,7 +56,7 @@ type WheelDeltaParams = Pick<WheelEvent, 'deltaMode'> & {
 
 type WheelZoomParams = Pick<WheelEvent, 'deltaMode' | 'deltaY'>
 
-export function captureCursorZoomAnchor({
+export function captureZoomAnchor({
   clientX,
   clientY,
   contentRect,
@@ -64,7 +64,7 @@ export function captureCursorZoomAnchor({
   scrollLeft,
   scrollTop,
   viewportRect,
-}: CaptureCursorZoomAnchorParams): CursorZoomAnchor {
+}: CaptureZoomAnchorParams): ZoomAnchor {
   const viewportX = clientX - viewportRect.left
   const viewportY = clientY - viewportRect.top
   const contentLeft = contentRect.left - viewportRect.left + scrollLeft
@@ -131,7 +131,7 @@ export function moveZoomAnchorToClientPoint({
   clientX,
   clientY,
   viewportRect,
-}: MoveZoomAnchorToClientPointParams): CursorZoomAnchor {
+}: MoveZoomAnchorToClientPointParams): ZoomAnchor {
   return {
     ...anchor,
     viewportX: clientX - viewportRect.left,

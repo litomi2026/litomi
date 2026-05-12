@@ -11,13 +11,13 @@ import {
   shouldIgnoreViewerGestureTarget,
 } from '../viewerGesturePolicy'
 import {
-  type CursorZoomAnchor,
   DOUBLE_TAP_ZOOM_LEVEL,
   getDistance,
   getMidpoint,
   getNextOneFingerZoomLevel,
   getNextPinchZoomLevel,
   moveZoomAnchorToClientPoint,
+  type ZoomAnchor,
 } from './viewerZoom'
 
 const HORIZONTAL_SWIPE_THRESHOLD = 50
@@ -52,7 +52,7 @@ type ObservingGestureState = {
 
 type OneFingerZoomGestureState = {
   active: boolean
-  anchor: CursorZoomAnchor
+  anchor: ZoomAnchor
   mode: 'one-finger-zoom'
   pointerId: number
   startY: number
@@ -75,12 +75,12 @@ type Params = {
   captureZoomAnchorAtClientPoint: (params: {
     clientX: number
     clientY: number
-    currentZoom?: number
-  }) => CursorZoomAnchor | null
+    currentZoom: number
+  }) => ZoomAnchor | null
   nextPage: () => void
   onCenterTap: () => void
   prevPage: () => void
-  zoomToAnchor: (anchor: CursorZoomAnchor, nextZoom: number) => boolean
+  zoomToAnchor: (anchor: ZoomAnchor, nextZoom: number) => boolean
 }
 
 type PendingTouchTap = {
@@ -91,7 +91,7 @@ type PendingTouchTap = {
 }
 
 type PinchGestureState = {
-  anchor: CursorZoomAnchor
+  anchor: ZoomAnchor
   mode: 'pinch'
   pointerIds: [number, number]
   startDistance: number

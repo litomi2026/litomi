@@ -50,17 +50,17 @@ type Props = {
 }
 
 export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAreaOverlay }: Props) {
-  const { images = [] } = manga
-  const imageCount = images.length
   const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
   const screenFit = useScreenFitStore((state) => state.screenFit)
+  const { images = [] } = manga
+  const imageCount = images.length
 
   const pageViewerOffsets = isLowDataMode
     ? [0, 1]
     : Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }, (_, i) => i - 1)
 
   const { prevPage, nextPage } = usePageNavigation({
-    maxIndex: images.length,
+    maxIndex: imageCount,
     offset: isDoublePage ? 2 : 1,
   })
 
@@ -72,7 +72,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAre
     scrollRef,
     styles,
     zoomToAnchor,
-  } = usePageViewerZoom({ imageCount })
+  } = usePageViewerZoom()
 
   const { handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } = useViewerPointerGestures({
     captureZoomAnchorAtClientPoint,
