@@ -1,17 +1,17 @@
 import type { ImageVariant, ImageWithVariants, Manga } from '@/types/manga'
 
-import type { ReaderPageBase } from './ImageViewer/readerPages'
+import type { ReaderPage } from './ImageViewer/readerPages'
 
 export type MangaReaderPage = MangaImageReaderPage | MangaLastReaderPage
 
-type MangaImageReaderPage = ReaderPageBase & {
+type MangaImageReaderPage = ReaderPage & {
   image: ImageWithVariants
   imageIndex: number
   kind: 'image'
   thumbnail?: ImageVariant
 }
 
-type MangaLastReaderPage = ReaderPageBase & {
+type MangaLastReaderPage = ReaderPage & {
   kind: 'last'
 }
 

@@ -4,17 +4,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import type { ReaderLayout, ReaderPageBase, ReaderPageRenderer } from './readerPages'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from './readerPages'
 
 import { useReaderStore } from './store/reader'
 
-type Props<TPage extends ReaderPageBase> = {
+type Props<TPage extends ReaderPage> = {
   pages: readonly TPage[]
   readerLayout: ReaderLayout<TPage>
   renderThumbnail: ReaderPageRenderer<TPage>
 }
 
-export default function ThumbnailStrip<TPage extends ReaderPageBase>({
+export default function ThumbnailStrip<TPage extends ReaderPage>({
   pages,
   readerLayout,
   renderThumbnail,

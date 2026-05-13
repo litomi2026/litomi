@@ -14,7 +14,7 @@ import {
   resolveLowDataState,
 } from './lowData'
 import PageViewer from './PageViewer/PageViewer'
-import { createReaderLayout, type ReaderLayout, type ReaderPageBase, type ReaderPageRenderer } from './readerPages'
+import { createReaderLayout, type ReaderLayout, type ReaderPage, type ReaderPageRenderer } from './readerPages'
 import ScrollViewer from './ScrollViewer/ScrollViewer'
 import SlideshowButton from './SlideshowButton'
 import { orientations, ReaderProvider, useReaderSessionStore, useReaderStore } from './store/reader'
@@ -27,7 +27,7 @@ import { shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
 const BOTTOM_BUTTON_CLASS_NAME =
   'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
-type Props<TPage extends ReaderPageBase> = {
+type Props<TPage extends ReaderPage> = {
   children?: (context: ReaderContext<TPage>) => ReactNode
   header?: ReactNode
   pageSearchParam: string
@@ -37,12 +37,12 @@ type Props<TPage extends ReaderPageBase> = {
   renderThumbnail: ReaderPageRenderer<TPage>
 }
 
-type ReaderContext<TPage extends ReaderPageBase> = {
+type ReaderContext<TPage extends ReaderPage> = {
   readerLayout: ReaderLayout<TPage>
   readablePageCount: number
 }
 
-export default function ImageReader<TPage extends ReaderPageBase>({ persistenceKey, ...props }: Props<TPage>) {
+export default function ImageReader<TPage extends ReaderPage>({ persistenceKey, ...props }: Props<TPage>) {
   return (
     <ReaderProvider persistenceKey={persistenceKey}>
       <ReaderContent {...props} />
@@ -50,7 +50,7 @@ export default function ImageReader<TPage extends ReaderPageBase>({ persistenceK
   )
 }
 
-function ReaderContent<TPage extends ReaderPageBase>({
+function ReaderContent<TPage extends ReaderPage>({
   children,
   header,
   pageSearchParam,

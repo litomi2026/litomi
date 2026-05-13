@@ -10,17 +10,17 @@ import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 
-import type { ReaderLayout, ReaderPageBase } from './readerPages'
+import type { ReaderLayout, ReaderPage } from './readerPages'
 
 import { useReaderStore } from './store/reader'
 
-type Props<TPage extends ReaderPageBase> = {
+type Props<TPage extends ReaderPage> = {
   className?: string
   maxPageIndex: number
   readerLayout: ReaderLayout<TPage>
 }
 
-export default function SlideshowButton<TPage extends ReaderPageBase>({
+export default function SlideshowButton<TPage extends ReaderPage>({
   className = '',
   maxPageIndex,
   readerLayout,

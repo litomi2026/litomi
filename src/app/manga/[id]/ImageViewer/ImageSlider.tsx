@@ -2,16 +2,16 @@ import { Loader2 } from 'lucide-react'
 
 import Slider from '@/components/ui/Slider'
 
-import type { ReaderLayout, ReaderPageBase } from './readerPages'
+import type { ReaderLayout, ReaderPage } from './readerPages'
 
 import { useReaderStore } from './store/reader'
 
-type Props<TPage extends ReaderPageBase> = {
+type Props<TPage extends ReaderPage> = {
   maxPageIndex: number
   readerLayout: ReaderLayout<TPage>
 }
 
-export default function ImageSlider<TPage extends ReaderPageBase>({ maxPageIndex, readerLayout }: Props<TPage>) {
+export default function ImageSlider<TPage extends ReaderPage>({ maxPageIndex, readerLayout }: Props<TPage>) {
   const pageIndex = useReaderStore((state) => state.pageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
 

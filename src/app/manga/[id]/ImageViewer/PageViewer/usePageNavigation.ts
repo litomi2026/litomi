@@ -1,7 +1,7 @@
 import { useEffect, useEffectEvent } from 'react'
 import { toast } from 'sonner'
 
-import type { ReaderLayout, ReaderPageBase } from '../readerPages'
+import type { ReaderLayout, ReaderPage } from '../readerPages'
 
 import { useReaderStore } from '../store/reader'
 import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
@@ -11,12 +11,12 @@ const NEXT_PAGE_CODES = new Set(['ArrowRight', 'AudioVolumeDown', 'PageDown'])
 const PREV_PAGE_KEYS = new Set(['AudioVolumeUp', 'VolumeUp'])
 const NEXT_PAGE_KEYS = new Set(['AudioVolumeDown', 'VolumeDown'])
 
-type Params<TPage extends ReaderPageBase> = {
+type Params<TPage extends ReaderPage> = {
   maxPageIndex: number
   readerLayout: ReaderLayout<TPage>
 }
 
-export default function usePageNavigation<TPage extends ReaderPageBase>({ maxPageIndex, readerLayout }: Params<TPage>) {
+export default function usePageNavigation<TPage extends ReaderPage>({ maxPageIndex, readerLayout }: Params<TPage>) {
   const getPageIndex = useReaderStore((state) => state.getPageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
 
