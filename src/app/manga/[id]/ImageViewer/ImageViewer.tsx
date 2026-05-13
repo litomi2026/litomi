@@ -1,49 +1,63 @@
 'use client'
 
-import { ArrowLeft, ArrowRight, Loader2, MessageCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 import ms from 'ms'
-import dynamic from 'next/dynamic'
-import Link from 'next/link'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import BackButton from '@/components/BackButton'
-import { type Manga } from '@/types/manga'
-
-import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
 import {
   getAutoLowDataNoticeMessage,
-  getLowDataPreferenceLabel,
+  getLowDataLabel,
   getNavigatorLowDataSnapshot,
   type LowDataSnapshot,
   resolveLowDataState,
 } from './lowData'
-import MangaDetailButton from './MangaDetailButton'
 import PageViewer from './PageViewer/PageViewer'
-import ReadingProgressSaver from './ReadingProgress/ReadingProgressSaver'
-import ResumeReadingToast from './ReadingProgress/ResumeReadingToast'
-import ShareButton from './ShareButton'
+import { createReaderLayout, type ReaderLayout, type ReaderPageBase, type ReaderPageRenderer } from './readerPages'
+import ScrollViewer from './ScrollViewer/ScrollViewer'
 import SlideshowButton from './SlideshowButton'
-import { useLowDataModeStore, useLowDataPreferenceHydrated } from './store/lowDataMode'
-import { orientations, useOrientationStore } from './store/orientation'
-import { usePageNavigationStore } from './store/pageNavigation'
-import { usePageViewStore } from './store/pageView'
-import { useReadingDirectionStore } from './store/readingDirection'
-import { useScreenFitStore } from './store/screenFit'
-import { useViewerModeStore } from './store/viewerMode'
+import { orientations, ReaderProvider, useReaderSessionStore, useReaderStore } from './store/reader'
 import ThumbnailStrip from './ThumbnailStrip'
 import useAutoHideCursor from './useAutoHideCursor'
+import usePageSearchParamSync from './usePageSearchParamSync'
 import ViewControlPanel from './ViewControlPanel'
 import { shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
 
-const ScrollViewer = dynamic(() => import('./ScrollViewer/ScrollViewer'))
+const BOTTOM_BUTTON_CLASS_NAME =
+  'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
-type Props = {
-  manga: Manga
+type Props<TPage extends ReaderPageBase> = {
+  children?: (context: ReaderContext<TPage>) => ReactNode
+  header?: ReactNode
+  pageSearchParam: string
+  pages: readonly TPage[]
+  persistenceKey?: string
+  renderPage: ReaderPageRenderer<TPage>
+  renderThumbnail: ReaderPageRenderer<TPage>
 }
 
-export default function ImageViewer({ manga }: Props) {
+type ReaderContext<TPage extends ReaderPageBase> = {
+  readerLayout: ReaderLayout<TPage>
+  readablePageCount: number
+}
+
+export default function ImageReader<TPage extends ReaderPageBase>({ persistenceKey, ...props }: Props<TPage>) {
+  return (
+    <ReaderProvider persistenceKey={persistenceKey}>
+      <ReaderContent {...props} />
+    </ReaderProvider>
+  )
+}
+
+function ReaderContent<TPage extends ReaderPageBase>({
+  children,
+  header,
+  pageSearchParam,
+  pages,
+  renderPage,
+  renderThumbnail,
+}: Omit<Props<TPage>, 'persistenceKey'>) {
   const [showController, setShowController] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(false)
   const [showViewControl, setShowViewControl] = useState(false)
@@ -64,31 +78,25 @@ export default function ImageViewer({ manga }: Props) {
   const toggleReadingDirection = useReaderStore((state) => state.toggleReadingDirection)
   const viewControlRef = useRef<HTMLDivElement>(null)
 
-  const { images = [] } = manga
-  const thumbnailImages = images.map((image) => image.thumbnail)
-  const imageCount = images.length
+  const readerLayout = createReaderLayout(pages, { pageView })
+  const readablePageCount = readerLayout.countedPageCount
+  const maxPageIndex = Math.max(0, pages.length - 1)
   const isDoublePage = pageView === 'double'
   const isLowDataReady = isLowDataHydrated && lowDataSnapshot !== null
   const isPageMode = viewerMode === 'page'
   const isWidthFit = screenFit === 'width'
   const { enabled: isLowDataMode } = resolveLowDataState(lowData, lowDataSnapshot)
 
-  const topButtonClassName =
-    'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70'
-
-  const bottomButtonClassName =
-    'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
-
-  const handleIntervalChange = useCallback(
-    (index: number) => {
-      navigateToPageIndex(index, { maxIndex: imageCount })
-    },
-    [imageCount, navigateToPageIndex],
-  )
-
   const { isCursorHidden, registerActivity } = useAutoHideCursor({
     enabled: !showController,
     idleDelayMs: ms('3 seconds'),
+  })
+
+  usePageSearchParamSync({
+    enabled: isLowDataReady,
+    getScrollRowIndex: (pageIndex) => readerLayout.spreadIndexByPageIndex[pageIndex] ?? pageIndex,
+    maxIndex: maxPageIndex,
+    pageSearchParam,
   })
 
   // NOTE: 스크롤 방지
@@ -185,42 +193,24 @@ export default function ImageViewer({ manga }: Props) {
   return (
     <section
       aria-keyshortcuts="Enter Escape"
-      aria-label="이미지 뷰어"
       className="relative data-[cursor-hidden=true]:cursor-none focus:outline-none"
       data-cursor-hidden={isCursorHidden ? 'true' : 'false'}
       onPointerDown={registerActivity}
       onPointerMove={registerActivity}
       onWheel={registerActivity}
     >
-      <ResumeReadingToast manga={manga} />
-      <ReadingProgressSaver imageCount={imageCount} mangaId={manga.id} />
-      <header
-        aria-hidden={!showController}
-        className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 pt-safe px-safe transition opacity-0 pointer-events-none
-        data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto"
-        data-visible={showController ? 'true' : 'false'}
-        inert={!showController}
-      >
-        <div className="flex gap-2 items-center justify-between p-3 select-none" role="toolbar">
-          <div className="flex gap-1">
-            <BackButton className={topButtonClassName} fallbackUrl="/" />
-            <FullscreenButton className={topButtonClassName} />
-          </div>
-          <MangaDetailButton className={`${topButtonClassName} hover:underline`} manga={manga} />
-          <div className="flex gap-1">
-            <Link
-              aria-label="리뷰 보기"
-              className={topButtonClassName}
-              href={`/manga/${manga.id}/detail`}
-              prefetch={false}
-              title="리뷰 보기"
-            >
-              <MessageCircle className="size-6" />
-            </Link>
-            <ShareButton className={topButtonClassName} manga={manga} />
-          </div>
-        </div>
-      </header>
+      {children?.({ readerLayout, readablePageCount })}
+      {header && (
+        <header
+          aria-hidden={!showController}
+          className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 pt-safe px-safe transition opacity-0 pointer-events-none
+            data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto"
+          data-visible={showController ? 'true' : 'false'}
+          inert={!showController}
+        >
+          {header}
+        </header>
+      )}
       {!isLowDataReady ? (
         <output className="flex items-center justify-center h-dvh animate-fade-in">
           <Loader2 aria-hidden="true" className="size-8 animate-spin" />
@@ -229,12 +219,19 @@ export default function ImageViewer({ manga }: Props) {
       ) : isPageMode ? (
         <PageViewer
           isLowDataMode={isLowDataMode}
-          manga={manga}
           onClick={() => setShowController((prev) => !prev)}
+          pages={pages}
+          readerLayout={readerLayout}
+          renderPage={renderPage}
           showTouchAreaOverlay={showController}
         />
       ) : (
-        <ScrollViewer isLowDataMode={isLowDataMode} manga={manga} onClick={() => setShowController((prev) => !prev)} />
+        <ScrollViewer
+          isLowDataMode={isLowDataMode}
+          onClick={() => setShowController((prev) => !prev)}
+          readerLayout={readerLayout}
+          renderPage={renderPage}
+        />
       )}
       <footer
         aria-hidden={!showController}
@@ -244,8 +241,10 @@ export default function ImageViewer({ manga }: Props) {
         inert={!showController}
       >
         <div className="p-3 grid gap-1.5 select-none">
-          {showThumbnails && <ThumbnailStrip images={thumbnailImages} mangaId={manga.id} />}
-          <ImageSlider maxPageIndex={imageCount} />
+          {showThumbnails && (
+            <ThumbnailStrip pages={pages} readerLayout={readerLayout} renderThumbnail={renderThumbnail} />
+          )}
+          <ImageSlider maxPageIndex={maxPageIndex} readerLayout={readerLayout} />
           <div
             aria-label="뷰어 보기 설정"
             className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background"
@@ -253,7 +252,7 @@ export default function ImageViewer({ manga }: Props) {
           >
             <button
               aria-pressed={isPageMode}
-              className={bottomButtonClassName}
+              className={BOTTOM_BUTTON_CLASS_NAME}
               onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}
               type="button"
             >
@@ -261,14 +260,14 @@ export default function ImageViewer({ manga }: Props) {
             </button>
             <button
               aria-pressed={isDoublePage}
-              className={bottomButtonClassName}
+              className={BOTTOM_BUTTON_CLASS_NAME}
               onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
               type="button"
             >
               {isDoublePage ? '두 쪽' : '한 쪽'} 보기
             </button>
             <button
-              className={bottomButtonClassName}
+              className={BOTTOM_BUTTON_CLASS_NAME}
               onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}
               type="button"
             >
@@ -276,7 +275,7 @@ export default function ImageViewer({ manga }: Props) {
             </button>
             {isDoublePage && (
               <button
-                className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
+                className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
                 onClick={toggleReadingDirection}
                 type="button"
               >
@@ -285,28 +284,26 @@ export default function ImageViewer({ manga }: Props) {
               </button>
             )}
             {isPageMode && (
-              <>
-                <button
-                  className={bottomButtonClassName}
-                  onClick={() => {
-                    const currentIndex = orientations.indexOf(orientation)
-                    const nextIndex = (currentIndex + 1) % orientations.length
-                    setOrientation(orientations[nextIndex])
-                  }}
-                  type="button"
-                >
-                  {orientation === 'horizontal' && '좌우 넘기기'}
-                  {orientation === 'vertical' && '상하 넘기기'}
-                  {orientation === 'horizontal-reverse' && '우좌 넘기기'}
-                  {orientation === 'vertical-reverse' && '하상 넘기기'}
-                </button>
-              </>
+              <button
+                className={BOTTOM_BUTTON_CLASS_NAME}
+                onClick={() => {
+                  const currentIndex = orientations.indexOf(orientation)
+                  const nextIndex = (currentIndex + 1) % orientations.length
+                  setOrientation(orientations[nextIndex])
+                }}
+                type="button"
+              >
+                {orientation === 'horizontal' && '좌우 넘기기'}
+                {orientation === 'vertical' && '상하 넘기기'}
+                {orientation === 'horizontal-reverse' && '우좌 넘기기'}
+                {orientation === 'vertical-reverse' && '하상 넘기기'}
+              </button>
             )}
             {!isPageMode && (
               <div className="relative" ref={viewControlRef}>
                 <button
                   aria-expanded={showViewControl}
-                  className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
+                  className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
                   onClick={() => setShowViewControl((prev) => !prev)}
                   type="button"
                 >
@@ -316,21 +313,20 @@ export default function ImageViewer({ manga }: Props) {
               </div>
             )}
             <SlideshowButton
-              className={bottomButtonClassName}
-              maxPageIndex={imageCount}
-              offset={isDoublePage ? 2 : 1}
-              onIntervalChange={handleIntervalChange}
+              className={BOTTOM_BUTTON_CLASS_NAME}
+              maxPageIndex={maxPageIndex}
+              readerLayout={readerLayout}
             />
             <button
               aria-expanded={showThumbnails}
-              className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
+              className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
               onClick={() => setShowThumbnails((prev) => !prev)}
               title="미리보기"
               type="button"
             >
               미리보기
             </button>
-            <button className={bottomButtonClassName} onClick={cycleLowData} type="button">
+            <button className={BOTTOM_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
               {getLowDataLabel(lowData)}
             </button>
           </div>

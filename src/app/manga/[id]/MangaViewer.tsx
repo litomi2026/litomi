@@ -32,6 +32,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const isWaitingForAdClick = !me && !hasClickedAd
   const mangaIds = isWaitingForAdClick ? [] : [id]
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
+
   const data = mangaMap.get(id) ?? (!isWaitingForAdClick && !initialManga ? createLoadingManga(id) : undefined)
   const manga = prepareManga(data, initialManga)
   const metadata = prepareMetadata(manga)
