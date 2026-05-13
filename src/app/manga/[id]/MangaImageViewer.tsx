@@ -100,15 +100,15 @@ export default function MangaImageViewer({ manga }: Props) {
           <ResumeReadingToast
             manga={manga}
             maxPageIndex={Math.max(0, pages.length - 1)}
-            pageIndexByReadablePageNumber={readerLayout.pageIndexByCountedPageNumber}
+            pageIndexByReadablePageNumber={readerLayout.pageIndexByReadablePageNumber}
             readablePageCount={readablePageCount}
-            readablePageNumberByPageIndex={readerLayout.countedPageNumberByPageIndex}
+            readablePageNumberByPageIndex={readerLayout.readablePageNumberByPageIndex}
             scrollRowIndexByPageIndex={readerLayout.spreadIndexByPageIndex}
           />
           <ReadingProgressSaver
             mangaId={manga.id}
             readablePageCount={readablePageCount}
-            readablePageNumberByPageIndex={readerLayout.countedPageNumberByPageIndex}
+            readablePageNumberByPageIndex={readerLayout.readablePageNumberByPageIndex}
           />
         </>
       )}

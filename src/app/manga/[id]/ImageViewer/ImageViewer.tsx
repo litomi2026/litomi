@@ -79,7 +79,7 @@ function ReaderContent<TPage extends ReaderPage>({
   const viewControlRef = useRef<HTMLDivElement>(null)
 
   const readerLayout = createReaderLayout(pages, { pageView })
-  const readablePageCount = readerLayout.countedPageCount
+  const { readablePageCount } = readerLayout
   const maxPageIndex = Math.max(0, pages.length - 1)
   const isDoublePage = pageView === 'double'
   const isLowDataReady = isLowDataHydrated && lowDataSnapshot !== null

@@ -1,22 +1,11 @@
 import { Loader2 } from 'lucide-react'
-import { CSSProperties, useEffect } from 'react'
+import { type CSSProperties, Fragment, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
+import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
-import MangaImage from '@/components/MangaImage'
-import { Manga } from '@/types/manga'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../readerPages'
 
-import LastPage from '../LastPage'
-import { useBrightnessStore } from '../store/brightness'
-import { useImageWidthStore } from '../store/imageWidth'
-import { usePageNavigationStore } from '../store/pageNavigation'
-import { usePageViewStore } from '../store/pageView'
-import { useReadingDirectionStore } from '../store/readingDirection'
-import { ScreenFit, useScreenFitStore } from '../store/screenFit'
-import { useVirtualScrollStore } from '../store/virtualizer'
-import { useZoomStore } from '../store/zoom'
-import useInitialViewerPage from '../useInitialViewerPage'
-import { getResponsivePictureSources } from '../util'
+import { type ScreenFit, useReaderSessionStore, useReaderStore } from '../store/reader'
 import { NATIVE_GESTURE_BLOCK_CSS } from '../viewerGesturePolicy'
 
 const screenFitStyle: Record<ScreenFit, string> = {
@@ -27,18 +16,25 @@ const screenFitStyle: Record<ScreenFit, string> = {
     '[&_li]:flex [&_li]:items-center [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
 
-type Props = {
+export type Props<TPage extends ReaderPage> = {
   isLowDataMode: boolean
-  manga: Manga
   onClick: () => void
+  readerLayout: ReaderLayout<TPage>
+  renderPage: ReaderPageRenderer<TPage>
 }
 
-type RowProps = {
+type RowProps<TPage extends ReaderPage> = {
   isLowDataMode: boolean
-  manga: Manga
+  readerLayout: ReaderLayout<TPage>
+  renderPage: ReaderPageRenderer<TPage>
 }
 
-export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
+export default function ScrollViewer<TPage extends ReaderPage>({
+  isLowDataMode,
+  onClick,
+  readerLayout,
+  renderPage,
+}: Props<TPage>) {
   const listRef = useListRef(null)
   const brightness = useReaderSessionStore((state) => state.brightness)
   const imageWidth = useReaderStore((state) => state.imageWidth)
@@ -47,7 +43,8 @@ export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
   const screenFit = useReaderStore((state) => state.screenFit)
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
 
-  const overscanCount = isLowDataMode ? 1 : 2
+  const overscanCount = isLowDataMode ? 1 : 3
+  const maxPage = readerLayout.spreadIndexByPageIndex.length
 
   const dynamicStyle = {
     '--image-width': `${imageWidth}%`,
@@ -55,15 +52,13 @@ export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
     transform: `scale(${zoomLevel})`,
   } as CSSProperties
 
-  useInitialViewerPage({ maxIndex: images.length })
-
   // NOTE: virtualizer 초기화 및 정리
   useEffect(() => {
     setListRef(listRef)
     return () => setListRef(null)
   }, [listRef, setListRef])
 
-  if (images.length === 0) {
+  if (maxPage === 0) {
     return (
       <output className="flex items-center justify-center h-dvh animate-fade-in" onClick={onClick}>
         <Loader2 aria-hidden="true" className="size-8 animate-spin" />
@@ -83,75 +78,70 @@ export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
         listRef={listRef}
         overscanCount={overscanCount}
         rowComponent={ScrollViewerRow}
-        rowCount={totalItemCount}
+        rowCount={readerLayout.spreads.length}
         rowHeight={rowHeight}
-        rowProps={{ isLowDataMode, manga }}
+        rowProps={{ isLowDataMode, readerLayout, renderPage }}
       />
     </div>
   )
 }
 
-function ScrollViewerRow({ index, isLowDataMode, style, manga }: RowComponentProps<RowProps>) {
-  const currentPageIndex = usePageNavigationStore((state) => state.pageIndex)
-  const navigateToPageIndex = usePageNavigationStore((state) => state.navigateToPageIndex)
-  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
-  const isLTR = useReadingDirectionStore((state) => state.readingDirection === 'ltr')
+function ScrollViewerRow<TPage extends ReaderPage>({
+  index,
+  isLowDataMode,
+  readerLayout,
+  renderPage,
+  style,
+}: RowComponentProps<RowProps<TPage>>) {
+  const currentPageIndex = useReaderStore((state) => state.pageIndex)
+  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
+  const isLTR = useReaderStore((state) => state.readingDirection === 'ltr')
 
-  const { images = [] } = manga
-  const firstPageIndex = isDoublePage ? index * 2 : index
-  const nextPageIndex = firstPageIndex + 1
-  const isCurrentRow = index === (isDoublePage ? Math.floor(currentPageIndex / 2) : currentPageIndex)
+  const spread = readerLayout.spreads[index]
+  const firstPageIndex = spread?.startPageIndex ?? 0
+  const isCurrentRow = index === (readerLayout.spreadIndexByPageIndex[currentPageIndex] ?? currentPageIndex)
   const fetchPriority = !isLowDataMode || isCurrentRow ? 'high' : 'low'
-  const first = renderPage(firstPageIndex)
-  const second = isDoublePage ? renderPage(nextPageIndex) : null
+  const maxPage = readerLayout.spreadIndexByPageIndex.length
 
   const { ref: inViewRef, inView } = useInView({
     threshold: 0,
     rootMargin: '-50% 0% -50% 0%',
   })
 
-  function renderPage(pageIndex: number) {
-    if (pageIndex === images.length) {
-      return <LastPage manga={manga} />
-    }
-
-    const image = images[pageIndex]
-
-    return (
-      <MangaImage
-        alt={`${manga.title} ${pageIndex + 1}페이지`}
-        fetchPriority={fetchPriority}
-        imageIndex={pageIndex}
-        mangaId={manga.id}
-        pictures={getResponsivePictureSources(image)}
-        src={image?.thumbnail?.url}
-        variant="thumbnail"
-      />
-    )
-  }
-
   useEffect(() => {
-    if (inView) {
+    if (inView && spread) {
       navigateToPageIndex(firstPageIndex, {
-        maxIndex: images.length,
+        maxIndex: Math.max(0, maxPage - 1),
         scroll: false,
       })
     }
-  }, [firstPageIndex, images.length, inView, navigateToPageIndex])
+  }, [firstPageIndex, inView, navigateToPageIndex, maxPage, spread])
+
+  if (!spread) {
+    return null
+  }
+
+  const spreadPages = spread.pages.map((page, pageOffset) => ({
+    page,
+    pageIndex: spread.pageIndexes[pageOffset] ?? spread.startPageIndex,
+  }))
+
+  const orderedSpreadPages = isLTR ? spreadPages : [...spreadPages].reverse()
 
   return (
     <li ref={inViewRef} style={style}>
-      {isLTR ? (
-        <>
-          {first}
-          {second}
-        </>
-      ) : (
-        <>
-          {second}
-          {first}
-        </>
-      )}
+      {orderedSpreadPages.map(({ page, pageIndex }) => (
+        <Fragment key={page.id}>
+          {renderPage({
+            fetchPriority,
+            isActive: isCurrentRow,
+            isLowDataMode,
+            page,
+            pageIndex,
+            spreadIndex: index,
+          })}
+        </Fragment>
+      ))}
     </li>
   )
 }
