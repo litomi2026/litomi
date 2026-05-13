@@ -5,7 +5,6 @@ import ms from 'ms'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import ImageSlider from './ImageSlider'
 import {
   getAutoLowDataNoticeMessage,
   getLowDataLabel,
@@ -13,14 +12,15 @@ import {
   type LowDataSnapshot,
   resolveLowDataState,
 } from './lowData'
-import PageViewer from './PageViewer/PageViewer'
+import PageReaderView from './PageReaderView/PageReaderView'
+import PageSlider from './PageSlider'
 import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from './readerPages'
-import ReadingProgressSaver, {
+import ReadingProgressTracker, {
   type ReadingProgress,
   type ReadingProgressSaveOptions,
-} from './ReadingProgress/ReadingProgressSaver'
+} from './ReadingProgress/ReadingProgressTracker'
 import ResumeReadingToast from './ReadingProgress/ResumeReadingToast'
-import ScrollViewer from './ScrollViewer/ScrollViewer'
+import ScrollReaderView from './ScrollReaderView'
 import SlideshowButton from './SlideshowButton'
 import { orientations, ReaderProvider, useReaderSessionStore, useReaderStore } from './store/reader'
 import ThumbnailStrip from './ThumbnailStrip'
@@ -32,7 +32,7 @@ import { shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
 const BOTTOM_BUTTON_CLASS_NAME =
   'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
-export type Props<TPage extends ReaderPage> = {
+export type ReaderProps<TPage extends ReaderPage> = {
   header?: ReactNode
   pageSearchParam?: string
   pages: readonly TPage[]
@@ -48,7 +48,7 @@ type ReadingProgressOptions = {
   onSave?: (progress: ReadingProgress, options?: ReadingProgressSaveOptions) => Promise<void> | void
 }
 
-export default function ImageReader<TPage extends ReaderPage>({ persistenceKey, ...props }: Props<TPage>) {
+export default function Reader<TPage extends ReaderPage>({ persistenceKey, ...props }: ReaderProps<TPage>) {
   return (
     <ReaderProvider persistenceKey={persistenceKey}>
       <ReaderContent {...props} />
@@ -63,7 +63,7 @@ function ReaderContent<TPage extends ReaderPage>({
   readingProgress,
   renderPage,
   renderThumbnail,
-}: Omit<Props<TPage>, 'persistenceKey'>) {
+}: Omit<ReaderProps<TPage>, 'persistenceKey'>) {
   const [showController, setShowController] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(false)
   const [showViewControl, setShowViewControl] = useState(false)
@@ -211,7 +211,7 @@ function ReaderContent<TPage extends ReaderPage>({
             maxPageIndex={maxPageIndex}
             readerLayout={readerLayout}
           />
-          <ReadingProgressSaver
+          <ReadingProgressTracker
             onChange={readingProgress.onChange}
             onSave={readingProgress.onSave}
             readerLayout={readerLayout}
@@ -235,7 +235,7 @@ function ReaderContent<TPage extends ReaderPage>({
           <span className="sr-only">이미지 불러오는 중</span>
         </output>
       ) : isPageMode ? (
-        <PageViewer
+        <PageReaderView
           isLowDataMode={isLowDataMode}
           onClick={() => setShowController((prev) => !prev)}
           pages={pages}
@@ -244,7 +244,7 @@ function ReaderContent<TPage extends ReaderPage>({
           showTouchAreaOverlay={showController}
         />
       ) : (
-        <ScrollViewer
+        <ScrollReaderView
           isLowDataMode={isLowDataMode}
           onClick={() => setShowController((prev) => !prev)}
           readerLayout={readerLayout}
@@ -262,7 +262,7 @@ function ReaderContent<TPage extends ReaderPage>({
           {showThumbnails && (
             <ThumbnailStrip pages={pages} readerLayout={readerLayout} renderThumbnail={renderThumbnail} />
           )}
-          <ImageSlider maxPageIndex={maxPageIndex} readerLayout={readerLayout} />
+          <PageSlider maxPageIndex={maxPageIndex} readerLayout={readerLayout} />
           <div
             aria-label="뷰어 보기 설정"
             className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background"

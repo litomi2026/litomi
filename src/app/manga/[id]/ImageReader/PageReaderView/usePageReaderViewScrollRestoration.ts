@@ -6,7 +6,7 @@ type Params = {
   scrollRef: RefObject<HTMLDivElement | null>
 }
 
-export default function usePageViewerScrollRestoration({ scrollRef }: Params) {
+export default function usePageReaderViewScrollRestoration({ scrollRef }: Params) {
   const getOrientation = useReaderStore((state) => state.getOrientation)
   const currentIndex = useReaderStore((state) => state.pageIndex)
   const previousIndexRef = useRef(currentIndex)

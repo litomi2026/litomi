@@ -11,7 +11,7 @@ type Props<TPage extends ReaderPage> = {
   readerLayout: ReaderLayout<TPage>
 }
 
-export default function ImageSlider<TPage extends ReaderPage>({ maxPageIndex, readerLayout }: Props<TPage>) {
+export default function PageSlider<TPage extends ReaderPage>({ maxPageIndex, readerLayout }: Props<TPage>) {
   const pageIndex = useReaderStore((state) => state.pageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
 

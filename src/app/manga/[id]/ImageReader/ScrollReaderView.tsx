@@ -3,10 +3,10 @@ import { type CSSProperties, Fragment, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../readerPages'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from './readerPages'
 
-import { type ScreenFit, useReaderSessionStore, useReaderStore } from '../store/reader'
-import { NATIVE_GESTURE_BLOCK_CSS } from '../viewerGesturePolicy'
+import { type ScreenFit, useReaderSessionStore, useReaderStore } from './store/reader'
+import { NATIVE_GESTURE_BLOCK_CSS } from './viewerGesturePolicy'
 
 const screenFitStyle: Record<ScreenFit, string> = {
   width:
@@ -29,7 +29,7 @@ type RowProps<TPage extends ReaderPage> = {
   renderPage: ReaderPageRenderer<TPage>
 }
 
-export default function ScrollViewer<TPage extends ReaderPage>({
+export default function ScrollReaderView<TPage extends ReaderPage>({
   isLowDataMode,
   onClick,
   readerLayout,
@@ -77,7 +77,7 @@ export default function ScrollViewer<TPage extends ReaderPage>({
         className={`overscroll-none ${screenFitStyle[screenFit]}`}
         listRef={listRef}
         overscanCount={overscanCount}
-        rowComponent={ScrollViewerRow}
+        rowComponent={ScrollReaderViewRow}
         rowCount={readerLayout.spreads.length}
         rowHeight={rowHeight}
         rowProps={{ isLowDataMode, readerLayout, renderPage }}
@@ -86,7 +86,7 @@ export default function ScrollViewer<TPage extends ReaderPage>({
   )
 }
 
-function ScrollViewerRow<TPage extends ReaderPage>({
+function ScrollReaderViewRow<TPage extends ReaderPage>({
   index,
   isLowDataMode,
   readerLayout,

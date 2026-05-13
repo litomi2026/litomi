@@ -25,7 +25,7 @@ type Props = {
   readerLayout: ReaderLayout<ReaderPage>
 }
 
-export default function ReadingProgressSaver({ onChange, onSave, readerLayout }: Props) {
+export default function ReadingProgressTracker({ onChange, onSave, readerLayout }: Props) {
   const pageIndex = useReaderStore((state) => state.pageIndex)
   const isSavePendingRef = useRef(false)
 

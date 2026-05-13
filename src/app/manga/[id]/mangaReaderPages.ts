@@ -1,6 +1,6 @@
 import type { ImageVariant, ImageWithVariants, Manga } from '@/types/manga'
 
-import type { ReaderPage } from './ImageViewer/readerPages'
+import type { ReaderPage } from './ImageReader/readerPages'
 
 export type MangaReaderPage = MangaImageReaderPage | MangaLastReaderPage
 

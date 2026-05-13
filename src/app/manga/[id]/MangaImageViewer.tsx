@@ -17,15 +17,15 @@ import { type Manga } from '@/types/manga'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 
-import type { ReaderPageRenderContext } from './ImageViewer/readerPages'
-import type { ReadingProgress, ReadingProgressSaveOptions } from './ImageViewer/ReadingProgress/ReadingProgressSaver'
+import type { ReaderPageRenderContext } from './ImageReader/readerPages'
+import type { ReadingProgress, ReadingProgressSaveOptions } from './ImageReader/ReadingProgress/ReadingProgressTracker'
 
-import FullscreenButton from './ImageViewer/FullscreenButton'
-import ImageReader from './ImageViewer/ImageViewer'
-import LastPage from './ImageViewer/LastPage'
-import MangaDetailButton from './ImageViewer/MangaDetailButton'
-import ShareButton from './ImageViewer/ShareButton'
-import { getResponsivePictureSources } from './ImageViewer/util'
+import FullscreenButton from './ImageReader/FullscreenButton'
+import LastPage from './ImageReader/LastPage'
+import MangaDetailButton from './ImageReader/MangaDetailButton'
+import Reader from './ImageReader/Reader'
+import ShareButton from './ImageReader/ShareButton'
+import { getResponsivePictureSources } from './ImageReader/util'
 import { createMangaReaderPages, type MangaReaderPage } from './mangaReaderPages'
 import useMangaReadingHistory from './useMangaReadingHistory'
 
@@ -111,7 +111,7 @@ export default function MangaImageViewer({ manga }: Props) {
   }, [manga.id, queryClient])
 
   return (
-    <ImageReader
+    <Reader
       header={
         <div className="flex gap-2 items-center justify-between p-3 select-none" role="toolbar">
           <div className="flex gap-1">
