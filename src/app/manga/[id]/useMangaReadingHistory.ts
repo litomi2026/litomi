@@ -13,7 +13,7 @@ import { getLocalReadingHistory } from '@/utils/reading-history-index'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
-export default function useReadingHistory(mangaId: number) {
+export default function useMangaReadingHistory(mangaId: number) {
   const { data: me, isLoading: isMeLoading } = useMeQuery()
   const adultState = getAdultState(me)
 
@@ -27,13 +27,13 @@ export default function useReadingHistory(mangaId: number) {
       }
 
       if (!me || !hasAdultAccess(adultState) || !me.settings.historySyncEnabled) {
-        return null
+        return
       }
 
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/history`
       const { data } = await fetchWithErrorHandling<GETV1MangaIdHistoryResponse>(url, { credentials: 'include' })
 
-      return data ?? null
+      return data
     },
     enabled: Boolean(mangaId) && !isMeLoading,
     meta: { requiresAdult: true },

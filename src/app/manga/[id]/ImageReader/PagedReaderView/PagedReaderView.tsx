@@ -1,25 +1,18 @@
 'use client'
 
 import { Loader2 } from 'lucide-react'
+import { Fragment } from 'react'
 
-import MangaImage from '@/components/MangaImage'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
-import { ImageWithVariants, Manga } from '@/types/manga'
 
-import LastPage from '../LastPage'
-import { useBrightnessStore } from '../store/brightness'
-import { useOrientationStore } from '../store/orientation'
-import { usePageNavigationStore } from '../store/pageNavigation'
-import { usePageViewStore } from '../store/pageView'
-import { useReadingDirectionStore } from '../store/readingDirection'
-import { ScreenFit, useScreenFitStore } from '../store/screenFit'
-import useInitialViewerPage from '../useInitialViewerPage'
-import { getResponsivePictureSources } from '../util'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../readerPages'
+
+import { type ScreenFit, useReaderSessionStore, useReaderStore } from '../store/reader'
 import { NATIVE_GESTURE_BLOCK_CSS } from '../viewerGesturePolicy'
+import usePagedReaderViewScrollRestoration from './usePagedReaderViewScrollRestoration'
+import usePagedReaderViewWheelNavigation from './usePagedReaderViewWheelNavigation'
+import usePagedReaderViewZoom from './usePagedReaderViewZoom'
 import usePageNavigation from './usePageNavigation'
-import usePageViewerScrollRestoration from './usePageViewerScrollRestoration'
-import usePageViewerWheelNavigation from './usePageViewerWheelNavigation'
-import usePageViewerZoom from './usePageViewerZoom'
 import useViewerPointerGestures from './useViewerPointerGestures'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
@@ -32,37 +25,37 @@ const screenFitContentStyle: Record<ScreenFit, string> = {
   all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
 }
 
-type PageViewerItemProps = {
+type ItemProps<TPage extends ReaderPage> = {
   isLowDataMode: boolean
-  manga: {
-    id: number
-    title: string
-    images?: ImageWithVariants[]
-  }
   offset: number
+  readerLayout: ReaderLayout<TPage>
+  renderPage: ReaderPageRenderer<TPage>
 }
 
-type Props = {
+type Props<TPage extends ReaderPage> = {
   isLowDataMode: boolean
-  manga: Manga
   onClick: () => void
+  pages: readonly TPage[]
+  readerLayout: ReaderLayout<TPage>
+  renderPage: ReaderPageRenderer<TPage>
   showTouchAreaOverlay: boolean
 }
 
-export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAreaOverlay }: Props) {
-  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
-  const screenFit = useScreenFitStore((state) => state.screenFit)
-  const { images = [] } = manga
-  const imageCount = images.length
+export default function PagedReaderView<TPage extends ReaderPage>({
+  isLowDataMode,
+  onClick,
+  pages,
+  readerLayout,
+  renderPage,
+  showTouchAreaOverlay,
+}: Props<TPage>) {
+  const screenFit = useReaderStore((state) => state.screenFit)
+  const maxPageIndex = Math.max(0, pages.length - 1)
+  const { prevPage, nextPage } = usePageNavigation({ maxPageIndex, readerLayout })
 
-  const pageViewerOffsets = isLowDataMode
+  const pagedReaderViewOffsets = isLowDataMode
     ? [0, 1]
     : Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }, (_, i) => i - 1)
-
-  const { prevPage, nextPage } = usePageNavigation({
-    maxIndex: imageCount,
-    offset: isDoublePage ? 2 : 1,
-  })
 
   const {
     captureZoomAnchorAtClientPoint,
@@ -72,7 +65,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAre
     scrollRef,
     styles,
     zoomToAnchor,
-  } = usePageViewerZoom()
+  } = usePagedReaderViewZoom()
 
   const { handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } = useViewerPointerGestures({
     captureZoomAnchorAtClientPoint,
@@ -82,9 +75,8 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAre
     zoomToAnchor,
   })
 
-  useInitialViewerPage({ maxIndex: imageCount })
-  usePageViewerScrollRestoration({ scrollRef })
-  usePageViewerWheelNavigation({ nextPage, prevPage, scrollRef })
+  usePagedReaderViewScrollRestoration({ scrollRef })
+  usePagedReaderViewWheelNavigation({ nextPage, prevPage, scrollRef })
 
   return (
     <>
@@ -105,7 +97,7 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAre
             ref={contentRef}
             style={styles.zoomContent}
           >
-            {imageCount === 0 ? (
+            {pages.length === 0 ? (
               <li className="flex items-center justify-center h-full animate-fade-in">
                 <output className="flex items-center justify-center">
                   <Loader2 aria-hidden="true" className="size-8 animate-spin" />
@@ -113,8 +105,14 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAre
                 </output>
               </li>
             ) : (
-              pageViewerOffsets.map((offset) => (
-                <PageViewerItem isLowDataMode={isLowDataMode} key={offset} manga={manga} offset={offset} />
+              pagedReaderViewOffsets.map((offset) => (
+                <PagedReaderViewItem
+                  isLowDataMode={isLowDataMode}
+                  key={offset}
+                  offset={offset}
+                  readerLayout={readerLayout}
+                  renderPage={renderPage}
+                />
               ))
             )}
           </ul>
@@ -124,15 +122,15 @@ export default function PageViewer({ isLowDataMode, manga, onClick, showTouchAre
   )
 }
 
-function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
-  const currentPageIndex = usePageNavigationStore((state) => state.pageIndex)
-  const brightness = useBrightnessStore((state) => state.brightness)
-  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
-  const isLTR = useReadingDirectionStore((state) => state.readingDirection === 'ltr')
-
-  const { images = [] } = manga
-  const pageIndex = (isDoublePage ? Math.floor(currentPageIndex / 2) * 2 : currentPageIndex) + offset
-  const isDoublePageSpread = isDoublePage && offset === 0
+function PagedReaderViewItem<TPage extends ReaderPage>({
+  isLowDataMode,
+  offset,
+  readerLayout,
+  renderPage,
+}: ItemProps<TPage>) {
+  const currentPageIndex = useReaderStore((state) => state.pageIndex)
+  const brightness = useReaderSessionStore((state) => state.brightness)
+  const isLTR = useReaderStore((state) => state.readingDirection === 'ltr')
 
   const fetchPriority = isLowDataMode
     ? offset === 0
@@ -142,48 +140,41 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
       ? 'high'
       : 'low'
 
-  const first = renderPage(pageIndex)
-  const second = isDoublePageSpread ? renderPage(pageIndex + 1) : null
+  const activeSpreadIndex = readerLayout.spreadIndexByPageIndex[currentPageIndex] ?? 0
+  const spreadIndex = activeSpreadIndex + offset
+  const spread = readerLayout.spreads[spreadIndex]
 
-  function renderPage(pageIndex: number) {
-    if (pageIndex === images.length) {
-      return <LastPage manga={manga} />
-    }
-
-    const image = images[pageIndex]
-
-    return (
-      <MangaImage
-        alt={`${manga.title} ${pageIndex + 1}페이지`}
-        fetchPriority={fetchPriority}
-        imageIndex={pageIndex}
-        mangaId={manga.id}
-        pictures={getResponsivePictureSources(image)}
-        src={image?.thumbnail?.url}
-        variant="thumbnail"
-      />
-    )
+  if (!spread) {
+    return null
   }
+
+  const spreadPages = spread.pages.map((page, index) => ({
+    page,
+    pageIndex: spread.pageIndexes[index] ?? spread.startPageIndex,
+  }))
+
+  const orderedSpreadPages = isLTR ? spreadPages : [...spreadPages].reverse()
 
   return (
     <li aria-hidden={offset !== 0} style={{ filter: `brightness(${brightness}%)` }}>
-      {isLTR ? (
-        <>
-          {first}
-          {second}
-        </>
-      ) : (
-        <>
-          {second}
-          {first}
-        </>
-      )}
+      {orderedSpreadPages.map(({ page, pageIndex }) => (
+        <Fragment key={page.id}>
+          {renderPage({
+            fetchPriority,
+            isActive: offset === 0,
+            isLowDataMode,
+            page,
+            pageIndex,
+            spreadIndex,
+          })}
+        </Fragment>
+      ))}
     </li>
   )
 }
 
 function TouchAreaOverlay() {
-  const orientation = useOrientationStore((state) => state.orientation)
+  const orientation = useReaderStore((state) => state.orientation)
   const isHorizontal = orientation === 'horizontal' || orientation === 'horizontal-reverse'
   const isReversed = orientation === 'horizontal-reverse' || orientation === 'vertical-reverse'
 

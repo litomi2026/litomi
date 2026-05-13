@@ -13,7 +13,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { AdultState, getAdultState } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
-import ImageViewer from './ImageViewer/ImageViewer'
+import MangaImageViewer from './MangaImageViewer'
 import usePageMetadata from './usePageMetadata'
 
 const NotFound = dynamic(() => import('./not-found'))
@@ -32,6 +32,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const isWaitingForAdClick = !me && !hasClickedAd
   const mangaIds = isWaitingForAdClick ? [] : [id]
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
+
   const data = mangaMap.get(id) ?? (!isWaitingForAdClick && !initialManga ? createLoadingManga(id) : undefined)
   const manga = prepareManga(data, initialManga)
   const metadata = prepareMetadata(manga)
@@ -87,7 +88,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
     return <NotFound />
   }
 
-  return <ImageViewer manga={manga} />
+  return <MangaImageViewer manga={manga} />
 }
 
 function prepareManga(data: Manga | undefined, initialManga: Manga | null | undefined): Manga | null | undefined {

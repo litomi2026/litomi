@@ -4,28 +4,36 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import MangaImage from '@/components/MangaImage'
-import { ImageVariant } from '@/types/manga'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from './readerPages'
 
-import { usePageNavigationStore } from './store/pageNavigation'
-import { usePageViewStore } from './store/pageView'
+import { useReaderStore } from './store/reader'
 
-type Props = {
-  images: (ImageVariant | undefined)[]
-  mangaId: number
+type Props<TPage extends ReaderPage> = {
+  pages: readonly TPage[]
+  readerLayout: ReaderLayout<TPage>
+  renderThumbnail: ReaderPageRenderer<TPage>
 }
 
-export default function ThumbnailStrip({ images, mangaId }: Props) {
-  const { navigateToPageIndex, pageIndex } = usePageNavigationStore()
-  const pageView = usePageViewStore((state) => state.pageView)
-  const isDoublePage = pageView === 'double'
-  const activeImageIndex = isDoublePage ? Math.floor(pageIndex / 2) * 2 : pageIndex
+export default function ThumbnailStrip<TPage extends ReaderPage>({
+  pages,
+  readerLayout,
+  renderThumbnail,
+}: Props<TPage>) {
+  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
+  const pageIndex = useReaderStore((state) => state.pageIndex)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const { ref: firstImageRef, inView: isFirstImageInView } = useInView()
   const { ref: lastImageRef, inView: isLastImageInView } = useInView()
 
+  const activeSpreadIndex = readerLayout.spreadIndexByPageIndex[pageIndex] ?? 0
+  const activePageIndexes = new Set(readerLayout.spreads[activeSpreadIndex]?.pageIndexes ?? [pageIndex])
+  const activeThumbnailIndex = readerLayout.spreads[activeSpreadIndex]?.startPageIndex ?? pageIndex
+
   function handleThumbnailClick(index: number) {
-    navigateToPageIndex(index, { maxIndex: images.length })
+    navigateToPageIndex(index, {
+      maxIndex: Math.max(0, pages.length - 1),
+      scrollRowIndex: readerLayout.spreadIndexByPageIndex[index] ?? index,
+    })
   }
 
   function scrollLeft() {
@@ -53,14 +61,18 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
   // NOTE: 현재 페이지에 해당하는 썸네일을 가운데 정렬
   useEffect(() => {
     const container = scrollContainerRef.current
-    if (!container) return
+    if (!container) {
+      return
+    }
 
     const thumbnailElements = container.querySelectorAll('button')
-    const activeThumbnail = thumbnailElements[activeImageIndex]
-    if (!activeThumbnail) return
+    const activeThumbnail = thumbnailElements[activeThumbnailIndex]
+    if (!activeThumbnail) {
+      return
+    }
 
     activeThumbnail.scrollIntoView({ inline: 'center' })
-  }, [activeImageIndex])
+  }, [activeThumbnailIndex])
 
   return (
     <div className="relative overflow-hidden flex justify-center">
@@ -91,30 +103,29 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
         onWheel={(e) => e.stopPropagation()}
         ref={scrollContainerRef}
       >
-        {images.map((image, i) => {
-          const isActive = i === activeImageIndex
-          const isSecondaryActive = isDoublePage && i === activeImageIndex + 1
+        {pages.map((page, i) => {
+          const isActive = activePageIndexes.has(i)
+          const fetchPriority = i > activeThumbnailIndex - 3 && i <= activeThumbnailIndex + 3 ? 'high' : 'low'
 
           return (
             <button
-              aria-current={isActive || isSecondaryActive ? 'page' : undefined}
+              aria-current={isActive ? 'page' : undefined}
               aria-label={`${i + 1}페이지로 이동`}
               className="relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition 
               aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
-              key={i}
+              key={page.id}
               onClick={() => handleThumbnailClick(i)}
-              ref={i === 0 ? firstImageRef : i === images.length - 1 ? lastImageRef : undefined}
+              ref={i === 0 ? firstImageRef : i === pages.length - 1 ? lastImageRef : undefined}
               type="button"
             >
-              <MangaImage
-                alt={`${i + 1}페이지 미리보기`}
-                className="w-full h-full object-cover"
-                fetchPriority={i > activeImageIndex - 3 && i <= activeImageIndex + 3 ? undefined : 'low'}
-                imageIndex={i}
-                mangaId={mangaId}
-                src={image?.url}
-                variant="thumbnail"
-              />
+              {renderThumbnail({
+                fetchPriority,
+                isActive,
+                isLowDataMode: false,
+                page,
+                pageIndex: i,
+                spreadIndex: readerLayout.spreadIndexByPageIndex[i] ?? i,
+              })}
               <span className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-t-lg bg-background/80 text-xs text-center p-2 py-0.5">
                 {i + 1}
               </span>

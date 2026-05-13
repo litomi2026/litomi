@@ -1,10 +1,6 @@
 import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-import { usePageNavigationStore } from '../store/pageNavigation'
-import { usePageViewStore } from '../store/pageView'
-import { useReadingDirectionStore } from '../store/readingDirection'
-import { useScreenFitStore } from '../store/screenFit'
-import { clampZoomLevel, DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
+import { clampZoomLevel, DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '../store/reader'
 import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
 import { captureZoomAnchor, getNextWheelZoomLevel, type ZoomAnchor } from './viewerZoom'
 
@@ -28,15 +24,15 @@ const INITIAL_ZOOM_LAYOUT: ZoomLayout = {
   viewportWidth: 0,
 }
 
-export default function usePageViewerZoom() {
-  const currentIndex = usePageNavigationStore((state) => state.pageIndex)
-  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
-  const isRTL = useReadingDirectionStore((state) => state.readingDirection === 'rtl')
-  const screenFit = useScreenFitStore((state) => state.screenFit)
-  const zoomLevel = useZoomStore((state) => state.zoomLevel)
-  const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
-  const setZoomLevel = useZoomStore((state) => state.setZoomLevel)
-  const resetZoom = useZoomStore((state) => state.resetZoom)
+export default function usePagedReaderViewZoom() {
+  const currentIndex = useReaderStore((state) => state.pageIndex)
+  const isDoublePage = useReaderStore((state) => state.pageView === 'double')
+  const isRTL = useReaderStore((state) => state.readingDirection === 'rtl')
+  const screenFit = useReaderStore((state) => state.screenFit)
+  const zoomLevel = useReaderSessionStore((state) => state.zoomLevel)
+  const getZoomLevel = useReaderSessionStore((state) => state.getZoomLevel)
+  const setZoomLevel = useReaderSessionStore((state) => state.setZoomLevel)
+  const resetZoom = useReaderSessionStore((state) => state.resetZoom)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLUListElement>(null)
