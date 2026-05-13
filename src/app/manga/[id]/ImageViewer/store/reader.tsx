@@ -73,7 +73,6 @@ type ReaderPersistedState = Pick<
 
 type ReaderProviderProps = {
   children: ReactNode
-  onPageIndexCommit?: (pageIndex: number) => void
   persistenceKey?: string
 }
 
@@ -88,7 +87,6 @@ type ReaderStoreApi = PersistedStoreApi<ReaderStore>
 
 type ReaderStoreOptions = {
   localStorageKey: string
-  onPageIndexCommit?: (pageIndex: number) => void
 }
 
 type ReaderStores = {
@@ -117,11 +115,7 @@ export function clampZoomLevel(zoom: number) {
   return Math.min(Math.max(DEFAULT_ZOOM, zoom), MAX_ZOOM)
 }
 
-export function ReaderProvider({
-  children,
-  onPageIndexCommit,
-  persistenceKey = DEFAULT_PERSISTENCE_KEY,
-}: ReaderProviderProps) {
+export function ReaderProvider({ children, persistenceKey = DEFAULT_PERSISTENCE_KEY }: ReaderProviderProps) {
   const [stores] = useState(() => {
     return {
       readerSessionStore: createReaderSessionStore({
@@ -129,7 +123,6 @@ export function ReaderProvider({
       }),
       readerStore: createReaderStore({
         localStorageKey: `${persistenceKey}/local-settings`,
-        onPageIndexCommit,
       }),
     }
   })
@@ -219,31 +212,8 @@ function createReaderSessionStore({ sessionStorageKey }: ReaderSessionStoreOptio
   )
 }
 
-function createReaderStore({ localStorageKey, onPageIndexCommit }: ReaderStoreOptions) {
+function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
   let listRef: RefObject<ListImperativeAPI | null> | null = null
-  let pageIndexCommitTimer: ReturnType<typeof setTimeout> | null = null
-
-  function clearPageIndexCommitTimer() {
-    if (!pageIndexCommitTimer) {
-      return
-    }
-
-    clearTimeout(pageIndexCommitTimer)
-    pageIndexCommitTimer = null
-  }
-
-  function schedulePageIndexCommit(pageIndex: number) {
-    if (!onPageIndexCommit) {
-      return
-    }
-
-    clearPageIndexCommitTimer()
-
-    pageIndexCommitTimer = setTimeout(() => {
-      pageIndexCommitTimer = null
-      onPageIndexCommit(pageIndex)
-    }, 200)
-  }
 
   function scrollToRow(index: number) {
     requestAnimationFrame(() => {
@@ -268,7 +238,6 @@ function createReaderStore({ localStorageKey, onPageIndexCommit }: ReaderStoreOp
           const nextPageIndex = clampPageIndex(pageIndex, options.maxIndex)
 
           set({ pageIndex: nextPageIndex })
-          schedulePageIndexCommit(nextPageIndex)
 
           if (options.scroll !== false) {
             scrollToRow(options.scrollRowIndex ?? nextPageIndex)
@@ -279,7 +248,6 @@ function createReaderStore({ localStorageKey, onPageIndexCommit }: ReaderStoreOp
         pageView: DEFAULT_PAGE_VIEW,
         readingDirection: DEFAULT_READING_DIRECTION,
         resetPageIndex: () => {
-          clearPageIndexCommitTimer()
           set({ pageIndex: 0 })
         },
         screenFit: DEFAULT_SCREEN_FIT,
