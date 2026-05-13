@@ -10,17 +10,23 @@ import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 
-import { usePageNavigationStore } from './store/pageNavigation'
+import type { ReaderLayout, ReaderPageBase } from './readerPages'
 
-type Props = {
+import { useReaderStore } from './store/reader'
+
+type Props<TPage extends ReaderPageBase> = {
   className?: string
-  offset: number
   maxPageIndex: number
-  onIntervalChange?: (index: number) => void
+  readerLayout: ReaderLayout<TPage>
 }
 
-export default function SlideshowButton({ className = '', maxPageIndex, offset, onIntervalChange }: Readonly<Props>) {
-  const pageIndex = usePageNavigationStore((state) => state.pageIndex)
+export default function SlideshowButton<TPage extends ReaderPageBase>({
+  className = '',
+  maxPageIndex,
+  readerLayout,
+}: Props<TPage>) {
+  const pageIndex = useReaderStore((state) => state.pageIndex)
+  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const [isRunning, setIsRunning] = useState(false)
   const [isOpened, setIsOpened] = useState(false)
 
@@ -60,15 +66,19 @@ export default function SlideshowButton({ className = '', maxPageIndex, offset, 
     timeoutIdRef.current = window.setTimeout(
       () => {
         timeoutIdRef.current = null
-        const nextPageIndex = pageIndex + offset
+        const currentSpreadIndex = readerLayout.spreadIndexByPageIndex[pageIndex] ?? 0
+        const nextPageIndex = readerLayout.spreads[currentSpreadIndex + 1]?.startPageIndex ?? null
 
-        if (nextPageIndex <= maxPageIndex) {
-          onIntervalChange?.(nextPageIndex)
+        if (typeof nextPageIndex === 'number') {
+          navigateToPageIndex(nextPageIndex, {
+            maxIndex: maxPageIndex,
+            scrollRowIndex: readerLayout.spreadIndexByPageIndex[nextPageIndex] ?? nextPageIndex,
+          })
           return
         }
 
         if (isRepeatingRef.current) {
-          onIntervalChange?.(0)
+          navigateToPageIndex(0, { maxIndex: maxPageIndex, scrollRowIndex: 0 })
           return
         }
 
@@ -84,7 +94,7 @@ export default function SlideshowButton({ className = '', maxPageIndex, offset, 
         timeoutIdRef.current = null
       }
     }
-  }, [isRunning, maxPageIndex, offset, onIntervalChange, pageIndex])
+  }, [isRunning, maxPageIndex, navigateToPageIndex, pageIndex, readerLayout])
 
   return (
     <>

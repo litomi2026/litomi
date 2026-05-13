@@ -1,7 +1,9 @@
-import { useCallback, useEffect } from 'react'
+import { useEffect, useEffectEvent } from 'react'
 import { toast } from 'sonner'
 
-import { usePageNavigationStore } from '../store/pageNavigation'
+import type { ReaderLayout, ReaderPageBase } from '../readerPages'
+
+import { useReaderStore } from '../store/reader'
 import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
 
 const PREV_PAGE_CODES = new Set(['ArrowLeft', 'AudioVolumeUp', 'PageUp'])
@@ -9,93 +11,91 @@ const NEXT_PAGE_CODES = new Set(['ArrowRight', 'AudioVolumeDown', 'PageDown'])
 const PREV_PAGE_KEYS = new Set(['AudioVolumeUp', 'VolumeUp'])
 const NEXT_PAGE_KEYS = new Set(['AudioVolumeDown', 'VolumeDown'])
 
-type Params = {
-  maxIndex: number
-  offset: number
+type Params<TPage extends ReaderPageBase> = {
+  maxPageIndex: number
+  readerLayout: ReaderLayout<TPage>
 }
 
-export default function usePageNavigation({ maxIndex, offset }: Params) {
-  const { getPageIndex, navigateToPageIndex } = usePageNavigationStore()
+export default function usePageNavigation<TPage extends ReaderPageBase>({ maxPageIndex, readerLayout }: Params<TPage>) {
+  const getPageIndex = useReaderStore((state) => state.getPageIndex)
+  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
 
-  const prevPage = useCallback(() => {
+  function prevPage() {
     const currentPageIndex = getPageIndex()
-    const prevPageIndex = Math.max(0, currentPageIndex - offset)
+    const currentSpreadIndex = readerLayout.spreadIndexByPageIndex[currentPageIndex] ?? 0
+    const prevSpread = readerLayout.spreads[currentSpreadIndex - 1]
 
-    const isSameVisiblePageGroup =
-      prevPageIndex === currentPageIndex ||
-      (offset > 1 && Math.floor(prevPageIndex / offset) === Math.floor(currentPageIndex / offset))
-
-    if (isSameVisiblePageGroup) {
+    if (!prevSpread) {
       toast.warning('첫번째 페이지예요')
       return
     }
 
-    navigateToPageIndex(prevPageIndex, { maxIndex })
-  }, [getPageIndex, maxIndex, offset, navigateToPageIndex])
+    navigateToPageIndex(prevSpread.startPageIndex, { maxIndex: maxPageIndex })
+  }
 
-  const nextPage = useCallback(() => {
+  function nextPage() {
     const currentPageIndex = getPageIndex()
-    const nextPageIndex = Math.min(currentPageIndex + offset, maxIndex)
+    const currentSpreadIndex = readerLayout.spreadIndexByPageIndex[currentPageIndex] ?? 0
+    const nextSpread = readerLayout.spreads[currentSpreadIndex + 1]
 
-    const isSameVisiblePageGroup =
-      nextPageIndex === currentPageIndex ||
-      (offset > 1 && Math.floor(nextPageIndex / offset) === Math.floor(currentPageIndex / offset))
-
-    if (isSameVisiblePageGroup) {
+    if (!nextSpread) {
       toast.warning('마지막 페이지예요')
       return
     }
 
-    navigateToPageIndex(nextPageIndex, { maxIndex })
-  }, [getPageIndex, maxIndex, offset, navigateToPageIndex])
+    navigateToPageIndex(nextSpread.startPageIndex, { maxIndex: maxPageIndex })
+  }
 
-  const firstPage = useCallback(() => {
+  function firstPage() {
     const currentPageIndex = getPageIndex()
+    const firstSpread = readerLayout.spreads[0]
 
-    if (currentPageIndex === 0) {
+    if (!firstSpread || readerLayout.spreadIndexByPageIndex[currentPageIndex] === 0) {
       toast.warning('첫번째 페이지예요')
       return
     }
 
-    navigateToPageIndex(0, { maxIndex })
-  }, [getPageIndex, maxIndex, navigateToPageIndex])
+    navigateToPageIndex(firstSpread.startPageIndex, { maxIndex: maxPageIndex })
+  }
 
-  const lastPage = useCallback(() => {
+  function lastPage() {
     const currentPageIndex = getPageIndex()
+    const lastSpreadIndex = readerLayout.spreads.length - 1
+    const lastSpread = readerLayout.spreads[lastSpreadIndex]
 
-    if (currentPageIndex === maxIndex) {
+    if (!lastSpread || readerLayout.spreadIndexByPageIndex[currentPageIndex] === lastSpreadIndex) {
       toast.warning('마지막 페이지예요')
       return
     }
 
-    navigateToPageIndex(maxIndex, { maxIndex })
-  }, [getPageIndex, maxIndex, navigateToPageIndex])
+    navigateToPageIndex(lastSpread.startPageIndex, { maxIndex: maxPageIndex })
+  }
+
+  const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
+    const { altKey, code, ctrlKey, defaultPrevented, key, metaKey, target } = event
+
+    if (defaultPrevented || altKey || ctrlKey || metaKey || shouldIgnoreViewerGestureTarget(target)) {
+      return
+    }
+
+    if (PREV_PAGE_CODES.has(code) || PREV_PAGE_KEYS.has(key)) {
+      prevPage()
+    } else if (NEXT_PAGE_CODES.has(code) || NEXT_PAGE_KEYS.has(key)) {
+      nextPage()
+    } else if (code === 'Home') {
+      firstPage()
+    } else if (code === 'End') {
+      lastPage()
+    }
+  })
 
   // NOTE: 키보드 이벤트 핸들러
   useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      const { altKey, code, ctrlKey, defaultPrevented, key, metaKey, target } = event
-
-      if (defaultPrevented || altKey || ctrlKey || metaKey || shouldIgnoreViewerGestureTarget(target)) {
-        return
-      }
-
-      if (PREV_PAGE_CODES.has(code) || PREV_PAGE_KEYS.has(key)) {
-        prevPage()
-      } else if (NEXT_PAGE_CODES.has(code) || NEXT_PAGE_KEYS.has(key)) {
-        nextPage()
-      } else if (code === 'Home') {
-        firstPage()
-      } else if (code === 'End') {
-        lastPage()
-      }
-    }
-
     document.addEventListener('keydown', handleKeyDown)
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [nextPage, prevPage, firstPage, lastPage])
+  }, [])
 
   return { prevPage, nextPage }
 }

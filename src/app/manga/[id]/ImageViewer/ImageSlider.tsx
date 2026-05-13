@@ -1,32 +1,28 @@
 import { Loader2 } from 'lucide-react'
-import { useCallback } from 'react'
 
 import Slider from '@/components/ui/Slider'
 
-import { usePageNavigationStore } from './store/pageNavigation'
-import { usePageViewStore } from './store/pageView'
+import type { ReaderLayout, ReaderPageBase } from './readerPages'
 
-type Props = {
+import { useReaderStore } from './store/reader'
+
+type Props<TPage extends ReaderPageBase> = {
   maxPageIndex: number
+  readerLayout: ReaderLayout<TPage>
 }
 
-export default function ImageSlider({ maxPageIndex }: Readonly<Props>) {
-  const { navigateToPageIndex, pageIndex } = usePageNavigationStore()
-  const pageView = usePageViewStore((state) => state.pageView)
-  const isDoublePage = pageView === 'double'
-  const visibleStartPageIndex = isDoublePage ? Math.floor(pageIndex / 2) * 2 : pageIndex
-  const currentPage = visibleStartPageIndex + 1
-  const maxPage = maxPageIndex + 1
-  const startPage = Math.max(1, currentPage)
-  const endPage = isDoublePage ? Math.max(startPage, Math.min(currentPage + 1, maxPage)) : startPage
-  const currentPageText = startPage === endPage ? startPage : `${startPage}-${endPage}`
+export default function ImageSlider<TPage extends ReaderPageBase>({ maxPageIndex, readerLayout }: Props<TPage>) {
+  const pageIndex = useReaderStore((state) => state.pageIndex)
+  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
 
-  const handleValueCommit = useCallback(
-    (value: number) => {
-      navigateToPageIndex(value, { maxIndex: maxPageIndex })
-    },
-    [maxPageIndex, navigateToPageIndex],
-  )
+  const activeSpreadIndex = readerLayout.spreadIndexByPageIndex[pageIndex] ?? 0
+  const activeSpread = readerLayout.spreads[activeSpreadIndex]
+  const maxPage = readerLayout.spreadIndexByPageIndex.length
+
+  const visiblePageNumbers =
+    maxPage > 0 ? (activeSpread?.pageIndexes.map((visiblePageIndex) => visiblePageIndex + 1) ?? [pageIndex + 1]) : []
+
+  const currentPageText = getPageRangeText(visiblePageNumbers)
 
   return (
     <>
@@ -36,7 +32,12 @@ export default function ImageSlider({ maxPageIndex }: Readonly<Props>) {
           aria-valuetext={`${currentPageText} / ${maxPage}`}
           className="h-6"
           max={maxPageIndex}
-          onValueCommit={handleValueCommit}
+          onValueCommit={(value) => {
+            navigateToPageIndex(value, {
+              maxIndex: maxPageIndex,
+              scrollRowIndex: readerLayout.spreadIndexByPageIndex[value] ?? value,
+            })
+          }}
           value={pageIndex}
         />
       </div>
@@ -46,4 +47,18 @@ export default function ImageSlider({ maxPageIndex }: Readonly<Props>) {
       </div>
     </>
   )
+}
+
+function getPageRangeText(pageNumbers: number[]) {
+  if (pageNumbers.length === 0) {
+    return 0
+  }
+
+  if (pageNumbers.length === 1) {
+    return pageNumbers[0]
+  }
+
+  const firstPage = pageNumbers[0]
+  const lastPage = pageNumbers[pageNumbers.length - 1]
+  return `${firstPage}-${lastPage}`
 }
