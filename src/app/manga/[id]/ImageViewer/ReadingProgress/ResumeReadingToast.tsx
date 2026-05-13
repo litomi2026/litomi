@@ -1,53 +1,56 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 
-import { QueryKeys } from '@/constants/query'
-import { Manga } from '@/types/manga'
+import type { ReaderLayout, ReaderPage } from '../readerPages'
 
-import { usePageNavigationStore } from '../store/pageNavigation'
-import useReadingHistory from './useReadingHistory'
+import { useReaderStore } from '../store/reader'
+
+const DEFAULT_DURATION_MS = ms('10 seconds')
 
 type Props = {
-  manga: Manga
+  lastReadablePageNumber?: number
+  maxPageIndex: number
+  readerLayout: ReaderLayout<ReaderPage>
 }
 
-export default function ResumeReadingToast({ manga }: Readonly<Props>) {
-  const { id: mangaId, images = [] } = manga
-  const imageCount = images.length
-  const getPageIndex = usePageNavigationStore((state) => state.getPageIndex)
-  const navigateToPageIndex = usePageNavigationStore((state) => state.navigateToPageIndex)
-  const { lastPage } = useReadingHistory(mangaId)
-  const queryClient = useQueryClient()
+export default function ResumeReadingToast({ lastReadablePageNumber, maxPageIndex, readerLayout }: Props) {
+  const getPageIndex = useReaderStore((state) => state.getPageIndex)
+  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
 
-  // NOTE: 읽은 페이지 토스트 표시
   useEffect(() => {
-    const currentPage = Math.min(getPageIndex() + 1, imageCount)
+    const currentReadablePageNumber = readerLayout.readablePageNumberByPageIndex[getPageIndex()] ?? 0
 
-    if (lastPage && lastPage !== currentPage && lastPage !== imageCount) {
-      const toastId = toast(`마지막으로 읽던 페이지 ${lastPage}`, {
-        duration: ms('10 seconds'),
-        action: {
-          label: '이동',
-          onClick: () => {
-            navigateToPageIndex(lastPage - 1, { maxIndex: imageCount })
-          },
-        },
-      })
-
-      return () => {
-        toast.dismiss(toastId)
-      }
+    if (
+      typeof lastReadablePageNumber !== 'number' ||
+      lastReadablePageNumber === currentReadablePageNumber ||
+      lastReadablePageNumber === readerLayout.readablePageCount
+    ) {
+      return
     }
-  }, [lastPage, navigateToPageIndex, getPageIndex, imageCount])
 
-  // NOTE: 뷰어 들어오면 최신 감상 기록으로 갱신
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: QueryKeys.readingHistory(mangaId) })
-  }, [mangaId, queryClient])
+    const toastId = toast(`마지막으로 읽던 페이지 ${lastReadablePageNumber}`, {
+      duration: DEFAULT_DURATION_MS,
+      action: {
+        label: '이동',
+        onClick: () => {
+          const pageIndex =
+            readerLayout.pageIndexByReadablePageNumber[lastReadablePageNumber] ?? lastReadablePageNumber - 1
+
+          navigateToPageIndex(pageIndex, {
+            maxIndex: maxPageIndex,
+            scrollRowIndex: readerLayout.spreadIndexByPageIndex[pageIndex] ?? pageIndex,
+          })
+        },
+      },
+    })
+
+    return () => {
+      toast.dismiss(toastId)
+    }
+  }, [getPageIndex, lastReadablePageNumber, maxPageIndex, navigateToPageIndex, readerLayout])
 
   return null
 }

@@ -14,7 +14,12 @@ import {
   resolveLowDataState,
 } from './lowData'
 import PageViewer from './PageViewer/PageViewer'
-import { createReaderLayout, type ReaderLayout, type ReaderPage, type ReaderPageRenderer } from './readerPages'
+import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from './readerPages'
+import ReadingProgressSaver, {
+  type ReadingProgress,
+  type ReadingProgressSaveOptions,
+} from './ReadingProgress/ReadingProgressSaver'
+import ResumeReadingToast from './ReadingProgress/ResumeReadingToast'
 import ScrollViewer from './ScrollViewer/ScrollViewer'
 import SlideshowButton from './SlideshowButton'
 import { orientations, ReaderProvider, useReaderSessionStore, useReaderStore } from './store/reader'
@@ -27,18 +32,20 @@ import { shouldIgnoreViewerGestureTarget } from './viewerGesturePolicy'
 const BOTTOM_BUTTON_CLASS_NAME =
   'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
-type Props<TPage extends ReaderPage> = {
-  children?: (context: ReaderContext<TPage>) => ReactNode
+export type Props<TPage extends ReaderPage> = {
   header?: ReactNode
-  pageSearchParam: string
+  pageSearchParam?: string
   pages: readonly TPage[]
   persistenceKey?: string
+  readingProgress?: ReadingProgressOptions
   renderPage: ReaderPageRenderer<TPage>
   renderThumbnail: ReaderPageRenderer<TPage>
 }
 
-type ReaderContext<TPage extends ReaderPage> = {
-  readerLayout: ReaderLayout<TPage>
+type ReadingProgressOptions = {
+  lastReadablePageNumber?: number
+  onChange: (progress: ReadingProgress) => void
+  onSave?: (progress: ReadingProgress, options?: ReadingProgressSaveOptions) => Promise<void> | void
 }
 
 export default function ImageReader<TPage extends ReaderPage>({ persistenceKey, ...props }: Props<TPage>) {
@@ -50,10 +57,10 @@ export default function ImageReader<TPage extends ReaderPage>({ persistenceKey, 
 }
 
 function ReaderContent<TPage extends ReaderPage>({
-  children,
   header,
-  pageSearchParam,
+  pageSearchParam = 'page',
   pages,
+  readingProgress,
   renderPage,
   renderThumbnail,
 }: Omit<Props<TPage>, 'persistenceKey'>) {
@@ -197,7 +204,20 @@ function ReaderContent<TPage extends ReaderPage>({
       onPointerMove={registerActivity}
       onWheel={registerActivity}
     >
-      {children?.({ readerLayout })}
+      {readingProgress && (
+        <>
+          <ResumeReadingToast
+            lastReadablePageNumber={readingProgress.lastReadablePageNumber}
+            maxPageIndex={maxPageIndex}
+            readerLayout={readerLayout}
+          />
+          <ReadingProgressSaver
+            onChange={readingProgress.onChange}
+            onSave={readingProgress.onSave}
+            readerLayout={readerLayout}
+          />
+        </>
+      )}
       {header && (
         <header
           aria-hidden={!showController}

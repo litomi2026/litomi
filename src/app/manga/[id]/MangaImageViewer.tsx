@@ -1,24 +1,35 @@
 'use client'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect } from 'react'
+
+import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/history/POST'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import BackButton from '@/components/BackButton'
 import MangaImage from '@/components/MangaImage'
+import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
+import useMeQuery from '@/query/useMeQuery'
 import { type Manga } from '@/types/manga'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 
 import type { ReaderPageRenderContext } from './ImageViewer/readerPages'
+import type { ReadingProgress, ReadingProgressSaveOptions } from './ImageViewer/ReadingProgress/ReadingProgressSaver'
 
 import FullscreenButton from './ImageViewer/FullscreenButton'
 import ImageReader from './ImageViewer/ImageViewer'
 import LastPage from './ImageViewer/LastPage'
 import MangaDetailButton from './ImageViewer/MangaDetailButton'
-import ReadingProgressSaver from './ImageViewer/ReadingProgress/ReadingProgressSaver'
-import ResumeReadingToast from './ImageViewer/ReadingProgress/ResumeReadingToast'
 import ShareButton from './ImageViewer/ShareButton'
 import { getResponsivePictureSources } from './ImageViewer/util'
 import { createMangaReaderPages, type MangaReaderPage } from './mangaReaderPages'
+import useMangaReadingHistory from './useMangaReadingHistory'
+
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Props = {
   manga: Manga
@@ -29,6 +40,34 @@ const TOP_BUTTON_CLASS_NAME =
 
 export default function MangaImageViewer({ manga }: Props) {
   const pages = createMangaReaderPages(manga)
+  const { data: me } = useMeQuery()
+  const { lastPage } = useMangaReadingHistory(manga.id)
+  const queryClient = useQueryClient()
+
+  const adultState = getAdultState(me)
+  const canSyncReadingProgress = hasAdultAccess(adultState) && me?.settings.historySyncEnabled === true
+
+  function handleReadingProgressChange(progress: ReadingProgress) {
+    setLocalReadingHistoryEntry(manga.id, progress.readablePageNumber)
+    queryClient.invalidateQueries({ queryKey: QueryKeys.localReadingHistorySummary })
+    queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteReadingHistory('local') })
+  }
+
+  async function handleReadingProgressSave(progress: ReadingProgress, options?: ReadingProgressSaveOptions) {
+    const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${manga.id}/history`
+
+    const body: POSTV1MangaIdHistoryBody = {
+      lastPage: progress.readablePageNumber,
+    }
+
+    await fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      keepalive: options?.keepalive,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  }
 
   function renderPage({ fetchPriority, page }: ReaderPageRenderContext<MangaReaderPage>) {
     if (page.kind === 'last') {
@@ -66,6 +105,11 @@ export default function MangaImageViewer({ manga }: Props) {
     )
   }
 
+  // NOTE: 뷰어 들어오면 최신 감상 기록으로 갱신해요.
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: QueryKeys.readingHistory(manga.id) })
+  }, [manga.id, queryClient])
+
   return (
     <ImageReader
       header={
@@ -92,26 +136,13 @@ export default function MangaImageViewer({ manga }: Props) {
       pages={pages}
       pageSearchParam={MangaIdSearchParam.PAGE}
       persistenceKey="litomi-reader"
+      readingProgress={{
+        lastReadablePageNumber: lastPage,
+        onChange: handleReadingProgressChange,
+        onSave: canSyncReadingProgress ? handleReadingProgressSave : undefined,
+      }}
       renderPage={renderPage}
       renderThumbnail={renderThumbnail}
-    >
-      {({ readerLayout }) => (
-        <>
-          <ResumeReadingToast
-            manga={manga}
-            maxPageIndex={Math.max(0, pages.length - 1)}
-            pageIndexByReadablePageNumber={readerLayout.pageIndexByReadablePageNumber}
-            readablePageCount={readerLayout.readablePageCount}
-            readablePageNumberByPageIndex={readerLayout.readablePageNumberByPageIndex}
-            scrollRowIndexByPageIndex={readerLayout.spreadIndexByPageIndex}
-          />
-          <ReadingProgressSaver
-            mangaId={manga.id}
-            readablePageCount={readerLayout.readablePageCount}
-            readablePageNumberByPageIndex={readerLayout.readablePageNumberByPageIndex}
-          />
-        </>
-      )}
-    </ImageReader>
+    />
   )
 }

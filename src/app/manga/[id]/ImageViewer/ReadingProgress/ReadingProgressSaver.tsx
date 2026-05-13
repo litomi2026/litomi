@@ -1,102 +1,101 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import { useEffect, useEffectEvent, useRef } from 'react'
 
-import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/history/POST'
+import type { ReaderLayout, ReaderPage } from '../readerPages'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
+import { useReaderStore } from '../store/reader'
 
-import { usePageNavigationStore } from '../store/pageNavigation'
+const DEFAULT_SAVE_INTERVAL_MS = ms('1 minute')
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
-const SEND_INTERVAL_MS = ms('1 minute')
-
-type Props = {
-  imageCount: number
-  mangaId: number
+export type ReadingProgress = {
+  pageIndex: number
+  readablePageCount: number
+  readablePageNumber: number
 }
 
-export default function ReadingProgressSaver({ imageCount, mangaId }: Props) {
-  const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
-  const canSyncReadingProgress = hasAdultAccess(adultState) && me?.settings.historySyncEnabled === true
-  const pageIndex = usePageNavigationStore((state) => state.pageIndex)
-  const isRequestPendingRef = useRef(false)
-  const queryClient = useQueryClient()
+export type ReadingProgressSaveOptions = {
+  keepalive?: boolean
+}
 
-  const sendCurrentPage = useEffectEvent((options?: { keepalive?: boolean }) => {
-    if (!canSyncReadingProgress || isRequestPendingRef.current || pageIndex <= 0 || imageCount <= 0) {
+type Props = {
+  onChange: (progress: ReadingProgress) => void
+  onSave?: (progress: ReadingProgress, options?: ReadingProgressSaveOptions) => Promise<void> | void
+  readerLayout: ReaderLayout<ReaderPage>
+}
+
+export default function ReadingProgressSaver({ onChange, onSave, readerLayout }: Props) {
+  const pageIndex = useReaderStore((state) => state.pageIndex)
+  const isSavePendingRef = useRef(false)
+
+  const canSave = Boolean(onSave)
+  const readablePageCount = readerLayout.readablePageCount
+  const readablePageNumber = readerLayout.readablePageNumberByPageIndex[pageIndex] ?? null
+
+  const emitProgressChange = useEffectEvent((progress: ReadingProgress) => onChange(progress))
+
+  const saveCurrentProgress = useEffectEvent((options?: ReadingProgressSaveOptions) => {
+    if (!onSave || isSavePendingRef.current || !readablePageNumber || readablePageCount <= 0) {
       return
     }
 
-    const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/history`
-    const lastReadablePage = Math.min(pageIndex + 1, imageCount)
-
-    const body: POSTV1MangaIdHistoryBody = {
-      lastPage: lastReadablePage,
+    const progress: ReadingProgress = {
+      pageIndex,
+      readablePageCount,
+      readablePageNumber: Math.min(readablePageNumber, readablePageCount),
     }
 
-    isRequestPendingRef.current = true
+    isSavePendingRef.current = true
 
-    fetch(url, {
-      method: 'POST',
-      credentials: 'include',
-      keepalive: options?.keepalive,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(body),
-    })
+    Promise.resolve(onSave(progress, options))
       .catch(() => {})
       .finally(() => {
-        isRequestPendingRef.current = false
+        isSavePendingRef.current = false
       })
-  })
-
-  const flush = useEffectEvent(() => {
-    sendCurrentPage({ keepalive: true })
   })
 
   // NOTE: 로컬 기록은 항상 최신으로 유지해요.
   useEffect(() => {
-    if (pageIndex <= 0 || imageCount <= 0) {
+    if (!readablePageNumber || readablePageCount <= 0) {
       return
     }
 
-    setLocalReadingHistoryEntry(mangaId, Math.min(pageIndex + 1, imageCount))
-
-    queryClient.invalidateQueries({ queryKey: QueryKeys.localReadingHistorySummary })
-    queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteReadingHistory('local') })
-  }, [imageCount, mangaId, pageIndex, queryClient])
+    emitProgressChange({
+      pageIndex,
+      readablePageCount,
+      readablePageNumber: Math.min(readablePageNumber, readablePageCount),
+    })
+  }, [pageIndex, readablePageCount, readablePageNumber])
 
   // NOTE: 감상 기록 자동 저장이 켜져 있으면 1분마다 최신 페이지를 서버에 보내요.
   useEffect(() => {
-    if (!canSyncReadingProgress) {
+    if (!canSave) {
       return
     }
 
-    const intervalId = setInterval(() => {
-      sendCurrentPage()
-    }, SEND_INTERVAL_MS)
+    const intervalId = window.setInterval(() => {
+      saveCurrentProgress()
+    }, DEFAULT_SAVE_INTERVAL_MS)
 
     return () => {
-      clearInterval(intervalId)
+      window.clearInterval(intervalId)
     }
-  }, [canSyncReadingProgress])
+  }, [canSave])
 
   // NOTE: 탭/페이지가 숨김·종료되거나 뷰어를 떠나는 시점에 마지막 감상 상태를 보내요.
   useEffect(() => {
+    if (!canSave) {
+      return
+    }
+
     function handlePageHide() {
-      flush()
+      saveCurrentProgress({ keepalive: true })
     }
 
     function handleVisibilityChange() {
       if (document.visibilityState === 'hidden') {
-        flush()
+        saveCurrentProgress({ keepalive: true })
       }
     }
 
@@ -104,11 +103,11 @@ export default function ReadingProgressSaver({ imageCount, mangaId }: Props) {
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
-      flush()
+      saveCurrentProgress({ keepalive: true })
       window.removeEventListener('pagehide', handlePageHide)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [])
+  }, [canSave])
 
   return null
 }
