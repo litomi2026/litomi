@@ -39,7 +39,6 @@ type Props<TPage extends ReaderPage> = {
 
 type ReaderContext<TPage extends ReaderPage> = {
   readerLayout: ReaderLayout<TPage>
-  readablePageCount: number
 }
 
 export default function ImageReader<TPage extends ReaderPage>({ persistenceKey, ...props }: Props<TPage>) {
@@ -79,7 +78,6 @@ function ReaderContent<TPage extends ReaderPage>({
   const viewControlRef = useRef<HTMLDivElement>(null)
 
   const readerLayout = createReaderLayout(pages, { pageView })
-  const { readablePageCount } = readerLayout
   const maxPageIndex = Math.max(0, pages.length - 1)
   const isDoublePage = pageView === 'double'
   const isLowDataReady = isLowDataHydrated && lowDataSnapshot !== null
@@ -199,7 +197,7 @@ function ReaderContent<TPage extends ReaderPage>({
       onPointerMove={registerActivity}
       onWheel={registerActivity}
     >
-      {children?.({ readerLayout, readablePageCount })}
+      {children?.({ readerLayout })}
       {header && (
         <header
           aria-hidden={!showController}
