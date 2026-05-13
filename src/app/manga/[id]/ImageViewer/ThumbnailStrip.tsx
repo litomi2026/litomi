@@ -53,11 +53,15 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
   // NOTE: 현재 페이지에 해당하는 썸네일을 가운데 정렬
   useEffect(() => {
     const container = scrollContainerRef.current
-    if (!container) return
+    if (!container) {
+      return
+    }
 
     const thumbnailElements = container.querySelectorAll('button')
-    const activeThumbnail = thumbnailElements[activeImageIndex]
-    if (!activeThumbnail) return
+    const activeThumbnail = thumbnailElements[activeThumbnailIndex]
+    if (!activeThumbnail) {
+      return
+    }
 
     activeThumbnail.scrollIntoView({ inline: 'center' })
   }, [activeImageIndex])

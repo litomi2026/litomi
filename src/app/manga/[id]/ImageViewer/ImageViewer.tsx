@@ -48,25 +48,30 @@ export default function ImageViewer({ manga }: Props) {
   const [showThumbnails, setShowThumbnails] = useState(false)
   const [showViewControl, setShowViewControl] = useState(false)
   const [lowDataSnapshot, setLowDataSnapshot] = useState<LowDataSnapshot | null>(null)
-  const { preference, cyclePreference } = useLowDataModeStore()
-  const { viewerMode, setViewerMode } = useViewerModeStore()
-  const { screenFit, setScreenFit } = useScreenFitStore()
-  const { orientation, setOrientation } = useOrientationStore()
-  const { pageView, setPageView } = usePageViewStore()
-  const { readingDirection, toggleReadingDirection } = useReadingDirectionStore()
-  const navigateToPageIndex = usePageNavigationStore((state) => state.navigateToPageIndex)
-  const resetPageIndex = usePageNavigationStore((state) => state.resetPageIndex)
-  const isLowDataPreferenceHydrated = useLowDataPreferenceHydrated()
+  const isLowDataHydrated = useReaderStore((state) => state.isStorageHydrated)
+  const lowData = useReaderSessionStore((state) => state.lowData)
+  const orientation = useReaderStore((state) => state.orientation)
+  const pageView = useReaderStore((state) => state.pageView)
+  const readingDirection = useReaderStore((state) => state.readingDirection)
+  const screenFit = useReaderStore((state) => state.screenFit)
+  const viewerMode = useReaderStore((state) => state.viewerMode)
+  const cycleLowData = useReaderSessionStore((state) => state.cycleLowData)
+  const resetPageIndex = useReaderStore((state) => state.resetPageIndex)
+  const setViewerMode = useReaderStore((state) => state.setViewerMode)
+  const setScreenFit = useReaderStore((state) => state.setScreenFit)
+  const setOrientation = useReaderStore((state) => state.setOrientation)
+  const setPageView = useReaderStore((state) => state.setPageView)
+  const toggleReadingDirection = useReaderStore((state) => state.toggleReadingDirection)
   const viewControlRef = useRef<HTMLDivElement>(null)
 
   const { images = [] } = manga
   const thumbnailImages = images.map((image) => image.thumbnail)
   const imageCount = images.length
   const isDoublePage = pageView === 'double'
-  const isLowDataReady = isLowDataPreferenceHydrated && lowDataSnapshot !== null
+  const isLowDataReady = isLowDataHydrated && lowDataSnapshot !== null
   const isPageMode = viewerMode === 'page'
   const isWidthFit = screenFit === 'width'
-  const { enabled: isLowDataMode } = resolveLowDataState(preference, lowDataSnapshot)
+  const { enabled: isLowDataMode } = resolveLowDataState(lowData, lowDataSnapshot)
 
   const topButtonClassName =
     'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70'
@@ -98,12 +103,12 @@ export default function ImageViewer({ manga }: Props) {
 
   // NOTE: 뷰어 진입 시 네트워크 상태를 한 번만 읽고, 자동 모드 안내도 그때만 결정해요
   useEffect(() => {
-    if (!isLowDataPreferenceHydrated || lowDataSnapshot) {
+    if (!isLowDataHydrated || lowDataSnapshot) {
       return
     }
 
     const snapshot = getNavigatorLowDataSnapshot()
-    const nextResolvedLowData = resolveLowDataState(preference, snapshot)
+    const nextResolvedLowData = resolveLowDataState(lowData, snapshot)
     const message = getAutoLowDataNoticeMessage(nextResolvedLowData.reason)
 
     setLowDataSnapshot(snapshot)
@@ -111,7 +116,7 @@ export default function ImageViewer({ manga }: Props) {
     if (message) {
       toast(message)
     }
-  }, [isLowDataPreferenceHydrated, lowDataSnapshot, preference])
+  }, [isLowDataHydrated, lowDataSnapshot, lowData])
 
   // NOTE: 뷰어를 벗어나면 페이지 초기화
   useEffect(() => {
@@ -325,8 +330,8 @@ export default function ImageViewer({ manga }: Props) {
             >
               미리보기
             </button>
-            <button className={bottomButtonClassName} onClick={cyclePreference} type="button">
-              {getLowDataPreferenceLabel(preference)}
+            <button className={bottomButtonClassName} onClick={cycleLowData} type="button">
+              {getLowDataLabel(lowData)}
             </button>
           </div>
         </div>

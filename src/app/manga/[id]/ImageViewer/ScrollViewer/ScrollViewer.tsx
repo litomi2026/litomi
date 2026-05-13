@@ -40,18 +40,14 @@ type RowProps = {
 
 export default function ScrollViewer({ isLowDataMode, manga, onClick }: Props) {
   const listRef = useListRef(null)
-  const brightness = useBrightnessStore((state) => state.brightness)
-  const imageWidth = useImageWidthStore((state) => state.imageWidth)
-  const zoomLevel = useZoomStore((state) => state.zoomLevel)
-  const setListRef = useVirtualScrollStore((state) => state.setListRef)
-  const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
-  const screenFit = useScreenFitStore((state) => state.screenFit)
+  const brightness = useReaderSessionStore((state) => state.brightness)
+  const imageWidth = useReaderStore((state) => state.imageWidth)
+  const zoomLevel = useReaderSessionStore((state) => state.zoomLevel)
+  const setListRef = useReaderStore((state) => state.setListRef)
+  const screenFit = useReaderStore((state) => state.screenFit)
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
 
-  const { images = [] } = manga
-  const pageCount = images.length + 1
   const overscanCount = isLowDataMode ? 1 : 2
-  const totalItemCount = isDoublePage ? Math.ceil(pageCount / 2) : pageCount
 
   const dynamicStyle = {
     '--image-width': `${imageWidth}%`,

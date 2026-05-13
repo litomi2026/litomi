@@ -23,6 +23,7 @@ export default function SlideshowButton({ className = '', maxPageIndex, offset, 
   const pageIndex = usePageNavigationStore((state) => state.pageIndex)
   const [isRunning, setIsRunning] = useState(false)
   const [isOpened, setIsOpened] = useState(false)
+
   const intervalSecondsRef = useRef(10)
   const isRepeatingRef = useRef(false)
   const timeoutIdRef = useRef<number | null>(null)
@@ -30,8 +31,8 @@ export default function SlideshowButton({ className = '', maxPageIndex, offset, 
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
-
     const intervalInput = e.currentTarget.elements.namedItem('interval')
+
     if (!(intervalInput instanceof HTMLInputElement)) {
       return
     }
