@@ -20,14 +20,14 @@ import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 import type { ReaderPageRenderContext } from './ImageReader/readerPages'
 import type { ReadingProgress, ReadingProgressSaveOptions } from './ImageReader/ReadingProgress/ReadingProgressTracker'
 
-import FullscreenButton from './ImageReader/FullscreenButton'
-import LastPage from './ImageReader/LastPage'
-import MangaDetailButton from './ImageReader/MangaDetailButton'
+import FullscreenButton from './FullscreenButton'
 import Reader from './ImageReader/Reader'
-import ShareButton from './ImageReader/ShareButton'
-import { getResponsivePictureSources } from './ImageReader/util'
+import LastPage from './LastPage'
+import MangaDetailButton from './MangaDetailButton'
 import { createMangaReaderPages, type MangaReaderPage } from './mangaReaderPages'
+import ShareButton from './ShareButton'
 import useMangaReadingHistory from './useMangaReadingHistory'
+import { getResponsivePictureSources } from './util'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
