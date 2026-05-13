@@ -133,8 +133,6 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
   const { images = [] } = manga
   const pageIndex = (isDoublePage ? Math.floor(currentPageIndex / 2) * 2 : currentPageIndex) + offset
   const isDoublePageSpread = isDoublePage && offset === 0
-  const first = renderPage(pageIndex)
-  const second = isDoublePageSpread ? renderPage(pageIndex + 1) : null
 
   const fetchPriority = isLowDataMode
     ? offset === 0
@@ -143,6 +141,9 @@ function PageViewerItem({ isLowDataMode, offset, manga }: PageViewerItemProps) {
     : offset < IMAGE_FETCH_PRIORITY_THRESHOLD
       ? 'high'
       : 'low'
+
+  const first = renderPage(pageIndex)
+  const second = isDoublePageSpread ? renderPage(pageIndex + 1) : null
 
   function renderPage(pageIndex: number) {
     if (pageIndex === images.length) {
