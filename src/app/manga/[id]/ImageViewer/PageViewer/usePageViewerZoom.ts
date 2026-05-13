@@ -6,16 +6,12 @@ import { useReadingDirectionStore } from '../store/readingDirection'
 import { useScreenFitStore } from '../store/screenFit'
 import { clampZoomLevel, DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
 import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
-import { captureCursorZoomAnchor, type CursorZoomAnchor, getNextWheelZoomLevel } from './viewerZoom'
+import { captureZoomAnchor, getNextWheelZoomLevel, type ZoomAnchor } from './viewerZoom'
 
-type CaptureZoomAnchorAtClientPointParams = {
+type CaptureZoomAnchorParams = {
   clientX: number
   clientY: number
-  currentZoom?: number
-}
-
-type Params = {
-  imageCount: number
+  currentZoom: number
 }
 
 type ZoomLayout = {
@@ -32,7 +28,7 @@ const INITIAL_ZOOM_LAYOUT: ZoomLayout = {
   viewportWidth: 0,
 }
 
-export default function usePageViewerZoom({ imageCount }: Params) {
+export default function usePageViewerZoom() {
   const currentIndex = usePageNavigationStore((state) => state.pageIndex)
   const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
   const isRTL = useReadingDirectionStore((state) => state.readingDirection === 'rtl')
@@ -44,7 +40,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLUListElement>(null)
-  const pendingCursorZoomAnchorRef = useRef<CursorZoomAnchor | null>(null)
+  const pendingZoomAnchorRef = useRef<ZoomAnchor | null>(null)
   const [zoomLayout, setZoomLayout] = useState(INITIAL_ZOOM_LAYOUT)
 
   const measureZoomLayout = useCallback(() => {
@@ -76,29 +72,26 @@ export default function usePageViewerZoom({ imageCount }: Params) {
     })
   }, [])
 
-  const captureZoomAnchorAtClientPoint = useCallback(
-    ({ clientX, clientY, currentZoom = getZoomLevel() }: CaptureZoomAnchorAtClientPointParams) => {
-      const scroll = scrollRef.current
-      const content = contentRef.current
+  const captureZoomAnchorAtClientPoint = useCallback(({ clientX, clientY, currentZoom }: CaptureZoomAnchorParams) => {
+    const scroll = scrollRef.current
+    const content = contentRef.current
 
-      if (!scroll || !content) {
-        return null
-      }
+    if (!scroll || !content) {
+      return null
+    }
 
-      return captureCursorZoomAnchor({
-        clientX,
-        clientY,
-        contentRect: content.getBoundingClientRect(),
-        currentZoom,
-        scrollLeft: scroll.scrollLeft,
-        scrollTop: scroll.scrollTop,
-        viewportRect: scroll.getBoundingClientRect(),
-      })
-    },
-    [getZoomLevel],
-  )
+    return captureZoomAnchor({
+      clientX,
+      clientY,
+      contentRect: content.getBoundingClientRect(),
+      currentZoom,
+      scrollLeft: scroll.scrollLeft,
+      scrollTop: scroll.scrollTop,
+      viewportRect: scroll.getBoundingClientRect(),
+    })
+  }, [])
 
-  const applyAnchoredScroll = useCallback((anchor: CursorZoomAnchor, nextZoom: number) => {
+  const applyAnchoredScroll = useCallback((anchor: ZoomAnchor, nextZoom: number) => {
     const scroll = scrollRef.current
 
     if (scroll) {
@@ -108,23 +101,23 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   }, [])
 
   const zoomToAnchor = useCallback(
-    (anchor: CursorZoomAnchor, nextZoom: number) => {
+    (anchor: ZoomAnchor, nextZoom: number) => {
       const clampedNextZoom = clampZoomLevel(nextZoom)
 
       if (clampedNextZoom === getZoomLevel()) {
-        pendingCursorZoomAnchorRef.current = null
+        pendingZoomAnchorRef.current = null
         applyAnchoredScroll(anchor, clampedNextZoom)
         return false
       }
 
-      pendingCursorZoomAnchorRef.current = anchor
+      pendingZoomAnchorRef.current = anchor
       setZoomLevel(clampedNextZoom)
       return true
     },
     [applyAnchoredScroll, getZoomLevel, setZoomLevel],
   )
 
-  const handleCursorZoomWheel = useCallback(
+  const handleZoomWheel = useCallback(
     (event: WheelEvent) => {
       const { ctrlKey, metaKey, clientX, clientY, target } = event
 
@@ -166,7 +159,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   // NOTE: 페이지 구성이나 보기 옵션이 바뀌면 화면에 그리기 전에 줌 기준 크기를 다시 재요
   useLayoutEffect(() => {
     measureZoomLayout()
-  }, [currentIndex, imageCount, isDoublePage, isRTL, measureZoomLayout, screenFit])
+  }, [currentIndex, isDoublePage, isRTL, measureZoomLayout, screenFit])
 
   // NOTE: 뷰포트나 콘텐츠 크기 변경을 즉시 반영해 확대된 스크롤 영역이 늦게 맞춰지지 않게 해요
   useLayoutEffect(() => {
@@ -187,12 +180,12 @@ export default function usePageViewerZoom({ imageCount }: Params) {
 
   // NOTE: 커서 위치를 기준으로 줌한 뒤 같은 지점이 유지되도록 스크롤 위치를 보정해요
   useLayoutEffect(() => {
-    const anchor = pendingCursorZoomAnchorRef.current
+    const anchor = pendingZoomAnchorRef.current
     if (!anchor) {
       return
     }
 
-    pendingCursorZoomAnchorRef.current = null
+    pendingZoomAnchorRef.current = null
 
     applyAnchoredScroll(anchor, zoomLevel)
   }, [applyAnchoredScroll, zoomLevel])
@@ -201,7 +194,7 @@ export default function usePageViewerZoom({ imageCount }: Params) {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === '0') {
-        pendingCursorZoomAnchorRef.current = null
+        pendingZoomAnchorRef.current = null
         resetZoom()
 
         const scroll = scrollRef.current
@@ -228,12 +221,12 @@ export default function usePageViewerZoom({ imageCount }: Params) {
       return
     }
 
-    scroll.addEventListener('wheel', handleCursorZoomWheel, { passive: false })
+    scroll.addEventListener('wheel', handleZoomWheel, { passive: false })
 
     return () => {
-      scroll.removeEventListener('wheel', handleCursorZoomWheel)
+      scroll.removeEventListener('wheel', handleZoomWheel)
     }
-  }, [handleCursorZoomWheel])
+  }, [handleZoomWheel])
 
   return {
     captureZoomAnchorAtClientPoint,

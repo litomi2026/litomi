@@ -99,33 +99,22 @@ function ScrollViewerRow({ index, isLowDataMode, style, manga }: RowComponentPro
   const currentPageIndex = usePageNavigationStore((state) => state.pageIndex)
   const navigateToPageIndex = usePageNavigationStore((state) => state.navigateToPageIndex)
   const isDoublePage = usePageViewStore((state) => state.pageView === 'double')
-  const isRTL = useReadingDirectionStore((state) => state.readingDirection === 'rtl')
+  const isLTR = useReadingDirectionStore((state) => state.readingDirection === 'ltr')
 
   const { images = [] } = manga
   const firstPageIndex = isDoublePage ? index * 2 : index
   const nextPageIndex = firstPageIndex + 1
   const isCurrentRow = index === (isDoublePage ? Math.floor(currentPageIndex / 2) : currentPageIndex)
   const fetchPriority = !isLowDataMode || isCurrentRow ? 'high' : 'low'
+  const first = renderPage(firstPageIndex)
+  const second = isDoublePage ? renderPage(nextPageIndex) : null
 
   const { ref: inViewRef, inView } = useInView({
     threshold: 0,
     rootMargin: '-50% 0% -50% 0%',
   })
 
-  useEffect(() => {
-    if (inView) {
-      navigateToPageIndex(firstPageIndex, {
-        maxIndex: images.length,
-        scroll: false,
-      })
-    }
-  }, [firstPageIndex, images.length, inView, navigateToPageIndex])
-
   function renderPage(pageIndex: number) {
-    if (pageIndex < 0 || pageIndex > images.length) {
-      return null
-    }
-
     if (pageIndex === images.length) {
       return <LastPage manga={manga} />
     }
@@ -145,20 +134,26 @@ function ScrollViewerRow({ index, isLowDataMode, style, manga }: RowComponentPro
     )
   }
 
-  const first = renderPage(firstPageIndex)
-  const second = isDoublePage ? renderPage(nextPageIndex) : null
+  useEffect(() => {
+    if (inView) {
+      navigateToPageIndex(firstPageIndex, {
+        maxIndex: images.length,
+        scroll: false,
+      })
+    }
+  }, [firstPageIndex, images.length, inView, navigateToPageIndex])
 
   return (
     <li ref={inViewRef} style={style}>
-      {isRTL ? (
+      {isLTR ? (
         <>
-          {second}
           {first}
+          {second}
         </>
       ) : (
         <>
-          {first}
           {second}
+          {first}
         </>
       )}
     </li>

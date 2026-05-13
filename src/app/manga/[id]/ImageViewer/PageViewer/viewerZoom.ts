@@ -1,5 +1,3 @@
-import { clampZoomLevel } from '../store/zoom'
-
 const DOM_DELTA_LINE = 1
 const DOM_DELTA_PAGE = 2
 const LINE_DELTA_PIXELS = 16
@@ -13,7 +11,7 @@ const MIN_PINCH_DISTANCE = 24
 
 export const DOUBLE_TAP_ZOOM_LEVEL = 2
 
-export type CursorZoomAnchor = {
+export type ZoomAnchor = {
   contentLeft: number
   contentTop: number
   contentX: number
@@ -22,7 +20,7 @@ export type CursorZoomAnchor = {
   viewportY: number
 }
 
-type CaptureCursorZoomAnchorParams = {
+type CaptureZoomAnchorParams = {
   clientX: number
   clientY: number
   contentRect: RectLike
@@ -33,7 +31,7 @@ type CaptureCursorZoomAnchorParams = {
 }
 
 type MoveZoomAnchorToClientPointParams = {
-  anchor: CursorZoomAnchor
+  anchor: ZoomAnchor
   clientX: number
   clientY: number
   viewportRect: RectLike
@@ -58,7 +56,7 @@ type WheelDeltaParams = Pick<WheelEvent, 'deltaMode'> & {
 
 type WheelZoomParams = Pick<WheelEvent, 'deltaMode' | 'deltaY'>
 
-export function captureCursorZoomAnchor({
+export function captureZoomAnchor({
   clientX,
   clientY,
   contentRect,
@@ -66,8 +64,7 @@ export function captureCursorZoomAnchor({
   scrollLeft,
   scrollTop,
   viewportRect,
-}: CaptureCursorZoomAnchorParams): CursorZoomAnchor {
-  const zoom = clampZoomLevel(currentZoom)
+}: CaptureZoomAnchorParams): ZoomAnchor {
   const viewportX = clientX - viewportRect.left
   const viewportY = clientY - viewportRect.top
   const contentLeft = contentRect.left - viewportRect.left + scrollLeft
@@ -76,8 +73,8 @@ export function captureCursorZoomAnchor({
   return {
     contentLeft,
     contentTop,
-    contentX: (scrollLeft + viewportX - contentLeft) / zoom,
-    contentY: (scrollTop + viewportY - contentTop) / zoom,
+    contentX: (scrollLeft + viewportX - contentLeft) / currentZoom,
+    contentY: (scrollTop + viewportY - contentTop) / currentZoom,
     viewportX,
     viewportY,
   }
@@ -95,15 +92,15 @@ export function getMidpoint(first: PointerLike, second: PointerLike) {
 }
 
 export function getNextOneFingerZoomLevel(startZoom: number, dragDeltaY: number) {
-  return clampZoomLevel(startZoom * Math.exp(dragDeltaY * ONE_FINGER_ZOOM_SPEED))
+  return startZoom * Math.exp(dragDeltaY * ONE_FINGER_ZOOM_SPEED)
 }
 
 export function getNextPinchZoomLevel({ currentDistance, startDistance, startZoom }: PinchZoomParams) {
   if (startDistance < MIN_PINCH_DISTANCE) {
-    return clampZoomLevel(startZoom)
+    return startZoom
   }
 
-  return clampZoomLevel(startZoom * (currentDistance / startDistance))
+  return startZoom * (currentDistance / startDistance)
 }
 
 export function getNextWheelZoomLevel(currentZoom: number, wheel: WheelZoomParams) {
@@ -114,7 +111,7 @@ export function getNextWheelZoomLevel(currentZoom: number, wheel: WheelZoomParam
 
   const clampedDeltaY = Math.max(-MAX_NORMALIZED_WHEEL_DELTA, Math.min(normalizedDeltaY, MAX_NORMALIZED_WHEEL_DELTA))
   const speed = getAdaptiveWheelZoomSpeed(clampedDeltaY)
-  return clampZoomLevel(currentZoom * Math.exp(-clampedDeltaY * speed))
+  return currentZoom * Math.exp(-clampedDeltaY * speed)
 }
 
 export function getNormalizedWheelDelta({ delta, deltaMode }: WheelDeltaParams) {
@@ -134,7 +131,7 @@ export function moveZoomAnchorToClientPoint({
   clientX,
   clientY,
   viewportRect,
-}: MoveZoomAnchorToClientPointParams): CursorZoomAnchor {
+}: MoveZoomAnchorToClientPointParams): ZoomAnchor {
   return {
     ...anchor,
     viewportX: clientX - viewportRect.left,

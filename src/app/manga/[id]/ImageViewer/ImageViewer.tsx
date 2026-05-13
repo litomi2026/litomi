@@ -43,7 +43,7 @@ type Props = {
   manga: Manga
 }
 
-export default function ImageViewer({ manga }: Readonly<Props>) {
+export default function ImageViewer({ manga }: Props) {
   const [showController, setShowController] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(false)
   const [showViewControl, setShowViewControl] = useState(false)
@@ -196,11 +196,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         data-visible={showController ? 'true' : 'false'}
         inert={!showController}
       >
-        <div
-          aria-label="뷰어 상단 도구"
-          className="flex gap-2 items-center justify-between p-3 select-none"
-          role="toolbar"
-        >
+        <div className="flex gap-2 items-center justify-between p-3 select-none" role="toolbar">
           <div className="flex gap-1">
             <BackButton className={topButtonClassName} fallbackUrl="/" />
             <FullscreenButton className={topButtonClassName} />
