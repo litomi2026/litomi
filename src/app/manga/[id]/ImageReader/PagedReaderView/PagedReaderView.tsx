@@ -9,10 +9,10 @@ import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../readerPage
 
 import { type ScreenFit, useReaderSessionStore, useReaderStore } from '../store/reader'
 import { NATIVE_GESTURE_BLOCK_CSS } from '../viewerGesturePolicy'
+import usePagedReaderViewScrollRestoration from './usePagedReaderViewScrollRestoration'
+import usePagedReaderViewWheelNavigation from './usePagedReaderViewWheelNavigation'
+import usePagedReaderViewZoom from './usePagedReaderViewZoom'
 import usePageNavigation from './usePageNavigation'
-import usePageReaderViewScrollRestoration from './usePageReaderViewScrollRestoration'
-import usePageReaderViewWheelNavigation from './usePageReaderViewWheelNavigation'
-import usePageReaderViewZoom from './usePageReaderViewZoom'
 import useViewerPointerGestures from './useViewerPointerGestures'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
@@ -41,7 +41,7 @@ type Props<TPage extends ReaderPage> = {
   showTouchAreaOverlay: boolean
 }
 
-export default function PageReaderView<TPage extends ReaderPage>({
+export default function PagedReaderView<TPage extends ReaderPage>({
   isLowDataMode,
   onClick,
   pages,
@@ -53,7 +53,7 @@ export default function PageReaderView<TPage extends ReaderPage>({
   const maxPageIndex = Math.max(0, pages.length - 1)
   const { prevPage, nextPage } = usePageNavigation({ maxPageIndex, readerLayout })
 
-  const pageReaderViewOffsets = isLowDataMode
+  const pagedReaderViewOffsets = isLowDataMode
     ? [0, 1]
     : Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }, (_, i) => i - 1)
 
@@ -65,7 +65,7 @@ export default function PageReaderView<TPage extends ReaderPage>({
     scrollRef,
     styles,
     zoomToAnchor,
-  } = usePageReaderViewZoom()
+  } = usePagedReaderViewZoom()
 
   const { handlePointerCancel, handlePointerDown, handlePointerMove, handlePointerUp } = useViewerPointerGestures({
     captureZoomAnchorAtClientPoint,
@@ -75,8 +75,8 @@ export default function PageReaderView<TPage extends ReaderPage>({
     zoomToAnchor,
   })
 
-  usePageReaderViewScrollRestoration({ scrollRef })
-  usePageReaderViewWheelNavigation({ nextPage, prevPage, scrollRef })
+  usePagedReaderViewScrollRestoration({ scrollRef })
+  usePagedReaderViewWheelNavigation({ nextPage, prevPage, scrollRef })
 
   return (
     <>
@@ -105,8 +105,8 @@ export default function PageReaderView<TPage extends ReaderPage>({
                 </output>
               </li>
             ) : (
-              pageReaderViewOffsets.map((offset) => (
-                <PageReaderViewItem
+              pagedReaderViewOffsets.map((offset) => (
+                <PagedReaderViewItem
                   isLowDataMode={isLowDataMode}
                   key={offset}
                   offset={offset}
@@ -122,7 +122,7 @@ export default function PageReaderView<TPage extends ReaderPage>({
   )
 }
 
-function PageReaderViewItem<TPage extends ReaderPage>({
+function PagedReaderViewItem<TPage extends ReaderPage>({
   isLowDataMode,
   offset,
   readerLayout,

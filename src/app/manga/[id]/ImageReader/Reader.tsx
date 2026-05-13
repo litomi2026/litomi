@@ -12,7 +12,7 @@ import {
   type LowDataSnapshot,
   resolveLowDataState,
 } from './lowData'
-import PageReaderView from './PageReaderView/PageReaderView'
+import PagedReaderView from './PagedReaderView/PagedReaderView'
 import PageSlider from './PageSlider'
 import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from './readerPages'
 import ReadingProgressTracker, {
@@ -235,7 +235,7 @@ function ReaderContent<TPage extends ReaderPage>({
           <span className="sr-only">이미지 불러오는 중</span>
         </output>
       ) : isPageMode ? (
-        <PageReaderView
+        <PagedReaderView
           isLowDataMode={isLowDataMode}
           onClick={() => setShowController((prev) => !prev)}
           pages={pages}

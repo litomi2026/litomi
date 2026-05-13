@@ -16,7 +16,7 @@ type Params = {
 
 type WheelDirection = -1 | 1
 
-export default function usePageReaderViewWheelNavigation({ nextPage, prevPage, scrollRef }: Params) {
+export default function usePagedReaderViewWheelNavigation({ nextPage, prevPage, scrollRef }: Params) {
   const getOrientation = useReaderStore((state) => state.getOrientation)
   const getZoomLevel = useReaderSessionStore((state) => state.getZoomLevel)
   const accumulatedDeltaRef = useRef(0)

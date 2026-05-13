@@ -24,7 +24,7 @@ const INITIAL_ZOOM_LAYOUT: ZoomLayout = {
   viewportWidth: 0,
 }
 
-export default function usePageReaderViewZoom() {
+export default function usePagedReaderViewZoom() {
   const currentIndex = useReaderStore((state) => state.pageIndex)
   const isDoublePage = useReaderStore((state) => state.pageView === 'double')
   const isRTL = useReaderStore((state) => state.readingDirection === 'rtl')
