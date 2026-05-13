@@ -1,4 +1,4 @@
-import { LowDataPreference } from './store/lowDataMode'
+import type { LowDataMode } from './store/reader'
 
 export type LowDataReason = 'auto-save-data' | 'auto-slow-network' | 'manual-on' | 'none'
 
@@ -31,12 +31,12 @@ export function getAutoLowDataNoticeMessage(reason: LowDataReason): string | nul
   return null
 }
 
-export function getLowDataPreferenceLabel(preference: LowDataPreference): string {
-  if (preference === 'off') {
+export function getLowDataLabel(lowData: LowDataMode): string {
+  if (lowData === 'off') {
     return '저데이터 꺼짐'
   }
 
-  if (preference === 'on') {
+  if (lowData === 'on') {
     return '저데이터 켜짐'
   }
 
@@ -60,18 +60,18 @@ export function getNavigatorLowDataSnapshot(): LowDataSnapshot {
 }
 
 export function resolveLowDataState(
-  preference: LowDataPreference,
+  lowData: LowDataMode,
   snapshot: LowDataSnapshot | null,
 ): ResolvedLowDataState {
   if (!snapshot) {
     return { enabled: false, reason: 'none' }
   }
 
-  if (preference === 'off') {
+  if (lowData === 'off') {
     return { enabled: false, reason: 'none' }
   }
 
-  if (preference === 'on') {
+  if (lowData === 'on') {
     return { enabled: true, reason: 'manual-on' }
   }
 

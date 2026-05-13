@@ -1,8 +1,6 @@
 import { type PointerEvent, useEffect, useRef } from 'react'
 
-import { useBrightnessStore } from '../store/brightness'
-import { useOrientationStore } from '../store/orientation'
-import { DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
+import { DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '../store/reader'
 import {
   canScrollAxis,
   getScrollableAxesInPath,
@@ -120,10 +118,10 @@ export default function useViewerPointerGestures({
   prevPage,
   zoomToAnchor,
 }: Params) {
-  const getOrientation = useOrientationStore((state) => state.getOrientation)
-  const getBrightness = useBrightnessStore((state) => state.getBrightness)
-  const setBrightness = useBrightnessStore((state) => state.setBrightness)
-  const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
+  const getOrientation = useReaderStore((state) => state.getOrientation)
+  const getBrightness = useReaderSessionStore((state) => state.getBrightness)
+  const setBrightness = useReaderSessionStore((state) => state.setBrightness)
+  const getZoomLevel = useReaderSessionStore((state) => state.getZoomLevel)
 
   const activePointersRef = useRef(new Map<number, GesturePointer>())
   const consumedPointerIdsRef = useRef(new Set<number>())

@@ -1,7 +1,6 @@
 import { type RefObject, useEffect, useRef } from 'react'
 
-import { type Orientation, useOrientationStore } from '../store/orientation'
-import { DEFAULT_ZOOM, useZoomStore } from '../store/zoom'
+import { DEFAULT_ZOOM, type Orientation, useReaderSessionStore, useReaderStore } from '../store/reader'
 import { getScrollableAxesInPath, shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
 import { getNormalizedWheelDelta } from './viewerZoom'
 
@@ -18,8 +17,8 @@ type Params = {
 type WheelDirection = -1 | 1
 
 export default function usePageViewerWheelNavigation({ nextPage, prevPage, scrollRef }: Params) {
-  const getOrientation = useOrientationStore((state) => state.getOrientation)
-  const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
+  const getOrientation = useReaderStore((state) => state.getOrientation)
+  const getZoomLevel = useReaderSessionStore((state) => state.getZoomLevel)
   const accumulatedDeltaRef = useRef(0)
   const cooldownUntilRef = useRef(0)
   const directionRef = useRef<WheelDirection | null>(null)

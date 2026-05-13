@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type AutoHideCursorOptions = {
   enabled: boolean
@@ -9,40 +9,44 @@ export default function useAutoHideCursor({ enabled, idleDelayMs }: AutoHideCurs
   const [isCursorHidden, setIsCursorHidden] = useState(false)
   const timeoutIdRef = useRef<number | null>(null)
 
-  const clearTimer = useCallback(() => {
-    if (timeoutIdRef.current === null) {
-      return
-    }
-    window.clearTimeout(timeoutIdRef.current)
-    timeoutIdRef.current = null
-  }, [])
-
-  const scheduleHide = useCallback(() => {
-    clearTimer()
-    timeoutIdRef.current = window.setTimeout(() => {
-      setIsCursorHidden(true)
-    }, idleDelayMs)
-  }, [clearTimer, idleDelayMs])
-
-  const registerActivity = useCallback(() => {
+  function registerActivity() {
     if (!enabled) {
       return
     }
 
     setIsCursorHidden((prev) => (prev ? false : prev))
-    scheduleHide()
-  }, [enabled, scheduleHide])
+
+    if (timeoutIdRef.current !== null) {
+      window.clearTimeout(timeoutIdRef.current)
+    }
+
+    timeoutIdRef.current = window.setTimeout(() => {
+      setIsCursorHidden(true)
+    }, idleDelayMs)
+  }
 
   useEffect(() => {
+    function clearCursorTimer() {
+      if (timeoutIdRef.current === null) {
+        return
+      }
+
+      window.clearTimeout(timeoutIdRef.current)
+      timeoutIdRef.current = null
+    }
+
     if (!enabled) {
-      clearTimer()
+      clearCursorTimer()
       setIsCursorHidden(false)
       return
     }
 
-    scheduleHide()
-    return clearTimer
-  }, [clearTimer, enabled, scheduleHide])
+    timeoutIdRef.current = window.setTimeout(() => {
+      setIsCursorHidden(true)
+    }, idleDelayMs)
+
+    return clearCursorTimer
+  }, [enabled, idleDelayMs])
 
   return { isCursorHidden, registerActivity }
 }
