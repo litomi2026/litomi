@@ -1,6 +1,5 @@
+import { getViewerLink } from '@litomi/domain/utils/manga'
 import { describe, expect, test } from 'bun:test'
-
-import { getViewerLink } from '../manga'
 
 describe('getViewerLink', () => {
   test('소스 별로 뷰어 링크를 생성한다', () => {

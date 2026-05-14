@@ -1,6 +1,5 @@
+import { appendViewToPath, getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { describe, expect, test } from 'bun:test'
-
-import { appendViewToPath, getViewFromSearchParams, setViewToSearchParams, View } from './param'
 
 describe('view search params helpers', () => {
   test('view=img일 때만 이미지 모드로 해석한다', () => {
@@ -11,7 +10,9 @@ describe('view search params helpers', () => {
   })
 
   test('이미지 모드는 쿼리에 view를 남기고 카드 모드는 제거한다', () => {
-    expect(setViewToSearchParams(new URLSearchParams('sort=recent'), View.IMAGE).toString()).toBe('sort=recent&view=img')
+    expect(setViewToSearchParams(new URLSearchParams('sort=recent'), View.IMAGE).toString()).toBe(
+      'sort=recent&view=img',
+    )
     expect(setViewToSearchParams(new URLSearchParams('sort=recent&view=img'), View.CARD).toString()).toBe('sort=recent')
   })
 

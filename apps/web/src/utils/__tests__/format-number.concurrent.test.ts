@@ -1,6 +1,5 @@
+import { formatNumber } from '@litomi/std'
 import { describe, expect, it } from 'bun:test'
-
-import { formatNumber } from '../format/number'
 
 describe('formatNumber', () => {
   describe('영어 포맷(en)', () => {

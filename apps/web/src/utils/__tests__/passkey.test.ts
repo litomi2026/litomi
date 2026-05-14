@@ -1,6 +1,5 @@
+import { signalCurrentPasskeyUserDetails, signalUnknownPasskeyCredential } from '@litomi/auth/passkey'
 import { afterEach, describe, expect, mock, test } from 'bun:test'
-
-import { signalCurrentPasskeyUserDetails, signalUnknownPasskeyCredential } from '../passkey'
 
 const originalLocation = globalThis.location
 const originalPublicKeyCredential = globalThis.PublicKeyCredential

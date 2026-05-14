@@ -1,6 +1,5 @@
+import { imageURLSchema } from '@litomi/domain/database/zod'
 import { describe, expect, test } from 'bun:test'
-
-import { imageURLSchema } from '../zod'
 
 describe('데이터베이스 zod 스키마', () => {
   describe('imageURLSchema', () => {

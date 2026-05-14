@@ -1,6 +1,5 @@
+import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import { describe, expect, test } from 'bun:test'
-
-import { getRequestIP, getRequestUserAgent } from '../request'
 
 describe('request helpers', () => {
   test('CF-Connecting-IP를 가장 우선해서 사용한다', () => {

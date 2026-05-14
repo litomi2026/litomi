@@ -1,13 +1,12 @@
-import { COOKIE_DOMAIN } from '@litomi/domain/constants'
-import { CookieKey } from '@litomi/domain/constants/storage'
-import { describe, expect, test } from 'bun:test'
-
 import {
   getAccessTokenCookieConfig,
   getAuthCookieClearConfigs,
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
-} from '../cookie'
+} from '@litomi/auth/cookie'
+import { COOKIE_DOMAIN } from '@litomi/domain/constants'
+import { CookieKey } from '@litomi/domain/constants/storage'
+import { describe, expect, test } from 'bun:test'
 
 describe('auth cookie configs', () => {
   test('access token cookie는 remember 여부와 상관없이 session cookie로 발급된다', async () => {
