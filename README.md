@@ -129,7 +129,7 @@ bun run db:push
 bun run db:push:aiven
 ```
 
-`bun run db:push`는 Drizzle schema를 먼저 적용한 뒤, `src/database/supabase/functions/*.sql`에 있는 Postgres 함수를 이름순으로 이어서 반영해요. 각 함수는 `create or replace function`으로 관리해서 멱등성을 유지하고, cron 스케줄은 Supabase Dashboard UI에서 별도로 관리해요.
+`bun run db:push`는 Drizzle schema를 먼저 적용한 뒤, `packages/db/src/database/supabase/functions/*.sql`에 있는 Postgres 함수를 이름순으로 이어서 반영해요. 각 함수는 `create or replace function`으로 관리해서 멱등성을 유지하고, cron 스케줄은 Supabase Dashboard UI에서 별도로 관리해요.
 
 ### 2) Backend 실행
 
@@ -158,8 +158,8 @@ bun dev
 
 - **Vercel (Web)**: Next.js 앱 배포에 사용해요.
 - **Cloud Run (Job)**: 주기 작업(데이터 동기화/알림)을 배포할 때 사용해요.
-  - [`cloud-run/manga-crawl/README.md`](cloud-run/manga-crawl/README.md)
-  - [`cloud-run/crawl-and-notify/README.md`](cloud-run/crawl-and-notify/README.md)
+  - [`infra/cloud-run/catalog-ingest/README.md`](infra/cloud-run/catalog-ingest/README.md)
+  - [`infra/cloud-run/notification-dispatch/README.md`](infra/cloud-run/notification-dispatch/README.md)
 
 ## 기여하기
 

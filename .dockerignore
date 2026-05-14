@@ -2,6 +2,7 @@
 .next
 dist
 data
+node_modules
 
 # OS / editors
 .DS_Store
@@ -23,7 +24,10 @@ test-results
 coverage
 
 # Mobile build artifacts
-mobile
+apps/mobile/android/.gradle
+apps/mobile/android/build
+apps/mobile/android/app/build
+apps/mobile/ios/App/build
 
 # Local env
 .env*

@@ -381,3 +381,5 @@ data/model/
 
 .open-next/
 *.crt
+
+.turbo/
