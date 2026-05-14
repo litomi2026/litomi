@@ -3,8 +3,6 @@ const probeState = {
   draining: false,
 }
 
-let signalHandlersRegistered = false
-
 export function getProbeStateSnapshot() {
   return {
     startupComplete: probeState.startupComplete,
@@ -18,16 +16,6 @@ export function markProbeDraining() {
 
 export function markProbeStartupComplete() {
   probeState.startupComplete = true
-}
-
-export function registerProbeSignalHandlers() {
-  if (signalHandlersRegistered) {
-    return
-  }
-
-  process.once('SIGTERM', markProbeDraining)
-  process.once('SIGINT', markProbeDraining)
-  signalHandlersRegistered = true
 }
 
 export function resetProbeStateForTest() {

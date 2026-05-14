@@ -15,9 +15,7 @@ import { timing } from 'hono/timing'
 import appRoutes from './app'
 import { auth } from './middleware/auth'
 import { getDefaultSecureHeadersOptions } from './middleware/secure-headers'
-import { initBackendOtel } from './otel'
 import probeRoutes from './probe'
-import { markProbeStartupComplete, registerProbeSignalHandlers } from './probe/state'
 import { resolveCORSOrigin } from './utils/cors-origin'
 
 export type Env = {
@@ -27,9 +25,6 @@ export type Env = {
     isAdult?: boolean
   }
 }
-
-initBackendOtel()
-registerProbeSignalHandlers()
 
 const app = new Hono<Env>()
 
@@ -79,12 +74,5 @@ app.use(
 // )
 
 app.route('/', appRoutes)
-markProbeStartupComplete()
 
-const honoApp = {
-  ...app,
-  port: Number(process.env.PORT ?? 3002),
-  hostname: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
-}
-
-export default honoApp
+export default app

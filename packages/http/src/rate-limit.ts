@@ -30,10 +30,11 @@ export class MemoryStore implements RateLimitStore {
   private cleanupInterval: NodeJS.Timeout | null = null
 
   constructor(private windowMs: number) {
-    // Clean up old entries periodically
     this.cleanupInterval = setInterval(() => {
       this.cleanup()
-    }, 60 * 1000) // Every minute
+    }, ms('1 minute'))
+
+    this.cleanupInterval.unref?.()
   }
 
   async cleanup(): Promise<void> {

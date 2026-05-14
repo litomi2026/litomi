@@ -156,9 +156,3 @@ class TrendingKeywordsService {
 
 // Singleton instance
 export const trendingKeywordsService = new TrendingKeywordsService()
-
-// Ensure batch is flushed on process termination
-if (typeof process !== 'undefined') {
-  process.on('SIGTERM', () => trendingKeywordsService.flushSearchBatch())
-  process.on('SIGINT', () => trendingKeywordsService.flushSearchBatch())
-}

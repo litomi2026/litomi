@@ -25,8 +25,6 @@ export type PageRanking = {
 
 const analyticsClient = new BetaAnalyticsDataClient({ fallback: 'rest' })
 
-registerAnalyticsClientShutdown()
-
 const realtimeRoutes = new Hono<Env>()
 
 realtimeRoutes.get('/', async (c) => {
@@ -98,15 +96,12 @@ realtimeRoutes.get('/', async (c) => {
   }
 })
 
-function registerAnalyticsClientShutdown() {
-  function shutdown() {
-    analyticsClient.close().catch((error: unknown) => {
-      console.error('Failed to close Google Analytics Data client', error)
-    })
+export async function shutdownAnalyticsClient(): Promise<void> {
+  try {
+    await analyticsClient.close()
+  } catch (error) {
+    console.error('Failed to close Google Analytics Data client', error)
   }
-
-  process.once('SIGTERM', shutdown)
-  process.once('SIGINT', shutdown)
 }
 
 export default realtimeRoutes
