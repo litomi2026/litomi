@@ -1,32 +1,12 @@
+import type { ReferredPost } from '@litomi/contracts/post/referred-post'
+
+import { formatDistanceToNow } from '@litomi/std/format/date'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-
-import { formatDistanceToNow } from '@/utils/format/date'
 
 import Squircle from '../ui/Squircle'
 import { getPostDetailHref } from './postHref'
 import PostImages from './PostImages'
-
-export type DeletedReferredPost = {
-  isDeleted: true
-}
-
-export type LiveReferredPost = {
-  isDeleted?: false
-  id: number
-  createdAt: Date
-  updatedAt?: Date
-  content?: string | null
-  imageURLs?: string[] | null
-  author?: {
-    id: number
-    nickname: string
-    name: string
-    imageURL?: string | null
-  } | null
-}
-
-export type ReferredPost = DeletedReferredPost | LiveReferredPost
 
 type Props = {
   referredPost: ReferredPost

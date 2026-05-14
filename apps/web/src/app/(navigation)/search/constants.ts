@@ -1,5 +1,5 @@
-import { DEFAULT_SUGGESTIONS } from '@/constants/json'
-import { MAX_MANGA_ID } from '@/constants/policy'
+import { DEFAULT_SUGGESTIONS } from '@litomi/domain/constants/json'
+import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 
 // value: 소문자여야 함
 export const SEARCH_SUGGESTIONS = [
@@ -107,20 +107,3 @@ export type FilterKey = (typeof FILTER_KEYS)[number]
 export type FilterState = Partial<Record<FilterKey, string>>
 
 export const isDateFilter = (key: FilterKey) => FILTER_CONFIG[key]?.type === 'date'
-
-export const KOREAN_TO_ENGLISH_QUERY_KEYS: Record<string, string> = {
-  언어: 'language',
-  여성: 'female',
-  여자: 'female',
-  여: 'female',
-  남성: 'male',
-  남자: 'male',
-  남: 'male',
-  기타: 'other',
-  혼합: 'mixed',
-  작가: 'artist',
-  그룹: 'group',
-  캐릭터: 'character',
-  시리즈: 'series',
-  종류: 'type',
-}
