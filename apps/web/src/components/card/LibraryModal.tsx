@@ -1,6 +1,10 @@
 'use client'
 
 import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogFooter from '@litomi/ui/dialog-footer'
+import DialogHeader from '@litomi/ui/dialog-header'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
@@ -9,10 +13,6 @@ import { toast } from 'sonner'
 import { create } from 'zustand'
 
 import { addMangaToLibraries } from '@/app/(navigation)/library/api'
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogFooter from '@/components/ui/DialogFooter'
-import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 
 import useLibrariesQuery from './useLibrariesQuery'

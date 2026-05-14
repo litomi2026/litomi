@@ -1,9 +1,9 @@
 'use client'
 
+import Slider from '@litomi/ui/slider'
 import { Monitor, Palette, ZoomIn } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import Slider from './Slider'
 import { DEFAULT_ZOOM, MAX_ZOOM, useReaderSessionStore, useReaderStore } from './store/reader'
 
 const CONTROL_ICONS_CLASS = 'size-4 text-zinc-400'

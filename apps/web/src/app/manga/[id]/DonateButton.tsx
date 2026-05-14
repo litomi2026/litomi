@@ -4,16 +4,16 @@ import type { POSTV1PointsDonationCreateRequest } from '@litomi/contracts/api/po
 import type { Manga } from '@litomi/domain/types/manga'
 
 import { formatNumber } from '@litomi/std/format/number'
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogFooter from '@litomi/ui/dialog-footer'
+import DialogHeader from '@litomi/ui/dialog-header'
 import ms from 'ms'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'
 import { toast } from 'sonner'
 
 import { usePointsQuery } from '@/app/(navigation)/(top-navigation)/libo/usePointsQuery'
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogFooter from '@/components/ui/DialogFooter'
-import DialogHeader from '@/components/ui/DialogHeader'
 import useMeQuery from '@/query/useMeQuery'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

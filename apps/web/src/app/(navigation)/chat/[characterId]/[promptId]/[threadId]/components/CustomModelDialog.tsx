@@ -1,9 +1,8 @@
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogFooter from '@litomi/ui/dialog-footer'
+import DialogHeader from '@litomi/ui/dialog-header'
 import { SubmitEvent, useRef } from 'react'
-
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogFooter from '@/components/ui/DialogFooter'
-import DialogHeader from '@/components/ui/DialogHeader'
 
 interface CustomModelDialogProps {
   onClose: () => void

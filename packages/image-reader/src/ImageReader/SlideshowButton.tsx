@@ -1,14 +1,13 @@
 'use client'
 
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogFooter from '@litomi/ui/dialog-footer'
+import DialogHeader from '@litomi/ui/dialog-header'
+import Toggle from '@litomi/ui/toggle'
 import ms from 'ms'
 import { useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
-
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogFooter from '@/components/ui/DialogFooter'
-import DialogHeader from '@/components/ui/DialogHeader'
-import Toggle from '@/components/ui/Toggle'
 
 import type { ReaderLayout, ReaderPage } from './readerPages'
 

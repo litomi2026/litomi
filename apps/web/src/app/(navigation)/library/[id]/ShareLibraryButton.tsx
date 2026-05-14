@@ -1,12 +1,11 @@
 'use client'
 
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogHeader from '@litomi/ui/dialog-header'
 import { Check, Copy, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogHeader from '@/components/ui/DialogHeader'
 
 type Props = {
   className?: string

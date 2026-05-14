@@ -1,13 +1,13 @@
 'use client'
 import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogFooter from '@litomi/ui/dialog-footer'
+import DialogHeader from '@litomi/ui/dialog-header'
 import { Loader2, Shield, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogFooter from '@/components/ui/DialogFooter'
-import DialogHeader from '@/components/ui/DialogHeader'
 import useServerAction from '@/hook/useServerAction'
 
 import { deleteCredential } from './action-delete'

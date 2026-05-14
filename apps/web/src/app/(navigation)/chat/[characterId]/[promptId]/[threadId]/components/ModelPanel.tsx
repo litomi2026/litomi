@@ -2,6 +2,7 @@
 
 import { formatBytes } from '@litomi/std/format/byte'
 import { formatNumber } from '@litomi/std/format/number'
+import Toggle from '@litomi/ui/toggle'
 import { ChevronRight, Trash2 } from 'lucide-react'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
@@ -12,7 +13,6 @@ import type { ContextWindowPercent } from '@/app/(navigation)/chat/storage/webll
 import { computeContextWindowSizeFromPercent } from '@/app/(navigation)/chat/lib/webllmAppConfig'
 import { normalizeHuggingFaceUrl } from '@/app/(navigation)/chat/util/huggingface'
 import CustomSelect from '@/components/ui/CustomSelect'
-import Toggle from '@/components/ui/Toggle'
 
 import { CustomModelDialog } from './CustomModelDialog'
 import { type InstallState, ModelStatus } from './ModelStatus'

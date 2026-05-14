@@ -2,6 +2,10 @@
 
 import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/constants/policy'
 import { Manga } from '@litomi/domain/types/manga'
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogFooter from '@litomi/ui/dialog-footer'
+import DialogHeader from '@litomi/ui/dialog-header'
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -17,10 +21,6 @@ import MangaMetadataLink from '@/components/card/MangaMetadataLink'
 import MangaMetadataList from '@/components/card/MangaMetadataList'
 import MangaMetadataListWithLink from '@/components/card/MangaMetadataListWithLink'
 import MangaTagList from '@/components/card/MangaTagList'
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogFooter from '@/components/ui/DialogFooter'
-import DialogHeader from '@/components/ui/DialogHeader'
 
 type MangaDetailModalStore = {
   isOpen: boolean

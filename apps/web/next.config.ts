@@ -115,6 +115,7 @@ const nextConfig: NextConfig = {
     '@litomi/notifications',
     '@litomi/observability',
     '@litomi/std',
+    '@litomi/ui',
   ],
   ...(isProduction && {
     compiler: { removeConsole: { exclude: ['error', 'warn'] } },

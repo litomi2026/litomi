@@ -14,7 +14,7 @@ import {
 } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { registerTopLayerPortalContainer, unregisterTopLayerPortalContainer } from '@/components/ui/topLayerPortal'
+import { registerTopLayerPortalContainer, unregisterTopLayerPortalContainer } from './topLayerPortal'
 
 type DialogState = 'closed' | 'closing' | 'open' | 'opening'
 

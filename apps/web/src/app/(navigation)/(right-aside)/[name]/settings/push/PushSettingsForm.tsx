@@ -2,13 +2,13 @@
 
 import { getUsernameFromParam } from '@litomi/std/param'
 import { getTimezoneOffsetHours, localToUtcHour, utcToLocalHour } from '@litomi/std/timezone'
+import Toggle from '@litomi/ui/toggle'
 import { Loader2, Moon } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { ReactNode } from 'react'
 import { toast } from 'sonner'
 
 import CustomSelect from '@/components/ui/CustomSelect'
-import Toggle from '@/components/ui/Toggle'
 import useServerAction, { getFormField } from '@/hook/useServerAction'
 
 import { Params } from '../../common'

@@ -2,11 +2,11 @@
 
 import type { UserSettings } from '@litomi/domain/utils/user-settings'
 
+import Toggle from '@litomi/ui/toggle'
 import { Eye, History, Loader2 } from 'lucide-react'
 import { type ReactNode, SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
-import Toggle from '@/components/ui/Toggle'
 import usePatchMySettingsMutation from '@/query/usePatchMySettingsMutation'
 
 type Props = {

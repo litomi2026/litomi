@@ -1,6 +1,9 @@
 'use client'
 
 import { Manga } from '@litomi/domain/types/manga'
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogHeader from '@litomi/ui/dialog-header'
 import { Check, Link, Share2, X } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
 
@@ -8,9 +11,6 @@ import LogoFacebook from '@/components/icons/LogoFacebook'
 import LogoLine from '@/components/icons/LogoLine'
 import LogoTelegram from '@/components/icons/LogoTelegram'
 import LogoX from '@/components/icons/LogoX'
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogHeader from '@/components/ui/DialogHeader'
 
 type CopyStatus = 'error' | 'idle' | 'success'
 

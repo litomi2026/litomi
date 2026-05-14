@@ -1,11 +1,10 @@
 'use client'
 
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogHeader from '@litomi/ui/dialog-header'
 import { Fingerprint, Info } from 'lucide-react'
 import { useState } from 'react'
-
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogHeader from '@/components/ui/DialogHeader'
 
 export default function PasskeyInfoButton() {
   const [showInfoModal, setShowInfoModal] = useState(false)

@@ -13,19 +13,19 @@ mock.module('@/lib/toast', () => ({
   showLoginRequiredToast: showLoginRequiredToastMock,
 }))
 
-mock.module('@/components/ui/Dialog', () => ({
+mock.module('@litomi/ui/dialog', () => ({
   default: ({ children, open }: { children: ReactNode; open: boolean }) => (open ? <div>{children}</div> : null),
 }))
 
-mock.module('@/components/ui/DialogBody', () => ({
+mock.module('@litomi/ui/dialog-body', () => ({
   default: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }))
 
-mock.module('@/components/ui/DialogFooter', () => ({
+mock.module('@litomi/ui/dialog-footer', () => ({
   default: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }))
 
-mock.module('@/components/ui/DialogHeader', () => ({
+mock.module('@litomi/ui/dialog-header', () => ({
   default: ({ title }: { title: string }) => <div>{title}</div>,
 }))
 

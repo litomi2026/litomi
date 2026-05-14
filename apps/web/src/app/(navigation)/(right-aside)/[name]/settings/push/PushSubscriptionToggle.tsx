@@ -2,11 +2,11 @@
 
 import { env } from '@litomi/env/env/client'
 import { getUsernameFromParam } from '@litomi/std/param'
+import Toggle from '@litomi/ui/toggle'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import Toggle from '@/components/ui/Toggle'
 import useServerAction from '@/hook/useServerAction'
 import { checkIOSDevice, checkIOSSafari, urlBase64ToUint8Array } from '@/utils/browser'
 

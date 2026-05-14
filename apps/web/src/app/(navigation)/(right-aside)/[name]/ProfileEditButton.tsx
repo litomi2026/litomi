@@ -2,17 +2,16 @@
 
 import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { getSafeProfileImageURL } from '@litomi/std/profile-image-url'
+import Dialog from '@litomi/ui/dialog'
+import DialogBody from '@litomi/ui/dialog-body'
+import DialogFooter from '@litomi/ui/dialog-footer'
+import DialogHeader from '@litomi/ui/dialog-header'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { SubmitEvent, SyntheticEvent, use, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-
-import Dialog from '@/components/ui/Dialog'
-import DialogBody from '@/components/ui/DialogBody'
-import DialogFooter from '@/components/ui/DialogFooter'
-import DialogHeader from '@/components/ui/DialogHeader'
 
 import {
   applyProfileProblem,
