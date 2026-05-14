@@ -1,4 +1,8 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+
+@source '..';
+@source '../../../../packages/image-reader/src';
+@source '../../../../packages/ui/src';
 
 @theme {
   --color-background: #0a0a0a;
