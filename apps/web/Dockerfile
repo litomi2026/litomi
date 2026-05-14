@@ -6,7 +6,7 @@ ENV BUILD_OUTPUT=standalone
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-COPY package.json bun.lock turbo.json tsconfig.json ./
+COPY package.json bun.lock turbo.json tsconfig.json tsconfig.base.json ./
 COPY apps/api/package.json ./apps/api/package.json
 COPY apps/catalog-ingest/package.json ./apps/catalog-ingest/package.json
 COPY apps/web/package.json ./apps/web/package.json
