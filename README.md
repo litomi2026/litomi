@@ -134,7 +134,7 @@ bun run db:push:aiven
 ### 2) Backend 실행
 
 ```bash
-bun run dev:backend
+bun run dev:api
 ```
 
 ### 3) 모두 실행

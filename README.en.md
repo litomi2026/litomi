@@ -181,7 +181,7 @@ bun run db:push:aiven
 ### 5) Start Backend
 
 ```bash
-bun run dev:backend
+bun run dev:api
 ```
 
 ### 6) Start Web
