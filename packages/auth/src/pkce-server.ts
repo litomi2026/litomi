@@ -1,7 +1,7 @@
 'use server'
 
 import { redisClient } from '@litomi/db/database/redis'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import crypto from 'crypto'
 
 interface AuthChallenge {

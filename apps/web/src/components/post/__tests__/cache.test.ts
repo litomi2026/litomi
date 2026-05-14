@@ -1,6 +1,6 @@
-import type { GETV1PostLikedResponse, GETV1PostResponse } from '@litomi/contracts/api/post'
+import type { GETV1PostLikedResponse, GETV1PostResponse } from '@litomi/contracts'
 
-import { PostFilter } from '@litomi/contracts/post/constant'
+import { PostFilter } from '@litomi/contracts'
 import { PostType } from '@litomi/domain/database/enum'
 import { type InfiniteData, QueryClient } from '@tanstack/react-query'
 import { afterEach, describe, expect, test } from 'bun:test'

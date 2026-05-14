@@ -1,8 +1,7 @@
 'use client'
 
-import { formatBytes } from '@litomi/std/format/byte'
-import { formatNumber } from '@litomi/std/format/number'
-import Toggle from '@litomi/ui/toggle'
+import { formatBytes, formatNumber } from '@litomi/std'
+import { Toggle } from '@litomi/ui'
 import { ChevronRight, Trash2 } from 'lucide-react'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'

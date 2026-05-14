@@ -1,13 +1,10 @@
 'use client'
 
-import type { POSTV1PointsDonationCreateRequest } from '@litomi/contracts/api/points'
+import type { POSTV1PointsDonationCreateRequest } from '@litomi/contracts'
 import type { Manga } from '@litomi/domain/types/manga'
 
-import { formatNumber } from '@litomi/std/format/number'
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogFooter from '@litomi/ui/dialog-footer'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { formatNumber } from '@litomi/std'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import ms from 'ms'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'

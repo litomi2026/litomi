@@ -1,4 +1,4 @@
-import { NotificationFilter } from '@litomi/contracts/notification/types'
+import { NotificationFilter } from '@litomi/contracts'
 import { db } from '@litomi/db/database/supabase/drizzle'
 import 'server-only'
 import { notificationTable } from '@litomi/db/database/supabase/notification'

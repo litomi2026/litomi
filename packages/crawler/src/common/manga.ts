@@ -7,7 +7,7 @@ import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
 import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
 import { tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import { Manga, MangaError } from '@litomi/domain/types/manga'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 
 type MangaFetchParams = {
   id: number

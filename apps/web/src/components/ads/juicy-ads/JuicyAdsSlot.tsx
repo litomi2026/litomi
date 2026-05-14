@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDistanceFromNow } from '@litomi/std/format/date'
+import { formatDistanceFromNow } from '@litomi/std'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 

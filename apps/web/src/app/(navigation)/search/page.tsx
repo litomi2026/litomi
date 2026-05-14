@@ -1,5 +1,5 @@
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
-import { getViewFromSearchParams } from '@litomi/std/param'
+import { getViewFromSearchParams } from '@litomi/std'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 

@@ -1,8 +1,8 @@
 'use client'
 
-import type { Post } from '@litomi/contracts/api/post'
+import type { Post } from '@litomi/contracts'
 
-import { PostFilter } from '@litomi/contracts/post/constant'
+import { PostFilter } from '@litomi/contracts'
 import { Frown, Repeat } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode, useEffect, useMemo, useState } from 'react'

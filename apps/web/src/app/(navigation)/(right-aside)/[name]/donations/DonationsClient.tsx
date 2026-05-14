@@ -1,10 +1,9 @@
 'use client'
 
-import type { GETV1PointsDonationsMeRecipient } from '@litomi/contracts/api/points'
+import type { GETV1PointsDonationsMeRecipient } from '@litomi/contracts'
 
 import { normalizeValue } from '@litomi/catalog/translation/common'
-import { formatDistanceToNow, formatLocalDate } from '@litomi/std/format/date'
-import { formatNumber } from '@litomi/std/format/number'
+import { formatDistanceToNow, formatLocalDate, formatNumber } from '@litomi/std'
 import { Trash2 } from 'lucide-react'
 import Link from 'next/link'
 

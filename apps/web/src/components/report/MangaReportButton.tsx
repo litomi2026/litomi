@@ -1,11 +1,9 @@
 'use client'
 
-import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@litomi/contracts/api/manga'
+import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Flag } from 'lucide-react'
 import Link from 'next/link'

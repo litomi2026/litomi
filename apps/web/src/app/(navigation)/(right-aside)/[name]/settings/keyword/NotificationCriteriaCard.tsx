@@ -1,7 +1,7 @@
 'use client'
 
 import { NotificationConditionType } from '@litomi/domain/database/enum'
-import Toggle from '@litomi/ui/toggle'
+import { Toggle } from '@litomi/ui'
 import dayjs from 'dayjs'
 import { BellOff, Edit3, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'

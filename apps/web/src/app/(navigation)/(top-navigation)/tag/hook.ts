@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETV1TagResponse } from '@litomi/contracts/api/tag'
+import type { GETV1TagResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'

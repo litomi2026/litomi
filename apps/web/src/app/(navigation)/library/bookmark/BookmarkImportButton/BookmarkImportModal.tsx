@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1BookmarkResponse } from '@litomi/contracts/api/bookmark'
+import type { POSTV1BookmarkResponse } from '@litomi/contracts'
 
 import { MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/constants/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

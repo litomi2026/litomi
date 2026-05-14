@@ -13,20 +13,11 @@ mock.module('@/lib/toast', () => ({
   showLoginRequiredToast: showLoginRequiredToastMock,
 }))
 
-mock.module('@litomi/ui/dialog', () => ({
-  default: ({ children, open }: { children: ReactNode; open: boolean }) => (open ? <div>{children}</div> : null),
-}))
-
-mock.module('@litomi/ui/dialog-body', () => ({
-  default: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-}))
-
-mock.module('@litomi/ui/dialog-footer', () => ({
-  default: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-}))
-
-mock.module('@litomi/ui/dialog-header', () => ({
-  default: ({ title }: { title: string }) => <div>{title}</div>,
+mock.module('@litomi/ui', () => ({
+  Dialog: ({ children, open }: { children: ReactNode; open: boolean }) => (open ? <div>{children}</div> : null),
+  DialogBody: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  DialogFooter: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  DialogHeader: ({ title }: { title: string }) => <div>{title}</div>,
 }))
 
 const { default: FollowButton } = await import('./FollowButton')

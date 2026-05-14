@@ -1,4 +1,4 @@
-import type { ReadingHistoryItem } from '@litomi/contracts/api/library'
+import type { ReadingHistoryItem } from '@litomi/contracts'
 
 import ms from 'ms'
 

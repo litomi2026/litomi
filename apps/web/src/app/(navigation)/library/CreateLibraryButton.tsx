@@ -4,17 +4,19 @@ import type {
   GETV1LibraryListResponse,
   LibraryListItem,
   POSTV1LibraryResponse,
-} from '@litomi/contracts/api/library'
+} from '@litomi/contracts'
 
 import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/env/client'
-import { normalizeString } from '@litomi/std/string'
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogFooter from '@litomi/ui/dialog-footer'
-import DialogHeader from '@litomi/ui/dialog-header'
-import Toggle from '@litomi/ui/toggle'
+import { normalizeString } from '@litomi/std'
+import {
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Toggle,
+} from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus, Shuffle } from 'lucide-react'
 import { type SubmitEvent, useEffect, useId, useRef, useState } from 'react'

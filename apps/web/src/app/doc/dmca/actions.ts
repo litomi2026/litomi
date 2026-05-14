@@ -8,7 +8,7 @@ import {
 } from '@litomi/db/database/supabase/dmca'
 import { db } from '@litomi/db/database/supabase/drizzle'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
-import { normalizeString } from '@litomi/std/string'
+import { normalizeString } from '@litomi/std'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'

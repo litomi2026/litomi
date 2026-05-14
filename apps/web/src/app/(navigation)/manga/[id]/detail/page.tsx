@@ -1,4 +1,4 @@
-import { PostFilter } from '@litomi/contracts/post/constant'
+import { PostFilter } from '@litomi/contracts'
 import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { Book } from 'lucide-react'
 import { Metadata } from 'next'

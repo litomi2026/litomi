@@ -1,4 +1,4 @@
-import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@litomi/contracts/search/query-key-alias'
+import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@litomi/contracts'
 
 export function formatDate(timestamp: number | string) {
   return new Date(Number(timestamp) * 1000).toLocaleDateString('ko-KR', {

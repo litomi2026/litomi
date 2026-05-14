@@ -1,8 +1,8 @@
 import { Locale } from '@litomi/catalog/translation/common'
 import 'server-only'
-import { queryBlacklist } from '@litomi/contracts/search/suggestion'
+import { queryBlacklist } from '@litomi/contracts'
 import { createCacheControl } from '@litomi/http/cache-control'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { Hono } from 'hono'
 import { z } from 'zod'
 

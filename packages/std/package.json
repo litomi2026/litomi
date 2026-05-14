@@ -4,19 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./format/byte": "./src/format/byte.ts",
-    "./format/date": "./src/format/date.ts",
-    "./format/number": "./src/format/number.ts",
-    "./json": "./src/json.ts",
-    "./param": "./src/param.ts",
-    "./path-length-guard": "./src/path-length-guard.ts",
-    "./profile-image-url": "./src/profile-image-url.ts",
-    "./random": "./src/random.ts",
-    "./random-edge": "./src/random-edge.ts",
-    "./string": "./src/string.ts",
-    "./time": "./src/time.ts",
-    "./timezone": "./src/timezone.ts",
-    "./type": "./src/type.ts"
+    ".": "./src/index.ts"
   },
   "dependencies": {
     "dayjs": "^1.11.20",

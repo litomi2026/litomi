@@ -1,5 +1,5 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { getUsernameFromParam } from '@litomi/std/param'
+import { getUsernameFromParam } from '@litomi/std'
 
 import { getMe } from '../common'
 import DonationsClient from './DonationsClient'

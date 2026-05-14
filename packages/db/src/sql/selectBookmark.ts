@@ -1,6 +1,6 @@
 import type { SQL } from 'drizzle-orm'
 
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts/library/item-sort'
+import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
 import { bookmarkTable } from '@litomi/db/database/supabase/activity'
 import { db } from '@litomi/db/database/supabase/drizzle'
 import {

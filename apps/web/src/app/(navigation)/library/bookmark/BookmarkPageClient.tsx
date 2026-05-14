@@ -1,9 +1,9 @@
 'use client'
 
-import type { GETV1BookmarkResponse } from '@litomi/contracts/api/bookmark'
+import type { GETV1BookmarkResponse } from '@litomi/contracts'
 
-import { COLLECTION_ITEM_SORT_OPTIONS, CollectionItemSort } from '@litomi/contracts/library/item-sort'
-import { getViewFromSearchParams, View } from '@litomi/std/param'
+import { COLLECTION_ITEM_SORT_OPTIONS, CollectionItemSort } from '@litomi/contracts'
+import { getViewFromSearchParams, View } from '@litomi/std'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 

@@ -1,4 +1,4 @@
-import { getUsernameFromParam } from '@litomi/std/param'
+import { getUsernameFromParam } from '@litomi/std'
 import { Suspense } from 'react'
 
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'

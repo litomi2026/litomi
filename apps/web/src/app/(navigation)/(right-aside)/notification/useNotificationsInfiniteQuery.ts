@@ -1,4 +1,4 @@
-import type { GETNotificationResponse } from '@litomi/contracts/api/notification'
+import type { GETNotificationResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'

@@ -1,5 +1,5 @@
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
-import { formatNumber } from '@litomi/std/format/number'
+import { formatNumber } from '@litomi/std'
 import { Heart } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'

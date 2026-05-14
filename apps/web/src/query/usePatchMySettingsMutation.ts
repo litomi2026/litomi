@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETV1MeResponse, PATCHV1MeSettingsBody } from '@litomi/contracts/api/me'
+import type { GETV1MeResponse, PATCHV1MeSettingsBody } from '@litomi/contracts'
 
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'

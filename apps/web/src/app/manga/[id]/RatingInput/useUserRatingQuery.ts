@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETV1MangaIdRatingResponse } from '@litomi/contracts/api/manga'
+import type { GETV1MangaIdRatingResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'

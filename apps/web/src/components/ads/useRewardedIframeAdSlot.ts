@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1PointTokenResponse } from '@litomi/contracts/api/points'
+import type { POSTV1PointTokenResponse } from '@litomi/contracts'
 
 import { useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'

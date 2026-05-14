@@ -1,10 +1,7 @@
 'use client'
 
-import { formatLocalDate } from '@litomi/std/format/date'
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogFooter from '@litomi/ui/dialog-footer'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { formatLocalDate } from '@litomi/std'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Dispatch, RefObject, SetStateAction, SubmitEvent, useCallback, useEffect, useState, useTransition } from 'react'

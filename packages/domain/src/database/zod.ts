@@ -1,6 +1,6 @@
 import 'server-only'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
-import { isSafeProfileImageURL } from '@litomi/std/profile-image-url'
+import { isSafeProfileImageURL } from '@litomi/std'
 import { z } from 'zod'
 
 export const loginIdSchema = z

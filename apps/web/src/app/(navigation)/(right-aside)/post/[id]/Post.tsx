@@ -1,4 +1,4 @@
-import type { Post as TPost } from '@litomi/contracts/api/post'
+import type { Post as TPost } from '@litomi/contracts'
 
 import 'dayjs/locale/ko'
 import dayjs from 'dayjs'

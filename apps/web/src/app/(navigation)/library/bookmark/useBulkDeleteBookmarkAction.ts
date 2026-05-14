@@ -1,11 +1,6 @@
 'use client'
 
-import type {
-  DELETEV1BookmarkBody,
-  GETV1BookmarkIdResponse,
-  GETV1BookmarkResponse,
-} from '@litomi/contracts/api/bookmark'
-import type { GETV1LibrarySummaryResponse } from '@litomi/contracts/api/library'
+import type { DELETEV1BookmarkBody, GETV1BookmarkIdResponse, GETV1BookmarkResponse, GETV1LibrarySummaryResponse } from '@litomi/contracts'
 import type { InfiniteData } from '@tanstack/react-query'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'

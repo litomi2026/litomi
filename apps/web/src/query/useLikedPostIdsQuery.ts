@@ -1,4 +1,4 @@
-import type { GETV1PostLikedResponse } from '@litomi/contracts/api/post'
+import type { GETV1PostLikedResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'

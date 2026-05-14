@@ -1,4 +1,4 @@
-import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+import type { GETV1MeResponse } from '@litomi/contracts'
 import type { UserSettings } from '@litomi/domain/utils/user-settings'
 
 export enum AdultState {

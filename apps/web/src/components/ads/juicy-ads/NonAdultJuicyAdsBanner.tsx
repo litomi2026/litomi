@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+import type { GETV1MeResponse } from '@litomi/contracts'
 import type { ReactNode } from 'react'
 
 import Link from 'next/link'

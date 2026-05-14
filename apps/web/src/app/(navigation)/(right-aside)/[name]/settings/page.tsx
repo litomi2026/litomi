@@ -3,7 +3,7 @@ import { db } from '@litomi/db/database/supabase/drizzle'
 import { twoFactorTable } from '@litomi/db/database/supabase/two-factor'
 import { readUserSettings } from '@litomi/db/query/user-settings.query'
 import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
-import { getUsernameFromParam } from '@litomi/std/param'
+import { getUsernameFromParam } from '@litomi/std'
 import { ErrorBoundary } from '@suspensive/react'
 import { and, eq, isNull } from 'drizzle-orm'
 import {

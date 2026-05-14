@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1CensorshipCreateResponse } from '@litomi/contracts/api/censorship'
+import type { POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
 import { BLIND_TAG_VALUES } from '@litomi/domain/constants/json'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'

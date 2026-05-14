@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@litomi/contracts/api/auth'
+import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@litomi/contracts'
 
 import { SearchParamKey } from '@litomi/domain/constants/storage'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

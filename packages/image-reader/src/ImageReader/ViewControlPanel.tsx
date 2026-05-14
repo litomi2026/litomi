@@ -1,6 +1,6 @@
 'use client'
 
-import Slider from '@litomi/ui/slider'
+import { Slider } from '@litomi/ui'
 import { Monitor, Palette, ZoomIn } from 'lucide-react'
 import { useEffect, useState } from 'react'
 

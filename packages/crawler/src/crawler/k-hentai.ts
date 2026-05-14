@@ -12,7 +12,7 @@ import { NotFoundError, ParseError, UpstreamServerError } from '@litomi/crawler/
 import { ProxyClient, type ProxyClientConfig, type ProxyRequestInit } from '@litomi/crawler/crawler/proxy'
 import { isUpstreamServerError } from '@litomi/crawler/crawler/proxy-utils'
 import { MangaSource, tagCategoryNameToInt } from '@litomi/domain/database/enum'
-import { convertCamelCaseToKebabCase } from '@litomi/std/param'
+import { convertCamelCaseToKebabCase } from '@litomi/std'
 import ms from 'ms'
 
 const kHentaiTypeNumberToName: Record<number, string> = {

@@ -10,7 +10,7 @@ import type {
   POSTV1LibraryItemCopyResponse,
   POSTV1LibraryItemMoveBody,
   POSTV1LibraryItemMoveResponse,
-} from '@litomi/contracts/api/library'
+} from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 

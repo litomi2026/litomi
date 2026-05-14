@@ -7,7 +7,7 @@ import {
   parseImageProxyRoutePageParam,
   validateImageSourceURL,
 } from '@litomi/http/image-proxy'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { Hono } from 'hono'
 import { z } from 'zod'
 

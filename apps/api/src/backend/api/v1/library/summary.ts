@@ -2,7 +2,7 @@ import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/
 import { db } from '@litomi/db/database/supabase/drizzle'
 import 'server-only'
 import { createCacheControl } from '@litomi/http/cache-control'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 

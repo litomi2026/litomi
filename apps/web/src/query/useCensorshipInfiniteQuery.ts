@@ -1,4 +1,4 @@
-import type { GETV1CensorshipResponse } from '@litomi/contracts/api/censorship'
+import type { GETV1CensorshipResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'

@@ -1,6 +1,6 @@
 'use client'
 
-import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@litomi/contracts/api/me'
+import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@litomi/contracts'
 
 import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

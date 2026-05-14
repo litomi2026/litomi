@@ -2,11 +2,8 @@
 
 import type { Manga, MangaTorrent } from '@litomi/domain/types/manga'
 
-import { formatBytes } from '@litomi/std/format/byte'
-import { formatDistanceToNow } from '@litomi/std/format/date'
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { formatBytes, formatDistanceToNow } from '@litomi/std'
+import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import dayjs from 'dayjs'
 import { Copy, ExternalLink, Magnet } from 'lucide-react'
 import ms from 'ms'

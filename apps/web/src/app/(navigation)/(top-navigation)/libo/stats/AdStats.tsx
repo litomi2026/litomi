@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import { RefreshCw } from 'lucide-react'
 import ms from 'ms'

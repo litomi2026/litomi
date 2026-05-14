@@ -1,5 +1,5 @@
 import '@test/setup.dom'
-import { PostFilter } from '@litomi/contracts/post/constant'
+import { PostFilter } from '@litomi/contracts'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, waitFor } from '@testing-library/react'

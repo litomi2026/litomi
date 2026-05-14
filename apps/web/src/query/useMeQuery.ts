@@ -1,4 +1,4 @@
-import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+import type { GETV1MeResponse } from '@litomi/contracts'
 
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { env } from '@litomi/env/env/client'

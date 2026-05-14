@@ -1,6 +1,6 @@
 'use client'
 
-import { View } from '@litomi/std/param'
+import { View } from '@litomi/std'
 
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'

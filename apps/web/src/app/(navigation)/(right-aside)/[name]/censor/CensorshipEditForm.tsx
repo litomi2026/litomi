@@ -1,4 +1,4 @@
-import type { PATCHV1CensorshipUpdateResponse } from '@litomi/contracts/api/censorship'
+import type { PATCHV1CensorshipUpdateResponse } from '@litomi/contracts'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { env } from '@litomi/env/env/client'

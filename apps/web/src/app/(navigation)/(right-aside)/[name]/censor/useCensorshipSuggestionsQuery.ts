@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETSearchSuggestionsResponse } from '@litomi/contracts/api/search'
+import type { GETSearchSuggestionsResponse } from '@litomi/contracts'
 
 import { DEFAULT_SUGGESTIONS } from '@litomi/domain/constants/json'
 import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/constants/policy'

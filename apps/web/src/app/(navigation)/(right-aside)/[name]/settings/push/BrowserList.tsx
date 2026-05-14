@@ -1,6 +1,6 @@
 'use client'
 
-import { getUsernameFromParam } from '@litomi/std/param'
+import { getUsernameFromParam } from '@litomi/std'
 import dayjs from 'dayjs'
 import { Monitor, Smartphone, Trash2 } from 'lucide-react'
 import { useParams } from 'next/navigation'

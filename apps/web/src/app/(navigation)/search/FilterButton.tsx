@@ -1,6 +1,6 @@
 'use client'
 
-import { formatLocalDate } from '@litomi/std/format/date'
+import { formatLocalDate } from '@litomi/std'
 import { SlidersHorizontal } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { ReadonlyURLSearchParams } from 'next/navigation'

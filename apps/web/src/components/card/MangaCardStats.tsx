@@ -1,4 +1,4 @@
-import { formatNumber } from '@litomi/std/format/number'
+import { formatNumber } from '@litomi/std'
 import { Bookmark, Eye, Heart, Star } from 'lucide-react'
 
 type Props = {

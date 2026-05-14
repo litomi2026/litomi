@@ -1,4 +1,4 @@
-import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+import type { GETV1MeResponse } from '@litomi/contracts'
 
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestQueryClient, renderWithTestQueryClient } from '@test/utils/query-client'

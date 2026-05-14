@@ -1,4 +1,4 @@
-import Slider from '@litomi/ui/slider'
+import { Slider } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'
 
 import type { ReaderLayout, ReaderPage } from './readerPages'

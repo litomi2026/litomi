@@ -4,7 +4,7 @@ import type {
   PATCHV1NotificationReadAllResponse,
   PATCHV1NotificationReadBody,
   PATCHV1NotificationReadResponse,
-} from '@litomi/contracts/api/notification'
+} from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 

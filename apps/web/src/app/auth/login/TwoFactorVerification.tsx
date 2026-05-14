@@ -2,7 +2,7 @@
 
 import { PKCEChallenge } from '@litomi/auth/pkce-browser'
 import { BACKUP_CODE_PATTERN } from '@litomi/domain/constants/policy'
-import Toggle from '@litomi/ui/toggle'
+import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Key, Loader2, RectangleEllipsis } from 'lucide-react'
 import { SubmitEvent, useRef, useState } from 'react'

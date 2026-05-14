@@ -1,4 +1,4 @@
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { secureHeaders } from 'hono/secure-headers'
 
 export function getDefaultSecureHeadersOptions(): NonNullable<Parameters<typeof secureHeaders>[0]> {

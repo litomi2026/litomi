@@ -3,7 +3,7 @@ import type {
   DELETEV1BookmarkResponse,
   POSTV1BookmarkBody,
   POSTV1BookmarkResponse,
-} from '@litomi/contracts/api/bookmark'
+} from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 

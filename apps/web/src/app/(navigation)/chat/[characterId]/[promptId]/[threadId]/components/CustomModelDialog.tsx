@@ -1,7 +1,4 @@
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogFooter from '@litomi/ui/dialog-footer'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { SubmitEvent, useRef } from 'react'
 
 interface CustomModelDialogProps {

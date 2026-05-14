@@ -2,7 +2,7 @@ import 'server-only'
 import { BadRequestError } from '@litomi/crawler/crawler/errors'
 import { TOONKOR_DOMAIN_PATTERN, toonkorClient, type ToonkorParams } from '@litomi/crawler/crawler/toonkor'
 import { WebtoonCrawler, WebtoonEpisode, WebtoonList, WebtoonSeries } from '@litomi/crawler/crawler/webtoon/types'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { z } from 'zod'
 
 /**

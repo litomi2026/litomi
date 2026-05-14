@@ -1,8 +1,8 @@
 'use client'
 
 import { env } from '@litomi/env/env/client'
-import { getUsernameFromParam } from '@litomi/std/param'
-import Toggle from '@litomi/ui/toggle'
+import { getUsernameFromParam } from '@litomi/std'
+import { Toggle } from '@litomi/ui'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'

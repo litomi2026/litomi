@@ -7,7 +7,7 @@ import {
   PROBLEM_CONTENT_TYPE,
   type ProblemDetails,
 } from '@litomi/http/problem-details'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { captureException } from '@sentry/core'
 
 const { NEXT_PUBLIC_APP_ORIGIN } = env

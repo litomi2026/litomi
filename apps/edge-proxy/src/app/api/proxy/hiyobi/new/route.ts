@@ -3,7 +3,7 @@ import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
 import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@litomi/crawler/crawler/proxy-utils'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/env/client'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import z from 'zod'
 
 export const runtime = 'edge'

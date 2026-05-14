@@ -1,11 +1,8 @@
 'use client'
 
-import type { GETV1LibraryListResponse, LibraryListItem } from '@litomi/contracts/api/library'
+import type { GETV1LibraryListResponse, LibraryListItem } from '@litomi/contracts'
 
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogFooter from '@litomi/ui/dialog-footer'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'

@@ -1,6 +1,6 @@
 'use client'
 
-import type { DELETEV1MeBody, DELETEV1MeResponse } from '@litomi/contracts/api/me'
+import type { DELETEV1MeBody, DELETEV1MeResponse } from '@litomi/contracts'
 
 import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { getInvalidParams, type ProblemDetails } from '@litomi/http/problem-details'

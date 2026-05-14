@@ -1,6 +1,6 @@
 'use client'
 
-import type { LibraryListItem } from '@litomi/contracts/api/library'
+import type { LibraryListItem } from '@litomi/contracts'
 
 import { Pin } from 'lucide-react'
 import { useState } from 'react'

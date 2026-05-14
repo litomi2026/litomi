@@ -1,6 +1,6 @@
-import type { GETSearchSuggestionsResponse } from '@litomi/contracts/api/search'
+import type { GETSearchSuggestionsResponse } from '@litomi/contracts'
 
-import { queryBlacklist } from '@litomi/contracts/search/suggestion'
+import { queryBlacklist } from '@litomi/contracts'
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/env/client'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'

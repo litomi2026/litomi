@@ -1,4 +1,4 @@
-import { formatLocalDate } from '@litomi/std/format/date'
+import { formatLocalDate } from '@litomi/std'
 
 type BaseProps = {
   label: string

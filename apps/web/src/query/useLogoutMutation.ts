@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1AuthLogoutResponse } from '@litomi/contracts/api/auth'
+import type { POSTV1AuthLogoutResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

@@ -4,8 +4,7 @@ import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@lit
 import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@litomi/crawler/crawler/proxy-utils'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/env/client'
-import { sec } from '@litomi/std/format/date'
-import { chance } from '@litomi/std/random-edge'
+import { chance, sec } from '@litomi/std'
 import { waitUntil } from '@vercel/functions'
 
 import type { GETProxyKSearchResponse } from './types'

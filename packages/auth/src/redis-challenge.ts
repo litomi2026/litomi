@@ -3,7 +3,7 @@
 import { PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
 import { redisClient } from '@litomi/db/database/redis'
 import { ChallengeType } from '@litomi/domain/database/enum'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 
 /**
  * Get and delete a challenge atomically

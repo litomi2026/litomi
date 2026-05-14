@@ -4,7 +4,7 @@ import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { refreshSession } from '@litomi/auth/session/persistent-session'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { getRequestUserAgent } from '@litomi/http/request'
-import { getPathLengthBlockStatus } from '@litomi/std/path-length-guard'
+import { getPathLengthBlockStatus } from '@litomi/std'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const config = {

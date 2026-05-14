@@ -1,7 +1,6 @@
 'use client'
 
-import type { GETV1MeResponse } from '@litomi/contracts/api/me'
-import type { POSTV1PointTurnstileResponse } from '@litomi/contracts/api/points'
+import type { GETV1MeResponse, POSTV1PointTurnstileResponse } from '@litomi/contracts'
 
 import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import { env } from '@litomi/env/env/client'

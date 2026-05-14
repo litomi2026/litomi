@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1LibraryItemCopyBody, POSTV1LibraryItemCopyResponse } from '@litomi/contracts/api/library'
+import type { POSTV1LibraryItemCopyBody, POSTV1LibraryItemCopyResponse } from '@litomi/contracts'
 
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/constants/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

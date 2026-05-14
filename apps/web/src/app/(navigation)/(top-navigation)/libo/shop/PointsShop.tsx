@@ -1,7 +1,7 @@
 'use client'
 
 import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
-import { formatNumber } from '@litomi/std/format/number'
+import { formatNumber } from '@litomi/std'
 import { Bookmark, BookOpen, Check, LibraryBig, Pin, Star } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'

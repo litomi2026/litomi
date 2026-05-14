@@ -6,7 +6,7 @@ import { mangaSeenTable, notificationTable } from '@litomi/db/database/supabase/
 import { MAX_MANGA_TITLE_LENGTH, MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
 import { NotificationType } from '@litomi/domain/database/enum'
 import { getViewerLink } from '@litomi/domain/utils/manga'
-import { WebPushPayload, WebPushService } from '@litomi/notifications/lib/notification/WebPushService'
+import { WebPushPayload, WebPushService } from '@litomi/notifications'
 import { and, count, inArray, sql } from 'drizzle-orm'
 
 import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'

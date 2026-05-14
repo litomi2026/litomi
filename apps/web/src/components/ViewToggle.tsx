@@ -1,6 +1,6 @@
 'use client'
 
-import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std/param'
+import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { Image, LayoutGrid } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'

@@ -1,4 +1,4 @@
-import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+import type { GETV1MeResponse } from '@litomi/contracts'
 
 import { describe, expect, it } from 'bun:test'
 

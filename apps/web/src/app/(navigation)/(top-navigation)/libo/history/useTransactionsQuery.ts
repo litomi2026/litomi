@@ -1,4 +1,4 @@
-import type { GETV1PointTransactionResponse } from '@litomi/contracts/api/points'
+import type { GETV1PointTransactionResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'

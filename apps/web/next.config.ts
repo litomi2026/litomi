@@ -2,7 +2,7 @@ import type { NextConfig } from 'next'
 
 import { nextBuildEnv } from '@litomi/env/env/server.next.build'
 import { createCacheControl } from '@litomi/http/cache-control'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
 import { dirname, join } from 'node:path'

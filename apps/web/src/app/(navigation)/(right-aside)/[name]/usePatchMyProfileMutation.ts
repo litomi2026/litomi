@@ -4,7 +4,7 @@ import type {
   GETV1MeResponse,
   PATCHV1MeBody,
   PATCHV1MeResponse,
-} from '@litomi/contracts/api/me'
+} from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

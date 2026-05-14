@@ -2,7 +2,7 @@
 
 import { NotificationType } from '@litomi/domain/database/enum'
 import { NotificationData } from '@litomi/domain/database/type'
-import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatDistanceToNow } from '@litomi/std'
 import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'

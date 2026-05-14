@@ -1,6 +1,6 @@
 import { userRatingTable } from '@litomi/db/database/supabase/activity'
 import { db } from '@litomi/db/database/supabase/drizzle'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { and, count, desc, ne, sql } from 'drizzle-orm'
 import { Star } from 'lucide-react'
 import { unstable_cache } from 'next/cache'

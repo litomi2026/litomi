@@ -1,6 +1,6 @@
 'use client'
 
-import { formatNumber } from '@litomi/std/format/number'
+import { formatNumber } from '@litomi/std'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'

@@ -1,6 +1,6 @@
-import type { Post as TPost } from '@litomi/contracts/api/post'
+import type { Post as TPost } from '@litomi/contracts'
 
-import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 

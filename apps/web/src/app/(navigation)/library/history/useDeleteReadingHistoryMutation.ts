@@ -1,6 +1,6 @@
 'use client'
 
-import type { DELETEV1ReadingHistoryBody } from '@litomi/contracts/api/library'
+import type { DELETEV1ReadingHistoryBody } from '@litomi/contracts'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'

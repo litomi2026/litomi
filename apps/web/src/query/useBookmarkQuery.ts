@@ -1,4 +1,4 @@
-import type { GETV1BookmarkIdResponse } from '@litomi/contracts/api/bookmark'
+import type { GETV1BookmarkIdResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'

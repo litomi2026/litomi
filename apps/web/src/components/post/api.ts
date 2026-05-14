@@ -4,7 +4,7 @@ import type {
   POSTV1PostBody,
   POSTV1PostResponse,
   PUTV1PostIdLikeResponse,
-} from '@litomi/contracts/api/post'
+} from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 

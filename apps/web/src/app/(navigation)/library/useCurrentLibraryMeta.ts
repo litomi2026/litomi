@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETV1LibraryResponse } from '@litomi/contracts/api/library'
+import type { GETV1LibraryResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'

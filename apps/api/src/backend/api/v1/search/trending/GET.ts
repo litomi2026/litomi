@@ -10,7 +10,7 @@ import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
 import { createCacheControl } from '@litomi/http/cache-control'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { Hono } from 'hono'
 import { z } from 'zod'
 

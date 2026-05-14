@@ -1,7 +1,7 @@
 'use client'
 
 import { Manga } from '@litomi/domain/types/manga'
-import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 
 type Props = {

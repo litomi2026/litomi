@@ -1,7 +1,7 @@
 'use client'
 
 import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
-import { formatNumber } from '@litomi/std/format/number'
+import { formatNumber } from '@litomi/std'
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 import { type RefObject, useRef } from 'react'
 

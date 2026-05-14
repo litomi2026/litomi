@@ -1,7 +1,7 @@
 import 'server-only'
 import { env as commonEnv } from '@litomi/env/env/server.common'
 import { env } from '@litomi/env/env/server.hono'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 
 const { APP_ORIGIN } = commonEnv
 const { BBATON_CLIENT_ID } = env

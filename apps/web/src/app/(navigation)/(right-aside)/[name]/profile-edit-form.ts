@@ -1,4 +1,4 @@
-import type { PATCHV1MeBody } from '@litomi/contracts/api/me'
+import type { PATCHV1MeBody } from '@litomi/contracts'
 import type { ProblemDetails } from '@litomi/http/problem-details'
 
 import { getInvalidParams } from '@litomi/http/problem-details'

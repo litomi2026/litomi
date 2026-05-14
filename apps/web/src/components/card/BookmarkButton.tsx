@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETV1BookmarkIdResponse, PUTV1BookmarkIdResponse } from '@litomi/contracts/api/bookmark'
+import type { GETV1BookmarkIdResponse, PUTV1BookmarkIdResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { captureException } from '@sentry/nextjs'

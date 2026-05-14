@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./monitoring/sentry/common": "./src/monitoring/sentry/common.ts"
+    ".": "./src/index.ts"
   },
   "devDependencies": {
     "@sentry/core": "10.47.0"

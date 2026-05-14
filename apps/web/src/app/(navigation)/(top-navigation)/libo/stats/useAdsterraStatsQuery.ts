@@ -1,4 +1,4 @@
-import type { GETV1AdsterraStatsResponse } from '@litomi/contracts/api/adsterra'
+import type { GETV1AdsterraStatsResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'

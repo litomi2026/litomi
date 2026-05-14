@@ -1,6 +1,6 @@
 import { env } from '@litomi/env/env/server.common'
 import 'server-only'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import crypto from 'crypto'
 import { userAgent as parseUserAgent } from 'next/server'
 

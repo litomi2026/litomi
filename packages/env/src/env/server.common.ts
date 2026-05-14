@@ -1,4 +1,4 @@
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import 'server-only'
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'

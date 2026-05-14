@@ -3,7 +3,7 @@
 import type {
   POSTV1NotificationCriteriaBody,
   POSTV1NotificationCriteriaResponse,
-} from '@litomi/contracts/api/notification'
+} from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 

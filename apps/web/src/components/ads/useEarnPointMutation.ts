@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1PointEarnResponse } from '@litomi/contracts/api/points'
+import type { POSTV1PointEarnResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

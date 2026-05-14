@@ -1,4 +1,4 @@
-import type { GETV1PointsDonationsMeResponse } from '@litomi/contracts/api/points'
+import type { GETV1PointsDonationsMeResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'

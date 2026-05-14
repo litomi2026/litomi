@@ -4,7 +4,7 @@ import type { KeywordPromotion } from '@litomi/catalog/sponsor'
 import type { Manga } from '@litomi/domain/types/manga'
 import type { ReactNode } from 'react'
 
-import { getViewFromSearchParams, View } from '@litomi/std/param'
+import { getViewFromSearchParams, View } from '@litomi/std'
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'

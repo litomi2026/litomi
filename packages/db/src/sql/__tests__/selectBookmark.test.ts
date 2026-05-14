@@ -1,6 +1,6 @@
 import type { SQL } from 'drizzle-orm'
 
-import { CollectionItemSort } from '@litomi/contracts/library/item-sort'
+import { CollectionItemSort } from '@litomi/contracts'
 import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { PgDialect } from 'drizzle-orm/pg-core'
 

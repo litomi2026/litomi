@@ -1,4 +1,4 @@
-import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+import type { GETV1MeResponse } from '@litomi/contracts'
 import type { ReactNode } from 'react'
 
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
@@ -41,20 +41,11 @@ mock.module('@litomi/auth/passkey', () => ({
   signalCurrentPasskeyUserDetails: signalCurrentPasskeyUserDetailsMock,
 }))
 
-mock.module('@litomi/ui/dialog', () => ({
-  default: ({ children, open }: { children: ReactNode; open: boolean }) => (open ? <div>{children}</div> : null),
-}))
-
-mock.module('@litomi/ui/dialog-body', () => ({
-  default: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-}))
-
-mock.module('@litomi/ui/dialog-footer', () => ({
-  default: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-}))
-
-mock.module('@litomi/ui/dialog-header', () => ({
-  default: ({ title }: { title: string }) => <div>{title}</div>,
+mock.module('@litomi/ui', () => ({
+  Dialog: ({ children, open }: { children: ReactNode; open: boolean }) => (open ? <div>{children}</div> : null),
+  DialogBody: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  DialogFooter: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  DialogHeader: ({ title }: { title: string }) => <div>{title}</div>,
 }))
 
 beforeAll(async () => {

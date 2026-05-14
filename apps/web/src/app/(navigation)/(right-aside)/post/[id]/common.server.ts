@@ -1,4 +1,4 @@
-import type { Post } from '@litomi/contracts/api/post'
+import type { Post } from '@litomi/contracts'
 
 import { db } from '@litomi/db/database/supabase/drizzle'
 import { postTable } from '@litomi/db/database/supabase/post'

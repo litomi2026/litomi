@@ -1,4 +1,4 @@
-import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@litomi/contracts/api/me'
+import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 

@@ -8,7 +8,7 @@ import {
   pointTransactionTable,
 } from '@litomi/db/database/supabase/points'
 import { createCacheControl } from '@litomi/http/cache-control'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { and, desc, eq, inArray, lt, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'

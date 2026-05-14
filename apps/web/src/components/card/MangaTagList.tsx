@@ -1,6 +1,6 @@
 'use client'
 
-import type { CensorshipItem } from '@litomi/contracts/api/censorship'
+import type { CensorshipItem } from '@litomi/contracts'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { MangaTag } from '@litomi/domain/types/manga'

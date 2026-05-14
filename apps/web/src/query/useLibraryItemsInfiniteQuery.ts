@@ -1,6 +1,6 @@
-import type { GETLibraryItemsResponse } from '@litomi/contracts/api/library'
+import type { GETLibraryItemsResponse } from '@litomi/contracts'
 
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts/library/item-sort'
+import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 

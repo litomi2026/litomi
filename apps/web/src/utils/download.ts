@@ -1,6 +1,6 @@
 import type { ZipWriterConstructorOptions } from '@zip.js/zip.js/lib/zip-core-writer.js'
 
-import { sleep } from '@litomi/std/time'
+import { sleep } from '@litomi/std'
 import pLimit from 'p-limit'
 import pThrottle from 'p-throttle'
 import { toast } from 'sonner'

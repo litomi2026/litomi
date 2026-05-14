@@ -2,7 +2,7 @@ import type { KeywordPromotion } from '@litomi/catalog/sponsor'
 import type { Manga } from '@litomi/domain/types/manga'
 
 import { env } from '@litomi/env/env/client'
-import { whitelistSearchParams } from '@litomi/std/param'
+import { whitelistSearchParams } from '@litomi/std'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 

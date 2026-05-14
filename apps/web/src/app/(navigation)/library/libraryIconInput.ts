@@ -1,6 +1,6 @@
 import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
 import { isSingleEmoji } from '@litomi/domain/utils/emoji'
-import { normalizeString } from '@litomi/std/string'
+import { normalizeString } from '@litomi/std'
 import { toast } from 'sonner'
 
 let libraryEmojiListPromise: Promise<readonly string[]> | undefined

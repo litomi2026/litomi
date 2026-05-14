@@ -1,7 +1,7 @@
 'use client'
 
 import { Manga } from '@litomi/domain/types/manga'
-import { View } from '@litomi/std/param'
+import { View } from '@litomi/std'
 import { Check } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 

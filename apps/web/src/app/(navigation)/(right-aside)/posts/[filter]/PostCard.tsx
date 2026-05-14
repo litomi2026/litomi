@@ -1,8 +1,7 @@
-import type { Post } from '@litomi/contracts/api/post'
+import type { Post } from '@litomi/contracts'
 import type { ReactNode } from 'react'
 
-import { formatDistanceToNow } from '@litomi/std/format/date'
-import { formatNumber } from '@litomi/std/format/number'
+import { formatDistanceToNow, formatNumber } from '@litomi/std'
 import dayjs from 'dayjs'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
 import Link from 'next/link'

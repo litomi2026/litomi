@@ -6,11 +6,9 @@ import type {
   POSTV1AuthPasskeyOptionsResponse,
   POSTV1AuthPasskeyVerifyRequest,
   POSTV1AuthPasskeyVerifyResponse,
-} from '@litomi/contracts/api/auth'
-import type {
   POSTV1LibraryHistoryImportBody,
   POSTV1LibraryHistoryImportResponse,
-} from '@litomi/contracts/api/library'
+} from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 

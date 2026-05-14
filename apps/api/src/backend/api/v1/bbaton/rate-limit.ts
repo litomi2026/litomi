@@ -1,6 +1,6 @@
 import 'server-only'
 import { redisClient } from '@litomi/db/database/redis'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 
 type Action = 'attempt' | 'complete'
 

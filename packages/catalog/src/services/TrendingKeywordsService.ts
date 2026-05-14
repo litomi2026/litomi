@@ -1,6 +1,6 @@
 import { redisClient } from '@litomi/db/database/redis'
 import 'server-only'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import ms from 'ms'
 
 export interface TrendingKeyword {

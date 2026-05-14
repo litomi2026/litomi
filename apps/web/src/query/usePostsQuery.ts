@@ -1,6 +1,6 @@
-import type { GETV1PostResponse } from '@litomi/contracts/api/post'
+import type { GETV1PostResponse } from '@litomi/contracts'
 
-import { PostFilter } from '@litomi/contracts/post/constant'
+import { PostFilter } from '@litomi/contracts'
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 

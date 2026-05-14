@@ -2,7 +2,7 @@
 
 import type { ListImperativeAPI } from 'react-window'
 
-import { View } from '@litomi/std/param'
+import { View } from '@litomi/std'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { List, useDynamicRowHeight } from 'react-window'
 import { twMerge } from 'tailwind-merge'

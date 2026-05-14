@@ -1,4 +1,4 @@
-import type { DELETEV1MeBody, DELETEV1MeResponse } from '@litomi/contracts/api/me'
+import type { DELETEV1MeBody, DELETEV1MeResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 

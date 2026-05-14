@@ -1,7 +1,6 @@
 'use client'
 
-import { formatDistanceToNow } from '@litomi/std/format/date'
-import { formatNumber } from '@litomi/std/format/number'
+import { formatDistanceToNow, formatNumber } from '@litomi/std'
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'

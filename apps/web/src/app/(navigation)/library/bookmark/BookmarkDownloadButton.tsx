@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETV1BookmarkExportResponse } from '@litomi/contracts/api/bookmark'
+import type { GETV1BookmarkExportResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useMutation } from '@tanstack/react-query'

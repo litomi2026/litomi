@@ -1,4 +1,4 @@
-import { View } from '@litomi/std/param'
+import { View } from '@litomi/std'
 
 const MANGA_GRID_TEMPLATE_COLUMN = `grid-cols-[repeat(auto-fill,minmax(var(--manga-grid-column-min-width),1fr))]`
 

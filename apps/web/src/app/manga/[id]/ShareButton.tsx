@@ -1,9 +1,7 @@
 'use client'
 
 import { Manga } from '@litomi/domain/types/manga'
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import { Check, Link, Share2, X } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
 

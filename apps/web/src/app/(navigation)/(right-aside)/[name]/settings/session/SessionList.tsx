@@ -1,8 +1,8 @@
 'use client'
 
-import type { DELETEV1MeSessionResponse } from '@litomi/contracts/api/me'
+import type { DELETEV1MeSessionResponse } from '@litomi/contracts'
 
-import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatDistanceToNow } from '@litomi/std'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Loader2, LogOut, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'

@@ -1,5 +1,5 @@
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
-import { View } from '@litomi/std/param'
+import { View } from '@litomi/std'
 import { Metadata } from 'next'
 import { z } from 'zod'
 

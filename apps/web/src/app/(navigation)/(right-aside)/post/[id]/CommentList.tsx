@@ -1,6 +1,6 @@
 import type { PostComment } from '@litomi/db/sql/selectPostComment'
 
-import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 

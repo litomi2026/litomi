@@ -1,8 +1,6 @@
 'use client'
 
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import { Fingerprint, Info } from 'lucide-react'
 import { useState } from 'react'
 

@@ -1,4 +1,4 @@
-import type { GETV1LibraryListResponse } from '@litomi/contracts/api/library'
+import type { GETV1LibraryListResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'

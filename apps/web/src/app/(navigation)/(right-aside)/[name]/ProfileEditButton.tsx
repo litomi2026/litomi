@@ -1,11 +1,8 @@
 'use client'
 
 import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
-import { getSafeProfileImageURL } from '@litomi/std/profile-image-url'
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogFooter from '@litomi/ui/dialog-footer'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { getSafeProfileImageURL } from '@litomi/std'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { SquarePen } from 'lucide-react'

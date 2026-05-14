@@ -1,6 +1,6 @@
 'use client'
 
-import { useTopLayerPortalContainer } from '@litomi/ui/top-layer-portal'
+import { useTopLayerPortalContainer } from '@litomi/ui'
 import { type ReactNode, useLayoutEffect } from 'react'
 import { createPortal } from 'react-dom'
 

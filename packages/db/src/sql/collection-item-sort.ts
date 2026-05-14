@@ -1,5 +1,5 @@
 import 'server-only'
-import { CollectionItemSort } from '@litomi/contracts/library/item-sort'
+import { CollectionItemSort } from '@litomi/contracts'
 import { and, asc, desc, eq, gt, lt, or, SQL } from 'drizzle-orm'
 import { AnyPgColumn } from 'drizzle-orm/pg-core'
 

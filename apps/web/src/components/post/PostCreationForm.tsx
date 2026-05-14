@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1PostBody, POSTV1PostResponse } from '@litomi/contracts/api/post'
+import type { POSTV1PostBody, POSTV1PostResponse } from '@litomi/contracts'
 
 import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/constants/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

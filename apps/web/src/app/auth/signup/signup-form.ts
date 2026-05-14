@@ -1,4 +1,4 @@
-import type { POSTV1AuthSignupRequest } from '@litomi/contracts/api/auth'
+import type { POSTV1AuthSignupRequest } from '@litomi/contracts'
 import type { ProblemDetails } from '@litomi/http/problem-details'
 
 import { getInvalidParams } from '@litomi/http/problem-details'

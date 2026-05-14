@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import { Loader2, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useState } from 'react'

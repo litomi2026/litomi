@@ -1,7 +1,7 @@
 'use client'
 
 import { Locale } from '@litomi/catalog/translation/common'
-import { View } from '@litomi/std/param'
+import { View } from '@litomi/std'
 import { ChevronRight } from 'lucide-react'
 import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'

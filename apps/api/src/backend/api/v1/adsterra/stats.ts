@@ -1,6 +1,6 @@
 import { env } from '@litomi/env/env/server.hono'
 import { createCacheControl } from '@litomi/http/cache-control'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { Hono } from 'hono'
 import ms from 'ms'
 import { z } from 'zod'

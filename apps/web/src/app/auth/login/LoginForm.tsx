@@ -1,12 +1,12 @@
 'use client'
 
-import type { POSTV1AuthLoginAuthenticatedResponse, POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts/api/auth'
+import type { POSTV1AuthLoginAuthenticatedResponse, POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts'
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { generatePKCEChallenge, PKCEChallenge } from '@litomi/auth/pkce-browser'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { SearchParamKey } from '@litomi/domain/constants/storage'
-import Toggle from '@litomi/ui/toggle'
+import { Toggle } from '@litomi/ui'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2, X } from 'lucide-react'

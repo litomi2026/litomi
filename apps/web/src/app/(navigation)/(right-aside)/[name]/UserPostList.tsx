@@ -1,6 +1,6 @@
 'use client'
 
-import { PostFilter } from '@litomi/contracts/post/constant'
+import { PostFilter } from '@litomi/contracts'
 import { SquarePen } from 'lucide-react'
 
 import PostCreationForm from '@/components/post/PostCreationForm'

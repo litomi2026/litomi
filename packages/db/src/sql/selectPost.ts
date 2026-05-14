@@ -1,6 +1,6 @@
-import type { ReferredPost } from '@litomi/contracts/post/referred-post'
+import type { ReferredPost } from '@litomi/contracts'
 
-import { PostFilter } from '@litomi/contracts/post/constant'
+import { PostFilter } from '@litomi/contracts'
 import { db } from '@litomi/db/database/supabase/drizzle'
 import { postLikeTable, postTable } from '@litomi/db/database/supabase/post'
 import { userFollowTable, userTable } from '@litomi/db/database/supabase/user'

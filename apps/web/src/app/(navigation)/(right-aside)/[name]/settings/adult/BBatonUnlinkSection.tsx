@@ -1,7 +1,6 @@
 'use client'
 
-import type { POSTV1BBatonUnlinkResponse } from '@litomi/contracts/api/bbaton'
-import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+import type { GETV1MeResponse, POSTV1BBatonUnlinkResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

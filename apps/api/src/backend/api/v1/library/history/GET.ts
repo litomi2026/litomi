@@ -5,7 +5,7 @@ import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@litomi/
 import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import { READING_HISTORY_PER_PAGE } from '@litomi/domain/constants/policy'
 import { createCacheControl } from '@litomi/http/cache-control'
-import { sec } from '@litomi/std/format/date'
+import { sec } from '@litomi/std'
 import { and, desc, eq, lt, or, SQL } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'

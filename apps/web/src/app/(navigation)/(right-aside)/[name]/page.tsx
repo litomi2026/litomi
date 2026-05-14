@@ -1,5 +1,5 @@
 import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
-import { getUsernameFromParam } from '@litomi/std/param'
+import { getUsernameFromParam } from '@litomi/std'
 import { Metadata } from 'next'
 
 import { getUserByName } from './common'

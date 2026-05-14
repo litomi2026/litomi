@@ -1,12 +1,9 @@
 'use client'
 
-import type { CensorshipItem, POSTV1CensorshipCreateResponse } from '@litomi/contracts/api/censorship'
+import type { CensorshipItem, POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/env/client'
-import Dialog from '@litomi/ui/dialog'
-import DialogBody from '@litomi/ui/dialog-body'
-import DialogFooter from '@litomi/ui/dialog-footer'
-import DialogHeader from '@litomi/ui/dialog-header'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Download, Upload } from 'lucide-react'
 import { useState } from 'react'

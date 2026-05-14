@@ -1,12 +1,11 @@
 'use client'
 
-import type { POSTV1BBatonAttemptResponse } from '@litomi/contracts/api/bbaton'
+import type { POSTV1BBatonAttemptResponse } from '@litomi/contracts'
 
 import { BBATON_POPUP_WINDOW_NAME } from '@litomi/domain/constants/bbaton'
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { env } from '@litomi/env/env/client'
-import { formatDistanceToNow } from '@litomi/std/format/date'
-import { safeParseJSON } from '@litomi/std/json'
+import { formatDistanceToNow, safeParseJSON } from '@litomi/std'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'

@@ -1,8 +1,7 @@
 'use client'
 
-import { getUsernameFromParam } from '@litomi/std/param'
-import { getTimezoneOffsetHours, localToUtcHour, utcToLocalHour } from '@litomi/std/timezone'
-import Toggle from '@litomi/ui/toggle'
+import { getTimezoneOffsetHours, getUsernameFromParam, localToUtcHour, utcToLocalHour } from '@litomi/std'
+import { Toggle } from '@litomi/ui'
 import { Loader2, Moon } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { ReactNode } from 'react'

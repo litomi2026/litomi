@@ -1,4 +1,4 @@
-import type { CensorshipItem } from '@litomi/contracts/api/censorship'
+import type { CensorshipItem } from '@litomi/contracts'
 
 import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@litomi/domain/constants/json'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'

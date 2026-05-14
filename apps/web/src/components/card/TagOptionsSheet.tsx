@@ -1,6 +1,6 @@
 'use client'
 
-import type { DELETEV1CensorshipDeleteResponse, POSTV1CensorshipCreateResponse } from '@litomi/contracts/api/censorship'
+import type { DELETEV1CensorshipDeleteResponse, POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { env } from '@litomi/env/env/client'

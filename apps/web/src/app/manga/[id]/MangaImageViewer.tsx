@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1MangaIdHistoryBody } from '@litomi/contracts/api/manga'
+import type { POSTV1MangaIdHistoryBody } from '@litomi/contracts'
 
 import { type Manga } from '@litomi/domain/types/manga'
 import { env } from '@litomi/env/env/client'

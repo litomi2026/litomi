@@ -1,6 +1,6 @@
-import type { ReferredPost } from '@litomi/contracts/post/referred-post'
+import type { ReferredPost } from '@litomi/contracts'
 
-import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 

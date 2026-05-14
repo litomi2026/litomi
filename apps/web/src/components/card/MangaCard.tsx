@@ -1,6 +1,6 @@
 import { Manga } from '@litomi/domain/types/manga'
 import { getViewerLink } from '@litomi/domain/utils/manga'
-import { View } from '@litomi/std/param'
+import { View } from '@litomi/std'
 import { ErrorBoundary } from '@suspensive/react'
 import { ExternalLink } from 'lucide-react'
 import { ReactNode, Suspense } from 'react'

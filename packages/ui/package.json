@@ -4,13 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./dialog": "./src/Dialog.tsx",
-    "./dialog-body": "./src/DialogBody.tsx",
-    "./dialog-footer": "./src/DialogFooter.tsx",
-    "./dialog-header": "./src/DialogHeader.tsx",
-    "./slider": "./src/Slider.tsx",
-    "./toggle": "./src/Toggle.tsx",
-    "./top-layer-portal": "./src/topLayerPortal.ts"
+    ".": "./src/index.ts"
   },
   "dependencies": {
     "lucide-react": "^0.562.0",
