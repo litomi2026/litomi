@@ -1,0 +1,12 @@
+{
+  "name": "@litomi/api",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --conditions=react-server --env-file=../../.env.development --hot src/backend/index.ts",
+    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/backend/index.ts --target=bun --outfile dist/litomi-api",
+    "start": "bun src/backend/index.ts",
+    "type": "tsc --noEmit"
+  }
+}

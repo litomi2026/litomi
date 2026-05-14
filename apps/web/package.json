@@ -1,0 +1,12 @@
+{
+  "name": "@litomi/web",
+  "version": "1.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "analyze": "ANALYZE=true next build --webpack",
+    "type": "tsc --noEmit"
+  }
+}

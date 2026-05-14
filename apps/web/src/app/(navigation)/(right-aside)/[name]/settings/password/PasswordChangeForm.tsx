@@ -1,5 +1,6 @@
 'use client'
 
+import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -8,7 +9,6 @@ import { toast } from 'sonner'
 
 import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@/backend/api/v1/me/password'
 
-import { PASSWORD_PATTERN } from '@/constants/policy'
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

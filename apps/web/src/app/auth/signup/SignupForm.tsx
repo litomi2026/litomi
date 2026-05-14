@@ -1,5 +1,6 @@
 'use client'
 
+import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { Eye, EyeOff, Info, Loader2, X } from 'lucide-react'
 import Link from 'next/link'
@@ -10,7 +11,6 @@ import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import IconLogo from '@/components/icons/LogoLitomi'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 
 import {
   applySignupProblem,

@@ -1,6 +1,5 @@
+import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { Metadata } from 'next'
-
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import styles from '../authTheme.module.css'
 import LoginForm from './LoginForm'

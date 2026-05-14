@@ -1,9 +1,8 @@
 'use client'
 
+import { SearchParamKey } from '@litomi/domain/constants/storage'
 import Link from 'next/link'
 import { type ComponentProps, useEffect, useState } from 'react'
-
-import { SearchParamKey } from '@/constants/storage'
 
 type Props = Omit<ComponentProps<typeof Link>, 'href'>
 

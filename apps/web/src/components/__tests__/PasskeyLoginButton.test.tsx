@@ -77,7 +77,7 @@ mock.module('@/app/auth/login/api', () => ({
   verifyPasskeyAuthentication: verifyPasskeyAuthenticationMock,
 }))
 
-mock.module('@/utils/passkey', () => ({
+mock.module('@litomi/auth/passkey', () => ({
   signalUnknownPasskeyCredential: signalUnknownPasskeyCredentialMock,
 }))
 

@@ -1,12 +1,11 @@
 import '@test/setup.base'
+import { ChallengeType } from '@litomi/domain/database/enum'
 import { afterAll, afterEach, describe, expect, it, mock } from 'bun:test'
-
-import { ChallengeType } from '@/database/enum'
 
 const getdelMock = mock(async (): Promise<unknown | null> => null)
 const setMock = mock(async (): Promise<'OK'> => 'OK')
 
-mock.module('@/database/redis', () => ({
+mock.module('@litomi/db/database/redis', () => ({
   redisClient: {
     getdel: getdelMock,
     set: setMock,

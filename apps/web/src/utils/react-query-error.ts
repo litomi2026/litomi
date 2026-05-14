@@ -1,4 +1,9 @@
-import { createProblemTypeUrl, getStatusTitle, isProblemDetails, type ProblemDetails } from './problem-details'
+import {
+  createProblemTypeUrl,
+  getStatusTitle,
+  isProblemDetails,
+  type ProblemDetails,
+} from '@litomi/http/problem-details'
 
 export class ProblemDetailsError extends Error {
   readonly name = 'ProblemDetailsError'
