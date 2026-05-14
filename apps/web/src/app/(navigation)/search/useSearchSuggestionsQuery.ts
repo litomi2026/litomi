@@ -1,10 +1,10 @@
+import type { GETSearchSuggestionsResponse } from '@litomi/contracts/api/search'
+
 import { queryBlacklist } from '@litomi/contracts/search/suggestion'
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-
-import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/suggestion'
 
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

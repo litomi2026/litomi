@@ -1,6 +1,6 @@
-import { env } from '@litomi/env/env/client'
+import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@litomi/contracts/api/auth'
 
-import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@/backend/api/v1/auth/signup'
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

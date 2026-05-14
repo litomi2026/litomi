@@ -1,12 +1,11 @@
 'use client'
 
+import type { GETV1MeResponse } from '@litomi/contracts/api/me'
 import type { ReactNode } from 'react'
 
 import Link from 'next/link'
 import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
-
-import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
 import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'

@@ -1,9 +1,10 @@
-import dayjs from 'dayjs'
+import type { Post as TPost } from '@litomi/contracts/api/post'
+
 import 'dayjs/locale/ko'
+import dayjs from 'dayjs'
 import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
-import { type Post as TPost } from '@/backend/api/v1/post/GET'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { POST_DETAIL_CURRENT_ANCHOR_ID } from '@/components/post/postHref'
 import PostImages from '@/components/post/PostImages'

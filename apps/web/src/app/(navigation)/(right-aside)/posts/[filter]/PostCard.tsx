@@ -1,3 +1,4 @@
+import type { Post } from '@litomi/contracts/api/post'
 import type { ReactNode } from 'react'
 
 import { formatDistanceToNow } from '@litomi/std/format/date'
@@ -5,8 +6,6 @@ import { formatNumber } from '@litomi/std/format/number'
 import dayjs from 'dayjs'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
 import Link from 'next/link'
-
-import type { Post } from '@/backend/api/v1/post/GET'
 
 import PostMangaCard from '@/app/(navigation)/(right-aside)/post/[id]/PostMangaCard'
 import { getPostDetailHref } from '@/components/post/postHref'

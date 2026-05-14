@@ -1,11 +1,11 @@
+import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestQueryClient, renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test'
-
-import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
 const replaceMock = mock(() => {})
 const refreshMock = mock(() => {})

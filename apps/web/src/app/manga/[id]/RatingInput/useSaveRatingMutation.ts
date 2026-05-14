@@ -1,11 +1,10 @@
 'use client'
 
+import type { GETV1MangaIdRatingResponse, PUTV1MangaIdRatingResponse } from '@litomi/contracts/api/manga'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating/GET'
-import type { PUTV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating/PUT'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

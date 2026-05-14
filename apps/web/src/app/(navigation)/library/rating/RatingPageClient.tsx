@@ -1,13 +1,13 @@
 'use client'
 
+import type { GETV1RatingsResponse } from '@litomi/contracts/api/library'
+
 import { isGroupedRatingSort, RatingSort } from '@litomi/contracts/library/enum'
 import { Manga } from '@litomi/domain/types/manga'
 import { getViewFromSearchParams, View } from '@litomi/std/param'
 import { Star } from 'lucide-react'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
-
-import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'

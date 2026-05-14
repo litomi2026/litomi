@@ -1,8 +1,8 @@
 'use client'
 
-import { View } from '@litomi/std/param'
+import type { GETV1ReadingHistoryResponse } from '@litomi/contracts/api/library'
 
-import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
+import { View } from '@litomi/std/param'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'

@@ -1,10 +1,10 @@
 'use client'
 
+import type { GETV1TagResponse } from '@litomi/contracts/api/tag'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-
-import type { GETV1TagResponse } from '@/backend/api/v1/tag'
 
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

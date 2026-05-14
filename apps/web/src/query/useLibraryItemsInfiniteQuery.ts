@@ -1,9 +1,9 @@
+import type { GETLibraryItemsResponse } from '@litomi/contracts/api/library'
+
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts/library/item-sort'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
-
-import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

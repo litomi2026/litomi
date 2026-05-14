@@ -1,9 +1,11 @@
+import type {
+  GETV1PostLikedResponse,
+  GETV1PostResponse,
+  Post,
+} from '@litomi/contracts/api/post'
 import type { InfiniteData, QueryClient, QueryKey } from '@tanstack/react-query'
 
 import { QueryKeys } from '@litomi/domain/constants/query'
-
-import type { GETV1PostResponse, Post } from '@/backend/api/v1/post/GET'
-import type { GETV1PostLikedResponse } from '@/backend/api/v1/post/liked'
 
 export type LikedPostIdsSnapshot = GETV1PostLikedResponse | undefined
 export type PostLikeSnapshot = Array<[QueryKey, PostLikeState]>

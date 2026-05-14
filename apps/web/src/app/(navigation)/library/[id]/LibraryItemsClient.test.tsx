@@ -1,3 +1,5 @@
+import type { GETLibraryItemsResponse } from '@litomi/contracts/api/library'
+
 import { CollectionItemSort } from '@litomi/contracts/library/item-sort'
 import { View } from '@litomi/std/param'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
@@ -6,8 +8,6 @@ import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, fireEvent, waitFor } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
-
-import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
 
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
 

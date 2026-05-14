@@ -1,5 +1,7 @@
 'use client'
 
+import type { DELETEV1CensorshipDeleteResponse } from '@litomi/contracts/api/censorship'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { CensorshipKey } from '@litomi/domain/database/enum'
 import { env } from '@litomi/env/env/client'
@@ -8,8 +10,6 @@ import { Filter, Loader2, MoreHorizontal, Search } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-
-import type { DELETEV1CensorshipDeleteResponse } from '@/backend/api/v1/censorship/DELETE'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import CustomSelect from '@/components/ui/CustomSelect'

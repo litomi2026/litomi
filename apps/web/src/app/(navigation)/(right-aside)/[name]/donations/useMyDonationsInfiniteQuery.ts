@@ -1,8 +1,8 @@
+import type { GETV1PointsDonationsMeResponse } from '@litomi/contracts/api/points'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
-
-import type { GETV1PointsDonationsMeResponse } from '@/backend/api/v1/points/donations/GET'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

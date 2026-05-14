@@ -1,5 +1,8 @@
 'use client'
 
+import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+import type { POSTV1PointTurnstileResponse } from '@litomi/contracts/api/points'
+
 import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
@@ -10,8 +13,6 @@ import ms from 'ms'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
-import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
-import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile/POST'
 import type { AdClickResult } from '@/components/ads/types'
 
 import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'

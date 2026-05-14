@@ -1,13 +1,13 @@
 'use client'
 
+import type { GETV1MeResponse } from '@litomi/contracts/api/me'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { patchUserSettings, type UserSettingsSignal } from '@litomi/domain/utils/user-settings'
 import { safeParseJSON } from '@litomi/std/json'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
-
-import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
 import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'

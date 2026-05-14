@@ -1,11 +1,11 @@
 'use client'
 
+import type { CensorshipItem } from '@litomi/contracts/api/censorship'
+
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { MangaTag } from '@litomi/domain/types/manga'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-
-import type { CensorshipItem } from '@/backend/api/v1/censorship/GET'
 
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 

@@ -1,5 +1,7 @@
 'use client'
 
+import type { DELETEV1CensorshipDeleteResponse, POSTV1CensorshipCreateResponse } from '@litomi/contracts/api/censorship'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { env } from '@litomi/env/env/client'
@@ -7,9 +9,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Copy, EyeOff, Loader2, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-
-import type { DELETEV1CensorshipDeleteResponse } from '@/backend/api/v1/censorship/DELETE'
-import type { POSTV1CensorshipCreateResponse } from '@/backend/api/v1/censorship/POST'
 
 import BottomSheet, { BottomSheetItem } from '@/components/ui/BottomSheet'
 import useClipboard from '@/hook/useClipboard'

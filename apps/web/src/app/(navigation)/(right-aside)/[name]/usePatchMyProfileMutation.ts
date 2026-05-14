@@ -1,11 +1,15 @@
 'use client'
 
+import type {
+  GETV1MeResponse,
+  PATCHV1MeBody,
+  PATCHV1MeResponse,
+} from '@litomi/contracts/api/me'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
-import type { PATCHV1MeBody, PATCHV1MeResponse } from '@/backend/api/v1/me/PATCH'
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

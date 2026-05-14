@@ -1,13 +1,12 @@
 'use client'
 
+import type { GETV1MeResponse, PATCHV1MeSettingsBody } from '@litomi/contracts/api/me'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
-import type { PATCHV1MeSettingsBody } from '@/backend/api/v1/me/settings/PATCH'
 
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 

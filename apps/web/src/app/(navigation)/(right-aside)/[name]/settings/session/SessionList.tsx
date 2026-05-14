@@ -1,5 +1,7 @@
 'use client'
 
+import type { DELETEV1MeSessionResponse } from '@litomi/contracts/api/me'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { formatDistanceToNow } from '@litomi/std/format/date'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -7,8 +9,6 @@ import dayjs from 'dayjs'
 import { Loader2, LogOut, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-
-import type { DELETEV1MeSessionResponse } from '@/backend/api/v1/me/session'
 
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

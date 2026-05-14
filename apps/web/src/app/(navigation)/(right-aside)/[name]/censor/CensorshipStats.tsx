@@ -1,9 +1,9 @@
 'use client'
 
+import type { CensorshipItem } from '@litomi/contracts/api/censorship'
+
 import { CensorshipLevel } from '@litomi/domain/database/enum'
 import { memo, useMemo } from 'react'
-
-import type { CensorshipItem } from '@/backend/api/v1/censorship/GET'
 
 type Props = {
   censorships: CensorshipItem[]

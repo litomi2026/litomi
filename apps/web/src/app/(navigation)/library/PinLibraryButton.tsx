@@ -1,10 +1,10 @@
 'use client'
 
+import type { LibraryListItem } from '@litomi/contracts/api/library'
+
 import { Pin } from 'lucide-react'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-
-import type { LibraryListItem } from '@/backend/api/v1/library/GET'
 
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'

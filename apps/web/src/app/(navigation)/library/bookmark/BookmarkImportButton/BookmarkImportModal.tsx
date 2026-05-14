@@ -1,12 +1,12 @@
 'use client'
 
+import type { POSTV1BookmarkResponse } from '@litomi/contracts/api/bookmark'
+
 import { MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/constants/policy'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-
-import type { POSTV1BookmarkResponse } from '@/backend/api/v1/bookmark/POST'
 
 import MangaImportModal from '@/components/card/MangaImportModal'
 import { ProblemDetailsError } from '@/utils/react-query-error'

@@ -1,17 +1,18 @@
-import { env } from '@litomi/env/env/client'
-
-import type { DELETEV1LibraryIdResponse } from '@/backend/api/v1/library/[id]/DELETE'
-import type { PATCHV1LibraryIdBody, PATCHV1LibraryIdResponse } from '@/backend/api/v1/library/[id]/PATCH'
 import type {
+  DELETEV1LibraryIdResponse,
   DELETEV1LibraryItemBody,
   DELETEV1LibraryItemResponse,
+  PATCHV1LibraryIdBody,
+  PATCHV1LibraryIdResponse,
   POSTV1LibraryItemAddBody,
   POSTV1LibraryItemAddResponse,
   POSTV1LibraryItemCopyBody,
   POSTV1LibraryItemCopyResponse,
   POSTV1LibraryItemMoveBody,
   POSTV1LibraryItemMoveResponse,
-} from '@/backend/api/v1/library/item/schema'
+} from '@litomi/contracts/api/library'
+
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

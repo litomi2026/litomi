@@ -1,9 +1,9 @@
+import type { GETV1RatingsResponse } from '@litomi/contracts/api/library'
+
 import { RatingSort } from '@litomi/contracts/library/enum'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
-
-import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

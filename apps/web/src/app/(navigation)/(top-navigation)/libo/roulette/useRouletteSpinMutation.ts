@@ -1,10 +1,10 @@
 'use client'
 
+import type { POSTV1RouletteSpinRequest, POSTV1RouletteSpinResponse } from '@litomi/contracts/api/points'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { POSTV1RouletteSpinRequest, POSTV1RouletteSpinResponse } from '@/backend/api/v1/points/roulette'
 
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 

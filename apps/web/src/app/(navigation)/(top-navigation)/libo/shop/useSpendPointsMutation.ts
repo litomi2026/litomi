@@ -1,10 +1,10 @@
 'use client'
 
+import type { POSTV1PointSpendRequest, POSTV1PointSpendResponse } from '@litomi/contracts/api/points'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { POSTV1PointSpendRequest, POSTV1PointSpendResponse } from '@/backend/api/v1/points/spend'
 
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 

@@ -1,9 +1,12 @@
-import { env } from '@litomi/env/env/client'
+import type {
+  DELETEV1PostIdLikeResponse,
+  DELETEV1PostIdResponse,
+  POSTV1PostBody,
+  POSTV1PostResponse,
+  PUTV1PostIdLikeResponse,
+} from '@litomi/contracts/api/post'
 
-import type { DELETEV1PostIdResponse } from '@/backend/api/v1/post/[id]/DELETE'
-import type { DELETEV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/DELETE'
-import type { PUTV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/PUT'
-import type { POSTV1PostBody, POSTV1PostResponse } from '@/backend/api/v1/post/POST'
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

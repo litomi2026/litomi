@@ -1,5 +1,7 @@
 'use client'
 
+import type { POSTV1AuthLoginAuthenticatedResponse, POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts/api/auth'
+
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { generatePKCEChallenge, PKCEChallenge } from '@litomi/auth/pkce-browser'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
@@ -13,8 +15,6 @@ import { useRouter } from 'next/navigation'
 import { MouseEvent, SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { POSTV1AuthLoginAuthenticatedResponse } from '@/backend/api/v1/auth/login/POST'
-import type { POSTV1AuthPasskeyVerifyResponse } from '@/backend/api/v1/auth/passkey/verify/POST'
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import IconLogo from '@/components/icons/LogoLitomi'

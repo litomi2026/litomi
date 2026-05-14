@@ -1,6 +1,6 @@
-import { env } from '@litomi/env/env/client'
+import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@litomi/contracts/api/me'
 
-import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@/backend/api/v1/me/password'
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

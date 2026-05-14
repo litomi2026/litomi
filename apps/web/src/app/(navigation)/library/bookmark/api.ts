@@ -1,7 +1,11 @@
-import { env } from '@litomi/env/env/client'
+import type {
+  DELETEV1BookmarkBody,
+  DELETEV1BookmarkResponse,
+  POSTV1BookmarkBody,
+  POSTV1BookmarkResponse,
+} from '@litomi/contracts/api/bookmark'
 
-import type { DELETEV1BookmarkBody, DELETEV1BookmarkResponse } from '@/backend/api/v1/bookmark/DELETE'
-import type { POSTV1BookmarkBody, POSTV1BookmarkResponse } from '@/backend/api/v1/bookmark/POST'
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

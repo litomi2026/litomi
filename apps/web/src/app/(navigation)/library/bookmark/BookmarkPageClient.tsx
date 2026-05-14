@@ -1,11 +1,12 @@
 'use client'
 
+import type { GETV1BookmarkResponse } from '@litomi/contracts/api/bookmark'
+
 import { COLLECTION_ITEM_SORT_OPTIONS, CollectionItemSort } from '@litomi/contracts/library/item-sort'
 import { getViewFromSearchParams, View } from '@litomi/std/param'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'

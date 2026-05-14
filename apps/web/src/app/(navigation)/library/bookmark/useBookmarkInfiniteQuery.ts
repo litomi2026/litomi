@@ -1,3 +1,5 @@
+import type { GETV1BookmarkResponse } from '@litomi/contracts/api/bookmark'
+
 import {
   CollectionItemSort,
   DEFAULT_COLLECTION_ITEM_SORT,
@@ -6,8 +8,6 @@ import { BOOKMARKS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
-
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

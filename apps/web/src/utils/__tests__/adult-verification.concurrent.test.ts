@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'bun:test'
+import type { GETV1MeResponse } from '@litomi/contracts/api/me'
 
-import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
+import { describe, expect, it } from 'bun:test'
 
 import { AdultState, getAdultState, hasAdultAccess, requiresAdultVerification } from '../adult-verification'
 

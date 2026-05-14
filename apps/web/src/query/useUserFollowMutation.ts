@@ -1,12 +1,12 @@
 'use client'
 
+import type { GETV1MeFollowingResponse } from '@litomi/contracts/api/me'
+import type { DELETEV1UserIdFollowResponse, PUTV1UserIdFollowResponse } from '@litomi/contracts/api/user'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 
-import type { GETV1MeFollowingResponse } from '@/backend/api/v1/me/following/GET'
-import type { DELETEV1UserIdFollowResponse } from '@/backend/api/v1/user/[id]/follow/DELETE'
-import type { PUTV1UserIdFollowResponse } from '@/backend/api/v1/user/[id]/follow/PUT'
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import {

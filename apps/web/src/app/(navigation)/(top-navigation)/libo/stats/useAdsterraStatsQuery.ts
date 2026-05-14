@@ -1,8 +1,8 @@
+import type { GETV1AdsterraStatsResponse } from '@litomi/contracts/api/adsterra'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
-
-import type { GETV1AdsterraStatsResponse } from '@/backend/api/v1/adsterra/stats'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

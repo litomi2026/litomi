@@ -1,10 +1,10 @@
 'use client'
 
+import type { POSTV1AuthLogoutResponse } from '@litomi/contracts/api/auth'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { POSTV1AuthLogoutResponse } from '@/backend/api/v1/auth/logout'
 
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 

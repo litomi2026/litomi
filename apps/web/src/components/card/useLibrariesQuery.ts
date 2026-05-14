@@ -1,8 +1,8 @@
+import type { GETV1LibraryListResponse } from '@litomi/contracts/api/library'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
-
-import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/GET'
 
 import useMeQuery from '@/query/useMeQuery'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

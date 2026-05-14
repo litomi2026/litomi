@@ -1,16 +1,17 @@
 'use client'
 
+import type {
+  DELETEV1LibraryRatingBody,
+  GETV1LibrarySummaryResponse,
+  GETV1RatingsResponse,
+} from '@litomi/contracts/api/library'
+import type { GETV1MangaIdRatingResponse } from '@litomi/contracts/api/manga'
 import type { InfiniteData } from '@tanstack/react-query'
 
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-
-import type { DELETEV1LibraryRatingBody } from '@/backend/api/v1/library/rating/DELETE'
-import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
-import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
-import type { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating/GET'
 
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

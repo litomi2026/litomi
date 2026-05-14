@@ -1,11 +1,12 @@
-import { env } from '@litomi/env/env/client'
-
-import type { DELETEV1NotificationBody, DELETEV1NotificationResponse } from '@/backend/api/v1/notification/DELETE'
 import type {
+  DELETEV1NotificationBody,
+  DELETEV1NotificationResponse,
   PATCHV1NotificationReadAllResponse,
   PATCHV1NotificationReadBody,
   PATCHV1NotificationReadResponse,
-} from '@/backend/api/v1/notification/PATCH'
+} from '@litomi/contracts/api/notification'
+
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

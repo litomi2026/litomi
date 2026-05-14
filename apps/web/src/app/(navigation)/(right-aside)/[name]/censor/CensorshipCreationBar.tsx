@@ -1,5 +1,7 @@
 'use client'
 
+import type { POSTV1CensorshipCreateResponse } from '@litomi/contracts/api/censorship'
+
 import { BLIND_TAG_VALUES } from '@litomi/domain/constants/json'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
@@ -8,8 +10,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Info, Loader2, X } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
-
-import type { POSTV1CensorshipCreateResponse } from '@/backend/api/v1/censorship/POST'
 
 import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'

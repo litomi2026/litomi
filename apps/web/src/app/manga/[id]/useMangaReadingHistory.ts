@@ -1,10 +1,10 @@
 'use client'
 
+import type { GETV1MangaIdHistoryResponse } from '@litomi/contracts/api/manga'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
-
-import type { GETV1MangaIdHistoryResponse } from '@/backend/api/v1/manga/[id]/history/GET'
 
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'

@@ -1,5 +1,7 @@
 'use client'
 
+import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@litomi/contracts/api/manga'
+
 import { env } from '@litomi/env/env/client'
 import { useMutation } from '@tanstack/react-query'
 import { Flag } from 'lucide-react'
@@ -7,8 +9,6 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@/backend/api/v1/manga/[id]/report/POST'
 
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'

@@ -1,5 +1,6 @@
 'use client'
 
+import type { POSTV1PointsDonationCreateRequest } from '@litomi/contracts/api/points'
 import type { Manga } from '@litomi/domain/types/manga'
 
 import { formatNumber } from '@litomi/std/format/number'
@@ -7,8 +8,6 @@ import ms from 'ms'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'
 import { toast } from 'sonner'
-
-import type { POSTV1PointsDonationCreateRequest } from '@/backend/api/v1/points/donations/POST'
 
 import { usePointsQuery } from '@/app/(navigation)/(top-navigation)/libo/usePointsQuery'
 import Dialog from '@/components/ui/Dialog'

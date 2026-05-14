@@ -1,5 +1,11 @@
 'use client'
 
+import type {
+  GETV1LibraryListResponse,
+  LibraryListItem,
+  PATCHV1LibraryIdBody,
+} from '@litomi/contracts/api/library'
+
 import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/constants/policy'
 import { QueryKeys } from '@litomi/domain/constants/query'
@@ -8,9 +14,6 @@ import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-
 import { Check, Loader2, Shuffle } from 'lucide-react'
 import { type SubmitEvent, useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
-
-import type { PATCHV1LibraryIdBody } from '@/backend/api/v1/library/[id]/PATCH'
-import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
 
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'

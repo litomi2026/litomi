@@ -1,12 +1,12 @@
 'use client'
 
+import type { GETV1PointsDonationsMeRecipient } from '@litomi/contracts/api/points'
+
 import { normalizeValue } from '@litomi/catalog/translation/common'
 import { formatDistanceToNow, formatLocalDate } from '@litomi/std/format/date'
 import { formatNumber } from '@litomi/std/format/number'
 import { Trash2 } from 'lucide-react'
 import Link from 'next/link'
-
-import type { GETV1PointsDonationsMeRecipient } from '@/backend/api/v1/points/donations/GET'
 
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

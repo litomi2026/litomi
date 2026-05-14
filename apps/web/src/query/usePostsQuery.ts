@@ -1,9 +1,9 @@
+import type { GETV1PostResponse } from '@litomi/contracts/api/post'
+
 import { PostFilter } from '@litomi/contracts/post/constant'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
-
-import type { GETV1PostResponse } from '@/backend/api/v1/post/GET'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

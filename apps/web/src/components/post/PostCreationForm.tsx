@@ -1,5 +1,7 @@
 'use client'
 
+import type { POSTV1PostBody, POSTV1PostResponse } from '@litomi/contracts/api/post'
+
 import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/constants/policy'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -9,8 +11,6 @@ import { type ReactNode, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { POSTV1PostBody, POSTV1PostResponse } from '@/backend/api/v1/post/POST'
 
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'

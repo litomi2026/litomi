@@ -1,9 +1,9 @@
-import { env } from '@litomi/env/env/client'
-
 import type {
   DELETEV1ReadingHistoryBody,
   DELETEV1ReadingHistoryResponse,
-} from '@/backend/api/v1/library/history/DELETE'
+} from '@litomi/contracts/api/library'
+
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

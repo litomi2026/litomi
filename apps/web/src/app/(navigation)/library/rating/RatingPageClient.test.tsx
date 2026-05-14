@@ -1,3 +1,5 @@
+import type { GETV1RatingsResponse } from '@litomi/contracts/api/library'
+
 import { isGroupedRatingSort, RatingSort } from '@litomi/contracts/library/enum'
 import { View } from '@litomi/std/param'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
@@ -7,8 +9,6 @@ import { fireEvent } from '@test/utils/render'
 import { cleanup, waitFor } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
-
-import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
 

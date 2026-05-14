@@ -1,5 +1,7 @@
 'use client'
 
+import type { DELETEV1MeBody, DELETEV1MeResponse } from '@litomi/contracts/api/me'
+
 import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { getInvalidParams, type ProblemDetails } from '@litomi/http/problem-details'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -7,8 +9,6 @@ import { AlertTriangle, Check, Eye, EyeOff, Loader2, Trash2 } from 'lucide-react
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
-
-import type { DELETEV1MeBody, DELETEV1MeResponse } from '@/backend/api/v1/me/DELETE'
 
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
 import { ProblemDetailsError } from '@/utils/react-query-error'

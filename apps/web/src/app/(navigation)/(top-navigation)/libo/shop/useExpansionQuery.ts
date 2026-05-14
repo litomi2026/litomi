@@ -1,8 +1,8 @@
+import type { GETV1PointExpansionResponse } from '@litomi/contracts/api/points'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
-
-import type { GETV1PointExpansionResponse } from '@/backend/api/v1/points/expansion'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

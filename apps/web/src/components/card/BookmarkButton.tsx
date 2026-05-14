@@ -1,5 +1,7 @@
 'use client'
 
+import type { GETV1BookmarkIdResponse, PUTV1BookmarkIdResponse } from '@litomi/contracts/api/bookmark'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { captureException } from '@sentry/nextjs'
@@ -10,9 +12,6 @@ import ms from 'ms'
 import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { PUTV1BookmarkIdResponse } from '@/backend/api/v1/bookmark/[id]/PUT'
-import type { GETV1BookmarkIdResponse } from '@/backend/api/v1/bookmark/id'
 
 import useDelayedPendingIndicator from '@/hook/useDelayedPendingIndicator'
 import { showLoginRequiredToast } from '@/lib/toast'

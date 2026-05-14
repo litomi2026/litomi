@@ -1,9 +1,9 @@
+import type { GETNotificationResponse } from '@litomi/contracts/api/notification'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
-
-import type { GETNotificationResponse } from '@/backend/api/v1/notification/GET'
 
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'

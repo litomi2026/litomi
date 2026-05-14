@@ -1,16 +1,17 @@
 'use client'
 
+import type {
+  DELETEV1BookmarkBody,
+  GETV1BookmarkIdResponse,
+  GETV1BookmarkResponse,
+} from '@litomi/contracts/api/bookmark'
+import type { GETV1LibrarySummaryResponse } from '@litomi/contracts/api/library'
 import type { InfiniteData } from '@tanstack/react-query'
 
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-
-import type { DELETEV1BookmarkBody } from '@/backend/api/v1/bookmark/DELETE'
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
-import type { GETV1BookmarkIdResponse } from '@/backend/api/v1/bookmark/id'
-import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
 
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

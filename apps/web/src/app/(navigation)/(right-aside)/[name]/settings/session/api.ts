@@ -1,6 +1,6 @@
-import { env } from '@litomi/env/env/client'
+import type { DELETEV1MeSessionResponse } from '@litomi/contracts/api/me'
 
-import type { DELETEV1MeSessionResponse } from '@/backend/api/v1/me/session'
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

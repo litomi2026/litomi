@@ -1,8 +1,8 @@
+import type { Post as TPost } from '@litomi/contracts/api/post'
+
 import { formatDistanceToNow } from '@litomi/std/format/date'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-
-import type { Post as TPost } from '@/backend/api/v1/post/GET'
 
 import { getPostDetailHref } from '@/components/post/postHref'
 import ReferredPostCard from '@/components/post/ReferredPostCard'

@@ -1,11 +1,11 @@
 'use client'
 
-import { env } from '@litomi/env/env/client'
-
 import type {
   POSTV1NotificationCriteriaBody,
   POSTV1NotificationCriteriaResponse,
-} from '@/backend/api/v1/notification/criteria/POST'
+} from '@litomi/contracts/api/notification'
+
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

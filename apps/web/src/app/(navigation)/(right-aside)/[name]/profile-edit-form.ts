@@ -1,8 +1,7 @@
+import type { PATCHV1MeBody } from '@litomi/contracts/api/me'
 import type { ProblemDetails } from '@litomi/http/problem-details'
 
 import { getInvalidParams } from '@litomi/http/problem-details'
-
-import type { PATCHV1MeBody } from '@/backend/api/v1/me/PATCH'
 
 export type EditableProfile = {
   id: number

@@ -1,11 +1,12 @@
 'use client'
 
+import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@litomi/contracts/api/auth'
+
 import { SearchParamKey } from '@litomi/domain/constants/storage'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@/backend/api/v1/auth/signup'
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import amplitude from '@/lib/amplitude/browser'

@@ -1,11 +1,11 @@
 'use client'
 
+import type { POSTV1LibraryItemCopyBody, POSTV1LibraryItemCopyResponse } from '@litomi/contracts/api/library'
+
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/constants/policy'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-
-import type { POSTV1LibraryItemCopyBody, POSTV1LibraryItemCopyResponse } from '@/backend/api/v1/library/item/schema'
 
 import { bulkCopyToLibrary } from '@/app/(navigation)/library/api'
 import { ProblemDetailsError } from '@/utils/react-query-error'

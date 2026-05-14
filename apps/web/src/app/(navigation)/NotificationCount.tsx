@@ -1,10 +1,10 @@
 'use client'
 
+import type { GETUnreadCountResponse } from '@litomi/contracts/api/notification'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
-
-import type { GETUnreadCountResponse } from '@/backend/api/v1/notification/unread-count'
 
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'

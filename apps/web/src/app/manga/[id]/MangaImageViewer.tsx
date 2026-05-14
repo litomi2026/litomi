@@ -1,5 +1,7 @@
 'use client'
 
+import type { POSTV1MangaIdHistoryBody } from '@litomi/contracts/api/manga'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { type Manga } from '@litomi/domain/types/manga'
 import { env } from '@litomi/env/env/client'
@@ -7,8 +9,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect } from 'react'
-
-import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/history/POST'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import BackButton from '@/components/BackButton'

@@ -1,6 +1,6 @@
-import ms from 'ms'
+import type { ReadingHistoryItem } from '@litomi/contracts/api/library'
 
-import type { ReadingHistoryItem } from '@/backend/api/v1/library/history/GET'
+import ms from 'ms'
 
 export type DateGroup = 'lastMonth' | 'lastWeek' | 'older' | 'thisMonth' | 'thisWeek' | 'today' | 'yesterday'
 

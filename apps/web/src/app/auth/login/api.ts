@@ -1,16 +1,18 @@
-import { env } from '@litomi/env/env/client'
-
-import type { POSTV1AuthLogin2FARequest, POSTV1AuthLogin2FAResponse } from '@/backend/api/v1/auth/login/2fa/POST'
-import type { POSTV1AuthLoginRequest, POSTV1AuthLoginResponse } from '@/backend/api/v1/auth/login/POST'
-import type { POSTV1AuthPasskeyOptionsResponse } from '@/backend/api/v1/auth/passkey/options/POST'
 import type {
+  POSTV1AuthLogin2FARequest,
+  POSTV1AuthLogin2FAResponse,
+  POSTV1AuthLoginRequest,
+  POSTV1AuthLoginResponse,
+  POSTV1AuthPasskeyOptionsResponse,
   POSTV1AuthPasskeyVerifyRequest,
   POSTV1AuthPasskeyVerifyResponse,
-} from '@/backend/api/v1/auth/passkey/verify/POST'
+} from '@litomi/contracts/api/auth'
 import type {
   POSTV1LibraryHistoryImportBody,
   POSTV1LibraryHistoryImportResponse,
-} from '@/backend/api/v1/library/history/import'
+} from '@litomi/contracts/api/library'
+
+import { env } from '@litomi/env/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

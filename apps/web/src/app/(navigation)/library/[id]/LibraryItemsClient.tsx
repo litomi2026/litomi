@@ -1,5 +1,7 @@
 'use client'
 
+import type { GETLibraryItemsResponse } from '@litomi/contracts/api/library'
+
 import {
   COLLECTION_ITEM_SORT_OPTIONS,
   CollectionItemSort,
@@ -9,7 +11,6 @@ import { getViewFromSearchParams, View } from '@litomi/std/param'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
-import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'

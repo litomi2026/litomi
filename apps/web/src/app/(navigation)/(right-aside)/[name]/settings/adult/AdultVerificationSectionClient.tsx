@@ -1,5 +1,7 @@
 'use client'
 
+import type { POSTV1BBatonAttemptResponse } from '@litomi/contracts/api/bbaton'
+
 import { BBATON_POPUP_WINDOW_NAME } from '@litomi/domain/constants/bbaton'
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
@@ -11,8 +13,6 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { POSTV1BBatonAttemptResponse } from '@/backend/api/v1/bbaton/attempt'
 
 import BBatonButton from '@/svg/BBatonButton'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'

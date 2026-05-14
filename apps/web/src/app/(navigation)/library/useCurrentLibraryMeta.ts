@@ -1,11 +1,11 @@
 'use client'
 
+import type { GETV1LibraryResponse } from '@litomi/contracts/api/library'
+
 import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
-
-import type { GETV1LibraryResponse } from '@/backend/api/v1/library/[id]/GET'
 
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
