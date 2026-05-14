@@ -2,7 +2,7 @@ import { createMiddleware } from 'hono/factory'
 
 import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/backend/utils/adult-gate'
 
-import type { Env } from '..'
+import type { Env } from '../app'
 
 export const requireAdult = createMiddleware<Env>(async (c, next) => {
   if (!shouldBlockAdultGate(c)) {

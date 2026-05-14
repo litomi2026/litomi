@@ -7,7 +7,8 @@ import { BOOKMARKS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'

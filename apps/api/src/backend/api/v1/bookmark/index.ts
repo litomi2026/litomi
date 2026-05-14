@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import 'server-only'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
 
 import bookmarkIdDeleteRoute from './[id]/DELETE'
 import bookmarkIdPutRoute from './[id]/PUT'

@@ -5,7 +5,8 @@ import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'

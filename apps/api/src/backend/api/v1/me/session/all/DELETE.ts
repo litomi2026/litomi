@@ -2,7 +2,8 @@ import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import 'server-only'
 import { Hono } from 'hono'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 

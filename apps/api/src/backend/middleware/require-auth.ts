@@ -2,7 +2,7 @@ import { createMiddleware } from 'hono/factory'
 
 import { problemResponse } from '@/backend/utils/problem'
 
-import type { Env } from '..'
+import type { Env } from '../app'
 
 export const requireAuth = createMiddleware<Env>(async (c, next) => {
   const userId = c.get('userId')

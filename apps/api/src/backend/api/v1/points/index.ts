@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
 
 import donationsRoute from './donations'
 import earnRoute from './earn'

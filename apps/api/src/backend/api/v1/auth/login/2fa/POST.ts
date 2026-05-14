@@ -9,7 +9,8 @@ import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 import { z } from 'zod'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/backend/api/v1/auth/query'
 import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
 import { applyAuthCookie } from '@/backend/utils/cookie'

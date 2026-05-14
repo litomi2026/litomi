@@ -10,7 +10,8 @@ import { generateAuthenticationOptions } from '@simplewebauthn/server'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { problemResponse } from '@/backend/utils/problem'
 
 export type POSTV1AuthPasskeyOptionsResponse = {

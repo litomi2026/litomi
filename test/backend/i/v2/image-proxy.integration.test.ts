@@ -2,7 +2,7 @@ import { requestBackend } from '@test/backend/setup/app'
 import { externalRoute, installExternalFetchGuard } from '@test/backend/setup/network'
 import { afterEach, describe, expect, test } from 'bun:test'
 
-import backendApp from '@/backend'
+import backendApp from '@/backend/app'
 
 const ORIGINAL_NODE_ENV = process.env.NODE_ENV
 const REQUEST_IP_PORT = 3002

@@ -8,7 +8,8 @@ import { hash } from 'bcryptjs'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { issueAuthCookies } from '@/backend/api/v1/auth/session.query'
 import { createUser } from '@/backend/api/v1/auth/signup/query'
 import { applyAuthCookie } from '@/backend/utils/cookie'

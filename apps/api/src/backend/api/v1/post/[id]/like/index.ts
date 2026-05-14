@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
 
 import deleteRoute from './DELETE'
 import putRoute from './PUT'

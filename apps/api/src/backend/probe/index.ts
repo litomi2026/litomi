@@ -1,6 +1,6 @@
 import { type Context, Hono } from 'hono'
 
-import type { Env } from '@/backend'
+import type { Env } from '@/backend/app'
 
 import { resolveCORSOrigin } from '../utils/cors-origin'
 import { getProbeStateSnapshot } from './state'

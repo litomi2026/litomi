@@ -7,7 +7,8 @@ import { getRequestUserAgent } from '@litomi/http/request'
 import { getCookie } from 'hono/cookie'
 import { createMiddleware } from 'hono/factory'
 
-import { Env } from '..'
+import type { Env } from '../app'
+
 import { applyAuthCookie } from '../utils/cookie'
 
 export const auth = createMiddleware<Env>(async (c, next) => {

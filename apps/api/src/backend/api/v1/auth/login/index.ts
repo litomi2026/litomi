@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
 
 import twoFactorPostRoute from './2fa/POST'
 import postRoute from './POST'

@@ -11,7 +11,8 @@ import { sec } from '@litomi/std'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { createAllowedRequestInitiatorMiddleware } from '@/backend/middleware/allowed-request-initiator'
 
 const imageProxyRoutes = new Hono<Env>()

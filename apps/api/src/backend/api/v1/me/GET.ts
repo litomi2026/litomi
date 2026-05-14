@@ -7,7 +7,8 @@ import { resolveUserSettings, type UserSettings } from '@litomi/domain/utils/use
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'

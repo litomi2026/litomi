@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm'
 import { Context } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
 
 type ActiveRefreshSession = {
   maxAgeSeconds: number

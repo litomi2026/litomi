@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import 'server-only'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
 
 import libraryIdDeleteRoutes from './[id]/DELETE'
 import libraryIdRoutes from './[id]/GET'

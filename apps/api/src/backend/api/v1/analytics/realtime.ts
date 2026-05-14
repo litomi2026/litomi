@@ -7,7 +7,8 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { GaxiosError } from 'gaxios'
 import { Hono } from 'hono'
 
-import { Env } from '@/backend'
+import type { Env } from '@/backend/app'
+
 import { problemResponse } from '@/backend/utils/problem'
 
 const { GA_PROPERTY_ID } = env
