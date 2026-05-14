@@ -1,7 +1,6 @@
-import { HTMLAttributes, useEffect, useRef, useState } from 'react'
+import { type HTMLAttributes, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
-  className?: string
   max?: number
   min?: number
   onChange?: (value: number) => void
@@ -20,7 +19,7 @@ export default function Slider({
   className = '',
   ...rest
 }: Props) {
-  const [value, setValue] = useState<number>(controlledValue !== undefined ? controlledValue : min)
+  const [value, setValue] = useState<number>(controlledValue ?? min)
   const sliderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -29,47 +28,44 @@ export default function Slider({
     }
   }, [controlledValue])
 
-  // 현재 값의 비율 계산 (0 ~ 1)
   const ratio = (value - min) / (max - min || 1)
-  const ratioPercentage = Math.max(0, ratio * 100).toFixed(2)
+  const ratioPercentage = Math.max(0, Math.min(ratio * 100, 100)).toFixed(2)
 
-  // clientX 좌표를 기반으로 새로운 값을 계산 및 업데이트
-  function updateValueFromEvent(clientX: number): number {
-    if (!sliderRef.current) {
+  function updateValueFromClientX(clientX: number) {
+    const slider = sliderRef.current
+
+    if (!slider) {
       return value
     }
 
-    const rect = sliderRef.current.getBoundingClientRect()
-    const newRatio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1)
-    const newValue = min + newRatio * (max - min)
-    const steppedValue = Math.round((newValue - min) / step) * step + min
-    setValue(steppedValue)
-    if (onChange) {
-      onChange(steppedValue)
-    }
-    return steppedValue
+    const rect = slider.getBoundingClientRect()
+    const nextRatio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1)
+    const rawValue = min + nextRatio * (max - min)
+    const nextValue = Math.round((rawValue - min) / step) * step + min
+
+    setValue(nextValue)
+    onChange?.(nextValue)
+
+    return nextValue
   }
 
-  // 컨테이너에서 pointer down 발생 시 드래그 시작(트랙이나 thumb 모두 해당)
-  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
-    e.preventDefault()
-    updateValueFromEvent(e.clientX)
+  function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    event.preventDefault()
+    updateValueFromClientX(event.clientX)
 
-    function onPointerMove(e: PointerEvent) {
-      updateValueFromEvent(e.clientX)
+    function handlePointerMove(event: PointerEvent) {
+      updateValueFromClientX(event.clientX)
     }
 
-    function onPointerUp(e: PointerEvent) {
-      const finalValue = updateValueFromEvent(e.clientX)
-      document.removeEventListener('pointermove', onPointerMove)
-      document.removeEventListener('pointerup', onPointerUp)
-      if (onValueCommit) {
-        onValueCommit(finalValue)
-      }
+    function handlePointerUp(event: PointerEvent) {
+      const finalValue = updateValueFromClientX(event.clientX)
+      document.removeEventListener('pointermove', handlePointerMove)
+      document.removeEventListener('pointerup', handlePointerUp)
+      onValueCommit?.(finalValue)
     }
 
-    document.addEventListener('pointermove', onPointerMove)
-    document.addEventListener('pointerup', onPointerUp)
+    document.addEventListener('pointermove', handlePointerMove)
+    document.addEventListener('pointerup', handlePointerUp)
   }
 
   return (
@@ -79,16 +75,14 @@ export default function Slider({
       {...rest}
       onPointerDown={handlePointerDown}
     >
-      {/* 트랙 */}
-      <div className="relative h-1/3 border w-full grow overflow-hidden rounded-full bg-zinc-300">
+      <div className="relative h-1/3 w-full grow overflow-hidden rounded-full border bg-zinc-300">
         <div
-          className="absolute w-full origin-left h-full bg-brand-gradient"
-          style={{ transform: `scaleX(${ratio.toFixed(3)})` }}
+          className="absolute h-full w-full origin-left bg-brand-gradient"
+          style={{ transform: `scaleX(${ratio})` }}
         />
       </div>
-      {/* Thumb */}
       <div className="absolute aspect-square h-full -translate-x-1/2" style={{ left: `${ratioPercentage}%` }}>
-        <div className="w-full h-full border-2 rounded-full border-zinc-400 bg-foreground" />
+        <div className="h-full w-full rounded-full border-2 border-zinc-400 bg-foreground" />
       </div>
     </div>
   )
