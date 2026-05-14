@@ -1,7 +1,11 @@
 import type { Book, WithContext } from 'schema-dts'
 
 import { APP_ORIGIN, generateOpenGraphMetadata } from '@litomi/domain/constants'
-import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/constants/policy'
+import {
+  BLACKLISTED_MANGA_IDS,
+  MAX_MANGA_DESCRIPTION_LENGTH,
+  MAX_MANGA_TITLE_LENGTH,
+} from '@litomi/domain/constants/policy'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -10,7 +14,7 @@ import { toAbsoluteUrl } from '@/utils/url'
 
 import { getManga } from './common.server'
 import Forbidden from './Forbidden'
-import MangaViewer from './MangaViewer'
+import MangaPage from './MangaPage'
 import { mangaSchema } from './schema'
 
 export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Promise<Metadata> {
@@ -97,7 +101,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         type="application/ld+json"
       />
-      <MangaViewer id={id} initialManga={manga} />
+      <MangaPage id={id} initialManga={manga} />
     </main>
   )
 }

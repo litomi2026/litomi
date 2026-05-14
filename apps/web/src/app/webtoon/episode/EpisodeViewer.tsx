@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 
-import MangaImageViewer from '@/app/manga/[id]/MangaImageViewer'
+import MangaReader from '@/app/manga/[id]/MangaReader'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
@@ -43,7 +43,7 @@ export default function EpisodeViewer() {
     )
   }
 
-  return <MangaImageViewer manga={manga} />
+  return <MangaReader manga={manga} />
 }
 
 function createMangaFromEpisode(episode: WebtoonEpisode): Manga {

@@ -39,7 +39,7 @@ type Props = {
 const TOP_BUTTON_CLASS_NAME =
   'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70'
 
-export default function MangaImageViewer({ manga }: Props) {
+export default function MangaReader({ manga }: Props) {
   const pages = createMangaReaderPages(manga)
   const { data: me } = useMeQuery()
   const { lastPage } = useMangaReadingHistory(manga.id)

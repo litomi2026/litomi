@@ -13,7 +13,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { AdultState, getAdultState } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
-import MangaImageViewer from './MangaImageViewer'
+import MangaReader from './MangaReader'
 import usePageMetadata from './usePageMetadata'
 
 const NotFound = dynamic(() => import('./not-found'))
@@ -24,7 +24,7 @@ type Props = {
   initialManga?: Manga | null
 }
 
-export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
+export default function MangaPage({ id, initialManga }: Readonly<Props>) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const unlockTimeoutRef = useRef<number>(null)
   const { data: me } = useMeQuery()
@@ -88,7 +88,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
     return <NotFound />
   }
 
-  return <MangaImageViewer manga={manga} />
+  return <MangaReader manga={manga} />
 }
 
 function prepareManga(data: Manga | undefined, initialManga: Manga | null | undefined): Manga | null | undefined {
