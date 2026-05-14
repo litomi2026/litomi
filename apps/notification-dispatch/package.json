@@ -1,0 +1,11 @@
+{
+  "name": "@litomi/notification-dispatch",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/notification-dispatch",
+    "start": "bun --conditions=react-server src/index.ts",
+    "type": "tsc --noEmit"
+  }
+}

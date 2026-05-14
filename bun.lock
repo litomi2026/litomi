@@ -113,6 +113,10 @@
       "name": "@litomi/api",
       "version": "1.1.0",
     },
+    "apps/catalog-ingest": {
+      "name": "@litomi/catalog-ingest",
+      "version": "1.1.0",
+    },
     "apps/edge-proxy": {
       "name": "@litomi/edge-proxy",
       "version": "0.1.0",
@@ -147,6 +151,10 @@
         "@capacitor/ios": "8.3.0",
         "sharp": "^0.34.5",
       },
+    },
+    "apps/notification-dispatch": {
+      "name": "@litomi/notification-dispatch",
+      "version": "1.1.0",
     },
     "apps/web": {
       "name": "@litomi/web",
@@ -490,6 +498,8 @@
 
     "@litomi/catalog": ["@litomi/catalog@workspace:packages/catalog"],
 
+    "@litomi/catalog-ingest": ["@litomi/catalog-ingest@workspace:apps/catalog-ingest"],
+
     "@litomi/contracts": ["@litomi/contracts@workspace:packages/contracts"],
 
     "@litomi/crawler": ["@litomi/crawler@workspace:packages/crawler"],
@@ -505,6 +515,8 @@
     "@litomi/http": ["@litomi/http@workspace:packages/http"],
 
     "@litomi/mobile": ["@litomi/mobile@workspace:apps/mobile"],
+
+    "@litomi/notification-dispatch": ["@litomi/notification-dispatch@workspace:apps/notification-dispatch"],
 
     "@litomi/notifications": ["@litomi/notifications@workspace:packages/notifications"],
 

@@ -1,24 +1,14 @@
+import type { Manga } from '@litomi/domain/types/manga'
+
+import { Locale } from '@litomi/catalog/translation/common'
+import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
+import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
+import { db } from '@litomi/db/database/supabase/drizzle'
 import { sql } from 'drizzle-orm'
 
-import type { Manga } from '../../../src/types/manga'
-
-import {
-  HarpiComicKind,
-  HarpiListMode,
-  HarpiRandomMode,
-  HarpiSort,
-} from '../../../src/app/api/proxy/harpi/search/schema'
-import { harpiClient } from '../../../src/crawler/harpi/harpi'
-import { hiyobiClient } from '../../../src/crawler/hiyobi'
-import { kHentaiClient } from '../../../src/crawler/k-hentai'
-import { db } from '../../../src/database/supabase/drizzle'
 import { MangaNotificationProcessor } from './MangaNotificationProcessor'
 
 const CONFIG = {
-  HARPI: {
-    enabled: true,
-    maxPages: 1,
-  },
   HIYOBI: {
     enabled: true,
     maxPages: 1,
@@ -57,13 +47,9 @@ async function crawlAndNotify() {
     log.success('Database connection established')
     const processor = MangaNotificationProcessor.getInstance()
 
-    const [harpiResults, hiyobiResults, kHentaiResults] = await Promise.all([
-      crawlHarpi(),
-      crawlHiyobi(),
-      crawlKHentai(),
-    ])
+    const [hiyobiResults, kHentaiResults] = await Promise.all([crawlHiyobi(), crawlKHentai()])
 
-    const allManga = [...harpiResults, ...hiyobiResults, ...kHentaiResults]
+    const allManga = [...hiyobiResults, ...kHentaiResults]
     log.info(`Total manga crawled: ${allManga.length}`)
 
     if (allManga.length === 0) {
@@ -97,46 +83,6 @@ async function crawlAndNotify() {
   }
 }
 
-async function crawlHarpi(): Promise<Manga[]> {
-  if (!CONFIG.HARPI.enabled) return []
-
-  const results: Manga[] = []
-
-  try {
-    for (let page = 0; page < CONFIG.HARPI.maxPages; page++) {
-      log.info(`Crawling Harpi page ${page + 1}/${CONFIG.HARPI.maxPages}`)
-
-      const mangas = await harpiClient.searchMangas({
-        comicKind: HarpiComicKind.EMPTY,
-        isIncludeTagsAnd: true,
-        minImageCount: 0,
-        maxImageCount: 0,
-        listMode: HarpiListMode.SORT,
-        randomMode: HarpiRandomMode.SEARCH,
-        page,
-        pageLimit: 10,
-        sort: HarpiSort.DATE_DESC,
-      })
-
-      if (!mangas) {
-        continue
-      }
-
-      results.push(...mangas)
-
-      log.success(`Fetched ${mangas.length} manga from Harpi page ${page + 1}`)
-
-      if (page < CONFIG.HARPI.maxPages - 1) {
-        await sleep(CONFIG.DELAY_MS)
-      }
-    }
-  } catch (error) {
-    log.error('Error crawling Harpi:', error)
-  }
-
-  return results
-}
-
 async function crawlHiyobi(): Promise<Manga[]> {
   if (!CONFIG.HIYOBI.enabled) {
     return []
@@ -148,7 +94,7 @@ async function crawlHiyobi(): Promise<Manga[]> {
     for (let page = 1; page <= CONFIG.HIYOBI.maxPages; page++) {
       log.info(`Crawling Hiyobi page ${page}/${CONFIG.HIYOBI.maxPages}`)
 
-      const mangas = await hiyobiClient.fetchMangas({ page })
+      const mangas = await hiyobiClient.fetchMangas({ page, locale: Locale.KO })
       results.push(...mangas)
 
       log.success(`Fetched ${mangas.length} manga from Hiyobi page ${page}`)
@@ -174,7 +120,7 @@ async function crawlKHentai(): Promise<Manga[]> {
   try {
     log.info('Crawling K-Hentai manga')
 
-    const mangas = await kHentaiClient.searchMangas()
+    const mangas = await kHentaiClient.searchMangas(undefined, Locale.KO)
     results.push(...mangas)
 
     log.success(`Fetched ${mangas.length} manga from K-Hentai`)

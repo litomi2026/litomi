@@ -1,5 +1,6 @@
 import type { LabeledValue, Manga } from '@litomi/domain/types/manga'
 
+import { Locale } from '@litomi/catalog/translation/common'
 import { fetchMangaFromMultiSources } from '@litomi/crawler/common/manga'
 import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
 import { aivenDB } from '@litomi/db/database/aiven/drizzle'
@@ -67,7 +68,7 @@ export async function crawlMangas() {
         searchParams.nextId = nextId
       }
 
-      const searchResults = await kHentaiClient.searchMangas(searchParams, 'ko')
+      const searchResults = await kHentaiClient.searchMangas(searchParams, Locale.KO)
 
       if (!searchResults || searchResults.length === 0) {
         log.info('No more mangas to crawl. Reached the end.')
@@ -562,7 +563,7 @@ async function crawlMangaWithRetry(id: number, retries = CONFIG.MAX_RETRIES): Pr
       if (attempt > 1) {
         log.info(`Fetching manga #${id} (attempt ${attempt}/${retries})...`)
       }
-      const result = await fetchMangaFromMultiSources({ id, locale: 'ko' })
+      const result = await fetchMangaFromMultiSources({ id, locale: Locale.KO })
 
       if (!result) {
         log.warn(`No data found for manga #${id}`)
