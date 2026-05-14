@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun run --conditions=react-server --env-file=../../.env.development --watch src/backend/server.ts",
-    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/backend/server.ts --target=bun --outfile dist/litomi-api",
-    "start": "bun --conditions=react-server src/backend/server.ts",
+    "dev": "bun run --conditions=react-server --env-file=../../.env.development --watch src/server.ts",
+    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/server.ts --target=bun --outfile dist/litomi-api",
+    "start": "bun --conditions=react-server src/server.ts",
     "type": "tsc --noEmit"
   },
   "dependencies": {

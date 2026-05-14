@@ -8,7 +8,7 @@ import { issuePersistentSession } from '@litomi/auth/session/persistent-session'
 import { hash } from 'bcryptjs'
 import { expect } from 'bun:test'
 
-import { getTrustedBrowserCookieConfig, signTrustedBrowserToken } from '@/backend/api/v1/auth/login/2fa/util'
+import { getTrustedBrowserCookieConfig, signTrustedBrowserToken } from '@/api/v1/auth/login/2fa/util'
 
 import { getSetCookieStrings } from './app'
 

@@ -21,7 +21,7 @@ import {
 import { expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, setSystemTime, test } from 'bun:test'
 
-import { privateCacheControl } from '@/backend/utils/cache-control'
+import { privateCacheControl } from '@/utils/cache-control'
 
 installBackendIntegrationHooks()
 

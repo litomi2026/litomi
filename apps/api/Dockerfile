@@ -23,7 +23,7 @@ RUN bun build --compile \
   --conditions=react-server \
   --minify \
   --sourcemap \
-  ./apps/api/src/backend/server.ts \
+  ./apps/api/src/server.ts \
   --target=bun \
   --outfile litomi-api
 

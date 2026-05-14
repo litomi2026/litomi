@@ -1,7 +1,7 @@
 import { TEST_LOGIN_PASSWORD } from '@test/backend/setup/auth'
 import { externalRoute, installExternalFetchGuard, jsonResponse } from '@test/backend/setup/network'
 
-import type { POSTV1AuthSignupRequest } from '@/backend/api/v1/auth/signup'
+import type { POSTV1AuthSignupRequest } from '@/api/v1/auth/signup'
 
 type BuildSignupRequestInput = Partial<POSTV1AuthSignupRequest> & Pick<POSTV1AuthSignupRequest, 'loginId'>
 type TurnstileGuardResult = 'error' | 'failure' | 'success'

@@ -2,7 +2,7 @@ import { initiatePKCEChallenge } from '@litomi/auth/pkce-server'
 import { TEST_TOTP_SECRET } from '@test/backend/setup/db'
 import { generateSync } from 'otplib'
 
-import type { POSTV1AuthLogin2FARequest } from '@/backend/api/v1/auth/login/2fa/POST'
+import type { POSTV1AuthLogin2FARequest } from '@/api/v1/auth/login/2fa/POST'
 
 import { createPkcePair } from '../../fixtures'
 

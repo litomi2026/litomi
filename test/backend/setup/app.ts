@@ -1,4 +1,4 @@
-import backendApp from '@/backend/app'
+import backendApp from '@/app'
 
 type BackendRequestOptions = {
   cookies?: string | readonly string[]
