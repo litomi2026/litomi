@@ -1,8 +1,7 @@
 'use client'
 
+import { env } from '@litomi/env/env/client'
 import { useState } from 'react'
-
-import { env } from '@/env/client'
 
 type Props = Readonly<{
   digest?: string

@@ -1,5 +1,6 @@
+import type { ImageWithVariants } from '@litomi/domain/types/manga'
+
 import type { MangaImagePictures } from '@/components/MangaImage'
-import type { ImageWithVariants } from '@/types/manga'
 
 export function getResponsivePictureSources(image?: ImageWithVariants): MangaImagePictures[] {
   const originalSource = image?.original?.url

@@ -1,9 +1,10 @@
+import { env } from '@litomi/env/env/client'
+
 import type { DELETEV1PostIdResponse } from '@/backend/api/v1/post/[id]/DELETE'
 import type { DELETEV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/DELETE'
 import type { PUTV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/PUT'
 import type { POSTV1PostBody, POSTV1PostResponse } from '@/backend/api/v1/post/POST'
 
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

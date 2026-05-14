@@ -1,7 +1,6 @@
+import { PROBLEM_CONTENT_TYPE } from '@litomi/http/problem-details'
 import { describe, expect, test } from 'bun:test'
 import { Hono } from 'hono'
-
-import { PROBLEM_CONTENT_TYPE } from '@/utils/problem-details'
 
 import { problemResponse } from '../problem'
 

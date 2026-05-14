@@ -1,13 +1,13 @@
 'use client'
 
+import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/constants/policy'
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { ExternalLink, Loader2, Users } from 'lucide-react'
 import ms from 'ms'
 import Link from 'next/link'
 
-import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { useRealtimeStore } from './store'

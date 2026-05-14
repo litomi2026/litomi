@@ -1,7 +1,8 @@
-import type { POSTV1AuthSignupRequest } from '@/backend/api/v1/auth/signup'
-import type { ProblemDetails } from '@/utils/problem-details'
+import type { ProblemDetails } from '@litomi/http/problem-details'
 
-import { getInvalidParams } from '@/utils/problem-details'
+import { getInvalidParams } from '@litomi/http/problem-details'
+
+import type { POSTV1AuthSignupRequest } from '@/backend/api/v1/auth/signup'
 
 type SignupFormFieldName = 'cf-turnstile-response' | 'login-id' | 'nickname' | 'password-confirm' | 'password'
 type SignupPasswordFieldName = 'password-confirm' | 'password'

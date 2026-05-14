@@ -1,8 +1,8 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useQuery } from '@tanstack/react-query'
 
-import { QueryKeys } from '@/constants/query'
 import { getLocalReadingHistory } from '@/utils/reading-history-index'
 
 export type LocalReadingHistorySummary = {

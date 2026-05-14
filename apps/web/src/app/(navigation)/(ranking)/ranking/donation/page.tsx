@@ -1,10 +1,10 @@
+import { generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { formatNumber } from '@litomi/std/format/number'
 import { Heart } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
-import { generateOpenGraphMetadata } from '@/constants'
-import { formatNumber } from '@/utils/format/number'
 
 import { getDonationRanking } from './query'
 

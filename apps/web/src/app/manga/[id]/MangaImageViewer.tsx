@@ -1,5 +1,8 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { type Manga } from '@litomi/domain/types/manga'
+import { env } from '@litomi/env/env/client'
 import { useQueryClient } from '@tanstack/react-query'
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -10,10 +13,7 @@ import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/histo
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import BackButton from '@/components/BackButton'
 import MangaImage from '@/components/MangaImage'
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
-import { type Manga } from '@/types/manga'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 

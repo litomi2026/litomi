@@ -1,4 +1,4 @@
-import { getElementBySecureFisherYates } from './random'
+import { getElementBySecureFisherYates } from '@litomi/std/random'
 
 const adjectives = [
   '지배적인',

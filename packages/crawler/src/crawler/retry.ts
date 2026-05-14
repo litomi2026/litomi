@@ -1,6 +1,5 @@
+import { isRetryableError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
 import { captureException } from '@sentry/nextjs'
-
-import { isRetryableError, UpstreamServerError } from '@/crawler/errors'
 
 // Configuration for retry logic
 export interface RetryConfig {

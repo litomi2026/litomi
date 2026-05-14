@@ -1,6 +1,5 @@
+import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { Metadata } from 'next'
-
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import RealtimeRanking from './RealtimeRanking'
 import RealtimeToggleButton from './RealtimeToggleButton'

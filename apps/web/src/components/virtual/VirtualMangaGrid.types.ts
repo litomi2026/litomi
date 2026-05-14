@@ -1,6 +1,5 @@
+import type { View } from '@litomi/std/param'
 import type { Key, ReactNode } from 'react'
-
-import type { View } from '@/utils/param'
 
 export type VirtualMangaGridItem = {
   key: Key

@@ -1,10 +1,10 @@
 'use client'
 
+import { ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/constants/roulette'
+import { formatNumber } from '@litomi/std/format/number'
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
 
-import { ROULETTE_CONFIG, type RouletteSegment } from '@/constants/roulette'
 import useMeQuery from '@/query/useMeQuery'
-import { formatNumber } from '@/utils/format/number'
 
 import { useRouletteSpinMutation } from './useRouletteSpinMutation'
 

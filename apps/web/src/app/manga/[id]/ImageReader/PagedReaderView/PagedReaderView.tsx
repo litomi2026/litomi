@@ -1,9 +1,8 @@
 'use client'
 
+import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@litomi/domain/constants/policy'
 import { Loader2 } from 'lucide-react'
 import { Fragment } from 'react'
-
-import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../readerPages'
 

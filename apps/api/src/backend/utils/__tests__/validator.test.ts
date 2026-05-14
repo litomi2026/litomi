@@ -1,8 +1,7 @@
+import { getInvalidParams, PROBLEM_CONTENT_TYPE } from '@litomi/http/problem-details'
 import { describe, expect, test } from 'bun:test'
 import { Hono } from 'hono'
 import { z } from 'zod'
-
-import { getInvalidParams, PROBLEM_CONTENT_TYPE } from '@/utils/problem-details'
 
 import { zProblemValidator } from '../validator'
 

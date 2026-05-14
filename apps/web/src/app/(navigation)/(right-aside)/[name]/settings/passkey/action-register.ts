@@ -1,5 +1,12 @@
 'use server'
 
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { getAndDeleteChallenge, storeChallenge } from '@litomi/auth/redis-challenge'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { credentialTable } from '@litomi/db/database/supabase/passkey'
+import { userTable } from '@litomi/db/database/supabase/user'
+import { MAX_CREDENTIALS_PER_USER } from '@litomi/domain/constants/policy'
+import { ChallengeType, encodeDeviceType } from '@litomi/domain/database/enum'
 import { captureException } from '@sentry/nextjs'
 import {
   AuthenticatorTransportFuture,
@@ -11,14 +18,7 @@ import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
-import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'
-import { ChallengeType, encodeDeviceType } from '@/database/enum'
-import { db } from '@/database/supabase/drizzle'
-import { credentialTable } from '@/database/supabase/passkey'
-import { userTable } from '@/database/supabase/user'
 import { badRequest, forbidden, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromCookie } from '@/utils/cookie'
-import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from './common'
 import { hasCredentialId } from './utils'

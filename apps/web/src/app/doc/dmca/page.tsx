@@ -1,8 +1,7 @@
+import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { z } from 'zod'
-
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import DmcaNoticeFormClient from './DmcaNoticeFormClient'
 

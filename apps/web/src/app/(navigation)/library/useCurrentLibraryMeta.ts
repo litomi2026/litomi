@@ -1,12 +1,12 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 
 import type { GETV1LibraryResponse } from '@/backend/api/v1/library/[id]/GET'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

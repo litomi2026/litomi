@@ -1,10 +1,10 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FolderInput } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { QueryKeys } from '@/constants/query'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { BulkActionDescriptor, BulkTargetLibrary } from './bulkActionTypes'

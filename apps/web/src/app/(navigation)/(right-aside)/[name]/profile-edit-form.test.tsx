@@ -1,7 +1,7 @@
 import '@test/setup.dom'
-import { describe, expect, test } from 'bun:test'
+import type { ProblemDetails } from '@litomi/http/problem-details'
 
-import type { ProblemDetails } from '@/utils/problem-details'
+import { describe, expect, test } from 'bun:test'
 
 import {
   applyProfileProblem,

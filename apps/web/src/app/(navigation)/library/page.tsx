@@ -1,8 +1,7 @@
+import { generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { View } from '@litomi/std/param'
 import { Metadata } from 'next'
 import { z } from 'zod'
-
-import { generateOpenGraphMetadata } from '@/constants'
-import { View } from '@/utils/param'
 
 import NotFound from './[id]/not-found'
 import AllLibraryMangaView from './AllLibraryMangaView'

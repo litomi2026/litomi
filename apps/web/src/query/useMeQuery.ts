@@ -1,12 +1,12 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { CookieKey } from '@litomi/domain/constants/storage'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import ms from 'ms'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
-import { QueryKeys } from '@/constants/query'
-import { CookieKey } from '@/constants/storage'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

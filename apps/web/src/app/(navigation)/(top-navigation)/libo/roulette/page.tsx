@@ -1,6 +1,5 @@
+import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { Metadata } from 'next'
-
-import { generateOpenGraphMetadata } from '@/constants'
 
 import RoulettePageClient from './roulette-page-client'
 

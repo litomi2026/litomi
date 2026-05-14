@@ -1,13 +1,13 @@
 'use client'
 
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
+import { MangaTag } from '@litomi/domain/types/manga'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import type { CensorshipItem } from '@/backend/api/v1/censorship/GET'
 
-import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
-import { MangaTag } from '@/types/manga'
 
 import MangaTagLink from './MangaTagLink'
 import TagOptionsSheet from './TagOptionsSheet'

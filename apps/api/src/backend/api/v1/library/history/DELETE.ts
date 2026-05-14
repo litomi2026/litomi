@@ -1,6 +1,10 @@
+import { readingHistoryTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
+import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
+import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -9,10 +13,6 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { POINT_CONSTANTS } from '@/constants/points'
-import { MAX_MANGA_ID } from '@/constants/policy'
-import { readingHistoryTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
 
 const deleteSelectedBodySchema = z.object({
   mode: z.literal('selected'),

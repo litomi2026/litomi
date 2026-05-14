@@ -1,3 +1,5 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { userPointsTable } from '@litomi/db/database/supabase/points'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
@@ -5,8 +7,6 @@ import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
-import { db } from '@/database/supabase/drizzle'
-import { userPointsTable } from '@/database/supabase/points'
 
 export type GETV1PointsResponse = {
   balance: number

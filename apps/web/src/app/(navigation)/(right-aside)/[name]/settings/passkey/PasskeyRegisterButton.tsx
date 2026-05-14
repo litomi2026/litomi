@@ -1,11 +1,11 @@
 'use client'
 
+import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { startRegistration } from '@simplewebauthn/browser'
 import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
 import useServerAction from '@/hook/useServerAction'
-import { signalCurrentPasskeyUserDetails } from '@/utils/passkey'
 
 import { getRegistrationOptions, verifyRegistration } from './action-register'
 import { PasskeySignalData } from './common'

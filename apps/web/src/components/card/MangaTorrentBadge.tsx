@@ -1,8 +1,8 @@
 'use client'
 
-import { Magnet } from 'lucide-react'
+import type { Manga } from '@litomi/domain/types/manga'
 
-import type { Manga } from '@/types/manga'
+import { Magnet } from 'lucide-react'
 
 import { useMangaTorrentModal } from './MangaTorrentModal'
 

@@ -1,8 +1,7 @@
-import { and, desc, eq, gt, isNull } from 'drizzle-orm'
+import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/supabase/auth'
 import 'server-only'
-
-import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
-import { db } from '@/database/supabase/drizzle'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { and, desc, eq, gt, isNull } from 'drizzle-orm'
 
 export async function readCurrentSessionFamilyIdByTokenHash(userId: number, tokenHash: string) {
   const [family] = await db

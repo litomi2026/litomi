@@ -1,6 +1,5 @@
+import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import Link from 'next/link'
-
-import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 
 import { FILTER_CONFIG } from './constants'
 

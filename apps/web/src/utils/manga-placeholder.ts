@@ -1,6 +1,6 @@
-import type { Manga } from '@/types/manga'
+import type { Manga } from '@litomi/domain/types/manga'
 
-import { createThirdPartyMangaImageURLs } from './image-proxy'
+import { createThirdPartyMangaImageURLs } from '@litomi/http/image-proxy'
 
 const LOADING_MANGA_TITLE = '불러오는 중'
 

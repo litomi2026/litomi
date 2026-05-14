@@ -1,6 +1,6 @@
-import type { ProblemDetails } from '@/utils/problem-details'
+import type { ProblemDetails } from '@litomi/http/problem-details'
 
-import { getInvalidParams } from '@/utils/problem-details'
+import { getInvalidParams } from '@litomi/http/problem-details'
 
 type PasswordChangeFormFieldName = 'confirmPassword' | 'currentPassword' | 'newPassword' | 'token'
 type PasswordChangeServerFieldName = 'currentPassword' | 'newPassword' | 'token'

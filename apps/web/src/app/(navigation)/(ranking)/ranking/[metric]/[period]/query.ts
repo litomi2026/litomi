@@ -1,10 +1,9 @@
+import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { libraryItemTable } from '@litomi/db/database/supabase/library'
+import { TOP_MANGA_PER_PAGE } from '@litomi/domain/constants/policy'
 import { avg, count, desc, gte, sql } from 'drizzle-orm'
 import ms from 'ms'
-
-import { TOP_MANGA_PER_PAGE } from '@/constants/policy'
-import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable } from '@/database/supabase/library'
 
 import { MetricParam, PeriodParam } from '../../../common'
 

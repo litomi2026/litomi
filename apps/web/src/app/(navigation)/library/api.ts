@@ -1,3 +1,5 @@
+import { env } from '@litomi/env/env/client'
+
 import type { DELETEV1LibraryIdResponse } from '@/backend/api/v1/library/[id]/DELETE'
 import type { PATCHV1LibraryIdBody, PATCHV1LibraryIdResponse } from '@/backend/api/v1/library/[id]/PATCH'
 import type {
@@ -11,7 +13,6 @@ import type {
   POSTV1LibraryItemMoveResponse,
 } from '@/backend/api/v1/library/item/schema'
 
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

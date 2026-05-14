@@ -1,7 +1,8 @@
+import { env } from '@litomi/env/env/client'
+
 import type { DELETEV1BookmarkBody, DELETEV1BookmarkResponse } from '@/backend/api/v1/bookmark/DELETE'
 import type { POSTV1BookmarkBody, POSTV1BookmarkResponse } from '@/backend/api/v1/bookmark/POST'
 
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

@@ -1,9 +1,9 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 import { getLocalReadingHistoryArray } from '@/utils/reading-history-index'
 

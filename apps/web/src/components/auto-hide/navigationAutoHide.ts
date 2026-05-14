@@ -1,8 +1,7 @@
 'use client'
 
+import { SCROLL_THRESHOLD_PX } from '@litomi/domain/constants/policy'
 import { useEffect, useRef, useSyncExternalStore } from 'react'
-
-import { SCROLL_THRESHOLD_PX } from '@/constants/policy'
 
 type NavigationAutoHideListener = () => void
 

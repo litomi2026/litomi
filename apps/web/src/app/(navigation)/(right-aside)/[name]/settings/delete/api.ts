@@ -1,6 +1,7 @@
+import { env } from '@litomi/env/env/client'
+
 import type { DELETEV1MeBody, DELETEV1MeResponse } from '@/backend/api/v1/me/DELETE'
 
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

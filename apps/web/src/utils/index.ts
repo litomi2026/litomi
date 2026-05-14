@@ -1,4 +1,4 @@
-import { APP_ORIGIN } from '@/constants'
+import { APP_ORIGIN } from '@litomi/domain/constants'
 
 const privateIP = `
   ^(?:

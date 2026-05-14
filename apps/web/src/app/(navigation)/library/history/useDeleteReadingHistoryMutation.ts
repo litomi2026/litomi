@@ -1,11 +1,11 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import type { DELETEV1ReadingHistoryBody } from '@/backend/api/v1/library/history/DELETE'
 
-import { QueryKeys } from '@/constants/query'
 import {
   getLocalReadingHistory,
   removeLocalReadingHistory,

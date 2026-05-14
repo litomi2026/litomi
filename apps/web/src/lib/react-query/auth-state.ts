@@ -1,6 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query'
 
-import { QueryKeys } from '@/constants/query'
+import { QueryKeys } from '@litomi/domain/constants/query'
+
 import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
 

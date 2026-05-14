@@ -1,6 +1,5 @@
+import { getInvalidParams, isProblemDetails, PROBLEM_CONTENT_TYPE, type ProblemDetails } from '@litomi/http/problem-details'
 import { expect } from 'bun:test'
-
-import { getInvalidParams, isProblemDetails, PROBLEM_CONTENT_TYPE, type ProblemDetails } from '@/utils/problem-details'
 
 type ExpectedInvalidParam = {
   name: string

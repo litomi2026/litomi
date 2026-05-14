@@ -1,10 +1,10 @@
 'use client'
 
+import type { KeywordPromotion } from '@litomi/catalog/sponsor'
+
 import { ExternalLink } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
-
-import type { KeywordPromotion } from '@/sponsor'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'

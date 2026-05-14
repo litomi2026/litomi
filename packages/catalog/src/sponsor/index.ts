@@ -1,6 +1,5 @@
 import 'server-only'
-
-import { chance } from '@/utils/random-edge'
+import { chance } from '@litomi/std/random-edge'
 
 import artistSponsorsJSON from './artist.json'
 import characterSponsorsJSON from './character.json'

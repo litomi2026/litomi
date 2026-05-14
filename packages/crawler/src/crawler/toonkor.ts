@@ -1,6 +1,4 @@
-import ms from 'ms'
-
-import { ParseError } from '@/crawler/errors'
+import { ParseError } from '@litomi/crawler/crawler/errors'
 import {
   WebtoonCrawler,
   WebtoonEpisode,
@@ -8,7 +6,8 @@ import {
   WebtoonListItem,
   WebtoonSeries,
   WebtoonSeriesEpisode,
-} from '@/crawler/webtoon/types'
+} from '@litomi/crawler/crawler/webtoon/types'
+import ms from 'ms'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
 import { isUpstreamServerError } from './proxy-utils'

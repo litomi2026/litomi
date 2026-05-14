@@ -1,12 +1,12 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
 
 import type { POSTV1PointTokenResponse } from '@/backend/api/v1/points/token'
 
-import { QueryKeys } from '@/constants/query'
 import { useLatestRef } from '@/hook/useLatestRef'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

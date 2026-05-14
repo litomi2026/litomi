@@ -1,3 +1,5 @@
+import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import { CookieKey } from '@litomi/domain/constants/storage'
 import { Hono } from 'hono'
 import { getCookie } from 'hono/cookie'
 
@@ -5,8 +7,6 @@ import { Env } from '@/backend'
 import { touchUserLogoutAtAndReturnLoginId } from '@/backend/api/v1/auth/query'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
-import { CookieKey } from '@/constants/storage'
-import { getAuthCookieClearConfigs } from '@/utils/cookie'
 
 import { hashToken, revokeCurrentSessionByTokenHash } from '../session.query'
 

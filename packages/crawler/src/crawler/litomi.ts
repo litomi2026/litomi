@@ -1,10 +1,13 @@
-import { sql } from 'drizzle-orm'
-import ms from 'ms'
+import type { Manga } from '@litomi/domain/types/manga'
 
-import type { Manga } from '@/types/manga'
-
-import { aivenDB } from '@/database/aiven/drizzle'
-import { tagCategoryIntToName } from '@/database/enum'
+import { translateArtistList } from '@litomi/catalog/translation/artist'
+import { translateCharacterList } from '@litomi/catalog/translation/character'
+import { translateGroupList } from '@litomi/catalog/translation/group'
+import { translateLanguageList } from '@litomi/catalog/translation/language'
+import { translateSeriesList } from '@litomi/catalog/translation/series'
+import { translateTag } from '@litomi/catalog/translation/tag'
+import { translateType } from '@litomi/catalog/translation/type'
+import { aivenDB } from '@litomi/db/database/aiven/drizzle'
 import {
   artistTable,
   characterTable,
@@ -21,14 +24,10 @@ import {
   seriesTable,
   tagTable,
   uploaderTable,
-} from '@/database/neon/schema'
-import { translateArtistList } from '@/translation/artist'
-import { translateCharacterList } from '@/translation/character'
-import { translateGroupList } from '@/translation/group'
-import { translateLanguageList } from '@/translation/language'
-import { translateSeriesList } from '@/translation/series'
-import { translateTag } from '@/translation/tag'
-import { translateType } from '@/translation/type'
+} from '@litomi/db/database/neon/schema'
+import { tagCategoryIntToName } from '@litomi/domain/database/enum'
+import { sql } from 'drizzle-orm'
+import ms from 'ms'
 
 import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker'
 

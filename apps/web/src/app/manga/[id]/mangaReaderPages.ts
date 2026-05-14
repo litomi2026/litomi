@@ -1,4 +1,4 @@
-import type { ImageVariant, ImageWithVariants, Manga } from '@/types/manga'
+import type { ImageVariant, ImageWithVariants, Manga } from '@litomi/domain/types/manga'
 
 import type { ReaderPage } from './ImageReader/readerPages'
 

@@ -1,9 +1,8 @@
 'use client'
 
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { Check, SquarePen } from 'lucide-react'
 import { useCallback, useState } from 'react'
-
-import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 
 import CensorshipEditForm from './CensorshipEditForm'
 import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'

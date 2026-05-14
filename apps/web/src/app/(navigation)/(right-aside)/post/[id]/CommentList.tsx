@@ -1,11 +1,11 @@
+import type { PostComment } from '@litomi/db/sql/selectPostComment'
+
+import { formatDistanceToNow } from '@litomi/std/format/date'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
-import type { PostComment } from '@/sql/selectPostComment'
-
 import { getPostDetailHref } from '@/components/post/postHref'
 import Squircle from '@/components/ui/Squircle'
-import { formatDistanceToNow } from '@/utils/format/date'
 
 type Props = {
   comments: PostComment[]

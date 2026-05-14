@@ -1,12 +1,11 @@
+import { applyCookieConfigs, getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import { JWTType, verifyJWT } from '@litomi/auth/jwt'
+import { buildSessionDeviceLabel } from '@litomi/auth/session'
+import { refreshSession } from '@litomi/auth/session/persistent-session'
+import { CookieKey } from '@litomi/domain/constants/storage'
+import { getRequestUserAgent } from '@litomi/http/request'
+import { getPathLengthBlockStatus } from '@litomi/std/path-length-guard'
 import { NextRequest, NextResponse } from 'next/server'
-
-import { refreshSession } from './common/session'
-import { CookieKey } from './constants/storage'
-import { applyCookieConfigs, getAuthCookieClearConfigs } from './utils/cookie'
-import { JWTType, verifyJWT } from './utils/jwt'
-import { getPathLengthBlockStatus } from './utils/path-length-guard'
-import { getRequestUserAgent } from './utils/request'
-import { buildSessionDeviceLabel } from './utils/session'
 
 export const config = {
   // DOCS: The matcher values need to be constants so they can be statically analyzed at build-time

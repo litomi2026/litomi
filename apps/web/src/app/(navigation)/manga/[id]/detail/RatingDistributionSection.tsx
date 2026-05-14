@@ -1,10 +1,9 @@
+import { userRatingTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { sec } from '@litomi/std/format/date'
 import { count, eq } from 'drizzle-orm'
 import { BarChart3, Star } from 'lucide-react'
 import { unstable_cache } from 'next/cache'
-
-import { userRatingTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
-import { sec } from '@/utils/format/date'
 
 type Props = {
   mangaId: number

@@ -1,9 +1,8 @@
 'use client'
 
+import { Locale } from '@litomi/catalog/translation/common'
+import { CookieKey } from '@litomi/domain/constants/storage'
 import Cookies from 'js-cookie'
-
-import { CookieKey } from '@/constants/storage'
-import { Locale } from '@/translation/common'
 
 export function getLocaleFromCookie(): '' | Locale {
   return parseLocale(Cookies.get(CookieKey.LOCALE))

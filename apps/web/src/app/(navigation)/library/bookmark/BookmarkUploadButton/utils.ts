@@ -1,6 +1,5 @@
+import { MAX_BOOKMARK_FILE_SIZE } from '@litomi/domain/constants/policy'
 import { toast } from 'sonner'
-
-import { MAX_BOOKMARK_FILE_SIZE } from '@/constants/policy'
 
 import { BookmarkExportData } from './types'
 

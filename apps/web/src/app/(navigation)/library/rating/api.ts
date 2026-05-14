@@ -1,9 +1,10 @@
+import { env } from '@litomi/env/env/client'
+
 import type {
   DELETEV1LibraryRatingBody,
   DELETEV1LibraryRatingResponse,
 } from '@/backend/api/v1/library/rating/DELETE'
 
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

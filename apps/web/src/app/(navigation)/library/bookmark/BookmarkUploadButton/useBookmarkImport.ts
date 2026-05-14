@@ -1,10 +1,10 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
 import type { POSTV1BookmarkImportResponse } from '@/backend/api/v1/bookmark/import'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'

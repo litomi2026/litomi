@@ -1,14 +1,14 @@
+import { userCensorshipTable } from '@litomi/db/database/supabase/censorship'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
+import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { MAX_CENSORSHIPS_PER_USER } from '@/constants/policy'
-import { userCensorshipTable } from '@/database/supabase/censorship'
-import { db } from '@/database/supabase/drizzle'
 
 const deleteSchema = z.object({
   ids: z.array(z.coerce.number().int().positive()).min(1).max(MAX_CENSORSHIPS_PER_USER),

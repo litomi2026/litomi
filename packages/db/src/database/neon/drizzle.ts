@@ -3,7 +3,7 @@
 // import 'server-only'
 // import ws from 'ws'
 
-// import { env } from '@/env/server.next'
+// import { env } from '@litomi/env/env/server.next'
 
 // import * as schema from './schema'
 

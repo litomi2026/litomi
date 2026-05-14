@@ -1,8 +1,8 @@
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { ErrorBoundary } from '@suspensive/react'
 import { Suspense } from 'react'
 
 import LogoutButton from '@/app/(navigation)/LogoutButton'
-import { getUserIdFromCookie } from '@/utils/cookie'
 
 import FollowButton from '../post/[id]/FollowButton'
 import { getMe } from './common'

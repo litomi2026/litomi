@@ -1,9 +1,9 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { pushSettingsTable, webPushTable } from '@litomi/db/database/supabase/notification'
 import { eq } from 'drizzle-orm'
 import { Settings, Smartphone } from 'lucide-react'
 
 import IconBell from '@/components/icons/IconBell'
-import { db } from '@/database/supabase/drizzle'
-import { pushSettingsTable, webPushTable } from '@/database/supabase/notification'
 
 import BrowserList from './BrowserList'
 import PushSettingsForm from './PushSettingsForm'

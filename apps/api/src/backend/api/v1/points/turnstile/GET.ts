@@ -1,3 +1,5 @@
+import { COOKIE_DOMAIN } from '@litomi/domain/constants'
+import { CookieKey } from '@litomi/domain/constants/storage'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 
@@ -5,8 +7,6 @@ import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
-import { COOKIE_DOMAIN } from '@/constants'
-import { CookieKey } from '@/constants/storage'
 
 import { verifyPointsTurnstileToken } from '../util-turnstile-cookie'
 

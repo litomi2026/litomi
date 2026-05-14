@@ -1,10 +1,9 @@
 'use client'
 
+import { env } from '@litomi/env/env/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-
-import { env } from '@/env/client'
 
 import type { CharacterDefinition, CharacterPromptDefinition } from '../../../types/characterDefinition'
 

@@ -1,14 +1,14 @@
 'use client'
 
+import { WebtoonEpisode } from '@litomi/crawler/crawler/webtoon/types'
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { Manga } from '@litomi/domain/types/manga'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 
 import MangaImageViewer from '@/app/manga/[id]/MangaImageViewer'
-import { QueryKeys } from '@/constants/query'
-import { WebtoonEpisode } from '@/crawler/webtoon/types'
-import { env } from '@/env/client'
-import { Manga } from '@/types/manga'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env

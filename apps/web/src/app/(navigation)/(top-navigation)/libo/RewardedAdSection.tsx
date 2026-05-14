@@ -1,5 +1,8 @@
 'use client'
 
+import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Heart, HelpCircle, MousePointerClick, ShieldCheck } from 'lucide-react'
@@ -16,9 +19,6 @@ import AdsterraNativeBanner from '@/components/ads/adsterra/AdsterraNativeBanner
 import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
 import JuicyAdsSlot from '@/components/ads/juicy-ads/JuicyAdsSlot'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import { POINT_CONSTANTS } from '@/constants/points'
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { isAdultVerificationRequiredProblem } from '@/lib/react-query/QueryProvider'
 import useMeQuery from '@/query/useMeQuery'
 import usePointsTurnstileQuery from '@/query/usePointsTurnstileQuery'

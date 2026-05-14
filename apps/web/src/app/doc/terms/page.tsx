@@ -1,7 +1,6 @@
+import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 import Link from 'next/link'
-
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import Header1 from './Header1'
 

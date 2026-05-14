@@ -1,12 +1,12 @@
 'use client'
 
+import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
+import { formatNumber } from '@litomi/std/format/number'
 import { Bookmark, BookOpen, Check, LibraryBig, Pin, Star } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { POINT_CONSTANTS } from '@/constants/points'
 import useMeQuery from '@/query/useMeQuery'
-import { formatNumber } from '@/utils/format/number'
 
 import { usePointsQuery } from '../usePointsQuery'
 import { useExpansionQuery } from './useExpansionQuery'

@@ -1,11 +1,10 @@
 'use client'
 
+import { CookieKey } from '@litomi/domain/constants/storage'
 import { CN, JP, KR, TW, US } from 'country-flag-icons/react/3x2'
 import Cookies from 'js-cookie'
 import { Check, Globe } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
-import { CookieKey } from '@/constants/storage'
 
 const LANGUAGES = [
   { code: '', label: '모두 보기', Flag: Globe },

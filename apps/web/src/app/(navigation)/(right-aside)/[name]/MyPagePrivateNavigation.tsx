@@ -1,4 +1,4 @@
-import { getUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
 
 import { getMe } from './common'
 import MyPageNavigationLink from './MyPageNavigationLink'

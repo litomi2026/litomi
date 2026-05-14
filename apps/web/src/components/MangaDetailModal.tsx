@@ -1,5 +1,7 @@
 'use client'
 
+import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/constants/policy'
+import { Manga } from '@litomi/domain/types/manga'
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -19,8 +21,6 @@ import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
-import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@/constants/policy'
-import { Manga } from '@/types/manga'
 
 type MangaDetailModalStore = {
   isOpen: boolean

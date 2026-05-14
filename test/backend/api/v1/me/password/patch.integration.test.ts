@@ -1,3 +1,4 @@
+import { getInvalidParams } from '@litomi/http/problem-details'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import {
@@ -17,8 +18,6 @@ import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/
 import { compare } from 'bcryptjs'
 import { describe, expect, test } from 'bun:test'
 import { generateSync } from 'otplib'
-
-import { getInvalidParams } from '@/utils/problem-details'
 
 import { createMeSessionAuthContext } from '../fixtures'
 

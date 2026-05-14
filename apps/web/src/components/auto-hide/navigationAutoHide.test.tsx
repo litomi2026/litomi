@@ -1,8 +1,7 @@
 import '@test/setup.dom'
+import { SCROLL_THRESHOLD_PX } from '@litomi/domain/constants/policy'
 import { act, cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-
-import { SCROLL_THRESHOLD_PX } from '@/constants/policy'
 
 import {
   revealNavigationAutoHide,

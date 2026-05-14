@@ -1,12 +1,12 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import type { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating/GET'
 import type { PUTV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating/PUT'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

@@ -1,6 +1,11 @@
+import { userRatingTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
+import { userExpansionTable } from '@litomi/db/database/supabase/points'
+import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
+import { MAX_MANGA_ID, MAX_RATINGS_PER_USER } from '@litomi/domain/constants/policy'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -8,11 +13,6 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
-import { MAX_MANGA_ID, MAX_RATINGS_PER_USER } from '@/constants/policy'
-import { userRatingTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
-import { userExpansionTable } from '@/database/supabase/points'
 
 const ErrorCode = {
   RATING_LIMIT_REACHED: 'RATING_LIMIT_REACHED',

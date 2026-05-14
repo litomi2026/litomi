@@ -1,6 +1,5 @@
+import { APP_ORIGIN } from '@litomi/domain/constants'
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
-
-import { APP_ORIGIN } from '@/constants'
 
 export type Passkey = {
   id: number

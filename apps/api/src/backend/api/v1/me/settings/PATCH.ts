@@ -1,14 +1,14 @@
-import { Hono } from 'hono'
+import { db } from '@litomi/db/database/supabase/drizzle'
 import 'server-only'
+import { userSettingsTable } from '@litomi/db/database/supabase/user'
+import { readUserSettings } from '@litomi/db/query/user-settings.query'
+import { patchUserSettings } from '@litomi/domain/utils/user-settings'
+import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { db } from '@/database/supabase/drizzle'
-import { userSettingsTable } from '@/database/supabase/user'
-import { readUserSettings } from '@/query/user-settings.query'
-import { patchUserSettings } from '@/utils/user-settings'
 
 const patchMySettingsSchema = z
   .object({

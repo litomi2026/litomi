@@ -1,12 +1,13 @@
 'use client'
 
+import { PostFilter } from '@litomi/contracts/post/constant'
 import { Frown, Repeat } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import { PostFilter } from '@/backend/api/v1/post/constant'
-import { Post } from '@/backend/api/v1/post/GET'
+import type { Post } from '@/backend/api/v1/post/GET'
+
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import RetryGuidance from '@/components/RetryGuidance'
 import usePostInfiniteQuery from '@/query/usePostsQuery'

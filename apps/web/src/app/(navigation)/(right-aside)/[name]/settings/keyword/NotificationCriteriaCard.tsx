@@ -1,12 +1,12 @@
 'use client'
 
+import { NotificationConditionType } from '@litomi/domain/database/enum'
 import dayjs from 'dayjs'
 import { BellOff, Edit3, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import IconBell from '@/components/icons/IconBell'
 import Toggle from '@/components/ui/Toggle'
-import { NotificationConditionType } from '@/database/enum'
 import useServerAction from '@/hook/useServerAction'
 
 import type { NotificationCriteria } from './types'

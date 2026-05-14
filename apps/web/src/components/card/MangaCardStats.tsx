@@ -1,6 +1,5 @@
+import { formatNumber } from '@litomi/std/format/number'
 import { Bookmark, Eye, Heart, Star } from 'lucide-react'
-
-import { formatNumber } from '@/utils/format/number'
 
 type Props = {
   manga: {

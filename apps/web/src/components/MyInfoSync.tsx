@@ -1,18 +1,18 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { LocalStorageKey } from '@litomi/domain/constants/storage'
+import { patchUserSettings, type UserSettingsSignal } from '@litomi/domain/utils/user-settings'
+import { safeParseJSON } from '@litomi/std/json'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
 
-import { QueryKeys } from '@/constants/query'
-import { LocalStorageKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
-import { safeParseJSON } from '@/utils/json'
-import { patchUserSettings, type UserSettingsSignal } from '@/utils/user-settings'
 
 export default function MyInfoSync() {
   const queryClient = useQueryClient()

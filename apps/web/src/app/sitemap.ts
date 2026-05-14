@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { APP_ORIGIN } from '@/constants'
+import { APP_ORIGIN } from '@litomi/domain/constants'
 
 import { MetricParam, PeriodParam } from './(navigation)/(ranking)/common'
 

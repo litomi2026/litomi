@@ -1,3 +1,5 @@
+import { env } from '@litomi/env/env/client'
+
 import type { POSTV1AuthLogin2FARequest, POSTV1AuthLogin2FAResponse } from '@/backend/api/v1/auth/login/2fa/POST'
 import type { POSTV1AuthLoginRequest, POSTV1AuthLoginResponse } from '@/backend/api/v1/auth/login/POST'
 import type { POSTV1AuthPasskeyOptionsResponse } from '@/backend/api/v1/auth/passkey/options/POST'
@@ -10,7 +12,6 @@ import type {
   POSTV1LibraryHistoryImportResponse,
 } from '@/backend/api/v1/library/history/import'
 
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

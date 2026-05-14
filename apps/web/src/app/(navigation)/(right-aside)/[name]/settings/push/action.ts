@@ -1,15 +1,15 @@
 'use server'
 
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { notificationTable, pushSettingsTable, webPushTable } from '@litomi/db/database/supabase/notification'
+import { NotificationType } from '@litomi/domain/database/enum'
+import { WebPushService } from '@litomi/notifications/lib/notification/WebPushService'
 import { captureException } from '@sentry/nextjs'
 import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
-import { NotificationType } from '@/database/enum'
-import { db } from '@/database/supabase/drizzle'
-import { notificationTable, pushSettingsTable, webPushTable } from '@/database/supabase/notification'
-import { WebPushService } from '@/lib/notification/WebPushService'
 import { badRequest, conflict, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import {

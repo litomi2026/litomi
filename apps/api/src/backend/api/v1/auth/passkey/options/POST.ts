@@ -1,18 +1,17 @@
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/server'
 
+import { getPasskeyAuthenticationAttemptCookieConfig } from '@litomi/auth/cookie'
+import { WEBAUTHN_RP_ID } from '@litomi/auth/passkey'
+import { authenticationLimiter } from '@litomi/auth/passkey-authentication-attempt'
+import { storeChallenge } from '@litomi/auth/redis-challenge'
+import { ChallengeType } from '@litomi/domain/database/enum'
+import { getRequestIP } from '@litomi/http/request'
 import { generateAuthenticationOptions } from '@simplewebauthn/server'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 
-import { WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-aside)/[name]/settings/passkey/common'
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
-import { ChallengeType } from '@/database/enum'
-import { getPasskeyAuthenticationAttemptCookieConfig } from '@/utils/cookie'
-import { storeChallenge } from '@/utils/redis-challenge'
-import { getRequestIP } from '@/utils/request'
-
-import { authenticationLimiter } from '../shared'
 
 export type POSTV1AuthPasskeyOptionsResponse = {
   options: PublicKeyCredentialRequestOptionsJSON

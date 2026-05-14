@@ -1,5 +1,6 @@
+import type { UserSettings } from '@litomi/domain/utils/user-settings'
+
 import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
-import type { UserSettings } from '@/utils/user-settings'
 
 export enum AdultState {
   UNRESOLVED,

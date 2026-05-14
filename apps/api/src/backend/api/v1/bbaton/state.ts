@@ -1,6 +1,5 @@
 import 'server-only'
-
-import { redisClient } from '@/database/redis'
+import { redisClient } from '@litomi/db/database/redis'
 
 import { BBATON_ATTEMPT_TTL_SECONDS } from './utils'
 

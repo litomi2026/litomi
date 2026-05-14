@@ -1,6 +1,5 @@
+import { NotificationConditionType } from '@litomi/domain/database/enum'
 import { describe, expect, it } from 'bun:test'
-
-import { NotificationConditionType } from '@/database/enum'
 
 import { parseSearchQuery } from '../queryParser'
 

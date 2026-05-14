@@ -1,16 +1,15 @@
-import { and, eq, isNull } from 'drizzle-orm'
-
-import { issuePersistentSession } from '@/common/session'
-import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
-import { db } from '@/database/supabase/drizzle'
-import { type SessionWriteExecutor } from '@/query/session.query'
 import {
   type AuthCookieConfig,
   getAccessTokenCookieConfig,
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
-} from '@/utils/cookie'
-import { hashSessionToken } from '@/utils/session'
+} from '@litomi/auth/cookie'
+import { type SessionWriteExecutor } from '@litomi/auth/query/session.query'
+import { hashSessionToken } from '@litomi/auth/session'
+import { issuePersistentSession } from '@litomi/auth/session/persistent-session'
+import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/supabase/auth'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { and, eq, isNull } from 'drizzle-orm'
 
 type IssueAuthCookiesInput = {
   adult: boolean

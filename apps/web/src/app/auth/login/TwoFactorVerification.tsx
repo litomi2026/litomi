@@ -1,5 +1,7 @@
 'use client'
 
+import { PKCEChallenge } from '@litomi/auth/pkce-browser'
+import { BACKUP_CODE_PATTERN } from '@litomi/domain/constants/policy'
 import { useMutation } from '@tanstack/react-query'
 import { Key, Loader2, RectangleEllipsis } from 'lucide-react'
 import { SubmitEvent, useRef, useState } from 'react'
@@ -9,8 +11,6 @@ import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import OneTimeCodeInput from '@/app/(navigation)/(right-aside)/[name]/settings/two-factor/components/OneTimeCodeInput'
 import Toggle from '@/components/ui/Toggle'
-import { BACKUP_CODE_PATTERN } from '@/constants/policy'
-import { PKCEChallenge } from '@/utils/pkce-browser'
 
 import { verifyTwoFactorLogin } from './api'
 import { applyTwoFactorProblem, clearTwoFactorValidity } from './util'

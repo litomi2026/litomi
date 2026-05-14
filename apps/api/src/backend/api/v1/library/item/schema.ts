@@ -1,6 +1,5 @@
+import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { z } from 'zod'
-
-import { MAX_MANGA_ID } from '@/constants/policy'
 
 const positiveIntegerSchema = z.number().int().positive()
 const mangaIdSchema = positiveIntegerSchema.max(MAX_MANGA_ID)

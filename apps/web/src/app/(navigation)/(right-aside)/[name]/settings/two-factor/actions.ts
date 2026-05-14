@@ -1,18 +1,18 @@
 'use server'
 
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { decryptTOTPSecret, encryptTOTPSecret, generateQRCode, TOTP_CONFIG, verifyTOTPToken } from '@litomi/auth/two-factor'
+import { generateBackupCodes } from '@litomi/auth/two-factor-backup-code'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/database/supabase/two-factor'
+import { userTable } from '@litomi/db/database/supabase/user'
 import { captureException } from '@sentry/nextjs'
 import { and, eq, gt, isNull, sql } from 'drizzle-orm'
 import ms from 'ms'
 import { generateSecret, generateURI } from 'otplib'
 import { z } from 'zod'
 
-import { db } from '@/database/supabase/drizzle'
-import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
-import { userTable } from '@/database/supabase/user'
 import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromCookie } from '@/utils/cookie'
-import { decryptTOTPSecret, encryptTOTPSecret, generateQRCode, TOTP_CONFIG, verifyTOTPToken } from '@/utils/two-factor'
-import { generateBackupCodes } from '@/utils/two-factor-backup-code'
 
 const tokenSchema = z.object({
   token: z.string().length(6).regex(/^\d+$/),

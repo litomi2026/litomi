@@ -1,10 +1,10 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 
 import type { GETV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile/GET'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

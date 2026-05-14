@@ -1,5 +1,7 @@
 'use client'
 
+import { formatBytes } from '@litomi/std/format/byte'
+import { formatNumber } from '@litomi/std/format/number'
 import { ChevronRight, Trash2 } from 'lucide-react'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
@@ -11,8 +13,6 @@ import { computeContextWindowSizeFromPercent } from '@/app/(navigation)/chat/lib
 import { normalizeHuggingFaceUrl } from '@/app/(navigation)/chat/util/huggingface'
 import CustomSelect from '@/components/ui/CustomSelect'
 import Toggle from '@/components/ui/Toggle'
-import { formatBytes } from '@/utils/format/byte'
-import { formatNumber } from '@/utils/format/number'
 
 import { CustomModelDialog } from './CustomModelDialog'
 import { type InstallState, ModelStatus } from './ModelStatus'

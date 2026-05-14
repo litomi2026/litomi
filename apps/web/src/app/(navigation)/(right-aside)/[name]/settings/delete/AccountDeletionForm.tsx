@@ -1,5 +1,7 @@
 'use client'
 
+import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import { getInvalidParams, type ProblemDetails } from '@litomi/http/problem-details'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle, Check, Eye, EyeOff, Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -8,9 +10,7 @@ import { toast } from 'sonner'
 
 import type { DELETEV1MeBody, DELETEV1MeResponse } from '@/backend/api/v1/me/DELETE'
 
-import { PASSWORD_PATTERN } from '@/constants/policy'
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
-import { getInvalidParams, type ProblemDetails } from '@/utils/problem-details'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'

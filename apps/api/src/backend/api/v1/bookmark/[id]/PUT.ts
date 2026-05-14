@@ -1,6 +1,9 @@
+import { bookmarkTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
+import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -9,9 +12,6 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { MAX_MANGA_ID } from '@/constants/policy'
-import { bookmarkTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
 
 import { getBookmarkLimit } from '../limit'
 

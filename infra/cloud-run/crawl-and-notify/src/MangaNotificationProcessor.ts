@@ -1,14 +1,14 @@
+import type { NotificationData } from '@litomi/domain/database/type'
+import type { Manga } from '@litomi/domain/types/manga'
+
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { mangaSeenTable, notificationTable } from '@litomi/db/database/supabase/notification'
+import { MAX_MANGA_TITLE_LENGTH, MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
+import { NotificationType } from '@litomi/domain/database/enum'
+import { getViewerLink } from '@litomi/domain/utils/manga'
+import { WebPushPayload, WebPushService } from '@litomi/notifications/lib/notification/WebPushService'
 import { and, count, inArray, sql } from 'drizzle-orm'
 
-import type { NotificationData } from '../../../src/database/type'
-import type { Manga } from '../../../src/types/manga'
-
-import { MAX_MANGA_TITLE_LENGTH, MAX_NOTIFICATION_COUNT } from '../../../src/constants/policy'
-import { NotificationType } from '../../../src/database/enum'
-import { db } from '../../../src/database/supabase/drizzle'
-import { mangaSeenTable, notificationTable } from '../../../src/database/supabase/notification'
-import { WebPushPayload, WebPushService } from '../../../src/lib/notification/WebPushService'
-import { getViewerLink } from '../../../src/utils/manga'
 import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
 
 interface NewMangaNotification {

@@ -1,10 +1,9 @@
+import { readingHistoryTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { userExpansionTable } from '@litomi/db/database/supabase/points'
+import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
+import { MAX_READING_HISTORY_PER_USER } from '@litomi/domain/constants/policy'
 import { and, desc, eq, notInArray, sum } from 'drizzle-orm'
-
-import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
-import { MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
-import { readingHistoryTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
-import { userExpansionTable } from '@/database/supabase/points'
 
 export type SessionDBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 

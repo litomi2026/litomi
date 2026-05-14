@@ -1,6 +1,6 @@
-import { MAX_CRITERIA_NAME_LENGTH } from '@/constants/policy'
-import { NotificationConditionType } from '@/database/enum'
-import { normalizeValue } from '@/translation/common'
+import { normalizeValue } from '@litomi/catalog/translation/common'
+import { MAX_CRITERIA_NAME_LENGTH } from '@litomi/domain/constants/policy'
+import { NotificationConditionType } from '@litomi/domain/database/enum'
 
 export type ParsedCondition = {
   type: NotificationConditionType

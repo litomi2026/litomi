@@ -1,12 +1,12 @@
 'use client'
 
+import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
 import { SubmitEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import Toggle from '@/components/ui/Toggle'
-import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 
 import { type SearchSuggestion } from './constants'
 import SuggestionDropdown from './SuggestionDropdown'

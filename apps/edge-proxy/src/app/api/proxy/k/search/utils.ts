@@ -1,5 +1,5 @@
-import { normalizeValue } from '@/translation/common'
-import { Manga } from '@/types/manga'
+import { normalizeValue } from '@litomi/catalog/translation/common'
+import { Manga } from '@litomi/domain/types/manga'
 
 class NormalizedValueMap {
   private valueToNormalizedValueMap = new Map<string, string>()

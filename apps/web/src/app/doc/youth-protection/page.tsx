@@ -1,7 +1,6 @@
+import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 import Link from 'next/link'
-
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 const EFFECTIVE_DATE = '2026-04-04'
 const CONTACT_DEPARTMENT = '리토미 운영팀'

@@ -1,3 +1,6 @@
+import { addSeconds, REFRESH_SESSION_REUSE_GRACE_SECONDS } from '@litomi/auth/session'
+import { authSessionTokenTable } from '@litomi/db/database/supabase/auth'
+import { db } from '@litomi/db/database/supabase/drizzle'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { getSetCookieNames, getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import {
@@ -19,9 +22,6 @@ import { expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, setSystemTime, test } from 'bun:test'
 
 import { privateCacheControl } from '@/backend/utils/cache-control'
-import { authSessionTokenTable } from '@/database/supabase/auth'
-import { db } from '@/database/supabase/drizzle'
-import { addSeconds, REFRESH_SESSION_REUSE_GRACE_SECONDS } from '@/utils/session'
 
 installBackendIntegrationHooks()
 

@@ -1,8 +1,9 @@
 'use client'
 
+import { View } from '@litomi/std/param'
+
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import { View } from '@/utils/param'
 
 type Props = {
   mangaIds: number[]

@@ -1,10 +1,10 @@
-import { Hono } from 'hono'
+import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import 'server-only'
+import { Hono } from 'hono'
 
 import { Env } from '@/backend'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
-import { getAuthCookieClearConfigs } from '@/utils/cookie'
 
 import type { DELETEV1MeSessionResponse } from '../shared'
 

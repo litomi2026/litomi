@@ -1,4 +1,4 @@
-import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 
 export const authenticationLimiter = new RateLimiter(RateLimitPresets.balanced())
 

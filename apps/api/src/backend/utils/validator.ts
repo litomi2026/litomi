@@ -1,8 +1,7 @@
+import type { InvalidParam } from '@litomi/http/problem-details'
 import type { ValidationTargets } from 'hono'
 
 import { zValidator } from '@hono/zod-validator'
-
-import type { InvalidParam } from '@/utils/problem-details'
 
 import { problemResponse, type ProblemResponseOptions } from './problem'
 

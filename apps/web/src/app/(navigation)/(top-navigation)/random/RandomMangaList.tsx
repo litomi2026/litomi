@@ -1,7 +1,8 @@
 'use client'
 
+import { View } from '@litomi/std/param'
+
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
-import { View } from '@/utils/param'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomMangaLink from '../RandomMangaLink'

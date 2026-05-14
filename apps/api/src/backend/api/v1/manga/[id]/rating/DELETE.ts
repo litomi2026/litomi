@@ -1,15 +1,15 @@
+import { userRatingTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
+import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { MAX_MANGA_ID } from '@/constants/policy'
-import { userRatingTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
 
 const paramSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),

@@ -1,5 +1,6 @@
 'use client'
 
+import { getViewFromSearchParams, View } from '@litomi/std/param'
 import { Library } from 'lucide-react'
 import Link from 'next/link'
 import { ReadonlyURLSearchParams } from 'next/navigation'
@@ -18,7 +19,6 @@ import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
-import { getViewFromSearchParams, View } from '@/utils/param'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import CensoredManga from './CensoredManga'

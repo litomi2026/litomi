@@ -1,14 +1,14 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { notificationTable } from '@litomi/db/database/supabase/notification'
+import 'server-only'
+import { MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { MAX_NOTIFICATION_COUNT } from '@/constants/policy'
-import { db } from '@/database/supabase/drizzle'
-import { notificationTable } from '@/database/supabase/notification'
 
 const markAsReadBodySchema = z.object({
   ids: z.array(z.coerce.number().int().positive()).min(1).max(MAX_NOTIFICATION_COUNT),

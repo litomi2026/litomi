@@ -1,6 +1,5 @@
+import { createSentryInitOptions } from '@litomi/observability/monitoring/sentry/common'
 import * as Sentry from '@sentry/nextjs'
-
-import { createSentryInitOptions } from '@/monitoring/sentry/common'
 
 Sentry.init({
   ...createSentryInitOptions({

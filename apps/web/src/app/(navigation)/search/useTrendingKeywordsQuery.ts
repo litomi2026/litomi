@@ -1,10 +1,10 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import { type GETTrendingKeywordsResponse } from '@/backend/api/v1/search/trending/GET'
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

@@ -1,7 +1,7 @@
-import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
-import { env } from '@/env/client'
-import { RouteProps } from '@/types/nextjs'
-import { sec } from '@/utils/format/date'
+import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@litomi/crawler/crawler/proxy-utils'
+import { RouteProps } from '@litomi/domain/types/nextjs'
+import { env } from '@litomi/env/env/client'
+import { sec } from '@litomi/std/format/date'
 
 import { fetchWebtoonEpisode, isValidProvider } from '../../providers'
 

@@ -1,10 +1,10 @@
+import type { Manga } from '@litomi/domain/types/manga'
+
+import { Locale } from '@litomi/catalog/translation/common'
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 
-import type { Manga } from '@/types/manga'
-
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
-import { Locale } from '@/translation/common'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN } = env

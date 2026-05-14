@@ -1,6 +1,6 @@
-import type { KeywordPromotion } from '@/sponsor'
-import type { Locale } from '@/translation/common'
-import type { Manga } from '@/types/manga'
+import type { KeywordPromotion } from '@litomi/catalog/sponsor'
+import type { Locale } from '@litomi/catalog/translation/common'
+import type { Manga } from '@litomi/domain/types/manga'
 
 export enum Sort {
   RANDOM = 'random',

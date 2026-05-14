@@ -1,10 +1,9 @@
 'use client'
 
+import { ErrorProps } from '@litomi/domain/types/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
-
-import { ErrorProps } from '@/types/nextjs'
 
 export default function Error({ error, reset }: ErrorProps) {
   const router = useRouter()

@@ -2,13 +2,12 @@ import '@test/setup.dom'
 
 import type { ReactNode } from 'react'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
-
-import { QueryKeys } from '@/constants/query'
 
 import usePatchMyProfileMutation from './usePatchMyProfileMutation'
 

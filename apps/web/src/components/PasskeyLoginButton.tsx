@@ -1,5 +1,6 @@
 'use client'
 
+import { signalUnknownPasskeyCredential } from '@litomi/auth/passkey'
 import { browserSupportsWebAuthnAutofill, startAuthentication } from '@simplewebauthn/browser'
 import { useMutation } from '@tanstack/react-query'
 import { Fingerprint, Loader2 } from 'lucide-react'
@@ -9,7 +10,6 @@ import { toast } from 'sonner'
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { requestPasskeyAuthenticationOptions, verifyPasskeyAuthentication } from '@/app/auth/login/api'
-import { signalUnknownPasskeyCredential } from '@/utils/passkey'
 import { ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/react-query-error'
 
 type Props = {

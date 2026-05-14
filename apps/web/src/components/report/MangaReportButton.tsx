@@ -1,5 +1,6 @@
 'use client'
 
+import { env } from '@litomi/env/env/client'
 import { useMutation } from '@tanstack/react-query'
 import { Flag } from 'lucide-react'
 import Link from 'next/link'
@@ -12,7 +13,6 @@ import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@/bac
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogHeader from '@/components/ui/DialogHeader'
-import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess, requiresAdultVerification } from '@/utils/adult-verification'

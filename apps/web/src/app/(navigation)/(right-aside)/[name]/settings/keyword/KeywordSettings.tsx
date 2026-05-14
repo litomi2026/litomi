@@ -1,7 +1,6 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/supabase/notification'
 import { eq } from 'drizzle-orm'
-
-import { db } from '@/database/supabase/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification'
 
 import KeywordSettingsForm from './KeywordSettingsForm'
 

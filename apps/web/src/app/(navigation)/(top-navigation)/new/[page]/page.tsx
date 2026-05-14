@@ -1,11 +1,11 @@
+import { generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import PageNavigation from '@/components/PageNavigation'
-import { generateOpenGraphMetadata } from '@/constants'
-import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
 
 import NewMangaList from './NewMangaList'
 

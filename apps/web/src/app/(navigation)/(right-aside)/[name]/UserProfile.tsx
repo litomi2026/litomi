@@ -1,4 +1,4 @@
-import { getUserIdFromCookie } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
 
 import { getUserByName } from './common'
 import UserProfileView, { UserType } from './UserProfileView'

@@ -1,8 +1,7 @@
 'use client'
 
+import { formatDistanceFromNow } from '@litomi/std/format/date'
 import { useEffect, useRef, useState } from 'react'
-
-import { formatDistanceFromNow } from '@/utils/format/date'
 
 import type { AdClickResult } from '../types'
 

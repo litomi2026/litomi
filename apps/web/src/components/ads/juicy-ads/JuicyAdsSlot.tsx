@@ -1,9 +1,8 @@
 'use client'
 
+import { formatDistanceFromNow } from '@litomi/std/format/date'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-
-import { formatDistanceFromNow } from '@/utils/format/date'
 
 import type { AdClickResult } from '../types'
 

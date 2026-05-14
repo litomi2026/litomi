@@ -1,8 +1,7 @@
-import { createEnv } from '@t3-oss/env-core'
+import { sec } from '@litomi/std/format/date'
 import 'server-only'
+import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
-
-import { sec } from '@/utils/format/date'
 
 export const env = createEnv({
   server: {

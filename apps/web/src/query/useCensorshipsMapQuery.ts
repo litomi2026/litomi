@@ -1,9 +1,9 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import type { CensorshipItem, GETV1CensorshipResponse } from '@/backend/api/v1/censorship/GET'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

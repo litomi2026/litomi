@@ -1,7 +1,6 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { userTable } from '@litomi/db/database/supabase/user'
 import { sql } from 'drizzle-orm'
-
-import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
 
 type Params = {
   loginId?: string

@@ -1,12 +1,13 @@
 'use server'
 
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/supabase/notification'
+import { MAX_CRITERIA_PER_USER } from '@litomi/domain/constants/policy'
 import { captureException } from '@sentry/nextjs'
 import { and, count, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
-import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
-import { db } from '@/database/supabase/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification'
 import {
   badRequest,
   created,
@@ -16,7 +17,6 @@ import {
   ok,
   unauthorized,
 } from '@/utils/action-response'
-import { getUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import { createCriteriaSchema, deleteCriteriaSchema, updateCriteriaSchema } from './schema'

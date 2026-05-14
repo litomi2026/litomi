@@ -1,5 +1,7 @@
 'use client'
 
+import { MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/constants/policy'
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -7,8 +9,6 @@ import { toast } from 'sonner'
 import type { POSTV1BookmarkResponse } from '@/backend/api/v1/bookmark/POST'
 
 import MangaImportModal from '@/components/card/MangaImportModal'
-import { MAX_BOOKMARK_BATCH_SIZE } from '@/constants/policy'
-import { QueryKeys } from '@/constants/query'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { addBookmarks } from '../api'

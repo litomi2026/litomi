@@ -1,10 +1,8 @@
 import 'server-only'
+import { RatingSort } from '@litomi/contracts/library/enum'
+import { userRatingTable } from '@litomi/db/database/supabase/activity'
+import { encodeRatingCursor } from '@litomi/domain/common/cursor'
 import { and, asc, desc, eq, gt, lt, or, SQL } from 'drizzle-orm'
-
-import { encodeRatingCursor } from '@/common/cursor'
-import { userRatingTable } from '@/database/supabase/activity'
-
-import { RatingSort } from './enum'
 
 export type RatingCursor = {
   rating: number

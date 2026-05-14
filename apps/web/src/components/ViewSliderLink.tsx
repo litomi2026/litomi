@@ -1,9 +1,8 @@
 'use client'
 
+import { View } from '@litomi/std/param'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-
-import { View } from '@/utils/param'
 
 const layoutMap = {
   [View.CARD]: { index: 0, label: '카드' },

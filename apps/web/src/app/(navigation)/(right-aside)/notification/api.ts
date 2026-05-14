@@ -1,3 +1,5 @@
+import { env } from '@litomi/env/env/client'
+
 import type { DELETEV1NotificationBody, DELETEV1NotificationResponse } from '@/backend/api/v1/notification/DELETE'
 import type {
   PATCHV1NotificationReadAllResponse,
@@ -5,7 +7,6 @@ import type {
   PATCHV1NotificationReadResponse,
 } from '@/backend/api/v1/notification/PATCH'
 
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

@@ -1,5 +1,8 @@
 'use client'
 
+import type { ImageWithVariants } from '@litomi/domain/types/manga'
+
+import { CookieKey } from '@litomi/domain/constants/storage'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Cookies from 'js-cookie'
 import { Download, Loader2 } from 'lucide-react'
@@ -8,14 +11,11 @@ import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ImageWithVariants } from '@/types/manga'
-
 import {
   disableJuicyPopunder,
   enableJuicyPopunder,
   JUICY_POPUNDER_TRIGGER_CLASS,
 } from '@/components/ads/juicy-ads/popunder'
-import { CookieKey } from '@/constants/storage'
 import { useDownload } from '@/hook/useDownload'
 import { useThrottleValue } from '@/hook/useThrottleValue'
 import { AdultState } from '@/utils/adult-verification'

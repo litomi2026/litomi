@@ -1,15 +1,15 @@
 'use client'
 
+import { CensorshipLevel } from '@litomi/domain/database/enum'
+import { Manga } from '@litomi/domain/types/manga'
 import { Eye, EyeOff } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
-import { CensorshipLevel } from '@/database/enum'
 import useMatchedCensorships from '@/hook/useCensorshipCheck'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { Manga } from '@/types/manga'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
 const MangaCardCensorshipChildren = dynamic(() => import('./MangaCardCensorshipChildren'))

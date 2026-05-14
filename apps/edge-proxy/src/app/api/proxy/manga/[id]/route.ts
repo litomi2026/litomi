@@ -1,16 +1,16 @@
-import { fetchMangaFromMultiSources } from '@/common/manga'
-import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@/constants/policy'
+import { Locale } from '@litomi/catalog/translation/common'
+import { fetchMangaFromMultiSources } from '@litomi/crawler/common/manga'
 import {
   calculateOptimalCacheDuration,
   createCacheControlHeaders,
   createProblemDetailsResponse,
   handleRouteError,
-} from '@/crawler/proxy-utils'
-import { env } from '@/env/client'
-import { Locale } from '@/translation/common'
-import { RouteProps } from '@/types/nextjs'
-import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@/utils/degraded-response'
-import { sec } from '@/utils/format/date'
+} from '@litomi/crawler/crawler/proxy-utils'
+import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/constants/policy'
+import { RouteProps } from '@litomi/domain/types/nextjs'
+import { env } from '@litomi/env/env/client'
+import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
+import { sec } from '@litomi/std/format/date'
 
 import { GETProxyMangaIdSchema } from './schema'
 

@@ -1,7 +1,6 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { userTable } from '@litomi/db/database/supabase/user'
 import { eq } from 'drizzle-orm'
-
-import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
 
 export type UserRowLockTx = Parameters<Parameters<typeof db.transaction>[0]>[0]
 

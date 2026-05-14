@@ -1,9 +1,8 @@
 'use client'
 
+import { env } from '@litomi/env/env/client'
 import ms from 'ms'
 import { useEffect, useState } from 'react'
-
-import { env } from '@/env/client'
 
 type ServiceStatus = 'critical' | 'major' | 'minor' | 'none' | 'unknown'
 

@@ -1,7 +1,6 @@
 import '@test/setup.dom'
+import { SessionStorageKeyMap } from '@litomi/domain/constants/storage'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-
-import { SessionStorageKeyMap } from '@/constants/storage'
 
 import {
   getLocalReadingHistory,

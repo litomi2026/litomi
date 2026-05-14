@@ -2,12 +2,12 @@
 
 import type { ListImperativeAPI } from 'react-window'
 
+import { View } from '@litomi/std/param'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { List, useDynamicRowHeight } from 'react-window'
 import { twMerge } from 'tailwind-merge'
 
 import { useIsomorphicLayoutEffect } from '@/hook/useIsomorphicLayoutEffect'
-import { View } from '@/utils/param'
 import { MANGA_GRID_COLUMN_MIN_WIDTH_CLASS, readMangaGridColumnMinWidth } from '@/utils/style'
 
 import type {

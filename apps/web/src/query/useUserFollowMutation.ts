@@ -1,5 +1,7 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 
 import type { GETV1MeFollowingResponse } from '@/backend/api/v1/me/following/GET'
@@ -13,8 +15,6 @@ import {
   restorePostLists,
   snapshotFollowingPostLists,
 } from '@/components/post/cache'
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { showLoginRequiredToast } from '@/lib/toast'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

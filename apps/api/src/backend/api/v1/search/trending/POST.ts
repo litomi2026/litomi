@@ -1,10 +1,10 @@
-import { Hono } from 'hono'
+import { trendingKeywordsService } from '@litomi/catalog/services/TrendingKeywordsService'
 import 'server-only'
+import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 
 const bodySchema = z.object({
   keywords: z.array(z.string().min(1).max(100)).min(1).max(10),

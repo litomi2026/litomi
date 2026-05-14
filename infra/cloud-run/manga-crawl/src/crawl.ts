@@ -1,13 +1,12 @@
+import type { LabeledValue, Manga } from '@litomi/domain/types/manga'
+
+import { fetchMangaFromMultiSources } from '@litomi/crawler/common/manga'
+import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
+import { aivenDB } from '@litomi/db/database/aiven/drizzle'
+import { mangaTable } from '@litomi/db/database/aiven/schema'
+import { MangaType, TagCategory, tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import dayjs from 'dayjs'
 import { max, min, sql } from 'drizzle-orm'
-
-import type { LabeledValue, Manga } from '../../../src/types/manga'
-
-import { fetchMangaFromMultiSources } from '../../../src/common/manga'
-import { kHentaiClient } from '../../../src/crawler/k-hentai'
-import { aivenDB } from '../../../src/database/aiven/drizzle'
-import { mangaTable } from '../../../src/database/aiven/schema'
-import { MangaType, TagCategory, tagCategoryNameToInt } from '../../../src/database/enum'
 
 // Configuration
 const CONFIG = {

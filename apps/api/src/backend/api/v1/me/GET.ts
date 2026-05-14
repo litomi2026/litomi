@@ -1,16 +1,16 @@
+import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import { bbatonVerificationTable } from '@litomi/db/database/supabase/bbaton'
+import 'server-only'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { userSettingsTable, userTable } from '@litomi/db/database/supabase/user'
+import { resolveUserSettings, type UserSettings } from '@litomi/domain/utils/user-settings'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 
 import { Env } from '@/backend'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
-import { bbatonVerificationTable } from '@/database/supabase/bbaton'
-import { db } from '@/database/supabase/drizzle'
-import { userSettingsTable, userTable } from '@/database/supabase/user'
-import { getAuthCookieClearConfigs } from '@/utils/cookie'
-import { resolveUserSettings, type UserSettings } from '@/utils/user-settings'
 
 export type AdultVerificationStatus = 'adult' | 'not_adult' | 'unverified'
 

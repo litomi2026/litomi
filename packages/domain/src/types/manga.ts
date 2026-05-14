@@ -1,4 +1,4 @@
-import { MangaSource } from '@/database/enum'
+import { MangaSource } from '@litomi/domain/database/enum'
 
 export type ImageVariant = {
   url: string

@@ -1,8 +1,7 @@
+import { bbatonVerificationTable } from '@litomi/db/database/supabase/bbaton'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { twoFactorTable } from '@litomi/db/database/supabase/two-factor'
 import { and, eq, isNull } from 'drizzle-orm'
-
-import { bbatonVerificationTable } from '@/database/supabase/bbaton'
-import { db } from '@/database/supabase/drizzle'
-import { twoFactorTable } from '@/database/supabase/two-factor'
 
 import AdultVerificationSectionClient from './AdultVerificationSectionClient'
 

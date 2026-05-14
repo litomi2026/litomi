@@ -1,7 +1,6 @@
+import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import NotificationList from './NotificationList'
 

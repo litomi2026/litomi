@@ -1,7 +1,6 @@
 import 'server-only'
+import { env } from '@litomi/env/env/server.hono'
 import { z } from 'zod'
-
-import { env } from '@/env/server.hono'
 
 const { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET } = env
 

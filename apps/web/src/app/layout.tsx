@@ -2,6 +2,16 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
+import {
+  APP_ORIGIN,
+  APPLICATION_NAME,
+  DESCRIPTION,
+  generateOpenGraphMetadata,
+  SHORT_NAME,
+  THEME_COLOR,
+} from '@litomi/domain/constants'
+import { env } from '@litomi/env/env/client'
+import { env as serverEnv } from '@litomi/env/env/server.next'
 import { GoogleTagManager } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import localFont from 'next/font/local'
@@ -18,16 +28,6 @@ import SEOText from '@/components/SEOText'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import ThemeProvider from '@/components/ThemeProvider'
 import OverlayHost from '@/components/ui/OverlayHost'
-import {
-  APP_ORIGIN,
-  APPLICATION_NAME,
-  DESCRIPTION,
-  generateOpenGraphMetadata,
-  SHORT_NAME,
-  THEME_COLOR,
-} from '@/constants'
-import { env } from '@/env/client'
-import { env as serverEnv } from '@/env/server.next'
 import QueryProvider from '@/lib/react-query/QueryProvider'
 
 const { NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_GTM_SCRIPT_URL } = env

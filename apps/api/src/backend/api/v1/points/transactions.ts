@@ -1,3 +1,6 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { pointTransactionTable } from '@litomi/db/database/supabase/points'
+import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
@@ -8,9 +11,6 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
-import { db } from '@/database/supabase/drizzle'
-import { pointTransactionTable } from '@/database/supabase/points'
 
 export type GETV1PointTransactionResponse = {
   items: Transaction[]

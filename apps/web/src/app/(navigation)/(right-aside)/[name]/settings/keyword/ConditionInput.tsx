@@ -1,9 +1,9 @@
 'use client'
 
+import { NotificationConditionType, NotificationConditionTypeNames } from '@litomi/domain/database/enum'
 import { Trash2 } from 'lucide-react'
 
 import CustomSelect from '@/components/ui/CustomSelect'
-import { NotificationConditionType, NotificationConditionTypeNames } from '@/database/enum'
 
 interface Props {
   index: number

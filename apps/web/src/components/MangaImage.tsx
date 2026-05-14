@@ -2,13 +2,12 @@
 
 import type { ComponentPropsWithRef, SyntheticEvent } from 'react'
 
-import { useEffect, useState } from 'react'
-
 import {
   createLitomiProxyMangaImageURL,
   createThirdPartyMangaImageURLs,
   isLitomiImageProxyURL,
-} from '@/utils/image-proxy'
+} from '@litomi/http/image-proxy'
+import { useEffect, useState } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 const FALLBACK_IMAGE_URL = '/image/fallback.svg'

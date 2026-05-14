@@ -1,5 +1,6 @@
 'use client'
 
+import { formatDistanceToNow } from '@litomi/std/format/date'
 import dayjs from 'dayjs'
 import { RefreshCw } from 'lucide-react'
 import ms from 'ms'
@@ -7,7 +8,6 @@ import { useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import useMeQuery from '@/query/useMeQuery'
-import { formatDistanceToNow } from '@/utils/format/date'
 
 import { useAdsterraStatsQuery } from './useAdsterraStatsQuery'
 

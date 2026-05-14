@@ -1,10 +1,10 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
 import type { GETNotificationResponse } from '@/backend/api/v1/notification/GET'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

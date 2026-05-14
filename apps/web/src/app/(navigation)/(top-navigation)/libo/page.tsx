@@ -1,7 +1,7 @@
+import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 
 import JuicyAdsScript from '@/components/ads/juicy-ads/JuicyAdsScript'
-import { generateOpenGraphMetadata } from '@/constants'
 
 import RewardedAdSection from './RewardedAdSection'
 

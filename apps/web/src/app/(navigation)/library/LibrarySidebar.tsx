@@ -1,11 +1,11 @@
 'use client'
 
+import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
+import { formatNumber } from '@litomi/std/format/number'
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 import { type RefObject, useRef } from 'react'
 
-import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import { formatNumber } from '@/utils/format/number'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
 import CreateLibraryButton from './CreateLibraryButton'

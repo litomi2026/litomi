@@ -1,9 +1,9 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

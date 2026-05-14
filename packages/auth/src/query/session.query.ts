@@ -1,9 +1,8 @@
-import { and, eq, isNull } from 'drizzle-orm'
+import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/supabase/auth'
 import 'server-only'
-
-import { authSessionFamilyTable, authSessionTokenTable } from '@/database/supabase/auth'
-import { bbatonVerificationTable } from '@/database/supabase/bbaton'
-import { db } from '@/database/supabase/drizzle'
+import { bbatonVerificationTable } from '@litomi/db/database/supabase/bbaton'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { and, eq, isNull } from 'drizzle-orm'
 
 export type SessionFamilyInsert = typeof authSessionFamilyTable.$inferInsert
 export type SessionFamilyRow = typeof authSessionFamilyTable.$inferSelect

@@ -1,3 +1,5 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { pointDonationTable } from '@litomi/db/database/supabase/points'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
@@ -6,8 +8,6 @@ import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { db } from '@/database/supabase/drizzle'
-import { pointDonationTable } from '@/database/supabase/points'
 
 const route = new Hono<Env>()
 

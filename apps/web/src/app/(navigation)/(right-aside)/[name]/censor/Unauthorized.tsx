@@ -1,8 +1,8 @@
+import { SearchParamKey } from '@litomi/domain/constants/storage'
 import { Check, X } from 'lucide-react'
 import Link from 'next/link'
 
 import LoginButton from '@/components/LoginButton'
-import { SearchParamKey } from '@/constants/storage'
 
 export default function Unauthorized() {
   return (

@@ -1,8 +1,7 @@
 import 'server-only'
+import { Locale } from '@litomi/catalog/translation/common'
+import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { z } from 'zod'
-
-import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
-import { Locale } from '@/translation/common'
 
 import { Sort } from './types'
 

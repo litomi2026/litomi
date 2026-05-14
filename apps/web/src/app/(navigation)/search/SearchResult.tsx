@@ -1,14 +1,15 @@
 'use client'
 
+import type { KeywordPromotion } from '@litomi/catalog/sponsor'
+import type { Manga } from '@litomi/domain/types/manga'
 import type { ReactNode } from 'react'
 
+import { getViewFromSearchParams, View } from '@litomi/std/param'
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
-import type { KeywordPromotion } from '@/sponsor'
-import type { Manga } from '@/types/manga'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
@@ -17,7 +18,6 @@ import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
-import { getViewFromSearchParams, View } from '@/utils/param'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 

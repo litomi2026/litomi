@@ -1,4 +1,4 @@
-import { env } from '@/env/client'
+import { env } from '@litomi/env/env/client'
 
 const { NEXT_PUBLIC_IMAGE_PROXY_ORIGIN } = env
 

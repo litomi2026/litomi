@@ -1,13 +1,12 @@
+import { getKeywordPromotion } from '@litomi/catalog/sponsor'
+import { Locale } from '@litomi/catalog/translation/common'
+import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@litomi/crawler/crawler/k-hentai'
+import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@litomi/crawler/crawler/proxy-utils'
+import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
+import { env } from '@litomi/env/env/client'
+import { sec } from '@litomi/std/format/date'
+import { chance } from '@litomi/std/random-edge'
 import { waitUntil } from '@vercel/functions'
-
-import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
-import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
-import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
-import { env } from '@/env/client'
-import { getKeywordPromotion } from '@/sponsor'
-import { Locale } from '@/translation/common'
-import { sec } from '@/utils/format/date'
-import { chance } from '@/utils/random-edge'
 
 import type { GETProxyKSearchResponse } from './types'
 

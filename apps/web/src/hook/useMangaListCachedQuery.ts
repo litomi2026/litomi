@@ -1,15 +1,15 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { Manga } from '@litomi/domain/types/manga'
+import { env } from '@litomi/env/env/client'
+import { isDegradedResponse } from '@litomi/http/degraded-response'
 import { QueryKey, useQueries, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import pLimit from 'p-limit'
 import pThrottle from 'p-throttle'
 import { useMemo } from 'react'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
-import { Manga } from '@/types/manga'
-import { isDegradedResponse } from '@/utils/degraded-response'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env

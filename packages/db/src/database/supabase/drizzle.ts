@@ -1,8 +1,7 @@
+import { env } from '@litomi/env/env/server.common'
 import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
 import 'server-only'
-
-import { env } from '@/env/server.common'
+import postgres from 'postgres'
 
 import * as activitySchema from './activity'
 import * as authSchema from './auth'

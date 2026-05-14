@@ -1,15 +1,15 @@
 'use client'
 
+import type { ErrorProps } from '@litomi/domain/types/nextjs'
+
+import { env } from '@litomi/env/env/client'
 import * as Sentry from '@sentry/nextjs'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-import type { ErrorProps } from '@/types/nextjs'
-
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import ErrorDiagnosticDetails from '@/components/ErrorDiagnosticDetails'
 import RetryGuidance from '@/components/RetryGuidance'
-import { env } from '@/env/client'
 
 export default function GlobalError({ error, reset }: ErrorProps) {
   const pathname = usePathname()

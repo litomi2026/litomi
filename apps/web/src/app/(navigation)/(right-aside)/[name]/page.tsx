@@ -1,7 +1,6 @@
+import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { getUsernameFromParam } from '@litomi/std/param'
 import { Metadata } from 'next'
-
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { getUsernameFromParam } from '@/utils/param'
 
 import { getUserByName } from './common'
 import UserPostList from './UserPostList'

@@ -1,5 +1,5 @@
-import { CircuitBreaker, type CircuitBreakerConfig } from '@/crawler/CircuitBreaker'
-import { NotFoundError, UpstreamServerError } from '@/crawler/errors'
+import { CircuitBreaker, type CircuitBreakerConfig } from '@litomi/crawler/crawler/CircuitBreaker'
+import { NotFoundError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
 
 import { RetryConfig, retryWithBackoff } from './retry'
 

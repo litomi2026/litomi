@@ -1,10 +1,9 @@
 'use server'
 
-import { PasskeyAuthenticationAttempt } from '@/backend/api/v1/auth/passkey/shared'
-import { ChallengeType } from '@/database/enum'
-import { redisClient } from '@/database/redis'
-
-import { sec } from './format/date'
+import { PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
+import { redisClient } from '@litomi/db/database/redis'
+import { ChallengeType } from '@litomi/domain/database/enum'
+import { sec } from '@litomi/std/format/date'
 
 /**
  * Get and delete a challenge atomically

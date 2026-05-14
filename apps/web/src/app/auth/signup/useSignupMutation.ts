@@ -1,5 +1,6 @@
 'use client'
 
+import { SearchParamKey } from '@litomi/domain/constants/storage'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -7,7 +8,6 @@ import { toast } from 'sonner'
 import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@/backend/api/v1/auth/signup'
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { SearchParamKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'

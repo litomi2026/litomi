@@ -1,8 +1,8 @@
+import { getUsernameFromParam } from '@litomi/std/param'
 import { Suspense } from 'react'
 
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
-import { getUsernameFromParam } from '@/utils/param'
 
 import MyPageNavigationLink from './MyPageNavigationLink'
 import MyPagePrivateNavigation from './MyPagePrivateNavigation'

@@ -1,18 +1,18 @@
 'use server'
 
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/database/supabase/activity'
+import { userCensorshipTable } from '@litomi/db/database/supabase/censorship'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { libraryItemTable, libraryTable } from '@litomi/db/database/supabase/library'
+import { userTable } from '@litomi/db/database/supabase/user'
+import { passwordSchema } from '@litomi/domain/database/zod'
 import { captureException } from '@sentry/nextjs'
 import { compare } from 'bcryptjs'
 import { eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 
-import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
-import { userCensorshipTable } from '@/database/supabase/censorship'
-import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/supabase/library'
-import { userTable } from '@/database/supabase/user'
-import { passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromCookie } from '@/utils/cookie'
 
 const exportDataSchema = z.object({
   password: passwordSchema,

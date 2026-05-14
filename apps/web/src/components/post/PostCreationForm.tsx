@@ -1,5 +1,7 @@
 'use client'
 
+import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/constants/policy'
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -10,8 +12,6 @@ import { twMerge } from 'tailwind-merge'
 
 import type { POSTV1PostBody, POSTV1PostResponse } from '@/backend/api/v1/post/POST'
 
-import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
-import { QueryKeys } from '@/constants/query'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { ProblemDetailsError } from '@/utils/react-query-error'

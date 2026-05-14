@@ -1,4 +1,4 @@
-import { RateLimiter, RateLimitPresets, type RateLimitResult } from '@/utils/rate-limit'
+import { RateLimiter, RateLimitPresets, type RateLimitResult } from '@litomi/http/rate-limit'
 
 export const DUMMY_PASSWORD_HASH = '$2b$10$dummyhashfortimingatackprevention'
 

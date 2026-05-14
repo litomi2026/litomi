@@ -1,11 +1,11 @@
 import type { Book, WithContext } from 'schema-dts'
 
+import { APP_ORIGIN, generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/constants/policy'
+import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { APP_ORIGIN, generateOpenGraphMetadata } from '@/constants'
-import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
-import { createKHentaiThumbnailCoverURL } from '@/utils/image-proxy'
 import { toAbsoluteUrl } from '@/utils/url'
 
 import { getManga } from './common.server'

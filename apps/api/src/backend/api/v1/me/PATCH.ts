@@ -1,17 +1,17 @@
+import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import { isPostgresError } from '@litomi/db/database/error'
+import 'server-only'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { userTable } from '@litomi/db/database/supabase/user'
+import { imageURLSchema, nameSchema, nicknameSchema } from '@litomi/domain/database/zod'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { applyAuthCookie } from '@/backend/utils/cookie'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { isPostgresError } from '@/database/error'
-import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/user'
-import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
-import { getAuthCookieClearConfigs } from '@/utils/cookie'
 
 const patchMyProfileSchema = z
   .object({

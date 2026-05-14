@@ -1,10 +1,10 @@
+import { RatingSort } from '@litomi/contracts/library/enum'
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 
-import { RatingSort } from '@/backend/api/v1/library/enum'
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

@@ -1,20 +1,19 @@
+import type { Manga } from '@litomi/domain/types/manga'
+
+import { translateArtistList } from '@litomi/catalog/translation/artist'
+import { translateCharacterList } from '@litomi/catalog/translation/character'
+import { Locale } from '@litomi/catalog/translation/common'
+import { translateGroupList } from '@litomi/catalog/translation/group'
+import { translateLanguageList } from '@litomi/catalog/translation/language'
+import { translateSeriesList } from '@litomi/catalog/translation/series'
+import { translateTag } from '@litomi/catalog/translation/tag'
+import { translateType } from '@litomi/catalog/translation/type'
+import { NotFoundError, ParseError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
+import { ProxyClient, type ProxyClientConfig } from '@litomi/crawler/crawler/proxy'
+import { isUpstreamServerError } from '@litomi/crawler/crawler/proxy-utils'
+import { MangaSource, tagCategoryNameToInt } from '@litomi/domain/database/enum'
+import { convertCamelCaseToKebabCase } from '@litomi/std/param'
 import ms from 'ms'
-
-import type { Manga } from '@/types/manga'
-
-import { NotFoundError, ParseError, UpstreamServerError } from '@/crawler/errors'
-import { ProxyClient, type ProxyClientConfig } from '@/crawler/proxy'
-import { isUpstreamServerError } from '@/crawler/proxy-utils'
-import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
-import { translateArtistList } from '@/translation/artist'
-import { translateCharacterList } from '@/translation/character'
-import { Locale } from '@/translation/common'
-import { translateGroupList } from '@/translation/group'
-import { translateLanguageList } from '@/translation/language'
-import { translateSeriesList } from '@/translation/series'
-import { translateTag } from '@/translation/tag'
-import { translateType } from '@/translation/type'
-import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: 'doujinshi',

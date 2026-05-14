@@ -1,12 +1,11 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useIsFetching, useQueryClient } from '@tanstack/react-query'
 import { Dices } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
-
-import { QueryKeys } from '@/constants/query'
 
 import RandomRefreshButton from './RandomRefreshButton'
 import { topNavigationActionClassName } from './topNavigationActionConfig'

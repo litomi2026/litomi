@@ -1,8 +1,7 @@
+import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
+import { isSingleEmoji } from '@litomi/domain/utils/emoji'
+import { normalizeString } from '@litomi/std/string'
 import { toast } from 'sonner'
-
-import { DEFAULT_LIBRARY_ICON } from '@/constants/library'
-import { isSingleEmoji } from '@/utils/emoji'
-import { normalizeString } from '@/utils/string'
 
 let libraryEmojiListPromise: Promise<readonly string[]> | undefined
 
@@ -41,7 +40,7 @@ export function preloadLibraryEmojiList() {
 }
 
 async function loadLibraryEmojiList(): Promise<readonly string[]> {
-  libraryEmojiListPromise ??= import('@/generated/emojis').then(({ EMOJI_LIST }) => EMOJI_LIST)
+  libraryEmojiListPromise ??= import('@litomi/domain/generated/emojis').then(({ EMOJI_LIST }) => EMOJI_LIST)
 
   return libraryEmojiListPromise
 }

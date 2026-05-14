@@ -1,9 +1,9 @@
+import { generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { getViewFromSearchParams } from '@litomi/std/param'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
-import { generateOpenGraphMetadata } from '@/constants'
-import { getViewFromSearchParams } from '@/utils/param'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import SearchResult, { SearchResultLoading } from './SearchResult'

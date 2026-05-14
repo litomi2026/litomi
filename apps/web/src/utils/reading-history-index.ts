@@ -1,6 +1,6 @@
 'use client'
 
-import { SessionStorageKeyMap } from '@/constants/storage'
+import { SessionStorageKeyMap } from '@litomi/domain/constants/storage'
 
 type LocalReadingHistory = Record<string, LocalReadingHistoryStorageEntry>
 

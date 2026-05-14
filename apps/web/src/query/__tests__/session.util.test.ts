@@ -1,6 +1,5 @@
+import { buildSessionDeviceLabel, generateSessionToken } from '@litomi/auth/session'
 import { describe, expect, test } from 'bun:test'
-
-import { buildSessionDeviceLabel, generateSessionToken } from '@/utils/session'
 
 describe('buildSessionDeviceLabel', () => {
   test('raw user-agent 대신 축약된 기기 라벨만 만든다', () => {

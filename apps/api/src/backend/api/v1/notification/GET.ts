@@ -1,18 +1,17 @@
+import { NotificationFilter } from '@litomi/contracts/notification/types'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
+import { notificationTable } from '@litomi/db/database/supabase/notification'
+import { NOTIFICATION_PER_PAGE } from '@litomi/domain/constants/policy'
+import { NotificationType } from '@litomi/domain/database/enum'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { NOTIFICATION_PER_PAGE } from '@/constants/policy'
-import { NotificationType } from '@/database/enum'
-import { db } from '@/database/supabase/drizzle'
-import { notificationTable } from '@/database/supabase/notification'
-
-import { NotificationFilter } from './types'
 
 const querySchema = z.object({
   nextId: z.coerce.number().optional(),

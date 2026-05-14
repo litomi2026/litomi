@@ -1,5 +1,7 @@
 'use client'
 
+import { View } from '@litomi/std/param'
+
 import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
@@ -7,7 +9,6 @@ import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
-import { View } from '@/utils/param'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import type { ReadingHistorySource } from './common'

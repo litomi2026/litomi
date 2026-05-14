@@ -1,10 +1,9 @@
 import 'server-only'
+import { APP_ORIGIN } from '@litomi/domain/constants'
+import { env } from '@litomi/env/env/server.common'
 import crypto from 'crypto'
 import { verify } from 'otplib'
 import QRCode from 'qrcode'
-
-import { APP_ORIGIN } from '@/constants'
-import { env } from '@/env/server.common'
 
 const { TOTP_ENCRYPTION_KEY } = env
 

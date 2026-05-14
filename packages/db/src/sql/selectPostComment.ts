@@ -1,9 +1,8 @@
-import { desc, eq } from 'drizzle-orm'
+import { db } from '@litomi/db/database/supabase/drizzle'
 import 'server-only'
-
-import { db } from '@/database/supabase/drizzle'
-import { postTable } from '@/database/supabase/post'
-import { userTable } from '@/database/supabase/user'
+import { postTable } from '@litomi/db/database/supabase/post'
+import { userTable } from '@litomi/db/database/supabase/user'
+import { desc, eq } from 'drizzle-orm'
 
 export type PostComment = {
   id: number

@@ -1,13 +1,13 @@
+import type { ImageWithVariants } from '@litomi/domain/types/manga'
+
+import { createLitomiProxyMangaImageURL, createThirdPartyMangaImageURLs } from '@litomi/http/image-proxy'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
-
-import type { ImageWithVariants } from '@/types/manga'
 
 import { showAdultVerificationRecommendedToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { downloadMultipleImages } from '@/utils/download'
-import { createLitomiProxyMangaImageURL, createThirdPartyMangaImageURLs } from '@/utils/image-proxy'
 
 // Supported image extensions
 const VALID_IMAGE_EXTENSIONS = new Set(['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])

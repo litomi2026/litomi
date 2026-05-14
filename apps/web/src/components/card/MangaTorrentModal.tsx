@@ -1,5 +1,9 @@
 'use client'
 
+import type { Manga, MangaTorrent } from '@litomi/domain/types/manga'
+
+import { formatBytes } from '@litomi/std/format/byte'
+import { formatDistanceToNow } from '@litomi/std/format/date'
 import dayjs from 'dayjs'
 import { Copy, ExternalLink, Magnet } from 'lucide-react'
 import ms from 'ms'
@@ -8,14 +12,10 @@ import { useEffect, useMemo, useRef } from 'react'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 
-import type { Manga, MangaTorrent } from '@/types/manga'
-
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogHeader from '@/components/ui/DialogHeader'
 import useClipboard from '@/hook/useClipboard'
-import { formatBytes } from '@/utils/format/byte'
-import { formatDistanceToNow } from '@/utils/format/date'
 
 type MangaTorrentModalStore = {
   isOpen: boolean

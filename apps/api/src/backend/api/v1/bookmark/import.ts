@@ -1,6 +1,8 @@
+import { bookmarkTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -9,8 +11,6 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { bookmarkTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
 
 import { BookmarkLimitReachedError, saveBookmarks } from './save'
 

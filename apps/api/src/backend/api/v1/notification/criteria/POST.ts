@@ -1,6 +1,15 @@
+import { normalizeValue } from '@litomi/catalog/translation/common'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
+import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/supabase/notification'
+import {
+  MAX_CRITERIA_NAME_LENGTH,
+  MAX_CRITERIA_PER_USER,
+  MAX_NOTIFICATION_CRITERIA_CONDITIONS,
+} from '@litomi/domain/constants/policy'
+import { NotificationConditionType } from '@litomi/domain/database/enum'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -8,15 +17,6 @@ import { areNotificationCriteriaConditionsEqual } from '@/backend/api/v1/notific
 import { lockUserRowForUpdate } from '@/backend/utils/lock-user-row'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import {
-  MAX_CRITERIA_NAME_LENGTH,
-  MAX_CRITERIA_PER_USER,
-  MAX_NOTIFICATION_CRITERIA_CONDITIONS,
-} from '@/constants/policy'
-import { NotificationConditionType } from '@/database/enum'
-import { db } from '@/database/supabase/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification'
-import { normalizeValue } from '@/translation/common'
 
 type ExistingCriteriaRow = {
   criteriaId: number

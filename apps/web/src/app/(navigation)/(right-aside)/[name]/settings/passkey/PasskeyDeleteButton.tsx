@@ -1,4 +1,5 @@
 'use client'
+import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { Loader2, Shield, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -8,7 +9,6 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import useServerAction from '@/hook/useServerAction'
-import { signalCurrentPasskeyUserDetails } from '@/utils/passkey'
 
 import { deleteCredential } from './action-delete'
 import { PasskeySignalData } from './common'

@@ -1,12 +1,12 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { userFollowTable } from '@litomi/db/database/supabase/user'
+import 'server-only'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 
 import { Env } from '@/backend'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
-import { db } from '@/database/supabase/drizzle'
-import { userFollowTable } from '@/database/supabase/user'
 
 export type GETV1MeFollowingResponse = {
   userIds: number[]

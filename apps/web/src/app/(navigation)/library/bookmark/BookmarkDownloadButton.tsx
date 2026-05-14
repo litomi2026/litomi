@@ -1,5 +1,6 @@
 'use client'
 
+import { env } from '@litomi/env/env/client'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Download } from 'lucide-react'
@@ -7,7 +8,6 @@ import { toast } from 'sonner'
 
 import type { GETV1BookmarkExportResponse } from '@/backend/api/v1/bookmark/export'
 
-import { env } from '@/env/client'
 import { downloadBlob } from '@/utils/download'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

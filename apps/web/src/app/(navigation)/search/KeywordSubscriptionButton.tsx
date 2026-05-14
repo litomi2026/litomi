@@ -1,5 +1,6 @@
 'use client'
 
+import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/constants/policy'
 import { useMutation } from '@tanstack/react-query'
 import { BellRing, Loader2 } from 'lucide-react'
 import { ReadonlyURLSearchParams, useRouter } from 'next/navigation'
@@ -8,7 +9,6 @@ import { toast } from 'sonner'
 
 import IconBell from '@/components/icons/IconBell'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
-import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@/constants/policy'
 import useMeQuery from '@/query/useMeQuery'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

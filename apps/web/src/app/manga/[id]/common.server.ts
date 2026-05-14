@@ -1,8 +1,7 @@
+import { litomiClient } from '@litomi/crawler/crawler/litomi'
 import { unstable_cache } from 'next/cache'
-import { cache } from 'react'
 import 'server-only'
-
-import { litomiClient } from '@/crawler/litomi'
+import { cache } from 'react'
 
 function getMangaFromNextjsCache(id: number) {
   return unstable_cache(

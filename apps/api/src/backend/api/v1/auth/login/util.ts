@@ -1,4 +1,4 @@
-import { JWTType, verifyJWT } from '@/utils/jwt'
+import { JWTType, verifyJWT } from '@litomi/auth/jwt'
 
 type TrustedBrowserPayload = {
   sub: string

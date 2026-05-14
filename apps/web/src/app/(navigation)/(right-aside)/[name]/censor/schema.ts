@@ -1,7 +1,6 @@
 import 'server-only'
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { z } from 'zod'
-
-import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 
 export const addCensorshipsSchema = z
   .object({

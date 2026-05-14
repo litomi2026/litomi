@@ -1,9 +1,9 @@
+import { SHORT_NAME } from '@litomi/domain/constants'
 import { Download } from 'lucide-react'
 import Link from 'next/link'
 
 import ScrollButtons from '@/components/ScrollButtons'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
-import { SHORT_NAME } from '@/constants'
 
 import TopNavigationActions from './TopNavigationActions'
 

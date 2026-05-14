@@ -1,13 +1,13 @@
 'use client'
 
+import { Locale } from '@litomi/catalog/translation/common'
+import { View } from '@litomi/std/param'
 import { ChevronRight } from 'lucide-react'
 import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
-import { Locale } from '@/translation/common'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
-import { View } from '@/utils/param'
 
 import KeywordLink from './KeywordLink'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'

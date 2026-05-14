@@ -1,9 +1,8 @@
+import { bookmarkTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
 import { createAccessTokenCookies } from '@test/backend/setup/auth'
 import { seedUser } from '@test/backend/setup/db'
 import { asc, eq } from 'drizzle-orm'
-
-import { bookmarkTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
 
 type BookmarkAuthContextInput = {
   adult?: boolean

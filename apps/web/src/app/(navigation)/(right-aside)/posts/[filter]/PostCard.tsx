@@ -1,16 +1,17 @@
 import type { ReactNode } from 'react'
 
+import { formatDistanceToNow } from '@litomi/std/format/date'
+import { formatNumber } from '@litomi/std/format/number'
 import dayjs from 'dayjs'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
 import Link from 'next/link'
 
+import type { Post } from '@/backend/api/v1/post/GET'
+
 import PostMangaCard from '@/app/(navigation)/(right-aside)/post/[id]/PostMangaCard'
-import { Post } from '@/backend/api/v1/post/GET'
 import { getPostDetailHref } from '@/components/post/postHref'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
 import Squircle from '@/components/ui/Squircle'
-import { formatDistanceToNow } from '@/utils/format/date'
-import { formatNumber } from '@/utils/format/number'
 
 const urlMatchRegex = /https?:\/\/[^\s]+/g
 const trailingPunctuationRegex = /[.,!?;:)\]}]/

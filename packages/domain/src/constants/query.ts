@@ -1,6 +1,6 @@
-import { RatingSort } from '@/backend/api/v1/library/enum'
-import { CollectionItemSort } from '@/backend/api/v1/library/item-sort'
-import { PostFilter } from '@/backend/api/v1/post/constant'
+import { RatingSort } from '@litomi/contracts/library/enum'
+import { CollectionItemSort } from '@litomi/contracts/library/item-sort'
+import { PostFilter } from '@litomi/contracts/post/constant'
 
 export const QueryKeys = {
   me: ['me'],

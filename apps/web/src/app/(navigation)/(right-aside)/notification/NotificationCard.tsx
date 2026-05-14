@@ -1,5 +1,8 @@
 'use client'
 
+import { NotificationType } from '@litomi/domain/database/enum'
+import { NotificationData } from '@litomi/domain/database/type'
+import { formatDistanceToNow } from '@litomi/std/format/date'
 import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -7,9 +10,6 @@ import { useInView } from 'react-intersection-observer'
 
 import IconBell from '@/components/icons/IconBell'
 import LinkPending from '@/components/LinkPending'
-import { NotificationType } from '@/database/enum'
-import { NotificationData } from '@/database/type'
-import { formatDistanceToNow } from '@/utils/format/date'
 
 const AUTO_MARK_AS_READ_DELAY = 2000
 

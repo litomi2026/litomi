@@ -1,7 +1,6 @@
+import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 import Link from 'next/link'
-
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 const EFFECTIVE_DATE = '2026-01-04'
 const CONTACT_EMAIL = 'litomi2026@gmail.com'

@@ -1,6 +1,6 @@
+import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { useMemo, useState } from 'react'
 
-import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'
 import useDebouncedValue from '@/hook/useDebouncedValue'
 
 import { SEARCH_SUGGESTIONS } from './constants'

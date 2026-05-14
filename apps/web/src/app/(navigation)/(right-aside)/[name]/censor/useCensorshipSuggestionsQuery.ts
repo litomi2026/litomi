@@ -1,13 +1,13 @@
 'use client'
 
+import { DEFAULT_SUGGESTIONS } from '@litomi/domain/constants/json'
+import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/constants/policy'
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/suggestion'
 
-import { DEFAULT_SUGGESTIONS } from '@/constants/json'
-import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

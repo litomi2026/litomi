@@ -1,10 +1,10 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { QueryKeys } from '@/constants/query'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 

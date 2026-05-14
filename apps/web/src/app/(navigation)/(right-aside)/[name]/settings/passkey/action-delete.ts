@@ -1,14 +1,14 @@
 'use server'
 
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { credentialTable } from '@litomi/db/database/supabase/passkey'
 import { captureException } from '@sentry/nextjs'
 import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
-import { db } from '@/database/supabase/drizzle'
-import { credentialTable } from '@/database/supabase/passkey'
 import { badRequest, internalServerError, notFound, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromCookie } from '@/utils/cookie'
 
 const deleteCredentialSchema = z.object({
   'credential-id': z.coerce.number().int().positive(),

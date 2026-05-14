@@ -1,11 +1,11 @@
 'use client'
 
+import { formatNumber } from '@litomi/std/format/number'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
 import PageNavigation from '@/components/PageNavigation'
-import { formatNumber } from '@/utils/format/number'
 
 import { CategoryParam, useTagQuery } from './hook'
 

@@ -5,7 +5,7 @@ import {
   getStatusTitle,
   PROBLEM_CONTENT_TYPE,
   type ProblemDetails,
-} from '@/utils/problem-details'
+} from '@litomi/http/problem-details'
 
 export type ProblemResponseOptions = {
   code?: string

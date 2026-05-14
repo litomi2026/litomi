@@ -1,10 +1,9 @@
+import { JWTType, verifyJWT } from '@litomi/auth/jwt'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/database/supabase/two-factor'
+import { CookieKey } from '@litomi/domain/constants/storage'
 import { and, eq, isNull, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
-
-import { CookieKey } from '@/constants/storage'
-import { db } from '@/database/supabase/drizzle'
-import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
-import { JWTType, verifyJWT } from '@/utils/jwt'
 
 import TwoFactorSettingsClient from './TwoFactorSettingsClient'
 import { TwoFactorStatus } from './types'

@@ -1,9 +1,9 @@
 'use client'
 
+import type { Manga } from '@litomi/domain/types/manga'
+
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
-
-import type { Manga } from '@/types/manga'
 
 import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'

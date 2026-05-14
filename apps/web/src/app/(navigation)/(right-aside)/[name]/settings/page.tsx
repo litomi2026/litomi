@@ -1,3 +1,9 @@
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { twoFactorTable } from '@litomi/db/database/supabase/two-factor'
+import { readUserSettings } from '@litomi/db/query/user-settings.query'
+import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { getUsernameFromParam } from '@litomi/std/param'
 import { ErrorBoundary } from '@suspensive/react'
 import { and, eq, isNull } from 'drizzle-orm'
 import {
@@ -20,12 +26,6 @@ import { Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { db } from '@/database/supabase/drizzle'
-import { twoFactorTable } from '@/database/supabase/two-factor'
-import { readUserSettings } from '@/query/user-settings.query'
-import { getUserIdFromCookie } from '@/utils/cookie'
-import { getUsernameFromParam } from '@/utils/param'
 
 import { getMe } from '../common'
 import AdultVerificationSection from './adult/AdultVerificationSection'

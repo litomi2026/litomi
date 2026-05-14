@@ -1,3 +1,5 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import type {
@@ -5,8 +7,6 @@ import type {
   POSTV1PointsDonationCreateResponse,
 } from '@/backend/api/v1/points/donations/POST'
 
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

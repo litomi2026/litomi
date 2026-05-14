@@ -1,9 +1,8 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { credentialTable } from '@litomi/db/database/supabase/passkey'
+import { decodeDeviceType } from '@litomi/domain/database/enum'
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 import { desc, eq } from 'drizzle-orm'
-
-import { decodeDeviceType } from '@/database/enum'
-import { db } from '@/database/supabase/drizzle'
-import { credentialTable } from '@/database/supabase/passkey'
 
 import PasskeyList from './PasskeyList'
 

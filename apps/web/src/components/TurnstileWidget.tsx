@@ -1,11 +1,10 @@
 'use client'
 
+import { env } from '@litomi/env/env/client'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import { Loader2 } from 'lucide-react'
 import { Ref } from 'react'
 import { toast } from 'sonner'
-
-import { env } from '@/env/client'
 
 const { NEXT_PUBLIC_TURNSTILE_SITE_KEY } = env
 

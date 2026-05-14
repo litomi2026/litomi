@@ -1,8 +1,7 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { userFollowTable, userTable } from '@litomi/db/database/supabase/user'
 import { eq, or, sql } from 'drizzle-orm'
 import { cache } from 'react'
-
-import { db } from '@/database/supabase/drizzle'
-import { userFollowTable, userTable } from '@/database/supabase/user'
 
 export const getMe = cache(async (userId: number) => {
   const [user] = await db

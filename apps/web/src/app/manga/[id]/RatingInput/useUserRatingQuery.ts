@@ -1,10 +1,11 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
+import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 
-import { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating/GET'
-import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
+import type { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating/GET'
+
 import useMeQuery from '@/query/useMeQuery'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 

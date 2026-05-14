@@ -1,3 +1,12 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import {
+  DONATION_RECIPIENT_TYPE,
+  pointDonationRecipientTable,
+  pointDonationTable,
+  pointTransactionTable,
+  userPointsTable,
+} from '@litomi/db/database/supabase/points'
+import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
@@ -6,15 +15,6 @@ import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { TRANSACTION_TYPE } from '@/constants/points'
-import { db } from '@/database/supabase/drizzle'
-import {
-  DONATION_RECIPIENT_TYPE,
-  pointDonationRecipientTable,
-  pointDonationTable,
-  pointTransactionTable,
-  userPointsTable,
-} from '@/database/supabase/points'
 
 const route = new Hono<Env>()
 

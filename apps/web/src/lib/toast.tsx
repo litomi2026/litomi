@@ -1,9 +1,8 @@
 'use client'
 
+import { SearchParamKey } from '@litomi/domain/constants/storage'
 import ms from 'ms'
 import { toast } from 'sonner'
-
-import { SearchParamKey } from '@/constants/storage'
 
 type ToastOptions = {
   message?: string

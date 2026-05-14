@@ -1,12 +1,12 @@
 'use client'
 
+import { formatDistanceToNow } from '@litomi/std/format/date'
 import dayjs from 'dayjs'
 import { Loader2, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import useServerAction from '@/hook/useServerAction'
-import { formatDistanceToNow } from '@/utils/format/date'
 
 import { revokeAllTrustedBrowsers, revokeTrustedBrowser } from '../action-trusted-browser'
 

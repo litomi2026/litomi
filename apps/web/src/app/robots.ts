@@ -1,6 +1,5 @@
+import { APP_ORIGIN } from '@litomi/domain/constants'
 import { type MetadataRoute } from 'next'
-
-import { APP_ORIGIN } from '@/constants'
 
 export default function robots(): MetadataRoute.Robots {
   return {

@@ -2,6 +2,7 @@
 
 import type { InfiniteData } from '@tanstack/react-query'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -11,7 +12,6 @@ import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
 import type { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating/GET'
 
-import { QueryKeys } from '@/constants/query'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { BulkActionDescriptor } from '../bulkActionTypes'

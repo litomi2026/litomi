@@ -1,8 +1,8 @@
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
 import { showLoginRequiredToast } from '@/lib/toast'

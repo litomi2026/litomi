@@ -1,7 +1,6 @@
+import { COOKIE_DOMAIN } from '@litomi/domain/constants'
+import { CookieKey } from '@litomi/domain/constants/storage'
 import { describe, expect, test } from 'bun:test'
-
-import { COOKIE_DOMAIN } from '@/constants'
-import { CookieKey } from '@/constants/storage'
 
 import {
   getAccessTokenCookieConfig,

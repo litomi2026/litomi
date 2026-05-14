@@ -1,5 +1,6 @@
 'use client'
 
+import { Manga } from '@litomi/domain/types/manga'
 import { Check, Link, Share2, X } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
 
@@ -10,7 +11,6 @@ import LogoX from '@/components/icons/LogoX'
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogHeader from '@/components/ui/DialogHeader'
-import { Manga } from '@/types/manga'
 
 type CopyStatus = 'error' | 'idle' | 'success'
 

@@ -1,11 +1,10 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { trustedBrowserTable } from '@litomi/db/database/supabase/two-factor'
+import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/database/supabase/two-factor'
+import { MAX_TRUSTED_DEVICES_PER_USER } from '@litomi/domain/constants/policy'
 import crypto from 'crypto'
 import { and, desc, eq, gte, isNull, lt, notInArray, or } from 'drizzle-orm'
 import { userAgent as getUserAgent } from 'next/server'
-
-import { MAX_TRUSTED_DEVICES_PER_USER } from '@/constants/policy'
-import { db } from '@/database/supabase/drizzle'
-import { trustedBrowserTable } from '@/database/supabase/two-factor'
-import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 
 import { TRUSTED_BROWSER_EXPIRY_DAYS } from './util'
 

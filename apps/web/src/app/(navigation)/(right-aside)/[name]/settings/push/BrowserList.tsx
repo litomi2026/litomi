@@ -1,5 +1,6 @@
 'use client'
 
+import { getUsernameFromParam } from '@litomi/std/param'
 import dayjs from 'dayjs'
 import { Monitor, Smartphone, Trash2 } from 'lucide-react'
 import { useParams } from 'next/navigation'
@@ -7,7 +8,6 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import useServerAction from '@/hook/useServerAction'
-import { getUsernameFromParam } from '@/utils/param'
 import { formatDeviceInfo } from '@/utils/push-device'
 
 import { Params } from '../../common'

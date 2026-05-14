@@ -1,11 +1,11 @@
 'use client'
 
+import { Manga } from '@litomi/domain/types/manga'
+import { View } from '@litomi/std/param'
 import { Check } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
 import MangaCard from '@/components/card/MangaCard'
-import { Manga } from '@/types/manga'
-import { View } from '@/utils/param'
 
 import CensoredManga from './CensoredManga'
 import { useLibrarySelection } from './librarySelection'

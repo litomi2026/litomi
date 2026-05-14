@@ -1,4 +1,4 @@
-import { Manga } from '@/types/manga'
+import { Manga } from '@litomi/domain/types/manga'
 
 export const BLIND_TAG_VALUE_TO_LABEL: Record<string, string> = {
   bestiality: '수간',

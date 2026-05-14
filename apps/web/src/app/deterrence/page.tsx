@@ -1,9 +1,9 @@
+import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { ArrowLeft, ExternalLink, ShieldAlert } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
 import IconLogo from '@/components/icons/LogoLitomi'
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 const CONTACT_EMAIL = 'litomi2026@gmail.com'
 

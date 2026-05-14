@@ -1,14 +1,13 @@
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { postTable } from '@litomi/db/database/supabase/post'
+import selectPost from '@litomi/db/sql/selectPost'
+import 'server-only'
+import selectPostComment from '@litomi/db/sql/selectPostComment'
 import { sql } from 'drizzle-orm'
 import { cache } from 'react'
 import { z } from 'zod'
-import 'server-only'
 
 import type { Post } from '@/backend/api/v1/post/GET'
-
-import { db } from '@/database/supabase/drizzle'
-import { postTable } from '@/database/supabase/post'
-import selectPost from '@/sql/selectPost'
-import selectPostComment from '@/sql/selectPostComment'
 
 export const postParamsSchema = z.object({
   id: z.coerce.number().int().positive(),

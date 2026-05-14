@@ -1,5 +1,6 @@
 'use client'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -11,7 +12,6 @@ import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
-import { QueryKeys } from '@/constants/query'
 
 import { deleteLibrary } from './api'
 

@@ -1,14 +1,14 @@
+import { userRatingTable } from '@litomi/db/database/supabase/activity'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import 'server-only'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { userRatingTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
 
 const deleteBodySchema = z.object({
   mangaIds: z.array(z.coerce.number().int().positive()).min(1).max(100),
