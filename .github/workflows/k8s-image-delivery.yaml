@@ -183,7 +183,7 @@ jobs:
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
-            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_API }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_BACKEND }}
           tags: ${{ steps.metadata_api.outputs.tags }}
           labels: ${{ steps.metadata_api.outputs.labels }}
 
