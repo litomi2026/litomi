@@ -30,7 +30,7 @@ export type Env = {
 const app = new Hono<Env>()
 
 // NOTE: 공통 미들웨어
-app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-backend' }))
+app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-api' }))
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
 app.use(logger())

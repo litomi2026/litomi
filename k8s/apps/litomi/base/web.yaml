@@ -25,7 +25,7 @@ spec:
             - configMapRef:
                 name: litomi-common-env
             - secretRef:
-                name: litomi-backend-secret
+                name: litomi-api-secret
           startupProbe:
             httpGet:
               path: /api/health

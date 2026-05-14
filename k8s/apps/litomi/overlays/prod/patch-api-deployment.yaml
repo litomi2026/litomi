@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: litomi-backend
+  name: litomi-api
 spec:
   template:
     spec:
       containers:
-        - name: backend
+        - name: api
           env:
             - name: POSTGRES_APPLICATION_NAME
-              value: litomi-backend
+              value: litomi-api

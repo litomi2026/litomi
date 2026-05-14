@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: litomi-backend
+  name: litomi-api
 spec:
   template:
     spec:
-      serviceAccountName: litomi-backend
+      serviceAccountName: litomi-api
       automountServiceAccountToken: false
       containers:
-        - name: backend
+        - name: api
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/workload-identity/credential-configuration.json
@@ -29,4 +29,4 @@ spec:
                   path: token
         - name: google-application-credentials
           configMap:
-            name: litomi-backend-google-credentials
+            name: litomi-api-google-credentials

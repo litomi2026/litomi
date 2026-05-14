@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - redis.yaml
-  - backend.yaml
+  - api.yaml
   - web.yaml
 
 configMapGenerator:

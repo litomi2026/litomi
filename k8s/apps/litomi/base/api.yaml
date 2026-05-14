@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: litomi-backend
+  name: litomi-api
 spec:
   selector:
     matchLabels:
-      app: litomi-backend
+      app: litomi-api
   template:
     metadata:
       labels:
-        app: litomi-backend
+        app: litomi-api
     spec:
       automountServiceAccountToken: false
       containers:
-        - name: backend
-          image: litomi-backend:prod
+        - name: api
+          image: litomi-api:prod
           imagePullPolicy: IfNotPresent
           env:
             - name: PORT
@@ -23,7 +23,7 @@ spec:
             - configMapRef:
                 name: litomi-common-env
             - secretRef:
-                name: litomi-backend-secret
+                name: litomi-api-secret
           startupProbe:
             httpGet:
               path: /startup
@@ -65,9 +65,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: litomi-backend
+  name: litomi-api
 spec:
   selector:
-    app: litomi-backend
+    app: litomi-api
   ports:
     - port: 3002

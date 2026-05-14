@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: litomi-backend
+  name: litomi-api
 spec:
   strategy:
     type: RollingUpdate
@@ -11,7 +11,7 @@ spec:
   template:
     spec:
       containers:
-        - name: backend
+        - name: api
           resources:
             requests:
               cpu: 40m
@@ -21,6 +21,6 @@ spec:
               memory: 1088Mi
           env:
             - name: POSTGRES_APPLICATION_NAME
-              value: litomi-backend-stg
+              value: litomi-api-stg
             - name: POSTGRES_POOL_MAX
               value: '1'
