@@ -2,25 +2,28 @@
 
 # Load environment variables or use defaults
 set -a
-source cloud-run/crawl-and-notify/.env
+if [ -f "infra/cloud-run/notification-dispatch/.env" ]; then
+  source infra/cloud-run/notification-dispatch/.env
+fi
 set +a
 
 PROJECT_ID=${PROJECT_ID:-"your-project-id"}
 REGION=${REGION:-"asia-northeast1"}
-JOB_NAME=${JOB_NAME:-"job-name"}
-ARTIFACT_REGISTRY_REPO=${ARTIFACT_REGISTRY_REPO:-"artifact-registry-repo"}
-SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"service-account-name"}
+JOB_NAME=${JOB_NAME:-"notification-dispatch"}
+ARTIFACT_REGISTRY_REPO=${ARTIFACT_REGISTRY_REPO:-"cloud-run-jobs"}
+SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"notification-dispatch-sa"}
 IMAGE_NAME="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}/${JOB_NAME}"
 SERVICE_ACCOUNT="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 SCHEDULER_JOB_NAME="${JOB_NAME}-schedule"
+JOB_SCHEDULE=${JOB_SCHEDULE:-"0 * * * *"}  # Default: hourly
 
 # Check for required environment variables
 if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "❌ Error: PROJECT_ID environment variable not set"
     echo ""
-    echo "Please copy env.example to .env and source it:"
-    echo "  cp cloud-run/crawl-and-notify/.env.example cloud-run/crawl-and-notify/.env"
-    echo "  # Edit cloud-run/.env with your values"
+    echo "Please copy env.template to .env and configure it:"
+    echo "  cp infra/cloud-run/notification-dispatch/env.template infra/cloud-run/notification-dispatch/.env"
+    echo "  # Edit infra/cloud-run/notification-dispatch/.env with your values"
     exit 1
 fi
 
@@ -32,53 +35,46 @@ if ! gcloud artifacts repositories describe ${ARTIFACT_REGISTRY_REPO} \
   echo "To list available repositories: gcloud artifacts repositories list --location=${REGION} --project=${PROJECT_ID}"
 fi
 
-echo "🗑️  Starting cleanup of Cloud Run resources..."
+echo "🚀 Starting deployment of notification dispatch job..."
 echo "Project: ${PROJECT_ID}"
 echo "Region: ${REGION}"
 echo "Job Name: ${JOB_NAME}"
 echo "Artifact Registry Repo: ${ARTIFACT_REGISTRY_REPO}"
+echo "Schedule: ${JOB_SCHEDULE}"
 echo ""
 
 echo "Cleaning up Artifact Registry images..."
 REGISTRY_PATH="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}"
-ALL_IMAGES=$(gcloud artifacts docker images list ${REGISTRY_PATH} \
+ALL_IMAGES=$(gcloud artifacts docker images list ${REGISTRY_PATH}/${JOB_NAME} \
   --format="csv[no-heading](IMAGE,DIGEST,CREATE_TIME)" 2>&1 | grep -v "^Listing items" || true)
 
 if [ -n "$ALL_IMAGES" ] && [ "$ALL_IMAGES" != "Listed 0 items." ]; then
   SORTED_IMAGES=$(echo "$ALL_IMAGES" | sort -t',' -k3,3r)
-  
   IMAGE_COUNT=$(echo "$SORTED_IMAGES" | wc -l | tr -d ' ')
-  echo "Found ${IMAGE_COUNT} existing images"
-  echo "Deleting images in reverse chronological order (newest first)..."
-  echo ""
-  
-  while IFS=',' read -r image digest create_time; do
-    if [ -n "$image" ] && [ -n "$digest" ]; then
-      full_image_ref="${image}@${digest}"
-      echo "Deleting: https://${full_image_ref} (created: ${create_time})"
-      
-      if gcloud artifacts docker images delete "${full_image_ref}" \
-        --quiet \
-        --project=${PROJECT_ID} 2>/dev/null; then
-        echo "  ✓ Deleted successfully"
-      else
-        echo "  ⚠️ Failed to delete"
+
+  if [ "$IMAGE_COUNT" -gt 3 ]; then
+    echo "Found ${IMAGE_COUNT} existing images, keeping newest 3..."
+    IMAGES_TO_DELETE=$(echo "$SORTED_IMAGES" | tail -n +4)
+
+    while IFS=',' read -r image digest create_time; do
+      if [ -n "$image" ] && [ -n "$digest" ]; then
+        full_image_ref="${image}@${digest}"
+        echo "Deleting old image: ${full_image_ref}"
+        gcloud artifacts docker images delete "${full_image_ref}" \
+          --quiet \
+          --project=${PROJECT_ID} 2>/dev/null || true
       fi
-    fi
-  done <<< "$SORTED_IMAGES"
-  
-  echo "✅ Artifact Registry cleanup completed"
-else
-  echo "No existing images found in Artifact Registry"
+    done <<< "$IMAGES_TO_DELETE"
+  fi
 fi
 
 # Configure Docker authentication for Artifact Registry
 echo "Configuring Docker authentication for Artifact Registry..."
-gcloud auth configure-docker ${REGION}-docker.pkg.dev
+gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 
 # Build and push the Docker image
 echo "Building and pushing Docker image for linux/amd64 platform..."
-if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f cloud-run/crawl-and-notify/Dockerfile .; then
+if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f apps/notification-dispatch/Dockerfile .; then
   echo "Failed to build/push Docker image. Please check the error messages above."
   echo ""
   echo "Common fixes:"
@@ -107,9 +103,37 @@ if gcloud run jobs deploy ${JOB_NAME} \
   --set-env-vars="POSTGRES_URL=${POSTGRES_URL}" \
   --set-env-vars="NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}" \
   --set-env-vars="VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}" \
-  --service-account="${SERVICE_ACCOUNT}"; then
+  --service-account="${SERVICE_ACCOUNT}" \
+  --project=${PROJECT_ID}; then
   echo "✅ Cloud Run Job ${JOB_NAME} deployed successfully!"
 else
   echo "Failed to deploy Cloud Run Job. Please check the error messages above."
   exit 1
+fi
+
+echo ""
+echo "Setting up Cloud Scheduler job..."
+
+if gcloud scheduler jobs describe ${SCHEDULER_JOB_NAME} \
+  --location=${REGION} \
+  --project=${PROJECT_ID} >/dev/null 2>&1; then
+  echo "Deleting existing scheduler job..."
+  gcloud scheduler jobs delete ${SCHEDULER_JOB_NAME} \
+    --location=${REGION} \
+    --project=${PROJECT_ID} \
+    --quiet
+fi
+
+if gcloud scheduler jobs create http ${SCHEDULER_JOB_NAME} \
+  --location=${REGION} \
+  --schedule="${JOB_SCHEDULE}" \
+  --uri="https://${REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${PROJECT_ID}/jobs/${JOB_NAME}:run" \
+  --http-method=POST \
+  --oauth-service-account-email=${SERVICE_ACCOUNT} \
+  --project=${PROJECT_ID}; then
+  echo "✅ Cloud Scheduler job '${SCHEDULER_JOB_NAME}' set up successfully!"
+  echo "   Schedule: ${JOB_SCHEDULE}"
+else
+  echo "⚠️  Failed to set up Cloud Scheduler job. You may need to enable the Cloud Scheduler API:"
+  echo "  gcloud services enable cloudscheduler.googleapis.com --project=${PROJECT_ID}"
 fi

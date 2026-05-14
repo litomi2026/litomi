@@ -1,4 +1,4 @@
-# Manga Crawl - Cloud Run Job
+# Catalog Ingest - Cloud Run Job
 
 A periodic Cloud Run job that automatically crawls new manga data from multiple sources and stores it in a PostgreSQL database.
 
@@ -7,7 +7,7 @@ A periodic Cloud Run job that automatically crawls new manga data from multiple 
 - **Automatic New Manga Detection**: Automatically detects and crawls new manga IDs
 - **Smart ID Range Detection**: Fetches highest ID from database and latest from K-Hentai to determine what to crawl
 - **Concurrent Processing**: Processes multiple manga IDs concurrently for improved performance
-- **Multi-Source Support**: Fetches data from K-Hentai, Hiyobi, Hitomi, Harpi, Komi, and HentaiPaw
+- **Multi-Source Support**: Fetches data from K-Hentai, Hiyobi, Hitomi, and HentaiPaw
 - **Database Integration**: Stores manga metadata including artists, tags, characters, series, etc.
 - **Scheduled Execution**: Automated execution via Cloud Scheduler
 - **Production Ready**: Distroless container image for security and minimal footprint
@@ -15,14 +15,14 @@ A periodic Cloud Run job that automatically crawls new manga data from multiple 
 ## Architecture
 
 ```
-Cloud Scheduler → Cloud Run Job → K-Hentai (Latest ID) → Multi-Source Crawl → PostgreSQL (Neon)
+Cloud Scheduler → Cloud Run Job → K-Hentai (Latest ID) → Multi-Source Crawl → PostgreSQL (Aiven)
                                  ↓
                           Check Highest DB ID
 ```
 
 ## How It Works
 
-The manga crawl job operates automatically with the following workflow:
+The catalog ingest job operates automatically with the following workflow:
 
 1. **Database Check**: Queries the PostgreSQL database to find the highest manga ID that has been crawled
 2. **K-Hentai Range Detection**: Makes a single API call to K-Hentai to fetch:
@@ -32,7 +32,7 @@ The manga crawl job operates automatically with the following workflow:
    - If database has data: Crawl from (highest DB ID + 1) to latest K-Hentai ID
    - If database is empty: Crawl from lowest ID in K-Hentai search results to latest K-Hentai ID
 4. **Multi-Source Crawling**: For each manga ID in the range:
-   - Fetches manga data from multiple sources concurrently (K-Hentai, Hiyobi, Hitomi, Harpi, Komi, HentaiPaw)
+   - Fetches manga data from multiple sources concurrently (K-Hentai, Hiyobi, Hitomi, HentaiPaw)
    - Merges data from all available sources
    - Retries failed requests with exponential backoff
 5. **Database Storage**: Saves manga metadata including titles, descriptions, artists, tags, characters, series, groups, languages, and uploaders
@@ -42,7 +42,7 @@ The manga crawl job operates automatically with the following workflow:
 
 - Docker installed locally
 - `gcloud` CLI installed and configured
-- PostgreSQL database (e.g., Neon)
+- PostgreSQL database (e.g., Aiven)
 - Node.js/Bun runtime for local development
 
 ## Quick Start
@@ -54,43 +54,43 @@ The manga crawl job operates automatically with the following workflow:
 cd /path/to/litomi
 
 # Copy the environment template
-cp cloud-run/manga-crawl/env.template cloud-run/manga-crawl/.env
+cp infra/cloud-run/catalog-ingest/env.template infra/cloud-run/catalog-ingest/.env
 
 # Edit the .env file with your configuration
-# Important: Set PROJECT_ID, NEON_DATABASE_URL, and other required values
-vim cloud-run/manga-crawl/.env
+# Important: Set PROJECT_ID, AIVEN_POSTGRES_URL, and other required values
+vim infra/cloud-run/catalog-ingest/.env
 
 # Source the environment variables
-source cloud-run/manga-crawl/.env
+source infra/cloud-run/catalog-ingest/.env
 
 # Make scripts executable
-chmod +x cloud-run/manga-crawl/deploy.sh
+chmod +x infra/cloud-run/catalog-ingest/deploy.sh
 
 # Run the deployment script
-./cloud-run/manga-crawl/deploy.sh
+./infra/cloud-run/catalog-ingest/deploy.sh
 ```
 
 ### 2. Deploy the Job
 
 ```bash
 # Deploy using the deployment script
-./cloud-run/manga-crawl/deploy.sh
+./infra/cloud-run/catalog-ingest/deploy.sh
 
 # Or use Cloud Build for CI/CD
-gcloud builds submit --config=cloud-run/manga-crawl/cloudbuild.yaml --substitutions=_NEON_DATABASE_URL="postgresql://..."
+gcloud builds submit --config=infra/cloud-run/catalog-ingest/cloudbuild.yaml --substitutions=_AIVEN_POSTGRES_URL="postgresql://..."
 ```
 
 ### 3. Manual Execution
 
 ```bash
 # Execute the job manually
-gcloud run jobs execute manga-crawl --region=asia-northeast1
+gcloud run jobs execute catalog-ingest --region=asia-northeast1
 
 # View execution history
-gcloud run jobs executions list --job=manga-crawl --region=asia-northeast1
+gcloud run jobs executions list --job=catalog-ingest --region=asia-northeast1
 
 # View logs
-gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=manga-crawl" --limit=50
+gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=catalog-ingest" --limit=50
 ```
 
 ## Configuration
@@ -101,7 +101,7 @@ gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=ma
 | ------------------- | ---------------------------- | --------------- | -------- |
 | `PROJECT_ID`        | GCP Project ID               | -               | Yes      |
 | `REGION`            | GCP Region                   | asia-northeast1 | Yes      |
-| `NEON_DATABASE_URL` | PostgreSQL connection string | -               | Yes      |
+| `AIVEN_POSTGRES_URL` | PostgreSQL connection string | -               | Yes      |
 
 ### Schedule Configuration
 
@@ -116,7 +116,7 @@ The job schedule is configured during deployment (not via environment variables)
 To update the schedule:
 
 ```bash
-gcloud scheduler jobs update http manga-crawl-schedule \
+gcloud scheduler jobs update http catalog-ingest-schedule \
   --schedule="NEW_CRON_EXPRESSION" \
   --location=asia-northeast1
 ```
@@ -142,18 +142,18 @@ Adjust in `deploy.sh` or `cloudbuild.yaml` as needed.
 bun install
 
 # Run the crawler locally
-NEON_DATABASE_URL=your_connection_string \
-bun run cloud-run/manga-crawl/src/index.ts
+AIVEN_POSTGRES_URL=your_connection_string \
+bun run catalog:ingest
 ```
 
 ### Building the Docker Image Locally
 
 ```bash
 # Build for local testing
-docker build -f cloud-run/manga-crawl/Dockerfile -t manga-crawl:local .
+docker build -f apps/catalog-ingest/Dockerfile -t catalog-ingest:local .
 
 # Run locally
-docker run --env-file cloud-run/manga-crawl/.env manga-crawl:local
+docker run --env-file infra/cloud-run/catalog-ingest/.env catalog-ingest:local
 ```
 
 ## Monitoring
@@ -162,13 +162,13 @@ docker run --env-file cloud-run/manga-crawl/.env manga-crawl:local
 
 ```bash
 # Recent logs
-gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=manga-crawl" \
+gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=catalog-ingest" \
   --project=YOUR_PROJECT_ID \
   --limit=50 \
   --format=json
 
 # Stream logs
-gcloud alpha logging tail "resource.type=cloud_run_job AND resource.labels.job_name=manga-crawl" \
+gcloud alpha logging tail "resource.type=cloud_run_job AND resource.labels.job_name=catalog-ingest" \
   --project=YOUR_PROJECT_ID
 ```
 
@@ -177,7 +177,7 @@ gcloud alpha logging tail "resource.type=cloud_run_job AND resource.labels.job_n
 Monitor job performance in the Cloud Console:
 
 1. Go to Cloud Run → Jobs
-2. Select `manga-crawl`
+2. Select `catalog-ingest`
 3. View Metrics tab for execution history, duration, and success rate
 
 ## Troubleshooting
@@ -197,7 +197,7 @@ Monitor job performance in the Cloud Console:
    - Ensure App Engine is created in your project
 
 4. **Database connection errors**
-   - Verify `NEON_DATABASE_URL` is correct and includes SSL mode
+   - Verify `AIVEN_POSTGRES_URL` is correct and includes SSL mode
    - Check database allows connections from Cloud Run
 
 5. **Job timeout**
@@ -210,17 +210,17 @@ To remove all resources:
 
 ```bash
 # Delete the Cloud Run job
-gcloud run jobs delete manga-crawl --region=asia-northeast1
+gcloud run jobs delete catalog-ingest --region=asia-northeast1
 
 # Delete the Cloud Scheduler job
-gcloud scheduler jobs delete manga-crawl-schedule --location=asia-northeast1
+gcloud scheduler jobs delete catalog-ingest-schedule --location=asia-northeast1
 
 # Delete Docker images from Artifact Registry
 gcloud artifacts docker images delete \
-  asia-northeast1-docker.pkg.dev/PROJECT_ID/cloud-run-jobs/manga-crawl
+  asia-northeast1-docker.pkg.dev/PROJECT_ID/cloud-run-jobs/catalog-ingest
 
 # Delete the service account (optional)
-gcloud iam service-accounts delete manga-crawl-sa@PROJECT_ID.iam.gserviceaccount.com
+gcloud iam service-accounts delete catalog-ingest-sa@PROJECT_ID.iam.gserviceaccount.com
 ```
 
 ## Cost Optimization

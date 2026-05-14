@@ -1,13 +1,13 @@
-# Cloud Build configuration for deploying the manga crawler job
-# Usage: gcloud builds submit --config=cloud-run/manga-crawl/cloudbuild.yaml --substitutions=_NEON_DATABASE_URL="postgresql://...",_REGION=asia-northeast1
+# Cloud Build configuration for deploying the catalog ingester job
+# Usage: gcloud builds submit --config=infra/cloud-run/catalog-ingest/cloudbuild.yaml --substitutions=_AIVEN_POSTGRES_URL="postgresql://...",_REGION=asia-northeast1
 
 substitutions:
-  _JOB_NAME: manga-crawl
+  _JOB_NAME: catalog-ingest
   _REGION: asia-northeast1
   _ARTIFACT_REGISTRY_REPO: cloud-run-jobs
-  _SERVICE_ACCOUNT_NAME: manga-crawl-sa
-  _CRAWL_SCHEDULE: '0 * * * *'
-  _NEON_DATABASE_URL: ''
+  _SERVICE_ACCOUNT_NAME: catalog-ingest-sa
+  _JOB_SCHEDULE: '0 * * * *'
+  _AIVEN_POSTGRES_URL: ''
 
 steps:
   # Create Artifact Registry repository if it doesn't exist
@@ -33,7 +33,7 @@ steps:
       - '-t'
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/${_JOB_NAME}'
       - '-f'
-      - 'cloud-run/manga-crawl/Dockerfile'
+      - 'apps/catalog-ingest/Dockerfile'
       - '--push'
       - '.'
 
@@ -54,7 +54,7 @@ steps:
       - '--cpu=2'
       - '--service-account=${_SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com'
       - '--set-env-vars=NODE_ENV=production'
-      - '--set-env-vars=NEON_DATABASE_URL=${_NEON_DATABASE_URL}'
+      - '--set-env-vars=AIVEN_POSTGRES_URL=${_AIVEN_POSTGRES_URL}'
       - '--project=${PROJECT_ID}'
 
   # Set up Cloud Scheduler
@@ -78,7 +78,7 @@ steps:
         # Create new scheduler job
         gcloud scheduler jobs create http ${SCHEDULER_JOB_NAME} \
           --location=${_REGION} \
-          --schedule="${_CRAWL_SCHEDULE}" \
+          --schedule="${_JOB_SCHEDULE}" \
           --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${PROJECT_ID}/jobs/${_JOB_NAME}:run" \
           --http-method=POST \
           --oauth-service-account-email=${_SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com \

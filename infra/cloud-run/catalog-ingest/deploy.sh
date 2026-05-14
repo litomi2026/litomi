@@ -2,40 +2,40 @@
 
 # Load environment variables or use defaults
 set -a
-if [ -f "cloud-run/manga-crawl/.env" ]; then
-  source cloud-run/manga-crawl/.env
+if [ -f "infra/cloud-run/catalog-ingest/.env" ]; then
+  source infra/cloud-run/catalog-ingest/.env
 fi
 set +a
 
 # Configuration
 PROJECT_ID=${PROJECT_ID:-"your-project-id"}
 REGION=${REGION:-"asia-northeast1"}
-JOB_NAME=${JOB_NAME:-"manga-crawl"}
+JOB_NAME=${JOB_NAME:-"catalog-ingest"}
 ARTIFACT_REGISTRY_REPO=${ARTIFACT_REGISTRY_REPO:-"cloud-run-jobs"}
-SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"manga-crawl-sa"}
+SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"catalog-ingest-sa"}
 IMAGE_NAME="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}/${JOB_NAME}"
 SERVICE_ACCOUNT="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 SCHEDULER_JOB_NAME="${JOB_NAME}-schedule"
 
 # Schedule configuration for Cloud Scheduler (not used by the app itself)
-CRAWL_SCHEDULE=${CRAWL_SCHEDULE:-"0 2 * * *"}  # Default: 2 AM daily
+JOB_SCHEDULE=${JOB_SCHEDULE:-"0 2 * * *"}  # Default: 2 AM daily
 
 # Check for required environment variables
 if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "❌ Error: PROJECT_ID environment variable not set"
     echo ""
     echo "Please copy env.template to .env and configure it:"
-    echo "  cp cloud-run/manga-crawl/env.template cloud-run/manga-crawl/.env"
-    echo "  # Edit cloud-run/manga-crawl/.env with your values"
+    echo "  cp infra/cloud-run/catalog-ingest/env.template infra/cloud-run/catalog-ingest/.env"
+    echo "  # Edit infra/cloud-run/catalog-ingest/.env with your values"
     exit 1
 fi
 
-echo "🚀 Starting deployment of manga crawl job..."
+echo "🚀 Starting deployment of catalog ingest job..."
 echo "Project: ${PROJECT_ID}"
 echo "Region: ${REGION}"
 echo "Job Name: ${JOB_NAME}"
 echo "Artifact Registry Repo: ${ARTIFACT_REGISTRY_REPO}"
-echo "Schedule: ${CRAWL_SCHEDULE}"
+echo "Schedule: ${JOB_SCHEDULE}"
 echo ""
 
 # Check if Artifact Registry repository exists
@@ -83,7 +83,7 @@ gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 
 # Build and push the Docker image
 echo "Building and pushing Docker image for linux/amd64 platform..."
-if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f cloud-run/manga-crawl/Dockerfile .; then
+if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f apps/catalog-ingest/Dockerfile .; then
   echo "❌ Failed to build/push Docker image. Please check the error messages above."
   echo ""
   echo "Common fixes:"
@@ -113,7 +113,7 @@ if gcloud run jobs deploy ${JOB_NAME} \
   --cpu=2 \
   --service-account="${SERVICE_ACCOUNT}" \
   --set-env-vars="NODE_ENV=production" \
-  --set-env-vars="NEON_DATABASE_URL=${NEON_DATABASE_URL}" \
+  --set-env-vars="AIVEN_POSTGRES_URL=${AIVEN_POSTGRES_URL}" \
   --project=${PROJECT_ID}; then
   echo "✅ Cloud Run Job deployed successfully!"
 else
@@ -140,13 +140,13 @@ fi
 # Create new scheduler job
 if gcloud scheduler jobs create http ${SCHEDULER_JOB_NAME} \
   --location=${REGION} \
-  --schedule="${CRAWL_SCHEDULE}" \
+  --schedule="${JOB_SCHEDULE}" \
   --uri="https://${REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${PROJECT_ID}/jobs/${JOB_NAME}:run" \
   --http-method=POST \
   --oauth-service-account-email=${SERVICE_ACCOUNT} \
   --project=${PROJECT_ID}; then
   echo "✅ Cloud Scheduler job '${SCHEDULER_JOB_NAME}' set up successfully!"
-  echo "   Schedule: ${CRAWL_SCHEDULE}"
+  echo "   Schedule: ${JOB_SCHEDULE}"
 else
   echo "⚠️  Failed to set up Cloud Scheduler job. You may need to enable the Cloud Scheduler API:"
   echo "  gcloud services enable cloudscheduler.googleapis.com --project=${PROJECT_ID}"
