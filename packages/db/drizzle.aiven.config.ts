@@ -4,8 +4,8 @@ dotenv.config({ path: process.env.DB_ENV === 'production' ? '.env.production' : 
 import { defineConfig } from 'drizzle-kit'
 
 export default defineConfig({
-  out: './drizzle/aiven',
-  schema: './src/database/aiven',
+  out: './packages/db/drizzle/aiven',
+  schema: './packages/db/src/database/aiven',
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env.AIVEN_POSTGRES_URL ?? '',

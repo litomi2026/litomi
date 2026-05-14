@@ -1,9 +1,8 @@
 import type { SQL } from 'drizzle-orm'
 
+import { CollectionItemSort } from '@litomi/contracts/library/item-sort'
 import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { PgDialect } from 'drizzle-orm/pg-core'
-
-import { CollectionItemSort } from '@/backend/api/v1/library/item-sort'
 
 const dialect = new PgDialect()
 
@@ -47,7 +46,7 @@ const whereMock = mock((whereClause: SQL) => {
 const fromMock = mock(() => ({ where: whereMock }))
 const selectMock = mock(() => ({ from: fromMock }))
 
-mock.module('@/database/supabase/drizzle', () => ({
+mock.module('@litomi/db/database/supabase/drizzle', () => ({
   db: {
     select: selectMock,
   },
