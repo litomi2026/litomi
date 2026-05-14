@@ -1,25 +1,22 @@
 import type { NextConfig } from 'next'
 
 import { withSentryConfig } from '@sentry/nextjs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 const isProduction = process.env.NODE_ENV === 'production'
-const configDir = dirname(fileURLToPath(import.meta.url))
-const repoRoot = join(configDir, '..')
 const sentryRelease = process.env.VERCEL_GIT_COMMIT_SHA
 const sentryDeployEnv = process.env.VERCEL_ENV
 
 const nextConfig: NextConfig = {
-  experimental: {
-    externalDir: true,
-  },
-  turbopack: {
-    // Avoid workspace root inference when multiple lockfiles exist.
-    // Set to monorepo root so `tsconfig` extends and `@/*` paths resolve.
-    root: repoRoot,
-  },
   poweredByHeader: false,
+  transpilePackages: [
+    '@litomi/catalog',
+    '@litomi/crawler',
+    '@litomi/domain',
+    '@litomi/env',
+    '@litomi/http',
+    '@litomi/observability',
+    '@litomi/std',
+  ],
   ...(isProduction && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
 }
 

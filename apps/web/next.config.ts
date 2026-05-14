@@ -1,14 +1,16 @@
 import type { NextConfig } from 'next'
 
+import { nextBuildEnv } from '@litomi/env/env/server.next.build'
+import { createCacheControl } from '@litomi/http/cache-control'
+import { sec } from '@litomi/std/format/date'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
-
-import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/format/date'
-
-import { nextBuildEnv } from './src/env/server.next.build'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const isProduction = process.env.NODE_ENV === 'production'
+const configDir = dirname(fileURLToPath(import.meta.url))
+const repoRoot = join(configDir, '../..')
 const commitSHA = process.env.COMMIT_SHA
 const sentryDeployEnv = process.env.NEXT_PUBLIC_APP_ENV
 const appEnv = nextBuildEnv.NEXT_PUBLIC_APP_ENV
@@ -99,6 +101,20 @@ const nextConfig: NextConfig = {
   ],
   poweredByHeader: false,
   reactCompiler: true,
+  outputFileTracingRoot: repoRoot,
+  transpilePackages: [
+    '@litomi/auth',
+    '@litomi/catalog',
+    '@litomi/contracts',
+    '@litomi/crawler',
+    '@litomi/db',
+    '@litomi/domain',
+    '@litomi/env',
+    '@litomi/http',
+    '@litomi/notifications',
+    '@litomi/observability',
+    '@litomi/std',
+  ],
   ...(isProduction && {
     compiler: { removeConsole: { exclude: ['error', 'warn'] } },
   }),
@@ -108,7 +124,6 @@ const nextConfig: NextConfig = {
   }),
   ...(process.env.BUILD_OUTPUT === 'standalone' && {
     output: 'standalone',
-    transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
 }
 

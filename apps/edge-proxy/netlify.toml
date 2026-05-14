@@ -1,6 +1,0 @@
-[build]
-  command = "cd .. && bun install && cd vercel && bun install && bun run build"
-  publish = ".next"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
