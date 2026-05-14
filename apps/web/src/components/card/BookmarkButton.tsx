@@ -12,11 +12,10 @@ import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import useDelayedPendingIndicator from '@/hook/useDelayedPendingIndicator'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showLoginRequiredToast } from '@/lib/toast'
 import useBookmarkQuery from '@/query/useBookmarkQuery'
-import useMeQuery from '@/query/useMeQuery'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { useLibraryModal } from './LibraryModal'
@@ -29,7 +28,7 @@ type Props = {
 }
 
 export default function BookmarkButton({ manga, className }: Props) {
-  const { data: me } = useMeQuery()
+  const { guardAdultAccess, guardLogin } = useAdultAccessGuard()
   const { data: bookmarks } = useBookmarkQuery()
   const { open: openLibraryModal } = useLibraryModal()
   const queryClient = useQueryClient()
@@ -55,6 +54,7 @@ export default function BookmarkButton({ manga, className }: Props) {
         credentials: 'include',
       })
     },
+
     onSuccess: (_, { mangaId, shouldBookmark }) => {
       const toastId = `bookmark-toggle-${mangaId}`
 
@@ -103,15 +103,18 @@ export default function BookmarkButton({ manga, className }: Props) {
   function handleToggleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
 
-    if (!me) {
-      showLoginRequiredToast()
-      return
-    }
     if (saveMutation.isPending) {
       return
     }
 
-    saveMutation.mutate({ mangaId, shouldBookmark: !isBookmarked })
+    const shouldBookmark = !isBookmarked
+    const canRequest = shouldBookmark ? guardAdultAccess() : guardLogin()
+
+    if (!canRequest) {
+      return
+    }
+
+    saveMutation.mutate({ mangaId, shouldBookmark })
   }
 
   return (

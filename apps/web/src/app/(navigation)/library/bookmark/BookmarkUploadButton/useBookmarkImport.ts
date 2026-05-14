@@ -4,6 +4,7 @@ import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
@@ -15,6 +16,7 @@ export function useBookmarkImport() {
   const [importMode, setImportMode] = useState<ImportMode>('merge')
   const [previewData, setPreviewData] = useState<BookmarkExportData | null>(null)
   const queryClient = useQueryClient()
+  const { guardAdultAccess } = useAdultAccessGuard()
 
   const importMutation = useMutation<
     { imported: number; skipped: number },
@@ -36,6 +38,7 @@ export function useBookmarkImport() {
         skipped: data.skipped,
       }
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.bookmarks })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarksBase })
@@ -52,18 +55,18 @@ export function useBookmarkImport() {
 
   const importResult: ImportResult | null = importMutation.isSuccess ? importMutation.data : null
 
-  const reset = () => {
+  function reset() {
     setPreviewData(null)
     importMutation.reset()
   }
 
-  const handleFileLoad = (data: BookmarkExportData) => {
+  function handleFileLoad(data: BookmarkExportData) {
     setPreviewData(data)
     importMutation.reset()
   }
 
-  const performImport = () => {
-    if (!previewData || importMutation.isPending) {
+  function performImport() {
+    if (!previewData || importMutation.isPending || !guardAdultAccess()) {
       return
     }
 

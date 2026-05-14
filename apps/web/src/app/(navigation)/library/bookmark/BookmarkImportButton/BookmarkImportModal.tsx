@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import MangaImportModal from '@/components/card/MangaImportModal'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -15,8 +16,9 @@ import { addBookmarks } from '../api'
 import { useBookmarkImportModalStore } from './store'
 
 export default function BookmarkImportModal() {
-  const queryClient = useQueryClient()
   const { isOpen, setIsOpen } = useBookmarkImportModalStore()
+  const { guardAdultAccess } = useAdultAccessGuard()
+  const queryClient = useQueryClient()
   const router = useRouter()
 
   const mutation = useMutation<POSTV1BookmarkResponse, ProblemDetailsError, { mangaIds: number[] }>({
@@ -57,6 +59,10 @@ export default function BookmarkImportModal() {
   }
 
   function handleSubmit(mangaIds: number[]) {
+    if (!guardAdultAccess()) {
+      return
+    }
+
     mutation.mutate({ mangaIds })
   }
 
