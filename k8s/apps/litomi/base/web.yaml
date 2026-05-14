@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litomi-web
+spec:
+  selector:
+    matchLabels:
+      app: litomi-web
+  template:
+    metadata:
+      labels:
+        app: litomi-web
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: web
+          image: litomi-web:prod
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: '3000'
+          envFrom:
+            - configMapRef:
+                name: litomi-public-env
+            - configMapRef:
+                name: litomi-common-env
+            - secretRef:
+                name: litomi-backend-secret
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 240m
+              memory: 1248Mi
+            limits:
+              cpu: 1000m
+              memory: 1664Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            # `runAsNonRoot: true` + image `USER nextjs`(string) 조합이면 kubelet이 non-root 검증을 못 해서 거부할 수 있어요.
+            # 이미지(`Dockerfile.nextjs`)의 nextjs UID/GID(1001)에 맞춰 숫자로 고정해요.
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: litomi-web
+spec:
+  selector:
+    app: litomi-web
+  ports:
+    - port: 3000

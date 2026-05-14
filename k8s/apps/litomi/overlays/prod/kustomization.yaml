@@ -1,0 +1,46 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: litomi-prod
+
+resources:
+  - ../../base
+  - hpa-backend.yaml
+  - hpa-web.yaml
+  - namespace.yaml
+  - serviceaccount-eso-vault.yaml
+  - secretstore-vault.yaml
+  - externalsecret-litomi-backend-secret.yaml
+  - ingress.yaml
+  - workload-identity-template/serviceaccount-backend-google-auth.yaml
+  - workload-identity-template/configmap-backend-google-credentials.yaml
+
+patches:
+  - path: patch-backend-deployment.yaml
+  - path: patch-web-deployment.yaml
+  - path: workload-identity-template/patch-backend-deployment-google-auth.yaml
+
+configMapGenerator:
+  - name: litomi-public-env
+    envs:
+      - public.env.kv
+
+  - name: litomi-common-env
+    literals:
+      - APP_ENV=prod
+      - APP_ORIGIN=https://litomi.in
+      - REDIS_URL=redis://redis:6379
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://opentelemetry-collector.tracing.svc:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_TRACES_SAMPLER=parentbased_traceidratio
+      - OTEL_TRACES_SAMPLER_ARG=0.01
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=litomi,deployment.environment=prod,k8s.cluster.name=litomi-k3s
+
+images:
+  - name: litomi-web
+    newName: ghcr.io/litomi2026/litomi-web
+    digest: sha256:bf86ae59e6c8dd1897542d0a7ea4278e3bc207c84cb5539ba2b9d9ad37daece6
+  - name: litomi-backend
+    newName: ghcr.io/litomi2026/litomi-backend
+    digest: sha256:1abcdecf14c489c839a01148ed458b48333fa6315598ee66e49b529d09909587
