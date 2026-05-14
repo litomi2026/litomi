@@ -1,6 +1,5 @@
 'use client'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { Manga } from '@litomi/domain/types/manga'
 import { env } from '@litomi/env/env/client'
 import { isDegradedResponse } from '@litomi/http/degraded-response'
@@ -10,6 +9,7 @@ import pLimit from 'p-limit'
 import pThrottle from 'p-throttle'
 import { useMemo } from 'react'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env

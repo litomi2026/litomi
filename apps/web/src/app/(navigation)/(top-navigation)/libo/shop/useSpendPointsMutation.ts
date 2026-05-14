@@ -2,10 +2,10 @@
 
 import type { POSTV1PointSpendRequest, POSTV1PointSpendResponse } from '@litomi/contracts/api/points'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

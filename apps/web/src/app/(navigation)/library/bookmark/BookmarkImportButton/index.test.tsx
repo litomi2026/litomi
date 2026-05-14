@@ -1,10 +1,11 @@
 import '@test/setup.dom'
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestQueryClient, renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+
+import { QueryKeys } from '@/lib/react-query/query-keys'
 
 const toastSuccessMock = mock(() => {})
 const toastWarningMock = mock(() => {})

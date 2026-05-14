@@ -2,7 +2,6 @@
 
 import type { GETV1BookmarkIdResponse, PUTV1BookmarkIdResponse } from '@litomi/contracts/api/bookmark'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
@@ -14,6 +13,7 @@ import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import useDelayedPendingIndicator from '@/hook/useDelayedPendingIndicator'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useBookmarkQuery from '@/query/useBookmarkQuery'
 import useMeQuery from '@/query/useMeQuery'

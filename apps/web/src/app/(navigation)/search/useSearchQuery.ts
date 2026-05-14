@@ -1,12 +1,12 @@
 import type { KeywordPromotion } from '@litomi/catalog/sponsor'
 import type { Manga } from '@litomi/domain/types/manga'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { whitelistSearchParams } from '@litomi/std/param'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

@@ -2,10 +2,10 @@
 
 import type { DELETEV1ReadingHistoryBody } from '@litomi/contracts/api/library'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import {
   getLocalReadingHistory,
   removeLocalReadingHistory,

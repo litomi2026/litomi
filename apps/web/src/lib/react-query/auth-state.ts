@@ -1,9 +1,8 @@
 import type { QueryClient } from '@tanstack/react-query'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
-
 import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 
 export function handleUnauthorizedError(queryClient: QueryClient) {
   queryClient.setQueryData(QueryKeys.me, null)

@@ -9,7 +9,7 @@ import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
 import { NotFoundError, ParseError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
-import { ProxyClient, type ProxyClientConfig } from '@litomi/crawler/crawler/proxy'
+import { ProxyClient, type ProxyClientConfig, type ProxyRequestInit } from '@litomi/crawler/crawler/proxy'
 import { isUpstreamServerError } from '@litomi/crawler/crawler/proxy-utils'
 import { MangaSource, tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import { convertCamelCaseToKebabCase } from '@litomi/std/param'
@@ -273,7 +273,7 @@ class KHentaiClient {
     return this.searchMangas({ search: 'language:korean', sort: 'random' }, locale, { next: { revalidate } })
   }
 
-  async searchMangas(params: KHentaiMangaSearchOptions = {}, locale: Locale, options?: RequestInit) {
+  async searchMangas(params: KHentaiMangaSearchOptions = {}, locale: Locale, options?: ProxyRequestInit) {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])

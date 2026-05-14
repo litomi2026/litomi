@@ -3,7 +3,6 @@
 import type { GETV1MeFollowingResponse } from '@litomi/contracts/api/me'
 import type { DELETEV1UserIdFollowResponse, PUTV1UserIdFollowResponse } from '@litomi/contracts/api/user'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -15,6 +14,7 @@ import {
   restorePostLists,
   snapshotFollowingPostLists,
 } from '@/components/post/cache'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showLoginRequiredToast } from '@/lib/toast'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

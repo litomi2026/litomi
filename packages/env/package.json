@@ -1,0 +1,19 @@
+{
+  "name": "@litomi/env",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./env/client": "./src/env/client.ts",
+    "./env/server.common": "./src/env/server.common.ts",
+    "./env/server.hono": "./src/env/server.hono.ts",
+    "./env/server.next": "./src/env/server.next.ts",
+    "./env/server.next.build": "./src/env/server.next.build.ts"
+  },
+  "dependencies": {
+    "@litomi/std": "workspace:*",
+    "@t3-oss/env-core": "^0.13.11",
+    "server-only": "^0.0.1",
+    "zod": "^4.3.6"
+  }
+}

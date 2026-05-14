@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/nextjs'
+import { captureException } from '@sentry/core'
 import ms from 'ms'
 
 import { CircuitBreakerError } from './errors'

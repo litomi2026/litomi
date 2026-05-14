@@ -1,10 +1,11 @@
 import type { GETV1PostLikedResponse, GETV1PostResponse } from '@litomi/contracts/api/post'
 
 import { PostFilter } from '@litomi/contracts/post/constant'
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { PostType } from '@litomi/domain/database/enum'
 import { type InfiniteData, QueryClient } from '@tanstack/react-query'
 import { afterEach, describe, expect, test } from 'bun:test'
+
+import { QueryKeys } from '@/lib/react-query/query-keys'
 
 import {
   applyPostLikeCountDeltaInPostLists,

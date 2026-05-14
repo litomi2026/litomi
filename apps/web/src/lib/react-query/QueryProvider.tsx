@@ -1,6 +1,5 @@
 'use client'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
@@ -8,6 +7,7 @@ import { PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
 import MyInfoSync from '@/components/MyInfoSync'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

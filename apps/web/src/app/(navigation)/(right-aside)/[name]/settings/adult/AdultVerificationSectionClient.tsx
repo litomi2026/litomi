@@ -3,7 +3,6 @@
 import type { POSTV1BBatonAttemptResponse } from '@litomi/contracts/api/bbaton'
 
 import { BBATON_POPUP_WINDOW_NAME } from '@litomi/domain/constants/bbaton'
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { env } from '@litomi/env/env/client'
 import { formatDistanceToNow } from '@litomi/std/format/date'
@@ -14,6 +13,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import BBatonButton from '@/svg/BBatonButton'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 

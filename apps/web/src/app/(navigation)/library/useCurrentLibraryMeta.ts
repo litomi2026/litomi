@@ -2,11 +2,11 @@
 
 import type { GETV1LibraryResponse } from '@litomi/contracts/api/library'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

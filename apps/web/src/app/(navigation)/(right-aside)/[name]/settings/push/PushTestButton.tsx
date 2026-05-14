@@ -1,12 +1,12 @@
 'use client'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { useQueryClient } from '@tanstack/react-query'
 import { BellRing } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import useServerAction from '@/hook/useServerAction'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 
 import { testNotification } from './action'
 import { getCurrentBrowserEndpoint } from './common'

@@ -2,7 +2,6 @@
 
 import type { DELETEV1CensorshipDeleteResponse } from '@litomi/contracts/api/censorship'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { CensorshipKey } from '@litomi/domain/database/enum'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -15,6 +14,7 @@ import AdultVerificationGate from '@/components/AdultVerificationGate'
 import CustomSelect from '@/components/ui/CustomSelect'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'

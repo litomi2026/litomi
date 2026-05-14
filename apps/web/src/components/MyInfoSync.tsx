@@ -2,7 +2,6 @@
 
 import type { GETV1MeResponse } from '@litomi/contracts/api/me'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { patchUserSettings, type UserSettingsSignal } from '@litomi/domain/utils/user-settings'
 import { safeParseJSON } from '@litomi/std/json'
@@ -11,6 +10,7 @@ import { useEffect } from 'react'
 
 import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
 

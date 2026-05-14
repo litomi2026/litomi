@@ -25,6 +25,13 @@ export interface ProxyClientConfig {
   retry?: RetryConfig
 }
 
+export type ProxyRequestInit = RequestInit & {
+  next?: {
+    revalidate?: number | false
+    tags?: string[]
+  }
+}
+
 export class ProxyClient {
   private readonly circuitBreaker?: CircuitBreaker
 
@@ -34,14 +41,14 @@ export class ProxyClient {
     }
   }
 
-  async fetch<T>(path: string, options: RequestInit = {}, raw = false): Promise<T> {
+  async fetch<T>(path: string, options: ProxyRequestInit = {}, raw = false): Promise<T> {
     const { data } = await this.fetchWithRedirect<T>(path, { ...options, redirect: options.redirect || 'manual' }, raw)
     return data
   }
 
   async fetchWithRedirect<T>(
     path: string,
-    options: RequestInit = {},
+    options: ProxyRequestInit = {},
     raw = false,
   ): Promise<{ data: T; finalUrl: string }> {
     const url = `${this.config.baseURL}${path}`

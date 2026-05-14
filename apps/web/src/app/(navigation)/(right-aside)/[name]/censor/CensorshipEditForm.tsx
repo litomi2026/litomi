@@ -1,6 +1,5 @@
 import type { PATCHV1CensorshipUpdateResponse } from '@litomi/contracts/api/censorship'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -8,6 +7,7 @@ import { Check } from 'lucide-react'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'

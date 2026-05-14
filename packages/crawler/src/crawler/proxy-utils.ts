@@ -8,7 +8,7 @@ import {
   type ProblemDetails,
 } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std/format/date'
-import { captureException } from '@sentry/nextjs'
+import { captureException } from '@sentry/core'
 
 const { NEXT_PUBLIC_APP_ORIGIN } = env
 

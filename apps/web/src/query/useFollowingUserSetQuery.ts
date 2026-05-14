@@ -2,11 +2,11 @@
 
 import type { GETV1MeFollowingResponse } from '@litomi/contracts/api/me'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'

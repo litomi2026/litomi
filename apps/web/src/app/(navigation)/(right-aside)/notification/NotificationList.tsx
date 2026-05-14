@@ -1,7 +1,6 @@
 'use client'
 
 import { NotificationFilter } from '@litomi/contracts/notification/types'
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -13,6 +12,7 @@ import IconBell from '@/components/icons/IconBell'
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 

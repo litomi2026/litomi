@@ -1,0 +1,12 @@
+{
+  "name": "@litomi/observability",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./monitoring/sentry/common": "./src/monitoring/sentry/common.ts"
+  },
+  "devDependencies": {
+    "@sentry/core": "10.47.0"
+  }
+}

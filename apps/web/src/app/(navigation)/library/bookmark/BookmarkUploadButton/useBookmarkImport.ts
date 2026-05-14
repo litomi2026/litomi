@@ -1,10 +1,10 @@
 import type { POSTV1BookmarkImportResponse } from '@litomi/contracts/api/bookmark'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'

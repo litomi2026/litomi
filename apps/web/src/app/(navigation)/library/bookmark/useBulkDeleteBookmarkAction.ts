@@ -8,11 +8,11 @@ import type {
 import type { GETV1LibrarySummaryResponse } from '@litomi/contracts/api/library'
 import type { InfiniteData } from '@tanstack/react-query'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { BulkActionDescriptor } from '../bulkActionTypes'

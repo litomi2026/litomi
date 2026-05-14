@@ -2,7 +2,6 @@
 
 import type { DELETEV1CensorshipDeleteResponse, POSTV1CensorshipCreateResponse } from '@litomi/contracts/api/censorship'
 
-import { QueryKeys } from '@litomi/domain/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { env } from '@litomi/env/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -12,6 +11,7 @@ import { toast } from 'sonner'
 
 import BottomSheet, { BottomSheetItem } from '@/components/ui/BottomSheet'
 import useClipboard from '@/hook/useClipboard'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import useMeQuery from '@/query/useMeQuery'
