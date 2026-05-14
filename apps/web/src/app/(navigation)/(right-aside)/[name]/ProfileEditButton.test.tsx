@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 
+import { QueryKeys } from '@litomi/domain/constants/query'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestQueryClient, renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, fireEvent, waitFor } from '@testing-library/react'
@@ -7,8 +8,6 @@ import userEvent from '@testing-library/user-event'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me/GET'
-
-import { QueryKeys } from '@/constants/query'
 
 const replaceMock = mock(() => {})
 const refreshMock = mock(() => {})
@@ -38,7 +37,7 @@ mock.module('sonner', () => ({
   },
 }))
 
-mock.module('@/utils/passkey', () => ({
+mock.module('@litomi/auth/passkey', () => ({
   signalCurrentPasskeyUserDetails: signalCurrentPasskeyUserDetailsMock,
 }))
 

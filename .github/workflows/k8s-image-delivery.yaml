@@ -5,7 +5,7 @@ on:
     branches: [main, stage]
     # Skip k8s-only changes to avoid rebuilding images for manifest-only commits.
     paths-ignore:
-      - 'k8s/**'
+      - 'infra/k8s/**'
   workflow_dispatch:
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
     outputs:
       digest: ${{ steps.resolve_published_web_digest.outputs.digest }}
     env:
-      OVERLAY_DIR: ${{ github.ref_name == 'main' && 'k8s/apps/litomi/overlays/prod' || github.ref_name == 'stage' && 'k8s/apps/litomi/overlays/stg' || '' }}
+      OVERLAY_DIR: ${{ github.ref_name == 'main' && 'infra/k8s/apps/litomi/overlays/prod' || github.ref_name == 'stage' && 'infra/k8s/apps/litomi/overlays/stg' || '' }}
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
     steps:
       - name: Checkout repository
@@ -84,7 +84,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile.nextjs
+          file: apps/web/Dockerfile
           platforms: linux/arm64
           push: true
           build-args: |
@@ -106,7 +106,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile.nextjs
+          file: apps/web/Dockerfile
           platforms: linux/arm64
           push: true
           build-args: |
@@ -175,7 +175,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile.hono
+          file: apps/api/Dockerfile
           platforms: linux/arm64
           push: true
           build-args: |
@@ -197,7 +197,7 @@ jobs:
     permissions:
       contents: write
     env:
-      OVERLAY_FILE: k8s/apps/litomi/overlays/stg/kustomization.yaml
+      OVERLAY_FILE: infra/k8s/apps/litomi/overlays/stg/kustomization.yaml
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
       IMAGE_BACKEND_DIGEST: ${{ needs.build-and-publish-backend-image.outputs.digest }}
     steps:
@@ -261,7 +261,7 @@ jobs:
       contents: write
       pull-requests: write
     env:
-      OVERLAY_FILE: k8s/apps/litomi/overlays/prod/kustomization.yaml
+      OVERLAY_FILE: infra/k8s/apps/litomi/overlays/prod/kustomization.yaml
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
       IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}

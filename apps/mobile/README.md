@@ -1,6 +1,6 @@
 # Litomi Mobile
 
-`mobile/`은 `https://litomi.in`을 직접 여는 최소 Capacitor 앱입니다.
+`apps/mobile/`은 `https://litomi.in`을 직접 여는 최소 Capacitor 앱입니다.
 
 이 디렉터리는 로컬 웹앱을 따로 구현하는 공간이 아니라, 모바일 셸과 네이티브 빌드 설정을 관리하는 용도입니다.
 
@@ -54,7 +54,7 @@ bun run ios:altstore
 
 - `bun run ios:altstore`는 unsigned iOS archive를 만든 뒤 AltStore Classic과 SideStore에서 함께 쓸 수 있는 `.ipa`와 AltSource(`source.json`)를 생성합니다.
 - 결과물은 `artifacts/ios/` 아래에 `.ipa`, AltSource, dSYMs, 체크섬, 빌드 정보 파일로 저장됩니다.
-- 저장소에 커밋되는 고정 source 파일은 `mobile/ios.source.json`이며, AltStore Classic과 SideStore 모두 이 파일의 raw GitHub URL을 등록할 수 있습니다.
+- 저장소에 커밋되는 고정 source 파일은 `apps/mobile/ios.source.json`이며, AltStore Classic과 SideStore 모두 이 파일의 raw GitHub URL을 등록할 수 있습니다.
 - GitHub Actions의 `.github/workflows/mobile-ios-altstore-release.yml`는 같은 산출물을 GitHub Release와 Actions artifact로 올립니다.
 - AltStore Classic 사용자는 AltServer를 직접 설치해야 하고, SideStore 사용자는 초기 설치 시 한 번 컴퓨터가 필요합니다.
 - 무료 Apple 계정 기준으로 앱은 7일마다 갱신이 필요하며, SideStore는 설치·업데이트·갱신 중에 LocalDevVPN을 켜 두는 편이 안전합니다.
@@ -62,5 +62,5 @@ bun run ios:altstore
 
 ## 메모
 
-- 아이콘과 스플래시는 루트 `public/web-app-manifest-512x512.png`를 기준으로 생성합니다.
+- 아이콘과 스플래시는 `apps/web/public/web-app-manifest-512x512.png`를 기준으로 생성합니다.
 - Android 빌드는 현재 저장소에 맞춘 Gradle/AGP 설정을 사용합니다.

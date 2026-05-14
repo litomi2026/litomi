@@ -16,7 +16,7 @@ const versionName = String(packageJson.version ?? '').trim()
 const versionParts = versionName.split('.').map((value) => Number.parseInt(value, 10))
 
 if (versionParts.length !== 3 || versionParts.some((value) => Number.isNaN(value))) {
-  throw new Error(`mobile/package.json version must use numeric MAJOR.MINOR.PATCH. Received: ${versionName}`)
+  throw new Error(`apps/mobile/package.json version must use numeric MAJOR.MINOR.PATCH. Received: ${versionName}`)
 }
 
 const [major, minor, patch] = versionParts
@@ -28,7 +28,7 @@ const releaseBaseUrl = (process.env.ALTSTORE_RELEASE_BASE_URL || `${repositoryUr
 const sourceBranch = process.env.ALTSTORE_SOURCE_BRANCH || 'main'
 const sourceRepositoryPath = path.join(mobileDir, 'ios.source.json')
 const sourceUrl =
-  process.env.ALTSTORE_SOURCE_URL || getRawGitHubUrl(repositoryUrl, sourceBranch, 'mobile/ios.source.json')
+  process.env.ALTSTORE_SOURCE_URL || getRawGitHubUrl(repositoryUrl, sourceBranch, 'apps/mobile/ios.source.json')
 
 const archivePath = path.join(mobileDir, 'build', 'ios-archive', 'Litomi.xcarchive')
 const payloadRoot = path.join(mobileDir, 'build', 'ios-altstore-payload')
@@ -106,7 +106,7 @@ if (!displayName) {
 
 if (containsNonAscii(displayName)) {
   throw new Error(
-    `iOS display name must stay ASCII for this AltStore Classic flow. Received: ${displayName}. Update mobile/ios/App/App/Info.plist.`,
+    `iOS display name must stay ASCII for this AltStore Classic flow. Received: ${displayName}. Update apps/mobile/ios/App/App/Info.plist.`,
   )
 }
 

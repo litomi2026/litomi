@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
+import { env } from '@litomi/env/env/client'
 import { Apple, ArrowUpRight, Bot } from 'lucide-react'
 
 import InstallPrompt from '@/components/InstallPrompt'
-import { env } from '@/env/client'
 
 export const metadata: Metadata = {
   title: '앱으로 사용하기',
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 const ANDROID_APK_URL = 'https://github.com/litomi2026/litomi/releases/download/mobile-android-latest/litomi.apk'
-const IOS_SOURCE_URL = 'https://raw.githubusercontent.com/litomi2026/litomi/main/mobile/ios.source.json'
+const IOS_SOURCE_URL = 'https://raw.githubusercontent.com/litomi2026/litomi/main/apps/mobile/ios.source.json'
 const IOS_SIDESTORE_SETUP_GUIDE_URL = 'https://docs.sidestore.io/ko/docs/installation/prerequisites'
 const IOS_SIDESTORE_ADD_SOURCE_URL = `sidestore://source?url=${encodeURIComponent(IOS_SOURCE_URL)}`
 
