@@ -7,10 +7,8 @@ import { Check } from 'lucide-react'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
 
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { CENSORSHIP_LEVEL_LABELS } from './constants'
@@ -33,8 +31,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
   const inputId = useId()
   const [editValue, setEditValue] = useState(value)
   const [editLevel, setEditLevel] = useState(level)
-  const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
+  const { guardAdultAccess } = useAdultAccessGuard()
 
   const updateMutation = useMutation({
     mutationFn: async (items: { id: number; key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
@@ -63,8 +60,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if (!hasAdultAccess(adultState)) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+    if (!guardAdultAccess()) {
       return
     }
 

@@ -1,31 +1,23 @@
 'use client'
 
-import type {
-  GETV1LibraryListResponse,
-  LibraryListItem,
-  POSTV1LibraryResponse,
-} from '@litomi/contracts'
+import type { GETV1LibraryListResponse, LibraryListItem, POSTV1LibraryResponse } from '@litomi/contracts'
 
 import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/constants/policy'
+import {
+  MAX_LIBRARY_DESCRIPTION_LENGTH,
+  MAX_LIBRARY_ICON_LENGTH,
+  MAX_LIBRARY_NAME_LENGTH,
+} from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/env/client'
 import { normalizeString } from '@litomi/std'
-import {
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-  Toggle,
-} from '@litomi/ui'
+import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus, Shuffle } from 'lucide-react'
 import { type SubmitEvent, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
 import { getRandomLibraryColor } from './libraryColorInput'
@@ -52,12 +44,10 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const [isRandomIconPending, setIsRandomIconPending] = useState(false)
   const [isPublic, setIsPublic] = useState(true)
   const queryClient = useQueryClient()
-  const { data: me } = useMeQuery()
+  const { guardAdultAccess, guardLogin, me } = useAdultAccessGuard()
   const nameInputRef = useRef<HTMLInputElement>(null)
   const colorInputId = useId()
   const iconInputId = useId()
-
-  const adultState = getAdultState(me)
 
   const createMutation = useMutation<POSTV1LibraryResponse, ProblemDetailsError, CreateLibraryPayload>({
     mutationFn: createLibraryApi,
@@ -131,15 +121,11 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
 
   function handleOpen() {
     setIsModalOpen(true)
-
-    if (!me?.id) {
-      showLoginRequiredToast()
-    }
+    guardLogin()
   }
 
   function handleTogglePublic(next: boolean) {
-    if (!next && !hasAdultAccess(adultState)) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+    if (!next && !guardAdultAccess()) {
       return
     }
 
@@ -153,8 +139,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
       return
     }
 
-    if (!me?.id) {
-      showLoginRequiredToast()
+    if (!guardLogin()) {
       return
     }
 

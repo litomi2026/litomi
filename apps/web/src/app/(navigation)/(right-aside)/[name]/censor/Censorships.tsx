@@ -13,12 +13,10 @@ import { toast } from 'sonner'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import CustomSelect from '@/components/ui/CustomSelect'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
@@ -38,9 +36,7 @@ export default function Censorships() {
   const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
   const [selectedIds, setSelectedIds] = useState(new Set<number>())
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
-  const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
-  const canAccess = hasAdultAccess(adultState)
+  const { canAccess, guardAdultAccess, me } = useAdultAccessGuard()
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
     useCensorshipsInfiniteQuery()
@@ -69,13 +65,14 @@ export default function Censorships() {
     },
   })
 
+  const allCensorships = useMemo(() => data?.pages.flatMap((page) => page.censorships) ?? [], [data])
+  const isDeleting = deleteMutation.isPending || deletingIds.size > 0
+
   const loadMoreRef = useInfiniteScrollObserver({
     hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
-
-  const allCensorships = useMemo(() => data?.pages.flatMap((page) => page.censorships) ?? [], [data])
 
   const filteredCensorships = useMemo(() => {
     return allCensorships.filter((censorship) => {
@@ -85,23 +82,12 @@ export default function Censorships() {
     })
   }, [allCensorships, searchQuery, filterKey])
 
-  if (me && !canAccess) {
-    return (
-      <AdultVerificationGate
-        description="검열 설정을 사용하려면 익명 성인인증이 필요해요"
-        title="성인인증이 필요해요"
-        username={me.name}
-      />
-    )
-  }
-
   function handleCloseImportExportModal() {
     setShowImportExportModal(false)
   }
 
   function handleOpenImportExportModal() {
-    if (!canAccess) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+    if (!guardAdultAccess()) {
       return
     }
 
@@ -121,8 +107,7 @@ export default function Censorships() {
   }
 
   function handleBulkDelete() {
-    if (!canAccess) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+    if (!guardAdultAccess()) {
       return
     }
     if (selectedIds.size === 0) {
@@ -133,7 +118,15 @@ export default function Censorships() {
     deleteMutation.mutate(Array.from(selectedIds))
   }
 
-  const isDeleting = deleteMutation.isPending || deletingIds.size > 0
+  if (me && !canAccess) {
+    return (
+      <AdultVerificationGate
+        description="검열 설정을 사용하려면 익명 성인인증이 필요해요"
+        title="성인인증이 필요해요"
+        username={me.name}
+      />
+    )
+  }
 
   return (
     <div className="flex-1 flex flex-col gap-4">

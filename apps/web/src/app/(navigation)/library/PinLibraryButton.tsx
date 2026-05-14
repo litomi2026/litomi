@@ -6,9 +6,7 @@ import { Pin } from 'lucide-react'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 
 import usePinLibraryMutation from './usePinLibraryMutation'
 import usePinnedLibraryListInfiniteQuery from './usePinnedLibraryListInfiniteQuery'
@@ -20,29 +18,21 @@ type Props = {
 }
 
 export default function PinLibraryButton({ className = '', libraryId, library }: Readonly<Props>) {
-  const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
-  const canAccess = hasAdultAccess(adultState)
+  const { guardAdultAccess, me } = useAdultAccessGuard()
   const { mutate, isPending } = usePinLibraryMutation()
   const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id, enabled: !!me })
   const isPinned = pinnedData?.pages.some((page) => page.libraries.some((lib) => lib.id === libraryId))
   const [isAnimating, setIsAnimating] = useState(false)
 
   function handlePinToggle() {
-    if (isPending) {
-      return
-    }
-
     const action = isPinned ? 'unpin' : 'pin'
 
-    if (action === 'pin' && !canAccess) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+    if (isPending || (action === 'pin' && !guardAdultAccess())) {
       return
     }
 
     setIsAnimating(true)
     setTimeout(() => setIsAnimating(false), 300)
-
     mutate({ libraryId, action, library })
   }
 

@@ -10,12 +10,10 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import BottomSheet, { BottomSheetItem } from '@/components/ui/BottomSheet'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import useClipboard from '@/hook/useClipboard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 type Props = {
@@ -38,9 +36,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 export default function TagOptionsSheet({ isOpen, onClose, category, value, label }: Props) {
   const { copy } = useClipboard()
   const router = useRouter()
-  const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
-  const canAccess = hasAdultAccess(adultState)
+  const { canAccess, guardAdultAccess, me } = useAdultAccessGuard()
   const { data: censorshipsMap } = useCensorshipsMapQuery()
   const queryClient = useQueryClient()
 
@@ -99,8 +95,8 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
     if (!isLoggedIn || toggleCensorshipMutation.isPending) {
       return
     }
-    if (!canAccess) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+
+    if (!guardAdultAccess()) {
       return
     }
 

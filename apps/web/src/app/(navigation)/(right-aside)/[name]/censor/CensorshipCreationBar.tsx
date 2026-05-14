@@ -11,10 +11,8 @@ import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { TYPE_PATTERNS } from './constants'
@@ -31,8 +29,7 @@ export default function CensorshipCreationBar() {
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
-  const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
+  const { guardAdultAccess } = useAdultAccessGuard()
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
@@ -74,8 +71,7 @@ export default function CensorshipCreationBar() {
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if (!hasAdultAccess(adultState)) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+    if (!guardAdultAccess()) {
       return
     }
 

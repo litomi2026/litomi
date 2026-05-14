@@ -11,9 +11,8 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess, requiresAdultVerification } from '@/utils/adult-verification'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
+import { requiresAdultVerification } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -39,9 +38,8 @@ type ReasonButtonProps = {
 }
 
 export default function MangaReportButton({ mangaId, variant = 'icon', className = '' }: Props) {
-  const { data: me } = useMeQuery()
+  const { adultState, guardAdultAccess, me } = useAdultAccessGuard()
   const [open, setOpen] = useState(false)
-  const adultState = getAdultState(me)
   const isVerificationRequired = requiresAdultVerification(adultState)
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
@@ -70,13 +68,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
   function openDialog(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
 
-    if (!me) {
-      showLoginRequiredToast()
-      return
-    }
-
-    if (!hasAdultAccess(adultState)) {
-      showAdultVerificationRequiredToast({ username: me.name })
+    if (!guardAdultAccess()) {
       return
     }
 

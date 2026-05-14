@@ -9,10 +9,8 @@ import { Download, Upload } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { downloadBlob } from '@/utils/download'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
@@ -43,8 +41,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')
   const queryClient = useQueryClient()
-  const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
+  const { guardAdultAccess } = useAdultAccessGuard()
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
@@ -107,8 +104,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
   }
 
   function handleImport() {
-    if (!hasAdultAccess(adultState)) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+    if (!guardAdultAccess()) {
       return
     }
 

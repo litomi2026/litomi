@@ -1,30 +1,22 @@
 'use client'
 
-import type {
-  GETV1LibraryListResponse,
-  LibraryListItem,
-  PATCHV1LibraryIdBody,
-} from '@litomi/contracts'
+import type { GETV1LibraryListResponse, LibraryListItem, PATCHV1LibraryIdBody } from '@litomi/contracts'
 
 import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/constants/policy'
-import { normalizeString } from '@litomi/std'
 import {
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-  Toggle,
-} from '@litomi/ui'
+  MAX_LIBRARY_DESCRIPTION_LENGTH,
+  MAX_LIBRARY_ICON_LENGTH,
+  MAX_LIBRARY_NAME_LENGTH,
+} from '@litomi/domain/constants/policy'
+import { normalizeString } from '@litomi/std'
+import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check, Loader2, Shuffle } from 'lucide-react'
 import { type SubmitEvent, useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
-import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { updateLibrary } from './api'
@@ -54,8 +46,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   const colorInputId = useId()
   const iconInputId = useId()
   const queryClient = useQueryClient()
-  const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
+  const { guardAdultAccess } = useAdultAccessGuard()
 
   const updateLibraryMutation = useMutation({
     mutationFn: ({ body, libraryId }: { libraryId: number; body: PATCHV1LibraryIdBody }) =>
@@ -151,8 +142,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   }
 
   function handleTogglePublic(next: boolean) {
-    if (!next && !hasAdultAccess(adultState)) {
-      showAdultVerificationRequiredToast({ username: me?.name })
+    if (!next && !guardAdultAccess()) {
       setIsPublic(true)
       return
     }
@@ -193,7 +183,9 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
               className="size-20 rounded-2xl flex items-center justify-center text-3xl shadow-lg transition"
               style={{ backgroundColor: selectedColor }}
             >
-              <span className="max-w-full overflow-hidden">{normalizeString(selectedIcon) || DEFAULT_LIBRARY_ICON}</span>
+              <span className="max-w-full overflow-hidden">
+                {normalizeString(selectedIcon) || DEFAULT_LIBRARY_ICON}
+              </span>
             </div>
           </div>
 
