@@ -68,6 +68,7 @@ function ReaderContent<TPage extends ReaderPage>({
   const [showThumbnails, setShowThumbnails] = useState(false)
   const [showViewControl, setShowViewControl] = useState(false)
   const [lowDataSnapshot, setLowDataSnapshot] = useState<LowDataSnapshot | null>(null)
+  const doublePageAnchorIndex = useReaderStore((state) => state.doublePageAnchorIndex)
   const isLowDataHydrated = useReaderStore((state) => state.isStorageHydrated)
   const lowData = useReaderSessionStore((state) => state.lowData)
   const orientation = useReaderStore((state) => state.orientation)
@@ -84,7 +85,7 @@ function ReaderContent<TPage extends ReaderPage>({
   const toggleReadingDirection = useReaderStore((state) => state.toggleReadingDirection)
   const viewControlRef = useRef<HTMLDivElement>(null)
 
-  const readerLayout = createReaderLayout(pages, { pageView })
+  const readerLayout = createReaderLayout(pages, { doublePageAnchorIndex, pageView })
   const maxPageIndex = Math.max(0, pages.length - 1)
   const isDoublePage = pageView === 'double'
   const isLowDataReady = isLowDataHydrated && lowDataSnapshot !== null

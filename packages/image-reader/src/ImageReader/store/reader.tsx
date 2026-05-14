@@ -34,6 +34,7 @@ export type ReaderSessionStore = {
 }
 
 export type ReaderStore = {
+  doublePageAnchorIndex: number
   getOrientation: () => Orientation
   getPageIndex: () => number
   imageWidth: ImageWidth
@@ -230,6 +231,7 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
   return createStore<ReaderStore>()(
     persist(
       (set, get) => ({
+        doublePageAnchorIndex: 0,
         getOrientation: () => get().orientation,
         getPageIndex: () => get().pageIndex,
         imageWidth: DEFAULT_IMAGE_WIDTH,
@@ -248,7 +250,10 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
         pageView: DEFAULT_PAGE_VIEW,
         readingDirection: DEFAULT_READING_DIRECTION,
         resetPageIndex: () => {
-          set({ pageIndex: 0 })
+          set({
+            doublePageAnchorIndex: 0,
+            pageIndex: 0,
+          })
         },
         screenFit: DEFAULT_SCREEN_FIT,
         setImageWidth: (imageWidth) => {
@@ -261,7 +266,10 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
           set({ orientation })
         },
         setPageView: (pageView) => {
-          set({ pageView })
+          set((state) => ({
+            doublePageAnchorIndex: pageView === 'double' ? state.pageIndex : state.doublePageAnchorIndex,
+            pageView,
+          }))
         },
         setScreenFit: (screenFit) => {
           set({ screenFit })

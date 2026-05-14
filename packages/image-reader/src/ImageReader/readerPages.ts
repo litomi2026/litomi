@@ -9,6 +9,10 @@ export type ReaderLayout<TPage extends ReaderPage> = {
 }
 
 export type ReaderLayoutOptions = {
+  /**
+   * Double-page mode aligns spreads so this page starts the active spread.
+   */
+  doublePageAnchorIndex?: number
   pageView: ReaderPageView
 }
 
@@ -53,9 +57,13 @@ type NonEmptyArray<T> = [T, ...T[]]
 
 export function createReaderLayout<TPage extends ReaderPage>(
   pages: readonly TPage[],
-  { pageView }: ReaderLayoutOptions,
+  { doublePageAnchorIndex, pageView }: ReaderLayoutOptions,
 ): ReaderLayout<TPage> {
-  const spreads = buildReaderSpreads(pages, pageView)
+  const spreads =
+    pageView === 'single'
+      ? pages.map((page, pageIndex) => createReaderSpread([page], [pageIndex]))
+      : createReaderSpreads(pages, doublePageAnchorIndex ?? 0)
+
   const spreadIndexByPageIndex = Array(pages.length).fill(0)
 
   spreads.forEach((spread, spreadIndex) => {
@@ -99,46 +107,6 @@ function buildReaderPageProgress<TPage extends ReaderPage>(pages: readonly TPage
   }
 }
 
-function buildReaderSpreads<TPage extends ReaderPage>(
-  pages: readonly TPage[],
-  pageView: ReaderPageView,
-): ReaderSpread<TPage>[] {
-  if (pageView === 'single') {
-    return pages.map((page, pageIndex) => createReaderSpread([page], [pageIndex]))
-  }
-
-  const spreads: ReaderSpread<TPage>[] = []
-  let pageIndex = 0
-
-  while (pageIndex < pages.length) {
-    const firstPage = pages[pageIndex]
-
-    if (!firstPage) {
-      break
-    }
-
-    if (firstPage.spreadMode === 'solo') {
-      spreads.push(createReaderSpread([firstPage], [pageIndex]))
-      pageIndex += 1
-      continue
-    }
-
-    const nextPageIndex = pageIndex + 1
-    const nextPage = pages[nextPageIndex]
-
-    if (!nextPage || nextPage.spreadMode === 'solo') {
-      spreads.push(createReaderSpread([firstPage], [pageIndex]))
-      pageIndex += 1
-      continue
-    }
-
-    spreads.push(createReaderSpread([firstPage, nextPage], [pageIndex, nextPageIndex]))
-    pageIndex += 2
-  }
-
-  return spreads
-}
-
 function createReaderSpread<TPage extends ReaderPage>(
   pages: NonEmptyArray<TPage>,
   pageIndexes: NonEmptyArray<number>,
@@ -149,4 +117,57 @@ function createReaderSpread<TPage extends ReaderPage>(
     pages,
     startPageIndex: pageIndexes[0],
   }
+}
+
+function createReaderSpreads<TPage extends ReaderPage>(
+  pages: readonly TPage[],
+  doublePageAnchorIndex: number,
+): ReaderSpread<TPage>[] {
+  if (pages.length === 0) {
+    return []
+  }
+
+  const anchorPageIndex = Math.min(Math.max(0, doublePageAnchorIndex), pages.length - 1)
+  const spreads: ReaderSpread<TPage>[] = []
+
+  function createForwardSpread(pageIndex: number) {
+    const firstPage = pages[pageIndex]!
+    const nextPageIndex = pageIndex + 1
+    const nextPage = pages[nextPageIndex]
+
+    if (!nextPage || firstPage.spreadMode === 'solo' || nextPage.spreadMode === 'solo') {
+      return createReaderSpread([firstPage], [pageIndex])
+    }
+
+    return createReaderSpread([firstPage, nextPage], [pageIndex, nextPageIndex])
+  }
+
+  for (let pageIndex = anchorPageIndex - 1; pageIndex >= 0; ) {
+    const page = pages[pageIndex]!
+    const previousPageIndex = pageIndex - 1
+    const previousPage = pages[previousPageIndex]
+
+    if (!previousPage || page.spreadMode === 'solo' || previousPage.spreadMode === 'solo') {
+      spreads.unshift(createReaderSpread([page], [pageIndex]))
+      pageIndex -= 1
+      continue
+    }
+
+    spreads.unshift(createReaderSpread([previousPage, page], [previousPageIndex, pageIndex]))
+    pageIndex -= 2
+  }
+
+  const activeSpread = createForwardSpread(anchorPageIndex)
+  spreads.push(activeSpread)
+
+  let nextPageIndex = anchorPageIndex + activeSpread.pageIndexes.length
+
+  while (nextPageIndex < pages.length) {
+    const spread = createForwardSpread(nextPageIndex)
+
+    spreads.push(spread)
+    nextPageIndex += spread.pageIndexes.length
+  }
+
+  return spreads
 }
