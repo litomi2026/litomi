@@ -24,6 +24,7 @@ export function registerTopLayerPortalContainer(el: HTMLElement) {
 
 export function subscribeTopLayerPortalContainer(listener: Listener) {
   listeners.add(listener)
+
   return () => {
     listeners.delete(listener)
   }
