@@ -3,13 +3,13 @@
 이 레포는 GitOps(Argo CD)라서 **리소스 정의는 Git이 백업 역할**을 해요.  
 하지만 **상태(PV 데이터, k3s datastore)** 는 Git에 없어서 별도 백업/복구 절차가 필요해요.
 
-## 자동화 빠른 시작 (`k8s/platform-ops.sh`)
+## 자동화 빠른 시작 (`infra/k8s/platform-ops.sh`)
 
 ```zsh
 cd litomi
 
 # Velero 포함 플랫폼 상태 점검
-./k8s/platform-ops.sh --skip-public-check
+./infra/k8s/platform-ops.sh --skip-public-check
 ```
 
 위 커맨드는 아래를 포함해 확인해요.
@@ -47,8 +47,8 @@ k3s는 embedded etcd를 쓰는 구성(보통 HA/`--cluster-init`)에서 **스냅
 이 레포는 Velero를 Argo CD로 설치하도록 구성돼 있어요.
 
 - **오브젝트 스토리지**: 클러스터 안의 MinIO(S3 호환)를 기본으로 써요. (VM이 날아가면 백업도 같이 없어져도 되는 케이스에 적합해요)
-- **Argo CD Application**: `k8s/argocd/applications/velero.yaml`
-- **Helm values**: `k8s/platform/velero/velero.values.yaml`
+- **Argo CD Application**: `infra/k8s/argocd/applications/velero.yaml`
+- **Helm values**: `infra/k8s/platform/velero/velero.values.yaml`
 - **자격증명(Secret)**: Vault + ESO로 `velero-cloud-credentials`를 생성해요.
 
 ## 4) 백업이 잘 도는지 확인

@@ -14,13 +14,13 @@ spec:
       helm:
         releaseName: velero
         valueFiles:
-          - $values/k8s/platform/velero/velero.values.yaml
+          - $values/infra/k8s/platform/velero/velero.values.yaml
     - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
-      path: k8s/platform/velero
+      path: infra/k8s/platform/velero
   destination:
     server: https://kubernetes.default.svc
     namespace: velero

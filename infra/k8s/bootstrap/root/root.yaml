@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/litomi2026/litomi.git
     targetRevision: main
-    path: k8s/argocd
+    path: infra/k8s/argocd
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

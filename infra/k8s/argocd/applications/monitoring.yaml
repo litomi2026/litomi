@@ -13,13 +13,13 @@ spec:
       helm:
         releaseName: kube-prometheus-stack
         valueFiles:
-          - $values/k8s/platform/monitoring/kube-prometheus-stack.values.yaml
+          - $values/infra/k8s/platform/monitoring/kube-prometheus-stack.values.yaml
     - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
-      path: k8s/platform/monitoring
+      path: infra/k8s/platform/monitoring
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

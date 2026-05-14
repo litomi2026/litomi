@@ -2,13 +2,13 @@
 
 Prometheus/Grafana/Alertmanager 다음 단계로, 로그/트레이싱/외부 사용자 관점 모니터링을 붙이는 운영 가이드예요.
 
-### 자동화 빠른 시작 (`k8s/platform-ops.sh`)
+### 자동화 빠른 시작 (`infra/k8s/platform-ops.sh`)
 
 ```zsh
 cd litomi
 
 # Monitoring/Logging/Tracing 포함 상태 점검
-./k8s/platform-ops.sh --skip-public-check
+./infra/k8s/platform-ops.sh --skip-public-check
 ```
 
 위 커맨드는 아래를 포함해 확인해요.

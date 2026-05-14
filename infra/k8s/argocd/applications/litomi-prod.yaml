@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/litomi2026/litomi.git
     targetRevision: main
-    path: k8s/apps/litomi/overlays/prod
+    path: infra/k8s/apps/litomi/overlays/prod
   destination:
     server: https://kubernetes.default.svc
     namespace: litomi-prod

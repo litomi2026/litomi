@@ -1,6 +1,6 @@
 # Vault seed templates
 
-This directory stores example files used by `./k8s/platform-ops.sh`.
+This directory stores example files used by `./infra/k8s/platform-ops.sh`.
 
 - Copy each `*.env.example` to `*.env`.
 - Fill every value with real secrets before running the script.

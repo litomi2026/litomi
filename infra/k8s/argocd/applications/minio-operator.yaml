@@ -14,7 +14,7 @@ spec:
       helm:
         releaseName: minio-operator
         valueFiles:
-          - $values/k8s/platform/minio/operator.values.yaml
+          - $values/infra/k8s/platform/minio/operator.values.yaml
     - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
       ref: values

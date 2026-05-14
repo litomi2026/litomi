@@ -29,10 +29,10 @@ source "${OPS_ROOT}/lib/service.sh"
 usage() {
   cat <<'EOF_USAGE'
 Usage:
-  ./k8s/platform-ops.sh [options]
+  ./infra/k8s/platform-ops.sh [options]
 
 Options:
-  --vault-secrets-dir <dir>  Directory with Vault seed .env files (default: ./k8s/vault-secrets)
+  --vault-secrets-dir <dir>  Directory with Vault seed .env files (default: ./infra/k8s/vault-secrets)
   --skip-public-check        Skip public URL checks
   --force-argocd-bootstrap   Force full Argo CD bootstrap reapply in Step 2
   -h, --help                 Show help

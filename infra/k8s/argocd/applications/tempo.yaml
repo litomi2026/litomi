@@ -14,13 +14,13 @@ spec:
       helm:
         releaseName: tempo
         valueFiles:
-          - $values/k8s/platform/tracing/tempo.values.yaml
+          - $values/infra/k8s/platform/tracing/tempo.values.yaml
     - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
-      path: k8s/platform/tracing
+      path: infra/k8s/platform/tracing
   destination:
     server: https://kubernetes.default.svc
     namespace: tracing

@@ -14,7 +14,7 @@ spec:
       helm:
         releaseName: opentelemetry-collector
         valueFiles:
-          - $values/k8s/platform/tracing/opentelemetry-collector.values.yaml
+          - $values/infra/k8s/platform/tracing/opentelemetry-collector.values.yaml
     - repoURL: https://github.com/litomi2026/litomi.git
       targetRevision: main
       ref: values

@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/litomi2026/litomi.git
     targetRevision: main
-    path: k8s/platform/gtm-server
+    path: infra/k8s/platform/gtm-server
   destination:
     server: https://kubernetes.default.svc
     namespace: gtm-server

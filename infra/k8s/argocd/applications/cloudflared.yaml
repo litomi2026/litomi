@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/litomi2026/litomi.git
     targetRevision: main
-    path: k8s/platform/cloudflared
+    path: infra/k8s/platform/cloudflared
   destination:
     server: https://kubernetes.default.svc
     namespace: cloudflared

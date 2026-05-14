@@ -8,7 +8,7 @@ list_expected_argocd_apps() {
 
   echo "root"
 
-  apps_dir="${REPO_ROOT}/k8s/argocd/applications"
+  apps_dir="${REPO_ROOT}/infra/k8s/argocd/applications"
   if [[ ! -d "$apps_dir" ]]; then
     return
   fi

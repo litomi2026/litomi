@@ -338,8 +338,8 @@ wait_for_rollout_with_progress_deadline_retry() {
 }
 
 ensure_argocd_bootstrap_and_control_plane() {
-  assert_file_exists "${REPO_ROOT}/k8s/bootstrap/argocd/kustomization.yaml"
-  assert_file_exists "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
+  assert_file_exists "${REPO_ROOT}/infra/k8s/bootstrap/argocd/kustomization.yaml"
+  assert_file_exists "${REPO_ROOT}/infra/k8s/bootstrap/root/root.yaml"
 
   local -a missing=()
   local entry
@@ -358,7 +358,7 @@ ensure_argocd_bootstrap_and_control_plane() {
     if [[ "${FORCE_ARGOCD_BOOTSTRAP_APPLY:-false}" != "true" ]]; then
       log "Argo CD control plane missing (${missing[*]}), applying bootstrap manifests"
     fi
-    k_quiet apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
+    k_quiet apply --server-side --force-conflicts -k "${REPO_ROOT}/infra/k8s/bootstrap/argocd"
     ok "Argo CD control plane bootstrap applied"
   else
     ok "Argo CD control plane already present; bootstrap reapply skipped"
@@ -366,7 +366,7 @@ ensure_argocd_bootstrap_and_control_plane() {
 
   ensure_argocd_bootstrap_repo_credentials
 
-  k_quiet apply --server-side -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
+  k_quiet apply --server-side -f "${REPO_ROOT}/infra/k8s/bootstrap/root/root.yaml"
   ok "Argo CD root app applied"
 
   ensure_argocd_cm_labels

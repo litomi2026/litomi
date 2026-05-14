@@ -17,7 +17,7 @@ VAULT_ADDR="${VAULT_ADDR:-https://vault.vault.svc:8200}"
 VAULT_CACERT="${VAULT_CACERT:-/vault/userconfig/vault-tls/ca.crt}"
 VAULT_TLS_DIR="${VAULT_TLS_DIR:-$HOME/vault-tls}"
 VAULT_INIT_OUTPUT="${VAULT_INIT_OUTPUT:-${VAULT_TLS_DIR}/vault-init.json}"
-VAULT_SECRETS_DIR="${VAULT_SECRETS_DIR:-${REPO_ROOT}/k8s/vault-secrets}"
+VAULT_SECRETS_DIR="${VAULT_SECRETS_DIR:-${REPO_ROOT}/infra/k8s/vault-secrets}"
 
 SERVICE_NAME="${SERVICE_NAME:-litomi-platform-reboot.service}"
 SERVICE_UNIT_PATH="${SERVICE_UNIT_PATH:-/etc/systemd/system/${SERVICE_NAME}}"

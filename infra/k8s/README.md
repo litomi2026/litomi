@@ -1,7 +1,7 @@
 ## k3s + Argo CD + Cloudflare Tunnel
 
-- `k8s/bootstrap/`: **처음 1번만** 사람이 `kubectl apply`로 넣는 “시드(bootstrap)”예요.
-- `k8s/platform/`, `k8s/apps/`: Argo CD가 GitOps로 계속 맞춰주는 “목표 상태(desired state)”예요.
+- `infra/k8s/bootstrap/`: **처음 1번만** 사람이 `kubectl apply`로 넣는 “시드(bootstrap)”예요.
+- `infra/k8s/platform/`, `infra/k8s/apps/`: Argo CD가 GitOps로 계속 맞춰주는 “목표 상태(desired state)”예요.
 
 ### 1) 레포 받기
 
@@ -14,30 +14,30 @@ git clone https://github.com/litomi2026/litomi.git
 
 ### 2) Vault seed 파일 준비
 
-`k8s/platform-ops.sh`는 기본값으로 `./k8s/vault-secrets`를 읽어서 Vault KV를 채워요.
+`infra/k8s/platform-ops.sh`는 기본값으로 `./infra/k8s/vault-secrets`를 읽어서 Vault KV를 채워요.
 초기 1회 실행(`init`) 전에 아래 경로의 파일을 모두 준비해야 해요.
 
-- `k8s/vault-secrets/**/*.env.example`
+- `infra/k8s/vault-secrets/**/*.env.example`
 
 ### 3) 초기 부트스트랩 자동화
 
 ```zsh
 cd litomi
-./k8s/platform-ops.sh
+./infra/k8s/platform-ops.sh
 ```
 
 멀티홈 노드이거나 kubelet이 광고할 node IP를 명시해야 할 때만 `K3S_KUBELET_NODE_IP`를 설정하면 돼요.
 
 ```zsh
 export K3S_KUBELET_NODE_IP="192.168.139.242,2001:db8::10"
-./k8s/platform-ops.sh
+./infra/k8s/platform-ops.sh
 ```
 
 Argo CD control plane bootstrap은 기본적으로 "없거나 깨졌을 때만" 재적용하고, 정상일 때는 전체 bootstrap 재적용을 건너뛰어요.
 bootstrap 변경을 강제로 반영하려면 아래 옵션을 사용해요.
 
 ```zsh
-./k8s/platform-ops.sh --force-argocd-bootstrap
+./infra/k8s/platform-ops.sh --force-argocd-bootstrap
 ```
 
 기본 실행은 idempotent 하게 아래를 처리해요.
@@ -46,7 +46,7 @@ bootstrap 변경을 강제로 반영하려면 아래 옵션을 사용해요.
 - Argo CD bootstrap + root app 적용
 - Vault TLS secret/CA configmap 정렬
 - Vault init/unseal + kubernetes auth/kv/policy/role 구성
-- `k8s/vault-secrets` 기반 Vault KV 시딩
+- `infra/k8s/vault-secrets` 기반 Vault KV 시딩
 - Argo CD 전체 Application Synced/Healthy 수렴 + ESO/필수 secret/public URL 점검
 - 재부팅용 systemd 서비스(`litomi-platform-reboot.service`) 설치/활성화
 
@@ -60,16 +60,16 @@ bootstrap 변경을 강제로 반영하려면 아래 옵션을 사용해요.
 - **Grafana**: `https://grafana.litomi.in`
 
 ```zsh
-./k8s/platform-ops.sh --skip-public-check
+./infra/k8s/platform-ops.sh --skip-public-check
 ```
 
 ### 자동 백업 / 재해 복구
 
-`k8s/platform/velero/RUNBOOK.backup-dr.md` 참고
+`infra/k8s/platform/velero/RUNBOOK.backup-dr.md` 참고
 
 ### 관측 (로그/트레이싱/블랙박스)
 
-`k8s/platform/monitoring/RUNBOOK.logs-tracing-blackbox.md` 참고
+`infra/k8s/platform/monitoring/RUNBOOK.logs-tracing-blackbox.md` 참고
 
 ### 공식 문서
 
