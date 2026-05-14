@@ -59,10 +59,7 @@ export function getNavigatorLowDataSnapshot(): LowDataSnapshot {
   }
 }
 
-export function resolveLowDataState(
-  lowData: LowDataMode,
-  snapshot: LowDataSnapshot | null,
-): ResolvedLowDataState {
+export function resolveLowDataState(lowData: LowDataMode, snapshot: LowDataSnapshot | null): ResolvedLowDataState {
   if (!snapshot) {
     return { enabled: false, reason: 'none' }
   }

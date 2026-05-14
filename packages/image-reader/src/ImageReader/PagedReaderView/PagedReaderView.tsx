@@ -1,6 +1,5 @@
 'use client'
 
-import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@litomi/domain/constants/policy'
 import { Loader2 } from 'lucide-react'
 import { Fragment } from 'react'
 
@@ -15,6 +14,7 @@ import usePageNavigation from './usePageNavigation'
 import useViewerPointerGestures from './useViewerPointerGestures'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
+const PAGED_READER_VIEW_WINDOW_SIZE = 6
 
 const screenFitContentStyle: Record<ScreenFit, string> = {
   width:
@@ -54,7 +54,7 @@ export default function PagedReaderView<TPage extends ReaderPage>({
 
   const pagedReaderViewOffsets = isLowDataMode
     ? [0, 1]
-    : Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }, (_, i) => i - 1)
+    : Array.from({ length: PAGED_READER_VIEW_WINDOW_SIZE }, (_, i) => i - 1)
 
   const {
     captureZoomAnchorAtClientPoint,

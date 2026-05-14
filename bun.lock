@@ -166,6 +166,7 @@
         "@litomi/domain": "workspace:*",
         "@litomi/env": "workspace:*",
         "@litomi/http": "workspace:*",
+        "@litomi/image-reader": "workspace:*",
         "@litomi/notifications": "workspace:*",
         "@litomi/observability": "workspace:*",
         "@litomi/std": "workspace:*",
@@ -330,6 +331,33 @@
         "ms": "^2.1.3",
         "server-only": "^0.0.1",
       },
+    },
+    "packages/image-reader": {
+      "name": "@litomi/image-reader",
+      "version": "1.1.0",
+      "dependencies": {
+        "lucide-react": "^0.562.0",
+        "ms": "^2.1.3",
+        "react-intersection-observer": "^10.0.3",
+        "react-window": "^2.2.7",
+        "sonner": "^2.0.7",
+        "zustand": "^5.0.12",
+      },
+      "devDependencies": {
+        "@types/ms": "^2.1.0",
+        "@types/react": "19.2.14",
+        "@types/react-dom": "19.2.3",
+      },
+      "peerDependencies": {
+        "next": ">=16",
+        "react": ">=19",
+        "react-dom": ">=19",
+        "tailwindcss": ">=4",
+      },
+      "optionalPeers": [
+        "next",
+        "tailwindcss",
+      ],
     },
     "packages/notifications": {
       "name": "@litomi/notifications",
@@ -667,6 +695,8 @@
     "@litomi/env": ["@litomi/env@workspace:packages/env"],
 
     "@litomi/http": ["@litomi/http@workspace:packages/http"],
+
+    "@litomi/image-reader": ["@litomi/image-reader@workspace:packages/image-reader"],
 
     "@litomi/mobile": ["@litomi/mobile@workspace:apps/mobile"],
 

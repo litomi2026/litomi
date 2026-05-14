@@ -16,6 +16,8 @@ const screenFitStyle: Record<ScreenFit, string> = {
     '[&_li]:flex [&_li]:items-center [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
 
+const DEFAULT_SCROLL_ROW_HEIGHT = 800
+
 export type Props<TPage extends ReaderPage> = {
   isLowDataMode: boolean
   onClick: () => void
@@ -41,7 +43,7 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
   const zoomLevel = useReaderSessionStore((state) => state.zoomLevel)
   const setListRef = useReaderStore((state) => state.setListRef)
   const screenFit = useReaderStore((state) => state.screenFit)
-  const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
+  const rowHeight = useDynamicRowHeight({ defaultRowHeight: DEFAULT_SCROLL_ROW_HEIGHT })
 
   const overscanCount = isLowDataMode ? 1 : 3
   const maxPage = readerLayout.spreadIndexByPageIndex.length

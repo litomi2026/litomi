@@ -4,6 +4,11 @@ import type { POSTV1MangaIdHistoryBody } from '@litomi/contracts/api/manga'
 
 import { type Manga } from '@litomi/domain/types/manga'
 import { env } from '@litomi/env/env/client'
+import Reader, {
+  type ReaderPageRenderContext,
+  type ReadingProgress,
+  type ReadingProgressSaveOptions,
+} from '@litomi/image-reader'
 import { useQueryClient } from '@tanstack/react-query'
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -17,11 +22,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 
-import type { ReaderPageRenderContext } from './ImageReader/readerPages'
-import type { ReadingProgress, ReadingProgressSaveOptions } from './ImageReader/ReadingProgress/ReadingProgressTracker'
-
 import FullscreenButton from './FullscreenButton'
-import Reader from './ImageReader/Reader'
 import LastPage from './LastPage'
 import MangaDetailButton from './MangaDetailButton'
 import { createMangaReaderPages, type MangaReaderPage } from './mangaReaderPages'

@@ -1,6 +1,5 @@
 import type { ImageVariant, ImageWithVariants, Manga } from '@litomi/domain/types/manga'
-
-import type { ReaderPage } from './ImageReader/readerPages'
+import type { ReaderPage } from '@litomi/image-reader'
 
 export type MangaReaderPage = MangaImageReaderPage | MangaLastReaderPage
 

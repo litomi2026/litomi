@@ -1,9 +1,8 @@
 import { Loader2 } from 'lucide-react'
 
-import Slider from '@/components/ui/Slider'
-
 import type { ReaderLayout, ReaderPage } from './readerPages'
 
+import Slider from './Slider'
 import { useReaderStore } from './store/reader'
 
 type Props<TPage extends ReaderPage> = {
