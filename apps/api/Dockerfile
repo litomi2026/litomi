@@ -23,9 +23,9 @@ RUN bun build --compile \
   --conditions=react-server \
   --minify \
   --sourcemap \
-  ./apps/api/src/backend/index.ts \
+  ./apps/api/src/backend/server.ts \
   --target=bun \
-  --outfile litomi-backend
+  --outfile litomi-api
 
 # Runtime stage
 FROM gcr.io/distroless/base-nossl-debian12:nonroot
@@ -33,6 +33,6 @@ FROM gcr.io/distroless/base-nossl-debian12:nonroot
 ENV NODE_ENV=production
 WORKDIR /home
 
-COPY --chown=nonroot:nonroot --from=builder /app/litomi-backend ./
+COPY --chown=nonroot:nonroot --from=builder /app/litomi-api ./
 
-ENTRYPOINT [ "./litomi-backend" ]
+ENTRYPOINT [ "./litomi-api" ]
