@@ -1,0 +1,36 @@
+{
+  "name": "@litomi/contracts",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./api/adsterra": "./src/api/adsterra.ts",
+    "./api/auth": "./src/api/auth.ts",
+    "./api/bbaton": "./src/api/bbaton.ts",
+    "./api/bookmark": "./src/api/bookmark.ts",
+    "./api/censorship": "./src/api/censorship.ts",
+    "./api/library": "./src/api/library.ts",
+    "./api/manga": "./src/api/manga.ts",
+    "./api/me": "./src/api/me.ts",
+    "./api/notification": "./src/api/notification.ts",
+    "./api/points": "./src/api/points.ts",
+    "./api/post": "./src/api/post.ts",
+    "./api/search": "./src/api/search.ts",
+    "./api/tag": "./src/api/tag.ts",
+    "./api/user": "./src/api/user.ts",
+    "./library/enum": "./src/library/enum.ts",
+    "./library/item-sort": "./src/library/item-sort.ts",
+    "./notification/types": "./src/notification/types.ts",
+    "./post/constant": "./src/post/constant.ts",
+    "./post/referred-post": "./src/post/referred-post.ts",
+    "./search/query-key-alias": "./src/search/query-key-alias.ts",
+    "./search/suggestion": "./src/search/suggestion.ts"
+  },
+  "dependencies": {
+    "@litomi/domain": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@simplewebauthn/server": "^13.3.0"
+  }
+}
