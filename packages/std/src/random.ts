@@ -1,12 +1,13 @@
+const UINT32_RANGE = 0x100000000
+
 export function getElementBySecureFisherYates<T>(arr: T[]): T {
-  const random = getRandomUint32()
-  const randomIndex = Math.floor((random / (0xffffffff + 1)) * arr.length)
+  const randomIndex = arr.length === 0 ? 0 : getRandomInt(arr.length)
   return arr[randomIndex]
 }
 
 export function getRandomDecimal() {
   const random = getRandomUint32()
-  return random / (0xffffffff + 1)
+  return random / UINT32_RANGE
 }
 
 /**
@@ -20,21 +21,25 @@ export function sampleBySecureFisherYates<T>(arr: T[], n: number = arr.length): 
   const endIndex = Math.min(n, length)
 
   for (let i = 0; i < endIndex; i++) {
-    const random = getRandomUint32()
-    const j = i + Math.floor((random / (0xffffffff + 1)) * (length - i))
+    const j = i + getRandomInt(length - i)
     ;[result[i], result[j]] = [result[j], result[i]]
   }
 
   return result.slice(0, endIndex)
 }
 
-function getRandomUint32(): number {
-  const crypto = globalThis.crypto
+function getRandomInt(max: number): number {
+  const limit = UINT32_RANGE - (UINT32_RANGE % max)
+  let random = getRandomUint32()
 
-  if (!crypto?.getRandomValues) {
-    throw new Error('crypto.getRandomValues is not available in this runtime')
+  while (random >= limit) {
+    random = getRandomUint32()
   }
 
-  const [random] = crypto.getRandomValues(new Uint32Array(1))
+  return random % max
+}
+
+function getRandomUint32(): number {
+  const [random] = globalThis.crypto.getRandomValues(new Uint32Array(1))
   return random
 }
