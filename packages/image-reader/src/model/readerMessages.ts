@@ -70,8 +70,6 @@ type ReaderMessageMapKey =
   | 'viewerModeButtons'
   | 'viewerOrientationButtons'
 
-const DEFAULT_READER_LOCALE: ReaderLocale = 'ko'
-
 export const readerMessageCatalog = {
   ko: {
     brightPreset: '밝게',
@@ -400,8 +398,8 @@ export const readerMessageCatalog = {
   },
 } satisfies Record<ReaderLocale, ReaderMessages>
 
-export function getReaderMessages(locale?: string, overrides: ReaderMessageOverrides = {}): ReaderMessages {
-  const messages = readerMessageCatalog[normalizeReaderLocale(locale)]
+export function getReaderMessages(locale: ReaderLocale, overrides: ReaderMessageOverrides = {}): ReaderMessages {
+  const messages = readerMessageCatalog[locale]
 
   return {
     ...messages,
@@ -431,12 +429,4 @@ export function getReaderMessages(locale?: string, overrides: ReaderMessageOverr
       ...overrides.viewerOrientationButtons,
     },
   }
-}
-
-function normalizeReaderLocale(locale: string | undefined): ReaderLocale {
-  if (locale === 'en' || locale === 'ja' || locale === 'ko' || locale === 'zh-CN' || locale === 'zh-TW') {
-    return locale
-  }
-
-  return DEFAULT_READER_LOCALE
 }

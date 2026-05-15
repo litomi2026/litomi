@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReaderMessageOverrides, ReaderMessages } from '#reader/model/readerMessages'
+import type { ReaderLocale, ReaderMessageOverrides, ReaderMessages } from '#reader/model/readerMessages'
 import type { ReaderNoticeHandler } from '#reader/model/readerNotice'
 import type { ReactNode } from 'react'
 
@@ -9,7 +9,7 @@ import { createContext, useContext } from 'react'
 
 type ReaderRuntimeProviderProps = {
   children: ReactNode
-  locale?: string
+  locale: ReaderLocale
   messages?: ReaderMessageOverrides
   onNotice?: ReaderNoticeHandler
 }

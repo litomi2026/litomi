@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReaderMessageOverrides } from '#reader/model/readerMessages'
+import type { ReaderLocale, ReaderMessageOverrides } from '#reader/model/readerMessages'
 import type { ReaderNoticeHandler } from '#reader/model/readerNotice'
 
 import ReaderControls from '#reader/components/ReaderControls'
@@ -24,7 +24,7 @@ import { type ReactNode, useEffect, useState } from 'react'
 
 export type ReaderProps<TPage extends ReaderPage> = {
   header?: ReactNode
-  locale?: string
+  locale?: ReaderLocale
   messages?: ReaderMessageOverrides
   onNotice?: ReaderNoticeHandler
   pageSearchParam?: string
@@ -42,7 +42,7 @@ type ReadingProgressOptions = {
 }
 
 export default function Reader<TPage extends ReaderPage>({
-  locale,
+  locale = 'ko',
   messages,
   onNotice,
   persistenceKey,
