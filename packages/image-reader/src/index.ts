@@ -1,7 +1,7 @@
 'use client'
 
 export type { ReaderPage, ReaderPageRenderContext, ReaderPageRenderer } from '#reader/model/readerLayout'
-export { DEFAULT_READER_LOCALE, getReaderMessages, readerMessageCatalog } from '#reader/model/readerMessages'
+export { getReaderMessages, readerMessageCatalog } from '#reader/model/readerMessages'
 export type { ReaderLocale, ReaderMessageOverrides, ReaderMessages } from '#reader/model/readerMessages'
 
 export type {

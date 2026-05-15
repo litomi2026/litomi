@@ -137,7 +137,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
             onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}
             type="button"
           >
-            {messages.viewerModeButton(viewerMode)}
+            {messages.viewerModeButtons[viewerMode]}
           </button>
           <button
             aria-pressed={isDoublePage}
@@ -145,18 +145,18 @@ export default function ReaderControls<TPage extends ReaderPage>({
             onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
             type="button"
           >
-            {messages.pageViewButton(pageView)}
+            {messages.pageViewButtons[pageView]}
           </button>
           <button
             className={BOTTOM_BUTTON_CLASS_NAME}
             onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}
             type="button"
           >
-            {messages.screenFitButton(screenFit)}
+            {messages.screenFitButtons[screenFit]}
           </button>
           {isDoublePage && (
             <button
-              aria-label={messages.readingDirectionButton(readingDirection)}
+              aria-label={messages.readingDirectionButtons[readingDirection]}
               className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
               onClick={toggleReadingDirection}
               type="button"
@@ -176,7 +176,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
               }}
               type="button"
             >
-              {messages.viewerOrientationButton(orientation)}
+              {messages.viewerOrientationButtons[orientation]}
             </button>
           )}
           {!isPageMode && (
@@ -207,7 +207,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
             {messages.previewButton}
           </button>
           <button className={BOTTOM_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
-            {messages.lowDataLabel(lowData)}
+            {messages.lowDataLabels[lowData]}
           </button>
         </div>
       </div>
