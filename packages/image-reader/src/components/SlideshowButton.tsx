@@ -68,13 +68,18 @@ export default function SlideshowButton<TPage extends ReaderPage>({
         if (typeof nextPageIndex === 'number') {
           navigateToPageIndex(nextPageIndex, {
             maxIndex: maxPageIndex,
+            navigationType: 'relative',
             scrollRowIndex: readerLayout.spreadIndexByPageIndex[nextPageIndex] ?? nextPageIndex,
           })
           return
         }
 
         if (isRepeatingRef.current) {
-          navigateToPageIndex(0, { maxIndex: maxPageIndex, scrollRowIndex: 0 })
+          navigateToPageIndex(0, {
+            maxIndex: maxPageIndex,
+            navigationType: 'relative',
+            scrollRowIndex: 0,
+          })
           return
         }
 

@@ -36,6 +36,7 @@ export default function PageSlider<TPage extends ReaderPage>({ maxPageIndex, rea
             navigateToPageIndex(value, {
               maxIndex: maxPageIndex,
               scrollRowIndex: readerLayout.spreadIndexByPageIndex[value] ?? value,
+              navigationType: 'absolute',
             })
           }}
           value={pageIndex}

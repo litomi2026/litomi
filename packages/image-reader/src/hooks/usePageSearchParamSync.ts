@@ -36,6 +36,7 @@ export default function usePageSearchParamSync({ enabled, getScrollRowIndex, max
 
     navigateToPageIndex(pageIndex, {
       maxIndex,
+      navigationType: 'absolute',
       scrollRowIndex: getInitialScrollRowIndex(pageIndex),
     })
 
