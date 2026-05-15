@@ -2,8 +2,6 @@
 FROM oven/bun:1.3 AS builder
 WORKDIR /app
 
-ENV BUILD_OUTPUT=standalone
-ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 COPY package.json bun.lock turbo.json tsconfig.json tsconfig.base.json ./
@@ -16,6 +14,8 @@ COPY apps/notification-dispatch/package.json ./apps/notification-dispatch/packag
 COPY packages ./packages
 
 RUN bun install --frozen-lockfile --no-save --silent
+
+COPY tools ./tools
 
 ARG CI
 ARG COMMIT_SHA
@@ -32,8 +32,10 @@ ARG NEXT_PUBLIC_SENTRY_DSN
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY
 
-ENV CI=$CI
 ENV APP_ORIGIN=$NEXT_PUBLIC_APP_ORIGIN
+ENV BUILD_OUTPUT=standalone
+ENV CI=$CI
+ENV DO_NOT_TRACK=1
 ENV NEXT_PUBLIC_API_ORIGIN=$NEXT_PUBLIC_API_ORIGIN
 ENV NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV
 ENV NEXT_PUBLIC_APP_ORIGIN=$NEXT_PUBLIC_APP_ORIGIN
@@ -47,6 +49,8 @@ ENV NEXT_PUBLIC_IOS_TESTFLIGHT_URL=$NEXT_PUBLIC_IOS_TESTFLIGHT_URL
 ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=$NEXT_PUBLIC_VAPID_PUBLIC_KEY
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV TURBO_TELEMETRY_DISABLED=1
 
 COPY apps/web ./apps/web
 
@@ -55,7 +59,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=fals
     --mount=type=secret,id=SENTRY_PROJECT,env=SENTRY_PROJECT,required=false \
     --mount=type=secret,id=POSTGRES_URL,env=POSTGRES_URL,required=false \
     --mount=type=secret,id=SUPABASE_CERTIFICATE,env=SUPABASE_CERTIFICATE,required=false \
-    COMMIT_SHA="$COMMIT_SHA" bun --filter @litomi/web build \
+    COMMIT_SHA="$COMMIT_SHA" bun run build --filter=@litomi/web \
   # Strip `sourceMappingURL` references (prevents browser `*.map` requests).
   && find apps/web/.next/static -type f -name '*.js' -exec sed -i -E 's@//# sourceMappingURL=.*$@@g' {} + \
   && find apps/web/.next/static -type f -name '*.css' -exec sed -i -E 's@/\*#[[:space:]]*sourceMappingURL=.*\*/@@g' {} +

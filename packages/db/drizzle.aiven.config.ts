@@ -1,11 +1,17 @@
 import dotenv from 'dotenv'
-dotenv.config({ path: process.env.DB_ENV === 'production' ? '.env.production' : '.env.development' })
-
 import { defineConfig } from 'drizzle-kit'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const packageRoot = path.dirname(fileURLToPath(import.meta.url))
+const workspaceRoot = path.resolve(packageRoot, '../..')
+const envFile = process.env.DB_ENV === 'production' ? '.env.production' : '.env.development'
+
+dotenv.config({ path: path.join(workspaceRoot, envFile) })
 
 export default defineConfig({
-  out: './packages/db/drizzle/aiven',
-  schema: './packages/db/src/database/aiven',
+  out: path.join(packageRoot, 'drizzle/aiven'),
+  schema: path.join(packageRoot, 'src/database/aiven'),
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env.AIVEN_POSTGRES_URL ?? '',

@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/notification-dispatch",
+    "docker:build": "docker build -f Dockerfile -t litomi-notification-dispatch-local ../..",
+    "docker:run": "docker run --rm --env-file ../../infra/cloud-run/notification-dispatch/.env litomi-notification-dispatch-local",
     "start": "bun --conditions=react-server src/index.ts",
     "type": "tsc --noEmit"
   },

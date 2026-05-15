@@ -1,33 +1,51 @@
 {
   "name": "@litomi/image-reader",
   "version": "1.1.0",
-  "private": true,
+  "private": false,
   "type": "module",
+  "license": "GPL-3.0-only",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "imports": {
+    "#reader/*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun ../../tools/buildReactPackage.ts .",
+    "type": "tsc -p tsconfig.dev.json --noEmit"
   },
   "dependencies": {
-    "@litomi/ui": "workspace:*",
+    "@litomi/ui": "^1.1.0",
     "lucide-react": "^0.562.0",
     "ms": "^2.1.3",
     "react-intersection-observer": "^10.0.3",
     "react-window": "^2.2.7",
-    "sonner": "^2.0.7",
     "zustand": "^5.0.12"
   },
   "peerDependencies": {
-    "next": ">=16",
     "react": ">=19",
     "react-dom": ">=19",
     "tailwindcss": ">=4"
-  },
-  "peerDependenciesMeta": {
-    "next": {
-      "optional": true
-    },
-    "tailwindcss": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@types/ms": "^2.1.0",

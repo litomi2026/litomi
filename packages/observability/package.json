@@ -6,6 +6,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
   "devDependencies": {
     "@sentry/core": "10.47.0"
   }

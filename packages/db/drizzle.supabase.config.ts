@@ -1,13 +1,17 @@
 import dotenv from 'dotenv'
-dotenv.config({ path: process.env.DB_ENV === 'production' ? '.env.production' : '.env.development' })
-
 import { defineConfig } from 'drizzle-kit'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-console.log('👀 - POSTGRES_URL_DIRECT:', process.env.POSTGRES_URL_DIRECT)
+const packageRoot = path.dirname(fileURLToPath(import.meta.url))
+const workspaceRoot = path.resolve(packageRoot, '../..')
+const envFile = process.env.DB_ENV === 'production' ? '.env.production' : '.env.development'
+
+dotenv.config({ path: path.join(workspaceRoot, envFile) })
 
 export default defineConfig({
-  out: './packages/db/drizzle/supabase',
-  schema: './packages/db/src/database/supabase',
+  out: path.join(packageRoot, 'drizzle/supabase'),
+  schema: path.join(packageRoot, 'src/database/supabase'),
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env.POSTGRES_URL_DIRECT ?? '',

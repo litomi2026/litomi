@@ -32,9 +32,9 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   return (
     <html lang="ko">
       <body className="flex items-center justify-center p-4 h-dvh bg-background">
-        <main className="max-w-prose text-center text-foreground">
+        <main className="max-w-lg text-center text-foreground">
           <h2 className="my-8 text-2xl font-medium">문제가 발생했어요</h2>
-          <p className="text-sm text-red-400 my-4 max-w-prose break-all">{error.message}</p>
+          <p className="text-sm text-red-400 my-4 break-all">{error.message}</p>
           <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
           <CloudProviderStatus onStatusUpdate={setHasSystemIssues} />
           <ErrorDiagnosticDetails digest={error.digest} errorMessage={error.message} pathname={pathname} />

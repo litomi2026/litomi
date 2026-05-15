@@ -30,8 +30,6 @@ export function createMangaReaderPages(manga: Manga): MangaReaderPage[] {
         image,
         imageIndex,
         kind: 'image',
-        progressMode: 'count',
-        spreadMode: 'pairable',
         thumbnail: image.thumbnail,
       }
     }),

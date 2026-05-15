@@ -17,6 +17,9 @@
     "./two-factor": "./src/two-factor.ts",
     "./two-factor-backup-code": "./src/two-factor-backup-code.ts"
   },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
   "dependencies": {
     "@litomi/db": "workspace:*",
     "@litomi/domain": "workspace:*",

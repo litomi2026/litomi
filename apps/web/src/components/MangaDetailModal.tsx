@@ -255,11 +255,9 @@ export function MangaDetailModal() {
           <BookmarkButton className={primaryButtonClassName} manga={manga} />
         </ErrorBoundary>
         {isDownloadable && (
-          <div className="grid gap-2 text-sm sm:grid-cols-2">
-            <ErrorBoundary fallback={DownloadButtonError}>
-              <DownloadButton className={secondaryButtonClassName} manga={manga} />
-            </ErrorBoundary>
-          </div>
+          <ErrorBoundary fallback={DownloadButtonError}>
+            <DownloadButton className={secondaryButtonClassName} manga={manga} />
+          </ErrorBoundary>
         )}
       </DialogFooter>
     </Dialog>

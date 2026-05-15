@@ -21,6 +21,9 @@
     "./translation/tag-unisex.json": "./src/translation/tag-unisex.json",
     "./translation/type": "./src/translation/type.ts"
   },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
   "dependencies": {
     "@litomi/db": "workspace:*",
     "@litomi/domain": "workspace:*",

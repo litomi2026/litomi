@@ -10,6 +10,9 @@
     "./env/server.next": "./src/env/server.next.ts",
     "./env/server.next.build": "./src/env/server.next.build.ts"
   },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
   "dependencies": {
     "@litomi/std": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
