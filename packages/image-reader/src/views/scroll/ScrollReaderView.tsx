@@ -39,7 +39,6 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
   const listRef = useListRef(null)
   const brightness = useReaderSessionStore((state) => state.brightness)
   const imageWidth = useReaderStore((state) => state.imageWidth)
-  const zoomLevel = useReaderSessionStore((state) => state.zoomLevel)
   const setListRef = useReaderStore((state) => state.setListRef)
   const screenFit = useReaderStore((state) => state.screenFit)
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: DEFAULT_SCROLL_ROW_HEIGHT })
@@ -50,7 +49,6 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
   const dynamicStyle = {
     '--image-width': `${imageWidth}%`,
     filter: `brightness(${brightness}%)`,
-    transform: `scale(${zoomLevel})`,
   } as CSSProperties
 
   // NOTE: virtualizer 초기화 및 정리

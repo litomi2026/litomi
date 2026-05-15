@@ -1,8 +1,8 @@
 'use client'
 
-import { DEFAULT_ZOOM, MAX_ZOOM, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
+import { useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { Slider } from '@litomi/ui'
-import { Monitor, Palette, ZoomIn } from 'lucide-react'
+import { Monitor, Palette } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 const CONTROL_ICONS_CLASS = 'size-4 text-zinc-400'
@@ -15,14 +15,11 @@ type Props = {
 export default function ViewControlPanel({ id }: Props) {
   const brightness = useReaderSessionStore((state) => state.brightness)
   const imageWidth = useReaderStore((state) => state.imageWidth)
-  const zoomLevel = useReaderSessionStore((state) => state.zoomLevel)
   const isWidthControlEnabled = useReaderStore((state) => state.screenFit === 'all' || state.screenFit === 'width')
   const setBrightness = useReaderSessionStore((state) => state.setBrightness)
   const setImageWidth = useReaderStore((state) => state.setImageWidth)
-  const setZoomLevel = useReaderSessionStore((state) => state.setZoomLevel)
   const [localBrightness, setLocalBrightness] = useState(brightness)
   const [localWidth, setLocalWidth] = useState(imageWidth)
-  const [localZoom, setLocalZoom] = useState(zoomLevel)
 
   useEffect(() => {
     setLocalBrightness(brightness)
@@ -31,10 +28,6 @@ export default function ViewControlPanel({ id }: Props) {
   useEffect(() => {
     setLocalWidth(imageWidth)
   }, [imageWidth])
-
-  useEffect(() => {
-    setLocalZoom(zoomLevel)
-  }, [zoomLevel])
 
   return (
     <fieldset
@@ -78,21 +71,6 @@ export default function ViewControlPanel({ id }: Props) {
             </div>
           )}
 
-          <div className="flex items-center gap-3.5">
-            <ZoomIn className={CONTROL_ICONS_CLASS} />
-            <Slider
-              aria-label="확대"
-              aria-valuetext={`${localZoom.toFixed(1)}배`}
-              className="flex-1 h-4"
-              max={MAX_ZOOM * 10}
-              min={DEFAULT_ZOOM * 10}
-              onChange={(value) => setLocalZoom((value as number) / 10)}
-              onValueCommit={(value) => setZoomLevel((value as number) / 10)}
-              step={5}
-              value={Math.round(localZoom * 10)}
-            />
-            <span className={CONTROL_LABEL_CLASS}>{localZoom.toFixed(1)}x</span>
-          </div>
         </div>
 
         <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-800 text-foreground">
@@ -126,8 +104,6 @@ export default function ViewControlPanel({ id }: Props) {
                   setImageWidth(100)
                   setLocalWidth(100)
                 }
-                setZoomLevel(DEFAULT_ZOOM)
-                setLocalZoom(DEFAULT_ZOOM)
               }}
               type="button"
             >
