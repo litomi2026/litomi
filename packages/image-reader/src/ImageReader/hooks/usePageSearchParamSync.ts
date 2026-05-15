@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent } from 'react'
 
-import { useReaderStore } from './store/reader'
+import { useReaderStore } from '../state/readerStore'
 
 const PAGE_SEARCH_PARAM_COMMIT_DELAY_MS = 200
 

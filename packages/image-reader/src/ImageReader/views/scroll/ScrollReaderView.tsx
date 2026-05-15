@@ -3,10 +3,10 @@ import { type CSSProperties, Fragment, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from './readerPages'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../../model/readerLayout'
 
-import { type ScreenFit, useReaderSessionStore, useReaderStore } from './store/reader'
-import { NATIVE_GESTURE_BLOCK_CSS } from './viewerGesturePolicy'
+import { NATIVE_GESTURE_BLOCK_CSS } from '../../model/viewerGesturePolicy'
+import { type ScreenFit, useReaderSessionStore, useReaderStore } from '../../state/readerStore'
 
 const screenFitStyle: Record<ScreenFit, string> = {
   width:

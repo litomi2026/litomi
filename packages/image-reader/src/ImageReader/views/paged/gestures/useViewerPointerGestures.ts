@@ -1,13 +1,13 @@
 import { type PointerEvent, useEffect, useRef } from 'react'
 
-import { DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '../store/reader'
 import {
   canScrollAxis,
   getScrollableAxesInPath,
   isScreenEdge,
   type ScrollableAxes,
   shouldIgnoreViewerGestureTarget,
-} from '../viewerGesturePolicy'
+} from '../../../model/viewerGesturePolicy'
+import { DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '../../../state/readerStore'
 import {
   DOUBLE_TAP_ZOOM_LEVEL,
   getDistance,

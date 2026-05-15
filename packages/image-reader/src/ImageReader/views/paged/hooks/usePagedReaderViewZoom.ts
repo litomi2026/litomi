@@ -1,8 +1,8 @@
 import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-import { clampZoomLevel, DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '../store/reader'
-import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
-import { captureZoomAnchor, getNextWheelZoomLevel, type ZoomAnchor } from './viewerZoom'
+import { shouldIgnoreViewerGestureTarget } from '../../../model/viewerGesturePolicy'
+import { clampZoomLevel, DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '../../../state/readerStore'
+import { captureZoomAnchor, getNextWheelZoomLevel, type ZoomAnchor } from '../gestures/viewerZoom'
 
 type CaptureZoomAnchorParams = {
   clientX: number

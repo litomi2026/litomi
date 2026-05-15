@@ -1,9 +1,9 @@
 import { Slider } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'
 
-import type { ReaderLayout, ReaderPage } from './readerPages'
+import type { ReaderLayout, ReaderPage } from '../model/readerLayout'
 
-import { useReaderStore } from './store/reader'
+import { useReaderStore } from '../state/readerStore'
 
 type Props<TPage extends ReaderPage> = {
   maxPageIndex: number

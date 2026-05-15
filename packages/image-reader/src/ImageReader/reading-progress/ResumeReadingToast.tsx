@@ -4,9 +4,9 @@ import ms from 'ms'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 
-import type { ReaderLayout, ReaderPage } from '../readerPages'
+import type { ReaderLayout, ReaderPage } from '../model/readerLayout'
 
-import { useReaderStore } from '../store/reader'
+import { useReaderStore } from '../state/readerStore'
 
 const DEFAULT_DURATION_MS = ms('10 seconds')
 

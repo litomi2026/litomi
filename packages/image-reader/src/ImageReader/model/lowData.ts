@@ -1,4 +1,4 @@
-import type { LowDataMode } from './store/reader'
+import type { LowDataMode } from '../state/readerStore'
 
 export type LowDataReason = 'auto-save-data' | 'auto-slow-network' | 'manual-on' | 'none'
 

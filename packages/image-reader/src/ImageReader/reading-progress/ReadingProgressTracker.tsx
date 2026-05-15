@@ -3,9 +3,9 @@
 import ms from 'ms'
 import { useEffect, useEffectEvent, useRef } from 'react'
 
-import type { ReaderLayout, ReaderPage } from '../readerPages'
+import type { ReaderLayout, ReaderPage } from '../model/readerLayout'
 
-import { useReaderStore } from '../store/reader'
+import { useReaderStore } from '../state/readerStore'
 
 const DEFAULT_SAVE_INTERVAL_MS = ms('1 minute')
 

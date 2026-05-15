@@ -1,10 +1,10 @@
 import { useEffect, useEffectEvent } from 'react'
 import { toast } from 'sonner'
 
-import type { ReaderLayout, ReaderPage } from '../readerPages'
+import type { ReaderLayout, ReaderPage } from '../../../model/readerLayout'
 
-import { useReaderStore } from '../store/reader'
-import { shouldIgnoreViewerGestureTarget } from '../viewerGesturePolicy'
+import { shouldIgnoreViewerGestureTarget } from '../../../model/viewerGesturePolicy'
+import { useReaderStore } from '../../../state/readerStore'
 
 const PREV_PAGE_CODES = new Set(['ArrowLeft', 'AudioVolumeUp', 'PageUp'])
 const NEXT_PAGE_CODES = new Set(['ArrowRight', 'AudioVolumeDown', 'PageDown'])

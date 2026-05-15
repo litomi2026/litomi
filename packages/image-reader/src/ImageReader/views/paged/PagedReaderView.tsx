@@ -3,15 +3,15 @@
 import { Loader2 } from 'lucide-react'
 import { Fragment } from 'react'
 
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../readerPages'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../../model/readerLayout'
 
-import { type ScreenFit, useReaderSessionStore, useReaderStore } from '../store/reader'
-import { NATIVE_GESTURE_BLOCK_CSS } from '../viewerGesturePolicy'
-import usePagedReaderViewScrollRestoration from './usePagedReaderViewScrollRestoration'
-import usePagedReaderViewWheelNavigation from './usePagedReaderViewWheelNavigation'
-import usePagedReaderViewZoom from './usePagedReaderViewZoom'
-import usePageNavigation from './usePageNavigation'
-import useViewerPointerGestures from './useViewerPointerGestures'
+import { NATIVE_GESTURE_BLOCK_CSS } from '../../model/viewerGesturePolicy'
+import { type ScreenFit, useReaderSessionStore, useReaderStore } from '../../state/readerStore'
+import useViewerPointerGestures from './gestures/useViewerPointerGestures'
+import usePagedReaderViewScrollRestoration from './hooks/usePagedReaderViewScrollRestoration'
+import usePagedReaderViewWheelNavigation from './hooks/usePagedReaderViewWheelNavigation'
+import usePagedReaderViewZoom from './hooks/usePagedReaderViewZoom'
+import usePageNavigation from './hooks/usePageNavigation'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 const PAGED_READER_VIEW_WINDOW_SIZE = 6
