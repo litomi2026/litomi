@@ -15,7 +15,7 @@
     "format": "prettier --write .",
     "type": "tsc -p tsconfig.json --noEmit && turbo type",
     "prepare": "husky",
-    "clean": "rm -rf .turbo apps/web/.next apps/edge-proxy/.next apps/api/dist apps/catalog-ingest/dist apps/notification-dispatch/dist node_modules/.cache",
+    "clean": "rm -rf .next .turbo apps/web/.next apps/edge-proxy/.next apps/api/dist apps/catalog-ingest/dist apps/notification-dispatch/dist node_modules/.cache",
     "db:reset": "docker compose -f infra/local/docker-compose.yml down -v && docker compose -f infra/local/docker-compose.yml up -d --wait && bun --filter=@litomi/db push",
     "test": "bun test",
     "test:backend:integration": "bun tools/setupBackendIntegrationDb.ts && bun test ./test/backend --max-concurrency 1",

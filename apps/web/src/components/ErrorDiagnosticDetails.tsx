@@ -33,7 +33,7 @@ export default function ErrorDiagnosticDetails({ digest, errorMessage, pathname 
       )}
 
       <details
-        className="mx-auto max-w-prose rounded-lg border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-left text-xs text-zinc-300"
+        className="mx-auto rounded-lg border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-left text-xs text-zinc-300"
         open
       >
         <summary className="cursor-pointer list-none font-medium text-zinc-200">진단 정보</summary>

@@ -43,7 +43,7 @@ export default function RetryGuidance({ hasSystemIssues, errorMessage = '' }: Sm
   }
 
   return (
-    <p className="my-3 mx-auto max-w-prose rounded-lg bg-zinc-900/50 px-4 py-2 text-xs text-zinc-300 border border-zinc-800 flex items-center justify-center gap-2">
+    <p className="my-3 mx-auto rounded-lg bg-zinc-900/50 px-4 py-2 text-xs text-zinc-300 border border-zinc-800 flex items-center justify-center gap-2">
       <Lightbulb aria-hidden className="size-4 shrink-0 text-zinc-500" />
       {guidance}
     </p>
