@@ -1,6 +1,13 @@
 'use client'
 
-export type { ReaderPage, ReaderPageRenderContext, ReaderPageRenderer } from '#reader/model/readerLayout'
+export type {
+  ReaderPage,
+  ReaderPageProgressMode,
+  ReaderPageRenderContext,
+  ReaderPageRenderer,
+  ReaderPageSpreadMode,
+} from '#reader/model/readerLayout'
+
 export { getReaderMessages, readerMessageCatalog } from '#reader/model/readerMessages'
 export type { ReaderLocale, ReaderMessageOverrides, ReaderMessages } from '#reader/model/readerMessages'
 

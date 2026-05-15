@@ -62,16 +62,6 @@ type Props = {
 export function GalleryReader({ images }: Props) {
   const [lastPage, setLastPage] = useState<number>()
 
-  const pages = useMemo<GalleryPage[]>(
-    () =>
-      images.map((image) => ({
-        ...image,
-        progressMode: 'count',
-        spreadMode: 'pairable',
-      })),
-    [images],
-  )
-
   function renderPage({ fetchPriority, isLowDataMode, page }: ReaderPageRenderContext<GalleryPage>) {
     return (
       <img
@@ -100,7 +90,7 @@ export function GalleryReader({ images }: Props) {
   return (
     <Reader
       locale="en"
-      pages={pages}
+      pages={images}
       pageSearchParam="page"
       persistenceKey="gallery-reader"
       readingProgress={{
