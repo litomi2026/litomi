@@ -6,6 +6,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
   "dependencies": {
     "dayjs": "^1.11.20",
     "ms": "^2.1.3"

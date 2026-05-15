@@ -196,9 +196,9 @@ ExHentai fullimg 링크 추출 스크립트
 
 Usage:
   EXHENTAI_COOKIE='ipb_member_id=...; ipb_pass_hash=...; igneous=...' \\
-    bun tools/exhentaiFullimgLinks.ts --gallery https://exhentai.org/g/3914616/dd5473ed25/ --end-page 10
+    bun --filter=@litomi/crawler exhentai:fullimg -- --gallery https://exhentai.org/g/3914616/dd5473ed25/ --end-page 10
 
-  bun tools/exhentaiFullimgLinks.ts --gid 3914616 --token dd5473ed25 --start-page 1 --limit 5 --format json
+  bun --filter=@litomi/crawler exhentai:fullimg -- --gid 3914616 --token dd5473ed25 --start-page 1 --limit 5 --format json
 
 Options:
   --gallery <url>       /g/{gid}/{gallery_token}/ 형태의 갤러리 URL

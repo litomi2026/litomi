@@ -48,8 +48,8 @@ const usage = `
 리보 운영 지급 스크립트
 
 Usage:
-  bun run grant:libo -- --login-id target --amount 5000
-  bun run grant:libo -- --user-id 42 --amount 5000 --operator ops --reason "CS 보상" --execute
+  bun --filter=@litomi/db grant:libo -- --login-id target --amount 5000
+  bun --filter=@litomi/db grant:libo -- --user-id 42 --amount 5000 --operator ops --reason "CS 보상" --execute
 
 Options:
   --user-id <number>      지급 대상 user.id

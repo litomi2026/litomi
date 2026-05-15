@@ -32,8 +32,13 @@
     "./sql/selectPostComment": "./src/sql/selectPostComment.ts"
   },
   "scripts": {
-    "db:push:aiven": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.aiven.config.ts",
-    "db:push:supabase": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.supabase.config.ts"
+    "grant:libo": "bun --conditions=react-server scripts/grantLibo.ts",
+    "push": "bun run push:supabase && bun run push:functions",
+    "push:prod": "DB_ENV=production bun run push:supabase && DB_ENV=production bun run push:functions && DB_ENV=production bun run push:aiven",
+    "push:aiven": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.aiven.config.ts",
+    "push:functions": "bun scripts/supabase/supabaseFunctionsPush.ts",
+    "push:supabase": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.supabase.config.ts",
+    "type": "tsc --noEmit"
   },
   "dependencies": {
     "@litomi/contracts": "workspace:*",

@@ -25,6 +25,10 @@
     "./utils/nickname": "./src/utils/nickname.ts",
     "./utils/user-settings": "./src/utils/user-settings.ts"
   },
+  "scripts": {
+    "generate:emoji": "bun scripts/generateEmojiList.ts",
+    "type": "tsc --noEmit"
+  },
   "dependencies": {
     "@litomi/std": "workspace:*",
     "ms": "^2.1.3",

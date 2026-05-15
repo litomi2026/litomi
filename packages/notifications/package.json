@@ -6,6 +6,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
   "dependencies": {
     "@litomi/db": "workspace:*",
     "@litomi/domain": "workspace:*",

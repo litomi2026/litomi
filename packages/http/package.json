@@ -12,6 +12,9 @@
     "./request": "./src/request.ts",
     "./turnstile": "./src/turnstile.ts"
   },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
   "dependencies": {
     "@litomi/env": "workspace:*",
     "@litomi/std": "workspace:*",

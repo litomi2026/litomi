@@ -1,8 +1,9 @@
 import dotenv from 'dotenv'
 import { spawn } from 'node:child_process'
+import path from 'node:path'
 import postgres from 'postgres'
 
-import { applySupabaseFunctions, withLocalSslDisabled } from './supabase/applySupabaseFunctions'
+import { applySupabaseFunctions, withLocalSslDisabled } from '../packages/db/scripts/supabase/applySupabaseFunctions'
 
 dotenv.config({ path: '.env.development' })
 
@@ -22,13 +23,14 @@ console.log(`[backend-test-db] recreating database ${testDatabaseName}`)
 await recreateDatabase(testDatabaseUrl, testDatabaseName)
 
 console.log('[backend-test-db] applying Drizzle schema')
-await runCommand(['bunx', 'drizzle-kit', 'push', '--config=drizzle.supabase.config.ts', '--force'], {
+await runCommand(['bunx', 'drizzle-kit', 'push', '--config=packages/db/drizzle.supabase.config.ts', '--force'], {
   NODE_OPTIONS: '--conditions=react-server',
   POSTGRES_URL_DIRECT: testDatabaseUrl,
 })
 
 console.log('[backend-test-db] applying Supabase function SQL')
 await applySupabaseFunctions(testDatabaseUrl, {
+  directory: path.join(process.cwd(), 'packages/db/src/database/supabase/functions'),
   log: (message) => console.log(`[backend-test-db] ${message}`),
 })
 
