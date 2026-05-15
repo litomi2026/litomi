@@ -109,10 +109,12 @@ function ScrollReaderViewRow<TPage extends ReaderPage>({
     rootMargin: '-50% 0% -50% 0%',
   })
 
+  // NOTE: 사용자가 스크롤해서 페이지가 바뀐 상황을 상태에 기록해요.
   useEffect(() => {
     if (inView && spread) {
       navigateToPageIndex(firstPageIndex, {
         maxIndex: Math.max(0, maxPage - 1),
+        navigationType: 'relative',
         scroll: false,
       })
     }

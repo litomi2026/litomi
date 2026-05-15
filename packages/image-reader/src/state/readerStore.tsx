@@ -14,11 +14,13 @@ export type LowDataMode = 'auto' | 'off' | 'on'
 
 export type NavigateToPageIndexOptions = {
   maxIndex?: number
+  navigationType: PageNavigationType
   scroll?: boolean
   scrollRowIndex?: number
 }
 
 export type Orientation = 'horizontal-reverse' | 'horizontal' | 'vertical-reverse' | 'vertical'
+export type PageNavigationType = 'absolute' | 'relative'
 export type PageView = 'double' | 'single'
 
 export type ReaderSessionStore = {
@@ -39,7 +41,7 @@ export type ReaderStore = {
   getPageIndex: () => number
   imageWidth: ImageWidth
   isStorageHydrated: boolean
-  navigateToPageIndex: (index: number, options?: NavigateToPageIndexOptions) => void
+  navigateToPageIndex: (index: number, options: NavigateToPageIndexOptions) => void
   orientation: Orientation
   pageIndex: number
   pageView: PageView
@@ -236,10 +238,17 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
         getPageIndex: () => get().pageIndex,
         imageWidth: DEFAULT_IMAGE_WIDTH,
         isStorageHydrated: false,
-        navigateToPageIndex: (pageIndex, options = {}) => {
+        navigateToPageIndex: (pageIndex, options) => {
           const nextPageIndex = clampPageIndex(pageIndex, options.maxIndex)
 
-          set({ pageIndex: nextPageIndex })
+          set(
+            options.navigationType === 'absolute'
+              ? {
+                  doublePageAnchorIndex: nextPageIndex,
+                  pageIndex: nextPageIndex,
+                }
+              : { pageIndex: nextPageIndex },
+          )
 
           if (options.scroll !== false) {
             scrollToRow(options.scrollRowIndex ?? nextPageIndex)
