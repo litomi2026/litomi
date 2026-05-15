@@ -29,7 +29,7 @@
   },
   "scripts": {
     "build": "bun ../../tools/buildReactPackage.ts .",
-    "type": "tsc --noEmit"
+    "type": "tsc -p tsconfig.dev.json --noEmit"
   },
   "dependencies": {
     "@litomi/ui": "^1.1.0",

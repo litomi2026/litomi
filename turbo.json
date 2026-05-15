@@ -14,7 +14,7 @@
       "persistent": true
     },
     "type": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^type"],
       "outputs": []
     },
     "lint": {

@@ -1,10 +1,34 @@
 {
   "name": "@litomi/ui",
   "version": "1.1.0",
-  "private": true,
+  "private": false,
   "type": "module",
+  "license": "GPL-3.0-only",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "imports": {
+    "#ui/*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun ../../tools/buildReactPackage.ts .",
+    "type": "tsc -p tsconfig.dev.json --noEmit"
   },
   "dependencies": {
     "lucide-react": "^0.562.0",
