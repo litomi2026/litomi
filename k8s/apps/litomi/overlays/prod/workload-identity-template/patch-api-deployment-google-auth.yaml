@@ -5,7 +5,7 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: litomi-api
+      serviceAccountName: litomi-backend
       automountServiceAccountToken: false
       containers:
         - name: api
