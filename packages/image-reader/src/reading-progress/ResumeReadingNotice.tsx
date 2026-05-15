@@ -1,11 +1,12 @@
 'use client'
 
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
+import type { ReaderNoticeHandle } from '#reader/model/readerNotice'
 
 import { useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import ms from 'ms'
-import { useEffect } from 'react'
+import { useEffect, useEffectEvent, useRef } from 'react'
 
 const DEFAULT_DURATION_MS = ms('10 seconds')
 
@@ -20,42 +21,69 @@ export default function ResumeReadingNotice({ lastReadablePageNumber, maxPageInd
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const messages = useReaderMessages()
   const onNotice = useReaderNoticeHandler()
+  const hasCheckedInitialNoticeRef = useRef(false)
+  const noticeHandleRef = useRef<ReaderNoticeHandle | null>(null)
 
+  // NOTE: 토스트 액션은 누르는 순간의 최신 레이아웃으로 이동하게 해요.
+  const showResumeReadingNotice = useEffectEvent((readablePageNumber: number) => {
+    function handleClick() {
+      const pageIndex = readerLayout.pageIndexByReadablePageNumber[readablePageNumber] ?? readablePageNumber - 1
+
+      navigateToPageIndex(pageIndex, {
+        maxIndex: maxPageIndex,
+        scrollRowIndex: readerLayout.spreadIndexByPageIndex[pageIndex] ?? pageIndex,
+      })
+    }
+
+    noticeHandleRef.current =
+      onNotice?.({
+        action: {
+          label: messages.resumeReadingAction,
+          onClick: handleClick,
+        },
+        code: 'resume-reading',
+        durationMs: DEFAULT_DURATION_MS,
+        id: 'reader:resume-reading',
+        message: messages.resumeReadingNotice(readablePageNumber),
+        severity: 'info',
+      }) ?? null
+  })
+
+  // NOTE: 마지막 읽은 위치 안내는 뷰어 진입 때 한 번만 판단해요.
   useEffect(() => {
-    const currentReadablePageNumber = readerLayout.readablePageNumberByPageIndex[getPageIndex()] ?? 0
+    if (hasCheckedInitialNoticeRef.current) {
+      return
+    }
 
     if (
       typeof lastReadablePageNumber !== 'number' ||
-      lastReadablePageNumber === currentReadablePageNumber ||
-      lastReadablePageNumber === readerLayout.readablePageCount
+      !Number.isFinite(lastReadablePageNumber) ||
+      lastReadablePageNumber < 1 ||
+      readerLayout.readablePageCount <= 0
     ) {
       return
     }
 
-    const notice = onNotice?.({
-      action: {
-        label: messages.resumeReadingAction,
-        onClick: () => {
-          const pageIndex =
-            readerLayout.pageIndexByReadablePageNumber[lastReadablePageNumber] ?? lastReadablePageNumber - 1
+    hasCheckedInitialNoticeRef.current = true
 
-          navigateToPageIndex(pageIndex, {
-            maxIndex: maxPageIndex,
-            scrollRowIndex: readerLayout.spreadIndexByPageIndex[pageIndex] ?? pageIndex,
-          })
-        },
-      },
-      code: 'resume-reading',
-      durationMs: DEFAULT_DURATION_MS,
-      id: 'reader:resume-reading',
-      message: messages.resumeReadingNotice(lastReadablePageNumber),
-      severity: 'info',
-    })
+    const readablePageNumber = Math.min(Math.floor(lastReadablePageNumber), readerLayout.readablePageCount)
+    const currentReadablePageNumber = readerLayout.readablePageNumberByPageIndex[getPageIndex()] ?? null
 
-    return () => {
-      notice?.dismiss()
+    if (readablePageNumber === currentReadablePageNumber) {
+      return
     }
-  }, [getPageIndex, lastReadablePageNumber, maxPageIndex, messages, navigateToPageIndex, onNotice, readerLayout])
+
+    showResumeReadingNotice(readablePageNumber)
+  }, [getPageIndex, lastReadablePageNumber, readerLayout])
+
+  // NOTE: 컴포넌트 언마운트 시 notice를 없애요.
+  useEffect(() => {
+    return () => {
+      hasCheckedInitialNoticeRef.current = false
+      noticeHandleRef.current?.dismiss()
+      noticeHandleRef.current = null
+    }
+  }, [])
 
   return null
 }
