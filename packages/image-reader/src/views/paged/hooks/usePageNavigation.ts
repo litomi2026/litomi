@@ -1,7 +1,7 @@
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
 import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
-import { useReaderMessages, useReaderNotice } from '#reader/readerRuntime'
+import { useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import { useEffect, useEffectEvent } from 'react'
 
@@ -19,7 +19,7 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
   const getPageIndex = useReaderStore((state) => state.getPageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const messages = useReaderMessages()
-  const notify = useReaderNotice()
+  const onNotice = useReaderNoticeHandler()
 
   function prevPage() {
     const currentPageIndex = getPageIndex()
@@ -27,7 +27,7 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
     const prevSpread = readerLayout.spreads[currentSpreadIndex - 1]
 
     if (!prevSpread) {
-      notify({
+      onNotice?.({
         code: 'first-page',
         id: 'reader:first-page',
         message: messages.firstPageNotice,
@@ -45,7 +45,7 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
     const nextSpread = readerLayout.spreads[currentSpreadIndex + 1]
 
     if (!nextSpread) {
-      notify({
+      onNotice?.({
         code: 'last-page',
         id: 'reader:last-page',
         message: messages.lastPageNotice,
@@ -62,7 +62,7 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
     const firstSpread = readerLayout.spreads[0]
 
     if (!firstSpread || readerLayout.spreadIndexByPageIndex[currentPageIndex] === 0) {
-      notify({
+      onNotice?.({
         code: 'first-page',
         id: 'reader:first-page',
         message: messages.firstPageNotice,
@@ -80,7 +80,7 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
     const lastSpread = readerLayout.spreads[lastSpreadIndex]
 
     if (!lastSpread || readerLayout.spreadIndexByPageIndex[currentPageIndex] === lastSpreadIndex) {
-      notify({
+      onNotice?.({
         code: 'last-page',
         id: 'reader:last-page',
         message: messages.lastPageNotice,

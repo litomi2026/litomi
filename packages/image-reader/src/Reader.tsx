@@ -9,7 +9,7 @@ import usePageSearchParamSync from '#reader/hooks/usePageSearchParamSync'
 import { getNavigatorLowDataSnapshot, type LowDataSnapshot, resolveLowDataState } from '#reader/model/lowData'
 import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from '#reader/model/readerLayout'
 import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
-import { ReaderRuntimeProvider, useReaderMessages, useReaderNotice } from '#reader/readerRuntime'
+import { ReaderRuntimeProvider, useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
 import ReadingProgressTracker, {
   type ReadingProgress,
   type ReadingProgressSaveOptions,
@@ -74,7 +74,7 @@ function ReaderContent<TPage extends ReaderPage>({
   const viewerMode = useReaderStore((state) => state.viewerMode)
   const resetPageIndex = useReaderStore((state) => state.resetPageIndex)
   const messages = useReaderMessages()
-  const notify = useReaderNotice()
+  const onNotice = useReaderNoticeHandler()
 
   const readerLayout = createReaderLayout(pages, { doublePageAnchorIndex, pageView })
   const maxPageIndex = Math.max(0, pages.length - 1)
@@ -117,7 +117,7 @@ function ReaderContent<TPage extends ReaderPage>({
     setLowDataSnapshot(snapshot)
 
     if (nextResolvedLowData.reason === 'auto-save-data') {
-      notify({
+      onNotice?.({
         code: 'low-data-auto-save-data',
         id: 'reader:low-data:auto-save-data',
         message: messages.lowDataAutoSaveDataNotice,
@@ -126,14 +126,14 @@ function ReaderContent<TPage extends ReaderPage>({
     }
 
     if (nextResolvedLowData.reason === 'auto-slow-network') {
-      notify({
+      onNotice?.({
         code: 'low-data-auto-slow-network',
         id: 'reader:low-data:auto-slow-network',
         message: messages.lowDataAutoSlowNetworkNotice,
         severity: 'info',
       })
     }
-  }, [isLowDataHydrated, lowDataSnapshot, lowData, messages, notify])
+  }, [isLowDataHydrated, lowDataSnapshot, lowData, messages, onNotice])
 
   // NOTE: 뷰어를 벗어나면 페이지 초기화
   useEffect(() => {

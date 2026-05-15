@@ -2,7 +2,7 @@
 
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
-import { useReaderMessages, useReaderNotice } from '#reader/readerRuntime'
+import { useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import ms from 'ms'
 import { useEffect } from 'react'
@@ -19,7 +19,7 @@ export default function ResumeReadingNotice({ lastReadablePageNumber, maxPageInd
   const getPageIndex = useReaderStore((state) => state.getPageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const messages = useReaderMessages()
-  const notify = useReaderNotice()
+  const onNotice = useReaderNoticeHandler()
 
   useEffect(() => {
     const currentReadablePageNumber = readerLayout.readablePageNumberByPageIndex[getPageIndex()] ?? 0
@@ -32,7 +32,7 @@ export default function ResumeReadingNotice({ lastReadablePageNumber, maxPageInd
       return
     }
 
-    const notice = notify({
+    const notice = onNotice?.({
       action: {
         label: messages.resumeReadingAction,
         onClick: () => {
@@ -53,9 +53,9 @@ export default function ResumeReadingNotice({ lastReadablePageNumber, maxPageInd
     })
 
     return () => {
-      notice.dismiss()
+      notice?.dismiss()
     }
-  }, [getPageIndex, lastReadablePageNumber, maxPageIndex, messages, navigateToPageIndex, notify, readerLayout])
+  }, [getPageIndex, lastReadablePageNumber, maxPageIndex, messages, navigateToPageIndex, onNotice, readerLayout])
 
   return null
 }

@@ -2,7 +2,7 @@
 
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
-import { useReaderMessages, useReaderNotice } from '#reader/readerRuntime'
+import { useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import ms from 'ms'
@@ -29,7 +29,7 @@ export default function SlideshowButton<TPage extends ReaderPage>({
   const timeoutIdRef = useRef<number | null>(null)
   const intervalInputId = useId()
   const messages = useReaderMessages()
-  const notify = useReaderNotice()
+  const onNotice = useReaderNoticeHandler()
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -78,7 +78,7 @@ export default function SlideshowButton<TPage extends ReaderPage>({
           return
         }
 
-        notify({
+        onNotice?.({
           code: 'slideshow-ended',
           id: 'reader:slideshow-ended',
           message: messages.lastPageNotice,
@@ -96,7 +96,7 @@ export default function SlideshowButton<TPage extends ReaderPage>({
         timeoutIdRef.current = null
       }
     }
-  }, [isRunning, maxPageIndex, messages, navigateToPageIndex, notify, pageIndex, readerLayout])
+  }, [isRunning, maxPageIndex, messages, navigateToPageIndex, onNotice, pageIndex, readerLayout])
 
   return (
     <>
