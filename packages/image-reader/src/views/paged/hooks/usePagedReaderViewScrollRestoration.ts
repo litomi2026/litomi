@@ -1,6 +1,5 @@
+import { useReaderStore } from '#reader/state/readerStore'
 import { type RefObject, useEffect, useRef } from 'react'
-
-import { useReaderStore } from '../../../state/readerStore'
 
 type Params = {
   scrollRef: RefObject<HTMLDivElement | null>

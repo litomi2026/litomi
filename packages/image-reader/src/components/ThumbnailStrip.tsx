@@ -1,12 +1,11 @@
 'use client'
 
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
+
+import { useReaderStore } from '#reader/state/readerStore'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
-
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../model/readerLayout'
-
-import { useReaderStore } from '../state/readerStore'
 
 type Props<TPage extends ReaderPage> = {
   pages: readonly TPage[]

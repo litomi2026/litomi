@@ -1,7 +1,7 @@
+import { getScrollableAxesInPath, shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
+import { DEFAULT_ZOOM, type Orientation, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { type RefObject, useEffect, useRef } from 'react'
 
-import { getScrollableAxesInPath, shouldIgnoreViewerGestureTarget } from '../../../model/viewerGesturePolicy'
-import { DEFAULT_ZOOM, type Orientation, useReaderSessionStore, useReaderStore } from '../../../state/readerStore'
 import { getNormalizedWheelDelta } from '../gestures/viewerZoom'
 
 const WHEEL_PAGE_NAVIGATION_THRESHOLD = 80

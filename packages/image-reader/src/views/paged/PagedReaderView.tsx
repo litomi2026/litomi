@@ -1,12 +1,12 @@
 'use client'
 
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
+
+import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
+import { type ScreenFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { Loader2 } from 'lucide-react'
 import { Fragment } from 'react'
 
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../../model/readerLayout'
-
-import { NATIVE_GESTURE_BLOCK_CSS } from '../../model/viewerGesturePolicy'
-import { type ScreenFit, useReaderSessionStore, useReaderStore } from '../../state/readerStore'
 import useViewerPointerGestures from './gestures/useViewerPointerGestures'
 import usePagedReaderViewScrollRestoration from './hooks/usePagedReaderViewScrollRestoration'
 import usePagedReaderViewWheelNavigation from './hooks/usePagedReaderViewWheelNavigation'

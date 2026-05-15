@@ -1,11 +1,10 @@
 'use client'
 
+import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
+
+import { useReaderStore } from '#reader/state/readerStore'
 import ms from 'ms'
 import { useEffect, useEffectEvent, useRef } from 'react'
-
-import type { ReaderLayout, ReaderPage } from '../model/readerLayout'
-
-import { useReaderStore } from '../state/readerStore'
 
 const DEFAULT_SAVE_INTERVAL_MS = ms('1 minute')
 

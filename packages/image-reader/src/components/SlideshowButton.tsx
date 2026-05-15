@@ -1,13 +1,12 @@
 'use client'
 
+import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
+
+import { useReaderStore } from '#reader/state/readerStore'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import ms from 'ms'
 import { useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
-
-import type { ReaderLayout, ReaderPage } from '../model/readerLayout'
-
-import { useReaderStore } from '../state/readerStore'
 
 type Props<TPage extends ReaderPage> = {
   className?: string

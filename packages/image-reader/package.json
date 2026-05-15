@@ -1,13 +1,42 @@
 {
   "name": "@litomi/image-reader",
   "version": "1.1.0",
-  "private": true,
+  "private": false,
   "type": "module",
+  "license": "GPL-3.0-only",
+  "sideEffects": false,
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "imports": {
+    "#reader/Reader": "./src/Reader.tsx",
+    "#reader/components/*": "./src/components/*.tsx",
+    "#reader/hooks/*": "./src/hooks/*.ts",
+    "#reader/model/*": "./src/model/*.ts",
+    "#reader/reading-progress/*": "./src/reading-progress/*.tsx",
+    "#reader/state/*": "./src/state/*.tsx",
+    "#reader/views/paged/*": "./src/views/paged/*.tsx",
+    "#reader/views/paged/gestures/*": "./src/views/paged/gestures/*.ts",
+    "#reader/views/paged/hooks/*": "./src/views/paged/hooks/*.ts",
+    "#reader/views/scroll/*": "./src/views/scroll/*.tsx"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "type": "tsc --noEmit"
   },
   "dependencies": {
-    "@litomi/ui": "workspace:*",
+    "@litomi/ui": "^1.1.0",
     "lucide-react": "^0.562.0",
     "ms": "^2.1.3",
     "react-intersection-observer": "^10.0.3",
@@ -20,14 +49,6 @@
     "react": ">=19",
     "react-dom": ">=19",
     "tailwindcss": ">=4"
-  },
-  "peerDependenciesMeta": {
-    "next": {
-      "optional": true
-    },
-    "tailwindcss": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@types/ms": "^2.1.0",

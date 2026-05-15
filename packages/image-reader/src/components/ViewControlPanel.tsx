@@ -1,10 +1,9 @@
 'use client'
 
+import { DEFAULT_ZOOM, MAX_ZOOM, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { Slider } from '@litomi/ui'
 import { Monitor, Palette, ZoomIn } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
-import { DEFAULT_ZOOM, MAX_ZOOM, useReaderSessionStore, useReaderStore } from '../state/readerStore'
 
 const CONTROL_ICONS_CLASS = 'size-4 text-zinc-400'
 const CONTROL_LABEL_CLASS = 'text-xs text-zinc-400 font-medium min-w-8 text-right'

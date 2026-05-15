@@ -1,29 +1,28 @@
 'use client'
 
-import { Loader2 } from 'lucide-react'
-import ms from 'ms'
-import { type ReactNode, useEffect, useState } from 'react'
-import { toast } from 'sonner'
-
-import ReaderControls from './components/ReaderControls'
-import useAutoHideCursor from './hooks/useAutoHideCursor'
-import usePageSearchParamSync from './hooks/usePageSearchParamSync'
+import ReaderControls from '#reader/components/ReaderControls'
+import useAutoHideCursor from '#reader/hooks/useAutoHideCursor'
+import usePageSearchParamSync from '#reader/hooks/usePageSearchParamSync'
 import {
   getAutoLowDataNoticeMessage,
   getNavigatorLowDataSnapshot,
   type LowDataSnapshot,
   resolveLowDataState,
-} from './model/lowData'
-import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from './model/readerLayout'
-import { shouldIgnoreViewerGestureTarget } from './model/viewerGesturePolicy'
+} from '#reader/model/lowData'
+import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from '#reader/model/readerLayout'
+import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
 import ReadingProgressTracker, {
   type ReadingProgress,
   type ReadingProgressSaveOptions,
-} from './reading-progress/ReadingProgressTracker'
-import ResumeReadingToast from './reading-progress/ResumeReadingToast'
-import { ReaderProvider, useReaderSessionStore, useReaderStore } from './state/readerStore'
-import PagedReaderView from './views/paged/PagedReaderView'
-import ScrollReaderView from './views/scroll/ScrollReaderView'
+} from '#reader/reading-progress/ReadingProgressTracker'
+import ResumeReadingToast from '#reader/reading-progress/ResumeReadingToast'
+import { ReaderProvider, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
+import PagedReaderView from '#reader/views/paged/PagedReaderView'
+import ScrollReaderView from '#reader/views/scroll/ScrollReaderView'
+import { Loader2 } from 'lucide-react'
+import ms from 'ms'
+import { type ReactNode, useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 export type ReaderProps<TPage extends ReaderPage> = {
   header?: ReactNode

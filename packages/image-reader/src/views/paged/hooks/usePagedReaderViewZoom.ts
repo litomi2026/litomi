@@ -1,7 +1,7 @@
+import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
+import { clampZoomLevel, DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-import { shouldIgnoreViewerGestureTarget } from '../../../model/viewerGesturePolicy'
-import { clampZoomLevel, DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '../../../state/readerStore'
 import { captureZoomAnchor, getNextWheelZoomLevel, type ZoomAnchor } from '../gestures/viewerZoom'
 
 type CaptureZoomAnchorParams = {

@@ -1,12 +1,12 @@
 'use client'
 
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
+
+import { getLowDataLabel } from '#reader/model/lowData'
+import { orientations, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '../model/readerLayout'
-
-import { getLowDataLabel } from '../model/lowData'
-import { orientations, useReaderSessionStore, useReaderStore } from '../state/readerStore'
 import PageSlider from './PageSlider'
 import SlideshowButton from './SlideshowButton'
 import ThumbnailStrip from './ThumbnailStrip'
