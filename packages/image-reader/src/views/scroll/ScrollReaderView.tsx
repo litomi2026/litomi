@@ -40,8 +40,9 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
   const listRef = useListRef(null)
   const brightness = useReaderSessionStore((state) => state.brightness)
   const imageWidth = useReaderStore((state) => state.imageWidth)
-  const setListRef = useReaderStore((state) => state.setListRef)
   const screenFit = useReaderStore((state) => state.screenFit)
+  const scrollTargetPageIndex = useReaderStore((state) => state.scrollTargetPageIndex)
+  const clearScrollTargetPageIndex = useReaderStore((state) => state.clearScrollTargetPageIndex)
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: DEFAULT_SCROLL_ROW_HEIGHT })
   const messages = useReaderMessages()
 
@@ -53,11 +54,22 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
     filter: `brightness(${brightness}%)`,
   } as CSSProperties
 
-  // NOTE: virtualizer 초기화 및 정리
+  // NOTE: 외부 컨트롤에서 페이지 이동을 요청하면 현재 spread layout 기준으로 해당 row를 보여줘요.
   useEffect(() => {
-    setListRef(listRef)
-    return () => setListRef(null)
-  }, [listRef, setListRef])
+    const list = listRef.current
+
+    if (scrollTargetPageIndex === null || !list) {
+      return
+    }
+
+    list.scrollToRow({
+      align: 'center',
+      behavior: 'instant',
+      index: readerLayout.spreadIndexByPageIndex[scrollTargetPageIndex] ?? scrollTargetPageIndex,
+    })
+
+    clearScrollTargetPageIndex()
+  }, [clearScrollTargetPageIndex, listRef, readerLayout, scrollTargetPageIndex])
 
   if (maxPage === 0) {
     return (
@@ -109,10 +121,12 @@ function ScrollReaderViewRow<TPage extends ReaderPage>({
     rootMargin: '-50% 0% -50% 0%',
   })
 
+  // NOTE: 사용자가 스크롤해서 페이지가 바뀐 상황을 상태에 기록해요.
   useEffect(() => {
     if (inView && spread) {
       navigateToPageIndex(firstPageIndex, {
         maxIndex: Math.max(0, maxPage - 1),
+        navigationType: 'relative',
         scroll: false,
       })
     }

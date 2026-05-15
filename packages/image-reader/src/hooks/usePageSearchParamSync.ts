@@ -1,20 +1,18 @@
 import { useReaderStore } from '#reader/state/readerStore'
-import { useEffect, useEffectEvent, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const PAGE_SEARCH_PARAM_COMMIT_DELAY_MS = 200
 
 type Params = {
   enabled: boolean
-  getScrollRowIndex: (pageIndex: number) => number
   maxIndex: number
   pageSearchParam: string
 }
 
-export default function usePageSearchParamSync({ enabled, getScrollRowIndex, maxIndex, pageSearchParam }: Params) {
+export default function usePageSearchParamSync({ enabled, maxIndex, pageSearchParam }: Params) {
   const [hasSyncedInitialPage, setHasSyncedInitialPage] = useState(false)
   const pageIndex = useReaderStore((state) => state.pageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
-  const getInitialScrollRowIndex = useEffectEvent((pageIndex: number) => getScrollRowIndex(pageIndex))
   const isInitialPageSynced = enabled && hasSyncedInitialPage
 
   // NOTE: page search param이 있으면 초기 진입 시 해당 페이지로 이동해요.
@@ -36,7 +34,7 @@ export default function usePageSearchParamSync({ enabled, getScrollRowIndex, max
 
     navigateToPageIndex(pageIndex, {
       maxIndex,
-      scrollRowIndex: getInitialScrollRowIndex(pageIndex),
+      navigationType: 'absolute',
     })
 
     setHasSyncedInitialPage(true)

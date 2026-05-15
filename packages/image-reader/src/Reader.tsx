@@ -89,7 +89,6 @@ function ReaderContent<TPage extends ReaderPage>({
 
   const isInitialPageSynced = usePageSearchParamSync({
     enabled: isLowDataReady,
-    getScrollRowIndex: (pageIndex) => readerLayout.spreadIndexByPageIndex[pageIndex] ?? pageIndex,
     maxIndex: maxPageIndex,
     pageSearchParam,
   })

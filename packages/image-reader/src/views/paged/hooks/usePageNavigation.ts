@@ -36,7 +36,10 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
       return
     }
 
-    navigateToPageIndex(prevSpread.startPageIndex, { maxIndex: maxPageIndex })
+    navigateToPageIndex(prevSpread.startPageIndex, {
+      maxIndex: maxPageIndex,
+      navigationType: 'relative',
+    })
   }
 
   function nextPage() {
@@ -54,14 +57,14 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
       return
     }
 
-    navigateToPageIndex(nextSpread.startPageIndex, { maxIndex: maxPageIndex })
+    navigateToPageIndex(nextSpread.startPageIndex, {
+      maxIndex: maxPageIndex,
+      navigationType: 'relative',
+    })
   }
 
   function firstPage() {
-    const currentPageIndex = getPageIndex()
-    const firstSpread = readerLayout.spreads[0]
-
-    if (!firstSpread || readerLayout.spreadIndexByPageIndex[currentPageIndex] === 0) {
+    if (getPageIndex() === 0) {
       onNotice?.({
         code: 'first-page',
         id: 'reader:first-page',
@@ -71,15 +74,14 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
       return
     }
 
-    navigateToPageIndex(firstSpread.startPageIndex, { maxIndex: maxPageIndex })
+    navigateToPageIndex(0, {
+      maxIndex: maxPageIndex,
+      navigationType: 'absolute',
+    })
   }
 
   function lastPage() {
-    const currentPageIndex = getPageIndex()
-    const lastSpreadIndex = readerLayout.spreads.length - 1
-    const lastSpread = readerLayout.spreads[lastSpreadIndex]
-
-    if (!lastSpread || readerLayout.spreadIndexByPageIndex[currentPageIndex] === lastSpreadIndex) {
+    if (getPageIndex() === maxPageIndex) {
       onNotice?.({
         code: 'last-page',
         id: 'reader:last-page',
@@ -89,7 +91,10 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
       return
     }
 
-    navigateToPageIndex(lastSpread.startPageIndex, { maxIndex: maxPageIndex })
+    navigateToPageIndex(maxPageIndex, {
+      maxIndex: maxPageIndex,
+      navigationType: 'absolute',
+    })
   }
 
   const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {

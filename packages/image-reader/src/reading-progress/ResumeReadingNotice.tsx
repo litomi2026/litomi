@@ -31,7 +31,7 @@ export default function ResumeReadingNotice({ lastReadablePageNumber, maxPageInd
 
       navigateToPageIndex(pageIndex, {
         maxIndex: maxPageIndex,
-        scrollRowIndex: readerLayout.spreadIndexByPageIndex[pageIndex] ?? pageIndex,
+        navigationType: 'absolute',
       })
     }
 
