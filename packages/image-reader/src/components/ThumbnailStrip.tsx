@@ -110,7 +110,7 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
             <button
               aria-current={isActive ? 'page' : undefined}
               aria-label={`${i + 1}페이지로 이동`}
-              className="relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition 
+              className="relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition
               aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
               key={page.id}
               onClick={() => handleThumbnailClick(i)}

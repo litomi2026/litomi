@@ -15,13 +15,10 @@ Image reader components for Next.js, React, TypeScript, and Tailwind CSS.
 import Reader, { type ReaderPageRenderContext } from '@litomi/image-reader'
 ```
 
-Because Tailwind CSS ignores dependencies by default, register this package and `@litomi/ui` as explicit sources in your app stylesheet:
+Import the package styles from the stylesheet that imports Tailwind CSS:
 
 ```css
 @import 'tailwindcss';
-
-@source '../node_modules/@litomi/image-reader/dist';
-@source '../node_modules/@litomi/ui/dist';
+@import '@litomi/ui/styles.css';
+@import '@litomi/image-reader/styles.css';
 ```
-
-Adjust the paths relative to the stylesheet that imports Tailwind CSS.

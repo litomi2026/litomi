@@ -1,7 +1,16 @@
 import { transformFileSync } from '@babel/core'
 import { spawnSync } from 'node:child_process'
-import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
-import { basename, join, resolve } from 'node:path'
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
+import { basename, dirname, join, relative, resolve } from 'node:path'
 
 const packageRootArg = process.argv[2]
 
@@ -11,6 +20,7 @@ if (!packageRootArg) {
 
 const packageRoot = resolve(packageRootArg)
 const distDir = join(packageRoot, 'dist')
+const srcDir = join(packageRoot, 'src')
 
 rmSync(distDir, { force: true, recursive: true })
 
@@ -22,6 +32,13 @@ const tscResult = spawnSync('tsc', ['-p', 'tsconfig.build.json'], {
 
 if (tscResult.status !== 0) {
   process.exit(tscResult.status ?? 1)
+}
+
+for (const file of findFiles(srcDir, '.css')) {
+  const outputFile = join(distDir, relative(srcDir, file))
+
+  mkdirSync(dirname(outputFile), { recursive: true })
+  copyFileSync(file, outputFile)
 }
 
 for (const file of findFiles(distDir, '.js')) {

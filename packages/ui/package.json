@@ -4,7 +4,9 @@
   "private": false,
   "type": "module",
   "license": "GPL-3.0-only",
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "files": [
     "dist"
   ],
@@ -15,7 +17,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    }
+    },
+    "./styles.css": "./dist/styles.css"
   },
   "imports": {
     "#ui/*": {
