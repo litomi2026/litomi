@@ -8,7 +8,6 @@
       }
     ],
     "paths": {
-      "@litomi/image-reader": ["../../packages/image-reader/src/index.ts"],
       "@/*": ["./src/*"],
       "@test/*": ["../../test/*"]
     }

@@ -13,7 +13,7 @@ COPY apps/notification-dispatch/package.json ./apps/notification-dispatch/packag
 COPY apps/web/package.json ./apps/web/package.json
 COPY packages ./packages
 
-RUN bun install --filter @litomi/catalog-ingest --ignore-scripts --production --silent --frozen-lockfile
+RUN bun install --filter=@litomi/catalog-ingest --ignore-scripts --production --silent --frozen-lockfile
 
 COPY tsconfig.json tsconfig.base.json turbo.json ./
 COPY apps/catalog-ingest ./apps/catalog-ingest

@@ -143,17 +143,17 @@ bun install
 
 # Run the crawler locally
 AIVEN_POSTGRES_URL=your_connection_string \
-bun run catalog:ingest
+bun --filter=@litomi/catalog-ingest start
 ```
 
 ### Building the Docker Image Locally
 
 ```bash
 # Build for local testing
-docker build -f apps/catalog-ingest/Dockerfile -t catalog-ingest:local .
+bun --filter=@litomi/catalog-ingest docker:build
 
 # Run locally
-docker run --env-file infra/cloud-run/catalog-ingest/.env catalog-ingest:local
+bun --filter=@litomi/catalog-ingest docker:run
 ```
 
 ## Monitoring

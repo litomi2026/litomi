@@ -98,7 +98,7 @@ bun install
 ### 2) Postgres/Redis 실행 (docker compose)
 
 ```bash
-bun db
+bun run db:reset
 ```
 
 기본 포트:
@@ -109,7 +109,7 @@ bun db
 - Postgres: `5434`
 - Serverless Redis HTTP: `8079`
 
-> 참고: `bun db`은 `docker compose down -v`를 포함해서 **DB 볼륨이 초기화돼고 DB 스키마 반영까지 진행돼요**. 처음부터 다시 시작할 때만 사용해 주세요.
+> 참고: `bun run db:reset`은 `docker compose down -v`를 포함해서 **DB 볼륨이 초기화돼고 DB 스키마 반영까지 진행돼요**. 처음부터 다시 시작할 때만 사용해 주세요.
 
 ### 3) 서비스 실행
 
@@ -123,18 +123,18 @@ bun dev
 
 ```bash
 # Supabase 테이블/인덱스(Drizzle) + SQL 함수 동기화
-bun run db:push
+bun --filter=@litomi/db push
 
 # Aiven 스키마
-bun run db:push:aiven
+bun --filter=@litomi/db push:aiven
 ```
 
-`bun run db:push`는 Drizzle schema를 먼저 적용한 뒤, `packages/db/src/database/supabase/functions/*.sql`에 있는 Postgres 함수를 이름순으로 이어서 반영해요. 각 함수는 `create or replace function`으로 관리해서 멱등성을 유지하고, cron 스케줄은 Supabase Dashboard UI에서 별도로 관리해요.
+`bun --filter=@litomi/db push`는 Drizzle schema를 먼저 적용한 뒤, `packages/db/src/database/supabase/functions/*.sql`에 있는 Postgres 함수를 이름순으로 이어서 반영해요. 각 함수는 `create or replace function`으로 관리해서 멱등성을 유지하고, cron 스케줄은 Supabase Dashboard UI에서 별도로 관리해요.
 
 ### 2) Backend 실행
 
 ```bash
-bun run dev:api
+bun --filter=@litomi/api dev
 ```
 
 ### 3) 모두 실행

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "bun run --conditions=react-server --env-file=../../.env.development --watch src/server.ts",
     "build": "bun build --compile --conditions=react-server --minify --sourcemap src/server.ts --target=bun --outfile dist/litomi-api",
+    "docker:build": "docker build -f Dockerfile -t litomi-api-local ../..",
+    "docker:run": "docker run --rm -p 3002:3002 --env-file ../../.env.docker litomi-api-local",
     "start": "bun --conditions=react-server src/server.ts",
     "type": "tsc --noEmit"
   },

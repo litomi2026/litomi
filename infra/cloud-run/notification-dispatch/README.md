@@ -49,12 +49,12 @@ Common schedules:
 ## Local Development
 
 ```zsh
-bun run notification:dispatch
+bun --filter=@litomi/notification-dispatch start
 ```
 
 ```zsh
-docker build -f apps/notification-dispatch/Dockerfile -t notification-dispatch:local .
-docker run --env-file infra/cloud-run/notification-dispatch/.env notification-dispatch:local
+bun --filter=@litomi/notification-dispatch docker:build
+bun --filter=@litomi/notification-dispatch docker:run
 ```
 
 ## Monitoring

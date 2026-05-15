@@ -98,17 +98,18 @@ bun install
 ### 2) Start Postgres/Redis (docker compose)
 
 ```bash
-docker compose up -d
+bun run db:reset
 ```
 
 Default ports:
 
 - Web: `3000`
+- Proxy: `3001`
 - Backend: `3002`
 - Postgres: `5434`
 - Serverless Redis HTTP: `8079`
 
-> Note: `bun run db` includes `docker compose down -v`, which **wipes DB volumes**. Use it only when you want a fresh reset.
+> Note: `bun run db:reset` includes `docker compose down -v`, which **wipes DB volumes**. Use it only when you want a fresh reset.
 
 ### 3) Configure environment variables (`.env.development`)
 
@@ -170,18 +171,18 @@ TOTP_ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789a
 
 ```bash
 # Supabase tables/indexes (Drizzle) + SQL function sync
-bun run db:push
+bun --filter=@litomi/db push
 
 # Aiven schema
-bun run db:push:aiven
+bun --filter=@litomi/db push:aiven
 ```
 
-`bun run db:push` applies the Drizzle schema first, then applies the Postgres functions from `src/database/supabase/functions/*.sql` in filename order. Each function stays idempotent via `create or replace function`, while cron schedules are managed separately in the Supabase Dashboard UI.
+`bun --filter=@litomi/db push` applies the Drizzle schema first, then applies the Postgres functions from `packages/db/src/database/supabase/functions/*.sql` in filename order. Each function stays idempotent via `create or replace function`, while cron schedules are managed separately in the Supabase Dashboard UI.
 
 ### 5) Start Backend
 
 ```bash
-bun run dev:api
+bun --filter=@litomi/api dev
 ```
 
 ### 6) Start Web

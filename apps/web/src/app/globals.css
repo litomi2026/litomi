@@ -1,6 +1,6 @@
 @import 'tailwindcss' source(none);
-@import '../../../../packages/ui/src/styles.css';
-@import '../../../../packages/image-reader/src/styles.css';
+@import '@litomi/ui/styles.css';
+@import '@litomi/image-reader/styles.css';
 
 @source '..';
 
