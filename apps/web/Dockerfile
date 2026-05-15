@@ -2,8 +2,6 @@
 FROM oven/bun:1.3 AS builder
 WORKDIR /app
 
-ENV BUILD_OUTPUT=standalone
-ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 COPY package.json bun.lock turbo.json tsconfig.json tsconfig.base.json ./
@@ -14,9 +12,10 @@ COPY apps/edge-proxy/package.json ./apps/edge-proxy/package.json
 COPY apps/mobile/package.json ./apps/mobile/package.json
 COPY apps/notification-dispatch/package.json ./apps/notification-dispatch/package.json
 COPY packages ./packages
-COPY tools ./tools
 
 RUN bun install --frozen-lockfile --no-save --silent
+
+COPY tools ./tools
 
 ARG CI
 ARG COMMIT_SHA
@@ -34,6 +33,7 @@ ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY
 
 ENV APP_ORIGIN=$NEXT_PUBLIC_APP_ORIGIN
+ENV BUILD_OUTPUT=standalone 
 ENV CI=$CI
 ENV DO_NOT_TRACK=1
 ENV NEXT_PUBLIC_API_ORIGIN=$NEXT_PUBLIC_API_ORIGIN
@@ -49,6 +49,7 @@ ENV NEXT_PUBLIC_IOS_TESTFLIGHT_URL=$NEXT_PUBLIC_IOS_TESTFLIGHT_URL
 ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=$NEXT_PUBLIC_VAPID_PUBLIC_KEY
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV TURBO_TELEMETRY_DISABLED=1
 
 COPY apps/web ./apps/web
