@@ -87,7 +87,7 @@ function ReaderContent<TPage extends ReaderPage>({
     idleDelayMs: ms('3 seconds'),
   })
 
-  usePageSearchParamSync({
+  const isInitialPageSynced = usePageSearchParamSync({
     enabled: isLowDataReady,
     getScrollRowIndex: (pageIndex) => readerLayout.spreadIndexByPageIndex[pageIndex] ?? pageIndex,
     maxIndex: maxPageIndex,
@@ -173,7 +173,7 @@ function ReaderContent<TPage extends ReaderPage>({
       onPointerMove={registerActivity}
       onWheel={registerActivity}
     >
-      {readingProgress && (
+      {readingProgress && isInitialPageSynced && (
         <>
           <ResumeReadingNotice
             lastReadablePageNumber={readingProgress.lastReadablePageNumber}

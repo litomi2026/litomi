@@ -1,5 +1,5 @@
 import { useReaderStore } from '#reader/state/readerStore'
-import { useEffect, useEffectEvent } from 'react'
+import { useEffect, useEffectEvent, useState } from 'react'
 
 const PAGE_SEARCH_PARAM_COMMIT_DELAY_MS = 200
 
@@ -11,13 +11,16 @@ type Params = {
 }
 
 export default function usePageSearchParamSync({ enabled, getScrollRowIndex, maxIndex, pageSearchParam }: Params) {
+  const [hasSyncedInitialPage, setHasSyncedInitialPage] = useState(false)
   const pageIndex = useReaderStore((state) => state.pageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const getInitialScrollRowIndex = useEffectEvent((pageIndex: number) => getScrollRowIndex(pageIndex))
+  const isInitialPageSynced = enabled && hasSyncedInitialPage
 
   // NOTE: page search param이 있으면 초기 진입 시 해당 페이지로 이동해요.
   useEffect(() => {
     if (!enabled) {
+      setHasSyncedInitialPage(false)
       return
     }
 
@@ -26,7 +29,8 @@ export default function usePageSearchParamSync({ enabled, getScrollRowIndex, max
     const parsedPage = parseInt(pageStr, 10)
     const pageIndex = parsedPage - 1
 
-    if (isNaN(pageIndex)) {
+    if (Number.isNaN(pageIndex)) {
+      setHasSyncedInitialPage(true)
       return
     }
 
@@ -34,11 +38,13 @@ export default function usePageSearchParamSync({ enabled, getScrollRowIndex, max
       maxIndex,
       scrollRowIndex: getInitialScrollRowIndex(pageIndex),
     })
+
+    setHasSyncedInitialPage(true)
   }, [enabled, maxIndex, navigateToPageIndex, pageSearchParam])
 
   // NOTE: pageIndex 값이 바뀌면 URL search param에 마지막 위치를 반영해요.
   useEffect(() => {
-    if (!enabled) {
+    if (!enabled || !isInitialPageSynced) {
       return
     }
 
@@ -49,7 +55,9 @@ export default function usePageSearchParamSync({ enabled, getScrollRowIndex, max
     return () => {
       window.clearTimeout(timeoutId)
     }
-  }, [enabled, pageIndex, pageSearchParam])
+  }, [enabled, isInitialPageSynced, pageIndex, pageSearchParam])
+
+  return isInitialPageSynced
 }
 
 function replacePageSearchParam(searchParam: string, pageIndex: number) {
