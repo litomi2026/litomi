@@ -6,33 +6,29 @@
   "license": "GPL-3.0-only",
   "sideEffects": false,
   "files": [
-    "src",
+    "dist",
     "README.md"
   ],
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "imports": {
-    "#reader/Reader": "./src/Reader.tsx",
-    "#reader/components/*": "./src/components/*.tsx",
-    "#reader/hooks/*": "./src/hooks/*.ts",
-    "#reader/model/*": "./src/model/*.ts",
-    "#reader/reading-progress/*": "./src/reading-progress/*.tsx",
-    "#reader/state/*": "./src/state/*.tsx",
-    "#reader/views/paged/*": "./src/views/paged/*.tsx",
-    "#reader/views/paged/gestures/*": "./src/views/paged/gestures/*.ts",
-    "#reader/views/paged/hooks/*": "./src/views/paged/hooks/*.ts",
-    "#reader/views/scroll/*": "./src/views/scroll/*.tsx"
+    "#reader/*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
+    "build": "bun ../../tools/buildReactPackage.ts .",
     "type": "tsc --noEmit"
   },
   "dependencies": {
@@ -45,7 +41,6 @@
     "zustand": "^5.0.12"
   },
   "peerDependencies": {
-    "next": ">=16",
     "react": ">=19",
     "react-dom": ">=19",
     "tailwindcss": ">=4"

@@ -6,8 +6,6 @@ import {
   shouldIgnoreViewerGestureTarget,
 } from '#reader/model/viewerGesturePolicy'
 import { DEFAULT_ZOOM, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
-import { type PointerEvent, useEffect, useRef } from 'react'
-
 import {
   DOUBLE_TAP_ZOOM_LEVEL,
   getDistance,
@@ -16,7 +14,8 @@ import {
   getNextPinchZoomLevel,
   moveZoomAnchorToClientPoint,
   type ZoomAnchor,
-} from './viewerZoom'
+} from '#reader/views/paged/gestures/viewerZoom'
+import { type PointerEvent, useEffect, useRef } from 'react'
 
 const HORIZONTAL_SWIPE_THRESHOLD = 50
 const VERTICAL_BRIGHTNESS_THRESHOLD = 24

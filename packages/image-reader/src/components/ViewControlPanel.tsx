@@ -70,7 +70,6 @@ export default function ViewControlPanel({ id }: Props) {
               <span className={CONTROL_LABEL_CLASS}>{localWidth}%</span>
             </div>
           )}
-
         </div>
 
         <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-800 text-foreground">

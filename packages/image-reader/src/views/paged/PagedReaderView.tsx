@@ -4,14 +4,13 @@ import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model
 
 import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
 import { type ScreenFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
+import useViewerPointerGestures from '#reader/views/paged/gestures/useViewerPointerGestures'
+import usePagedReaderViewScrollRestoration from '#reader/views/paged/hooks/usePagedReaderViewScrollRestoration'
+import usePagedReaderViewWheelNavigation from '#reader/views/paged/hooks/usePagedReaderViewWheelNavigation'
+import usePagedReaderViewZoom from '#reader/views/paged/hooks/usePagedReaderViewZoom'
+import usePageNavigation from '#reader/views/paged/hooks/usePageNavigation'
 import { Loader2 } from 'lucide-react'
 import { Fragment } from 'react'
-
-import useViewerPointerGestures from './gestures/useViewerPointerGestures'
-import usePagedReaderViewScrollRestoration from './hooks/usePagedReaderViewScrollRestoration'
-import usePagedReaderViewWheelNavigation from './hooks/usePagedReaderViewWheelNavigation'
-import usePagedReaderViewZoom from './hooks/usePagedReaderViewZoom'
-import usePageNavigation from './hooks/usePageNavigation'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 const PAGED_READER_VIEW_WINDOW_SIZE = 6

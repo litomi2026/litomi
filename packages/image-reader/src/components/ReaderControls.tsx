@@ -2,15 +2,14 @@
 
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 
+import PageSlider from '#reader/components/PageSlider'
+import SlideshowButton from '#reader/components/SlideshowButton'
+import ThumbnailStrip from '#reader/components/ThumbnailStrip'
+import ViewControlPanel from '#reader/components/ViewControlPanel'
 import { getLowDataLabel } from '#reader/model/lowData'
 import { orientations, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-
-import PageSlider from './PageSlider'
-import SlideshowButton from './SlideshowButton'
-import ThumbnailStrip from './ThumbnailStrip'
-import ViewControlPanel from './ViewControlPanel'
 
 const BOTTOM_BUTTON_CLASS_NAME =
   'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'

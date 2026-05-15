@@ -20,8 +20,8 @@ Because Tailwind CSS ignores dependencies by default, register this package and 
 ```css
 @import 'tailwindcss';
 
-@source '../node_modules/@litomi/image-reader/src';
-@source '../node_modules/@litomi/ui/src';
+@source '../node_modules/@litomi/image-reader/dist';
+@source '../node_modules/@litomi/ui/dist';
 ```
 
 Adjust the paths relative to the stylesheet that imports Tailwind CSS.
