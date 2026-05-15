@@ -1,6 +1,7 @@
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 
 import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
+import { useReaderMessages } from '#reader/readerRuntime'
 import { type ScreenFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { Loader2 } from 'lucide-react'
 import { type CSSProperties, Fragment, useEffect } from 'react'
@@ -42,6 +43,7 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
   const setListRef = useReaderStore((state) => state.setListRef)
   const screenFit = useReaderStore((state) => state.screenFit)
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: DEFAULT_SCROLL_ROW_HEIGHT })
+  const messages = useReaderMessages()
 
   const overscanCount = isLowDataMode ? 1 : 3
   const maxPage = readerLayout.spreadIndexByPageIndex.length
@@ -61,7 +63,7 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
     return (
       <output className="flex items-center justify-center h-dvh animate-fade-in" onClick={onClick}>
         <Loader2 aria-hidden="true" className="size-8 animate-spin" />
-        <span className="sr-only">이미지 불러오는 중</span>
+        <span className="sr-only">{messages.loadingImages}</span>
       </output>
     )
   }

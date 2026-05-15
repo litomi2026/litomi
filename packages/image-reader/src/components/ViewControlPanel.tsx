@@ -1,5 +1,6 @@
 'use client'
 
+import { useReaderMessages } from '#reader/readerRuntime'
 import { useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { Slider } from '@litomi/ui'
 import { Monitor, Palette } from 'lucide-react'
@@ -20,6 +21,7 @@ export default function ViewControlPanel({ id }: Props) {
   const setImageWidth = useReaderStore((state) => state.setImageWidth)
   const [localBrightness, setLocalBrightness] = useState(brightness)
   const [localWidth, setLocalWidth] = useState(imageWidth)
+  const messages = useReaderMessages()
 
   useEffect(() => {
     setLocalBrightness(brightness)
@@ -34,13 +36,13 @@ export default function ViewControlPanel({ id }: Props) {
       className="fixed sm:absolute bottom-20 sm:bottom-full inset-x-4 sm:inset-x-auto sm:mb-2 left-1/2 -translate-x-1/2 z-30 m-0 min-w-0 w-[calc(100vw-2rem)] max-w-sm border-0 p-0"
       id={id}
     >
-      <legend className="sr-only">보기 조절</legend>
+      <legend className="sr-only">{messages.viewControlsTitle}</legend>
       <div className="bg-zinc-900/95 border border-zinc-700 rounded-xl shadow-xl p-3 sm:p-4">
         <div className="grid gap-3 sm:gap-4">
           <div className="flex items-center gap-3.5">
             <Palette className={CONTROL_ICONS_CLASS} />
             <Slider
-              aria-label="밝기"
+              aria-label={messages.brightnessLabel}
               aria-valuetext={`${localBrightness}%`}
               className="flex-1 h-4"
               max={100}
@@ -57,7 +59,7 @@ export default function ViewControlPanel({ id }: Props) {
             <div className="flex items-center gap-3.5">
               <Monitor className={CONTROL_ICONS_CLASS} />
               <Slider
-                aria-label="이미지 너비"
+                aria-label={messages.imageWidthLabel}
                 aria-valuetext={`${localWidth}%`}
                 className="flex-1 h-4"
                 max={100}
@@ -82,7 +84,7 @@ export default function ViewControlPanel({ id }: Props) {
               }}
               type="button"
             >
-              밝게
+              {messages.brightPreset}
             </button>
             <button
               className="text-xs px-2 sm:px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition flex-1"
@@ -92,7 +94,7 @@ export default function ViewControlPanel({ id }: Props) {
               }}
               type="button"
             >
-              어둡게
+              {messages.darkPreset}
             </button>
             <button
               className="text-xs px-2 sm:px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition flex-1"
@@ -106,7 +108,7 @@ export default function ViewControlPanel({ id }: Props) {
               }}
               type="button"
             >
-              초기화
+              {messages.resetViewControls}
             </button>
           </div>
         </div>

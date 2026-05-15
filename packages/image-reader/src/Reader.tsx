@@ -1,31 +1,32 @@
 'use client'
 
+import type { ReaderMessageOverrides } from '#reader/model/readerMessages'
+import type { ReaderNoticeHandler } from '#reader/model/readerNotice'
+
 import ReaderControls from '#reader/components/ReaderControls'
 import useAutoHideCursor from '#reader/hooks/useAutoHideCursor'
 import usePageSearchParamSync from '#reader/hooks/usePageSearchParamSync'
-import {
-  getAutoLowDataNoticeMessage,
-  getNavigatorLowDataSnapshot,
-  type LowDataSnapshot,
-  resolveLowDataState,
-} from '#reader/model/lowData'
+import { getNavigatorLowDataSnapshot, type LowDataSnapshot, resolveLowDataState } from '#reader/model/lowData'
 import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from '#reader/model/readerLayout'
 import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
+import { ReaderRuntimeProvider, useReaderMessages, useReaderNotice } from '#reader/readerRuntime'
 import ReadingProgressTracker, {
   type ReadingProgress,
   type ReadingProgressSaveOptions,
 } from '#reader/reading-progress/ReadingProgressTracker'
-import ResumeReadingToast from '#reader/reading-progress/ResumeReadingToast'
+import ResumeReadingNotice from '#reader/reading-progress/ResumeReadingNotice'
 import { ReaderProvider, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import PagedReaderView from '#reader/views/paged/PagedReaderView'
 import ScrollReaderView from '#reader/views/scroll/ScrollReaderView'
 import { Loader2 } from 'lucide-react'
 import ms from 'ms'
 import { type ReactNode, useEffect, useState } from 'react'
-import { toast } from 'sonner'
 
 export type ReaderProps<TPage extends ReaderPage> = {
   header?: ReactNode
+  locale?: string
+  messages?: ReaderMessageOverrides
+  onNotice?: ReaderNoticeHandler
   pageSearchParam?: string
   pages: readonly TPage[]
   persistenceKey?: string
@@ -40,11 +41,19 @@ type ReadingProgressOptions = {
   onSave?: (progress: ReadingProgress, options?: ReadingProgressSaveOptions) => Promise<void> | void
 }
 
-export default function Reader<TPage extends ReaderPage>({ persistenceKey, ...props }: ReaderProps<TPage>) {
+export default function Reader<TPage extends ReaderPage>({
+  locale,
+  messages,
+  onNotice,
+  persistenceKey,
+  ...props
+}: ReaderProps<TPage>) {
   return (
-    <ReaderProvider persistenceKey={persistenceKey}>
-      <ReaderContent {...props} />
-    </ReaderProvider>
+    <ReaderRuntimeProvider locale={locale} messages={messages} onNotice={onNotice}>
+      <ReaderProvider persistenceKey={persistenceKey}>
+        <ReaderContent {...props} />
+      </ReaderProvider>
+    </ReaderRuntimeProvider>
   )
 }
 
@@ -55,7 +64,7 @@ function ReaderContent<TPage extends ReaderPage>({
   readingProgress,
   renderPage,
   renderThumbnail,
-}: Omit<ReaderProps<TPage>, 'persistenceKey'>) {
+}: Omit<ReaderProps<TPage>, 'locale' | 'messages' | 'onNotice' | 'persistenceKey'>) {
   const [areControlsVisible, setAreControlsVisible] = useState(false)
   const [lowDataSnapshot, setLowDataSnapshot] = useState<LowDataSnapshot | null>(null)
   const doublePageAnchorIndex = useReaderStore((state) => state.doublePageAnchorIndex)
@@ -64,6 +73,8 @@ function ReaderContent<TPage extends ReaderPage>({
   const pageView = useReaderStore((state) => state.pageView)
   const viewerMode = useReaderStore((state) => state.viewerMode)
   const resetPageIndex = useReaderStore((state) => state.resetPageIndex)
+  const messages = useReaderMessages()
+  const notify = useReaderNotice()
 
   const readerLayout = createReaderLayout(pages, { doublePageAnchorIndex, pageView })
   const maxPageIndex = Math.max(0, pages.length - 1)
@@ -102,14 +113,27 @@ function ReaderContent<TPage extends ReaderPage>({
 
     const snapshot = getNavigatorLowDataSnapshot()
     const nextResolvedLowData = resolveLowDataState(lowData, snapshot)
-    const message = getAutoLowDataNoticeMessage(nextResolvedLowData.reason)
 
     setLowDataSnapshot(snapshot)
 
-    if (message) {
-      toast(message)
+    if (nextResolvedLowData.reason === 'auto-save-data') {
+      notify({
+        code: 'low-data-auto-save-data',
+        id: 'reader:low-data:auto-save-data',
+        message: messages.lowDataAutoSaveDataNotice,
+        severity: 'info',
+      })
     }
-  }, [isLowDataHydrated, lowDataSnapshot, lowData])
+
+    if (nextResolvedLowData.reason === 'auto-slow-network') {
+      notify({
+        code: 'low-data-auto-slow-network',
+        id: 'reader:low-data:auto-slow-network',
+        message: messages.lowDataAutoSlowNetworkNotice,
+        severity: 'info',
+      })
+    }
+  }, [isLowDataHydrated, lowDataSnapshot, lowData, messages, notify])
 
   // NOTE: 뷰어를 벗어나면 페이지 초기화
   useEffect(() => {
@@ -151,7 +175,7 @@ function ReaderContent<TPage extends ReaderPage>({
     >
       {readingProgress && (
         <>
-          <ResumeReadingToast
+          <ResumeReadingNotice
             lastReadablePageNumber={readingProgress.lastReadablePageNumber}
             maxPageIndex={maxPageIndex}
             readerLayout={readerLayout}
@@ -177,7 +201,7 @@ function ReaderContent<TPage extends ReaderPage>({
       {!isLowDataReady ? (
         <output className="flex items-center justify-center h-dvh animate-fade-in">
           <Loader2 aria-hidden="true" className="size-8 animate-spin" />
-          <span className="sr-only">이미지 불러오는 중</span>
+          <span className="sr-only">{messages.loadingImages}</span>
         </output>
       ) : isPageMode ? (
         <PagedReaderView

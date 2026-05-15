@@ -3,6 +3,7 @@
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 
 import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
+import { useReaderMessages } from '#reader/readerRuntime'
 import { type ScreenFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import useViewerPointerGestures from '#reader/views/paged/gestures/useViewerPointerGestures'
 import usePagedReaderViewScrollRestoration from '#reader/views/paged/hooks/usePagedReaderViewScrollRestoration'
@@ -48,6 +49,7 @@ export default function PagedReaderView<TPage extends ReaderPage>({
   showTouchAreaOverlay,
 }: Props<TPage>) {
   const screenFit = useReaderStore((state) => state.screenFit)
+  const messages = useReaderMessages()
   const maxPageIndex = Math.max(0, pages.length - 1)
   const { prevPage, nextPage } = usePageNavigation({ maxPageIndex, readerLayout })
 
@@ -99,7 +101,7 @@ export default function PagedReaderView<TPage extends ReaderPage>({
               <li className="flex items-center justify-center h-full animate-fade-in">
                 <output className="flex items-center justify-center">
                   <Loader2 aria-hidden="true" className="size-8 animate-spin" />
-                  <span className="sr-only">이미지 불러오는 중</span>
+                  <span className="sr-only">{messages.loadingImages}</span>
                 </output>
               </li>
             ) : (
@@ -173,6 +175,8 @@ function PagedReaderViewItem<TPage extends ReaderPage>({
 
 function TouchAreaOverlay() {
   const orientation = useReaderStore((state) => state.orientation)
+  const messages = useReaderMessages()
+
   const isHorizontal = orientation === 'horizontal' || orientation === 'horizontal-reverse'
   const isReversed = orientation === 'horizontal-reverse' || orientation === 'vertical-reverse'
 
@@ -184,13 +188,13 @@ function TouchAreaOverlay() {
     >
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
-          {isReversed ? '다음' : '이전'}
+          {isReversed ? messages.touchNext : messages.touchPrevious}
         </span>
       </div>
       {isHorizontal && <div className="flex-1" />}
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
-          {isReversed ? '이전' : '다음'}
+          {isReversed ? messages.touchPrevious : messages.touchNext}
         </span>
       </div>
     </div>

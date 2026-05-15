@@ -2,11 +2,11 @@
 
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
+import { useReaderMessages, useReaderNotice } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import ms from 'ms'
 import { useEffect, useId, useRef, useState } from 'react'
-import { toast } from 'sonner'
 
 type Props<TPage extends ReaderPage> = {
   className?: string
@@ -28,6 +28,8 @@ export default function SlideshowButton<TPage extends ReaderPage>({
   const isRepeatingRef = useRef(false)
   const timeoutIdRef = useRef<number | null>(null)
   const intervalInputId = useId()
+  const messages = useReaderMessages()
+  const notify = useReaderNotice()
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -76,7 +78,13 @@ export default function SlideshowButton<TPage extends ReaderPage>({
           return
         }
 
-        toast.info('마지막 페이지예요')
+        notify({
+          code: 'slideshow-ended',
+          id: 'reader:slideshow-ended',
+          message: messages.lastPageNotice,
+          severity: 'info',
+        })
+
         setIsRunning(false)
       },
       ms(`${intervalSecondsRef.current}s`),
@@ -88,7 +96,7 @@ export default function SlideshowButton<TPage extends ReaderPage>({
         timeoutIdRef.current = null
       }
     }
-  }, [isRunning, maxPageIndex, navigateToPageIndex, pageIndex, readerLayout])
+  }, [isRunning, maxPageIndex, messages, navigateToPageIndex, notify, pageIndex, readerLayout])
 
   return (
     <>
@@ -109,19 +117,23 @@ export default function SlideshowButton<TPage extends ReaderPage>({
         }}
         type="button"
       >
-        {isRunning ? '중지' : '자동 넘기기'}
+        {isRunning ? messages.slideshowStopButton : messages.slideshowStartButton}
       </button>
       <Dialog
-        ariaLabel="자동 넘기기"
+        ariaLabel={messages.slideshowTitle}
         className="rounded-xl border-2 h-auto max-w-sm max-sm:p-0 sm:max-w-sm"
         onClose={() => setIsOpened(false)}
         open={isOpened}
       >
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
-          <DialogHeader onClose={() => setIsOpened(false)} title="자동 넘기기" />
+          <DialogHeader
+            closeButtonLabel={messages.closeDialog}
+            onClose={() => setIsOpened(false)}
+            title={messages.slideshowTitle}
+          />
           <DialogBody>
             <div className="grid grid-cols-[auto_1fr] items-center gap-4 whitespace-nowrap [&_h4]:font-semibold">
-              <label htmlFor={intervalInputId}>주기</label>
+              <label htmlFor={intervalInputId}>{messages.intervalLabel}</label>
               <div className="flex items-center gap-2">
                 <input
                   autoFocus
@@ -137,11 +149,11 @@ export default function SlideshowButton<TPage extends ReaderPage>({
                   required
                   type="number"
                 />
-                <span>초</span>
+                <span>{messages.secondsUnit}</span>
               </div>
-              <strong>반복</strong>
+              <strong>{messages.repeatLabel}</strong>
               <Toggle
-                aria-label="자동 넘기기 반복"
+                aria-label={messages.slideshowRepeatLabel}
                 className="w-14 peer-checked:bg-brand/80"
                 defaultChecked={false}
                 name="repeat"
@@ -150,10 +162,10 @@ export default function SlideshowButton<TPage extends ReaderPage>({
           </DialogBody>
           <DialogFooter className="grid gap-2 text-sm [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:rounded-full [&_button]:transition">
             <button className="border-2 p-2 font-bold text-foreground transition border-zinc-700" type="submit">
-              시작
+              {messages.slideshowStartAction}
             </button>
             <button className="p-2 text-zinc-500" onClick={() => setIsOpened(false)} type="button">
-              취소
+              {messages.cancelAction}
             </button>
           </DialogFooter>
         </form>

@@ -19,30 +19,6 @@ type NetworkInformationLike = {
 
 const SLOW_EFFECTIVE_TYPES = new Set(['2g', 'slow-2g'])
 
-export function getAutoLowDataNoticeMessage(reason: LowDataReason): string | null {
-  if (reason === 'auto-save-data') {
-    return '데이터 절약 모드가 켜졌어요'
-  }
-
-  if (reason === 'auto-slow-network') {
-    return '느린 네트워크가 감지됐어요'
-  }
-
-  return null
-}
-
-export function getLowDataLabel(lowData: LowDataMode): string {
-  if (lowData === 'off') {
-    return '저데이터 꺼짐'
-  }
-
-  if (lowData === 'on') {
-    return '저데이터 켜짐'
-  }
-
-  return '저데이터 자동'
-}
-
 export function getNavigatorLowDataSnapshot(): LowDataSnapshot {
   if (typeof navigator === 'undefined') {
     return {

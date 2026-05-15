@@ -2,10 +2,10 @@
 
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
+import { useReaderMessages, useReaderNotice } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import ms from 'ms'
 import { useEffect } from 'react'
-import { toast } from 'sonner'
 
 const DEFAULT_DURATION_MS = ms('10 seconds')
 
@@ -15,9 +15,11 @@ type Props = {
   readerLayout: ReaderLayout<ReaderPage>
 }
 
-export default function ResumeReadingToast({ lastReadablePageNumber, maxPageIndex, readerLayout }: Props) {
+export default function ResumeReadingNotice({ lastReadablePageNumber, maxPageIndex, readerLayout }: Props) {
   const getPageIndex = useReaderStore((state) => state.getPageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
+  const messages = useReaderMessages()
+  const notify = useReaderNotice()
 
   useEffect(() => {
     const currentReadablePageNumber = readerLayout.readablePageNumberByPageIndex[getPageIndex()] ?? 0
@@ -30,10 +32,9 @@ export default function ResumeReadingToast({ lastReadablePageNumber, maxPageInde
       return
     }
 
-    const toastId = toast(`마지막으로 읽던 페이지 ${lastReadablePageNumber}`, {
-      duration: DEFAULT_DURATION_MS,
+    const notice = notify({
       action: {
-        label: '이동',
+        label: messages.resumeReadingAction,
         onClick: () => {
           const pageIndex =
             readerLayout.pageIndexByReadablePageNumber[lastReadablePageNumber] ?? lastReadablePageNumber - 1
@@ -44,12 +45,17 @@ export default function ResumeReadingToast({ lastReadablePageNumber, maxPageInde
           })
         },
       },
+      code: 'resume-reading',
+      durationMs: DEFAULT_DURATION_MS,
+      id: 'reader:resume-reading',
+      message: messages.resumeReadingNotice(lastReadablePageNumber),
+      severity: 'info',
     })
 
     return () => {
-      toast.dismiss(toastId)
+      notice.dismiss()
     }
-  }, [getPageIndex, lastReadablePageNumber, maxPageIndex, navigateToPageIndex, readerLayout])
+  }, [getPageIndex, lastReadablePageNumber, maxPageIndex, messages, navigateToPageIndex, notify, readerLayout])
 
   return null
 }

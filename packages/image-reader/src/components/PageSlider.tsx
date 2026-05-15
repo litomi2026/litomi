@@ -1,5 +1,6 @@
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
+import { useReaderMessages } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import { Slider } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'
@@ -12,6 +13,7 @@ type Props<TPage extends ReaderPage> = {
 export default function PageSlider<TPage extends ReaderPage>({ maxPageIndex, readerLayout }: Props<TPage>) {
   const pageIndex = useReaderStore((state) => state.pageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
+  const messages = useReaderMessages()
 
   const activeSpreadIndex = readerLayout.spreadIndexByPageIndex[pageIndex] ?? 0
   const activeSpread = readerLayout.spreads[activeSpreadIndex]
@@ -26,8 +28,8 @@ export default function PageSlider<TPage extends ReaderPage>({ maxPageIndex, rea
     <>
       <div className="px-3">
         <Slider
-          aria-label="페이지 이동"
-          aria-valuetext={`${currentPageText} / ${maxPage}`}
+          aria-label={messages.pageSliderLabel}
+          aria-valuetext={messages.pageSliderValue(currentPageText, maxPage)}
           className="h-6"
           max={maxPageIndex}
           onValueCommit={(value) => {

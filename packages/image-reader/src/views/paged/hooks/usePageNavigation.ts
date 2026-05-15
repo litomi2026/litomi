@@ -1,9 +1,9 @@
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
 import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
+import { useReaderMessages, useReaderNotice } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import { useEffect, useEffectEvent } from 'react'
-import { toast } from 'sonner'
 
 const PREV_PAGE_CODES = new Set(['ArrowLeft', 'AudioVolumeUp', 'PageUp'])
 const NEXT_PAGE_CODES = new Set(['ArrowRight', 'AudioVolumeDown', 'PageDown'])
@@ -18,6 +18,8 @@ type Params<TPage extends ReaderPage> = {
 export default function usePageNavigation<TPage extends ReaderPage>({ maxPageIndex, readerLayout }: Params<TPage>) {
   const getPageIndex = useReaderStore((state) => state.getPageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
+  const messages = useReaderMessages()
+  const notify = useReaderNotice()
 
   function prevPage() {
     const currentPageIndex = getPageIndex()
@@ -25,7 +27,12 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
     const prevSpread = readerLayout.spreads[currentSpreadIndex - 1]
 
     if (!prevSpread) {
-      toast.warning('첫번째 페이지예요')
+      notify({
+        code: 'first-page',
+        id: 'reader:first-page',
+        message: messages.firstPageNotice,
+        severity: 'warning',
+      })
       return
     }
 
@@ -38,7 +45,12 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
     const nextSpread = readerLayout.spreads[currentSpreadIndex + 1]
 
     if (!nextSpread) {
-      toast.warning('마지막 페이지예요')
+      notify({
+        code: 'last-page',
+        id: 'reader:last-page',
+        message: messages.lastPageNotice,
+        severity: 'warning',
+      })
       return
     }
 
@@ -50,7 +62,12 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
     const firstSpread = readerLayout.spreads[0]
 
     if (!firstSpread || readerLayout.spreadIndexByPageIndex[currentPageIndex] === 0) {
-      toast.warning('첫번째 페이지예요')
+      notify({
+        code: 'first-page',
+        id: 'reader:first-page',
+        message: messages.firstPageNotice,
+        severity: 'warning',
+      })
       return
     }
 
@@ -63,7 +80,12 @@ export default function usePageNavigation<TPage extends ReaderPage>({ maxPageInd
     const lastSpread = readerLayout.spreads[lastSpreadIndex]
 
     if (!lastSpread || readerLayout.spreadIndexByPageIndex[currentPageIndex] === lastSpreadIndex) {
-      toast.warning('마지막 페이지예요')
+      notify({
+        code: 'last-page',
+        id: 'reader:last-page',
+        message: messages.lastPageNotice,
+        severity: 'warning',
+      })
       return
     }
 

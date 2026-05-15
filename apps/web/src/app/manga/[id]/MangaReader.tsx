@@ -5,6 +5,7 @@ import type { POSTV1MangaIdHistoryBody } from '@litomi/contracts'
 import { type Manga } from '@litomi/domain/types/manga'
 import { env } from '@litomi/env/env/client'
 import Reader, {
+  type ReaderNotice,
   type ReaderPageRenderContext,
   type ReadingProgress,
   type ReadingProgressSaveOptions,
@@ -13,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import BackButton from '@/components/BackButton'
@@ -20,6 +22,7 @@ import MangaImage from '@/components/MangaImage'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 
 import FullscreenButton from './FullscreenButton'
@@ -45,8 +48,26 @@ export default function MangaReader({ manga }: Props) {
   const { lastPage } = useMangaReadingHistory(manga.id)
   const queryClient = useQueryClient()
 
+  const locale = getLocaleFromCookie() || 'ko'
   const adultState = getAdultState(me)
   const canSyncReadingProgress = hasAdultAccess(adultState) && me?.settings.historySyncEnabled === true
+
+  function handleReaderNotice(notice: ReaderNotice) {
+    const toastOptions = {
+      action: notice.action,
+      duration: notice.durationMs,
+      id: notice.id,
+    }
+
+    const toastId =
+      notice.severity === 'warning'
+        ? toast.warning(notice.message, toastOptions)
+        : toast.info(notice.message, toastOptions)
+
+    return {
+      dismiss: () => toast.dismiss(toastId),
+    }
+  }
 
   function handleReadingProgressChange(progress: ReadingProgress) {
     setLocalReadingHistoryEntry(manga.id, progress.readablePageNumber)
@@ -134,6 +155,8 @@ export default function MangaReader({ manga }: Props) {
           </div>
         </div>
       }
+      locale={locale}
+      onNotice={handleReaderNotice}
       pages={pages}
       pageSearchParam={MangaIdSearchParam.PAGE}
       persistenceKey="litomi-reader"

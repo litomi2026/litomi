@@ -6,7 +6,7 @@ import PageSlider from '#reader/components/PageSlider'
 import SlideshowButton from '#reader/components/SlideshowButton'
 import ThumbnailStrip from '#reader/components/ThumbnailStrip'
 import ViewControlPanel from '#reader/components/ViewControlPanel'
-import { getLowDataLabel } from '#reader/model/lowData'
+import { useReaderMessages } from '#reader/readerRuntime'
 import { orientations, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -44,6 +44,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
   const setViewerMode = useReaderStore((state) => state.setViewerMode)
   const toggleReadingDirection = useReaderStore((state) => state.toggleReadingDirection)
   const viewControlRef = useRef<HTMLDivElement>(null)
+  const messages = useReaderMessages()
 
   const isDoublePage = pageView === 'double'
   const isPageMode = viewerMode === 'page'
@@ -126,7 +127,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
         )}
         <PageSlider maxPageIndex={maxPageIndex} readerLayout={readerLayout} />
         <div
-          aria-label="뷰어 보기 설정"
+          aria-label={messages.controlsToolbarLabel}
           className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background"
           role="toolbar"
         >
@@ -136,7 +137,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
             onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}
             type="button"
           >
-            {isPageMode ? '페이지' : '스크롤'}보기
+            {messages.viewerModeButton(viewerMode)}
           </button>
           <button
             aria-pressed={isDoublePage}
@@ -144,22 +145,25 @@ export default function ReaderControls<TPage extends ReaderPage>({
             onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
             type="button"
           >
-            {isDoublePage ? '두 쪽' : '한 쪽'} 보기
+            {messages.pageViewButton(pageView)}
           </button>
           <button
             className={BOTTOM_BUTTON_CLASS_NAME}
             onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}
             type="button"
           >
-            {screenFit === 'all' ? '화면' : isWidthFit ? '가로' : '세로'} 맞춤
+            {messages.screenFitButton(screenFit)}
           </button>
           {isDoublePage && (
             <button
+              aria-label={messages.readingDirectionButton(readingDirection)}
               className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
               onClick={toggleReadingDirection}
               type="button"
             >
-              좌 {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />} 우
+              {messages.readingDirectionLeftShort}
+              {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
+              {messages.readingDirectionRightShort}
             </button>
           )}
           {isPageMode && (
@@ -172,10 +176,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
               }}
               type="button"
             >
-              {orientation === 'horizontal' && '좌우 넘기기'}
-              {orientation === 'vertical' && '상하 넘기기'}
-              {orientation === 'horizontal-reverse' && '우좌 넘기기'}
-              {orientation === 'vertical-reverse' && '하상 넘기기'}
+              {messages.viewerOrientationButton(orientation)}
             </button>
           )}
           {!isPageMode && (
@@ -186,7 +187,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
                 onClick={() => setIsViewControlOpen((prev) => !prev)}
                 type="button"
               >
-                보기 조절
+                {messages.viewControlsButton}
               </button>
               {isViewControlOpen && <ViewControlPanel />}
             </div>
@@ -200,13 +201,13 @@ export default function ReaderControls<TPage extends ReaderPage>({
             aria-expanded={isThumbnailStripOpen}
             className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
             onClick={() => setIsThumbnailStripOpen((prev) => !prev)}
-            title="미리보기"
+            title={messages.previewButton}
             type="button"
           >
-            미리보기
+            {messages.previewButton}
           </button>
           <button className={BOTTOM_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
-            {getLowDataLabel(lowData)}
+            {messages.lowDataLabel(lowData)}
           </button>
         </div>
       </div>

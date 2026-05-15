@@ -2,6 +2,7 @@
 
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 
+import { useReaderMessages } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
@@ -21,6 +22,7 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const pageIndex = useReaderStore((state) => state.pageIndex)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const messages = useReaderMessages()
   const { ref: firstImageRef, inView: isFirstImageInView } = useInView()
   const { ref: lastImageRef, inView: isLastImageInView } = useInView()
 
@@ -76,23 +78,23 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
   return (
     <div className="relative overflow-hidden flex justify-center">
       <button
-        aria-label="이전 미리보기"
+        aria-label={messages.thumbnailPrevious}
         className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-r-lg bg-background/90 transition hover:bg-background
         disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
         disabled={isFirstImageInView}
         onClick={scrollLeft}
-        title="이전 미리보기"
+        title={messages.thumbnailPrevious}
         type="button"
       >
         <ChevronLeft className="size-5 stroke-3" />
       </button>
       <button
-        aria-label="다음 미리보기"
+        aria-label={messages.thumbnailNext}
         className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-l-lg bg-background/90 transition hover:bg-background
         disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
         disabled={isLastImageInView}
         onClick={scrollRight}
-        title="다음 미리보기"
+        title={messages.thumbnailNext}
         type="button"
       >
         <ChevronRight className="size-5 stroke-3" />
@@ -109,7 +111,7 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
           return (
             <button
               aria-current={isActive ? 'page' : undefined}
-              aria-label={`${i + 1}페이지로 이동`}
+              aria-label={messages.goToPage(i + 1)}
               className="relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition
               aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
               key={page.id}
