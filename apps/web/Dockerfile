@@ -55,7 +55,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=fals
     --mount=type=secret,id=SENTRY_PROJECT,env=SENTRY_PROJECT,required=false \
     --mount=type=secret,id=POSTGRES_URL,env=POSTGRES_URL,required=false \
     --mount=type=secret,id=SUPABASE_CERTIFICATE,env=SUPABASE_CERTIFICATE,required=false \
-    COMMIT_SHA="$COMMIT_SHA" bun run --cwd apps/web build \
+    COMMIT_SHA="$COMMIT_SHA" bun --filter=@litomi/web run build \
   # Strip `sourceMappingURL` references (prevents browser `*.map` requests).
   && find apps/web/.next/static -type f -name '*.js' -exec sed -i -E 's@//# sourceMappingURL=.*$@@g' {} + \
   && find apps/web/.next/static -type f -name '*.css' -exec sed -i -E 's@/\*#[[:space:]]*sourceMappingURL=.*\*/@@g' {} +

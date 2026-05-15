@@ -40,7 +40,7 @@ export type ValidationProblemDetails = ProblemDetails & {
 export const PROBLEM_CONTENT_TYPE = 'application/problem+json'
 
 export function createProblemTypeUrl(origin: string, code: string): string {
-  const safeOrigin = origin.replace(/\/+$/, '')
+  const safeOrigin = trimTrailingSlashes(origin)
   const safeCode = encodeURIComponent(code)
 
   try {
@@ -98,4 +98,14 @@ export function isProblemDetails(value: unknown): value is ProblemDetails {
     (record.detail === undefined || typeof record.detail === 'string') &&
     (record.instance === undefined || typeof record.instance === 'string')
   )
+}
+
+function trimTrailingSlashes(value: string): string {
+  let end = value.length
+
+  while (end > 0 && value[end - 1] === '/') {
+    end -= 1
+  }
+
+  return value.slice(0, end)
 }
