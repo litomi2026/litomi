@@ -10,7 +10,7 @@ import {
 } from '@test/backend/setup/db'
 import { describe, expect, setSystemTime, test } from 'bun:test'
 
-import { verifyTrustedBrowserToken } from '@/backend/api/v1/auth/login/util'
+import { verifyTrustedBrowserToken } from '@/api/v1/auth/login/util'
 
 import {
   AUTH_TEST_SAFARI_USER_AGENT,

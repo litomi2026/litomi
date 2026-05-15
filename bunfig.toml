@@ -3,7 +3,7 @@
 preload = ["./test/setup.base.ts"]
 
 # Test configuration
-root = "./src"
+root = "."
 
 # Coverage settings
 coverageReporter = ["text", "lcov"]

@@ -1,5 +1,7 @@
 import type { VerifiedAuthenticationResponse } from '@simplewebauthn/server'
 
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey'
+import { CookieKey } from '@litomi/domain/constants/storage'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { expectCookieCleared, expectPersistentCookie, expectSessionCookie } from '@test/backend/setup/auth'
@@ -11,9 +13,6 @@ import {
   seedUser,
 } from '@test/backend/setup/db'
 import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
-
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/app/(navigation)/(right-aside)/[name]/settings/passkey/common'
-import { CookieKey } from '@/constants/storage'
 
 import { AUTH_TEST_SAFARI_USER_AGENT, buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
 import { buildPasskeyAuthentication, installPasskeyTurnstileGuard, issuePasskeyAttempt } from '../fixtures'

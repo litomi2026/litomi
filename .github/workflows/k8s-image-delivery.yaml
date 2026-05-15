@@ -84,7 +84,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile.nextjs
+          file: apps/web/Dockerfile
           platforms: linux/arm64
           push: true
           build-args: |
@@ -106,7 +106,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile.nextjs
+          file: apps/web/Dockerfile
           platforms: linux/arm64
           push: true
           build-args: |
@@ -139,23 +139,23 @@ jobs:
 
           echo "digest=${digest}" >> "$GITHUB_OUTPUT"
 
-  build-and-publish-backend-image:
-    name: Build and publish backend image
+  build-and-publish-api-image:
+    name: Build and publish api image
     if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
     runs-on: ubuntu-24.04-arm
     outputs:
-      digest: ${{ steps.build_backend_image.outputs.digest }}
+      digest: ${{ steps.build_api_image.outputs.digest }}
     env:
-      IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
+      IMAGE_API: ghcr.io/${{ github.repository_owner }}/litomi-api
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Generate backend image metadata
-        id: metadata_backend
+      - name: Generate api image metadata
+        id: metadata_api
         uses: docker/metadata-action@v6
         with:
-          images: ${{ env.IMAGE_BACKEND }}
+          images: ${{ env.IMAGE_API }}
           tags: |
             type=raw,value=${{ github.sha }}
             type=ref,event=branch
@@ -170,12 +170,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and publish backend image
-        id: build_backend_image
+      - name: Build and publish api image
+        id: build_api_image
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile.hono
+          file: apps/api/Dockerfile
           platforms: linux/arm64
           push: true
           build-args: |
@@ -184,22 +184,22 @@ jobs:
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_BACKEND }}
-          tags: ${{ steps.metadata_backend.outputs.tags }}
-          labels: ${{ steps.metadata_backend.outputs.labels }}
+          tags: ${{ steps.metadata_api.outputs.tags }}
+          labels: ${{ steps.metadata_api.outputs.labels }}
 
   update-staging-image-digests:
     name: Update staging image digests
     if: ${{ github.ref_name == 'stage' && github.event_name != 'pull_request' }}
     needs:
       - build-and-publish-web-image
-      - build-and-publish-backend-image
+      - build-and-publish-api-image
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     env:
       OVERLAY_FILE: k8s/apps/litomi/overlays/stg/kustomization.yaml
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
-      IMAGE_BACKEND_DIGEST: ${{ needs.build-and-publish-backend-image.outputs.digest }}
+      IMAGE_API_DIGEST: ${{ needs.build-and-publish-api-image.outputs.digest }}
     steps:
       - name: Checkout staging branch
         uses: actions/checkout@v6
@@ -222,7 +222,7 @@ jobs:
 
           replacements = {
               "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
-              "litomi-backend": os.environ["IMAGE_BACKEND_DIGEST"],
+              "litomi-api": os.environ["IMAGE_API_DIGEST"],
           }
 
           for name, digest in replacements.items():
@@ -255,7 +255,7 @@ jobs:
     if: ${{ github.ref_name == 'main' && github.event_name != 'pull_request' }}
     needs:
       - build-and-publish-web-image
-      - build-and-publish-backend-image
+      - build-and-publish-api-image
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -263,9 +263,9 @@ jobs:
     env:
       OVERLAY_FILE: k8s/apps/litomi/overlays/prod/kustomization.yaml
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
-      IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
+      IMAGE_API: ghcr.io/${{ github.repository_owner }}/litomi-api
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
-      IMAGE_BACKEND_DIGEST: ${{ needs.build-and-publish-backend-image.outputs.digest }}
+      IMAGE_API_DIGEST: ${{ needs.build-and-publish-api-image.outputs.digest }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v6
@@ -288,7 +288,7 @@ jobs:
 
           replacements = {
               "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
-              "litomi-backend": os.environ["IMAGE_BACKEND_DIGEST"],
+              "litomi-api": os.environ["IMAGE_API_DIGEST"],
           }
 
           for name, digest in replacements.items():
@@ -313,7 +313,7 @@ jobs:
             This PR updates the production overlay to the latest immutable image digests built from `main`.
 
             - Web: `${{ env.IMAGE_WEB }}@${{ env.IMAGE_WEB_DIGEST }}`
-            - Backend: `${{ env.IMAGE_BACKEND }}@${{ env.IMAGE_BACKEND_DIGEST }}`
+            - API: `${{ env.IMAGE_API }}@${{ env.IMAGE_API_DIGEST }}`
             - Source commit: `${{ github.sha }}`
             - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           base: main

@@ -181,7 +181,7 @@ bun run db:push:aiven
 ### 5) Start Backend
 
 ```bash
-bun run dev:backend
+bun run dev:api
 ```
 
 ### 6) Start Web
@@ -205,8 +205,8 @@ bun dev
 
 - **Vercel (Web)**: for deploying the Next.js app.
 - **Cloud Run (Job)**: for periodic jobs (sync/notify).
-  - [`cloud-run/manga-crawl/README.md`](cloud-run/manga-crawl/README.md)
-  - [`cloud-run/crawl-and-notify/README.md`](cloud-run/crawl-and-notify/README.md)
+  - [`infra/cloud-run/catalog-ingest/README.md`](infra/cloud-run/catalog-ingest/README.md)
+  - [`infra/cloud-run/notification-dispatch/README.md`](infra/cloud-run/notification-dispatch/README.md)
 
 ## Contributing
 

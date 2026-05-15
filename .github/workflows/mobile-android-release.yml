@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/mobile-android-release.yml'
-      - 'mobile/**'
+      - 'apps/mobile/**'
   workflow_dispatch:
 
 permissions:
@@ -50,16 +50,16 @@ jobs:
           sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
 
       - name: Install mobile dependencies
-        working-directory: mobile
+        working-directory: apps/mobile
         run: bun install --frozen-lockfile
 
-      - name: Compute version from mobile/package.json
+      - name: Compute version from apps/mobile/package.json
         id: version
         shell: bash
         run: |
           set -euo pipefail
 
-          version_name=$(node -p "require('./mobile/package.json').version")
+          version_name=$(node -p "require('./apps/mobile/package.json').version")
           IFS='.' read -r major minor patch <<< "$version_name"
 
           version_code=$((major*1000000 + minor*1000 + patch))
@@ -77,10 +77,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          mkdir -p mobile/android/keystore
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > mobile/android/keystore/release.jks
+          mkdir -p apps/mobile/android/keystore
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > apps/mobile/android/keystore/release.jks
 
-          cat > mobile/android/keystore.properties <<EOF
+          cat > apps/mobile/android/keystore.properties <<EOF
           storeFile=keystore/release.jks
           storePassword=$ANDROID_KEYSTORE_PASSWORD
           keyAlias=$ANDROID_KEY_ALIAS
@@ -88,11 +88,11 @@ jobs:
           EOF
 
       - name: Sync Capacitor
-        working-directory: mobile
+        working-directory: apps/mobile
         run: bun run sync:android
 
       - name: Build release APK
-        working-directory: mobile/android
+        working-directory: apps/mobile/android
         run: ./gradlew :app:assembleRelease -PversionName=${{ steps.version.outputs.version_name }} -PversionCode=${{ steps.version.outputs.version_code }}
 
       - name: Prepare release assets
@@ -100,9 +100,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          mkdir -p mobile/artifacts/android
-          cp mobile/android/app/build/outputs/apk/release/app-release.apk mobile/artifacts/android/litomi.apk
-          sha256sum mobile/artifacts/android/litomi.apk | awk '{print $1}' > mobile/artifacts/android/litomi.apk.sha256
+          mkdir -p apps/mobile/artifacts/android
+          cp apps/mobile/android/app/build/outputs/apk/release/app-release.apk apps/mobile/artifacts/android/litomi.apk
+          sha256sum apps/mobile/artifacts/android/litomi.apk | awk '{print $1}' > apps/mobile/artifacts/android/litomi.apk.sha256
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
@@ -111,8 +111,8 @@ jobs:
           target_commitish: ${{ github.sha }}
           generate_release_notes: true
           files: |
-            mobile/artifacts/android/litomi.apk
-            mobile/artifacts/android/litomi.apk.sha256
+            apps/mobile/artifacts/android/litomi.apk
+            apps/mobile/artifacts/android/litomi.apk.sha256
 
       - name: Publish stable Android download release
         uses: softprops/action-gh-release@v2
@@ -129,5 +129,5 @@ jobs:
           make_latest: false
           overwrite_files: true
           files: |
-            mobile/artifacts/android/litomi.apk
-            mobile/artifacts/android/litomi.apk.sha256
+            apps/mobile/artifacts/android/litomi.apk
+            apps/mobile/artifacts/android/litomi.apk.sha256

@@ -1,0 +1,87 @@
+import { MAX_CRITERIA_NAME_LENGTH, MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
+import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { z } from 'zod'
+
+import { NotificationFilter } from '../notification/types'
+
+export const notificationSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  createdAt: z.date(),
+  type: z.number(),
+  read: z.boolean(),
+  title: z.string(),
+  body: z.string(),
+  data: z.string().nullable(),
+  sentAt: z.date().nullable(),
+})
+
+export const getNotificationResponseSchema = z.object({
+  notifications: z.array(notificationSchema),
+  hasNextPage: z.boolean(),
+})
+
+export type GETNotificationResponse = z.infer<typeof getNotificationResponseSchema>
+
+export const getUnreadCountResponseSchema = z.number()
+
+export type GETUnreadCountResponse = z.infer<typeof getUnreadCountResponseSchema>
+
+export const deleteV1NotificationBodySchema = z.object({
+  ids: z.array(z.coerce.number().int().positive()).min(1).max(MAX_NOTIFICATION_COUNT),
+})
+
+export type DELETEV1NotificationBody = z.infer<typeof deleteV1NotificationBodySchema>
+
+export const deleteV1NotificationResponseSchema = z.object({
+  ids: z.array(z.number()),
+})
+
+export type DELETEV1NotificationResponse = z.infer<typeof deleteV1NotificationResponseSchema>
+
+export const patchV1NotificationReadBodySchema = deleteV1NotificationBodySchema
+
+export type PATCHV1NotificationReadBody = z.infer<typeof patchV1NotificationReadBodySchema>
+
+export const patchV1NotificationReadResponseSchema = deleteV1NotificationResponseSchema
+
+export type PATCHV1NotificationReadResponse = z.infer<typeof patchV1NotificationReadResponseSchema>
+
+export const patchV1NotificationReadAllResponseSchema = z.object({
+  updatedCount: z.number(),
+})
+
+export type PATCHV1NotificationReadAllResponse = z.infer<typeof patchV1NotificationReadAllResponseSchema>
+
+export const notificationCriteriaConditionSchema = z.object({
+  type: z
+    .number()
+    .int()
+    .min(NotificationConditionType.SERIES, '올바른 조건 타입을 선택해 주세요')
+    .max(NotificationConditionType.UPLOADER, '올바른 조건 타입을 선택해 주세요'),
+  value: z.string().min(1, '조건 값을 입력해 주세요').max(100, '조건 값은 100자 이하여야 해요'),
+  isExcluded: z.boolean().optional().default(false),
+})
+
+export const postV1NotificationCriteriaBodySchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, '알림 이름을 입력해 주세요')
+    .max(MAX_CRITERIA_NAME_LENGTH, `알림 이름은 ${MAX_CRITERIA_NAME_LENGTH}자 이하여야 해요`),
+  conditions: z.array(notificationCriteriaConditionSchema).min(1).max(20),
+  isActive: z.boolean().optional().default(true),
+})
+
+export type POSTV1NotificationCriteriaBody = z.input<typeof postV1NotificationCriteriaBodySchema>
+
+export const postV1NotificationCriteriaResponseSchema = z.object({
+  createdAt: z.number(),
+  id: z.number(),
+  isActive: z.boolean(),
+  name: z.string(),
+})
+
+export type POSTV1NotificationCriteriaResponse = z.infer<typeof postV1NotificationCriteriaResponseSchema>
+
+export const notificationFilterSchema = z.enum(NotificationFilter)

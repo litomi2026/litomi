@@ -1,3 +1,6 @@
+import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
+import { CookieKey } from '@litomi/domain/constants/storage'
+import { ChallengeType } from '@litomi/domain/database/enum'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { expectCookieCleared } from '@test/backend/setup/auth'
@@ -10,10 +13,6 @@ import {
 } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
 import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
-
-import { CookieKey } from '@/constants/storage'
-import { ChallengeType } from '@/database/enum'
-import { getAndDeleteChallenge } from '@/utils/redis-challenge'
 
 import { buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
 import { buildPasskeyAuthentication, installPasskeyTurnstileGuard, issuePasskeyAttempt } from '../fixtures'

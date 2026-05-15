@@ -22,14 +22,14 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: litomi-backend
+                name: litomi-api
                 port:
                   number: 3002
           - path: /health
             pathType: Prefix
             backend:
               service:
-                name: litomi-backend
+                name: litomi-api
                 port:
                   number: 3002
     - host: img-stg.litomi.in
@@ -39,6 +39,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: litomi-backend
+                name: litomi-api
                 port:
                   number: 3002

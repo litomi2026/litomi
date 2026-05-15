@@ -1,0 +1,44 @@
+'use client'
+
+import type { GETV1TagResponse } from '@litomi/contracts'
+
+import { env } from '@litomi/env/env/client'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+
+import { QueryKeys } from '@/lib/react-query/query-keys'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_API_ORIGIN } = env
+
+export type CategoryParam = 'female' | 'male' | 'mixed' | 'other'
+
+type Params = {
+  category: CategoryParam
+  page: number
+}
+
+export function useTagQuery({ category, page }: Params) {
+  const locale = getLocaleFromCookie()
+
+  return useQuery({
+    queryKey: QueryKeys.tag(category, page, locale),
+    queryFn: () => fetchTags(category, page, locale),
+    placeholderData: keepPreviousData,
+  })
+}
+
+async function fetchTags(category: CategoryParam, page: number, locale: string) {
+  const searchParams = new URLSearchParams({
+    category,
+    page: String(page),
+  })
+
+  if (locale) {
+    searchParams.set('locale', locale)
+  }
+
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/tag?${searchParams}`
+  const { data } = await fetchWithErrorHandling<GETV1TagResponse>(url)
+  return data
+}

@@ -1,7 +1,7 @@
 import { TEST_LOGIN_PASSWORD } from '@test/backend/setup/auth'
 import { externalRoute, installExternalFetchGuard, jsonResponse } from '@test/backend/setup/network'
 
-import type { POSTV1AuthLoginRequest } from '@/backend/api/v1/auth/login/POST'
+import type { POSTV1AuthLoginRequest } from '@/api/v1/auth/login/POST'
 
 import { createPkcePair } from '../fixtures'
 

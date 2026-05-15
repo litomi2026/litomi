@@ -1,0 +1,29 @@
+import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { Metadata } from 'next'
+
+import Censorships from './Censorships'
+import Unauthorized from './Unauthorized'
+
+export const metadata: Metadata = {
+  title: '검열',
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `검열 - ${SHORT_NAME}`,
+    url: '/@/censor',
+  },
+  alternates: {
+    canonical: '/@/censor',
+    languages: { ko: '/@/censor' },
+  },
+}
+
+export default async function Page() {
+  const userId = await getUserIdFromCookie()
+
+  if (!userId) {
+    return <Unauthorized />
+  }
+
+  return <Censorships />
+}

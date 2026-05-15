@@ -1,0 +1,30 @@
+{
+  "name": "@litomi/mobile",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "doctor": "bunx cap doctor",
+    "assets:generate": "node scripts/generate-native-assets.mjs",
+    "sync": "bunx cap sync",
+    "sync:android": "bunx cap sync android",
+    "sync:ios": "bunx cap sync ios",
+    "open:android": "bunx cap open android",
+    "open:ios": "bunx cap open ios",
+    "android": "bun run sync:android && bun run open:android",
+    "ios": "bun run sync:ios && bun run open:ios",
+    "android:debug": "bun run sync:android && cd android && ./gradlew :app:assembleDebug && cd .. && mkdir -p artifacts/android && cp android/app/build/outputs/apk/debug/app-debug.apk artifacts/android/litomi-debug.apk && shasum -a 256 artifacts/android/litomi-debug.apk > artifacts/android/litomi-debug.apk.sha256",
+    "android:release": "bun run sync:android && cd android && ./gradlew :app:assembleRelease && cd .. && mkdir -p artifacts/android && cp android/app/build/outputs/apk/release/app-release.apk artifacts/android/litomi.apk && shasum -a 256 artifacts/android/litomi.apk > artifacts/android/litomi.apk.sha256",
+    "ios:altstore": "node scripts/build-ios-altstore.mjs"
+  },
+  "dependencies": {
+    "@capacitor/app": "8.1.0",
+    "@capacitor/core": "8.3.0"
+  },
+  "devDependencies": {
+    "@capacitor/android": "8.3.0",
+    "@capacitor/cli": "8.3.0",
+    "@capacitor/ios": "8.3.0",
+    "sharp": "^0.34.5"
+  }
+}

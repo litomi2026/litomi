@@ -1,9 +1,8 @@
 import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
 
+import { CookieKey } from '@litomi/domain/constants/storage'
 import { getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import { installExternalFetchGuard } from '@test/backend/setup/network'
-
-import { CookieKey } from '@/constants/storage'
 
 import { buildAuthHeaders } from '../fixtures'
 import { turnstileErrorRoute, turnstileFailureRoute, turnstileSuccessRoute } from '../login/fixtures'

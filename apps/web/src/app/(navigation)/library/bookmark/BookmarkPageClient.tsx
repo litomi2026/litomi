@@ -1,0 +1,167 @@
+'use client'
+
+import type { GETV1BookmarkResponse } from '@litomi/contracts'
+
+import { COLLECTION_ITEM_SORT_OPTIONS, CollectionItemSort } from '@litomi/contracts'
+import { getViewFromSearchParams, View } from '@litomi/std'
+import { ReadonlyURLSearchParams } from 'next/navigation'
+import { useState } from 'react'
+
+import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
+
+import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
+import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
+import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import SearchParamsSync from '@/components/router/SearchParamsSync'
+import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
+import ViewToggle from '@/components/ViewToggle'
+import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
+import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import { createLoadingManga } from '@/utils/manga-placeholder'
+
+import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
+import { useLibrarySelection } from '../librarySelection'
+import SelectableMangaCard from '../SelectableMangaCard'
+import BookmarkDownloadButton from './BookmarkDownloadButton'
+import BookmarkUploadButton from './BookmarkUploadButton'
+import NotFound from './NotFound'
+import useBookmarkInfiniteQuery from './useBookmarkInfiniteQuery'
+
+type BookmarkGridItem =
+  | (VirtualMangaGridItem & {
+      mangaId: number
+      type: 'manga'
+    })
+  | (VirtualMangaGridItem & {
+      type: 'loading'
+    })
+
+type Props = {
+  initialData: GETV1BookmarkResponse
+  initialSort: CollectionItemSort
+  initialView: View
+}
+
+export default function BookmarkPageClient({ initialData, initialSort, initialView }: Props) {
+  const [sort, setSort] = useState<CollectionItemSort>(initialSort)
+  const [view, setView] = useState<View>(initialView)
+  const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
+  const { exit, isSelectionMode } = useLibrarySelection()
+  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
+    useBookmarkInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
+
+  const bookmarkIds = data?.pages.flatMap((page) => page.bookmarks.map((bookmark) => bookmark.mangaId)) ?? []
+
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
+  const showLoadingSkeleton = (isLoading && bookmarkIds.length === 0) || isFetchingNextPage
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds: bookmarkIds })
+
+  const items = bookmarkIds.map<BookmarkGridItem>((mangaId) => ({
+    key: `manga-${mangaId}`,
+    mangaId,
+    type: 'manga',
+  }))
+
+  if (showLoadingSkeleton) {
+    items.push({
+      key: 'loading-skeleton',
+      type: 'loading',
+    })
+  }
+
+  const footer = (
+    <>
+      {isFetchNextPageError && (
+        <div className="flex justify-center py-4">
+          <LoadMoreRetryButton onRetry={fetchNextPage} />
+        </div>
+      )}
+      <MobileNavigationSpacer />
+    </>
+  )
+
+  function handleSortChange(newSort: CollectionItemSort) {
+    if (newSort !== sort) {
+      exit()
+      setSort(newSort)
+      const url = new URL(window.location.href)
+      url.searchParams.set('sort', String(newSort))
+      window.history.replaceState(window.history.state, '', url)
+      setScrollToOptions({ top: 0 })
+    }
+  }
+
+  const header = (
+    <>
+      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
+      <div className="flex flex-wrap items-center justify-between gap-2 p-2 pb-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            className="bg-zinc-900 text-sm px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
+            onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
+            value={sort}
+          >
+            {COLLECTION_ITEM_SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <ViewToggle initialView={initialView} />
+        </div>
+        <div className="ml-auto flex items-center gap-x-2">
+          <BookmarkDownloadButton />
+          <BookmarkUploadButton />
+        </div>
+      </div>
+    </>
+  )
+
+  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
+    setView(getViewFromSearchParams(searchParams))
+  }
+
+  function renderItem(item: BookmarkGridItem, index: number) {
+    if (item.type === 'loading') {
+      return <MangaCardSkeleton variant={view} />
+    }
+
+    const manga = mangaMap.get(item.mangaId) ?? createLoadingManga(item.mangaId)
+
+    if (!isSelectionMode) {
+      return <MangaCard index={index} manga={manga} variant={view} />
+    }
+
+    return <SelectableMangaCard index={index} manga={manga} variant={view} />
+  }
+
+  if (data && bookmarkIds.length === 0 && !hasNextPage && !isFetchingNextPage && !isLoading) {
+    return <NotFound />
+  }
+
+  return (
+    <>
+      <SearchParamsSync onUpdate={handleViewUpdate} />
+      <VirtualMangaGrid
+        fetchNextPage={fetchNextPage}
+        footer={footer}
+        hasNextPage={canAutoLoadMore}
+        header={header}
+        isFetchingNextPage={isFetchingNextPage}
+        itemGap={8}
+        items={items}
+        measurementKey={`${sort}:${view}`}
+        onScrollElementChange={setNavigationAutoHideScrollElement}
+        renderItem={renderItem}
+        scrollRestorationKey={`library:bookmark:${sort}:${view}`}
+        scrollToOptions={scrollToOptions}
+        view={view}
+      />
+    </>
+  )
+}

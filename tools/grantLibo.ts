@@ -1,12 +1,11 @@
 #!/usr/bin/env bun
 
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { pointTransactionTable, userPointsTable } from '@litomi/db/database/supabase/points'
+import { userTable } from '@litomi/db/database/supabase/user'
+import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
-
-import { TRANSACTION_TYPE } from '../src/constants/points'
-import { db } from '../src/database/supabase/drizzle'
-import { pointTransactionTable, userPointsTable } from '../src/database/supabase/points'
-import { userTable } from '../src/database/supabase/user'
 
 const ArgsSchema = z
   .object({

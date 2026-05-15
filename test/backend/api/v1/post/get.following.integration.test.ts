@@ -1,3 +1,4 @@
+import { PostType } from '@litomi/domain/database/enum'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { createAccessTokenCookies } from '@test/backend/setup/auth'
@@ -5,8 +6,7 @@ import { seedPost, seedUser, seedUserFollow } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
 
-import { privateCacheControl } from '@/backend/utils/cache-control'
-import { PostType } from '@/database/enum'
+import { privateCacheControl } from '@/utils/cache-control'
 
 installBackendIntegrationHooks()
 

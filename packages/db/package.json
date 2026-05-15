@@ -1,0 +1,53 @@
+{
+  "name": "@litomi/db",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./database/aiven/drizzle": "./src/database/aiven/drizzle.ts",
+    "./database/aiven/schema": "./src/database/aiven/schema.ts",
+    "./database/error": "./src/database/error.ts",
+    "./database/neon/schema": "./src/database/neon/schema.ts",
+    "./database/redis": "./src/database/redis.ts",
+    "./database/supabase/activity": "./src/database/supabase/activity.ts",
+    "./database/supabase/auth": "./src/database/supabase/auth.ts",
+    "./database/supabase/bbaton": "./src/database/supabase/bbaton.ts",
+    "./database/supabase/censorship": "./src/database/supabase/censorship.ts",
+    "./database/supabase/dmca": "./src/database/supabase/dmca.ts",
+    "./database/supabase/drizzle": "./src/database/supabase/drizzle.ts",
+    "./database/supabase/library": "./src/database/supabase/library.ts",
+    "./database/supabase/notification": "./src/database/supabase/notification.ts",
+    "./database/supabase/passkey": "./src/database/supabase/passkey.ts",
+    "./database/supabase/points": "./src/database/supabase/points.ts",
+    "./database/supabase/post": "./src/database/supabase/post.ts",
+    "./database/supabase/report": "./src/database/supabase/report.ts",
+    "./database/supabase/two-factor": "./src/database/supabase/two-factor.ts",
+    "./database/supabase/user": "./src/database/supabase/user.ts",
+    "./query/user-settings.query": "./src/query/user-settings.query.ts",
+    "./sql/collection-item-sort": "./src/sql/collection-item-sort.ts",
+    "./sql/rating-sort": "./src/sql/rating-sort.ts",
+    "./sql/selectBookmark": "./src/sql/selectBookmark.ts",
+    "./sql/selectLibraryItem": "./src/sql/selectLibraryItem.ts",
+    "./sql/selectPost": "./src/sql/selectPost.ts",
+    "./sql/selectPostComment": "./src/sql/selectPostComment.ts"
+  },
+  "scripts": {
+    "db:push:aiven": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.aiven.config.ts",
+    "db:push:supabase": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.supabase.config.ts"
+  },
+  "dependencies": {
+    "@litomi/contracts": "workspace:*",
+    "@litomi/domain": "workspace:*",
+    "@litomi/env": "workspace:*",
+    "@litomi/std": "workspace:*",
+    "@upstash/redis": "^1.37.0",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9",
+    "server-only": "^0.0.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.1",
+    "drizzle-kit": "^0.31.10"
+  }
+}

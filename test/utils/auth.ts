@@ -1,4 +1,4 @@
-import { CookieKey } from '@/constants/storage'
+import { CookieKey } from '@litomi/domain/constants/storage'
 
 export function clearDocumentCookies() {
   for (const entry of document.cookie.split(';')) {

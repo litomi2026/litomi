@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litomi-api
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    spec:
+      containers:
+        - name: api
+          resources:
+            requests:
+              cpu: 40m
+              memory: 960Mi
+            limits:
+              cpu: 500m
+              memory: 1088Mi
+          env:
+            - name: POSTGRES_APPLICATION_NAME
+              value: litomi-api-stg
+            - name: POSTGRES_POOL_MAX
+              value: '1'

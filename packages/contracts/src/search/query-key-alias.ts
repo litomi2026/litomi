@@ -1,0 +1,16 @@
+export const KOREAN_TO_ENGLISH_QUERY_KEYS: Record<string, string> = {
+  언어: 'language',
+  여성: 'female',
+  여자: 'female',
+  여: 'female',
+  남성: 'male',
+  남자: 'male',
+  남: 'male',
+  기타: 'other',
+  혼합: 'mixed',
+  작가: 'artist',
+  그룹: 'group',
+  캐릭터: 'character',
+  시리즈: 'series',
+  종류: 'type',
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@litomi/notifications",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@litomi/db": "workspace:*",
+    "@litomi/domain": "workspace:*",
+    "@litomi/env": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "server-only": "^0.0.1",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@types/web-push": "^3.6.4"
+  }
+}

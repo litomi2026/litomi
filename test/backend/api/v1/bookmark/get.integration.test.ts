@@ -4,7 +4,7 @@ import { seedBookmarks, seedUser } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
 
-import { privateCacheControl } from '@/backend/utils/cache-control'
+import { privateCacheControl } from '@/utils/cache-control'
 
 import { createBookmarkAuthContext } from './fixtures'
 

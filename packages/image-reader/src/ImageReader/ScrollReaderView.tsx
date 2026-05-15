@@ -1,0 +1,149 @@
+import { Loader2 } from 'lucide-react'
+import { type CSSProperties, Fragment, useEffect } from 'react'
+import { useInView } from 'react-intersection-observer'
+import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
+
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from './readerPages'
+
+import { type ScreenFit, useReaderSessionStore, useReaderStore } from './store/reader'
+import { NATIVE_GESTURE_BLOCK_CSS } from './viewerGesturePolicy'
+
+const screenFitStyle: Record<ScreenFit, string> = {
+  width:
+    '[&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-fit',
+  all: 'pt-safe px-safe [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
+  height:
+    '[&_li]:flex [&_li]:items-center [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
+}
+
+const DEFAULT_SCROLL_ROW_HEIGHT = 800
+
+export type Props<TPage extends ReaderPage> = {
+  isLowDataMode: boolean
+  onClick: () => void
+  readerLayout: ReaderLayout<TPage>
+  renderPage: ReaderPageRenderer<TPage>
+}
+
+type RowProps<TPage extends ReaderPage> = {
+  isLowDataMode: boolean
+  readerLayout: ReaderLayout<TPage>
+  renderPage: ReaderPageRenderer<TPage>
+}
+
+export default function ScrollReaderView<TPage extends ReaderPage>({
+  isLowDataMode,
+  onClick,
+  readerLayout,
+  renderPage,
+}: Props<TPage>) {
+  const listRef = useListRef(null)
+  const brightness = useReaderSessionStore((state) => state.brightness)
+  const imageWidth = useReaderStore((state) => state.imageWidth)
+  const zoomLevel = useReaderSessionStore((state) => state.zoomLevel)
+  const setListRef = useReaderStore((state) => state.setListRef)
+  const screenFit = useReaderStore((state) => state.screenFit)
+  const rowHeight = useDynamicRowHeight({ defaultRowHeight: DEFAULT_SCROLL_ROW_HEIGHT })
+
+  const overscanCount = isLowDataMode ? 1 : 3
+  const maxPage = readerLayout.spreadIndexByPageIndex.length
+
+  const dynamicStyle = {
+    '--image-width': `${imageWidth}%`,
+    filter: `brightness(${brightness}%)`,
+    transform: `scale(${zoomLevel})`,
+  } as CSSProperties
+
+  // NOTE: virtualizer 초기화 및 정리
+  useEffect(() => {
+    setListRef(listRef)
+    return () => setListRef(null)
+  }, [listRef, setListRef])
+
+  if (maxPage === 0) {
+    return (
+      <output className="flex items-center justify-center h-dvh animate-fade-in" onClick={onClick}>
+        <Loader2 aria-hidden="true" className="size-8 animate-spin" />
+        <span className="sr-only">이미지 불러오는 중</span>
+      </output>
+    )
+  }
+
+  return (
+    <div
+      className={`overflow-hidden h-dvh contain-strict ${NATIVE_GESTURE_BLOCK_CSS}`}
+      onClick={onClick}
+      style={dynamicStyle}
+    >
+      <List
+        className={`overscroll-none ${screenFitStyle[screenFit]}`}
+        listRef={listRef}
+        overscanCount={overscanCount}
+        rowComponent={ScrollReaderViewRow}
+        rowCount={readerLayout.spreads.length}
+        rowHeight={rowHeight}
+        rowProps={{ isLowDataMode, readerLayout, renderPage }}
+      />
+    </div>
+  )
+}
+
+function ScrollReaderViewRow<TPage extends ReaderPage>({
+  index,
+  isLowDataMode,
+  readerLayout,
+  renderPage,
+  style,
+}: RowComponentProps<RowProps<TPage>>) {
+  const currentPageIndex = useReaderStore((state) => state.pageIndex)
+  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
+  const isLTR = useReaderStore((state) => state.readingDirection === 'ltr')
+
+  const spread = readerLayout.spreads[index]
+  const firstPageIndex = spread?.startPageIndex ?? 0
+  const isCurrentRow = index === (readerLayout.spreadIndexByPageIndex[currentPageIndex] ?? currentPageIndex)
+  const fetchPriority = !isLowDataMode || isCurrentRow ? 'high' : 'low'
+  const maxPage = readerLayout.spreadIndexByPageIndex.length
+
+  const { ref: inViewRef, inView } = useInView({
+    threshold: 0,
+    rootMargin: '-50% 0% -50% 0%',
+  })
+
+  useEffect(() => {
+    if (inView && spread) {
+      navigateToPageIndex(firstPageIndex, {
+        maxIndex: Math.max(0, maxPage - 1),
+        scroll: false,
+      })
+    }
+  }, [firstPageIndex, inView, navigateToPageIndex, maxPage, spread])
+
+  if (!spread) {
+    return null
+  }
+
+  const spreadPages = spread.pages.map((page, pageOffset) => ({
+    page,
+    pageIndex: spread.pageIndexes[pageOffset] ?? spread.startPageIndex,
+  }))
+
+  const orderedSpreadPages = isLTR ? spreadPages : [...spreadPages].reverse()
+
+  return (
+    <li ref={inViewRef} style={style}>
+      {orderedSpreadPages.map(({ page, pageIndex }) => (
+        <Fragment key={page.id}>
+          {renderPage({
+            fetchPriority,
+            isActive: isCurrentRow,
+            isLowDataMode,
+            page,
+            pageIndex,
+            spreadIndex: index,
+          })}
+        </Fragment>
+      ))}
+    </li>
+  )
+}

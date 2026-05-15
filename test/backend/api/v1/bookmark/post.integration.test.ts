@@ -1,10 +1,9 @@
+import { EXPANSION_TYPE } from '@litomi/domain/constants/points'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { seedBookmark, seedBookmarks, seedUser, seedUserExpansion } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
 import { describe, expect, test } from 'bun:test'
-
-import { EXPANSION_TYPE } from '@/constants/points'
 
 import { createBookmarkAuthContext, listBookmarksForUser } from './fixtures'
 

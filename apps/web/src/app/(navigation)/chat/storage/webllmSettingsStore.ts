@@ -1,0 +1,111 @@
+'use client'
+
+import { LocalStorageKey } from '@litomi/domain/constants/storage'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+import { type CustomWebLLMModel, DEFAULT_MODEL_ID, type ModelId } from '../lib/webllmModel'
+
+export type ContextWindowPercent = 10 | 100 | 25 | 50
+
+type WebLLMSettingsStore = {
+  isAutoModelEnabled: boolean
+  manualModelId: ModelId
+  isThinkingEnabled: boolean
+  showThinkingTrace: boolean
+  contextWindowPercent: ContextWindowPercent
+  customModels: CustomWebLLMModel[]
+
+  setIsAutoModelEnabled: (enabled: boolean) => void
+  setModelId: (modelId: ModelId) => void
+  setIsThinkingEnabled: (enabled: boolean) => void
+  setShowThinkingTrace: (enabled: boolean) => void
+  setContextWindowPercent: (percent: ContextWindowPercent) => void
+  addCustomModel: (model: CustomWebLLMModel) => { ok: false; message: string } | { ok: true }
+  removeCustomModel: (modelId: string) => void
+}
+
+function normalizeCustomModel(model: CustomWebLLMModel): CustomWebLLMModel {
+  return {
+    ...model,
+    label: model.label.trim(),
+    description: model.description.trim(),
+    modelId: model.modelId.trim(),
+    modelUrl: model.modelUrl.trim(),
+    modelLibUrl: model.modelLibUrl.trim(),
+    requiredVramMb: model.requiredVramMb,
+  }
+}
+
+function sortCustomModels(models: readonly CustomWebLLMModel[]): CustomWebLLMModel[] {
+  return [...models].sort((a, b) => {
+    const av = a.requiredVramMb ?? Number.POSITIVE_INFINITY
+    const bv = b.requiredVramMb ?? Number.POSITIVE_INFINITY
+    if (av !== bv) return av - bv
+    return a.label.localeCompare(b.label)
+  })
+}
+
+export const useWebLLMSettingsStore = create<WebLLMSettingsStore>()(
+  persist(
+    (set, get) => ({
+      isAutoModelEnabled: true,
+      manualModelId: DEFAULT_MODEL_ID,
+      isThinkingEnabled: false,
+      showThinkingTrace: false,
+      contextWindowPercent: 100,
+      customModels: [],
+
+      setIsAutoModelEnabled: (enabled: boolean) => set({ isAutoModelEnabled: enabled }),
+      setModelId: (modelId: ModelId) => set({ isAutoModelEnabled: false, manualModelId: modelId }),
+      setIsThinkingEnabled: (enabled: boolean) => set({ isThinkingEnabled: enabled }),
+      setShowThinkingTrace: (enabled: boolean) => set({ showThinkingTrace: enabled }),
+      setContextWindowPercent: (percent: ContextWindowPercent) => set({ contextWindowPercent: percent }),
+
+      addCustomModel: (model: CustomWebLLMModel) => {
+        const next = normalizeCustomModel(model)
+
+        if (!next.label) {
+          return { ok: false, message: '모델 이름을 입력해 주세요' }
+        }
+        if (!next.modelId) {
+          return { ok: false, message: 'model_id를 입력해 주세요' }
+        }
+        if (!next.modelUrl) {
+          return { ok: false, message: 'HuggingFace URL을 입력해 주세요' }
+        }
+        if (!next.modelLibUrl) {
+          return { ok: false, message: 'model_lib URL을 입력해 주세요' }
+        }
+        if (!next.requiredVramMb) {
+          return { ok: false, message: 'VRAM(MB)을 올바르게 입력해 주세요' }
+        }
+
+        const state = get()
+        const updated = sortCustomModels([...state.customModels.filter((m) => m.modelId !== next.modelId), next])
+        set({
+          customModels: updated,
+          isAutoModelEnabled: false,
+          manualModelId: next.modelId,
+        })
+
+        return { ok: true }
+      },
+
+      removeCustomModel: (modelId: string) => {
+        const trimmed = modelId.trim()
+        const state = get()
+        const updated = state.customModels.filter((m) => m.modelId !== trimmed)
+        const shouldResetModelId = !state.isAutoModelEnabled && state.manualModelId === trimmed
+
+        if (shouldResetModelId) {
+          set({ customModels: updated, manualModelId: DEFAULT_MODEL_ID })
+          return
+        }
+
+        set({ customModels: updated })
+      },
+    }),
+    { name: LocalStorageKey.CHAT_WEBLLM_SETTINGS },
+  ),
+)

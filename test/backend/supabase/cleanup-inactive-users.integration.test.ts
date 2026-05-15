@@ -1,3 +1,8 @@
+import { bookmarkTable } from '@litomi/db/database/supabase/activity'
+import { authSessionFamilyTable } from '@litomi/db/database/supabase/auth'
+import { db } from '@litomi/db/database/supabase/drizzle'
+import { notificationTable } from '@litomi/db/database/supabase/notification'
+import { NotificationType } from '@litomi/domain/database/enum'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { createRefreshSessionCookies } from '@test/backend/setup/auth'
 import {
@@ -10,12 +15,6 @@ import {
 } from '@test/backend/setup/db'
 import { describe, expect, test } from 'bun:test'
 import { eq, sql } from 'drizzle-orm'
-
-import { NotificationType } from '@/database/enum'
-import { bookmarkTable } from '@/database/supabase/activity'
-import { authSessionFamilyTable } from '@/database/supabase/auth'
-import { db } from '@/database/supabase/drizzle'
-import { notificationTable } from '@/database/supabase/notification'
 
 installBackendIntegrationHooks()
 

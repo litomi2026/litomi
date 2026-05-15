@@ -1,0 +1,70 @@
+'use client'
+
+import { WebtoonEpisode } from '@litomi/crawler/crawler/webtoon/types'
+import { Manga } from '@litomi/domain/types/manga'
+import { env } from '@litomi/env/env/client'
+import { useQuery } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+
+import MangaReader from '@/app/manga/[id]/MangaReader'
+import { QueryKeys } from '@/lib/react-query/query-keys'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
+
+type EpisodeQueryParams = {
+  provider: string
+  domain: string
+  path: string
+}
+
+export default function EpisodeViewer() {
+  const searchParams = useSearchParams()
+  const provider = searchParams.get('provider') ?? ''
+  const domain = searchParams.get('domain') ?? ''
+  const path = searchParams.get('path') ?? ''
+  const { data: manga, isLoading, error } = useEpisodeQuery({ provider, domain, path })
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-dvh">
+        <Loader2 className="size-8 animate-spin" />
+      </div>
+    )
+  }
+
+  if (error || !manga) {
+    return (
+      <div className="flex flex-col items-center justify-center h-dvh gap-2">
+        <p className="text-zinc-500">이미지를 불러올 수 없어요</p>
+        <p className="text-zinc-600 text-sm">{error?.message}</p>
+      </div>
+    )
+  }
+
+  return <MangaReader manga={manga} />
+}
+
+function createMangaFromEpisode(episode: WebtoonEpisode): Manga {
+  return {
+    id: 0,
+    title: episode.title || '',
+    images: episode.images.map((url) => ({
+      original: { url },
+    })),
+  }
+}
+
+function useEpisodeQuery({ provider, domain, path }: EpisodeQueryParams) {
+  return useQuery({
+    queryKey: QueryKeys.webtoonEpisode(provider, domain, path),
+    queryFn: async () => {
+      const params = new URLSearchParams({ domain, path })
+      const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/webtoon/${provider}/episode?${params}`
+      const { data } = await fetchWithErrorHandling<WebtoonEpisode>(url)
+      return createMangaFromEpisode(data)
+    },
+    enabled: Boolean(provider && domain && path),
+  })
+}

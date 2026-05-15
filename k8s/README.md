@@ -147,11 +147,11 @@ open https://127.0.0.1:8200
 Secret 동기화 상태 확인
 
 ```zsh
-kubectl -n litomi-stg get externalsecret litomi-backend-secret \
+kubectl -n litomi-stg get externalsecret litomi-api-secret \
   -o jsonpath='{.spec.refreshInterval}{"\n"}{.status.refreshTime}{"\n"}{.status.conditions[?(@.type=="Ready")].status}{"\n"}'
 ```
 
-Vault 값을 바꾸면 ESO가 주기적으로 반영해요. 비교적 자주 반영이 필요한 `argocd/github-repo-creds`, `gtm-server`, `cloudflared`, `litomi-backend-secret`(stg/prod)는 `15m`, 나머지는 `1h` 주기예요.
+Vault 값을 바꾸면 ESO가 주기적으로 반영해요. 비교적 자주 반영이 필요한 `argocd/github-repo-creds`, `gtm-server`, `cloudflared`, `litomi-api-secret`(stg/prod)는 `15m`, 나머지는 `1h` 주기예요.
 
 ### Monitoring
 
@@ -207,7 +207,7 @@ sudo kubectl top pods -n litomi-stg
 ```zsh
 sudo kubectl -n litomi-prod get hpa
 sudo kubectl -n litomi-prod describe hpa litomi-web
-sudo kubectl -n litomi-prod describe hpa litomi-backend
+sudo kubectl -n litomi-prod describe hpa litomi-api
 ```
 
 아래 같은 이벤트가 보이면 원인을 바로 좁힐 수 있어요.
