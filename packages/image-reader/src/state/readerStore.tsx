@@ -1,7 +1,6 @@
 'use client'
 
-import type { ReactNode, RefObject } from 'react'
-import type { ListImperativeAPI } from 'react-window'
+import type { ReactNode } from 'react'
 import type { StoreApi } from 'zustand/vanilla'
 
 import { createContext, useContext, useEffect, useState } from 'react'
@@ -16,7 +15,6 @@ export type NavigateToPageIndexOptions = {
   maxIndex?: number
   navigationType: PageNavigationType
   scroll?: boolean
-  scrollRowIndex?: number
 }
 
 export type Orientation = 'horizontal-reverse' | 'horizontal' | 'vertical-reverse' | 'vertical'
@@ -36,6 +34,7 @@ export type ReaderSessionStore = {
 }
 
 export type ReaderStore = {
+  clearScrollTargetPageIndex: () => void
   doublePageAnchorIndex: number
   getOrientation: () => Orientation
   getPageIndex: () => number
@@ -48,8 +47,8 @@ export type ReaderStore = {
   readingDirection: ReadingDirection
   resetPageIndex: () => void
   screenFit: ScreenFit
+  scrollTargetPageIndex: number | null
   setImageWidth: (imageWidth: ImageWidth) => void
-  setListRef: (listRef: RefObject<ListImperativeAPI | null> | null) => void
   setOrientation: (orientation: Orientation) => void
   setPageView: (pageView: PageView) => void
   setScreenFit: (screenFit: ScreenFit) => void
@@ -216,43 +215,26 @@ function createReaderSessionStore({ sessionStorageKey }: ReaderSessionStoreOptio
 }
 
 function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
-  let listRef: RefObject<ListImperativeAPI | null> | null = null
-
-  function scrollToRow(index: number) {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        listRef?.current?.scrollToRow({
-          align: 'center',
-          behavior: 'instant',
-          index,
-        })
-      })
-    })
-  }
-
   return createStore<ReaderStore>()(
     persist(
       (set, get) => ({
+        clearScrollTargetPageIndex: () => {
+          set({ scrollTargetPageIndex: null })
+        },
         doublePageAnchorIndex: 0,
         getOrientation: () => get().orientation,
         getPageIndex: () => get().pageIndex,
         imageWidth: DEFAULT_IMAGE_WIDTH,
         isStorageHydrated: false,
         navigateToPageIndex: (pageIndex, options) => {
-          const nextPageIndex = clampPageIndex(pageIndex, options.maxIndex)
+          const { maxIndex, navigationType, scroll = true } = options
+          const nextPageIndex = clampPageIndex(pageIndex, maxIndex)
 
-          set(
-            options.navigationType === 'absolute'
-              ? {
-                  doublePageAnchorIndex: nextPageIndex,
-                  pageIndex: nextPageIndex,
-                }
-              : { pageIndex: nextPageIndex },
-          )
-
-          if (options.scroll !== false) {
-            scrollToRow(options.scrollRowIndex ?? nextPageIndex)
-          }
+          set({
+            pageIndex: nextPageIndex,
+            ...(scroll && { scrollTargetPageIndex: nextPageIndex }),
+            ...(navigationType === 'absolute' && { doublePageAnchorIndex: nextPageIndex }),
+          })
         },
         orientation: DEFAULT_ORIENTATION,
         pageIndex: 0,
@@ -262,14 +244,13 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
           set({
             doublePageAnchorIndex: 0,
             pageIndex: 0,
+            scrollTargetPageIndex: null,
           })
         },
         screenFit: DEFAULT_SCREEN_FIT,
+        scrollTargetPageIndex: null,
         setImageWidth: (imageWidth) => {
           set({ imageWidth })
-        },
-        setListRef: (nextListRef) => {
-          listRef = nextListRef
         },
         setOrientation: (orientation) => {
           set({ orientation })

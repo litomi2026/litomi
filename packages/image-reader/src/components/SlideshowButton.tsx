@@ -69,7 +69,6 @@ export default function SlideshowButton<TPage extends ReaderPage>({
           navigateToPageIndex(nextPageIndex, {
             maxIndex: maxPageIndex,
             navigationType: 'relative',
-            scrollRowIndex: readerLayout.spreadIndexByPageIndex[nextPageIndex] ?? nextPageIndex,
           })
           return
         }
@@ -78,7 +77,6 @@ export default function SlideshowButton<TPage extends ReaderPage>({
           navigateToPageIndex(0, {
             maxIndex: maxPageIndex,
             navigationType: 'relative',
-            scrollRowIndex: 0,
           })
           return
         }

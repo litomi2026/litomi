@@ -33,7 +33,6 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
   function handleThumbnailClick(index: number) {
     navigateToPageIndex(index, {
       maxIndex: Math.max(0, pages.length - 1),
-      scrollRowIndex: readerLayout.spreadIndexByPageIndex[index] ?? index,
       navigationType: 'absolute',
     })
   }
