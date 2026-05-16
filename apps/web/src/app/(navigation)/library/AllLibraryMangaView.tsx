@@ -29,15 +29,7 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from './libraryHeaderLayout'
 import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
 
-type AllLibraryMangaItem =
-  | NativeGridSponsorItem
-  | (VirtualMangaGridItem & {
-      libraryItem: LibraryItem
-      type: 'manga'
-    })
-  | (VirtualMangaGridItem & {
-      type: 'loading'
-    })
+type AllLibraryMangaItem = LoadingItem | MangaItem | NativeGridSponsorItem
 
 type Library = {
   id: number
@@ -50,6 +42,15 @@ type LibraryItem = {
   mangaId: number
   createdAt: number
   library: Library
+}
+
+type LoadingItem = VirtualMangaGridItem & {
+  type: 'loading'
+}
+
+type MangaItem = VirtualMangaGridItem & {
+  libraryItem: LibraryItem
+  type: 'manga'
 }
 
 type Props = {
@@ -79,13 +80,13 @@ export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: 
   const isInitialLoading = libraryItems.length === 0 && isLibraryPending
   const visibleLibraryItems = libraryItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
 
-  const mangaItems: AllLibraryMangaItem[] = visibleLibraryItems.map((libraryItem) => ({
+  const mangaItems = visibleLibraryItems.map((libraryItem) => ({
     key: `manga-${libraryItem.mangaId}`,
     libraryItem,
-    type: 'manga',
+    type: 'manga' as const,
   }))
 
-  const items = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
+  const items: AllLibraryMangaItem[] = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
 
   if (isFetchingNextPage) {
     items.push({

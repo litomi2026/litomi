@@ -28,21 +28,22 @@ import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 const Error400 = dynamic(() => import('./Error400'))
 const SearchResultError = dynamic(() => import('./SearchResultError'))
 
+type LoadingItem = VirtualMangaGridItem & {
+  type: 'loading'
+}
+
+type MangaItem = VirtualMangaGridItem & {
+  manga: Manga
+  mangaIndex: number
+  type: 'manga'
+}
+
 type Props = {
   header?: ReactNode
   nativeGridSponsor?: NativeGridSponsor | null
 }
 
-type SearchResultItem =
-  | NativeGridSponsorItem
-  | (VirtualMangaGridItem & {
-      manga: Manga
-      mangaIndex: number
-      type: 'manga'
-    })
-  | (VirtualMangaGridItem & {
-      type: 'loading'
-    })
+type SearchResultItem = LoadingItem | MangaItem | NativeGridSponsorItem
 
 export default function SearchResult({ header, nativeGridSponsor }: Props) {
   const searchParams = useSearchParams()
@@ -72,14 +73,14 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
 
-  const mangaItems: SearchResultItem[] = visibleMangas.map((manga, mangaIndex) => ({
+  const mangaItems = visibleMangas.map((manga, mangaIndex) => ({
     key: `manga-${manga.id}`,
     manga,
     mangaIndex,
-    type: 'manga',
+    type: 'manga' as const,
   }))
 
-  const items = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
+  const items: SearchResultItem[] = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
 
   if (isFetchingNextPage) {
     items.push({
