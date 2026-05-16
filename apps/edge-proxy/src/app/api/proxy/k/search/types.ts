@@ -1,4 +1,3 @@
-import type { KeywordPromotion } from '@litomi/catalog/sponsor'
 import type { Locale } from '@litomi/catalog/translation/common'
 import type { Manga } from '@litomi/domain/types/manga'
 
@@ -29,5 +28,4 @@ export type GETProxyKSearchRequest = {
 export type GETProxyKSearchResponse = {
   mangas: Manga[]
   nextCursor: string | null
-  promotion?: KeywordPromotion
 }
