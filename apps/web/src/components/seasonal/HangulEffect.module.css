@@ -1,0 +1,111 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.watermark {
+  position: absolute;
+  right: clamp(1.5rem, 5vw, 5rem);
+  bottom: clamp(5rem, 12vh, 8rem);
+  display: block;
+  width: min(72vw, 44rem);
+  aspect-ratio: 2002 / 189;
+  background: rgb(245 188 255 / 0.18);
+  animation: hangul-watermark-breathe 18s ease-in-out infinite both;
+  mask: url('/image/hangul-watermark.png') center / contain no-repeat;
+  -webkit-mask: url('/image/hangul-watermark.png') center / contain no-repeat;
+}
+
+.glyph {
+  position: absolute;
+  top: var(--glyph-top);
+  left: var(--glyph-left);
+  color: rgb(245 188 255);
+  font-size: var(--glyph-size);
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0;
+  text-rendering: geometricprecision;
+  transform-origin: center;
+  animation: hangul-float var(--glyph-duration) ease-in-out var(--glyph-delay) infinite both;
+  will-change: transform, opacity;
+}
+
+.glyph:nth-child(3n) {
+  color: rgb(70 205 252);
+}
+
+.glyph:nth-child(5n) {
+  color: rgb(255 255 255);
+}
+
+:global([data-theme='light']) .glyph {
+  color: rgb(139 92 246);
+}
+
+:global([data-theme='light']) .glyph:nth-child(3n) {
+  color: rgb(59 130 246);
+}
+
+:global([data-theme='light']) .glyph:nth-child(5n) {
+  color: rgb(39 39 42);
+}
+
+:global([data-theme='light']) .watermark {
+  background: rgb(59 130 246 / 0.12);
+}
+
+@keyframes hangul-watermark-breathe {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: translate3d(0, -0.35rem, 0);
+  }
+}
+
+@keyframes hangul-float {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  12%,
+  82% {
+    opacity: var(--glyph-opacity);
+  }
+
+  48% {
+    opacity: var(--glyph-opacity);
+    transform: translate3d(var(--glyph-x-mid), var(--glyph-y-mid), 0) rotate(var(--glyph-rotate-mid));
+  }
+
+  82% {
+    transform: translate3d(var(--glyph-x-end), var(--glyph-y-end), 0) rotate(var(--glyph-rotate-end));
+  }
+}
+
+@media (max-width: 640px) {
+  .watermark {
+    display: none;
+  }
+
+  .glyph:nth-child(n + 17) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    display: none;
+  }
+}
