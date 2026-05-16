@@ -17,11 +17,11 @@ import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
-import CensoredManga from './CensoredManga'
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from './libraryHeaderLayout'
 import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
 
@@ -67,10 +67,13 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
   const libraryItems = mergeUniqueLibraryItems(data?.pages)
   const mangaIds = libraryItems.map((item) => item.mangaId)
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
+  const { heavySignature, isVisible } = useMangaCensorship()
+
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const isInitialLoading = libraryItems.length === 0 && isLibraryPending
+  const visibleLibraryItems = libraryItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
 
-  const items: AllLibraryMangaItem[] = libraryItems.map((libraryItem) => ({
+  const items: AllLibraryMangaItem[] = visibleLibraryItems.map((libraryItem) => ({
     key: `manga-${libraryItem.mangaId}`,
     libraryItem,
     type: 'manga',
@@ -114,7 +117,6 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
 
     return (
       <div className="relative h-full rounded-xl overflow-hidden">
-        <CensoredManga mangaId={mangaId} />
         <MangaCard className="h-full" index={index} manga={manga} variant={view} />
         <Link
           className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-900/90 border border-zinc-700 shadow hover:bg-zinc-800 transition"
@@ -170,7 +172,7 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        measurementKey={view}
+        measurementKey={`${view}:${heavySignature}`}
         onScrollElementChange={setNavigationAutoHideScrollElement}
         renderItem={renderItem}
         scrollRestorationKey={`library:public:${view}`}

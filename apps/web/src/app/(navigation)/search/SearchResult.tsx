@@ -18,6 +18,7 @@ import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -49,6 +50,7 @@ export default function SearchResult({ header }: Props) {
   const view = getViewFromSearchParams(searchParams)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
+  const { heavySignature, isVisible } = useMangaCensorship()
 
   const {
     data,
@@ -64,8 +66,9 @@ export default function SearchResult({ header }: Props) {
   } = useSearchQuery()
 
   const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
+  const visibleMangas = mangas.filter(isVisible)
   const promotion = data?.pages[0]?.promotion
-  const measurementKey = searchParams.toString()
+  const measurementKey = `${searchParams.toString()}:${heavySignature}`
   const scrollRestorationKey = `search-results:${measurementKey}`
   const showRefreshButton = searchParams.get('sort') === 'random'
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
@@ -73,7 +76,7 @@ export default function SearchResult({ header }: Props) {
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
   const items: SearchResultItem[] = []
 
-  for (const [mangaIndex, manga] of mangas.entries()) {
+  for (const [mangaIndex, manga] of visibleMangas.entries()) {
     if (shouldShowPromotion && mangaIndex === (promotion.position ?? 0)) {
       items.push({
         key: `promotion-${promotion.id}`,

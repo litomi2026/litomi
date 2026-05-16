@@ -70,7 +70,6 @@ export default function MangaCard({
         config.containerClassName,
         className,
       )}
-      data-manga-card
     >
       <MangaCardImage manga={manga} mangaIndex={index} rank={rank} variant={variant} />
       {config.showBody && (

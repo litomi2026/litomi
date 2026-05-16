@@ -2,6 +2,7 @@
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { useNewMangaQuery } from './useNewMangaQuery'
@@ -12,6 +13,8 @@ type Props = {
 
 export default function NewMangaList({ page }: Props) {
   const { data: mangas, isLoading, error } = useNewMangaQuery({ page })
+  const { isVisible } = useMangaCensorship()
+  const visibleMangas = mangas?.filter(isVisible) ?? []
 
   if (isLoading) {
     return (
@@ -36,7 +39,7 @@ export default function NewMangaList({ page }: Props) {
 
   return (
     <div className={`flex-1 grid ${MANGA_GRID_COLUMN.card} gap-2`}>
-      {mangas.map((manga, i) => (
+      {visibleMangas.map((manga, i) => (
         <MangaCard index={i} key={manga.id} manga={manga} />
       ))}
       <MangaCardDonation />

@@ -3,6 +3,7 @@
 import { View } from '@litomi/std'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomMangaLink from '../RandomMangaLink'
@@ -10,7 +11,10 @@ import { useRandomMangaQuery } from './useRandomMangaQuery'
 
 export default function RandomMangaList() {
   const { data, isLoading, error } = useRandomMangaQuery()
+  const { isVisible } = useMangaCensorship()
+
   const mangas = data?.mangas ?? []
+  const visibleMangas = mangas.filter(isVisible)
 
   if (isLoading) {
     return (
@@ -36,7 +40,7 @@ export default function RandomMangaList() {
   return (
     <>
       <div className={`flex-1 grid ${MANGA_GRID_COLUMN[View.CARD]} gap-2`}>
-        {mangas.map((manga, i) => (
+        {visibleMangas.map((manga, i) => (
           <MangaCard index={i} key={manga.id} manga={manga} />
         ))}
       </div>

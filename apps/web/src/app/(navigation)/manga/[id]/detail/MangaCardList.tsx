@@ -3,6 +3,7 @@
 import { View } from '@litomi/std'
 
 import MangaCardImage from '@/components/card/MangaCardImage'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 
 type Props = {
@@ -11,10 +12,12 @@ type Props = {
 
 export default function MangaCardList({ mangaIds }: Props) {
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
+  const { isVisible } = useMangaCensorship()
+  const visibleMangaIds = mangaIds.filter((id) => isVisible(mangaMap.get(id)))
 
   return (
     <ul className="flex gap-2 overflow-x-auto scrollbar-hidden snap-x snap-mandatory">
-      {mangaIds.map((id, index) => {
+      {visibleMangaIds.map((id, index) => {
         const manga = mangaMap.get(id)
 
         if (!manga) {

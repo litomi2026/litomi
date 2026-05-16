@@ -1,14 +1,14 @@
 'use client'
 
+import type { Manga } from '@litomi/domain/types/manga'
+
 import { CensorshipLevel } from '@litomi/domain/database/enum'
-import { Manga } from '@litomi/domain/types/manga'
 import { Eye, EyeOff } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
-import useMatchedCensorships from '@/hook/useCensorshipCheck'
-import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMeQuery from '@/query/useMeQuery'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
@@ -22,25 +22,19 @@ type Props = {
 
 export default function MangaCardCensorship({ manga }: Props) {
   const { data: me } = useMeQuery()
-  const myName = me?.name ?? ''
-  const { data: censorshipsMap } = useCensorshipsMapQuery()
-  const { censoringReasons, highestCensorshipLevel } = useMatchedCensorships({ manga, censorshipsMap })
-  const ref = useRef<HTMLDivElement>(null)
+  const { getMatch } = useMangaCensorship()
   const [isBlurDisabled, setIsBlurDisabled] = useState(false)
+
   const locale = getLocaleFromCookie() || navigator.language || 'ko'
   const childrenDay = getChildrenDayForLocale(locale)
   const isChildrenDay = checkChildrenDay(childrenDay)
   const shouldCensorChildren = isChildrenDay && manga.tags?.some((tag) => CHILDREN_TAGS.has(tag.value))
+  const { censoringReasons, highestCensorshipLevel } = getMatch(manga)
+  const myName = me?.name ?? ''
 
-  // NOTE: 검열 레벨이 HEAVY인 경우 카드를 숨김
-  useEffect(() => {
-    if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
-      const cardElement = ref.current?.closest<HTMLElement>('[data-manga-card]')
-      if (cardElement) {
-        cardElement.style.display = 'none'
-      }
-    }
-  }, [highestCensorshipLevel])
+  if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
+    return null
+  }
 
   if (shouldCensorChildren) {
     return <MangaCardCensorshipChildren locale={childrenDay?.locale} />
@@ -48,10 +42,6 @@ export default function MangaCardCensorship({ manga }: Props) {
 
   if (!censoringReasons || censoringReasons.length === 0) {
     return null
-  }
-
-  if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
-    return <div ref={ref} style={{ display: 'none' }} />
   }
 
   return (
