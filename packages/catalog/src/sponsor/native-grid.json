@@ -8,7 +8,7 @@
     "label": "광고",
     "placements": ["public_grid_search"],
     "position": 3,
-    "targetUrl": "https://bdsm.vercel.app/",
+    "targetUrl": "https://bdsm.vercel.app",
     "targeting": {
       "keywords": [
         "bdsm",

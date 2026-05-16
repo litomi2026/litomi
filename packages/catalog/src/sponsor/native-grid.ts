@@ -15,6 +15,8 @@ type NativeGridSponsorConfig = Omit<NativeGridSponsor, 'placementId'> & {
   weight: number
 }
 
+const TARGETABLE_TAG_CATEGORIES = new Set(['female', 'male', 'mixed', 'other', 'tag'])
+
 const NATIVE_GRID_SPONSORS: NativeGridSponsorConfig[] = Object.entries(nativeGridSponsorsJSON).map(([id, sponsor]) => ({
   ...sponsor,
   id,
@@ -25,7 +27,7 @@ export function getNativeGridSponsor(
   searchQuery?: string | null,
 ): NativeGridSponsor | null {
   const now = new Date()
-  const normalizedSearchQuery = searchQuery?.toLowerCase()
+  const searchTargetingKeywords = parseSearchTargetingKeywords(searchQuery)
 
   const activeSponsors = NATIVE_GRID_SPONSORS.filter((sponsor) => {
     if (!sponsor.enabled || !sponsor.placements.includes(placementId)) {
@@ -46,11 +48,9 @@ export function getNativeGridSponsor(
       return true
     }
 
-    if (!normalizedSearchQuery) {
-      return false
-    }
-
-    return keywords.some((keyword) => normalizedSearchQuery.includes(keyword.toLowerCase()))
+    return keywords.some(
+      (keyword) => searchTargetingKeywords.included.has(keyword) && !searchTargetingKeywords.excluded.has(keyword),
+    )
   })
 
   const sponsor = pickWeightedSponsor(activeSponsors)
@@ -72,6 +72,41 @@ export function getNativeGridSponsor(
     targetUrl: sponsor.targetUrl,
     title: sponsor.title,
   }
+}
+
+function parseSearchTargetingKeywords(searchQuery?: string | null) {
+  const excluded = new Set<string>()
+  const included = new Set<string>()
+
+  if (!searchQuery?.trim()) {
+    return { excluded, included }
+  }
+
+  const tokens = searchQuery.trim().split(/\s+/)
+
+  for (const rawToken of tokens) {
+    const isExcluded = rawToken.startsWith('-')
+    const token = isExcluded ? rawToken.replace(/^-+/, '') : rawToken
+    const colonIndex = token.indexOf(':')
+    const keyword = colonIndex < 0 ? token : token.slice(colonIndex + 1)
+
+    if (!keyword) {
+      continue
+    }
+
+    if (colonIndex > 0) {
+      const category = token.slice(0, colonIndex)
+
+      if (!TARGETABLE_TAG_CATEGORIES.has(category)) {
+        continue
+      }
+    }
+
+    const keywords = isExcluded ? excluded : included
+    keywords.add(keyword)
+  }
+
+  return { excluded, included }
 }
 
 function pickWeightedSponsor(sponsors: NativeGridSponsorConfig[]) {
