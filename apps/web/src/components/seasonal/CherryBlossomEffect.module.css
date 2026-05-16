@@ -1,0 +1,81 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.petal {
+  position: absolute;
+  top: -12vh;
+  left: var(--petal-left);
+  width: var(--petal-size);
+  height: var(--petal-height);
+  border-radius: 72% 24% 76% 28%;
+  opacity: 0;
+  transform-origin: 55% 72%;
+  --petal-alpha: 1;
+  --petal-color-start: rgb(255 240 247 / 0.9);
+  --petal-color-end: rgb(255 178 208 / 0.76);
+  background: linear-gradient(135deg, var(--petal-color-start), var(--petal-color-end));
+  animation: cherry-blossom-fall var(--petal-duration) linear var(--petal-delay) infinite both;
+  will-change: transform, opacity;
+}
+
+.petal:nth-child(3n) {
+  --petal-alpha: 0.88;
+  --petal-color-start: rgb(255 248 251 / 0.84);
+  --petal-color-end: rgb(255 199 219 / 0.68);
+}
+
+.petal:nth-child(4n) {
+  --petal-alpha: 1.08;
+  --petal-color-start: rgb(255 233 243 / 0.92);
+  --petal-color-end: rgb(255 162 197 / 0.78);
+}
+
+.petal:nth-child(7n) {
+  --petal-alpha: 0.76;
+  --petal-color-start: rgb(255 255 255 / 0.78);
+  --petal-color-end: rgb(255 218 231 / 0.62);
+}
+
+@keyframes cherry-blossom-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+  }
+
+  8% {
+    opacity: calc(var(--petal-opacity) * var(--petal-alpha));
+  }
+
+  34% {
+    opacity: calc(var(--petal-opacity) * var(--petal-alpha));
+    transform: translate3d(var(--petal-x-early), 30vh, 0) rotate(var(--petal-rotate-early));
+  }
+
+  68% {
+    opacity: calc(var(--petal-opacity) * var(--petal-alpha));
+    transform: translate3d(var(--petal-x-mid), 68vh, 0) rotate(var(--petal-rotate-mid));
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--petal-x-end), 112vh, 0) rotate(var(--petal-rotate-end));
+  }
+}
+
+@media (max-width: 640px) {
+  .petal:nth-child(n + 23) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    display: none;
+  }
+}
