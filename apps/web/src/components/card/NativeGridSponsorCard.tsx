@@ -2,6 +2,7 @@
 
 import type { NativeGridSponsor } from '@litomi/contracts'
 
+import { View } from '@litomi/std'
 import { ExternalLink } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -13,9 +14,15 @@ import { track } from '@/lib/analytics/browser'
 type Props = {
   className?: string
   sponsor: NativeGridSponsor
+  variant?: View
 }
 
-export default function NativeGridSponsorCard({ className, sponsor }: Props) {
+const IMAGE_FRAME_CLASS_NAMES = {
+  [View.CARD]: 'aspect-4/3',
+  [View.IMAGE]: 'aspect-5/7',
+} as const
+
+export default function NativeGridSponsorCard({ className, sponsor, variant = View.CARD }: Props) {
   const pathname = usePathname()
   const imageCount = sponsor.imageUrls.length
   const [imageIndex, setImageIndex] = useState(0)
@@ -68,7 +75,7 @@ export default function NativeGridSponsorCard({ className, sponsor }: Props) {
       )}
       ref={cardRef}
     >
-      <div className="relative aspect-4/3 overflow-hidden bg-zinc-950">
+      <div className={twMerge('relative overflow-hidden bg-zinc-950', IMAGE_FRAME_CLASS_NAMES[variant])}>
         <a
           aria-label={imageLinkLabel}
           className="block size-full focus:outline-none"

@@ -1,5 +1,7 @@
 'use client'
 
+import type { NativeGridSponsor } from '@litomi/contracts'
+
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { Library } from 'lucide-react'
 import Link from 'next/link'
@@ -12,8 +14,10 @@ import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
+import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -26,6 +30,7 @@ import { LIBRARY_HEADER_SPACER_CLASS_NAME } from './libraryHeaderLayout'
 import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
 
 type AllLibraryMangaItem =
+  | NativeGridSponsorItem
   | (VirtualMangaGridItem & {
       libraryItem: LibraryItem
       type: 'manga'
@@ -49,9 +54,10 @@ type LibraryItem = {
 
 type Props = {
   initialView: View
+  nativeGridSponsor?: NativeGridSponsor | null
 }
 
-export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
+export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: Readonly<Props>) {
   const [view, setView] = useState<View>(initialView)
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
 
@@ -73,11 +79,13 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
   const isInitialLoading = libraryItems.length === 0 && isLibraryPending
   const visibleLibraryItems = libraryItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
 
-  const items: AllLibraryMangaItem[] = visibleLibraryItems.map((libraryItem) => ({
+  const mangaItems: AllLibraryMangaItem[] = visibleLibraryItems.map((libraryItem) => ({
     key: `manga-${libraryItem.mangaId}`,
     libraryItem,
     type: 'manga',
   }))
+
+  const items = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
 
   if (isFetchingNextPage) {
     items.push({
@@ -110,6 +118,10 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
   function renderItem(item: AllLibraryMangaItem, index: number) {
     if (item.type === 'loading') {
       return <MangaCardSkeleton variant={view} />
+    }
+
+    if (item.type === 'native-grid-sponsor') {
+      return <NativeGridSponsorCard sponsor={item.sponsor} variant={view} />
     }
 
     const { library, mangaId } = item.libraryItem

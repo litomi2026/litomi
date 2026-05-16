@@ -1,14 +1,19 @@
 'use client'
 
+import type { NativeGridSponsor } from '@litomi/contracts'
+
 import { twMerge } from 'tailwind-merge'
 
 import MangaCard from '@/components/card/MangaCard'
+import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
+import { insertNativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 type Props = {
   className?: string
+  nativeGridSponsor?: NativeGridSponsor | null
   rankings: RankingItem[]
 }
 
@@ -16,18 +21,32 @@ type RankingItem = {
   mangaId: number
 }
 
-export default function RankingList({ className, rankings }: Props) {
+export default function RankingList({ className, nativeGridSponsor, rankings }: Props) {
   const mangaIds = rankings.map((r) => r.mangaId)
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
   const { isVisible } = useMangaCensorship()
   const visibleRankings = rankings.filter((ranking) => isVisible(mangaMap.get(ranking.mangaId)))
 
+  const mangaItems = visibleRankings.map((ranking, mangaIndex) => ({
+    key: `manga-${ranking.mangaId}`,
+    mangaId: ranking.mangaId,
+    mangaIndex,
+    rank: mangaIndex + 1,
+    type: 'manga' as const,
+  }))
+
+  const items = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
+
   return (
     <div className={twMerge(`grid gap-2 p-2`, className)}>
-      {visibleRankings.map((ranking, i) => {
-        const manga = mangaMap.get(ranking.mangaId) ?? createLoadingManga(ranking.mangaId)
+      {items.map((item) => {
+        if (item.type === 'native-grid-sponsor') {
+          return <NativeGridSponsorCard key={item.key} sponsor={item.sponsor} />
+        }
 
-        return <MangaCard index={i} key={ranking.mangaId} manga={manga} rank={i + 1} />
+        const manga = mangaMap.get(item.mangaId) ?? createLoadingManga(item.mangaId)
+
+        return <MangaCard index={item.mangaIndex} key={item.key} manga={manga} rank={item.rank} />
       })}
     </div>
   )

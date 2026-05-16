@@ -1,20 +1,37 @@
 'use client'
 
+import type { NativeGridSponsor } from '@litomi/contracts'
+
 import { View } from '@litomi/std'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
+import { insertNativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomMangaLink from '../RandomMangaLink'
 import { useRandomMangaQuery } from './useRandomMangaQuery'
 
-export default function RandomMangaList() {
+type Props = {
+  nativeGridSponsor?: NativeGridSponsor | null
+}
+
+export default function RandomMangaList({ nativeGridSponsor }: Props) {
   const { data, isLoading, error } = useRandomMangaQuery()
   const { isVisible } = useMangaCensorship()
 
   const mangas = data?.mangas ?? []
   const visibleMangas = mangas.filter(isVisible)
+
+  const mangaItems = visibleMangas.map((manga, mangaIndex) => ({
+    key: `manga-${manga.id}`,
+    manga,
+    mangaIndex,
+    type: 'manga' as const,
+  }))
+
+  const items = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
 
   if (isLoading) {
     return (
@@ -40,9 +57,13 @@ export default function RandomMangaList() {
   return (
     <>
       <div className={`flex-1 grid ${MANGA_GRID_COLUMN[View.CARD]} gap-2`}>
-        {visibleMangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} />
-        ))}
+        {items.map((item) => {
+          if (item.type === 'native-grid-sponsor') {
+            return <NativeGridSponsorCard key={item.key} sponsor={item.sponsor} />
+          }
+
+          return <MangaCard index={item.mangaIndex} key={item.key} manga={item.manga} />
+        })}
       </div>
       <div className="flex justify-center items-center">
         <RandomMangaLink timer={20} />
