@@ -72,12 +72,11 @@ export default function SearchResult({ header }: Props) {
   const scrollRestorationKey = `search-results:${measurementKey}`
   const showRefreshButton = searchParams.get('sort') === 'random'
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
-  const shouldShowPromotion = view === View.CARD && promotion
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
   const items: SearchResultItem[] = []
 
   for (const [mangaIndex, manga] of visibleMangas.entries()) {
-    if (shouldShowPromotion && mangaIndex === (promotion.position ?? 0)) {
+    if (view === View.CARD && promotion && mangaIndex === (promotion.position ?? 0)) {
       items.push({
         key: `promotion-${promotion.id}`,
         promotion,
