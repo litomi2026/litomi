@@ -6,6 +6,7 @@ import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
 import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
 import IconLogo from '@/components/icons/LogoLitomi'
+import SeasonalEffects from '@/components/seasonal/SeasonalEffects'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
 import NotificationCount from './NotificationCount'
@@ -16,6 +17,7 @@ import SelectableLink from './SelectableLink'
 export default async function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="flex flex-col min-h-full mx-auto px-safe max-w-screen-2xl sm:flex-row">
+      <SeasonalEffects />
       <AutoHideHeader
         className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t bg-background/80 backdrop-blur transition
           sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-safe sm:data-[auto-hide=true]:opacity-100
