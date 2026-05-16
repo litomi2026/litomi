@@ -17,6 +17,7 @@ import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
@@ -67,10 +68,13 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
   const libraryItems = mergeUniqueLibraryItems(data?.pages)
   const mangaIds = libraryItems.map((item) => item.mangaId)
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
+  const { heavySignature, isVisible } = useMangaCensorship()
+
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const isInitialLoading = libraryItems.length === 0 && isLibraryPending
+  const visibleLibraryItems = libraryItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
 
-  const items: AllLibraryMangaItem[] = libraryItems.map((libraryItem) => ({
+  const items: AllLibraryMangaItem[] = visibleLibraryItems.map((libraryItem) => ({
     key: `manga-${libraryItem.mangaId}`,
     libraryItem,
     type: 'manga',
@@ -170,7 +174,7 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        measurementKey={view}
+        measurementKey={`${view}:${heavySignature}`}
         onScrollElementChange={setNavigationAutoHideScrollElement}
         renderItem={renderItem}
         scrollRestorationKey={`library:public:${view}`}

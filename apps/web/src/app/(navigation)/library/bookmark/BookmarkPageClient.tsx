@@ -18,6 +18,7 @@ import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
@@ -55,12 +56,13 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
     useBookmarkInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
 
   const bookmarkIds = data?.pages.flatMap((page) => page.bookmarks.map((bookmark) => bookmark.mangaId)) ?? []
-
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const showLoadingSkeleton = (isLoading && bookmarkIds.length === 0) || isFetchingNextPage
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: bookmarkIds })
+  const { heavySignature, isVisible } = useMangaCensorship()
+  const visibleBookmarkIds = bookmarkIds.filter((mangaId) => isVisible(mangaMap.get(mangaId)))
 
-  const items = bookmarkIds.map<BookmarkGridItem>((mangaId) => ({
+  const items = visibleBookmarkIds.map<BookmarkGridItem>((mangaId) => ({
     key: `manga-${mangaId}`,
     mangaId,
     type: 'manga',
@@ -155,7 +157,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        measurementKey={`${sort}:${view}`}
+        measurementKey={`${sort}:${view}:${heavySignature}`}
         onScrollElementChange={setNavigationAutoHideScrollElement}
         renderItem={renderItem}
         scrollRestorationKey={`library:bookmark:${sort}:${view}`}

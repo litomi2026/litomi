@@ -7,6 +7,7 @@ import { View } from '@litomi/std'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
@@ -31,7 +32,6 @@ export default function HistoryPageClient(props: Props) {
     useReadingHistoryInfiniteQuery(props)
 
   const historyItems = data?.pages.flatMap((page) => page.items) ?? []
-  const { isSelectionMode } = useLibrarySelection()
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
@@ -40,8 +40,13 @@ export default function HistoryPageClient(props: Props) {
     fetchNextPage,
   })
 
+  const { isSelectionMode } = useLibrarySelection()
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: historyItems.map((item) => item.mangaId) })
-  const groupedHistory = groupHistoryByDate(historyItems)
+  const { isVisible } = useMangaCensorship()
+
+  const visibleHistoryItems = historyItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
+  const historyIndexMap = new Map(visibleHistoryItems.map((item, index) => [item.mangaId, index]))
+  const groupedHistory = groupHistoryByDate(visibleHistoryItems)
 
   if (data && historyItems.length === 0 && !hasNextPage && !isFetchingNextPage) {
     return <NotFound />
@@ -59,7 +64,7 @@ export default function HistoryPageClient(props: Props) {
             <div className={`grid ${MANGA_GRID_COLUMN[View.CARD]} gap-2 p-2`}>
               {items.map(({ mangaId, lastPage }) => {
                 const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
-                const index = historyItems.findIndex((item) => item.mangaId === mangaId)
+                const index = historyIndexMap.get(mangaId) ?? 0
 
                 if (!isSelectionMode) {
                   return (

@@ -14,6 +14,7 @@ import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
@@ -53,17 +54,19 @@ export default function RatingPageClient({ initialData, initialSort, initialView
   const [sort, setSort] = useState<RatingSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
   const { exit, isSelectionMode } = useLibrarySelection()
+  const { isVisible } = useMangaCensorship()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useRatingInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
 
-  const ratingPages = data?.pages ?? []
-  const ratingItems = ratingPages.flatMap((page) => page.items)
-  const ratingIndexMap = new Map(ratingItems.map((item, index) => [item.mangaId, index]))
+  const ratingItems = data?.pages?.flatMap((page) => page.items) ?? []
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
+
   const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const showLoadingSkeleton = isLoading && ratingItems.length === 0
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
+  const visibleRatingItems = ratingItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
+  const ratingIndexMap = new Map(visibleRatingItems.map((item, index) => [item.mangaId, index]))
   const groupedRatings = new Map<number, typeof ratingItems>()
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
@@ -72,7 +75,7 @@ export default function RatingPageClient({ initialData, initialSort, initialView
     fetchNextPage,
   })
 
-  for (const item of ratingItems) {
+  for (const item of visibleRatingItems) {
     const group = groupedRatings.get(item.rating) || []
     group.push(item)
 
@@ -150,7 +153,7 @@ export default function RatingPageClient({ initialData, initialSort, initialView
         <MangaList
           isFetchingNextPage={isFetchingNextPage || showLoadingSkeleton}
           isSelectionMode={isSelectionMode}
-          items={ratingItems}
+          items={visibleRatingItems}
           mangaMap={mangaMap}
           ratingIndexMap={ratingIndexMap}
           view={view}
