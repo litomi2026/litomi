@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./services/TrendingKeywordsService": "./src/services/TrendingKeywordsService.ts",
     "./sponsor/native-grid": "./src/sponsor/native-grid.ts",
     "./translation/artist": "./src/translation/artist.ts",
     "./translation/category": "./src/translation/category.ts",
@@ -26,10 +25,8 @@
   },
   "dependencies": {
     "@litomi/contracts": "workspace:*",
-    "@litomi/db": "workspace:*",
     "@litomi/domain": "workspace:*",
     "@litomi/std": "workspace:*",
-    "ms": "^2.1.3",
     "server-only": "^0.0.1"
   }
 }

@@ -1,5 +1,3 @@
-import { trendingKeywordsService } from '@litomi/catalog/services/TrendingKeywordsService'
-import 'server-only'
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateCategory } from '@litomi/catalog/translation/category'
 import { translateCharacterList } from '@litomi/catalog/translation/character'
@@ -12,10 +10,12 @@ import { translateType } from '@litomi/catalog/translation/type'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
+import 'server-only'
 import { z } from 'zod'
 
 import type { Env } from '@/app'
 
+import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 import { zProblemValidator } from '@/utils/validator'
 
 enum TrendingType {

@@ -1,4 +1,4 @@
-import { trendingKeywordsService } from '@litomi/catalog/services/TrendingKeywordsService'
+import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 
 import { shutdownAnalyticsClient } from './api/v1/analytics/realtime'
 import app from './app'
