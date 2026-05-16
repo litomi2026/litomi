@@ -1,0 +1,100 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.snowflake {
+  position: absolute;
+  top: -8vh;
+  left: var(--flake-left);
+  width: var(--flake-size);
+  height: var(--flake-size);
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgb(255 255 255 / 0.96) 0 38%,
+    rgb(255 255 255 / 0.45) var(--flake-softness),
+    rgb(255 255 255 / 0) 78%
+  );
+  opacity: 0;
+  animation: snow-fall var(--flake-duration) linear var(--flake-delay) infinite both;
+  will-change: transform, opacity;
+}
+
+.snowflake:nth-child(3n) {
+  background: radial-gradient(
+    circle,
+    rgb(236 246 255 / 0.92) 0 36%,
+    rgb(236 246 255 / 0.38) var(--flake-softness),
+    rgb(236 246 255 / 0) 78%
+  );
+}
+
+.snowflake:nth-child(5n) {
+  background: radial-gradient(
+    circle,
+    rgb(255 255 255 / 0.78) 0 34%,
+    rgb(255 255 255 / 0.32) var(--flake-softness),
+    rgb(255 255 255 / 0) 78%
+  );
+}
+
+:global([data-theme='light']) .snowflake {
+  background: radial-gradient(
+    circle,
+    rgb(71 85 105 / 0.48) 0 34%,
+    rgb(71 85 105 / 0.2) var(--flake-softness),
+    rgb(71 85 105 / 0) 78%
+  );
+}
+
+:global([data-theme='light']) .snowflake:nth-child(3n) {
+  background: radial-gradient(
+    circle,
+    rgb(59 130 246 / 0.42) 0 34%,
+    rgb(59 130 246 / 0.18) var(--flake-softness),
+    rgb(59 130 246 / 0) 78%
+  );
+}
+
+@keyframes snow-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -8vh, 0);
+  }
+
+  10% {
+    opacity: var(--flake-opacity);
+  }
+
+  36% {
+    opacity: var(--flake-opacity);
+    transform: translate3d(var(--flake-x-early), 32vh, 0);
+  }
+
+  58% {
+    opacity: var(--flake-opacity);
+    transform: translate3d(var(--flake-x-mid), 58vh, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--flake-x-end), 108vh, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .snowflake:nth-child(n + 41) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    display: none;
+  }
+}
