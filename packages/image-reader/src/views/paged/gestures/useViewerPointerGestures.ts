@@ -476,8 +476,10 @@ export default function useViewerPointerGestures({
   }
 
   function handlePointerDown(e: PointerEvent<HTMLDivElement>) {
+    const isIgnoredNonPrimaryPointer = !e.isPrimary && e.pointerType !== 'touch'
+
     if (
-      !e.isPrimary ||
+      isIgnoredNonPrimaryPointer ||
       (e.pointerType === 'mouse' && e.button !== 0) ||
       isScreenEdge(e.clientX) ||
       shouldIgnoreViewerGestureTarget(e.target)
