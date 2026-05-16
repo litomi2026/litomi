@@ -50,7 +50,7 @@ export const SEASONAL_EFFECTS = [
     id: 'rain',
     window: {
       timeZone: SEOUL_TIME_ZONE,
-      start: { month: 1, day: 1, hour: 0, minute: 0 },
+      start: { month: 7, day: 1, hour: 0, minute: 0 },
       end: { month: 7, day: 4, hour: 0, minute: 0 },
     },
   },
