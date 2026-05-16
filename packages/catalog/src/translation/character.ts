@@ -1,6 +1,6 @@
 import 'server-only'
-import { getCharacterSponsors } from '@litomi/catalog/sponsor'
 
+import { getCharacterSponsors } from '../sponsor/character'
 import { translateCategory } from './category'
 import characterTranslationJSON from './character.json'
 import { Locale, Multilingual, normalizeValue, translateValue } from './common'

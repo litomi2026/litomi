@@ -1,10 +1,10 @@
-import { trendingKeywordsService } from '@litomi/catalog/services/TrendingKeywordsService'
-import 'server-only'
 import { Hono } from 'hono'
+import 'server-only'
 import { z } from 'zod'
 
 import type { Env } from '@/app'
 
+import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 import { zProblemValidator } from '@/utils/validator'
 
 const bodySchema = z.object({

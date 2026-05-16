@@ -1,6 +1,6 @@
 import 'server-only'
-import { getArtistSponsors } from '@litomi/catalog/sponsor'
 
+import { getArtistSponsors } from '../sponsor/artist'
 import artistTranslationJSON from './artist.json'
 import { translateCategory } from './category'
 import { Locale, Multilingual, normalizeValue, translateValue } from './common'

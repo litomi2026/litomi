@@ -1,4 +1,3 @@
-import type { KeywordPromotion } from '@litomi/catalog/sponsor'
 import type { Manga } from '@litomi/domain/types/manga'
 
 import { env } from '@litomi/env/env/client'
@@ -17,7 +16,6 @@ const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 type GETProxyKSearchResponse = {
   mangas: Manga[]
   nextCursor: string | null
-  promotion?: KeywordPromotion
 }
 
 export function useSearchQuery() {

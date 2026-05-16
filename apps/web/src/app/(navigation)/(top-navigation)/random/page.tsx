@@ -1,3 +1,5 @@
+import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
+import { NativeGridSponsorPlacement } from '@litomi/contracts'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 
@@ -16,5 +18,7 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <RandomMangaList />
+  const nativeGridSponsor = getNativeGridSponsor(NativeGridSponsorPlacement.RANDOM)
+
+  return <RandomMangaList nativeGridSponsor={nativeGridSponsor} />
 }

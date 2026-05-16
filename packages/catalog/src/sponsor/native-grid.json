@@ -1,0 +1,40 @@
+{
+  "bdsm-test-native-grid-example": {
+    "campaignId": "bdsm-test",
+    "creativeId": "bdsm-test-card-v1",
+    "description": "안전하고 건전한 BDSM 플레이를 위한 지식 학습 공간",
+    "enabled": true,
+    "imageUrls": ["https://bdsm.vercel.app/apple-icon.png"],
+    "label": "광고",
+    "placements": ["public_grid_search"],
+    "position": 3,
+    "targetUrl": "https://bdsm.vercel.app",
+    "targeting": {
+      "keywords": [
+        "bdsm",
+        "bondage",
+        "slave",
+        "collar",
+        "shibari",
+        "femdom",
+        "smalldom",
+        "spanking",
+        "whip",
+        "gag",
+        "leash",
+        "chastity_belt",
+        "harness",
+        "pillory",
+        "blindfold",
+        "nose_hook",
+        "cbt",
+        "orgasm_denial",
+        "cock_ring",
+        "petplay",
+        "forniphilia"
+      ]
+    },
+    "title": "BDSM 지식 테스트",
+    "weight": 1
+  }
+}

@@ -1,7 +1,10 @@
-import { getKeywordPromotion } from '@litomi/catalog/sponsor'
 import { Locale } from '@litomi/catalog/translation/common'
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@litomi/crawler/crawler/k-hentai'
-import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@litomi/crawler/crawler/proxy-utils'
+import {
+  createCacheControlHeaders,
+  createProblemDetailsResponse,
+  handleRouteError,
+} from '@litomi/crawler/crawler/proxy-utils'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/env/client'
 import { chance, sec } from '@litomi/std'
@@ -139,12 +142,9 @@ export async function GET(request: Request) {
 
     const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
     const mangas = filterMangasByMinusPrefix(filteredMangas, query)
-    const promotion = !nextId ? getKeywordPromotion(query) : null
-
     const response: GETProxyKSearchResponse = {
       mangas,
       nextCursor,
-      ...(promotion && { promotion }),
     }
 
     const headers = new Headers(getCacheControlHeader(params))

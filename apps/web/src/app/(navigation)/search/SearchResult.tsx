@@ -1,6 +1,6 @@
 'use client'
 
-import type { KeywordPromotion } from '@litomi/catalog/sponsor'
+import type { NativeGridSponsor } from '@litomi/contracts'
 import type { Manga } from '@litomi/domain/types/manga'
 import type { ReactNode } from 'react'
 
@@ -14,8 +14,9 @@ import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
-import MangaCardPromotion from '@/components/card/MangaCardPromotion'
+import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
+import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaCensorship from '@/hook/useMangaCensorship'
@@ -27,25 +28,24 @@ import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 const Error400 = dynamic(() => import('./Error400'))
 const SearchResultError = dynamic(() => import('./SearchResultError'))
 
-type Props = {
-  header?: ReactNode
+type LoadingItem = VirtualMangaGridItem & {
+  type: 'loading'
 }
 
-type SearchResultItem =
-  | (VirtualMangaGridItem & {
-      manga: Manga
-      mangaIndex: number
-      type: 'manga'
-    })
-  | (VirtualMangaGridItem & {
-      promotion: KeywordPromotion
-      type: 'promotion'
-    })
-  | (VirtualMangaGridItem & {
-      type: 'loading'
-    })
+type MangaItem = VirtualMangaGridItem & {
+  manga: Manga
+  mangaIndex: number
+  type: 'manga'
+}
 
-export default function SearchResult({ header }: Props) {
+type Props = {
+  header?: ReactNode
+  nativeGridSponsor?: NativeGridSponsor | null
+}
+
+type SearchResultItem = LoadingItem | MangaItem | NativeGridSponsorItem
+
+export default function SearchResult({ header, nativeGridSponsor }: Props) {
   const searchParams = useSearchParams()
   const view = getViewFromSearchParams(searchParams)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
@@ -67,30 +67,20 @@ export default function SearchResult({ header }: Props) {
 
   const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
   const visibleMangas = mangas.filter(isVisible)
-  const promotion = data?.pages[0]?.promotion
   const measurementKey = `${searchParams.toString()}:${heavySignature}`
   const scrollRestorationKey = `search-results:${measurementKey}`
   const showRefreshButton = searchParams.get('sort') === 'random'
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
-  const items: SearchResultItem[] = []
 
-  for (const [mangaIndex, manga] of visibleMangas.entries()) {
-    if (view === View.CARD && promotion && mangaIndex === (promotion.position ?? 0)) {
-      items.push({
-        key: `promotion-${promotion.id}`,
-        promotion,
-        type: 'promotion',
-      })
-    }
+  const mangaItems = visibleMangas.map((manga, mangaIndex) => ({
+    key: `manga-${manga.id}`,
+    manga,
+    mangaIndex,
+    type: 'manga' as const,
+  }))
 
-    items.push({
-      key: `manga-${manga.id}`,
-      manga,
-      mangaIndex,
-      type: 'manga',
-    })
-  }
+  const items: SearchResultItem[] = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
 
   if (isFetchingNextPage) {
     items.push({
@@ -132,8 +122,8 @@ export default function SearchResult({ header }: Props) {
         return <MangaCardSkeleton variant={view} />
       case 'manga':
         return <MangaCard index={item.mangaIndex} manga={item.manga} showSearchFromNextButton variant={view} />
-      case 'promotion':
-        return <MangaCardPromotion promotion={item.promotion} />
+      case 'native-grid-sponsor':
+        return <NativeGridSponsorCard sponsor={item.sponsor} variant={view} />
     }
   }
 

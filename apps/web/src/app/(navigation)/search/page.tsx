@@ -1,3 +1,5 @@
+import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
+import { NativeGridSponsorPlacement } from '@litomi/contracts'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { getViewFromSearchParams } from '@litomi/std'
 import { Metadata } from 'next'
@@ -49,6 +51,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
 
   const view = getViewFromSearchParams(params)
   const hasActiveFilters = Boolean(Object.values(filters).some(Boolean))
+  const nativeGridSponsor = getNativeGridSponsor(NativeGridSponsorPlacement.SEARCH, params.get('query'))
 
   const header = (
     <div className="flex flex-col gap-2 p-2 pb-0">
@@ -70,7 +73,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
   return (
     <>
       <Suspense fallback={<SearchResultLoading view={view} />}>
-        <SearchResult header={header} />
+        <SearchResult header={header} nativeGridSponsor={nativeGridSponsor} />
       </Suspense>
     </>
   )

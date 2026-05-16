@@ -1,20 +1,34 @@
 'use client'
 
+import type { NativeGridSponsor } from '@litomi/contracts'
+
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
+import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
+import { insertNativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { useNewMangaQuery } from './useNewMangaQuery'
 
 type Props = {
+  nativeGridSponsor?: NativeGridSponsor | null
   page: number
 }
 
-export default function NewMangaList({ page }: Props) {
+export default function NewMangaList({ nativeGridSponsor, page }: Props) {
   const { data: mangas, isLoading, error } = useNewMangaQuery({ page })
   const { isVisible } = useMangaCensorship()
   const visibleMangas = mangas?.filter(isVisible) ?? []
+
+  const mangaItems = visibleMangas.map((manga, mangaIndex) => ({
+    key: `manga-${manga.id}`,
+    manga,
+    mangaIndex,
+    type: 'manga' as const,
+  }))
+
+  const items = insertNativeGridSponsorItem(mangaItems, nativeGridSponsor)
 
   if (isLoading) {
     return (
@@ -39,9 +53,13 @@ export default function NewMangaList({ page }: Props) {
 
   return (
     <div className={`flex-1 grid ${MANGA_GRID_COLUMN.card} gap-2`}>
-      {visibleMangas.map((manga, i) => (
-        <MangaCard index={i} key={manga.id} manga={manga} />
-      ))}
+      {items.map((item) => {
+        if (item.type === 'native-grid-sponsor') {
+          return <NativeGridSponsorCard key={item.key} sponsor={item.sponsor} />
+        }
+
+        return <MangaCard index={item.mangaIndex} key={item.key} manga={item.manga} />
+      })}
       <MangaCardDonation />
     </div>
   )

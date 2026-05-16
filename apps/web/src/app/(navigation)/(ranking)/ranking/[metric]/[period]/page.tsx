@@ -1,3 +1,5 @@
+import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
+import { NativeGridSponsorPlacement } from '@litomi/contracts'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -63,6 +65,7 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
 
   const { metric, period } = validation.data
   const rankings = await getRankingData(metric, period)
+  const nativeGridSponsor = getNativeGridSponsor(NativeGridSponsorPlacement.RANKING)
 
   if (!rankings) {
     notFound()
@@ -71,7 +74,7 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
   return (
     <>
       <NonAdultJuicyAdsBanner className="mt-2 mx-2" />
-      <RankingList className={MANGA_GRID_COLUMN.card} rankings={rankings} />
+      <RankingList className={MANGA_GRID_COLUMN.card} nativeGridSponsor={nativeGridSponsor} rankings={rankings} />
     </>
   )
 }
