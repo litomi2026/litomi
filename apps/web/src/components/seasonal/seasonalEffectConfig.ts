@@ -58,7 +58,7 @@ export const SEASONAL_EFFECTS = [
     id: 'hangul',
     window: {
       timeZone: SEOUL_TIME_ZONE,
-      start: { month: 1, day: 9, hour: 0, minute: 0 },
+      start: { month: 10, day: 9, hour: 0, minute: 0 },
       end: { month: 10, day: 10, hour: 0, minute: 0 },
     },
   },
