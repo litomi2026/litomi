@@ -5,7 +5,7 @@
   "type": "module",
   "exports": {
     "./services/TrendingKeywordsService": "./src/services/TrendingKeywordsService.ts",
-    "./sponsor": "./src/sponsor/index.ts",
+    "./sponsor/native-grid": "./src/sponsor/native-grid.ts",
     "./translation/artist": "./src/translation/artist.ts",
     "./translation/category": "./src/translation/category.ts",
     "./translation/character": "./src/translation/character.ts",
@@ -25,6 +25,7 @@
     "type": "tsc --noEmit"
   },
   "dependencies": {
+    "@litomi/contracts": "workspace:*",
     "@litomi/db": "workspace:*",
     "@litomi/domain": "workspace:*",
     "@litomi/std": "workspace:*",
