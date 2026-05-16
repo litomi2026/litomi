@@ -14,7 +14,6 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import type { ReadingHistorySource } from './common'
 
-import CensoredManga from '../CensoredManga'
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -69,7 +68,6 @@ export default function HistoryPageClient(props: Props) {
                 if (!isSelectionMode) {
                   return (
                     <div className="relative group overflow-hidden" key={mangaId}>
-                      <CensoredManga mangaId={mangaId} />
                       <MangaCard className="h-full rounded-b-xs" index={index} manga={manga} />
                       <div className="absolute bottom-0 left-0 right-0 from-black/80 to-transparent pointer-events-none">
                         <div className="text-xs bg-brand/80 mx-auto w-fit px-2 py-0.5 mb-1 rounded text-background opacity-0 transition group-hover:opacity-100">

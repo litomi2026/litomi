@@ -19,7 +19,6 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
-import CensoredManga from '../CensoredManga'
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -178,7 +177,6 @@ function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchin
               <div className="absolute top-0.5 left-0.5 right-0.5 z-10 flex justify-center p-2 rounded-t-xl bg-background/60 pointer-events-none">
                 <StarRating rating={rating} />
               </div>
-              <CensoredManga mangaId={mangaId} />
               <MangaCard className="h-full" index={index} manga={manga} variant={view} />
             </div>
           )

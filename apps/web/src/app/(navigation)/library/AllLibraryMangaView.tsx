@@ -22,7 +22,6 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
-import CensoredManga from './CensoredManga'
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from './libraryHeaderLayout'
 import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
 
@@ -118,7 +117,6 @@ export default function AllLibraryMangaView({ initialView }: Readonly<Props>) {
 
     return (
       <div className="relative h-full rounded-xl overflow-hidden">
-        <CensoredManga mangaId={mangaId} />
         <MangaCard className="h-full" index={index} manga={manga} variant={view} />
         <Link
           className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-900/90 border border-zinc-700 shadow hover:bg-zinc-800 transition"

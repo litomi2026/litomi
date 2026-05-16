@@ -1,14 +1,14 @@
 'use client'
 
+import type { Manga } from '@litomi/domain/types/manga'
+
 import { CensorshipLevel } from '@litomi/domain/database/enum'
-import { Manga } from '@litomi/domain/types/manga'
 import { Eye, EyeOff } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
 
-import useMatchedCensorships from '@/hook/useCensorshipCheck'
-import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
+import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMeQuery from '@/query/useMeQuery'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
@@ -22,14 +22,15 @@ type Props = {
 
 export default function MangaCardCensorship({ manga }: Props) {
   const { data: me } = useMeQuery()
-  const myName = me?.name ?? ''
-  const { data: censorshipsMap } = useCensorshipsMapQuery()
-  const { censoringReasons, highestCensorshipLevel } = useMatchedCensorships({ manga, censorshipsMap })
+  const { getMatch } = useMangaCensorship()
   const [isBlurDisabled, setIsBlurDisabled] = useState(false)
+
   const locale = getLocaleFromCookie() || navigator.language || 'ko'
   const childrenDay = getChildrenDayForLocale(locale)
   const isChildrenDay = checkChildrenDay(childrenDay)
   const shouldCensorChildren = isChildrenDay && manga.tags?.some((tag) => CHILDREN_TAGS.has(tag.value))
+  const { censoringReasons, highestCensorshipLevel } = getMatch(manga)
+  const myName = me?.name ?? ''
 
   if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
     return null

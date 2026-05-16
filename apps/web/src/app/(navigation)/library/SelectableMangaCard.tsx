@@ -7,7 +7,6 @@ import { twMerge } from 'tailwind-merge'
 
 import MangaCard from '@/components/card/MangaCard'
 
-import CensoredManga from './CensoredManga'
 import { useLibrarySelection } from './librarySelection'
 
 type Props = {
@@ -30,7 +29,6 @@ export default function SelectableMangaCard({ className, index, manga, variant }
       )}
       onClick={() => toggle(manga.id)}
     >
-      <CensoredManga className="pointer-events-none" mangaId={manga.id} />
       <div className="absolute top-2 left-2 z-10 size-5 flex items-center justify-center rounded border-2 border-white bg-zinc-900/80">
         {isSelected && <Check className="size-4" />}
       </div>
