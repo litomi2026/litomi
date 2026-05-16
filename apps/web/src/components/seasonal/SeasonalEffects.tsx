@@ -12,9 +12,13 @@ const EFFECT_CHECK_INTERVAL_MS = ms('10 minutes')
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
 const CherryBlossomEffect = dynamic(() => import('@/components/seasonal/CherryBlossomEffect'), { ssr: false })
+const RainEffect = dynamic(() => import('@/components/seasonal/RainEffect'), { ssr: false })
+const SnowEffect = dynamic(() => import('@/components/seasonal/SnowEffect'), { ssr: false })
 
 const SEASONAL_EFFECT_COMPONENT_BY_ID = {
   'cherry-blossom': CherryBlossomEffect,
+  rain: RainEffect,
+  snow: SnowEffect,
 } satisfies Record<SeasonalEffectId, ComponentType>
 
 export default function SeasonalEffects() {

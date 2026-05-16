@@ -1,7 +1,7 @@
 const MINUTE_MS = 60 * 1000
 const SEOUL_TIME_ZONE = 'Asia/Seoul'
 
-export type SeasonalEffectId = 'cherry-blossom'
+export type SeasonalEffectId = 'cherry-blossom' | 'rain' | 'snow'
 
 type MonthDayTime = {
   day: number
@@ -31,11 +31,27 @@ type ZonedDateParts = {
 
 export const SEASONAL_EFFECTS = [
   {
+    id: 'snow',
+    window: {
+      timeZone: SEOUL_TIME_ZONE,
+      start: { month: 12, day: 24, hour: 0, minute: 0 },
+      end: { month: 1, day: 2, hour: 0, minute: 0 },
+    },
+  },
+  {
     id: 'cherry-blossom',
     window: {
       timeZone: SEOUL_TIME_ZONE,
       start: { month: 4, day: 1, hour: 0, minute: 0 },
       end: { month: 4, day: 8, hour: 0, minute: 0 },
+    },
+  },
+  {
+    id: 'rain',
+    window: {
+      timeZone: SEOUL_TIME_ZONE,
+      start: { month: 1, day: 1, hour: 0, minute: 0 },
+      end: { month: 7, day: 4, hour: 0, minute: 0 },
     },
   },
 ] as const satisfies readonly SeasonalEffectDefinition[]
