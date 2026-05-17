@@ -57,11 +57,11 @@ export function ImportModeOption({
     <label
       aria-current={isSelected}
       className={twMerge(
-        'relative flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition overflow-hidden',
+        'relative flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition overflow-hidden border-zinc-800/60',
+        'hover:border-zinc-700 hover:bg-zinc-800/30 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-zinc-900',
         colorClasses.border,
         colorClasses.bg,
         colorClasses.shadow,
-        'border-zinc-800/60 hover:border-zinc-700 hover:bg-zinc-800/30 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-zinc-900',
         colorClasses.ring,
       )}
     >

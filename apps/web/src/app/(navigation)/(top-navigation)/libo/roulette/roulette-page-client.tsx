@@ -126,9 +126,8 @@ export default function RoulettePageClient() {
                   <p className="text-xs text-white/80">{result.landed.label}</p>
                   <p
                     className={twMerge(
-                      `text-lg font-semibold tabular-nums drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)] ${getSegmentTextClass(
-                        result.landed.id,
-                      )}`,
+                      'text-lg font-semibold tabular-nums drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)]',
+                      getSegmentTextClass(result.landed.id),
                     )}
                   >
                     {result.payout > 0 ? '+' : ''}

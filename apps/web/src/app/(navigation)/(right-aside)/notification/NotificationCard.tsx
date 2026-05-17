@@ -122,8 +122,8 @@ export default function NotificationCard({
       aria-selected={selected}
       className={twMerge(
         'group relative rounded-xl border transition flex gap-3 p-3 sm:gap-4 sm:p-4 overflow-hidden',
-        isUnread ? 'border-zinc-700 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900/20',
         'hover:border-zinc-600 hover:bg-zinc-900/60 aria-selected:border-brand aria-selected:bg-brand/10',
+        isUnread ? 'border-zinc-700 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900/20',
         mangaViewerURL && !selectionMode ? 'cursor-pointer' : '',
       )}
       href={mangaViewerURL ?? ''}
@@ -175,9 +175,9 @@ export default function NotificationCard({
         <div className="flex items-start justify-between gap-4">
           <h3
             className={twMerge(
-              `font-medium line-clamp-1 transition ${
-                isUnread ? 'text-foreground' : 'text-zinc-300'
-              } ${mangaViewerURL ? 'group-hover:text-brand' : ''}`,
+              'font-medium line-clamp-1 transition',
+              isUnread ? 'text-foreground' : 'text-zinc-300',
+              mangaViewerURL ? 'group-hover:text-brand' : '',
             )}
           >
             {notification.title}

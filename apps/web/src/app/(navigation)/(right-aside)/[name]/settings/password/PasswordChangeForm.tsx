@@ -219,9 +219,8 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Readonly<Prop
               {[1, 2, 3, 4].map((level) => (
                 <div
                   className={twMerge(
-                    `flex-1 rounded-full transition-all ${
-                      level <= calculatePasswordStrength(newPassword) ? strengthInfo.barColor : 'bg-zinc-700'
-                    }`,
+                    'flex-1 rounded-full transition-all',
+                    level <= calculatePasswordStrength(newPassword) ? strengthInfo.barColor : 'bg-zinc-700',
                   )}
                   key={level}
                 />

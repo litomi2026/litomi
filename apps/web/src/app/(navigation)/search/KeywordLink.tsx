@@ -22,7 +22,7 @@ type Props = {
 
 export default function KeywordLink({
   href,
-  keyword: { label },
+  keyword: { label, value },
   index,
   linkRef,
   ariaCurrent,

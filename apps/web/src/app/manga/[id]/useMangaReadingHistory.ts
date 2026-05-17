@@ -27,13 +27,16 @@ export default function useMangaReadingHistory(mangaId: number) {
       }
 
       if (!me || !hasAdultAccess(adultState) || !me.settings.historySyncEnabled) {
-        return
+        return null
       }
 
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/history`
-      const { data } = await fetchWithErrorHandling<GETV1MangaIdHistoryResponse>(url, { credentials: 'include' })
 
-      return data
+      const { data } = await fetchWithErrorHandling<GETV1MangaIdHistoryResponse | undefined>(url, {
+        credentials: 'include',
+      })
+
+      return data ?? null
     },
     enabled: Boolean(mangaId) && !isMeLoading,
     meta: { requiresAdult: true },

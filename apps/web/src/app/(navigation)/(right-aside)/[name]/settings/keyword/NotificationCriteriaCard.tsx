@@ -157,9 +157,8 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
             {criterion.conditions.map((condition, index) => (
               <span
                 className={twMerge(
-                  `inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs transition ${
-                    condition.isExcluded ? 'bg-zinc-900 border border-zinc-700 opacity-60' : 'bg-zinc-800'
-                  }`,
+                  'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs transition',
+                  condition.isExcluded ? 'bg-zinc-900 border border-zinc-700 opacity-60' : 'bg-zinc-800',
                 )}
                 key={index}
                 title={`${condition.isExcluded ? '제외' : '포함'}: ${CONDITION_TYPE_LABELS[condition.type]} - ${condition.value}`}
