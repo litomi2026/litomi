@@ -1,6 +1,10 @@
 import { Locale } from '@litomi/catalog/translation/common'
 import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
-import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@litomi/crawler/crawler/proxy-utils'
+import {
+  createCacheControlHeaders,
+  createProblemDetailsResponse,
+  handleRouteError,
+} from '@litomi/crawler/crawler/proxy-utils'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/env/client'
 import { sec } from '@litomi/std'
@@ -48,12 +52,12 @@ export async function GET(request: Request) {
     const headers = new Headers(
       createCacheControlHeaders({
         vercel: {
-          maxAge: sec('4 hours'),
+          maxAge: sec('6 hours'),
         },
         browser: {
           public: true,
           maxAge: sec('30 minutes'),
-          sMaxAge: sec('4 hours'),
+          sMaxAge: sec('6 hours'),
           swr: sec('30 minutes'),
         },
       }),
