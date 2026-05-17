@@ -37,7 +37,7 @@ export type ReaderProps<TPage extends ReaderPage> = {
 }
 
 type ReadingProgressOptions = {
-  lastReadablePageNumber: number | null
+  lastReadablePageNumber?: number | null
   onChange: (progress: ReadingProgress) => void
   onSave?: (progress: ReadingProgress, options?: ReadingProgressSaveOptions) => Promise<void> | void
 }

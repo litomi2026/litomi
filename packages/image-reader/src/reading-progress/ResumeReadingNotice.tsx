@@ -11,7 +11,7 @@ import { useEffect, useEffectEvent, useRef } from 'react'
 const DEFAULT_DURATION_MS = ms('10 seconds')
 
 type Props = {
-  lastReadablePageNumber: number | null
+  lastReadablePageNumber?: number | null
   maxPageIndex: number
   readerLayout: ReaderLayout<ReaderPage>
 }
