@@ -39,6 +39,7 @@
     "@vercel/otel": "^2.1.2",
     "@zip.js/zip.js": "^2.8.26",
     "bcryptjs": "^3.0.3",
+    "botid": "^1.5.11",
     "country-flag-icons": "^1.6.15",
     "dayjs": "^1.11.20",
     "drizzle-orm": "^0.45.2",
