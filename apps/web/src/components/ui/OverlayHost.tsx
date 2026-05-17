@@ -4,7 +4,7 @@ import { useTopLayerPortalContainer } from '@litomi/ui'
 import { type ReactNode, useLayoutEffect } from 'react'
 import { createPortal } from 'react-dom'
 
-import { ensureOverlayRoot } from '@/components/ui/overlayRoot'
+import { useOverlayRoot } from '@/components/ui/overlayRoot'
 
 type Props = {
   children: ReactNode
@@ -12,7 +12,7 @@ type Props = {
 
 export default function OverlayHost({ children }: Props) {
   const topLayerPortalContainer = useTopLayerPortalContainer()
-  const overlayRoot = ensureOverlayRoot()
+  const overlayRoot = useOverlayRoot()
 
   useLayoutEffect(() => {
     if (!overlayRoot) {

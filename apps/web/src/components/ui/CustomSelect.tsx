@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { twMerge } from 'tailwind-merge'
 
-import { ensureOverlayRoot } from '@/components/ui/overlayRoot'
+import { useOverlayRoot } from '@/components/ui/overlayRoot'
 
 interface CustomSelectProps {
   buttonClassName?: string
@@ -41,7 +41,7 @@ export default function CustomSelect({
   const containerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const portalContainer = ensureOverlayRoot()
+  const portalContainer = useOverlayRoot()
 
   const isControlled = controlledValue !== undefined
   const value = isControlled ? controlledValue : internalValue

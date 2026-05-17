@@ -1,12 +1,20 @@
 'use client'
 
+import { useLayoutEffect, useState } from 'react'
+
 let overlayRoot: HTMLDivElement | null = null
 
-export function ensureOverlayRoot(): HTMLDivElement | null {
-  if (typeof document === 'undefined') {
-    return null
-  }
+export function useOverlayRoot(): HTMLDivElement | null {
+  const [root, setRoot] = useState<HTMLDivElement | null>(null)
 
+  useLayoutEffect(() => {
+    setRoot(ensureOverlayRoot())
+  }, [])
+
+  return root
+}
+
+function ensureOverlayRoot(): HTMLDivElement {
   if (overlayRoot) {
     return overlayRoot
   }
@@ -19,9 +27,5 @@ export function ensureOverlayRoot(): HTMLDivElement | null {
   el.style.pointerEvents = 'none'
 
   overlayRoot = el
-  return overlayRoot
-}
-
-export function getOverlayRoot(): HTMLDivElement | null {
   return overlayRoot
 }
