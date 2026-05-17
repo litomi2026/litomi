@@ -332,6 +332,7 @@ export async function seedUserSettings({ userId, ...overrides }: SeedUserSetting
       userId,
       historySyncEnabled: overrides.historySyncEnabled ?? true,
       adultVerifiedAdVisible: overrides.adultVerifiedAdVisible ?? false,
+      defaultCensorshipEnabled: overrides.defaultCensorshipEnabled ?? true,
       autoDeletionDay: overrides.autoDeletionDay ?? 90,
     })
     .returning()
