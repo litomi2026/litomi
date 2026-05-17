@@ -67,7 +67,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             태그
           </SelectableLink>
           <div className="relative">
-            <SelectableLink href="/notification" icon={<IconBell />} selectedIconStyle="fill">
+            <SelectableLink className="h-full" href="/notification" icon={<IconBell />} selectedIconStyle="fill">
               알림
             </SelectableLink>
             <NotificationCount />
