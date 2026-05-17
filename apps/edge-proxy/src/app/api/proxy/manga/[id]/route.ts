@@ -11,12 +11,14 @@ import { RouteProps } from '@litomi/domain/types/nextjs'
 import { env } from '@litomi/env/env/client'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { sec } from '@litomi/std'
+import { checkBotId } from 'botid/server'
 
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
 
 const { NEXT_PUBLIC_APP_ORIGIN } = env
+const BOT_ID_ALLOWED_FRONTEND_HOSTS = ['litomi.in', 'stg.litomi.in']
 
 type Params = {
   id: string
@@ -72,6 +74,31 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   try {
+    // const botVerification = await checkBotId({
+    //   advancedOptions: {
+    //     checkLevel: 'basic',
+    //     extraAllowedHosts: BOT_ID_ALLOWED_FRONTEND_HOSTS,
+    //   },
+    // })
+
+    // if (botVerification.isBot) {
+    //   const forbiddenHeaders = createCacheControlHeaders({
+    //     vercel: {
+    //       noStore: true,
+    //     },
+    //     browser: {
+    //       noStore: true,
+    //     },
+    //   })
+
+    //   return createProblemDetailsResponse(request, {
+    //     status: 403,
+    //     code: 'forbidden',
+    //     detail: '요청하신 작품은 접근할 수 없어요',
+    //     headers: createProxyHeaders(forbiddenHeaders),
+    //   })
+    // }
+
     const manga = await fetchMangaFromMultiSources({ id, locale })
 
     if (!manga) {
