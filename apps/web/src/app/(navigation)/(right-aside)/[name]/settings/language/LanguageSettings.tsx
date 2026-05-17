@@ -5,6 +5,7 @@ import { CN, JP, KR, TW, US } from 'country-flag-icons/react/3x2'
 import Cookies from 'js-cookie'
 import { Check, Globe } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 const LANGUAGES = [
   { code: '', label: '모두 보기', Flag: Globe },
@@ -46,8 +47,10 @@ export default function LanguageSettings() {
         return (
           <button
             aria-pressed={isSelected}
-            className="flex items-center gap-4 p-4 rounded-lg border-2 transition text-left border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30
-            aria-pressed:border-brand aria-pressed:bg-zinc-800/50"
+            className={twMerge(
+              'flex items-center gap-4 p-4 rounded-lg border-2 transition text-left border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30',
+              'aria-pressed:border-brand aria-pressed:bg-zinc-800/50',
+            )}
             key={code}
             onClick={() => handleLanguageChange(code)}
             type="button"

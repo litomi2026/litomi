@@ -7,6 +7,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Key, Loader2, RectangleEllipsis } from 'lucide-react'
 import { SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -126,9 +127,11 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             autoComplete={isBackupCode ? 'off' : 'one-time-code'}
             autoCorrect="off"
             autoFocus
-            className="w-full rounded-xl bg-white/4 border border-white/7 px-4 py-3 text-center text-xl font-mono text-zinc-50 placeholder:text-zinc-500 transition
-              focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
-              disabled:opacity-60 disabled:cursor-not-allowed"
+            className={twMerge(
+              'w-full rounded-xl bg-white/4 border border-white/7 px-4 py-3 text-center text-xl font-mono text-zinc-50 placeholder:text-zinc-500 transition',
+              'focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent',
+              'disabled:opacity-60 disabled:cursor-not-allowed',
+            )}
             disabled={isPending}
             enterKeyHint="done"
             inputMode={isBackupCode ? 'text' : 'numeric'}
@@ -151,10 +154,12 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             </label>
             <Toggle
               aria-label="브라우저 신뢰하기"
-              className="w-10 bg-white/6 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.28)] after:bg-white after:border-white/20 transition
-                peer-checked:bg-brand/65 peer-checked:border-transparent
-                peer-checked:shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.18)]
-                peer-focus-visible:ring-white/20 peer-focus-visible:ring-offset-0"
+              className={twMerge(
+                'w-10 bg-white/6 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.28)] after:bg-white after:border-white/20 transition',
+                'peer-checked:bg-brand/65 peer-checked:border-transparent',
+                'peer-checked:shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.18)]',
+                'peer-focus-visible:ring-white/20 peer-focus-visible:ring-offset-0',
+              )}
               disabled={isPending || isBackupCode}
               id="trust-browser"
               name="trust-browser"
@@ -164,10 +169,12 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
 
         <button
           aria-disabled={isPending}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90
-            shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition
-            hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15
-            aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+          className={twMerge(
+            'inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90',
+            'shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition',
+            'hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15',
+            'aria-disabled:opacity-50 aria-disabled:pointer-events-none',
+          )}
           disabled={isPending}
           type="submit"
         >

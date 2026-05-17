@@ -135,9 +135,11 @@ function ReasonButton({ disabled, description, label, onClick }: ReasonButtonPro
   return (
     <button
       aria-disabled={disabled}
-      className="flex w-full items-center gap-3 px-4 py-3 text-left rounded-xl transition
-        hover:bg-zinc-800 active:bg-zinc-800/50
-        aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+      className={twMerge(
+        'flex w-full items-center gap-3 px-4 py-3 text-left rounded-xl transition',
+        'hover:bg-zinc-800 active:bg-zinc-800/50',
+        'aria-disabled:opacity-50 aria-disabled:pointer-events-none',
+      )}
       disabled={disabled}
       onClick={onClick}
       type="button"

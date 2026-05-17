@@ -7,6 +7,7 @@ import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-
 import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 
@@ -82,17 +83,26 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
 
       <DialogFooter className="flex gap-3">
         <button
-          className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg bg-red-700 text-foreground font-medium 
-            hover:bg-red-700 transition disabled:opacity-50 relative"
+          className={twMerge(
+            'flex-1 flex items-center justify-center gap-2 h-10 rounded-lg bg-red-700 text-foreground font-medium',
+            'hover:bg-red-700 transition disabled:opacity-50 relative',
+          )}
           disabled={deleteLibraryMutation.isPending}
           onClick={() => deleteLibraryMutation.mutate(libraryId)}
           type="button"
         >
-          {deleteLibraryMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} 삭제
+          {deleteLibraryMutation.isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Trash2 className="size-4" />
+          )}{' '}
+          삭제
         </button>
         <button
-          className="flex-1 h-10 rounded-lg bg-zinc-800 text-zinc-300 font-medium 
-            hover:bg-zinc-700 transition disabled:opacity-50"
+          className={twMerge(
+            'flex-1 h-10 rounded-lg bg-zinc-800 text-zinc-300 font-medium',
+            'hover:bg-zinc-700 transition disabled:opacity-50',
+          )}
           disabled={deleteLibraryMutation.isPending}
           onClick={() => onOpenChange(false)}
           type="button"

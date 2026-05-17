@@ -6,6 +6,7 @@ import { BellRing, Loader2 } from 'lucide-react'
 import { ReadonlyURLSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import IconBell from '@/components/icons/IconBell'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
@@ -92,11 +93,13 @@ export default function KeywordSubscriptionButton() {
     <button
       aria-label={buttonTitle}
       aria-pressed={isSubscribed}
-      className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] transition border
-        bg-zinc-900/92 border-zinc-700 text-zinc-200 shadow-sm
-        hover:border-zinc-600 hover:bg-zinc-800/80
-        focus:outline-none focus:ring-2 focus:ring-zinc-500/30 focus:ring-offset-2 focus:ring-offset-background
-        disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-foreground aria-pressed:hover:border-brand"
+      className={twMerge(
+        'inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] transition border',
+        'bg-zinc-900/92 border-zinc-700 text-zinc-200 shadow-sm',
+        'hover:border-zinc-600 hover:bg-zinc-800/80',
+        'focus:outline-none focus:ring-2 focus:ring-zinc-500/30 focus:ring-offset-2 focus:ring-offset-background',
+        'disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-foreground aria-pressed:hover:border-brand',
+      )}
       disabled={isPending}
       onClick={handleToggleSubscription}
       title={buttonTitle}

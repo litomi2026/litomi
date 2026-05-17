@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { Loader2, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import useServerAction from '@/hook/useServerAction'
 
@@ -125,8 +126,10 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
                 <form action={dispatchRevokeSingle} onSubmit={handleRevokeDevice}>
                   <input name="trustedBrowserId" type="hidden" value={id} />
                   <button
-                    className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 
-                      disabled:opacity-50 transition"
+                    className={twMerge(
+                      'rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-red-400',
+                      'disabled:opacity-50 transition',
+                    )}
                     disabled={isRevokingSingle}
                     title="제거"
                     type="submit"

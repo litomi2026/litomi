@@ -7,6 +7,7 @@ import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { twMerge } from 'tailwind-merge'
 
 import IconBell from '@/components/icons/IconBell'
 import LinkPending from '@/components/LinkPending'
@@ -119,10 +120,12 @@ export default function NotificationCard({
   return (
     <Link
       aria-selected={selected}
-      className={`group relative rounded-xl border transition flex gap-3 p-3 sm:gap-4 sm:p-4 overflow-hidden
-      ${isUnread ? 'border-zinc-700 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900/20'}
-      hover:border-zinc-600 hover:bg-zinc-900/60 aria-selected:border-brand aria-selected:bg-brand/10
-      ${mangaViewerURL && !selectionMode ? 'cursor-pointer' : ''}`}
+      className={twMerge(
+        'group relative rounded-xl border transition flex gap-3 p-3 sm:gap-4 sm:p-4 overflow-hidden',
+        'hover:border-zinc-600 hover:bg-zinc-900/60 aria-selected:border-brand aria-selected:bg-brand/10',
+        isUnread ? 'border-zinc-700 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900/20',
+        mangaViewerURL && !selectionMode ? 'cursor-pointer' : '',
+      )}
       href={mangaViewerURL ?? ''}
       onClick={handleClick}
       prefetch={false}
@@ -171,9 +174,11 @@ export default function NotificationCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-4">
           <h3
-            className={`font-medium line-clamp-1 transition ${
-              isUnread ? 'text-foreground' : 'text-zinc-300'
-            } ${mangaViewerURL ? 'group-hover:text-brand' : ''}`}
+            className={twMerge(
+              'font-medium line-clamp-1 transition',
+              isUnread ? 'text-foreground' : 'text-zinc-300',
+              mangaViewerURL ? 'group-hover:text-brand' : '',
+            )}
           >
             {notification.title}
           </h3>

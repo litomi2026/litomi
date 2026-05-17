@@ -44,6 +44,7 @@ route.get('/', async (c) => {
         adultFlag: bbatonVerificationTable.adultFlag,
         historySyncEnabled: userSettingsTable.historySyncEnabled,
         adultVerifiedAdVisible: userSettingsTable.adultVerifiedAdVisible,
+        defaultCensorshipEnabled: userSettingsTable.defaultCensorshipEnabled,
         autoDeletionDay: userSettingsTable.autoDeletionDay,
       })
       .from(userTable)
@@ -64,6 +65,7 @@ route.get('/', async (c) => {
     const settings = resolveUserSettings({
       historySyncEnabled: user.historySyncEnabled ?? undefined,
       adultVerifiedAdVisible: user.adultVerifiedAdVisible ?? undefined,
+      defaultCensorshipEnabled: user.defaultCensorshipEnabled ?? undefined,
       autoDeletionDay: user.autoDeletionDay ?? undefined,
     })
 

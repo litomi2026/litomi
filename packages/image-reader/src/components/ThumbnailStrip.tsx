@@ -7,6 +7,7 @@ import { useReaderStore } from '#reader/state/readerStore'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { twMerge } from 'tailwind-merge'
 
 type Props<TPage extends ReaderPage> = {
   pages: readonly TPage[]
@@ -79,8 +80,10 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
     <div className="relative overflow-hidden flex justify-center">
       <button
         aria-label={messages.thumbnailPrevious}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-r-lg bg-background/90 transition hover:bg-background
-        disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
+        className={twMerge(
+          'absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-r-lg bg-background/90 transition hover:bg-background',
+          'disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70',
+        )}
         disabled={isFirstImageInView}
         onClick={scrollLeft}
         title={messages.thumbnailPrevious}
@@ -90,8 +93,10 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
       </button>
       <button
         aria-label={messages.thumbnailNext}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-l-lg bg-background/90 transition hover:bg-background
-        disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
+        className={twMerge(
+          'absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-l-lg bg-background/90 transition hover:bg-background',
+          'disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70',
+        )}
         disabled={isLastImageInView}
         onClick={scrollRight}
         title={messages.thumbnailNext}
@@ -112,8 +117,10 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
             <button
               aria-current={isActive ? 'page' : undefined}
               aria-label={messages.goToPage(i + 1)}
-              className="relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition
-              aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
+              className={twMerge(
+                'relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition',
+                'aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70',
+              )}
               key={page.id}
               onClick={() => handleThumbnailClick(i)}
               ref={i === 0 ? firstImageRef : i === pages.length - 1 ? lastImageRef : undefined}

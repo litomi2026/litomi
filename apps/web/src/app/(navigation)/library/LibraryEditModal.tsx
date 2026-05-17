@@ -14,6 +14,7 @@ import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-
 import { Check, Loader2, Shuffle } from 'lucide-react'
 import { type SubmitEvent, useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -197,8 +198,10 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
               <input
                 autoCapitalize="off"
                 autoComplete="off"
-                className="h-10 w-16 rounded-lg border border-zinc-700 bg-zinc-800 text-center text-xl outline-none transition
-                  focus:border-transparent focus:ring-2 focus:ring-zinc-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className={twMerge(
+                  'h-10 w-16 rounded-lg border border-zinc-700 bg-zinc-800 text-center text-xl outline-none transition',
+                  'focus:border-transparent focus:ring-2 focus:ring-zinc-600 disabled:cursor-not-allowed disabled:opacity-50',
+                )}
                 disabled={updateLibraryMutation.isPending}
                 id={iconInputId}
                 maxLength={MAX_LIBRARY_ICON_LENGTH}
@@ -213,9 +216,11 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
               />
               <button
                 aria-label="랜덤 아이콘으로 변경"
-                className="inline-flex size-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900
-                  text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
-                  disabled:cursor-not-allowed disabled:opacity-50"
+                className={twMerge(
+                  'inline-flex size-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900',
+                  'text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800',
+                  'disabled:cursor-not-allowed disabled:opacity-50',
+                )}
                 disabled={updateLibraryMutation.isPending || isRandomIconPending}
                 onClick={() => updateRandomIcon(selectedIcon)}
                 onFocus={preloadLibraryEmojiList}
@@ -234,10 +239,12 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             </label>
             <div className="flex items-center gap-2">
               <input
-                className="h-10 w-20 overflow-hidden rounded-lg border border-zinc-700 bg-zinc-800 p-0 outline-none transition
-                  focus:border-transparent focus:ring-2 focus:ring-zinc-600 disabled:cursor-not-allowed disabled:opacity-50
-                  [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:border-0
-                  [&::-webkit-color-swatch-wrapper]:p-0"
+                className={twMerge(
+                  'h-10 w-20 overflow-hidden rounded-lg border border-zinc-700 bg-zinc-800 p-0 outline-none transition',
+                  'focus:border-transparent focus:ring-2 focus:ring-zinc-600 disabled:cursor-not-allowed disabled:opacity-50',
+                  '[&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:border-0',
+                  '[&::-webkit-color-swatch-wrapper]:p-0',
+                )}
                 disabled={updateLibraryMutation.isPending}
                 id={colorInputId}
                 name="color"
@@ -247,9 +254,11 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
               />
               <button
                 aria-label="랜덤 색상으로 변경"
-                className="inline-flex size-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900
-                  text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
-                  disabled:cursor-not-allowed disabled:opacity-50"
+                className={twMerge(
+                  'inline-flex size-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900',
+                  'text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800',
+                  'disabled:cursor-not-allowed disabled:opacity-50',
+                )}
                 disabled={updateLibraryMutation.isPending}
                 onClick={() => setSelectedColor(getRandomLibraryColor())}
                 title="랜덤 색상으로 변경"
@@ -315,8 +324,10 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
         </DialogBody>
         <DialogFooter className="flex gap-3">
           <button
-            className="flex-1 h-10 px-4 rounded-lg bg-zinc-800 text-zinc-300 font-medium 
-              hover:bg-zinc-700 transition disabled:opacity-50"
+            className={twMerge(
+              'flex-1 h-10 px-4 rounded-lg bg-zinc-800 text-zinc-300 font-medium',
+              'hover:bg-zinc-700 transition disabled:opacity-50',
+            )}
             disabled={updateLibraryMutation.isPending}
             onClick={() => onOpenChange(false)}
             type="button"
@@ -324,8 +335,10 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             취소
           </button>
           <button
-            className="flex-1 h-10 px-4 rounded-lg bg-brand text-background font-semibold
-              hover:bg-brand/90 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className={twMerge(
+              'flex-1 h-10 px-4 rounded-lg bg-brand text-background font-semibold',
+              'hover:bg-brand/90 transition disabled:opacity-50 flex items-center justify-center gap-2',
+            )}
             disabled={updateLibraryMutation.isPending}
             type="submit"
           >

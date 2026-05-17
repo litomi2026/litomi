@@ -10,6 +10,7 @@ import { useReaderMessages } from '#reader/readerRuntime'
 import { orientations, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 const BOTTOM_BUTTON_CLASS_NAME =
   'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
@@ -116,8 +117,10 @@ export default function ReaderControls<TPage extends ReaderPage>({
   return (
     <footer
       aria-hidden={!isVisible}
-      className="fixed bottom-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
-        data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto"
+      className={twMerge(
+        'fixed bottom-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none',
+        'data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto',
+      )}
       data-visible={isVisible ? 'true' : 'false'}
       inert={!isVisible}
     >

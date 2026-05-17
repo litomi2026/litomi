@@ -32,6 +32,7 @@ export const userSettingsTable = pgTable('user_settings', {
     .primaryKey(),
   historySyncEnabled: boolean('history_sync_enabled').notNull().default(true),
   adultVerifiedAdVisible: boolean('adult_verified_ad_visible').notNull().default(false),
+  defaultCensorshipEnabled: boolean('default_censorship_enabled').notNull().default(true),
   autoDeletionDay: smallint('auto_deletion_day').notNull().default(90), // 0 = disabled
 }).enableRLS()
 

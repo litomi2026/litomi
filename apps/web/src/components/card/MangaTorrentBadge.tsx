@@ -3,6 +3,7 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
 import { Magnet } from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 import { useMangaTorrentModal } from './MangaTorrentModal'
 
@@ -23,9 +24,12 @@ export default function MangaTorrentBadge({ manga, className = '' }: Props) {
   return (
     <button
       aria-label={`토렌트 ${torrentCount}개 보기`}
-      className={`inline-flex items-center gap-1 rounded-lg bg-background/80 p-2 py-1 border border-zinc-700/60
-        before:content-[''] before:absolute before:-inset-2 before:rounded-lg
-        hover:bg-background/70 active:bg-background/80 transition ${className}`}
+      className={twMerge(
+        'inline-flex items-center gap-1 rounded-lg bg-background/80 p-2 py-1 border border-zinc-700/60',
+        "before:content-[''] before:absolute before:-inset-2 before:rounded-lg",
+        'hover:bg-background/70 active:bg-background/80 transition',
+        className,
+      )}
       onClick={(e) => {
         e.preventDefault()
         e.stopPropagation()

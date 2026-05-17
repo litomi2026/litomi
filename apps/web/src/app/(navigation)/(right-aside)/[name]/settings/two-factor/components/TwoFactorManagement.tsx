@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import useServerAction, { getFormField } from '@/hook/useServerAction'
 
@@ -128,16 +129,20 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
       <OneTimeCodeInput defaultValue={defaultToken} />
       <div className="flex gap-3">
         <button
-          className="flex-1 rounded-lg bg-red-900 px-4 py-3 font-medium text-foreground transition
-          hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className={twMerge(
+            'flex-1 rounded-lg bg-red-900 px-4 py-3 font-medium text-foreground transition',
+            'hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50',
+          )}
           disabled={isDisabling}
           type="submit"
         >
           {isDisabling ? <Loader2 className="size-4 mx-auto animate-spin" /> : '비활성화'}
         </button>
         <button
-          className="flex-1 rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 transition
-          hover:bg-zinc-700"
+          className={twMerge(
+            'flex-1 rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 transition',
+            'hover:bg-zinc-700',
+          )}
           onClick={onCancel}
         >
           취소
@@ -165,16 +170,20 @@ function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCode
       <OneTimeCodeInput defaultValue={defaultToken} />
       <div className="flex gap-3">
         <button
-          className="flex-1 rounded-lg bg-brand px-4 py-3 font-medium text-background transition
-          hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className={twMerge(
+            'flex-1 rounded-lg bg-brand px-4 py-3 font-medium text-background transition',
+            'hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50',
+          )}
           disabled={isRegenerating}
           type="submit"
         >
           {isRegenerating ? <Loader2 className="size-4 mx-auto animate-spin" /> : '재생성'}
         </button>
         <button
-          className="flex-1 rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 transition
-          hover:bg-zinc-700"
+          className={twMerge(
+            'flex-1 rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 transition',
+            'hover:bg-zinc-700',
+          )}
           onClick={onCancel}
         >
           취소

@@ -3,6 +3,7 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Check, Loader2, UserPlus } from 'lucide-react'
 import { useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { showLoginRequiredToast } from '@/lib/toast'
 import useFollowingUserSetQuery from '@/query/useFollowingUserSetQuery'
@@ -69,12 +70,14 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
         aria-busy={isPending}
         aria-disabled={isPending}
         aria-pressed={isFollowing}
-        className="inline-flex min-w-24 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-4 py-2 text-sm font-semibold tracking transition
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background
-        disabled:cursor-progress disabled:opacity-80
-        aria-pressed:bg-zinc-900 aria-pressed:text-zinc-100 aria-pressed:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]
-        aria-pressed:hover:border-red-400/60 aria-pressed:hover:bg-red-500/10 aria-pressed:hover:text-red-300
-        border-transparent bg-foreground text-background shadow-[0_10px_28px_-22px_rgba(255,255,255,0.9)] hover:opacity-90 active:translate-y-px active:opacity-85"
+        className={twMerge(
+          'inline-flex min-w-24 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-4 py-2 text-sm font-semibold tracking transition',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          'disabled:cursor-progress disabled:opacity-80',
+          'aria-pressed:bg-zinc-900 aria-pressed:text-zinc-100 aria-pressed:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]',
+          'aria-pressed:hover:border-red-400/60 aria-pressed:hover:bg-red-500/10 aria-pressed:hover:text-red-300',
+          'border-transparent bg-foreground text-background shadow-[0_10px_28px_-22px_rgba(255,255,255,0.9)] hover:opacity-90 active:translate-y-px active:opacity-85',
+        )}
         disabled={isPending}
         onClick={handleButtonClick}
         type="button"

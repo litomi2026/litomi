@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { twMerge } from 'tailwind-merge'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
 
@@ -23,12 +24,16 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
   return (
     <>
       <NavigationWithMobileMenu
-        className="fixed top-0 left-0 right-0 z-10 border-b backdrop-blur bg-background/90
-          sm:sticky sm:pt-safe sm:min-h-(--safe-area-top)"
+        className={twMerge(
+          'fixed top-0 left-0 right-0 z-10 border-b backdrop-blur bg-background/90',
+          'sm:sticky sm:pt-safe sm:min-h-(--safe-area-top)',
+        )}
       >
         <div
-          className="grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground
-           sm:[&_a]:hover:bg-foreground/10"
+          className={twMerge(
+            'grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground',
+            'sm:[&_a]:hover:bg-foreground/10',
+          )}
         >
           <Link aria-selected={isrecommend} href="recommend" prefetch={false}>
             추천

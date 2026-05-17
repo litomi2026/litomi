@@ -3,6 +3,7 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Pen } from 'lucide-react'
 import { useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 type Props = {
   className?: string
@@ -14,9 +15,12 @@ export default function PublishButton({ className = '' }: Readonly<Props>) {
   return (
     <>
       <div
-        className={`text-center text-lg leading-5
-        [&_button]:bg-zinc-700 [&_button]:hover:bg-zinc-600 [&_button]:active:bg-zinc-700
-        [&_button]:rounded-full [&_button]:disabled:opacity-50 [&_button]:transition [&_button]:border-2 [&_button]:border-zinc-600 ${className}`}
+        className={twMerge(
+          'text-center text-lg leading-5',
+          '[&_button]:bg-zinc-700 [&_button]:hover:bg-zinc-600 [&_button]:active:bg-zinc-700',
+          '[&_button]:rounded-full [&_button]:disabled:opacity-50 [&_button]:transition [&_button]:border-2 [&_button]:border-zinc-600',
+          className,
+        )}
       >
         <button className="p-3 2xl:hidden" onClick={() => setIsOpened(true)} type="button">
           <Pen aria-label="글쓰기" className="size-6 shrink-0 text-foreground" />

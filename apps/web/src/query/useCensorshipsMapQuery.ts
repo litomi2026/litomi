@@ -1,5 +1,6 @@
 import type { CensorshipItem, GETV1CensorshipResponse } from '@litomi/contracts'
 
+import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 
@@ -12,7 +13,8 @@ import useMeQuery from './useMeQuery'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchCensorshipsMap() {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
+  const params = new URLSearchParams({ limit: MAX_CENSORSHIPS_PER_USER.toString() })
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship?${params}`
   const { data } = await fetchWithErrorHandling<GETV1CensorshipResponse>(url, { credentials: 'include' })
   const lookup = new Map<string, CensorshipItem>()
 

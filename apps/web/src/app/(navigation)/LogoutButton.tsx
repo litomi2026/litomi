@@ -2,6 +2,7 @@
 
 import { LogOut } from 'lucide-react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
@@ -27,9 +28,11 @@ export default function LogoutButton() {
 
   return (
     <button
-      className="group rounded-full p-2 w-full text-red-500 text-sm font-semibold transition whitespace-nowrap
-        hover:bg-red-500/20 active:scale-95 
-          disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400 sm:px-3 sm:py-2"
+      className={twMerge(
+        'group rounded-full p-2 w-full text-red-500 text-sm font-semibold transition whitespace-nowrap',
+        'hover:bg-red-500/20 active:scale-95',
+        'disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400 sm:px-3 sm:py-2',
+      )}
       disabled={isPending}
       onClick={handleLogout}
       type="button"

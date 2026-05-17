@@ -10,6 +10,7 @@ import ms from 'ms'
 import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useRef } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 import { create } from 'zustand'
 
 import useClipboard from '@/hook/useClipboard'
@@ -162,8 +163,10 @@ export default function MangaTorrentModal() {
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <a
-                          className="inline-flex items-center gap-1 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100
-                            hover:bg-zinc-800 transition"
+                          className={twMerge(
+                            'inline-flex items-center gap-1 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100',
+                            'hover:bg-zinc-800 transition',
+                          )}
                           href={magnet}
                           onClick={handleClickOpen}
                           rel="noreferrer"
@@ -172,8 +175,10 @@ export default function MangaTorrentModal() {
                           열기
                         </a>
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100
-                            hover:bg-zinc-800 transition"
+                          className={twMerge(
+                            'inline-flex items-center gap-1 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100',
+                            'hover:bg-zinc-800 transition',
+                          )}
                           onClick={() => copy(magnet)}
                           type="button"
                         >

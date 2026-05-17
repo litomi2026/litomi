@@ -1,4 +1,5 @@
 import { Key, Shield } from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 import { Passkey, PasskeySignalData } from './common'
 import PasskeyDeleteButton from './PasskeyDeleteButton'
@@ -47,8 +48,10 @@ export default function PasskeyCard({ passkey, passkeySignalData }: Readonly<Pro
               )}
             </h3>
             <PasskeyDeleteButton
-              className="opacity-0 sm:opacity-100 -my-2 -mx-1 p-2 text-zinc-600 rounded-xl transition 
-              hover:text-red-400 hover:bg-red-900/10 group-hover/card:opacity-100"
+              className={twMerge(
+                'opacity-0 sm:opacity-100 -my-2 -mx-1 p-2 text-zinc-600 rounded-xl transition',
+                'hover:text-red-400 hover:bg-red-900/10 group-hover/card:opacity-100',
+              )}
               credentialId={credentialId}
               id={id}
               passkeySignalData={passkeySignalData}

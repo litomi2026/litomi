@@ -2,6 +2,7 @@
 
 import { SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import usePatchMySettingsMutation from '@/query/usePatchMySettingsMutation'
 
@@ -57,9 +58,11 @@ export default function AutoDeletionForm({ autoDeletionDay }: Props) {
                 value={option.value}
               />
               <div
-                className="relative flex items-center gap-3 h-full rounded-lg border border-zinc-800 px-4 py-3 text-zinc-300 transition
-                hover:border-zinc-700 peer-checked:border-brand peer-checked:bg-brand/10 peer-checked:text-zinc-100
-                peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+                className={twMerge(
+                  'relative flex items-center gap-3 h-full rounded-lg border border-zinc-800 px-4 py-3 text-zinc-300 transition',
+                  'hover:border-zinc-700 peer-checked:border-brand peer-checked:bg-brand/10 peer-checked:text-zinc-100',
+                  'peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+                )}
               >
                 <div className="flex-1">
                   <div className="font-medium text-sm">{option.label}</div>
@@ -73,17 +76,21 @@ export default function AutoDeletionForm({ autoDeletionDay }: Props) {
           ))}
         </div>
         <div
-          className="rounded-lg bg-zinc-800/50 p-3 text-xs text-zinc-400 space-y-1
-          group-has-[input[name=autoDeletionDay][value=0]:checked]/auto-deletion:hidden"
+          className={twMerge(
+            'rounded-lg bg-zinc-800/50 p-3 text-xs text-zinc-400 space-y-1',
+            'group-has-[input[name=autoDeletionDay][value=0]:checked]/auto-deletion:hidden',
+          )}
         >
           <p>• 삭제 30일 전에 알림을 보내드려요</p>
           <p>• 로그인하면 자동 삭제가 취소돼요</p>
         </div>
       </div>
       <button
-        className="p-2 relative bg-brand font-medium text-background rounded-lg transition text-sm w-full
-          hover:bg-brand/90 disabled:opacity-50
-          focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-zinc-900"
+        className={twMerge(
+          'p-2 relative bg-brand font-medium text-background rounded-lg transition text-sm w-full',
+          'hover:bg-brand/90 disabled:opacity-50',
+          'focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-zinc-900',
+        )}
         disabled={patchMySettingsMutation.isPending}
         type="submit"
       >

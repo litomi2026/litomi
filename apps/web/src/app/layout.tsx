@@ -112,6 +112,14 @@ export default function RootLayout({ children }: Readonly<Props>) {
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <ThemeProvider />
         <CapacitorNativeEffects />
+        <OverlayHost>
+          <Toaster
+            className="pointer-events-auto"
+            mobileOffset={{ top: 'calc(1rem + var(--safe-area-top))' }}
+            position="top-center"
+            theme="system"
+          />
+        </OverlayHost>
         <QueryProvider>
           {children}
           <LibraryModal />
@@ -121,14 +129,6 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <ServiceWorkerRegistrar />
         <HiyobiPing />
         <NewYearToastNudge />
-        <OverlayHost>
-          <Toaster
-            className="pointer-events-auto"
-            mobileOffset={{ top: 'calc(1rem + var(--safe-area-top))' }}
-            position="top-center"
-            theme="system"
-          />
-        </OverlayHost>
         {(NEXT_PUBLIC_GTM_ID || NEXT_PUBLIC_GTM_SCRIPT_URL) && (
           <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} gtmScriptUrl={NEXT_PUBLIC_GTM_SCRIPT_URL} />
         )}
