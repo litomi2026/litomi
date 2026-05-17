@@ -15,6 +15,7 @@ export function identify(userId: number | string | null) {
   }
 
   sendGTMEvent({
+    event: 'auth_identify',
     user_id: userId === null ? null : String(userId),
   })
 }
