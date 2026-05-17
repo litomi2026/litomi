@@ -1,5 +1,15 @@
 import { createSentryInitOptions } from '@litomi/observability'
 import * as Sentry from '@sentry/nextjs'
+import { initBotId } from 'botid/client/core'
+
+initBotId({
+  protect: [
+    {
+      path: '/api/proxy/*',
+      method: 'GET',
+    },
+  ],
+})
 
 Sentry.init({
   ...createSentryInitOptions({
