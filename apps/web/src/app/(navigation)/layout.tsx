@@ -1,6 +1,5 @@
 import { Bookmark, Bot, Clover, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
 import Link from 'next/link'
-import { Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
@@ -11,7 +10,7 @@ import SeasonalEffects from '@/components/seasonal/SeasonalEffects'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
 import NotificationCount from './NotificationCount'
-import Profile, { ProfileSkeleton } from './Profile'
+import Profile from './Profile'
 import ProfileLink from './ProfileLink'
 import SelectableLink from './SelectableLink'
 
@@ -90,9 +89,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
         </nav>
-        <Suspense fallback={<ProfileSkeleton />}>
-          <Profile />
-        </Suspense>
+        <Profile />
       </AutoHideHeader>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
       {children}

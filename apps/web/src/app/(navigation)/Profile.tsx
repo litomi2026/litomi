@@ -11,9 +11,9 @@ import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
 
 export default function Profile() {
-  const { data: user, isLoading } = useMeQuery()
+  const { data: user, isPending } = useMeQuery()
 
-  if (isLoading) {
+  if (isPending) {
     return <ProfileSkeleton />
   }
 
