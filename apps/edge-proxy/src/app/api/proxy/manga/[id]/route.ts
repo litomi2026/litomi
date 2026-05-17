@@ -74,30 +74,30 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   try {
-    const botVerification = await checkBotId({
-      advancedOptions: {
-        checkLevel: 'basic',
-        extraAllowedHosts: BOT_ID_ALLOWED_FRONTEND_HOSTS,
-      },
-    })
+    // const botVerification = await checkBotId({
+    //   advancedOptions: {
+    //     checkLevel: 'basic',
+    //     extraAllowedHosts: BOT_ID_ALLOWED_FRONTEND_HOSTS,
+    //   },
+    // })
 
-    if (botVerification.isBot) {
-      const forbiddenHeaders = createCacheControlHeaders({
-        vercel: {
-          noStore: true,
-        },
-        browser: {
-          noStore: true,
-        },
-      })
+    // if (botVerification.isBot) {
+    //   const forbiddenHeaders = createCacheControlHeaders({
+    //     vercel: {
+    //       noStore: true,
+    //     },
+    //     browser: {
+    //       noStore: true,
+    //     },
+    //   })
 
-      return createProblemDetailsResponse(request, {
-        status: 403,
-        code: 'forbidden',
-        detail: '요청하신 작품은 접근할 수 없어요',
-        headers: createProxyHeaders(forbiddenHeaders),
-      })
-    }
+    //   return createProblemDetailsResponse(request, {
+    //     status: 403,
+    //     code: 'forbidden',
+    //     detail: '요청하신 작품은 접근할 수 없어요',
+    //     headers: createProxyHeaders(forbiddenHeaders),
+    //   })
+    // }
 
     const manga = await fetchMangaFromMultiSources({ id, locale })
 
