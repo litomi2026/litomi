@@ -38,7 +38,7 @@
         "accountId": "6271292129",
         "containerId": "247564775",
         "tagId": "4",
-        "name": "Google Tag",
+        "name": "GA4 - Config - Base",
         "type": "googtag",
         "parameter": [
           {
@@ -82,7 +82,7 @@
         "accountId": "6271292129",
         "containerId": "247564775",
         "tagId": "6",
-        "name": "GA4 - view_promotion",
+        "name": "GA4 - Event - view_promotion",
         "type": "gaawe",
         "parameter": [
           {
@@ -241,7 +241,7 @@
         "accountId": "6271292129",
         "containerId": "247564775",
         "tagId": "10",
-        "name": "GA4 - select_promotion",
+        "name": "GA4 - Event - select_promotion",
         "type": "gaawe",
         "parameter": [
           {
@@ -415,7 +415,7 @@
         "accountId": "6271292129",
         "containerId": "247564775",
         "tagId": "9",
-        "name": "Google Tag - GA4 - update user_id",
+        "name": "GA4 - Config - user_id update",
         "type": "googtag",
         "parameter": [
           {
@@ -476,7 +476,7 @@
         "accountId": "6271292129",
         "containerId": "247564775",
         "triggerId": "5",
-        "name": "view_promotion",
+        "name": "CE - view_promotion",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
           {
@@ -501,7 +501,7 @@
         "accountId": "6271292129",
         "containerId": "247564775",
         "triggerId": "11",
-        "name": "select_promotion",
+        "name": "CE - select_promotion",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
           {
@@ -526,7 +526,7 @@
         "accountId": "6271292129",
         "containerId": "247564775",
         "triggerId": "8",
-        "name": "auth_identify",
+        "name": "CE - auth_identify",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
           {
