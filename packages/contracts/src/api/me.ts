@@ -93,6 +93,7 @@ export const patchV1MeSettingsBodySchema = z
   .object({
     historySyncEnabled: z.boolean().optional(),
     adultVerifiedAdVisible: z.boolean().optional(),
+    defaultCensorshipEnabled: z.boolean().optional(),
     autoDeletionDay: z.number().int().min(0).max(1500).optional(),
   })
   .refine((value) => Object.values(value).some((item) => item !== undefined), {

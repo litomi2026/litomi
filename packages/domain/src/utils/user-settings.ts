@@ -1,6 +1,7 @@
 export type UserSettings = {
   historySyncEnabled: boolean
   adultVerifiedAdVisible: boolean
+  defaultCensorshipEnabled: boolean
   autoDeletionDay: number
 }
 
@@ -9,6 +10,7 @@ export type UserSettingsPatch = Partial<UserSettings>
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   historySyncEnabled: true,
   adultVerifiedAdVisible: false,
+  defaultCensorshipEnabled: true,
   autoDeletionDay: 90,
 }
 
@@ -29,6 +31,7 @@ export function resolveUserSettings(value?: Partial<UserSettings> | null): UserS
   return {
     historySyncEnabled: value?.historySyncEnabled ?? DEFAULT_USER_SETTINGS.historySyncEnabled,
     adultVerifiedAdVisible: value?.adultVerifiedAdVisible ?? DEFAULT_USER_SETTINGS.adultVerifiedAdVisible,
+    defaultCensorshipEnabled: value?.defaultCensorshipEnabled ?? DEFAULT_USER_SETTINGS.defaultCensorshipEnabled,
     autoDeletionDay: value?.autoDeletionDay ?? DEFAULT_USER_SETTINGS.autoDeletionDay,
   }
 }

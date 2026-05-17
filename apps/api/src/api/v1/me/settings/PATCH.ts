@@ -15,6 +15,7 @@ const patchMySettingsSchema = z
   .object({
     historySyncEnabled: z.boolean().optional(),
     adultVerifiedAdVisible: z.boolean().optional(),
+    defaultCensorshipEnabled: z.boolean().optional(),
     autoDeletionDay: z.int().min(0).max(1500).optional(),
   })
   .refine((value) => Object.values(value).some((item) => item !== undefined), {
@@ -39,6 +40,7 @@ route.patch('/', zProblemValidator('json', patchMySettingsSchema), async (c) => 
         userId,
         historySyncEnabled: nextSettings.historySyncEnabled,
         adultVerifiedAdVisible: nextSettings.adultVerifiedAdVisible,
+        defaultCensorshipEnabled: nextSettings.defaultCensorshipEnabled,
         autoDeletionDay: nextSettings.autoDeletionDay,
       })
       .onConflictDoUpdate({
@@ -46,6 +48,9 @@ route.patch('/', zProblemValidator('json', patchMySettingsSchema), async (c) => 
         set: {
           ...(patch.historySyncEnabled !== undefined && { historySyncEnabled: patch.historySyncEnabled }),
           ...(patch.adultVerifiedAdVisible !== undefined && { adultVerifiedAdVisible: patch.adultVerifiedAdVisible }),
+          ...(patch.defaultCensorshipEnabled !== undefined && {
+            defaultCensorshipEnabled: patch.defaultCensorshipEnabled,
+          }),
           ...(patch.autoDeletionDay !== undefined && { autoDeletionDay: patch.autoDeletionDay }),
         },
       })
