@@ -5,6 +5,7 @@ import { env } from '@litomi/env/env/client'
 import { useQuery } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import ms from 'ms'
+import { useEffect, useState } from 'react'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
@@ -25,12 +26,16 @@ export function getMeQueryFetchOptions() {
 }
 
 export default function useMeQuery() {
-  const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
+  const [hasAuthHint, setHasAuthHint] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    setHasAuthHint(Cookies.get(CookieKey.AUTH_HINT) === '1')
+  }, [])
 
   return useQuery<GETV1MeResponse | null>({
     ...getMeQueryFetchOptions(),
-    enabled: hasAuthHint,
-    placeholderData: hasAuthHint ? undefined : null,
+    enabled: hasAuthHint === true,
+    placeholderData: hasAuthHint === false ? null : undefined,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,

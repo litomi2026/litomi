@@ -11,9 +11,9 @@ import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
 
 export default function Profile() {
-  const { data: user, isLoading } = useMeQuery()
+  const { data: user, isPending } = useMeQuery()
 
-  if (isLoading) {
+  if (isPending) {
     return <ProfileSkeleton />
   }
 
@@ -26,12 +26,12 @@ export default function Profile() {
   return (
     <TooltipPopover
       buttonClassName="w-full pointer-events-none rounded-full transition sm:hover:bg-zinc-900 sm:active:bg-zinc-900 sm:pointer-events-auto"
-      className="px-2 flex justify-center"
+      className="p-2 flex justify-center"
       position="top-right"
       type="popover"
     >
       <Link
-        className="flex justify-center items-center gap-3 p-2 group rounded-full pointer-events-auto sm:pointer-events-none 2xl:pl-3"
+        className="flex justify-center items-center gap-3 p-2 group rounded-full pointer-events-auto sm:pointer-events-none"
         href={`/@${name}`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -53,7 +53,7 @@ export default function Profile() {
 
 export function ProfileSkeleton() {
   return (
-    <div className="flex items-center justify-center w-fit m-auto p-2 rounded-full sm:my-0 2xl:w-full 2xl:pl-3 2xl:py-2">
+    <div className="flex items-center justify-center w-fit m-auto p-4 rounded-full sm:my-0 2xl:w-full">
       <Squircle backgroundClassName="fill-zinc-700" className="w-8 animate-fade-in shrink-0 sm:w-10" />
       <div className="ml-3 hidden w-full min-w-0 gap-1 py-0.5 2xl:grid">
         <div className="h-5 animate-fade-in rounded-full bg-zinc-700" />
