@@ -2,7 +2,7 @@ import { userCensorshipTable } from '@litomi/db/database/supabase/censorship'
 import { db } from '@litomi/db/database/supabase/drizzle'
 import 'server-only'
 import { encodeCensorshipCursor } from '@litomi/domain/common/cursor'
-import { CENSORSHIPS_PER_PAGE } from '@litomi/domain/constants/policy'
+import { CENSORSHIPS_PER_PAGE, MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -16,7 +16,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const querySchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(CENSORSHIPS_PER_PAGE).default(CENSORSHIPS_PER_PAGE),
+  limit: z.coerce.number().int().positive().max(MAX_CENSORSHIPS_PER_USER).default(CENSORSHIPS_PER_PAGE),
 })
 
 export type CensorshipItem = {

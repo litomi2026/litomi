@@ -12,6 +12,7 @@ export type MangaCensorshipMatch = {
 type Params = {
   manga: Manga
   censorshipsMap: Map<string, CensorshipItem> | undefined
+  defaultCensorshipEnabled?: boolean
 }
 
 export function getHeavyCensorshipSignature(censorshipsMap: Map<string, CensorshipItem> | undefined) {
@@ -34,7 +35,7 @@ export function getHeavyCensorshipSignature(censorshipsMap: Map<string, Censorsh
   return `heavy:${heavyKeys.sort().join(',')}`
 }
 
-export function getMatchedCensorships({ manga, censorshipsMap }: Readonly<Params>): MangaCensorshipMatch {
+export function getMatchedCensorships({ manga, censorshipsMap, defaultCensorshipEnabled }: Params) {
   const { artists, characters, group, series, tags, languages, uploader, type } = manga
   let highest = CensorshipLevel.LIGHT
   const matchedLabels: string[] = []
@@ -44,13 +45,18 @@ export function getMatchedCensorships({ manga, censorshipsMap }: Readonly<Params
     const tagMatches = censorshipsMap?.get(tagKey)
 
     if (BLIND_TAG_VALUES.includes(tag.value)) {
-      // 기본 검열 태그
-      if (!tagMatches || tagMatches.level !== CensorshipLevel.NONE) {
+      if (tagMatches?.level === CensorshipLevel.NONE) {
+        continue
+      }
+
+      if (tagMatches) {
         matchedLabels.push(BLIND_TAG_VALUE_TO_LABEL[tag.value])
-        highest = Math.max(highest, tagMatches?.level ?? CensorshipLevel.LIGHT)
+        highest = Math.max(highest, tagMatches.level)
+      } else if (defaultCensorshipEnabled) {
+        matchedLabels.push(BLIND_TAG_VALUE_TO_LABEL[tag.value])
+        highest = Math.max(highest, CensorshipLevel.LIGHT)
       }
     } else {
-      // 사용자 지정 검열 태그
       if (tagMatches && tagMatches.level !== CensorshipLevel.NONE) {
         matchedLabels.push(tag.label.split(':')[1])
         highest = Math.max(highest, tagMatches.level)
@@ -59,10 +65,7 @@ export function getMatchedCensorships({ manga, censorshipsMap }: Readonly<Params
   }
 
   if (!censorshipsMap) {
-    return {
-      censoringReasons: Array.from(new Set(matchedLabels)),
-      highestCensorshipLevel: highest,
-    }
+    return createCensorshipMatch(matchedLabels, highest)
   }
 
   // 개별 태그: male, female, mixed, other
@@ -146,6 +149,10 @@ export function getMatchedCensorships({ manga, censorshipsMap }: Readonly<Params
     }
   }
 
+  return createCensorshipMatch(matchedLabels, highest)
+}
+
+function createCensorshipMatch(matchedLabels: string[], highest: CensorshipLevel): MangaCensorshipMatch {
   if (matchedLabels.length === 0) {
     return {}
   }
