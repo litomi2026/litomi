@@ -121,6 +121,11 @@
   padding-right: var(--safe-area-right);
 }
 
+@utility py-safe {
+  padding-top: var(--safe-area-top);
+  padding-bottom: var(--safe-area-bottom);
+}
+
 @utility pt-safe {
   padding-top: var(--safe-area-top);
 }
