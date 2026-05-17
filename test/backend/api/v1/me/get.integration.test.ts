@@ -63,6 +63,7 @@ describe('GET /api/v1/me', () => {
       userId: user.id,
       historySyncEnabled: false,
       adultVerifiedAdVisible: true,
+      defaultCensorshipEnabled: false,
       autoDeletionDay: 30,
     })
 
@@ -92,6 +93,7 @@ describe('GET /api/v1/me', () => {
       settings: {
         historySyncEnabled: false,
         adultVerifiedAdVisible: true,
+        defaultCensorshipEnabled: false,
         autoDeletionDay: 30,
       },
     })
@@ -120,6 +122,7 @@ describe('GET /api/v1/me', () => {
       settings: {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
+        defaultCensorshipEnabled: true,
         autoDeletionDay: 90,
       },
     })
@@ -151,6 +154,7 @@ describe('GET /api/v1/me', () => {
       settings: {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
+        defaultCensorshipEnabled: true,
         autoDeletionDay: 90,
       },
     })
@@ -182,6 +186,7 @@ describe('GET /api/v1/me', () => {
       settings: {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
+        defaultCensorshipEnabled: true,
         autoDeletionDay: 90,
       },
     })

@@ -26,7 +26,7 @@ export default function Profile() {
   return (
     <TooltipPopover
       buttonClassName="w-full pointer-events-none rounded-full transition sm:hover:bg-zinc-900 sm:active:bg-zinc-900 sm:pointer-events-auto"
-      className="p-2 flex justify-center"
+      className="px-2 flex justify-center sm:py-2"
       position="top-right"
       type="popover"
     >
@@ -53,7 +53,7 @@ export default function Profile() {
 
 export function ProfileSkeleton() {
   return (
-    <div className="flex items-center justify-center w-fit m-auto p-4 rounded-full sm:my-0 2xl:w-full">
+    <div className="flex items-center justify-center w-fit m-auto p-2 rounded-full sm:my-0 sm:p-4 2xl:w-full">
       <Squircle backgroundClassName="fill-zinc-700" className="w-8 animate-fade-in shrink-0 sm:w-10" />
       <div className="ml-3 hidden w-full min-w-0 gap-1 py-0.5 2xl:grid">
         <div className="h-5 animate-fade-in rounded-full bg-zinc-700" />
