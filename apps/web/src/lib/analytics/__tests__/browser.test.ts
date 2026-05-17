@@ -64,13 +64,13 @@ describe('브라우저 분석 래퍼', () => {
     })
   })
 
-  test('identify는 숫자 ID를 문자열로 보내고 null이면 해제한다', async () => {
+  test('identify는 auth_identify 이벤트로 숫자 ID를 문자열로 보내고 null이면 해제한다', async () => {
     const { identify } = await importFreshAnalyticsBrowser()
 
     identify(42)
     identify(null)
 
-    expect(sendGTMEventMock).toHaveBeenNthCalledWith(1, { user_id: '42' })
-    expect(sendGTMEventMock).toHaveBeenNthCalledWith(2, { user_id: null })
+    expect(sendGTMEventMock).toHaveBeenNthCalledWith(1, { event: 'auth_identify', user_id: '42' })
+    expect(sendGTMEventMock).toHaveBeenNthCalledWith(2, { event: 'auth_identify', user_id: null })
   })
 })
