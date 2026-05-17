@@ -11,12 +11,14 @@ import { RouteProps } from '@litomi/domain/types/nextjs'
 import { env } from '@litomi/env/env/client'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { sec } from '@litomi/std'
+import { checkBotId } from 'botid/server'
 
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
 
 const { NEXT_PUBLIC_APP_ORIGIN } = env
+const BOT_ID_ALLOWED_FRONTEND_HOSTS = ['litomi.in', 'stg.litomi.in']
 
 type Params = {
   id: string
@@ -31,13 +33,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   })
 
   if (!validation.success) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 400,
       code: 'bad-request',
       detail: '잘못된 요청이에요',
+      headers: createProxyHeaders(),
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-    return response
   }
 
   const { id, locale } = validation.data
@@ -55,27 +56,49 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       },
     })
 
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 403,
       code: 'forbidden',
       detail: '요청하신 작품은 접근할 수 없어요',
-      headers: forbiddenHeaders,
+      headers: createProxyHeaders(forbiddenHeaders),
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-    return response
   }
 
   if (request.signal?.aborted) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 499,
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
+      headers: createProxyHeaders(),
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-    return response
   }
 
   try {
+    const botVerification = await checkBotId({
+      advancedOptions: {
+        checkLevel: 'basic',
+        extraAllowedHosts: BOT_ID_ALLOWED_FRONTEND_HOSTS,
+      },
+    })
+
+    if (botVerification.isBot) {
+      const forbiddenHeaders = createCacheControlHeaders({
+        vercel: {
+          noStore: true,
+        },
+        browser: {
+          noStore: true,
+        },
+      })
+
+      return createProblemDetailsResponse(request, {
+        status: 403,
+        code: 'forbidden',
+        detail: '요청하신 작품은 접근할 수 없어요',
+        headers: createProxyHeaders(forbiddenHeaders),
+      })
+    }
+
     const manga = await fetchMangaFromMultiSources({ id, locale })
 
     if (!manga) {
@@ -93,14 +116,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         },
       })
 
-      const response = createProblemDetailsResponse(request, {
+      return createProblemDetailsResponse(request, {
         status: isPermanentlyMissing ? 410 : 404,
         code: 'not-found',
         detail: '요청하신 작품을 찾을 수 없어요',
-        headers: notFoundHeaders,
+        headers: createProxyHeaders(notFoundHeaders),
       })
-      response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-      return response
     }
 
     if ('isError' in manga) {
@@ -149,4 +170,10 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
+}
+
+function createProxyHeaders(init?: HeadersInit): Headers {
+  const headers = new Headers(init)
+  headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
+  return headers
 }

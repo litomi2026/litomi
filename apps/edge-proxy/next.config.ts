@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next'
 
 import { withSentryConfig } from '@sentry/nextjs'
+import { withBotId } from 'botid/next/config'
 
 const isProduction = process.env.NODE_ENV === 'production'
 const sentryRelease = process.env.VERCEL_GIT_COMMIT_SHA
@@ -20,7 +21,7 @@ const nextConfig: NextConfig = {
   ...(isProduction && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
 }
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withBotId(nextConfig), {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   authToken: process.env.SENTRY_AUTH_TOKEN,
