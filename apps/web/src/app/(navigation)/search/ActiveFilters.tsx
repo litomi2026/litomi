@@ -3,6 +3,7 @@
 import { Loader2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { FILTER_KEYS } from './constants'
 import { formatDate, formatNumber } from './utils'
@@ -97,8 +98,10 @@ export default function ActiveFilters({ filters }: Readonly<Props>) {
         .filter((config) => config.condition)
         .map((config) => (
           <div
-            className="relative flex items-center gap-2 pl-3.5 pr-3 py-1.5 transition rounded-full
-            bg-zinc-800/80 border border-zinc-700/60"
+            className={twMerge(
+              'relative flex items-center gap-2 pl-3.5 pr-3 py-1.5 transition rounded-full',
+              'bg-zinc-800/80 border border-zinc-700/60',
+            )}
             key={config.value}
           >
             <span className="text-[13px] font-medium leading-tight">
@@ -108,8 +111,10 @@ export default function ActiveFilters({ filters }: Readonly<Props>) {
             </span>
             <button
               aria-label={`${config.label} 조건 제거`}
-              className="flex items-center justify-center size-7 p-1.5 -m-2 transition
-              text-zinc-500 hover:text-zinc-300 active:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={twMerge(
+                'flex items-center justify-center size-7 p-1.5 -m-2 transition',
+                'text-zinc-500 hover:text-zinc-300 active:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed',
+              )}
               disabled={isPending}
               onClick={config.onRemove}
               type="button"
@@ -141,8 +146,10 @@ export function ClearAllFilters() {
   return (
     <button
       aria-label="모든 조건 제거"
-      className="flex items-center gap-1.5 p-2 py-1 transition text-xs font-medium text-zinc-500 
-      hover:text-zinc-300 active:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed"
+      className={twMerge(
+        'flex items-center gap-1.5 p-2 py-1 transition text-xs font-medium text-zinc-500',
+        'hover:text-zinc-300 active:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed',
+      )}
       disabled={isPending}
       onClick={clearAllFilters}
       type="button"

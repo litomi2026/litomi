@@ -3,6 +3,7 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2, UploadCloud } from 'lucide-react'
 import { SubmitEvent, useEffect, useId, useMemo, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { parseMangaIds } from './parseMangaIds'
 
@@ -78,8 +79,10 @@ export default function MangaImportModal({
           <textarea
             aria-describedby={helperTextId}
             aria-label={INPUT_LABEL}
-            className="w-full min-h-32 max-h-96 mb-0 px-3 py-2 border-2 border-zinc-700 rounded-lg transition font-mono
-              text-zinc-100 placeholder-zinc-500 focus:border-brand focus:outline-none"
+            className={twMerge(
+              'w-full min-h-32 max-h-96 mb-0 px-3 py-2 border-2 border-zinc-700 rounded-lg transition font-mono',
+              'text-zinc-100 placeholder-zinc-500 focus:border-brand focus:outline-none',
+            )}
             disabled={isPending}
             id={inputId}
             onChange={(event) => setInputText(event.target.value)}
@@ -94,9 +97,11 @@ export default function MangaImportModal({
 
         <DialogFooter className="border-t-2 border-zinc-800">
           <button
-            className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium
-              bg-brand rounded-lg transition hover:bg-brand/90
-              disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
+            className={twMerge(
+              'flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium',
+              'bg-brand rounded-lg transition hover:bg-brand/90',
+              'disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed',
+            )}
             disabled={isSubmitDisabled}
             type="submit"
           >

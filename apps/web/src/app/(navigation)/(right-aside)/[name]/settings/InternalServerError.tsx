@@ -5,6 +5,7 @@ import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { RefreshCw, TriangleAlert } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 export default function InternalServerError({ error, reset }: ErrorBoundaryFallbackProps) {
   const pathname = usePathname()
@@ -28,8 +29,10 @@ export default function InternalServerError({ error, reset }: ErrorBoundaryFallb
       </div>
       <p className="text-sm text-red-200/80 text-center">일시적인 문제가 발생했습니다</p>
       <button
-        className="relative overflow-hidden flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-100/90 bg-red-900/30 border border-red-800/40 rounded-full transition
-        hover:bg-red-800/40 hover:border-red-700/50 hover:text-red-50 disabled:opacity-50"
+        className={twMerge(
+          'relative overflow-hidden flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-100/90 bg-red-900/30 border border-red-800/40 rounded-full transition',
+          'hover:bg-red-800/40 hover:border-red-700/50 hover:text-red-50 disabled:opacity-50',
+        )}
         disabled={isRetrying}
         onClick={handleRetry}
       >

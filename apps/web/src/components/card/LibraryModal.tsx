@@ -7,6 +7,7 @@ import { Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 import { create } from 'zustand'
 
 import { addMangaToLibraries } from '@/app/(navigation)/library/api'
@@ -133,8 +134,10 @@ export default function LibraryModal() {
             <div className="text-center py-12">
               <p className="text-zinc-400 mb-6">아직 서재가 없어요</p>
               <Link
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand hover:bg-brand/90
-                  transition font-semibold text-background"
+                className={twMerge(
+                  'inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand hover:bg-brand/90',
+                  'transition font-semibold text-background',
+                )}
                 href="/library"
                 onClick={requestClose}
                 prefetch={false}
@@ -174,8 +177,10 @@ export default function LibraryModal() {
         {libraries && libraries.length > 0 && (
           <DialogFooter className="border-t-2 border-zinc-800 space-y-2">
             <button
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand rounded-lg transition hover:bg-brand/90
-                disabled:bg-zinc-700 disabled:text-zinc-500"
+              className={twMerge(
+                'flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand rounded-lg transition hover:bg-brand/90',
+                'disabled:bg-zinc-700 disabled:text-zinc-500',
+              )}
               disabled={addToLibrariesMutation.isPending || selectedLibraryIds.size === 0}
               type="submit"
             >
@@ -189,8 +194,10 @@ export default function LibraryModal() {
               </span>
             </button>
             <button
-              className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 rounded-lg transition hover:bg-zinc-700
-                disabled:bg-zinc-700 disabled:text-zinc-500"
+              className={twMerge(
+                'w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 rounded-lg transition hover:bg-zinc-700',
+                'disabled:bg-zinc-700 disabled:text-zinc-500',
+              )}
               disabled={addToLibrariesMutation.isPending}
               onClick={requestClose}
               type="button"

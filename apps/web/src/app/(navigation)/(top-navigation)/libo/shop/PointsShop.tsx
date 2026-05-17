@@ -5,6 +5,7 @@ import { formatNumber } from '@litomi/std'
 import { Bookmark, BookOpen, Check, LibraryBig, Pin, Star } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import useMeQuery from '@/query/useMeQuery'
 
@@ -191,9 +192,11 @@ export default function PointsShop() {
             <button
               aria-disabled={isDisabled}
               aria-selected={isSelected}
-              className="w-full text-left flex items-center gap-4 p-4 rounded-xl border bg-white/4 border-white/7 transition 
-                hover:bg-white/5.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-0 
-                aria-selected:bg-brand/8 aria-selected:hover:bg-brand/10 aria-disabled:opacity-60 aria-disabled:hover:bg-white/4 aria-disabled:cursor-not-allowed"
+              className={twMerge(
+                'w-full text-left flex items-center gap-4 p-4 rounded-xl border bg-white/4 border-white/7 transition',
+                'hover:bg-white/5.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-0',
+                'aria-selected:bg-brand/8 aria-selected:hover:bg-brand/10 aria-disabled:opacity-60 aria-disabled:hover:bg-white/4 aria-disabled:cursor-not-allowed',
+              )}
               disabled={isDisabled}
               key={item.id}
               onClick={() => setSelectedItemId(item.id)}

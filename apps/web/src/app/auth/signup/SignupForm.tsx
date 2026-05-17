@@ -6,6 +6,7 @@ import { Eye, EyeOff, Info, Loader2, X } from 'lucide-react'
 import Link from 'next/link'
 import { SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -117,10 +118,12 @@ export default function SignupForm() {
                 autoComplete="username"
                 autoCorrect="off"
                 autoFocus
-                className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
-                  focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
-                  disabled:opacity-60 disabled:cursor-not-allowed
-                  user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
+                className={twMerge(
+                  'w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition',
+                  'focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent',
+                  'disabled:opacity-60 disabled:cursor-not-allowed',
+                  'user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30',
+                )}
                 disabled={isPending}
                 enterKeyHint="next"
                 id="signup-username"
@@ -135,10 +138,12 @@ export default function SignupForm() {
               />
               <button
                 aria-label="아이디 지우기"
-                className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition
-                  opacity-0 pointer-events-none
-                  group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto
-                  disabled:opacity-50 disabled:pointer-events-none"
+                className={twMerge(
+                  'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
+                  'opacity-0 pointer-events-none',
+                  'group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto',
+                  'disabled:opacity-50 disabled:pointer-events-none',
+                )}
                 disabled={isPending}
                 onClick={() => clearSignupLoginId(formRef.current)}
                 onMouseDown={(e) => e.preventDefault()}
@@ -163,10 +168,12 @@ export default function SignupForm() {
                 autoCapitalize="off"
                 autoComplete="new-password"
                 autoCorrect="off"
-                className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
-                  focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
-                  disabled:opacity-60 disabled:cursor-not-allowed
-                  user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
+                className={twMerge(
+                  'w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition',
+                  'focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent',
+                  'disabled:opacity-60 disabled:cursor-not-allowed',
+                  'user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30',
+                )}
                 disabled={isPending}
                 enterKeyHint="next"
                 id="signup-new-password"
@@ -181,11 +188,13 @@ export default function SignupForm() {
               />
               <button
                 aria-label="비밀번호 표시"
-                className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition
-                  opacity-0 pointer-events-none
-                  group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto
-                  aria-pressed:[&_.eye-icon]:hidden aria-pressed:[&_.eye-off-icon]:block
-                  disabled:opacity-50 disabled:pointer-events-none"
+                className={twMerge(
+                  'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
+                  'opacity-0 pointer-events-none',
+                  'group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto',
+                  'aria-pressed:[&_.eye-icon]:hidden aria-pressed:[&_.eye-off-icon]:block',
+                  'disabled:opacity-50 disabled:pointer-events-none',
+                )}
                 disabled={isPending}
                 onClick={(e) => toggleSignupPasswordVisibility(formRef.current, 'password', e.currentTarget)}
                 onMouseDown={(e) => e.preventDefault()}
@@ -214,10 +223,12 @@ export default function SignupForm() {
                 autoCapitalize="off"
                 autoComplete="new-password"
                 autoCorrect="off"
-                className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
-                  focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
-                  disabled:opacity-60 disabled:cursor-not-allowed
-                  user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
+                className={twMerge(
+                  'w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition',
+                  'focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent',
+                  'disabled:opacity-60 disabled:cursor-not-allowed',
+                  'user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30',
+                )}
                 disabled={isPending}
                 enterKeyHint="next"
                 id="signup-new-password-confirmation"
@@ -231,11 +242,13 @@ export default function SignupForm() {
               />
               <button
                 aria-label="비밀번호 표시"
-                className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition
-                  opacity-0 pointer-events-none
-                  group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto
-                  aria-pressed:[&_.eye-icon]:hidden aria-pressed:[&_.eye-off-icon]:block
-                  disabled:opacity-50 disabled:pointer-events-none"
+                className={twMerge(
+                  'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
+                  'opacity-0 pointer-events-none',
+                  'group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto',
+                  'aria-pressed:[&_.eye-icon]:hidden aria-pressed:[&_.eye-off-icon]:block',
+                  'disabled:opacity-50 disabled:pointer-events-none',
+                )}
                 disabled={isPending}
                 onClick={(e) => toggleSignupPasswordVisibility(formRef.current, 'password-confirm', e.currentTarget)}
                 onMouseDown={(e) => e.preventDefault()}
@@ -260,10 +273,12 @@ export default function SignupForm() {
               autoCapitalize="off"
               autoComplete="nickname"
               autoCorrect="off"
-              className="w-full rounded-xl bg-white/4 border border-white/7 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
-                focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
-                disabled:opacity-60 disabled:cursor-not-allowed
-                user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
+              className={twMerge(
+                'w-full rounded-xl bg-white/4 border border-white/7 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition',
+                'focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent',
+                'disabled:opacity-60 disabled:cursor-not-allowed',
+                'user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30',
+              )}
               disabled={isPending}
               enterKeyHint="done"
               id="signup-nickname"
@@ -295,10 +310,12 @@ export default function SignupForm() {
 
         <button
           aria-disabled={isPending || !hasTurnstileToken}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90
-            shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition
-            hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15
-            aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+          className={twMerge(
+            'inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90',
+            'shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition',
+            'hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15',
+            'aria-disabled:opacity-50 aria-disabled:pointer-events-none',
+          )}
           disabled={isPending || !hasTurnstileToken}
           type="submit"
         >

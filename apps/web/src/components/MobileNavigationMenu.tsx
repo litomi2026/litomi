@@ -203,8 +203,10 @@ function MobileMenuLink({
   return (
     <Link
       aria-current={isSelected ? 'page' : undefined}
-      className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-zinc-800/50 border border-transparent
-        aria-[current=page]:bg-zinc-800 aria-[current=page]:border-zinc-700"
+      className={twMerge(
+        'flex items-center gap-4 p-3 rounded-lg transition hover:bg-zinc-800/50 border border-transparent',
+        'aria-[current=page]:bg-zinc-800 aria-[current=page]:border-zinc-700',
+      )}
       href={href}
       onClick={() => isSamePath && onClose()}
       prefetch={false}

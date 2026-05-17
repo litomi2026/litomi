@@ -1,6 +1,7 @@
 'use client'
 
 import { PointerEvent, ReactNode, useEffect, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 type BottomSheetItemProps = {
   children: ReactNode
@@ -110,9 +111,12 @@ export function BottomSheetItem({ children, onClick, disabled, className = '' }:
   return (
     <button
       aria-disabled={disabled}
-      className={`flex w-full items-center gap-3 px-4 py-3 text-left rounded-xl transition
-        hover:bg-zinc-800 active:bg-zinc-800/50
-        aria-disabled:opacity-50 aria-disabled:pointer-events-none ${className}`}
+      className={twMerge(
+        'flex w-full items-center gap-3 px-4 py-3 text-left rounded-xl transition',
+        'hover:bg-zinc-800 active:bg-zinc-800/50',
+        'aria-disabled:opacity-50 aria-disabled:pointer-events-none',
+        className,
+      )}
       disabled={disabled}
       onClick={onClick}
       type="button"

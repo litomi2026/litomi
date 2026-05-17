@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge'
+
 import { ImportMode } from './types'
 
 const colors = {
@@ -54,9 +56,14 @@ export function ImportModeOption({
   return (
     <label
       aria-current={isSelected}
-      className={`relative flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition overflow-hidden
-        ${colorClasses.border} ${colorClasses.bg} ${colorClasses.shadow}
-        border-zinc-800/60 hover:border-zinc-700 hover:bg-zinc-800/30 focus-within:ring-2 ${colorClasses.ring} focus-within:ring-offset-2 focus-within:ring-offset-zinc-900`}
+      className={twMerge(
+        'relative flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition overflow-hidden',
+        colorClasses.border,
+        colorClasses.bg,
+        colorClasses.shadow,
+        'border-zinc-800/60 hover:border-zinc-700 hover:bg-zinc-800/30 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-zinc-900',
+        colorClasses.ring,
+      )}
     >
       {isSelected && <div className={`absolute inset-0 bg-linear-to-br ${colorClasses.gradient}`} />}
       <input

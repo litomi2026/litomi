@@ -9,6 +9,7 @@ import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { SubmitEvent, SyntheticEvent, use, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import {
   applyProfileProblem,
@@ -166,8 +167,10 @@ export default function ProfileEditButton({ mePromise }: Props) {
   return (
     <>
       <button
-        className="flex items-center gap-3 text-sm font-semibold rounded-full p-2 transition whitespace-nowrap md:px-3 md:py-2
-          hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden"
+        className={twMerge(
+          'flex items-center gap-3 text-sm font-semibold rounded-full p-2 transition whitespace-nowrap md:px-3 md:py-2',
+          'hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden',
+        )}
         onClick={() => setShowModal(true)}
         type="button"
       >
@@ -214,8 +217,10 @@ export default function ProfileEditButton({ mePromise }: Props) {
                   aria-invalid={!!fieldErrors.name}
                   autoCapitalize="off"
                   autoComplete="username"
-                  className="w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent 
-                    aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600"
+                  className={twMerge(
+                    'w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent',
+                    'aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600',
+                  )}
                   defaultValue={currentMe.name}
                   id={formId.name}
                   maxLength={32}
@@ -235,8 +240,10 @@ export default function ProfileEditButton({ mePromise }: Props) {
                 <input
                   aria-invalid={!!fieldErrors.nickname}
                   autoCapitalize="off"
-                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
-                    aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
+                  className={twMerge(
+                    'w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent',
+                    'aria-invalid:border-red-500 aria-invalid:focus:ring-red-500',
+                  )}
                   defaultValue={currentMe.nickname}
                   id={formId.nickname}
                   maxLength={32}
@@ -257,8 +264,10 @@ export default function ProfileEditButton({ mePromise }: Props) {
                   aria-invalid={!!fieldErrors.imageURL}
                   autoCapitalize="off"
                   autoComplete="photo"
-                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
-                    aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
+                  className={twMerge(
+                    'w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent',
+                    'aria-invalid:border-red-500 aria-invalid:focus:ring-red-500',
+                  )}
                   defaultValue={defaultProfileImageURL}
                   id={formId.imageURL}
                   maxLength={256}

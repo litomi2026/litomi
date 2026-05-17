@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Ref } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import LinkPending from '@/components/LinkPending'
 
@@ -21,7 +22,7 @@ type Props = {
 
 export default function KeywordLink({
   href,
-  keyword: { label, value },
+  keyword: { label },
   index,
   linkRef,
   ariaCurrent,
@@ -34,8 +35,11 @@ export default function KeywordLink({
   return (
     <Link
       aria-current={ariaCurrent}
-      className={`flex items-center justify-center gap-1 relative text-xs px-2.5 py-1 rounded-full shrink-0 transition overflow-hidden bg-zinc-800 text-zinc-400  
-      hover:text-foreground hover:bg-zinc-700 ${className}`}
+      className={twMerge(
+        'flex items-center justify-center gap-1 relative text-xs px-2.5 py-1 rounded-full shrink-0 transition overflow-hidden bg-zinc-800 text-zinc-400',
+        'hover:text-foreground hover:bg-zinc-700',
+        className,
+      )}
       href={href}
       onBlur={onBlur}
       onClick={onClick}

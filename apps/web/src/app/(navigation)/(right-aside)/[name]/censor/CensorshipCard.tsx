@@ -3,6 +3,7 @@
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { Check, SquarePen } from 'lucide-react'
 import { useCallback, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import CensorshipEditForm from './CensorshipEditForm'
 import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
@@ -56,9 +57,11 @@ export default function CensorshipCard({
   return (
     <div
       aria-selected={isSelected}
-      className={`p-4 bg-zinc-800 rounded-lg border-2 transition relative ${
-        isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-zinc-700'
-      } aria-selected:border-brand aria-selected:bg-zinc-700`}
+      className={twMerge(
+        `p-4 bg-zinc-800 rounded-lg border-2 transition relative ${
+          isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-zinc-700'
+        } aria-selected:border-brand aria-selected:bg-zinc-700`,
+      )}
       onClick={isDeleting ? undefined : onToggleSelect}
     >
       {/* Deleting overlay with spinner */}

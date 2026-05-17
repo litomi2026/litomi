@@ -3,6 +3,7 @@
 import { ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/constants/roulette'
 import { formatNumber } from '@litomi/std'
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import useMeQuery from '@/query/useMeQuery'
 
@@ -124,9 +125,11 @@ export default function RoulettePageClient() {
                 <>
                   <p className="text-xs text-white/80">{result.landed.label}</p>
                   <p
-                    className={`text-lg font-semibold tabular-nums drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)] ${getSegmentTextClass(
-                      result.landed.id,
-                    )}`}
+                    className={twMerge(
+                      `text-lg font-semibold tabular-nums drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)] ${getSegmentTextClass(
+                        result.landed.id,
+                      )}`,
+                    )}
                   >
                     {result.payout > 0 ? '+' : ''}
                     {formatNumber(result.payout)} <span className="text-sm font-medium text-white/70">리보</span>

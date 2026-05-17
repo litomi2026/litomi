@@ -6,6 +6,7 @@ import { Monitor, Smartphone, Trash2 } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import useServerAction from '@/hook/useServerAction'
 import { formatDeviceInfo } from '@/utils/push-device'
@@ -69,11 +70,13 @@ export default function BrowserList({ webPushes }: Props) {
 
         return (
           <div
-            className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-              isCurrentDevice
-                ? 'bg-linear-to-r from-zinc-800/50 to-zinc-800/30 border-brand/20'
-                : 'bg-zinc-800/30 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/50'
-            }`}
+            className={twMerge(
+              `flex items-center justify-between p-4 rounded-xl border transition-all ${
+                isCurrentDevice
+                  ? 'bg-linear-to-r from-zinc-800/50 to-zinc-800/30 border-brand/20'
+                  : 'bg-zinc-800/30 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/50'
+              }`,
+            )}
             key={webPush.id}
           >
             <div className="flex items-center gap-3.5">

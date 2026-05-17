@@ -42,8 +42,10 @@ export default function SelectableLink({
       href={href}
     >
       <div
-        className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0 relative
-        group-active:scale-90 group-active:md:scale-95"
+        className={twMerge(
+          'flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0 relative',
+          'group-active:scale-90 group-active:md:scale-95',
+        )}
       >
         <LinkPending className={iconClassName}>
           <span

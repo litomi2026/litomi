@@ -9,6 +9,7 @@ import ms from 'ms'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import { usePointsQuery } from '@/app/(navigation)/(top-navigation)/libo/usePointsQuery'
 import useMeQuery from '@/query/useMeQuery'
@@ -170,8 +171,10 @@ export default function DonateButton({ manga, ...props }: Props) {
                     return (
                       <button
                         aria-pressed={isSelected}
-                        className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-left text-sm transition
-                        hover:border-zinc-700 aria-pressed:border-brand aria-pressed:bg-brand/10"
+                        className={twMerge(
+                          'flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-left text-sm transition',
+                          'hover:border-zinc-700 aria-pressed:border-brand aria-pressed:bg-brand/10',
+                        )}
                         key={key}
                         onClick={() => toggleRecipient(key)}
                         title={getDisplayLabel(r)}
@@ -194,8 +197,10 @@ export default function DonateButton({ manga, ...props }: Props) {
                 {PRESETS.map((p) => (
                   <button
                     aria-current={amount === p}
-                    className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-300 transition
-                    hover:border-zinc-700 aria-current:border-brand aria-current:bg-brand/10 aria-current:text-foreground"
+                    className={twMerge(
+                      'rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-300 transition',
+                      'hover:border-zinc-700 aria-current:border-brand aria-current:bg-brand/10 aria-current:text-foreground',
+                    )}
                     key={p}
                     onClick={() => {
                       setAmount(p)

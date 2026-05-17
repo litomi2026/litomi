@@ -15,6 +15,7 @@ import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-
 import { Loader2, Plus, Shuffle } from 'lucide-react'
 import { type SubmitEvent, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -183,8 +184,11 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   return (
     <>
       <button
-        className={`flex w-full items-center gap-3 p-3 bg-zinc-800/50 hover:bg-zinc-700/50 rounded-lg transition
-          sm:rounded sm:p-1.5 sm:hover:bg-zinc-800 sm:w-auto ${className}`}
+        className={twMerge(
+          'flex w-full items-center gap-3 p-3 bg-zinc-800/50 hover:bg-zinc-700/50 rounded-lg transition',
+          'sm:rounded sm:p-1.5 sm:hover:bg-zinc-800 sm:w-auto',
+          className,
+        )}
         onClick={handleOpen}
         onFocus={preloadLibraryEmojiList}
         onMouseEnter={preloadLibraryEmojiList}
@@ -216,8 +220,10 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 <input
                   autoCapitalize="off"
                   autoComplete="off"
-                  className="h-12 w-20 rounded-lg border-2 border-zinc-700 bg-zinc-800 text-center text-2xl outline-none transition
-                    focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  className={twMerge(
+                    'h-12 w-20 rounded-lg border-2 border-zinc-700 bg-zinc-800 text-center text-2xl outline-none transition',
+                    'focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50',
+                  )}
                   disabled={isPending}
                   id={iconInputId}
                   maxLength={MAX_LIBRARY_ICON_LENGTH}
@@ -232,9 +238,11 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 />
                 <button
                   aria-label="랜덤 아이콘으로 변경"
-                  className="inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900
-                    text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
-                    disabled:cursor-not-allowed disabled:opacity-50"
+                  className={twMerge(
+                    'inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900',
+                    'text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800',
+                    'disabled:cursor-not-allowed disabled:opacity-50',
+                  )}
                   disabled={isPending || isRandomIconPending}
                   onClick={() => updateRandomIcon(selectedIcon)}
                   onFocus={preloadLibraryEmojiList}
@@ -252,10 +260,12 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               </label>
               <div className="flex items-center gap-2">
                 <input
-                  className="h-12 w-20 overflow-hidden rounded-lg border-2 border-zinc-700 bg-zinc-800 p-0 outline-none transition
-                    focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50
-                    [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:border-0
-                    [&::-webkit-color-swatch-wrapper]:p-0"
+                  className={twMerge(
+                    'h-12 w-20 overflow-hidden rounded-lg border-2 border-zinc-700 bg-zinc-800 p-0 outline-none transition',
+                    'focus:border-zinc-600 disabled:cursor-not-allowed disabled:opacity-50',
+                    '[&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:border-0',
+                    '[&::-webkit-color-swatch-wrapper]:p-0',
+                  )}
                   disabled={isPending}
                   id={colorInputId}
                   name="color"
@@ -265,9 +275,11 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 />
                 <button
                   aria-label="랜덤 색상으로 변경"
-                  className="inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900
-                    text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800
-                    disabled:cursor-not-allowed disabled:opacity-50"
+                  className={twMerge(
+                    'inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900',
+                    'text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800',
+                    'disabled:cursor-not-allowed disabled:opacity-50',
+                  )}
                   disabled={isPending}
                   onClick={() => setSelectedColor(getRandomLibraryColor())}
                   title="랜덤 색상으로 변경"

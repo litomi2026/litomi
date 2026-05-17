@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { Bookmark, Check, Clock, Download, Library, Loader2, ShieldCheck, Star } from 'lucide-react'
 import { type ReactNode, useState, useTransition } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import { downloadBlob } from '@/utils/download'
 
@@ -90,17 +91,21 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
             return (
               <button
                 aria-pressed={isChecked}
-                className="flex items-center gap-2 p-3 rounded-lg border-2 transition text-left
-                  border-zinc-700 bg-zinc-800/30 hover:border-zinc-600
-                  aria-pressed:border-brand aria-pressed:bg-brand/10"
+                className={twMerge(
+                  'flex items-center gap-2 p-3 rounded-lg border-2 transition text-left',
+                  'border-zinc-700 bg-zinc-800/30 hover:border-zinc-600',
+                  'aria-pressed:border-brand aria-pressed:bg-brand/10',
+                )}
                 key={type}
                 onClick={() => toggleType(type)}
                 type="button"
               >
                 <div
                   aria-hidden
-                  className="size-4 shrink-0 rounded border-2 transition-all flex items-center justify-center
-                    border-zinc-600 bg-zinc-800"
+                  className={twMerge(
+                    'size-4 shrink-0 rounded border-2 transition-all flex items-center justify-center',
+                    'border-zinc-600 bg-zinc-800',
+                  )}
                   data-checked={isChecked || undefined}
                 >
                   {isChecked && <Check className="size-3 text-brand" />}
@@ -123,9 +128,11 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
           autoCapitalize="off"
           autoComplete="current-password"
           autoCorrect="off"
-          className="w-full p-3 py-2 bg-zinc-800 border-2 border-zinc-600 rounded-lg 
-            focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent
-            placeholder-zinc-500"
+          className={twMerge(
+            'w-full p-3 py-2 bg-zinc-800 border-2 border-zinc-600 rounded-lg',
+            'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent',
+            'placeholder-zinc-500',
+          )}
           disabled={isPending}
           enterKeyHint="done"
           id="export-password"
@@ -137,9 +144,11 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
         />
       </div>
       <button
-        className="w-full px-4 py-2 bg-brand hover:bg-brand/90 disabled:bg-zinc-700 
-          rounded-lg font-medium transition text-background
-          flex items-center justify-center gap-2"
+        className={twMerge(
+          'w-full px-4 py-2 bg-brand hover:bg-brand/90 disabled:bg-zinc-700',
+          'rounded-lg font-medium transition text-background',
+          'flex items-center justify-center gap-2',
+        )}
         disabled={isPending}
         type="submit"
       >

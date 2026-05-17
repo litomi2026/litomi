@@ -1,8 +1,8 @@
 import { getUsernameFromParam } from '@litomi/std'
 import { Suspense } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 
 import MyPageNavigationLink from './MyPageNavigationLink'
 import MyPagePrivateNavigation from './MyPagePrivateNavigation'
@@ -28,8 +28,10 @@ export default async function Layout({ params, children }: LayoutProps<'/[name]'
       </Suspense>
       <TopStickySafeAreaSurface />
       <nav
-        className="sticky top-(--safe-area-top) min-h-(--safe-area-top) z-30 overflow-x-auto scrollbar-hidden border-b bg-background font-semibold
-        [&_a]:min-w-16 [&_a]:group [&_a]:relative [&_a]:flex [&_a]:justify-center [&_a]:items-center [&_a]:gap-1 [&_a]:p-3 [&_a]:transition"
+        className={twMerge(
+          'sticky top-(--safe-area-top) min-h-(--safe-area-top) z-30 overflow-x-auto scrollbar-hidden border-b bg-background font-semibold',
+          '[&_a]:min-w-16 [&_a]:group [&_a]:relative [&_a]:flex [&_a]:justify-center [&_a]:items-center [&_a]:gap-1 [&_a]:p-3 [&_a]:transition',
+        )}
       >
         <div className="flex w-max h-full gap-4 px-3 whitespace-nowrap text-zinc-600">
           {publicLinks.map(({ href, label }) => (

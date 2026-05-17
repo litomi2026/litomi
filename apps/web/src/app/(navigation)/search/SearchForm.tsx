@@ -5,6 +5,7 @@ import { Toggle } from '@litomi/ui'
 import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
 import { SubmitEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 
@@ -243,8 +244,10 @@ export default function SearchForm({ className = '' }: Props) {
     <div className={`relative ${className}`}>
       <SearchParamsSync onUpdate={handleSearchParamUpdate} />
       <form
-        className="flex items-center gap-1 rounded-2xl border border-zinc-700 bg-zinc-900/92 text-zinc-400 shadow-sm transition
-          hover:border-zinc-600 hover:bg-zinc-900 focus-within:border-zinc-500 focus-within:bg-zinc-900"
+        className={twMerge(
+          'flex items-center gap-1 rounded-2xl border border-zinc-700 bg-zinc-900/92 text-zinc-400 shadow-sm transition',
+          'hover:border-zinc-600 hover:bg-zinc-900 focus-within:border-zinc-500 focus-within:bg-zinc-900',
+        )}
         onSubmit={onSubmit}
       >
         <div className="relative flex-1">
@@ -253,9 +256,11 @@ export default function SearchForm({ className = '' }: Props) {
             aria-controls="search-suggestions"
             autoCapitalize="off"
             autoComplete="off"
-            className="bg-transparent px-3.5 py-2 pr-10 text-foreground min-w-0 w-full placeholder-zinc-500/95 text-base leading-5 focus:outline-none
-            [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
-            [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0"
+            className={twMerge(
+              'bg-transparent px-3.5 py-2 pr-10 text-foreground min-w-0 w-full placeholder-zinc-500/95 text-base leading-5 focus:outline-none',
+              '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none',
+              '[&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0',
+            )}
             maxLength={MAX_SEARCH_QUERY_LENGTH}
             name="query"
             onBlur={handleBlur}
@@ -271,8 +276,10 @@ export default function SearchForm({ className = '' }: Props) {
           {keyword && (
             <button
               aria-label="검색어 지우기"
-              className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-1.5 shrink-0 transition text-zinc-500
-              hover:bg-zinc-800/70 hover:text-foreground active:text-zinc-300"
+              className={twMerge(
+                'absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-1.5 shrink-0 transition text-zinc-500',
+                'hover:bg-zinc-800/70 hover:text-foreground active:text-zinc-300',
+              )}
               onClick={handleClear}
               type="button"
             >
@@ -282,9 +289,11 @@ export default function SearchForm({ className = '' }: Props) {
         </div>
         <button
           aria-label="검색하기"
-          className="flex items-center justify-center rounded-[0.95rem] bg-foreground px-3.5 py-2 shrink-0 text-sm font-bold text-background
-            shadow-sm transition aria-disabled:opacity-60 active:scale-[0.98] hover:opacity-90
-            focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:ring-inset"
+          className={twMerge(
+            'flex items-center justify-center rounded-[0.95rem] bg-foreground px-3.5 py-2 shrink-0 text-sm font-bold text-background',
+            'shadow-sm transition aria-disabled:opacity-60 active:scale-[0.98] hover:opacity-90',
+            'focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:ring-inset',
+          )}
           disabled={isSearching}
           type="submit"
         >

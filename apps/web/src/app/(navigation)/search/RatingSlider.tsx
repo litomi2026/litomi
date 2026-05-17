@@ -2,6 +2,7 @@
 
 import { Star } from 'lucide-react'
 import { memo, useCallback, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 const RATING_PRESETS = [
   { label: '망작', min: '0.01', max: '1.5' },
@@ -124,8 +125,10 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly
           {RATING_PRESETS.map((preset) => (
             <button
               aria-pressed={minValue === preset.min && maxValue === preset.max}
-              className="px-3 py-1 text-xs rounded-lg border transition bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300
-                aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100"
+              className={twMerge(
+                'px-3 py-1 text-xs rounded-lg border transition bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300',
+                'aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100',
+              )}
               key={preset.label}
               onClick={() => handlePresetClick(preset)}
               type="button"

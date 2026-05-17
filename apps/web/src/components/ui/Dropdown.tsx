@@ -1,6 +1,7 @@
 'use client'
 
 import React, { ComponentProps, ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 type DropdownContentProps = {
   children: ReactNode
@@ -70,8 +71,12 @@ export function DropdownContent({ children, align = 'center', className = '' }: 
 
   return (
     <div
-      className={`absolute top-full mt-1 z-50 min-w-[8rem] overflow-hidden rounded-lg 
-        bg-zinc-900 border border-zinc-800 shadow-lg ${alignmentClasses[align]} ${className}`}
+      className={twMerge(
+        'absolute top-full mt-1 z-50 min-w-[8rem] overflow-hidden rounded-lg',
+        'bg-zinc-900 border border-zinc-800 shadow-lg',
+        alignmentClasses[align],
+        className,
+      )}
     >
       {children}
     </div>
@@ -92,8 +97,7 @@ export function DropdownItem({ children, onClick, className = '' }: DropdownItem
 
   return (
     <button
-      className={`flex w-full items-center px-3 py-2 text-sm hover:bg-zinc-800 
-        transition ${className}`}
+      className={twMerge('flex w-full items-center px-3 py-2 text-sm hover:bg-zinc-800', 'transition', className)}
       onClick={handleClick}
       type="button"
     >

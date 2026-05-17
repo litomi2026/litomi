@@ -5,6 +5,7 @@ import { SlidersHorizontal } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import useMounted from '@/hook/useMounted'
@@ -54,11 +55,13 @@ export default function FilterButton() {
         aria-expanded={showFilters}
         aria-label="상세 조건 설정"
         aria-pressed={hasActiveFilters}
-        className="relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] border transition
-          bg-zinc-900/92 border-zinc-700 text-zinc-200 shadow-sm
-          hover:border-zinc-600 hover:bg-zinc-800/80
-          focus:outline-none focus:ring-2 focus:ring-zinc-500/30 focus:ring-offset-2 focus:ring-offset-background
-          aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-foreground aria-pressed:hover:border-brand"
+        className={twMerge(
+          'relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] border transition',
+          'bg-zinc-900/92 border-zinc-700 text-zinc-200 shadow-sm',
+          'hover:border-zinc-600 hover:bg-zinc-800/80',
+          'focus:outline-none focus:ring-2 focus:ring-zinc-500/30 focus:ring-offset-2 focus:ring-offset-background',
+          'aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-foreground aria-pressed:hover:border-brand',
+        )}
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
         title="상세 조건 설정"

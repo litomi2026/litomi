@@ -9,6 +9,7 @@ import { AlertTriangle, Check, Eye, EyeOff, Loader2, Trash2 } from 'lucide-react
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
 import { ProblemDetailsError } from '@/utils/react-query-error'
@@ -164,9 +165,11 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
             <p className="text-zinc-400 mb-6">계정 삭제를 확인하려면 아래 문구를 정확히 입력해주세요:</p>
             <div className="bg-zinc-800 p-3 rounded-lg mb-4 font-mono text-sm">{expectedConfirmText}</div>
             <input
-              className="w-full px-4 py-3 bg-zinc-800 border-2 border-zinc-600 rounded-lg 
-                  focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent
-                  placeholder-zinc-500"
+              className={twMerge(
+                'w-full px-4 py-3 bg-zinc-800 border-2 border-zinc-600 rounded-lg',
+                'focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent',
+                'placeholder-zinc-500',
+              )}
               disabled={isPending}
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder="위 문구를 입력해 주세요"
@@ -190,9 +193,11 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
               이전 단계
             </button>
             <button
-              className="flex-1 px-4 py-3 bg-red-900 hover:bg-red-800 disabled:bg-zinc-700 
-                  text-foreground rounded-lg font-medium transition 
-                  flex items-center justify-center gap-2"
+              className={twMerge(
+                'flex-1 px-4 py-3 bg-red-900 hover:bg-red-800 disabled:bg-zinc-700',
+                'text-foreground rounded-lg font-medium transition',
+                'flex items-center justify-center gap-2',
+              )}
               disabled={!isConfirmTextValid || isPending}
               onClick={() => setStep(DeletionStep.FINAL)}
               type="button"
@@ -291,9 +296,11 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
               이전 단계
             </button>
             <button
-              className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-zinc-700 
-                  text-foreground rounded-lg font-medium transition 
-                  flex items-center justify-center gap-2"
+              className={twMerge(
+                'flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-zinc-700',
+                'text-foreground rounded-lg font-medium transition',
+                'flex items-center justify-center gap-2',
+              )}
               disabled={!canSubmit || isPending}
               type="submit"
             >

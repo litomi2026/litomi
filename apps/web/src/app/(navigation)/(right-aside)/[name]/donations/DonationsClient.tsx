@@ -6,6 +6,7 @@ import { normalizeValue } from '@litomi/catalog/translation/common'
 import { formatDistanceToNow, formatLocalDate, formatNumber } from '@litomi/std'
 import { Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { twMerge } from 'tailwind-merge'
 
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -91,8 +92,10 @@ export default function DonationsClient() {
 
                         return (
                           <Link
-                            className="group inline-flex items-center gap-2 rounded-full border border-zinc-800/60 bg-zinc-900/70 px-3 py-1 text-xs text-zinc-300 transition
-                              hover:border-zinc-700 hover:bg-zinc-900/90 hover:text-foreground"
+                            className={twMerge(
+                              'group inline-flex items-center gap-2 rounded-full border border-zinc-800/60 bg-zinc-900/70 px-3 py-1 text-xs text-zinc-300 transition',
+                              'hover:border-zinc-700 hover:bg-zinc-900/90 hover:text-foreground',
+                            )}
                             href={href}
                             key={`${item.id}-${recipient.type}-${recipient.value}`}
                             prefetch={false}
@@ -119,8 +122,10 @@ export default function DonationsClient() {
         <div className="flex justify-center">
           <button
             aria-disabled={!hasNextPage || isFetchingNextPage}
-            className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 px-4 py-2 text-sm font-semibold text-zinc-200 transition
-              hover:border-zinc-700 aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+            className={twMerge(
+              'rounded-xl border border-zinc-800/60 bg-zinc-950/40 px-4 py-2 text-sm font-semibold text-zinc-200 transition',
+              'hover:border-zinc-700 aria-disabled:opacity-50 aria-disabled:pointer-events-none',
+            )}
             onClick={() => fetchNextPage()}
             type="button"
           >

@@ -4,6 +4,7 @@ import { Edit, Menu, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import LibraryItemImportButton from '@/app/(navigation)/library/LibraryItemImportButton'
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
@@ -241,10 +242,12 @@ export default function LibraryHeader({
   return (
     <>
       <AutoHideHeader
-        className="fixed top-0 left-0 right-0 z-40 border-b border-zinc-800 bg-background transition px-safe pt-safe
-          sm:left-[calc(5rem+67px)] sm:pl-0
-          lg:left-72
-          2xl:left-[calc((100vw-1536px)/2+29rem)] 2xl:right-[calc((100vw-1536px)/2)]"
+        className={twMerge(
+          'fixed top-0 left-0 right-0 z-40 border-b border-zinc-800 bg-background transition px-safe pt-safe',
+          'sm:left-[calc(5rem+67px)] sm:pl-0',
+          'lg:left-72',
+          '2xl:left-[calc((100vw-1536px)/2+29rem)] 2xl:right-[calc((100vw-1536px)/2)]',
+        )}
       >
         <div className="flex min-h-(--library-header-height) items-center justify-between gap-3 p-2.5 sm:p-3">
           <div className="flex items-center gap-3">

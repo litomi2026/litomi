@@ -21,6 +21,7 @@ import ScrollReaderView from '#reader/views/scroll/ScrollReaderView'
 import { Loader2 } from 'lucide-react'
 import ms from 'ms'
 import { type ReactNode, useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 export type ReaderProps<TPage extends ReaderPage> = {
   header?: ReactNode
@@ -189,8 +190,10 @@ function ReaderContent<TPage extends ReaderPage>({
       {header && (
         <header
           aria-hidden={!areControlsVisible}
-          className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 pt-safe px-safe transition opacity-0 pointer-events-none
-            data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto"
+          className={twMerge(
+            'fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 pt-safe px-safe transition opacity-0 pointer-events-none',
+            'data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto',
+          )}
           data-visible={areControlsVisible ? 'true' : 'false'}
           inert={!areControlsVisible}
         >

@@ -6,6 +6,7 @@ import { Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode, useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import IconBell from '@/components/icons/IconBell'
@@ -319,10 +320,12 @@ function FilterButton({
   return (
     <button
       aria-pressed={active}
-      className="relative px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap
-      aria-pressed:bg-brand aria-pressed:text-background aria-pressed:font-bold
-      bg-zinc-800/50 hover:bg-zinc-700/50 hover:text-zinc-200
-      disabled:opacity-50"
+      className={twMerge(
+        'relative px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap',
+        'aria-pressed:bg-brand aria-pressed:text-background aria-pressed:font-bold',
+        'bg-zinc-800/50 hover:bg-zinc-700/50 hover:text-zinc-200',
+        'disabled:opacity-50',
+      )}
       disabled={disabled}
       onClick={onClick}
     >

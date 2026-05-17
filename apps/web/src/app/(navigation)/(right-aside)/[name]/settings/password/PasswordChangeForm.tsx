@@ -8,6 +8,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
 import { ProblemDetailsError } from '@/utils/react-query-error'
@@ -132,13 +133,15 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Readonly<Prop
 
   return (
     <form
-      className="grid gap-6
-        [&_label]:block [&_label]:mb-1.5 [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300
-        [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
-        [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 
-        [&_input]:focus:ring-zinc-500 [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 
-        [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
-        [&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700"
+      className={twMerge(
+        'grid gap-6',
+        '[&_label]:block [&_label]:mb-1.5 [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300',
+        '[&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600',
+        '[&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2',
+        '[&_input]:focus:ring-zinc-500 [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700',
+        '[&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed',
+        '[&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700',
+      )}
       name="password-change"
       onInput={(e) => clearPasswordChangeInputValidity(formRef.current, e.target)}
       onSubmit={handleSubmit}
@@ -215,9 +218,11 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Readonly<Prop
             <div className="flex gap-1 h-1">
               {[1, 2, 3, 4].map((level) => (
                 <div
-                  className={`flex-1 rounded-full transition-all ${
-                    level <= calculatePasswordStrength(newPassword) ? strengthInfo.barColor : 'bg-zinc-700'
-                  }`}
+                  className={twMerge(
+                    `flex-1 rounded-full transition-all ${
+                      level <= calculatePasswordStrength(newPassword) ? strengthInfo.barColor : 'bg-zinc-700'
+                    }`,
+                  )}
                   key={level}
                 />
               ))}
@@ -285,14 +290,18 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Readonly<Prop
       </div>
 
       <button
-        className="group border-2 border-brand-gradient font-medium rounded-xl focus:outline-none focus:ring-3 focus:ring-zinc-500
-        disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500 mt-2"
+        className={twMerge(
+          'group border-2 border-brand-gradient font-medium rounded-xl focus:outline-none focus:ring-3 focus:ring-zinc-500',
+          'disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500 mt-2',
+        )}
         disabled={!canSubmit || isPending}
         type="submit"
       >
         <div
-          className="p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 
-          group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed"
+          className={twMerge(
+            'p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900',
+            'group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed',
+          )}
         >
           {isPending ? <Loader2 className="text-zinc-500 size-6 p-0.5 animate-spin" /> : '비밀번호 변경'}
         </div>

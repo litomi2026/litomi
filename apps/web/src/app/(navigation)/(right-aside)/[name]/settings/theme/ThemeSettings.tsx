@@ -1,6 +1,7 @@
 'use client'
 
 import { Check, Moon, Palette, Sparkles, Sun } from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 import { Theme, useThemeStore } from '@/store/theme'
 
@@ -42,8 +43,10 @@ export default function ThemeSettings() {
         return (
           <button
             aria-pressed={isSelected}
-            className="flex items-center gap-4 p-4 rounded-lg border-2 transition text-left border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30
-            aria-pressed:border-brand aria-pressed:bg-zinc-800/50"
+            className={twMerge(
+              'flex items-center gap-4 p-4 rounded-lg border-2 transition text-left border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30',
+              'aria-pressed:border-brand aria-pressed:bg-zinc-800/50',
+            )}
             key={value}
             onClick={() => setTheme(value)}
             type="button"

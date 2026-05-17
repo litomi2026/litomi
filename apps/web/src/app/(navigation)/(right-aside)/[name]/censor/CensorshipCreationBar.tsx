@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Info, Loader2, X } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
@@ -203,8 +204,10 @@ export default function CensorshipCreationBar() {
         <input
           autoCapitalize="off"
           autoComplete="off"
-          className="w-full pl-4 pr-20 sm:pr-12 py-3 bg-zinc-800/70 rounded-lg border-2 border-zinc-700 outline-none transition
-          focus:border-brand focus:bg-zinc-800 placeholder:text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className={twMerge(
+            'w-full pl-4 pr-20 sm:pr-12 py-3 bg-zinc-800/70 rounded-lg border-2 border-zinc-700 outline-none transition',
+            'focus:border-brand focus:bg-zinc-800 placeholder:text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed',
+          )}
           disabled={addMutation.isPending}
           name="censorships"
           onBlur={handleBlur}

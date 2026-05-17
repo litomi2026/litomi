@@ -2,6 +2,7 @@
 
 import { NotificationConditionType, NotificationConditionTypeNames } from '@litomi/domain/database/enum'
 import { Trash2 } from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 import CustomSelect from '@/components/ui/CustomSelect'
 
@@ -35,8 +36,10 @@ export default function ConditionInput({ index, initialCondition, isPending, onR
           <input
             autoCapitalize="off"
             autoComplete="off"
-            className="min-w-0 flex-1 text-base px-3 py-2 bg-transparent placeholder-zinc-500 
-              focus:outline-none disabled:opacity-50 transition"
+            className={twMerge(
+              'min-w-0 flex-1 text-base px-3 py-2 bg-transparent placeholder-zinc-500',
+              'focus:outline-none disabled:opacity-50 transition',
+            )}
             defaultValue={initialCondition?.value || ''}
             disabled={isPending}
             name={`condition-value-${index}`}

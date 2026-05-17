@@ -4,7 +4,17 @@ import { formatLocalDate } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Dispatch, RefObject, SetStateAction, SubmitEvent, useCallback, useEffect, useState, useTransition } from 'react'
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  SubmitEvent,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+} from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import CustomSelect from '@/components/ui/CustomSelect'
 
@@ -155,12 +165,14 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           titleClassName="sm:text-lg"
         />
         <DialogBody
-          className="flex flex-col gap-4
-            [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1
-            [&_input]:text-base [&_input]:px-3 [&_input]:py-2 [&_input]:rounded-lg
-            [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-700 [&_input]:placeholder-zinc-500 
-            [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-400 [&_input]:focus:border-transparent [&_input]:invalid:ring-2 [&_input]:invalid:ring-red-500 
-            [&_input]:[appearance:textfield] [&_input]:[&::-webkit-outer-spin-button]:appearance-none [&_input]:[&::-webkit-inner-spin-button]:appearance-none"
+          className={twMerge(
+            'flex flex-col gap-4',
+            '[&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1',
+            '[&_input]:text-base [&_input]:px-3 [&_input]:py-2 [&_input]:rounded-lg',
+            '[&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-700 [&_input]:placeholder-zinc-500',
+            '[&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-400 [&_input]:focus:border-transparent [&_input]:invalid:ring-2 [&_input]:invalid:ring-red-500',
+            '[&_input]:[appearance:textfield] [&_input]:[&::-webkit-outer-spin-button]:appearance-none [&_input]:[&::-webkit-inner-spin-button]:appearance-none',
+          )}
         >
           {/* Sort */}
           <div>
@@ -242,8 +254,10 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                 { label: '전체', days: -1 },
               ].map(({ label, days }) => (
                 <button
-                  className="px-3 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg
-                    transition focus:outline-none focus:ring-2 focus:ring-zinc-400"
+                  className={twMerge(
+                    'px-3 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg',
+                    'transition focus:outline-none focus:ring-2 focus:ring-zinc-400',
+                  )}
                   key={label}
                   onClick={() => {
                     if (days === -1) {
@@ -330,8 +344,10 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
         <DialogFooter className="flex gap-2">
           <button
-            className="flex-1 px-3 py-2 bg-zinc-800 text-zinc-300 font-medium rounded-lg transition
-              disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-zinc-400 hover:bg-zinc-700"
+            className={twMerge(
+              'flex-1 px-3 py-2 bg-zinc-800 text-zinc-300 font-medium rounded-lg transition',
+              'disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-zinc-400 hover:bg-zinc-700',
+            )}
             disabled={isPending}
             onClick={clearFilters}
             type="button"
@@ -339,8 +355,10 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             초기화
           </button>
           <button
-            className="flex items-center justify-center flex-1 px-3 py-2 bg-brand text-background font-medium rounded-lg transition
-              focus:outline-none focus:ring-2 focus:ring-brand/50 hover:bg-brand/90 active:bg-brand/90 disabled:cursor-wait"
+            className={twMerge(
+              'flex items-center justify-center flex-1 px-3 py-2 bg-brand text-background font-medium rounded-lg transition',
+              'focus:outline-none focus:ring-2 focus:ring-brand/50 hover:bg-brand/90 active:bg-brand/90 disabled:cursor-wait',
+            )}
             disabled={isPending}
             type="submit"
           >
