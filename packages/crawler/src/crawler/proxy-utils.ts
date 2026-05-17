@@ -64,7 +64,7 @@ export function createCacheControlHeaders({ vercel, cloudflare, browser }: Cache
     headers['Vercel-CDN-Cache-Control'] = createCacheControl(vercel)
   }
   if (cloudflare) {
-    headers['Cloudflare-Cache-Control'] = createCacheControl(cloudflare)
+    headers['Cloudflare-CDN-Cache-Control'] = createCacheControl(cloudflare)
   }
   if (browser) {
     headers['Cache-Control'] = createCacheControl(browser)

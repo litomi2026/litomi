@@ -5,6 +5,7 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
+import { withBotId } from 'botid/next/config'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -132,7 +133,7 @@ const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })(nextConfig)
 
-export default withSentryConfig(withAnalyzer, {
+export default withSentryConfig(withBotId(withAnalyzer), {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   authToken: process.env.SENTRY_AUTH_TOKEN,
