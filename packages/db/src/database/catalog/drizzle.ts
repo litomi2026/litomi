@@ -19,7 +19,7 @@ const catalogClient = postgres(CATALOG_POSTGRES_URL, {
   idle_timeout: CATALOG_POSTGRES_IDLE_TIMEOUT_SECONDS,
   connect_timeout: CATALOG_POSTGRES_CONNECT_TIMEOUT_SECONDS,
   connection: { application_name: CATALOG_POSTGRES_APPLICATION_NAME },
-  ssl: CATALOG_POSTGRES_CERTIFICATE ? { ca: CATALOG_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'require',
+  ssl: CATALOG_POSTGRES_CERTIFICATE ? { ca: CATALOG_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
 })
 
 export const catalogDB = drizzle({ client: catalogClient, schema })

@@ -19,7 +19,7 @@ const client = postgres(APP_POSTGRES_URL, {
   idle_timeout: APP_POSTGRES_IDLE_TIMEOUT_SECONDS,
   connect_timeout: APP_POSTGRES_CONNECT_TIMEOUT_SECONDS,
   connection: { application_name: APP_POSTGRES_APPLICATION_NAME },
-  ssl: APP_POSTGRES_CERTIFICATE ? { ca: APP_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'require',
+  ssl: APP_POSTGRES_CERTIFICATE ? { ca: APP_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
 })
 
 export const db = drizzle({ client, schema })

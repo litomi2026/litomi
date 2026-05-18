@@ -8,7 +8,7 @@ export default defineConfig({
   dialect: 'postgresql',
   dbCredentials: {
     url: CATALOG_POSTGRES_URL_DIRECT,
-    ssl: CATALOG_POSTGRES_CERTIFICATE ? { ca: CATALOG_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'require',
+    ssl: CATALOG_POSTGRES_CERTIFICATE ? { ca: CATALOG_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
   },
   strict: true,
 })
