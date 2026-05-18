@@ -1,7 +1,7 @@
 'use client'
 
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/constants/policy'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { ExternalLink, Loader2, Users } from 'lucide-react'
 import ms from 'ms'

@@ -1,5 +1,5 @@
 import * as amplitude from '@amplitude/analytics-node'
-import { env } from '@litomi/env/env/server.next'
+import { env } from '@litomi/env/server.next'
 
 const { AMPLITUDE_API_KEY } = env
 

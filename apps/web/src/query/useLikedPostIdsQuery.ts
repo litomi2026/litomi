@@ -1,6 +1,6 @@
 import type { GETV1PostLikedResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 

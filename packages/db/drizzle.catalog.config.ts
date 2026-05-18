@@ -1,4 +1,4 @@
-import { env } from '@litomi/env/env/server.common'
+import { env } from '@litomi/env/server.common'
 import { defineConfig } from 'drizzle-kit'
 
 const { CATALOG_POSTGRES_CERTIFICATE, CATALOG_POSTGRES_URL_DIRECT } = env

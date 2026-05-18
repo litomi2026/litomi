@@ -3,7 +3,7 @@
 import type { GETV1MeResponse, POSTV1PointTurnstileResponse } from '@litomi/contracts'
 
 import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Heart, HelpCircle, MousePointerClick, ShieldCheck } from 'lucide-react'

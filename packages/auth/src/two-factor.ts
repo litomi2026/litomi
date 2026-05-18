@@ -1,6 +1,6 @@
 import 'server-only'
 import { APP_ORIGIN } from '@litomi/domain/constants'
-import { env } from '@litomi/env/env/server.common'
+import { env } from '@litomi/env/server.common'
 import crypto from 'crypto'
 import { verify } from 'otplib'
 import QRCode from 'qrcode'

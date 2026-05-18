@@ -4,7 +4,7 @@ import type { POSTV1BBatonAttemptResponse } from '@litomi/contracts'
 
 import { BBATON_POPUP_WINDOW_NAME } from '@litomi/domain/constants/bbaton'
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { formatDistanceToNow, safeParseJSON } from '@litomi/std'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'

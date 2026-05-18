@@ -4,7 +4,7 @@ import type { POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
 import { BLIND_TAG_VALUES } from '@litomi/domain/constants/json'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Info, Loader2, X } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'

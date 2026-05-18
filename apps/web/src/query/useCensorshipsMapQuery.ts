@@ -1,7 +1,7 @@
 import type { CensorshipItem, GETV1CensorshipResponse } from '@litomi/contracts'
 
 import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'

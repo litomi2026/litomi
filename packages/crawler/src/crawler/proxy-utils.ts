@@ -1,5 +1,5 @@
 import { normalizeError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { type CacheControlOptions, createCacheControl } from '@litomi/http/cache-control'
 import {
   createProblemTypeUrl,

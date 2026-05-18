@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { Apple, ArrowUpRight, Bot } from 'lucide-react'
 
 import InstallPrompt from '@/components/InstallPrompt'

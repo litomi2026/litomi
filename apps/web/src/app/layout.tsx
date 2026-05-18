@@ -10,8 +10,8 @@ import {
   SHORT_NAME,
   THEME_COLOR,
 } from '@litomi/domain/constants'
-import { env } from '@litomi/env/env/client'
-import { env as serverEnv } from '@litomi/env/env/server.next'
+import { env } from '@litomi/env/client'
+import { env as serverEnv } from '@litomi/env/server.next'
 import { GoogleTagManager } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import localFont from 'next/font/local'

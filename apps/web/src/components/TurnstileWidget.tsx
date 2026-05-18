@@ -1,6 +1,6 @@
 'use client'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import { Loader2 } from 'lucide-react'
 import { Ref } from 'react'

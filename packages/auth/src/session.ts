@@ -1,4 +1,4 @@
-import { env } from '@litomi/env/env/server.common'
+import { env } from '@litomi/env/server.common'
 import 'server-only'
 import { sec } from '@litomi/std'
 import crypto from 'crypto'

@@ -2,7 +2,7 @@
 
 import type { GETV1BookmarkIdResponse, PUTV1BookmarkIdResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

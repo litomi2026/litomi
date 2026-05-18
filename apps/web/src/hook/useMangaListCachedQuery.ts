@@ -1,7 +1,7 @@
 'use client'
 
 import { Manga } from '@litomi/domain/types/manga'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { isDegradedResponse } from '@litomi/http/degraded-response'
 import { QueryKey, useQueries, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'

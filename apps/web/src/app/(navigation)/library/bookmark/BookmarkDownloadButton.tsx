@@ -2,7 +2,7 @@
 
 import type { GETV1BookmarkExportResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Download } from 'lucide-react'

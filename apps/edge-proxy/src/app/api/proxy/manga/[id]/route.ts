@@ -8,7 +8,7 @@ import {
 } from '@litomi/crawler/crawler/proxy-utils'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/constants/policy'
 import { RouteProps } from '@litomi/domain/types/nextjs'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { sec } from '@litomi/std'
 import { checkBotId } from 'botid/server'

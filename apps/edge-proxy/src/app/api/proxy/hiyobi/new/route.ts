@@ -6,7 +6,7 @@ import {
   handleRouteError,
 } from '@litomi/crawler/crawler/proxy-utils'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { sec } from '@litomi/std'
 import z from 'zod'
 

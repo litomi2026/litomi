@@ -2,7 +2,7 @@
 
 import type { GETV1MangaIdRatingResponse, PUTV1MangaIdRatingResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'

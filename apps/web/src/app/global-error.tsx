@@ -2,7 +2,7 @@
 
 import type { ErrorProps } from '@litomi/domain/types/nextjs'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import * as Sentry from '@sentry/nextjs'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'

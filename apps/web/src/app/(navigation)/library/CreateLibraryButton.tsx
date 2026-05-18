@@ -8,7 +8,7 @@ import {
   MAX_LIBRARY_ICON_LENGTH,
   MAX_LIBRARY_NAME_LENGTH,
 } from '@litomi/domain/constants/policy'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { normalizeString } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'

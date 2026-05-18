@@ -1,4 +1,4 @@
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import {
   createLitomiProxyMangaImageURL,
   createThirdPartyMangaImageURLs,

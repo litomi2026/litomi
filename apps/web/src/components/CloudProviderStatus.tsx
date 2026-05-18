@@ -1,6 +1,6 @@
 'use client'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import ms from 'ms'
 import { useEffect, useState } from 'react'
 
