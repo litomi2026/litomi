@@ -1,6 +1,6 @@
 'use client'
 
-import { useReaderMessages } from '#reader/readerRuntime'
+import { useReaderMessages } from '#reader/context'
 import { useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { Slider } from '@litomi/ui'
 import { Monitor, Palette } from 'lucide-react'

@@ -1,7 +1,7 @@
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
+import { useReaderMessages, useReaderNoticeHandler } from '#reader/context'
 import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
-import { useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
 import { useReaderStore } from '#reader/state/readerStore'
 import { useEffect, useEffectEvent } from 'react'
 

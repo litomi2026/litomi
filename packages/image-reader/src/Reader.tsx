@@ -4,12 +4,12 @@ import type { ReaderLocale, ReaderMessageOverrides } from '#reader/model/readerM
 import type { ReaderNoticeHandler } from '#reader/model/readerNotice'
 
 import ReaderControls from '#reader/components/ReaderControls'
+import { ReaderRuntimeProvider, useReaderMessages, useReaderNoticeHandler } from '#reader/context'
 import useAutoHideCursor from '#reader/hooks/useAutoHideCursor'
 import usePageSearchParamSync from '#reader/hooks/usePageSearchParamSync'
 import { getNavigatorLowDataSnapshot, type LowDataSnapshot, resolveLowDataState } from '#reader/model/lowData'
 import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from '#reader/model/readerLayout'
 import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
-import { ReaderRuntimeProvider, useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
 import ReadingProgressTracker, {
   type ReadingProgress,
   type ReadingProgressSaveOptions,

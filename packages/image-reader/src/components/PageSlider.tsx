@@ -1,6 +1,6 @@
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
-import { useReaderMessages } from '#reader/readerRuntime'
+import { useReaderMessages } from '#reader/context'
 import { useReaderStore } from '#reader/state/readerStore'
 import { Slider } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'

@@ -2,8 +2,8 @@
 
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 
+import { useReaderMessages } from '#reader/context'
 import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
-import { useReaderMessages } from '#reader/readerRuntime'
 import { type ScreenFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import useViewerPointerGestures from '#reader/views/paged/gestures/useViewerPointerGestures'
 import usePagedReaderViewScrollRestoration from '#reader/views/paged/hooks/usePagedReaderViewScrollRestoration'

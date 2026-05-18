@@ -2,7 +2,7 @@
 
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 
-import { useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
+import { useReaderMessages, useReaderNoticeHandler } from '#reader/context'
 import { useReaderStore } from '#reader/state/readerStore'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import ms from 'ms'
