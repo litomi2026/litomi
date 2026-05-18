@@ -1,7 +1,9 @@
+import { env as cliEnv } from '@litomi/env/cli'
 import { env } from '@litomi/env/server.common'
 import { defineConfig } from 'drizzle-kit'
 
-const { CATALOG_POSTGRES_CERTIFICATE, CATALOG_POSTGRES_URL_DIRECT } = env
+const { CATALOG_POSTGRES_CERTIFICATE } = env
+const { CATALOG_POSTGRES_URL_DIRECT } = cliEnv
 
 export default defineConfig({
   schema: 'src/database/catalog/schema.ts',

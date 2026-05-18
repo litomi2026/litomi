@@ -1,21 +1,16 @@
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
-const DEFAULT_APP_POSTGRES_URL = 'postgresql://test_user:test_password@localhost:5434/app_db'
-const DEFAULT_CATALOG_POSTGRES_URL = 'postgresql://test_user:test_password@localhost:5435/catalog_db'
-
 export const env = createEnv({
   server: {
     APP_ORIGIN: z.url().default('http://localhost:3000'),
-    APP_POSTGRES_URL: z.url().default(DEFAULT_APP_POSTGRES_URL),
-    APP_POSTGRES_URL_DIRECT: z.url().default(DEFAULT_APP_POSTGRES_URL),
+    APP_POSTGRES_URL: z.url().default('postgresql://test_user:test_password@localhost:5434/app_db'),
     APP_POSTGRES_CERTIFICATE: z.string().optional(),
     APP_POSTGRES_POOL_MAX: z.coerce.number().int().positive().default(2),
     APP_POSTGRES_IDLE_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(20),
     APP_POSTGRES_CONNECT_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(10),
     APP_POSTGRES_APPLICATION_NAME: z.string().default('litomi-app-local'),
-    CATALOG_POSTGRES_URL: z.url().default(DEFAULT_CATALOG_POSTGRES_URL),
-    CATALOG_POSTGRES_URL_DIRECT: z.url().default(DEFAULT_CATALOG_POSTGRES_URL),
+    CATALOG_POSTGRES_URL: z.url().default('postgresql://test_user:test_password@localhost:5435/catalog_db'),
     CATALOG_POSTGRES_CERTIFICATE: z.string().optional(),
     CATALOG_POSTGRES_POOL_MAX: z.coerce.number().int().positive().default(3),
     CATALOG_POSTGRES_IDLE_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(20),

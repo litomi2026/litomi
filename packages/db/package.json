@@ -32,16 +32,12 @@
     "./sql/selectPostComment": "./src/sql/selectPostComment.ts"
   },
   "scripts": {
-    "grant:libo": "bun --conditions=react-server scripts/grantLibo.ts",
     "push:local": "bun run push:local:app && bun run push:local:catalog",
-    "push:local:app": "bun --env-file=../../.env.development drizzle-kit push --config=drizzle.app.config.ts --force && bun --env-file=../../.env.development scripts/app/pushAppFunction.ts",
-    "push:local:catalog": "bun --env-file=../../.env.development drizzle-kit push --config=drizzle.catalog.config.ts --force",
-    "push:stg": "bun run push:stg:app && bun run push:stg:catalog",
-    "push:stg:app": "bun --env-file=../../.env.stg drizzle-kit push --config=drizzle.app.config.ts && bun --env-file=../../.env.stg scripts/app/pushAppFunction.ts",
-    "push:stg:catalog": "bun --env-file=../../.env.stg drizzle-kit push --config=drizzle.catalog.config.ts",
+    "push:local:app": "bun --env-file=.env.local drizzle-kit push --config=drizzle.app.config.ts --force && bun --env-file=.env.local scripts/app/pushAppFunction.ts",
+    "push:local:catalog": "bun --env-file=.env.local drizzle-kit push --config=drizzle.catalog.config.ts --force",
     "push:prod": "bun run push:prod:app && bun run push:prod:catalog",
-    "push:prod:app": "bun --env-file=../../.env.production drizzle-kit push --config=drizzle.app.config.ts && bun --env-file=../../.env.production scripts/app/pushAppFunction.ts",
-    "push:prod:catalog": "bun --env-file=../../.env.production drizzle-kit push --config=drizzle.catalog.config.ts",
+    "push:prod:app": "test -f .env.prod && bun --env-file=.env.prod drizzle-kit push --config=drizzle.app.config.ts && bun --env-file=.env.prod scripts/app/pushAppFunction.ts",
+    "push:prod:catalog": "test -f .env.prod && bun --env-file=.env.prod drizzle-kit push --config=drizzle.catalog.config.ts",
     "type": "tsc --noEmit"
   },
   "dependencies": {

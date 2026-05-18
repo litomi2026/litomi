@@ -1,4 +1,4 @@
-import { env } from '@litomi/env/server.common'
+import { env } from '@litomi/env/cli'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
