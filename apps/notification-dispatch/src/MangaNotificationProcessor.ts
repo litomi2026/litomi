@@ -6,10 +6,18 @@ import { mangaSeenTable, notificationTable } from '@litomi/db/database/app/notif
 import { MAX_MANGA_TITLE_LENGTH, MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
 import { NotificationType } from '@litomi/domain/database/enum'
 import { getViewerLink } from '@litomi/domain/utils/manga'
-import { WebPushPayload, WebPushService } from '@litomi/notifications'
+import { type WebPushMessage, WebPushService } from '@litomi/notifications'
 import { and, count, inArray, sql } from 'drizzle-orm'
 
 import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
+
+interface InsertedNotificationForPush {
+  body: string
+  data: string | null
+  id: number
+  title: string
+  userId: number
+}
 
 interface NewMangaNotification {
   artists?: string[]
@@ -182,13 +190,6 @@ export class MangaNotificationProcessor {
     }
   }
 
-  /**
-   * Combined insert and cleanup operation in a single query
-   *
-   * 1. Inserts new notifications
-   * 2. Removes notifications older than 30 days
-   * 3. Keeps only the latest MAX_NOTIFICATION_COUNT per user
-   */
   private async insertAndCleanupNotifications(
     notificationInserts: {
       userId: number
@@ -198,43 +199,51 @@ export class MangaNotificationProcessor {
       data: string
     }[],
     affectedUserIds: number[],
-  ): Promise<void> {
-    const values = notificationInserts.map((n) => sql`(${n.userId}, ${n.type}, ${n.title}, ${n.body}, ${n.data})`)
-    const valuesQuery = sql.join(values, sql.raw(', '))
+  ): Promise<InsertedNotificationForPush[]> {
+    return db.transaction(async (tx) => {
+      const insertedNotifications = await tx.insert(notificationTable).values(notificationInserts).returning({
+        id: notificationTable.id,
+        userId: notificationTable.userId,
+        title: notificationTable.title,
+        body: notificationTable.body,
+        data: notificationTable.data,
+      })
 
-    await db.execute(sql`
-      WITH inserted AS (
-        INSERT INTO ${notificationTable} (user_id, type, title, body, data)
-        VALUES ${valuesQuery}
-      ),
-      notifications_to_delete AS (
-        SELECT id
-        FROM (
-          SELECT 
-            ${notificationTable.id},
-            ${notificationTable.userId},
-            ${notificationTable.createdAt},
-            ROW_NUMBER() OVER (
-              PARTITION BY user_id 
-              ORDER BY created_at DESC, id DESC
-            ) as row_num
-          FROM ${notificationTable}
-          WHERE ${inArray(notificationTable.userId, affectedUserIds)}
-        ) ranked_notifications
-        WHERE 
-          created_at < (NOW() - INTERVAL '30 days')
-          OR row_num > ${MAX_NOTIFICATION_COUNT}
-      )
-      DELETE FROM ${notificationTable}
-      WHERE id IN (SELECT id FROM notifications_to_delete)
-    `)
-
-    if (Math.random() < 0.01) {
-      await db.execute(sql`
+      const deletedRows = await tx.execute<{ id: number | string }>(sql`
+        WITH notifications_to_delete AS (
+          SELECT id
+          FROM (
+            SELECT
+              ${notificationTable.id},
+              ${notificationTable.userId},
+              ${notificationTable.createdAt},
+              ROW_NUMBER() OVER (
+                PARTITION BY user_id
+                ORDER BY created_at DESC, id DESC
+              ) as row_num
+            FROM ${notificationTable}
+            WHERE ${inArray(notificationTable.userId, affectedUserIds)}
+          ) ranked_notifications
+          WHERE
+            created_at < (NOW() - INTERVAL '30 days')
+            OR row_num > ${MAX_NOTIFICATION_COUNT}
+        )
         DELETE FROM ${notificationTable}
-        WHERE ${notificationTable.createdAt} < (NOW() - INTERVAL '30 days')
+        WHERE id IN (SELECT id FROM notifications_to_delete)
+        RETURNING ${notificationTable.id} AS id
       `)
-    }
+
+      if (Math.random() < 0.01) {
+        await tx.execute(sql`
+          DELETE FROM ${notificationTable}
+          WHERE ${notificationTable.createdAt} < (NOW() - INTERVAL '30 days')
+        `)
+      }
+
+      const deletedIds = new Set(deletedRows.map((row) => Number(row.id)))
+
+      return insertedNotifications.filter((notification) => !deletedIds.has(notification.id))
+    })
   }
 
   /**
