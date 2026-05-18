@@ -1,10 +1,10 @@
 import { Locale } from '@litomi/catalog/translation/common'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { catalogDB } from '@litomi/db/database/catalog/drizzle'
-import { mangaTagTable, tagTable } from '@litomi/db/database/catalog/schema'
+import { mangaTable } from '@litomi/db/database/catalog/schema'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
-import { count, desc, eq } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
@@ -41,9 +41,18 @@ export type GETV1TagResponse = {
   }
 }
 
+type TagCountRow = {
+  value: string
+  count: number
+}
+
 type TagItem = {
   value: string
   label: string
+  count: number
+}
+
+type TotalCountRow = {
   count: number
 }
 
@@ -55,32 +64,35 @@ tagRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
   const offset = (page - 1) * limit
 
   const [tagsWithCount, totalCountRow] = await Promise.all([
-    catalogDB
-      .select({
-        value: tagTable.value,
-        count: count(mangaTagTable.mangaId),
-      })
-      .from(tagTable)
-      .leftJoin(mangaTagTable, eq(tagTable.id, mangaTagTable.tagId))
-      .where(eq(tagTable.category, categoryNumber))
-      .groupBy(tagTable.id)
-      .orderBy(({ count }) => [desc(count), tagTable.value])
-      .limit(limit)
-      .offset(offset),
-    catalogDB.select({ count: count() }).from(tagTable).where(eq(tagTable.category, categoryNumber)),
+    catalogDB.execute(sql`
+      SELECT tag.value, count(*)::integer AS count
+      FROM ${mangaTable}
+      CROSS JOIN LATERAL unnest(${mangaTable.tagValues}, ${mangaTable.tagCategories}) AS tag(value, category)
+      WHERE tag.category = ${categoryNumber}
+      GROUP BY tag.value
+      ORDER BY count DESC, tag.value
+      LIMIT ${limit}
+      OFFSET ${offset}
+    `) as Promise<TagCountRow[]>,
+    catalogDB.execute(sql`
+      SELECT count(*)::integer AS count
+      FROM (
+        SELECT DISTINCT tag.value
+        FROM ${mangaTable}
+        CROSS JOIN LATERAL unnest(${mangaTable.tagValues}, ${mangaTable.tagCategories}) AS tag(value, category)
+        WHERE tag.category = ${categoryNumber}
+      ) tags
+    `) as Promise<TotalCountRow[]>,
   ])
 
   const totalCount = totalCountRow[0]?.count ?? 0
   const totalPages = Math.ceil(totalCount / limit)
 
-  const tags: TagItem[] = tagsWithCount.map(({ value, count }) => {
-    const translated = translateTag(category, value, locale)
-    return {
-      value: `${category}:${value}`,
-      label: translated.label,
-      count,
-    }
-  })
+  const tags: TagItem[] = tagsWithCount.map(({ value, count }) => ({
+    value: `${category}:${value}`,
+    label: translateTag(category, value, locale).label,
+    count,
+  }))
 
   const cacheControl = createCacheControl({
     public: true,

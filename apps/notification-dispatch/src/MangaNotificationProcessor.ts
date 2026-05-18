@@ -6,10 +6,18 @@ import { mangaSeenTable, notificationTable } from '@litomi/db/database/app/notif
 import { MAX_MANGA_TITLE_LENGTH, MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
 import { NotificationType } from '@litomi/domain/database/enum'
 import { getViewerLink } from '@litomi/domain/utils/manga'
-import { WebPushPayload, WebPushService } from '@litomi/notifications'
-import { and, count, inArray, sql } from 'drizzle-orm'
+import { type WebPushMessage, WebPushService } from '@litomi/notifications'
+import { and, count, desc, gte, inArray, isNull, sql } from 'drizzle-orm'
 
 import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
+
+interface InsertedNotificationForPush {
+  body: string
+  data: string | null
+  id: number
+  title: string
+  userId: number
+}
 
 interface NewMangaNotification {
   artists?: string[]
@@ -71,7 +79,7 @@ export class MangaNotificationProcessor {
       const latestProcessedResult = await db
         .select({ mangaId: mangaSeenTable.mangaId })
         .from(mangaSeenTable)
-        .orderBy(sql`${mangaSeenTable.mangaId} DESC`)
+        .orderBy(desc(mangaSeenTable.mangaId))
         .limit(1)
 
       const latestProcessedId = latestProcessedResult[0]?.mangaId || 0
@@ -182,13 +190,6 @@ export class MangaNotificationProcessor {
     }
   }
 
-  /**
-   * Combined insert and cleanup operation in a single query
-   *
-   * 1. Inserts new notifications
-   * 2. Removes notifications older than 30 days
-   * 3. Keeps only the latest MAX_NOTIFICATION_COUNT per user
-   */
   private async insertAndCleanupNotifications(
     notificationInserts: {
       userId: number
@@ -198,52 +199,53 @@ export class MangaNotificationProcessor {
       data: string
     }[],
     affectedUserIds: number[],
-  ): Promise<void> {
-    const values = notificationInserts.map((n) => sql`(${n.userId}, ${n.type}, ${n.title}, ${n.body}, ${n.data})`)
-    const valuesQuery = sql.join(values, sql.raw(', '))
+  ): Promise<InsertedNotificationForPush[]> {
+    return db.transaction(async (tx) => {
+      const insertedNotifications = await tx.insert(notificationTable).values(notificationInserts).returning({
+        id: notificationTable.id,
+        userId: notificationTable.userId,
+        title: notificationTable.title,
+        body: notificationTable.body,
+        data: notificationTable.data,
+      })
 
-    await db.execute(sql`
-      WITH inserted AS (
-        INSERT INTO ${notificationTable} (user_id, type, title, body, data)
-        VALUES ${valuesQuery}
-      ),
-      notifications_to_delete AS (
-        SELECT id
-        FROM (
-          SELECT 
-            ${notificationTable.id},
-            ${notificationTable.userId},
-            ${notificationTable.createdAt},
-            ROW_NUMBER() OVER (
-              PARTITION BY user_id 
-              ORDER BY created_at DESC, id DESC
-            ) as row_num
-          FROM ${notificationTable}
-          WHERE ${inArray(notificationTable.userId, affectedUserIds)}
-        ) ranked_notifications
-        WHERE 
-          created_at < (NOW() - INTERVAL '30 days')
-          OR row_num > ${MAX_NOTIFICATION_COUNT}
-      )
-      DELETE FROM ${notificationTable}
-      WHERE id IN (SELECT id FROM notifications_to_delete)
-    `)
-
-    if (Math.random() < 0.01) {
-      await db.execute(sql`
+      const deletedRows = await tx.execute<{ id: number | string }>(sql`
+        WITH notifications_to_delete AS (
+          SELECT id
+          FROM (
+            SELECT
+              ${notificationTable.id},
+              ${notificationTable.userId},
+              ${notificationTable.createdAt},
+              ROW_NUMBER() OVER (
+                PARTITION BY user_id
+                ORDER BY created_at DESC, id DESC
+              ) as row_num
+            FROM ${notificationTable}
+            WHERE ${inArray(notificationTable.userId, affectedUserIds)}
+          ) ranked_notifications
+          WHERE
+            created_at < (NOW() - INTERVAL '30 days')
+            OR row_num > ${MAX_NOTIFICATION_COUNT}
+        )
         DELETE FROM ${notificationTable}
-        WHERE ${notificationTable.createdAt} < (NOW() - INTERVAL '30 days')
+        WHERE id IN (SELECT id FROM notifications_to_delete)
+        RETURNING ${notificationTable.id} AS id
       `)
-    }
+
+      if (Math.random() < 0.01) {
+        await tx.execute(sql`
+          DELETE FROM ${notificationTable}
+          WHERE ${notificationTable.createdAt} < (NOW() - INTERVAL '30 days')
+        `)
+      }
+
+      const deletedIds = new Set(deletedRows.map((row) => Number(row.id)))
+
+      return insertedNotifications.filter((notification) => !deletedIds.has(notification.id))
+    })
   }
 
-  /**
-   * Process notifications for all users:
-   * 1. Insert all notifications into database
-   * 2. Send push notifications only to users with active subscriptions and appropriate settings
-   *
-   * NOTE(2025-08-06): 데이터베이스 요청 8번 (insert notifications, delete old, get settings, get daily counts, get subscriptions, update sentAt)
-   */
   private async insertAndSendNotifications(userNotificationsMap: Map<number, NewMangaNotification[]>) {
     const result = {
       errors: [] as string[],
@@ -256,7 +258,6 @@ export class MangaNotificationProcessor {
 
     const allUserIds = Array.from(userNotificationsMap.keys())
 
-    // Step 1: Insert all notifications into database for all users
     const allNotificationInserts: {
       userId: number
       type: number
@@ -282,104 +283,91 @@ export class MangaNotificationProcessor {
       }
     }
 
+    let insertedNotifications: InsertedNotificationForPush[] = []
+
     try {
       if (allNotificationInserts.length > 0) {
-        await this.insertAndCleanupNotifications(allNotificationInserts, allUserIds)
+        insertedNotifications = await this.insertAndCleanupNotifications(allNotificationInserts, allUserIds)
+      }
+
+      if (insertedNotifications.length === 0) {
+        return result
       }
     } catch (error) {
       result.errors.push(`insertAndCleanupNotifications: ${error}`)
       return result
     }
 
-    // Step 2: Determine which users should receive push notifications
     const userSettings = await this.notificationService.getPushSettingsOfUsers(allUserIds)
 
-    if (!userSettings) {
-      return result
-    }
-
     const todayStart = new Date()
-    todayStart.setHours(0, 0, 0, 0)
+    todayStart.setUTCHours(0, 0, 0, 0)
 
-    // Get count of push notifications sent today (only those with sentAt set)
     const dailyCounts = await db
       .select({
         userId: notificationTable.userId,
         count: count(),
       })
       .from(notificationTable)
-      .where(
-        and(
-          inArray(notificationTable.userId, allUserIds),
-          sql`${notificationTable.sentAt} >= ${todayStart.toISOString()}`,
-        ),
-      )
+      .where(and(inArray(notificationTable.userId, allUserIds), gte(notificationTable.sentAt, todayStart)))
       .groupBy(notificationTable.userId)
 
     const userDailyCounts = new Map(dailyCounts.map((row) => [row.userId, row.count]))
+    const userWebPushes: WebPushMessage[] = []
+    const pendingCountsByUser = new Map<number, number>()
 
-    // Step 3: Build list of push notifications to send
-    const userWebPushes: { userId: number; payload: WebPushPayload }[] = []
+    for (const notification of insertedNotifications) {
+      const settings = userSettings.get(notification.userId)!
 
-    for (const [userId, mangaNotifications] of userNotificationsMap) {
-      const settings = userSettings.get(userId)
-
-      // Skip if user doesn't have push settings or quiet hours are active
-      if (!settings || !this.shouldSendNotificationBasedOnSettings(settings)) {
+      if (!this.shouldSendNotificationBasedOnSettings(settings)) {
         continue
       }
 
-      // Check daily limit for push notifications
-      const dailyCount = userDailyCounts.get(userId) || 0
-      const remainingToday = settings.maxPerDay - dailyCount
+      const dailyCount = userDailyCounts.get(notification.userId) || 0
+      const pendingCount = pendingCountsByUser.get(notification.userId) || 0
+      const remainingToday = settings.maxPerDay - dailyCount - pendingCount
 
       if (remainingToday <= 0) {
         continue
       }
 
-      // Create push notifications for each manga, respecting daily limit
-      let sentForUser = 0
-      for (const notification of mangaNotifications) {
-        if (sentForUser >= remainingToday) {
-          break
-        }
+      const data = JSON.parse(notification.data!) as NotificationData
 
-        userWebPushes.push({
-          userId,
-          payload: {
-            title: notification.title,
-            body: notification.body,
-            data: { url: notification.url },
-            icon: notification.previewImageURL,
-            tag: `manga-${notification.mangaId}`,
-            badge: '/badge.png',
-          },
-        })
+      userWebPushes.push({
+        messageId: notification.id,
+        userId: notification.userId,
+        payload: {
+          title: notification.title,
+          body: notification.body,
+          data: { url: data.url },
+          icon: data.previewImageURL,
+          tag: data.mangaId ? `manga-${data.mangaId}` : undefined,
+          badge: '/badge.png',
+        },
+      })
 
-        result.notificationsSent++
-        sentForUser++
-      }
+      pendingCountsByUser.set(notification.userId, pendingCount + 1)
     }
 
     if (userWebPushes.length === 0) {
       return result
     }
 
-    // Step 4: Send push notifications (only to users with active subscriptions)
     try {
-      await this.notificationService.sendWebPushesToUsers(userWebPushes)
-      const sentUserIds = userWebPushes.map((wp) => wp.userId)
+      const sendResult = await this.notificationService.sendWebPushesToUsers(userWebPushes)
+      const sentNotificationIds = sendResult.successfulMessageIds
+      result.notificationsSent = sentNotificationIds.length
 
-      await db
-        .update(notificationTable)
-        .set({ sentAt: new Date() })
-        .where(
-          and(
-            inArray(notificationTable.userId, sentUserIds),
-            sql`${notificationTable.sentAt} IS NULL`,
-            sql`${notificationTable.createdAt} >= ${todayStart.toISOString()}`,
-          ),
-        )
+      if (sentNotificationIds.length > 0) {
+        await db
+          .update(notificationTable)
+          .set({ sentAt: new Date() })
+          .where(and(inArray(notificationTable.id, sentNotificationIds), isNull(notificationTable.sentAt)))
+      }
+
+      if (sendResult.failed.length > 0) {
+        result.errors.push(`Failed web push deliveries: ${sendResult.failed.length}/${sendResult.attemptedCount}`)
+      }
     } catch (error) {
       result.errors.push(`Failed to send push notifications: ${error}`)
     }
@@ -387,16 +375,13 @@ export class MangaNotificationProcessor {
     return result
   }
 
-  /**
-   * Check if notification should be sent based on user settings
-   */
   private shouldSendNotificationBasedOnSettings(settings: {
     quietEnabled: boolean
     quietHours: { start: number; end: number }
   }): boolean {
     if (settings.quietEnabled && settings.quietHours) {
       const { start, end } = settings.quietHours
-      const currentHour = new Date().getHours()
+      const currentHour = new Date().getUTCHours()
 
       if (start > end) {
         if (currentHour >= start || currentHour < end) {

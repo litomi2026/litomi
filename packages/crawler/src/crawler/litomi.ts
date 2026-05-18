@@ -8,25 +8,9 @@ import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
 import { catalogDB } from '@litomi/db/database/catalog/drizzle'
-import {
-  artistTable,
-  characterTable,
-  groupTable,
-  languageTable,
-  mangaArtistTable,
-  mangaCharacterTable,
-  mangaGroupTable,
-  mangaLanguageTable,
-  mangaSeriesTable,
-  mangaTable,
-  mangaTagTable,
-  mangaUploaderTable,
-  seriesTable,
-  tagTable,
-  uploaderTable,
-} from '@litomi/db/database/catalog/schema'
+import { mangaTable } from '@litomi/db/database/catalog/schema'
 import { tagCategoryIntToName } from '@litomi/domain/database/enum'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import ms from 'ms'
 
 import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker'
@@ -87,13 +71,19 @@ class LitomiClient {
     createdAt: Date | null
     artists: string[]
     characters: string[]
-    tags: { value: string; category: number }[]
     series: string[]
     groups: string[]
     languages: string[]
-    uploaders: string[]
+    uploader: string | null
+    tagValues: string[]
+    tagCategories: number[]
   }): Manga {
     const locale = 'ko' // TODO: Get from user preferences or context
+
+    const tags = result.tagValues.map((value, index) => ({
+      value,
+      category: result.tagCategories[index] ?? 3,
+    }))
 
     return {
       id: result.id,
@@ -109,8 +99,8 @@ class LitomiClient {
       series: translateSeriesList(result.series, locale),
       group: translateGroupList(result.groups, locale),
       languages: translateLanguageList(result.languages, locale),
-      uploader: result.uploaders[0],
-      tags: result.tags
+      uploader: result.uploader ?? undefined,
+      tags: tags
         .sort((a, b) => a.category - b.category)
         .map((t) => {
           const category = tagCategoryIntToName[t.category] ?? 'other'
@@ -135,78 +125,17 @@ class LitomiClient {
         type: mangaTable.type,
         count: mangaTable.count,
         createdAt: mangaTable.createdAt,
-        artists: sql<string[]>`
-          COALESCE(
-            (SELECT ARRAY_AGG(${artistTable.value})
-             FROM ${mangaArtistTable}
-             INNER JOIN ${artistTable} ON ${mangaArtistTable.artistId} = ${artistTable.id}
-             WHERE ${mangaArtistTable.mangaId} = ${sql.placeholder('mangaId')}),
-            '{}'::text[]
-          )
-        `,
-        characters: sql<string[]>`
-          COALESCE(
-            (SELECT ARRAY_AGG(${characterTable.value})
-             FROM ${mangaCharacterTable}
-             INNER JOIN ${characterTable} ON ${mangaCharacterTable.characterId} = ${characterTable.id}
-             WHERE ${mangaCharacterTable.mangaId} = ${sql.placeholder('mangaId')}),
-            '{}'::text[]
-          )
-        `,
-        tags: sql<{ value: string; category: number }[]>`
-          COALESCE(
-            (SELECT JSON_AGG(tag_data)
-             FROM (
-               SELECT jsonb_build_object(
-                 'value', ${tagTable.value},
-                 'category', ${tagTable.category}
-               ) as tag_data
-               FROM ${mangaTagTable}
-               INNER JOIN ${tagTable} ON ${mangaTagTable.tagId} = ${tagTable.id}
-               WHERE ${mangaTagTable.mangaId} = ${sql.placeholder('mangaId')}
-             ) sub),
-            '[]'::json
-          )
-        `,
-        series: sql<string[]>`
-          COALESCE(
-            (SELECT ARRAY_AGG(${seriesTable.value})
-             FROM ${mangaSeriesTable}
-             INNER JOIN ${seriesTable} ON ${mangaSeriesTable.seriesId} = ${seriesTable.id}
-             WHERE ${mangaSeriesTable.mangaId} = ${sql.placeholder('mangaId')}),
-            '{}'::text[]
-          )
-        `,
-        groups: sql<string[]>`
-          COALESCE(
-            (SELECT ARRAY_AGG(${groupTable.value})
-             FROM ${mangaGroupTable}
-             INNER JOIN ${groupTable} ON ${mangaGroupTable.groupId} = ${groupTable.id}
-             WHERE ${mangaGroupTable.mangaId} = ${sql.placeholder('mangaId')}),
-            '{}'::text[]
-          )
-        `,
-        languages: sql<string[]>`
-          COALESCE(
-            (SELECT ARRAY_AGG(${languageTable.value})
-             FROM ${mangaLanguageTable}
-             INNER JOIN ${languageTable} ON ${mangaLanguageTable.languageId} = ${languageTable.id}
-             WHERE ${mangaLanguageTable.mangaId} = ${sql.placeholder('mangaId')}),
-            '{}'::text[]
-          )
-        `,
-        uploaders: sql<string[]>`
-          COALESCE(
-            (SELECT ARRAY_AGG(${uploaderTable.value})
-             FROM ${mangaUploaderTable}
-             INNER JOIN ${uploaderTable} ON ${mangaUploaderTable.uploaderId} = ${uploaderTable.id}
-             WHERE ${mangaUploaderTable.mangaId} = ${sql.placeholder('mangaId')}),
-            '{}'::text[]
-          )
-        `,
+        artists: mangaTable.artists,
+        characters: mangaTable.characters,
+        series: mangaTable.series,
+        groups: mangaTable.groups,
+        languages: mangaTable.languages,
+        uploader: mangaTable.uploader,
+        tagValues: mangaTable.tagValues,
+        tagCategories: mangaTable.tagCategories,
       })
       .from(mangaTable)
-      .where(sql`${mangaTable.id} = ${sql.placeholder('mangaId')}`)
+      .where(eq(mangaTable.id, sql.placeholder('mangaId')))
       .prepare('selectMangaById')
   }
 
