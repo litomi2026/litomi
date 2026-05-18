@@ -5,7 +5,7 @@ import postgres from 'postgres'
 
 import { applyAppFunctions } from '../packages/db/scripts/app/applyAppFunction'
 
-dotenv.config({ path: '.env.development' })
+dotenv.config({ path: 'packages/db/.env.local' })
 
 const DEFAULT_BACKEND_INTEGRATION_POSTGRES_URL =
   'postgresql://test_user:test_password@localhost:5434/litomi_backend_integration_test'
