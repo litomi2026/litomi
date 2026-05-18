@@ -31,16 +31,14 @@ const cspHeader = `
   ${isProduction ? 'upgrade-insecure-requests;' : ''}
 `
 
-const cacheControlHeaders = [
-  {
-    key: 'Cache-Control',
-    value: createCacheControl({
-      public: true,
-      maxAge: 3,
-      sMaxAge: sec('1 year'),
-    }),
-  },
-]
+const cacheControlHeaders = {
+  key: 'Cache-Control',
+  value: createCacheControl({
+    public: true,
+    maxAge: 3,
+    sMaxAge: sec('1 year'),
+  }),
+}
 
 const bbatonCallbackCspHeader = `
   default-src 'none';
@@ -91,7 +89,7 @@ const nextConfig: NextConfig = {
     {
       source: '/sw.js',
       headers: [
-        ...cacheControlHeaders,
+        cacheControlHeaders,
         { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
         {
           key: 'Content-Security-Policy',
