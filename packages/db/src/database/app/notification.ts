@@ -25,7 +25,7 @@ export const webPushTable = pgTable('web_push', {
   p256dh: text().notNull(),
   auth: text().notNull(),
   userAgent: text('user_agent'),
-}).enableRLS()
+})
 
 export const pushSettingsTable = pgTable('push_settings', {
   userId: bigint('user_id', { mode: 'number' })
@@ -39,7 +39,7 @@ export const pushSettingsTable = pgTable('push_settings', {
   quietEnd: smallint('quiet_end').notNull().default(7), // 0-23
   batchEnabled: boolean('batch_enabled').notNull().default(true),
   maxDaily: smallint('max_daily').notNull().default(10),
-}).enableRLS()
+})
 
 export const notificationTable = pgTable(
   'notification',
@@ -62,7 +62,7 @@ export const notificationTable = pgTable(
     // NOTE: createdAt < (NOW() - INTERVAL '30 days')
     index('idx_notification_created_at').on(table.createdAt),
   ],
-).enableRLS()
+)
 
 export const notificationCriteriaTable = pgTable(
   'notification_criteria',
@@ -79,7 +79,7 @@ export const notificationCriteriaTable = pgTable(
     matchCount: integer('match_count').notNull().default(0),
   },
   (table) => [index('idx_notification_criteria_user_active').on(table.userId, table.isActive)],
-).enableRLS()
+)
 
 export const notificationConditionTable = pgTable(
   'notification_condition',
@@ -97,9 +97,9 @@ export const notificationConditionTable = pgTable(
     index('idx_notification_condition_type_value').on(table.type, table.value, table.isExcluded),
     unique('idx_notification_condition_unique').on(table.criteriaId, table.type, table.value),
   ],
-).enableRLS()
+)
 
 export const mangaSeenTable = pgTable('manga_seen', {
   mangaId: integer('manga_id').primaryKey(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-}).enableRLS()
+})

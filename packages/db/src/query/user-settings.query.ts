@@ -1,6 +1,6 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import 'server-only'
-import { userSettingsTable, userTable } from '@litomi/db/database/supabase/user'
+import { userSettingsTable, userTable } from '@litomi/db/database/app/user'
 import { resolveUserSettings, type UserSettings } from '@litomi/domain/utils/user-settings'
 import { eq } from 'drizzle-orm'
 

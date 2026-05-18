@@ -1,5 +1,5 @@
-import { readingHistoryTable } from '@litomi/db/database/supabase/activity'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { readingHistoryTable } from '@litomi/db/database/app/activity'
+import { db } from '@litomi/db/database/app/drizzle'
 import 'server-only'
 import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@litomi/domain/common/cursor'
 import { POINT_CONSTANTS } from '@litomi/domain/constants/points'

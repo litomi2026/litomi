@@ -22,7 +22,7 @@ export const authSessionFamilyTable = pgTable(
     index('idx_auth_session_family_idle_expires_at').on(table.idleExpiresAt),
     index('idx_auth_session_family_absolute_expires_at').on(table.absoluteExpiresAt),
   ],
-).enableRLS()
+)
 
 export const authSessionTokenTable = pgTable(
   'auth_session_token',
@@ -46,4 +46,4 @@ export const authSessionTokenTable = pgTable(
       foreignColumns: [table.id],
     }).onDelete('set null'),
   ],
-).enableRLS()
+)

@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { libraryTable } from '@litomi/db/database/supabase/library'
+import { db } from '@litomi/db/database/app/drizzle'
+import { libraryTable } from '@litomi/db/database/app/library'
 import 'server-only'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'

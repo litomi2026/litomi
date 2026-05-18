@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@litomi/db/database/supabase/library'
+import { db } from '@litomi/db/database/app/drizzle'
+import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { sec } from '@litomi/std'
 import { and, desc, eq, sql } from 'drizzle-orm'

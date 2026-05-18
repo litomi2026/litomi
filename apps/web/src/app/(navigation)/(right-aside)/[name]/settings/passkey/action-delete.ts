@@ -1,8 +1,8 @@
 'use server'
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { credentialTable } from '@litomi/db/database/supabase/passkey'
+import { db } from '@litomi/db/database/app/drizzle'
+import { credentialTable } from '@litomi/db/database/app/passkey'
 import { captureException } from '@sentry/nextjs'
 import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'

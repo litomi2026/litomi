@@ -36,7 +36,7 @@ export const dmcaNoticeTable = pgTable(
     signature: varchar('signature', { length: 128 }).notNull(),
   },
   (table) => [index('idx_dmca_notice_created_at').on(table.createdAt.desc())],
-).enableRLS()
+)
 
 export const dmcaNoticeTargetTable = pgTable(
   'dmca_notice_target',
@@ -51,7 +51,7 @@ export const dmcaNoticeTargetTable = pgTable(
     primaryKey({ columns: [table.noticeId, table.mangaId] }),
     index('idx_dmca_notice_target_manga_id').on(table.mangaId),
   ],
-).enableRLS()
+)
 
 export const dmcaCounterNoticeTable = pgTable(
   'dmca_counter_notice',
@@ -74,7 +74,7 @@ export const dmcaCounterNoticeTable = pgTable(
     perjuryConfirmed: boolean('perjury_confirmed').notNull(),
   },
   (table) => [index('idx_dmca_counter_notice_created_at').on(table.createdAt.desc())],
-).enableRLS()
+)
 
 export const dmcaCounterTargetTable = pgTable(
   'dmca_counter_target',
@@ -89,4 +89,4 @@ export const dmcaCounterTargetTable = pgTable(
     primaryKey({ columns: [table.counterId, table.mangaId] }),
     index('idx_dmca_counter_target_manga_id').on(table.mangaId),
   ],
-).enableRLS()
+)

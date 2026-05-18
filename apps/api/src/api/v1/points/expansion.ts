@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { userExpansionTable } from '@litomi/db/database/supabase/points'
+import { db } from '@litomi/db/database/app/drizzle'
+import { userExpansionTable } from '@litomi/db/database/app/points'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import {
   MAX_BOOKMARKS_PER_USER,

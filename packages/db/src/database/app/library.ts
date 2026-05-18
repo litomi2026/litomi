@@ -19,7 +19,7 @@ export const libraryTable = pgTable(
     isPublic: boolean('is_public').default(false).notNull(),
   },
   (table) => [index('idx_library_user_id').on(table.userId)],
-).enableRLS()
+)
 
 export const libraryItemTable = pgTable(
   'library_item',
@@ -34,7 +34,7 @@ export const libraryItemTable = pgTable(
     primaryKey({ columns: [table.libraryId, table.mangaId] }),
     index('idx_library_item_created_at').on(table.createdAt.desc()),
   ],
-).enableRLS()
+)
 
 export const pinnedLibraryTable = pgTable(
   'pinned_library',
@@ -48,4 +48,4 @@ export const pinnedLibraryTable = pgTable(
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.libraryId] })],
-).enableRLS()
+)

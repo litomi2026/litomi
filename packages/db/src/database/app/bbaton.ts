@@ -24,4 +24,4 @@ export const bbatonVerificationTable = pgTable(
     unique('bbaton_verification_bbaton_user_id_unique').on(table.bbatonUserId),
     index('idx_bbaton_verification_verified_at').on(table.verifiedAt.desc()),
   ],
-).enableRLS()
+)

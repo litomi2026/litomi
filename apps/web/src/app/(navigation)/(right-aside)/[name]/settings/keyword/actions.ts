@@ -1,8 +1,8 @@
 'use server'
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/supabase/notification'
+import { db } from '@litomi/db/database/app/drizzle'
+import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/app/notification'
 import { MAX_CRITERIA_PER_USER } from '@litomi/domain/constants/policy'
 import { captureException } from '@sentry/nextjs'
 import { and, count, eq, sql } from 'drizzle-orm'

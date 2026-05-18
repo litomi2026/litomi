@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { pushSettingsTable, webPushTable } from '@litomi/db/database/supabase/notification'
+import { db } from '@litomi/db/database/app/drizzle'
+import { pushSettingsTable, webPushTable } from '@litomi/db/database/app/notification'
 import { eq } from 'drizzle-orm'
 import { Settings, Smartphone } from 'lucide-react'
 

@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@litomi/db/database/supabase/library'
+import { db } from '@litomi/db/database/app/drizzle'
+import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
 import 'server-only'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'

@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { userTable } from '@litomi/db/database/supabase/user'
+import { db } from '@litomi/db/database/app/drizzle'
+import { userTable } from '@litomi/db/database/app/user'
 import { sql } from 'drizzle-orm'
 
 type Params = {

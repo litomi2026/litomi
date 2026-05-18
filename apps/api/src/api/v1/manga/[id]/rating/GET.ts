@@ -1,5 +1,5 @@
-import { userRatingTable } from '@litomi/db/database/supabase/activity'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { userRatingTable } from '@litomi/db/database/app/activity'
+import { db } from '@litomi/db/database/app/drizzle'
 import 'server-only'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, eq } from 'drizzle-orm'

@@ -1,8 +1,8 @@
 import type { SQL } from 'drizzle-orm'
 
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
-import { bookmarkTable } from '@litomi/db/database/supabase/activity'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { bookmarkTable } from '@litomi/db/database/app/activity'
+import { db } from '@litomi/db/database/app/drizzle'
 import {
   getCollectionItemCursorCondition,
   getCollectionItemOrderByClauses,

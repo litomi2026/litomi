@@ -32,7 +32,7 @@ import {
   SESSION_DEVICE_LABEL_MAX_LENGTH,
   truncateSessionMetadata,
 } from '@litomi/auth/session'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import crypto from 'crypto'
 
 export type RefreshSessionFailure = {

@@ -1,12 +1,12 @@
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateGroupList } from '@litomi/catalog/translation/group'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import {
   DONATION_RECIPIENT_TYPE,
   pointDonationRecipientTable,
   pointDonationTable,
   pointTransactionTable,
-} from '@litomi/db/database/supabase/points'
+} from '@litomi/db/database/app/points'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, inArray, lt, sum } from 'drizzle-orm'

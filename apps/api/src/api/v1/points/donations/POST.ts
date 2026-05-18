@@ -1,11 +1,11 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import {
   DONATION_RECIPIENT_TYPE,
   pointDonationRecipientTable,
   pointDonationTable,
   pointTransactionTable,
   userPointsTable,
-} from '@litomi/db/database/supabase/points'
+} from '@litomi/db/database/app/points'
 import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'

@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@litomi/db/database/supabase/points'
+import { db } from '@litomi/db/database/app/drizzle'
+import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@litomi/db/database/app/points'
 import { COOKIE_DOMAIN } from '@litomi/domain/constants'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { CookieKey } from '@litomi/domain/constants/storage'

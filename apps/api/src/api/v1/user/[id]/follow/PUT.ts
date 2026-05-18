@@ -1,7 +1,7 @@
-import { isPostgresError } from '@litomi/db/database/error'
+import { db } from '@litomi/db/database/app/drizzle'
 import 'server-only'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { userFollowTable } from '@litomi/db/database/supabase/user'
+import { userFollowTable } from '@litomi/db/database/app/user'
+import { isPostgresError } from '@litomi/db/database/error'
 import { Hono } from 'hono'
 import { z } from 'zod'
 

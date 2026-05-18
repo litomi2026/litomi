@@ -1,8 +1,8 @@
 'use server'
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { trustedBrowserTable } from '@litomi/db/database/supabase/two-factor'
+import { db } from '@litomi/db/database/app/drizzle'
+import { trustedBrowserTable } from '@litomi/db/database/app/two-factor'
 import { captureException } from '@sentry/nextjs'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'

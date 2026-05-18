@@ -1,5 +1,5 @@
-import { readingHistoryTable } from '@litomi/db/database/supabase/activity'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { readingHistoryTable } from '@litomi/db/database/app/activity'
+import { db } from '@litomi/db/database/app/drizzle'
 import { sec } from '@litomi/std'
 import { and, count, desc, ne, sql } from 'drizzle-orm'
 import { Eye } from 'lucide-react'

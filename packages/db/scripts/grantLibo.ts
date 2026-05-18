@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { pointTransactionTable, userPointsTable } from '@litomi/db/database/supabase/points'
-import { userTable } from '@litomi/db/database/supabase/user'
+import { db } from '@litomi/db/database/app/drizzle'
+import { pointTransactionTable, userPointsTable } from '@litomi/db/database/app/points'
+import { userTable } from '@litomi/db/database/app/user'
 import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
