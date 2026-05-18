@@ -9,7 +9,6 @@ import { toast } from 'sonner'
 
 import type { ProblemDetailsError } from '@/utils/react-query-error'
 
-import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
@@ -32,10 +31,8 @@ export default function useSignupMutation({ onError }: Params = {}) {
       toast.success(`${loginId} 계정으로 가입했어요`)
 
       if (userId) {
-        amplitude.setUserId(userId)
-        amplitude.track('signup', { loginId, nickname })
         identify(userId)
-        track('signup')
+        track('signup', { loginId, nickname, name })
       }
 
       await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })

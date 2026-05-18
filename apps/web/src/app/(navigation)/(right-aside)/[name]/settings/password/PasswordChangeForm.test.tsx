@@ -37,12 +37,6 @@ mock.module('sonner', () => ({
   },
 }))
 
-mock.module('@/lib/amplitude/browser', () => ({
-  default: {
-    reset: amplitudeResetMock,
-  },
-}))
-
 mock.module('@/lib/analytics/browser', () => ({
   identify: identifyMock,
 }))
@@ -80,7 +74,9 @@ describe('PasswordChangeForm', () => {
       matcher: ({ url }) => url.pathname === '/api/v1/me/password',
       method: 'PATCH',
       response: ({ init }) => {
-        expect(init?.body).toBe(JSON.stringify({ currentPassword: 'Password123', newPassword: 'NewPassword123', token: '123456' }))
+        expect(init?.body).toBe(
+          JSON.stringify({ currentPassword: 'Password123', newPassword: 'NewPassword123', token: '123456' }),
+        )
 
         return jsonResponse({
           clearedCurrentSession: true,
@@ -101,9 +97,9 @@ describe('PasswordChangeForm', () => {
     await user.click(view.getByRole('button', { name: '비밀번호 변경' }))
 
     await waitFor(() => {
-      expect(fetchController.calls.some((call) => call.method === 'PATCH' && call.url.pathname === '/api/v1/me/password')).toBe(
-        true,
-      )
+      expect(
+        fetchController.calls.some((call) => call.method === 'PATCH' && call.url.pathname === '/api/v1/me/password'),
+      ).toBe(true)
     })
   })
 

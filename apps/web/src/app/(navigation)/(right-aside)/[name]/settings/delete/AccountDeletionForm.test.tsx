@@ -37,12 +37,6 @@ mock.module('sonner', () => ({
   },
 }))
 
-mock.module('@/lib/amplitude/browser', () => ({
-  default: {
-    reset: amplitudeResetMock,
-  },
-}))
-
 mock.module('@/lib/analytics/browser', () => ({
   identify: identifyMock,
 }))
