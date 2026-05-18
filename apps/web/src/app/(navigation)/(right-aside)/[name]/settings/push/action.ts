@@ -9,7 +9,7 @@ import { captureException } from '@sentry/nextjs'
 import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
-import { badRequest, conflict, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
+import { badRequest, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import {
@@ -62,12 +62,7 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
   const notificationService = WebPushService.getInstance()
 
   try {
-    const upsertedSubscription = await notificationService.subscribeUser(userId, subscription, userAgent)
-
-    if (!upsertedSubscription) {
-      return conflict('현재 브라우저는 이미 등록되어 있어요')
-    }
-
+    await notificationService.registerPushSubscription(userId, subscription, userAgent)
     revalidatePath(`/@${username}/settings`)
     return created('이 브라우저의 푸시 알림을 활성화했어요')
   } catch (error) {

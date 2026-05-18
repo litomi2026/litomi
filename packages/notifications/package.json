@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@litomi/db": "workspace:*",
-    "@litomi/domain": "workspace:*",
     "@litomi/env": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "server-only": "^0.0.1",
