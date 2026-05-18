@@ -24,7 +24,7 @@ export async function applyAppFunctions(url: string, options: ApplyAppFunctionsO
     prepare: false,
     ssl: process.env.APP_POSTGRES_CERTIFICATE
       ? { ca: process.env.APP_POSTGRES_CERTIFICATE, rejectUnauthorized: true }
-      : 'require',
+      : 'prefer',
   })
 
   try {

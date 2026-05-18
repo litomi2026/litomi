@@ -1,101 +1,28 @@
 # litomi
 
-만화 웹 뷰어예요. 안전하고 쾌적한 감상 경험을 목표로 해요.  
-코드는 항상 공개해서 오픈 소스로 운영하려고 해요.
+리토미는 히토미 미러 만화 웹 뷰어예요. 안전하고 쾌적한 감상 경험을 목표로 하고 코드는 항상 공개해서 오픈 소스로 운영하려고 해요.
 
 English README: [`README.en.md`](README.en.md)
 
-## 미리보기
+## Preview
 
-![검색 화면](public/image/search.webp)
-![북마크 화면](public/image/bookmark.webp)
+![검색 화면](apps/web/public/image/desktop-search.avif)
+![북마크 화면](apps/web/public/image/desktop-bookmark.avif)
 
-## 기능
+## Requirements
 
-- **감상(뷰어)**
-  - 터치보기, 스크롤보기
-  - 한 쪽 보기, 두 쪽 보기
-  - 상하 넘기기, 좌우 넘기기
-  - 상하 스와이프로 밝기 조절
-  - 좌우 스와이프로 페이지 넘기기
-  - 이미지 레이아웃 조정
-  - 자동 넘기기
-  - 마지막 감상 페이지부터 이어서 보기
-  - 미리보기(썸네일)
-  - 터치보기: 스크롤로 페이지 넘기기
-  - 터치보기: meta + 스크롤로 이미지 확대
-  - 스크롤보기: 이미지 너비 조절
-- **검색/탐색**
-  - 카드 보기, 이미지(그림) 보기
-  - 고급 필터(조회수/페이지/별점/기간 등 범위 조건)
-  - 정렬(인기순/오래된 순/랜덤)
-  - 인기 검색어
-  - 최근 검색어
-  - 신작
-  - 랜덤(20초마다 자동 갱신)
-  - 이 작품과 함께 좋아한 작품 추천(별점 기반)
-  - 태그 탐색(카테고리별) + 태그 한글 번역
-- **서재/기록**
-  - 북마크
-  - 북마크 백업: 다운로드/업로드(JSON)
-  - 감상 기록
-  - 작품 평가(별점) + 평가 목록
-  - 서재: 북마크 폴더별 정리
-  - 서재 일괄 작업: 복사/이동/제거
-  - 데이터 내보내기(비밀번호 확인): 북마크/기록/별점/서재/검열 설정
-- **검열**
-  - 키워드로 작품 검열
-  - 규칙 가져오기/내보내기(JSON/CSV)
-- **알림**
-  - 알림 센터: 읽음 처리/삭제/필터링(미확인/신규 작품 등)
-  - 키워드 알림
-  - 웹 푸시 알림
-- **인기/랭킹**
-  - 조회수/북마크 등의 기간별 인기 순위
-  - 실시간 인기 페이지 순위 (Google Analytics Data API)
-- **이야기(포스트)**
-  - 추천 타임라인
-  - 글/이미지 포스트
-  - 좋아요/리포스트/댓글/조회수
-- **계정/보안**
-  - 회원가입, 로그인
-  - 성인인증(BBaton)
-  - 패스키 로그인(WebAuthn)
-  - 2단계 인증(TOTP)
-- **안전**
-  - 작품 신고
-- **리보(포인트)**
-  - 적립/상점/내역
-- **앱 설치**
-  - PWA 설치(홈 화면에 추가)
-  - Android APK 설치 안내
+- Bun 1.3
+- Docker 29.3
 
-## 기술 스택
+## Getting Started
 
-- Next.js (App Router)
-- React
-- TypeScript
-- Tailwind CSS
-- Drizzle ORM
-- TanStack Query
-- Hono (Backend)
-
-## 로컬 개발 (Quickstart)
-
-로컬 개발은 **Postgres + Redis(docker compose) + Backend + Web**을 모두 띄우는 구성이에요.
-
-### 준비물
-
-- Bun (권장: `package.json`의 `devDependencies.bun` 버전 근처)
-- Docker + Docker Compose
-
-### 1) 의존성 설치
+### 1. 의존성 설치
 
 ```bash
 bun install
 ```
 
-### 2) Postgres/Redis 실행 (docker compose)
+### 2. Postgres/Redis 실행
 
 ```bash
 bun run db:reset
@@ -106,7 +33,8 @@ bun run db:reset
 - Web: `3000`
 - Proxy: `3001`
 - Backend: `3002`
-- Postgres: `5434`
+- App Postgres: `5434`
+- Catalog Postgres: `5435`
 - Serverless Redis HTTP: `8079`
 
 > 참고: `bun run db:reset`은 `docker compose down -v`를 포함해서 **DB 볼륨이 초기화돼고 DB 스키마 반영까지 진행돼요**. 처음부터 다시 시작할 때만 사용해 주세요.
@@ -116,50 +44,6 @@ bun run db:reset
 ```
 bun dev
 ```
-
-## 기타 스크립트
-
-### 1) DB 스키마 반영
-
-```bash
-# Supabase 테이블/인덱스(Drizzle) + SQL 함수 동기화
-bun --filter=@litomi/db push
-
-# Aiven 스키마
-bun --filter=@litomi/db push:aiven
-```
-
-`bun --filter=@litomi/db push`는 Drizzle schema를 먼저 적용한 뒤, `packages/db/src/database/supabase/functions/*.sql`에 있는 Postgres 함수를 이름순으로 이어서 반영해요. 각 함수는 `create or replace function`으로 관리해서 멱등성을 유지하고, cron 스케줄은 Supabase Dashboard UI에서 별도로 관리해요.
-
-### 2) Backend 실행
-
-```bash
-bun --filter=@litomi/api dev
-```
-
-### 3) 모두 실행
-
-```bash
-bun dev
-```
-
-## 테스트
-
-- 문서: [`docs/testing.md`](docs/testing.md)
-- 대표 커맨드:
-  - `bun test`
-  - `bun run test:e2e`
-
-## 모바일
-
-- 문서: [`docs/mobile-distribution.md`](docs/mobile-distribution.md)
-
-## 배포
-
-- **Vercel (Web)**: Next.js 앱 배포에 사용해요.
-- **Cloud Run (Job)**: 주기 작업(데이터 동기화/알림)을 배포할 때 사용해요.
-  - [`infra/cloud-run/catalog-ingest/README.md`](infra/cloud-run/catalog-ingest/README.md)
-  - [`infra/cloud-run/notification-dispatch/README.md`](infra/cloud-run/notification-dispatch/README.md)
 
 ## 기여하기
 
