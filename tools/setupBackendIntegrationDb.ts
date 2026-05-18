@@ -1,11 +1,15 @@
 import dotenv from 'dotenv'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import postgres from 'postgres'
 
 import { applyAppFunctions } from '../packages/db/scripts/app/applyAppFunction'
 
-dotenv.config({ path: 'packages/db/.env.local' })
+const repositoryRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
+const dbPackageDirectory = path.join(repositoryRoot, 'packages/db')
+
+dotenv.config({ path: path.join(dbPackageDirectory, '.env.local') })
 
 const DEFAULT_BACKEND_INTEGRATION_POSTGRES_URL =
   'postgresql://test_user:test_password@localhost:5434/litomi_backend_integration_test'
@@ -22,18 +26,26 @@ console.log(`[backend-test-db] recreating database ${testDatabaseName}`)
 await recreateDatabase(testDatabaseUrl, testDatabaseName)
 
 console.log('[backend-test-db] applying Drizzle schema')
-await runCommand(['bunx', 'drizzle-kit', 'push', '--config=packages/db/drizzle.app.config.ts', '--force'], {
-  NODE_OPTIONS: '--conditions=react-server',
-  APP_POSTGRES_URL_DIRECT: testDatabaseUrl,
+await runCommand(['bunx', 'drizzle-kit', 'push', '--config=drizzle.app.config.ts', '--force'], {
+  cwd: dbPackageDirectory,
+  env: {
+    NODE_OPTIONS: '--conditions=react-server',
+    APP_POSTGRES_URL_DIRECT: testDatabaseUrl,
+  },
 })
 
 console.log('[backend-test-db] applying app function SQL')
 await applyAppFunctions(testDatabaseUrl, {
-  directory: path.join(process.cwd(), 'packages/db/src/database/app/functions'),
+  directory: path.join(dbPackageDirectory, 'src/database/app/functions'),
   log: (message) => console.log(`[backend-test-db] ${message}`),
 })
 
 console.log(`[backend-test-db] ready: ${testDatabaseName}`)
+
+type RunCommandOptions = {
+  cwd?: string
+  env?: Record<string, string>
+}
 
 function createPostgresClient(rawUrl: string) {
   const url = new URL(rawUrl)
@@ -86,12 +98,13 @@ async function recreateDatabase(rawUrl: string, databaseName: string) {
   }
 }
 
-async function runCommand(command: string[], envOverrides: Record<string, string> = {}) {
+async function runCommand(command: string[], options: RunCommandOptions = {}) {
   await new Promise<void>((resolve, reject) => {
     const child = spawn(command[0]!, command.slice(1), {
+      cwd: options.cwd,
       env: {
         ...process.env,
-        ...envOverrides,
+        ...options.env,
       },
       stdio: 'inherit',
     })
