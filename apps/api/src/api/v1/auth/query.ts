@@ -1,6 +1,6 @@
-import { bbatonVerificationTable } from '@litomi/db/database/supabase/bbaton'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { userTable } from '@litomi/db/database/supabase/user'
+import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
+import { db } from '@litomi/db/database/app/drizzle'
+import { userTable } from '@litomi/db/database/app/user'
 import { eq } from 'drizzle-orm'
 
 export type AuthenticatedUserProfile = {

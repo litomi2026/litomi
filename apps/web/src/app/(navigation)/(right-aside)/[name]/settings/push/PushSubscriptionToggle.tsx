@@ -1,6 +1,6 @@
 'use client'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { getUsernameFromParam } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
 import { useParams } from 'next/navigation'

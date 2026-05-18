@@ -1,6 +1,6 @@
 'use client'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'

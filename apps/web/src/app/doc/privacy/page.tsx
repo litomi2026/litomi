@@ -156,20 +156,9 @@ export default async function Page() {
               4. 외부 서비스 이용(제3자 제공/위탁)
             </h2>
             <p className="text-sm leading-relaxed text-zinc-300">
-              본 서비스는 안정적인 제공을 위해 아래와 같은 외부 서비스를 이용할 수 있습니다. 외부 서비스는 각 사업자의
-              정책에 따라 데이터를 처리할 수 있습니다.
+              본 서비스는 안정적인 제공을 위해 외부 서비스를 이용할 수 있습니다. 외부 서비스는 각 사업자의 정책에 따라
+              데이터를 처리할 수 있습니다.
             </p>
-            <ul className="list-disc list-inside space-y-2 text-sm text-zinc-300 marker:text-zinc-600">
-              <li>
-                <span className="font-medium text-zinc-200">보안/인프라</span>: Cloudflare, Vercel, Supabase
-              </li>
-              <li>
-                <span className="font-medium text-zinc-200">분석</span>: Google Analytics, Amplitude
-              </li>
-              <li>
-                <span className="font-medium text-zinc-200">광고</span>: Adsterra 등 제3자 광고 네트워크
-              </li>
-            </ul>
             <p className="text-sm leading-relaxed text-zinc-300">
               아래의 경우에도 대한민국 법관으로부터 적법한 절차에 따라 압수·수색 영장이 발부되기 전까진 어느 주체에게도
               제공하지 않습니다.

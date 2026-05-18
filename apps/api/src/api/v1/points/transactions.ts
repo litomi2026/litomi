@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { pointTransactionTable } from '@litomi/db/database/supabase/points'
+import { db } from '@litomi/db/database/app/drizzle'
+import { pointTransactionTable } from '@litomi/db/database/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'

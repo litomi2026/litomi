@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { userFollowTable } from '@litomi/db/database/supabase/user'
+import { db } from '@litomi/db/database/app/drizzle'
+import { userFollowTable } from '@litomi/db/database/app/user'
 import 'server-only'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'

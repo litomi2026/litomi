@@ -2,7 +2,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showLoginRequiredToast } from '@/lib/toast'
@@ -55,6 +54,9 @@ export function getFormField<T extends ActionResponse>(response: T | undefined, 
   }
 }
 
+/**
+ * @deprecated
+ */
 export default function useServerAction<T extends ActionResponse, TActionArgs extends unknown[]>({
   action,
   onSuccess,
@@ -78,7 +80,6 @@ export default function useServerAction<T extends ActionResponse, TActionArgs ex
         if (!response.ok) {
           if (response.status === 401) {
             queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
-            amplitude.reset()
             identify(null)
 
             if (typeof response.error === 'string') {

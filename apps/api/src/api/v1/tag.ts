@@ -1,7 +1,7 @@
 import { Locale } from '@litomi/catalog/translation/common'
 import { translateTag } from '@litomi/catalog/translation/tag'
-import { aivenDB } from '@litomi/db/database/aiven/drizzle'
-import { mangaTagTable, tagTable } from '@litomi/db/database/aiven/schema'
+import { catalogDB } from '@litomi/db/database/catalog/drizzle'
+import { mangaTagTable, tagTable } from '@litomi/db/database/catalog/schema'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { count, desc, eq } from 'drizzle-orm'
@@ -55,7 +55,7 @@ tagRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
   const offset = (page - 1) * limit
 
   const [tagsWithCount, totalCountRow] = await Promise.all([
-    aivenDB
+    catalogDB
       .select({
         value: tagTable.value,
         count: count(mangaTagTable.mangaId),
@@ -67,7 +67,7 @@ tagRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
       .orderBy(({ count }) => [desc(count), tagTable.value])
       .limit(limit)
       .offset(offset),
-    aivenDB.select({ count: count() }).from(tagTable).where(eq(tagTable.category, categoryNumber)),
+    catalogDB.select({ count: count() }).from(tagTable).where(eq(tagTable.category, categoryNumber)),
   ])
 
   const totalCount = totalCountRow[0]?.count ?? 0

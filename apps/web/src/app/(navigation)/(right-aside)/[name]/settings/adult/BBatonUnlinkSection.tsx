@@ -2,7 +2,7 @@
 
 import type { GETV1MeResponse, POSTV1BBatonUnlinkResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'

@@ -5,7 +5,7 @@ import type {
   POSTV1BookmarkResponse,
 } from '@litomi/contracts'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 

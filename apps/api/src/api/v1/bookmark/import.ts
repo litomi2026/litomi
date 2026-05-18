@@ -1,5 +1,5 @@
-import { bookmarkTable } from '@litomi/db/database/supabase/activity'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { bookmarkTable } from '@litomi/db/database/app/activity'
+import { db } from '@litomi/db/database/app/drizzle'
 import 'server-only'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'

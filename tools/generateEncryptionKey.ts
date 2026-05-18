@@ -11,7 +11,7 @@ console.log('🔐 Generating secure encryption key for TOTP...\n')
 // Generate a 32-byte (256-bit) random key
 const key = crypto.randomBytes(32).toString('hex')
 
-console.log('Add this to your .env file:')
+console.log('Add this to the package .env file that runs auth code:')
 console.log('─'.repeat(80))
 console.log(`TOTP_ENCRYPTION_KEY=${key}`)
 console.log('─'.repeat(80))

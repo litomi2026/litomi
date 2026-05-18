@@ -3,7 +3,7 @@
 import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 import type { ReaderNoticeHandle } from '#reader/model/readerNotice'
 
-import { useReaderMessages, useReaderNoticeHandler } from '#reader/readerRuntime'
+import { useReaderMessages, useReaderNoticeHandler } from '#reader/context'
 import { useReaderStore } from '#reader/state/readerStore'
 import ms from 'ms'
 import { useEffect, useEffectEvent, useRef } from 'react'

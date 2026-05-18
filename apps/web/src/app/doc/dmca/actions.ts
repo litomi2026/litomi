@@ -5,8 +5,8 @@ import {
   dmcaCounterTargetTable,
   dmcaNoticeTable,
   dmcaNoticeTargetTable,
-} from '@litomi/db/database/supabase/dmca'
-import { db } from '@litomi/db/database/supabase/drizzle'
+} from '@litomi/db/database/app/dmca'
+import { db } from '@litomi/db/database/app/drizzle'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { normalizeString } from '@litomi/std'
 import { captureException } from '@sentry/nextjs'

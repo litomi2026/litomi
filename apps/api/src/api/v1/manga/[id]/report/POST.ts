@@ -1,6 +1,6 @@
+import { db } from '@litomi/db/database/app/drizzle'
+import { mangaReportTable } from '@litomi/db/database/app/report'
 import { isPostgresError } from '@litomi/db/database/error'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { mangaReportTable } from '@litomi/db/database/supabase/report'
 import 'server-only'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { lt } from 'drizzle-orm'

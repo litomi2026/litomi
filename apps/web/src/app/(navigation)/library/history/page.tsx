@@ -1,6 +1,6 @@
 import { getAccessTokenClaimsFromCookie } from '@litomi/auth/cookie'
-import { readingHistoryTable } from '@litomi/db/database/supabase/activity'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { readingHistoryTable } from '@litomi/db/database/app/activity'
+import { db } from '@litomi/db/database/app/drizzle'
 import { encodeReadingHistoryCursor } from '@litomi/domain/common/cursor'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { READING_HISTORY_PER_PAGE } from '@litomi/domain/constants/policy'

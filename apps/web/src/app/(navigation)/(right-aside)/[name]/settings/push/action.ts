@@ -1,8 +1,8 @@
 'use server'
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { notificationTable, pushSettingsTable, webPushTable } from '@litomi/db/database/supabase/notification'
+import { db } from '@litomi/db/database/app/drizzle'
+import { notificationTable, pushSettingsTable, webPushTable } from '@litomi/db/database/app/notification'
 import { NotificationType } from '@litomi/domain/database/enum'
 import { WebPushService } from '@litomi/notifications'
 import { captureException } from '@sentry/nextjs'

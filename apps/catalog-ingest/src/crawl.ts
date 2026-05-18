@@ -3,8 +3,8 @@ import type { LabeledValue, Manga } from '@litomi/domain/types/manga'
 import { Locale } from '@litomi/catalog/translation/common'
 import { fetchMangaFromMultiSources } from '@litomi/crawler/common/manga'
 import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
-import { aivenDB } from '@litomi/db/database/aiven/drizzle'
-import { mangaTable } from '@litomi/db/database/aiven/schema'
+import { catalogDB } from '@litomi/db/database/catalog/drizzle'
+import { mangaTable } from '@litomi/db/database/catalog/schema'
 import { MangaType, TagCategory, tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import dayjs from 'dayjs'
 import { max, min, sql } from 'drizzle-orm'
@@ -218,7 +218,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
       createdAt: manga.date ? new Date(manga.date) : null,
     }))
 
-    const result = await aivenDB
+    const result = await catalogDB
       .insert(mangaTable)
       .values(mangaValues)
       .onConflictDoUpdate({
@@ -270,7 +270,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await aivenDB.execute(sql`
+      await catalogDB.execute(sql`
           WITH inserted_artists AS (
             INSERT INTO artist (value)
             VALUES ${artistValues}
@@ -309,7 +309,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await aivenDB.execute(sql`
+      await catalogDB.execute(sql`
           WITH inserted_characters AS (
             INSERT INTO character (value)
             VALUES ${characterValues}
@@ -358,7 +358,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`), (`,
       )})`
 
-      await aivenDB.execute(sql`
+      await catalogDB.execute(sql`
           WITH inserted_tags AS (
             INSERT INTO tag (value, category)
             VALUES ${tagInsertValues}
@@ -405,7 +405,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await aivenDB.execute(sql`
+      await catalogDB.execute(sql`
           WITH inserted_series AS (
             INSERT INTO series (value)
             VALUES ${seriesValues}
@@ -443,7 +443,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await aivenDB.execute(sql`
+      await catalogDB.execute(sql`
           WITH inserted_groups AS (
             INSERT INTO "group" (value)
             VALUES ${groupValues}
@@ -481,7 +481,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await aivenDB.execute(sql`
+      await catalogDB.execute(sql`
           WITH inserted_languages AS (
             INSERT INTO language (value)
             VALUES ${languageValues}
@@ -521,7 +521,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await aivenDB.execute(sql`
+      await catalogDB.execute(sql`
           WITH inserted_uploaders AS (
             INSERT INTO uploader (value)
             VALUES ${uploaderValues}
@@ -604,7 +604,7 @@ async function getExistingMangaIdRange(
   }
 
   try {
-    const result = await aivenDB
+    const result = await catalogDB
       .select({
         lowestId: min(mangaTable.id),
         highestId: max(mangaTable.id),
@@ -702,7 +702,7 @@ async function saveMangaToDatabase(manga: Manga) {
     // NOTE: neon-http driver doesn't support transactions, so we execute operations sequentially
     // This is less atomic but should work for the crawl script
     // Insert or update main manga record
-    await aivenDB
+    await catalogDB
       .insert(mangaTable)
       .values({
         id: manga.id,
@@ -729,7 +729,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.artists && manga.artists.length > 0) {
       for (const artist of manga.artists) {
         // Single query to handle both entity and junction table
-        await aivenDB.execute(sql`
+        await catalogDB.execute(sql`
             WITH artist_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO artist (value)
@@ -754,7 +754,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.characters && manga.characters.length > 0) {
       for (const character of manga.characters) {
         // Single query to handle both entity and junction table
-        await aivenDB.execute(sql`
+        await catalogDB.execute(sql`
             WITH character_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO character (value)
@@ -780,7 +780,7 @@ async function saveMangaToDatabase(manga: Manga) {
       for (const tag of manga.tags) {
         const categoryNum = tagCategoryNameToInt[tag.category] ?? TagCategory.OTHER
         // Single query to handle both entity and junction table
-        await aivenDB.execute(sql`
+        await catalogDB.execute(sql`
             WITH tag_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO tag (value, category)
@@ -805,7 +805,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.series && manga.series.length > 0) {
       for (const serie of manga.series) {
         // Single query to handle both entity and junction table
-        await aivenDB.execute(sql`
+        await catalogDB.execute(sql`
             WITH series_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO series (value)
@@ -830,7 +830,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.group && manga.group.length > 0) {
       for (const grp of manga.group) {
         // Single query to handle both entity and junction table
-        await aivenDB.execute(sql`
+        await catalogDB.execute(sql`
             WITH group_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO "group" (value)
@@ -855,7 +855,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.languages && manga.languages.length > 0) {
       for (const language of manga.languages) {
         // Single query to handle both entity and junction table
-        await aivenDB.execute(sql`
+        await catalogDB.execute(sql`
             WITH language_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO language (value)
@@ -879,7 +879,7 @@ async function saveMangaToDatabase(manga: Manga) {
     // Handle uploader
     if (manga.uploader) {
       // Single query to handle both entity and junction table
-      await aivenDB.execute(sql`
+      await catalogDB.execute(sql`
           WITH uploader_id AS (
             -- First try to insert, returns ID if successful
             INSERT INTO uploader (value)

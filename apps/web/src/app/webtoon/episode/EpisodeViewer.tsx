@@ -2,7 +2,7 @@
 
 import { WebtoonEpisode } from '@litomi/crawler/crawler/webtoon/types'
 import { Manga } from '@litomi/domain/types/manga'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'

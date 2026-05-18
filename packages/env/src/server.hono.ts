@@ -1,0 +1,13 @@
+import { createEnv } from '@t3-oss/env-core'
+import { z } from 'zod'
+
+export const env = createEnv({
+  server: {
+    ADSTERRA_API_KEY: z.string().optional(),
+    BBATON_CLIENT_ID: z.string().default('test-bbaton-client-id'),
+    BBATON_CLIENT_SECRET: z.string().default('test-bbaton-client-secret'),
+    GA_PROPERTY_ID: z.string().optional(),
+  },
+  runtimeEnv: process.env,
+  emptyStringAsUndefined: true,
+})

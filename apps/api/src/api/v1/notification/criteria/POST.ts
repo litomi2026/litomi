@@ -1,7 +1,7 @@
 import { normalizeValue } from '@litomi/catalog/translation/common'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import 'server-only'
-import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/supabase/notification'
+import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/app/notification'
 import {
   MAX_CRITERIA_NAME_LENGTH,
   MAX_CRITERIA_PER_USER,

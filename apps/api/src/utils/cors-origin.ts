@@ -1,4 +1,4 @@
-import { env } from '@litomi/env/env/server.common'
+import { env } from '@litomi/env/server.common'
 
 const { APP_ORIGIN } = env
 

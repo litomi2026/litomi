@@ -1,5 +1,5 @@
-import { userRatingTable } from '@litomi/db/database/supabase/activity'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { userRatingTable } from '@litomi/db/database/app/activity'
+import { db } from '@litomi/db/database/app/drizzle'
 import { sec } from '@litomi/std'
 import { count, eq } from 'drizzle-orm'
 import { BarChart3, Star } from 'lucide-react'

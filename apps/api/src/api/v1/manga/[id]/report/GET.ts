@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { mangaReportTable } from '@litomi/db/database/supabase/report'
+import { db } from '@litomi/db/database/app/drizzle'
+import { mangaReportTable } from '@litomi/db/database/app/report'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import 'server-only'
 import { and, eq } from 'drizzle-orm'

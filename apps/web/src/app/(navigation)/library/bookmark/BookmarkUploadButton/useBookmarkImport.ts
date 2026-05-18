@@ -1,6 +1,6 @@
 import type { POSTV1BookmarkImportResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 

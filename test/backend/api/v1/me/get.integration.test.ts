@@ -1,6 +1,6 @@
 import { addSeconds, REFRESH_SESSION_REUSE_GRACE_SECONDS } from '@litomi/auth/session'
-import { authSessionTokenTable } from '@litomi/db/database/supabase/auth'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { authSessionTokenTable } from '@litomi/db/database/app/auth'
+import { db } from '@litomi/db/database/app/drizzle'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { getSetCookieNames, getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import {

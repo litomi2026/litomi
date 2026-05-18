@@ -1,7 +1,7 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
 import { Locale } from '@litomi/catalog/translation/common'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'

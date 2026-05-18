@@ -1,21 +1,24 @@
 import dotenv from 'dotenv'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import postgres from 'postgres'
 
-import { applySupabaseFunctions, withLocalSslDisabled } from '../packages/db/scripts/supabase/applySupabaseFunctions'
+import { applyAppFunctions } from '../packages/db/scripts/app/applyAppFunction'
 
-dotenv.config({ path: '.env.development' })
+const repositoryRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
+const dbPackageDirectory = path.join(repositoryRoot, 'packages/db')
+
+dotenv.config({ path: path.join(dbPackageDirectory, '.env.local') })
 
 const DEFAULT_BACKEND_INTEGRATION_POSTGRES_URL =
   'postgresql://test_user:test_password@localhost:5434/litomi_backend_integration_test'
 
-const rawTestDatabaseUrl = process.env.BACKEND_INTEGRATION_POSTGRES_URL ?? DEFAULT_BACKEND_INTEGRATION_POSTGRES_URL
-const testDatabaseUrl = withLocalSslDisabled(rawTestDatabaseUrl)
+const testDatabaseUrl = process.env.BACKEND_INTEGRATION_POSTGRES_URL ?? DEFAULT_BACKEND_INTEGRATION_POSTGRES_URL
 const testDatabaseName = getDatabaseName(testDatabaseUrl)
 
 if (!testDatabaseName) {
-  console.error(`Could not resolve a database name from BACKEND_INTEGRATION_POSTGRES_URL: ${rawTestDatabaseUrl}`)
+  console.error(`Could not resolve a database name from BACKEND_INTEGRATION_POSTGRES_URL: ${testDatabaseUrl}`)
   process.exit(1)
 }
 
@@ -23,18 +26,26 @@ console.log(`[backend-test-db] recreating database ${testDatabaseName}`)
 await recreateDatabase(testDatabaseUrl, testDatabaseName)
 
 console.log('[backend-test-db] applying Drizzle schema')
-await runCommand(['bunx', 'drizzle-kit', 'push', '--config=packages/db/drizzle.supabase.config.ts', '--force'], {
-  NODE_OPTIONS: '--conditions=react-server',
-  POSTGRES_URL_DIRECT: testDatabaseUrl,
+await runCommand(['bunx', 'drizzle-kit', 'push', '--config=drizzle.app.config.ts', '--force'], {
+  cwd: dbPackageDirectory,
+  env: {
+    NODE_OPTIONS: '--conditions=react-server',
+    APP_POSTGRES_URL_DIRECT: testDatabaseUrl,
+  },
 })
 
-console.log('[backend-test-db] applying Supabase function SQL')
-await applySupabaseFunctions(testDatabaseUrl, {
-  directory: path.join(process.cwd(), 'packages/db/src/database/supabase/functions'),
+console.log('[backend-test-db] applying app function SQL')
+await applyAppFunctions(testDatabaseUrl, {
+  directory: path.join(dbPackageDirectory, 'src/database/app/functions'),
   log: (message) => console.log(`[backend-test-db] ${message}`),
 })
 
 console.log(`[backend-test-db] ready: ${testDatabaseName}`)
+
+type RunCommandOptions = {
+  cwd?: string
+  env?: Record<string, string>
+}
 
 function createPostgresClient(rawUrl: string) {
   const url = new URL(rawUrl)
@@ -87,12 +98,13 @@ async function recreateDatabase(rawUrl: string, databaseName: string) {
   }
 }
 
-async function runCommand(command: string[], envOverrides: Record<string, string> = {}) {
+async function runCommand(command: string[], options: RunCommandOptions = {}) {
   await new Promise<void>((resolve, reject) => {
     const child = spawn(command[0]!, command.slice(1), {
+      cwd: options.cwd,
       env: {
         ...process.env,
-        ...envOverrides,
+        ...options.env,
       },
       stdio: 'inherit',
     })

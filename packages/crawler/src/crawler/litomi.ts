@@ -7,7 +7,7 @@ import { translateLanguageList } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
-import { aivenDB } from '@litomi/db/database/aiven/drizzle'
+import { catalogDB } from '@litomi/db/database/catalog/drizzle'
 import {
   artistTable,
   characterTable,
@@ -24,7 +24,7 @@ import {
   seriesTable,
   tagTable,
   uploaderTable,
-} from '@litomi/db/database/neon/schema'
+} from '@litomi/db/database/catalog/schema'
 import { tagCategoryIntToName } from '@litomi/domain/database/enum'
 import { sql } from 'drizzle-orm'
 import ms from 'ms'
@@ -126,7 +126,7 @@ class LitomiClient {
   }
 
   private prepareMangaQuery() {
-    return aivenDB
+    return catalogDB
       .select({
         id: mangaTable.id,
         title: mangaTable.title,

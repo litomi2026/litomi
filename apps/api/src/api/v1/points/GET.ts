@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { userPointsTable } from '@litomi/db/database/supabase/points'
+import { db } from '@litomi/db/database/app/drizzle'
+import { userPointsTable } from '@litomi/db/database/app/points'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

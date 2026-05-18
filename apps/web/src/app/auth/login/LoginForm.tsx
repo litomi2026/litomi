@@ -21,7 +21,6 @@ import type { ProblemDetailsError } from '@/utils/react-query-error'
 import IconLogo from '@/components/icons/LogoLitomi'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
@@ -143,10 +142,8 @@ export default function LoginForm() {
     setPkceChallenge(null)
 
     if (id) {
-      amplitude.setUserId(id)
-      amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
       identify(id)
-      track('login')
+      track('login', { loginId, lastLoginAt, lastLogoutAt })
     }
 
     const me = await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })

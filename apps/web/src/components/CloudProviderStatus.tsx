@@ -1,12 +1,13 @@
 'use client'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import ms from 'ms'
 import { useEffect, useState } from 'react'
 
 type ServiceStatus = 'critical' | 'major' | 'minor' | 'none' | 'unknown'
 
 interface StatusData {
+  aiven: ServiceStatus
   api: ServiceStatus
   lastChecked: Date | null
   litomi: ServiceStatus
@@ -37,6 +38,7 @@ function toServiceStatus(indicator: string | undefined): ServiceStatus {
 }
 
 const STATUS_ENDPOINTS = {
+  aiven: 'https://status.aiven.io/api/v2/status.json',
   supabase: 'https://status.supabase.com/api/v2/status.json',
   vercel: 'https://www.vercel-status.com/api/v2/status.json',
   api: `${env.NEXT_PUBLIC_API_ORIGIN}/health`,
@@ -65,6 +67,7 @@ interface CloudProviderStatusProps {
 
 export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderStatusProps) {
   const [status, setStatus] = useState<StatusData>({
+    aiven: 'unknown',
     api: 'unknown',
     litomi: 'unknown',
     supabase: 'unknown',
@@ -75,7 +78,7 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
   useEffect(() => {
     async function checkStatus() {
       try {
-        const [supabaseRes, vercelRes, apiStatus, litomiStatus] = await Promise.all([
+        const [supabaseRes, vercelRes, apiStatus, litomiStatus, aivenRes] = await Promise.all([
           fetch(STATUS_ENDPOINTS.supabase, { cache: 'no-store' })
             .then((res) => res.json() as Promise<StatusPageResponse>)
             .catch(() => null),
@@ -92,9 +95,13 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
           fetch(STATUS_ENDPOINTS.litomi, { cache: 'no-store' })
             .then((res) => (res.ok ? 'none' : 'critical') as ServiceStatus)
             .catch(() => 'critical' as ServiceStatus),
+          fetch(STATUS_ENDPOINTS.aiven, { cache: 'no-store' })
+            .then((res) => res.json() as Promise<StatusPageResponse>)
+            .catch(() => null),
         ])
 
         setStatus({
+          aiven: toServiceStatus(aivenRes?.status?.indicator),
           api: apiStatus,
           litomi: litomiStatus,
           supabase: toServiceStatus(supabaseRes?.status?.indicator),
@@ -130,6 +137,7 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
     <details className="my-4 text-sm">
       <summary className="flex items-center gap-2 cursor-pointer w-fit mx-auto text-zinc-400 hover:text-zinc-300 transition">
         <span className="flex items-center gap-1">
+          <StatusDot status={status.aiven} />
           <StatusDot status={status.supabase} />
           <StatusDot status={status.vercel} />
           <StatusDot status={status.api} />
@@ -138,6 +146,7 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
         <span className="underline decoration-dotted underline-offset-4">시스템 상태 {hasIssues && '확인'}</span>
       </summary>
       <div className="mt-3 p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs space-y-2">
+        <ServiceStatusRow name="외부 데이터베이스" status={status.aiven} />
         <ServiceStatusRow name="외부 데이터베이스" status={status.supabase} />
         <ServiceStatusRow name="외부 서버 (Vercel)" status={status.vercel} />
         <ServiceStatusRow name="리토미 API 서버" status={status.api} />

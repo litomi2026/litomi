@@ -4,7 +4,7 @@ import type { JWTPayload } from 'jose'
 
 import { APP_ORIGIN } from '@litomi/domain/constants'
 import { CookieKey } from '@litomi/domain/constants/storage'
-import { env } from '@litomi/env/env/server.common'
+import { env } from '@litomi/env/server.common'
 import { sec } from '@litomi/std'
 import { jwtVerify, SignJWT } from 'jose'
 

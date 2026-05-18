@@ -21,7 +21,7 @@ brew install terraform
 
 2. **Configure your environment**:
 
-   Edit `.env` file with your Cloudflare API token:
+   Copy `.env.example` to `.env`, then edit it with your Cloudflare API token:
 
 ```bash
 CLOUDFLARE_API_TOKEN="your-api-token-here"

@@ -6,7 +6,7 @@ import {
   handleRouteError,
 } from '@litomi/crawler/crawler/proxy-utils'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { chance, sec } from '@litomi/std'
 import { waitUntil } from '@vercel/functions'
 

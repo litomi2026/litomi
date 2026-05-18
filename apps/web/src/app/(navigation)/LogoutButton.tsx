@@ -4,7 +4,6 @@ import { LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import amplitude from '@/lib/amplitude/browser'
 import { identify, track } from '@/lib/analytics/browser'
 import useLogoutMutation from '@/query/useLogoutMutation'
 
@@ -15,8 +14,6 @@ export default function LogoutButton() {
     logout(undefined, {
       onSuccess: ({ loginId }) => {
         toast.info(loginId ? `${loginId} 계정에서 로그아웃했어요` : '로그아웃했어요')
-        amplitude.track('logout')
-        amplitude.reset()
         identify(null)
         track('logout')
       },

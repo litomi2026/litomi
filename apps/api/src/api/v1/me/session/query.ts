@@ -1,6 +1,6 @@
-import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/supabase/auth'
+import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/app/auth'
 import 'server-only'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import { and, eq, isNull, ne } from 'drizzle-orm'
 
 type SessionFamilyWriteExecutor = Pick<Parameters<Parameters<typeof db.transaction>[0]>[0], 'update'> | Pick<typeof db, 'update'>

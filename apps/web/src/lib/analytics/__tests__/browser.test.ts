@@ -27,7 +27,7 @@ mock.module('@next/third-parties/google', () => ({
   sendGTMEvent: sendGTMEventMock,
 }))
 
-mock.module('@litomi/env/env/client', () => ({
+mock.module('@litomi/env/client', () => ({
   env: envMock,
 }))
 

@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { notificationTable } from '@litomi/db/database/supabase/notification'
+import { db } from '@litomi/db/database/app/drizzle'
+import { notificationTable } from '@litomi/db/database/app/notification'
 import 'server-only'
 import { MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
 import { and, eq, inArray } from 'drizzle-orm'

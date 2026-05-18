@@ -1,7 +1,7 @@
-import { isPostgresError } from '@litomi/db/database/error'
+import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
 import 'server-only'
-import { bbatonVerificationTable } from '@litomi/db/database/supabase/bbaton'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
+import { isPostgresError } from '@litomi/db/database/error'
 import { Hono } from 'hono'
 import { z } from 'zod'
 

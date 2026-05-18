@@ -1,10 +1,10 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import {
   notificationConditionTable,
   notificationCriteriaTable,
-} from '@litomi/db/database/supabase/notification'
+} from '@litomi/db/database/app/notification'
 import { NotificationConditionType } from '@litomi/domain/database/enum'
 import { and, count, eq, inArray, or, SQL, sql } from 'drizzle-orm'
 

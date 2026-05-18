@@ -6,9 +6,10 @@ const backendIntegrationPostgresUrl =
 
 process.env.SKIP_ENV_VALIDATION = 'true'
 process.env.BACKEND_INTEGRATION_POSTGRES_URL ??= backendIntegrationPostgresUrl
-process.env.POSTGRES_URL ??= backendIntegrationPostgresUrl
-process.env.POSTGRES_URL_DIRECT ??= backendIntegrationPostgresUrl
-process.env.AIVEN_POSTGRES_URL ??= backendIntegrationPostgresUrl
+process.env.APP_POSTGRES_URL ??= backendIntegrationPostgresUrl
+process.env.APP_POSTGRES_URL_DIRECT ??= backendIntegrationPostgresUrl
+process.env.CATALOG_POSTGRES_URL ??= backendIntegrationPostgresUrl
+process.env.CATALOG_POSTGRES_URL_DIRECT ??= backendIntegrationPostgresUrl
 process.env.APP_ORIGIN ??= 'http://localhost:3000'
 process.env.ADSTERRA_API_KEY ??= 'test-adsterra-api-key'
 process.env.BBATON_CLIENT_ID ??= 'test-bbaton-client-id'

@@ -1,9 +1,15 @@
 #!/bin/bash
 
-# Load environment variables or use defaults
+# Load deploy configuration and app runtime environment.
+DEPLOY_ENV_FILE=${DEPLOY_ENV_FILE:-"infra/cloud-run/catalog-ingest/.env.deploy"}
+RUNTIME_ENV_FILE=${RUNTIME_ENV_FILE:-"apps/catalog-ingest/.env.prod.runtime"}
+
 set -a
-if [ -f "infra/cloud-run/catalog-ingest/.env" ]; then
-  source infra/cloud-run/catalog-ingest/.env
+if [ -f "${DEPLOY_ENV_FILE}" ]; then
+  source "${DEPLOY_ENV_FILE}"
+fi
+if [ -f "${RUNTIME_ENV_FILE}" ]; then
+  source "${RUNTIME_ENV_FILE}"
 fi
 set +a
 
@@ -24,9 +30,18 @@ JOB_SCHEDULE=${JOB_SCHEDULE:-"0 2 * * *"}  # Default: 2 AM daily
 if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "❌ Error: PROJECT_ID environment variable not set"
     echo ""
-    echo "Please copy env.template to .env and configure it:"
-    echo "  cp infra/cloud-run/catalog-ingest/env.template infra/cloud-run/catalog-ingest/.env"
-    echo "  # Edit infra/cloud-run/catalog-ingest/.env with your values"
+    echo "Please copy .env.deploy.example to .env.deploy and configure it:"
+    echo "  cp infra/cloud-run/catalog-ingest/.env.deploy.example infra/cloud-run/catalog-ingest/.env.deploy"
+    echo "  # Edit infra/cloud-run/catalog-ingest/.env.deploy with your deploy values"
+    exit 1
+fi
+
+if [ -z "${CATALOG_POSTGRES_URL:-}" ]; then
+    echo "❌ Error: CATALOG_POSTGRES_URL environment variable not set"
+    echo ""
+    echo "Please create the runtime env file:"
+    echo "  cp apps/catalog-ingest/.env.prod.runtime.example apps/catalog-ingest/.env.prod.runtime"
+    echo "  # Edit apps/catalog-ingest/.env.prod.runtime with production runtime values"
     exit 1
 fi
 
@@ -103,6 +118,14 @@ echo ""
 
 # Deploy to Cloud Run Jobs
 echo "Deploying to Cloud Run Jobs..."
+ENV_ARGS=(
+  "--set-env-vars=NODE_ENV=production"
+  "--set-env-vars=CATALOG_POSTGRES_URL=${CATALOG_POSTGRES_URL}"
+)
+if [ -n "${CATALOG_POSTGRES_CERTIFICATE:-}" ]; then
+  ENV_ARGS+=("--set-env-vars=CATALOG_POSTGRES_CERTIFICATE=${CATALOG_POSTGRES_CERTIFICATE}")
+fi
+
 if gcloud run jobs deploy ${JOB_NAME} \
   --image=${IMAGE_NAME} \
   --region=${REGION} \
@@ -112,8 +135,7 @@ if gcloud run jobs deploy ${JOB_NAME} \
   --memory=2Gi \
   --cpu=2 \
   --service-account="${SERVICE_ACCOUNT}" \
-  --set-env-vars="NODE_ENV=production" \
-  --set-env-vars="AIVEN_POSTGRES_URL=${AIVEN_POSTGRES_URL}" \
+  "${ENV_ARGS[@]}" \
   --project=${PROJECT_ID}; then
   echo "✅ Cloud Run Job deployed successfully!"
 else

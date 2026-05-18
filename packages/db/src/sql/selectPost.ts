@@ -1,9 +1,9 @@
 import type { ReferredPost } from '@litomi/contracts'
 
 import { PostFilter } from '@litomi/contracts'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { postLikeTable, postTable } from '@litomi/db/database/supabase/post'
-import { userFollowTable, userTable } from '@litomi/db/database/supabase/user'
+import { db } from '@litomi/db/database/app/drizzle'
+import { postLikeTable, postTable } from '@litomi/db/database/app/post'
+import { userFollowTable, userTable } from '@litomi/db/database/app/user'
 import { PostType } from '@litomi/domain/database/enum'
 import { and, count, desc, eq, inArray, isNotNull, lt, or, SQL } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'

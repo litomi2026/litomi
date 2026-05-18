@@ -1,4 +1,4 @@
-import { env } from '@litomi/env/env/server.common'
+import { env } from '@litomi/env/server.common'
 import { Redis } from '@upstash/redis'
 
 const { UPSTASH_KV_REST_API_TOKEN, UPSTASH_KV_REST_API_URL } = env

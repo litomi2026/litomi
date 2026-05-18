@@ -1,7 +1,7 @@
 'use client'
 
 import { WebtoonSeries } from '@litomi/crawler/crawler/webtoon/types'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'

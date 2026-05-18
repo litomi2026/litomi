@@ -15,7 +15,7 @@ A periodic Cloud Run job that automatically crawls new manga data from multiple 
 ## Architecture
 
 ```
-Cloud Scheduler → Cloud Run Job → K-Hentai (Latest ID) → Multi-Source Crawl → PostgreSQL (Aiven)
+Cloud Scheduler → Cloud Run Job → K-Hentai (Latest ID) → Multi-Source Crawl → Catalog PostgreSQL
                                  ↓
                           Check Highest DB ID
 ```
@@ -42,7 +42,7 @@ The catalog ingest job operates automatically with the following workflow:
 
 - Docker installed locally
 - `gcloud` CLI installed and configured
-- PostgreSQL database (e.g., Aiven)
+- Catalog PostgreSQL database
 - Node.js/Bun runtime for local development
 
 ## Quick Start
@@ -53,15 +53,15 @@ The catalog ingest job operates automatically with the following workflow:
 # Clone the repository and navigate to the project root
 cd /path/to/litomi
 
-# Copy the environment template
-cp infra/cloud-run/catalog-ingest/env.template infra/cloud-run/catalog-ingest/.env
+# Copy the deploy configuration example
+cp infra/cloud-run/catalog-ingest/.env.deploy.example infra/cloud-run/catalog-ingest/.env.deploy
 
-# Edit the .env file with your configuration
-# Important: Set PROJECT_ID, AIVEN_POSTGRES_URL, and other required values
-vim infra/cloud-run/catalog-ingest/.env
+# Copy the app runtime environment example
+cp apps/catalog-ingest/.env.prod.runtime.example apps/catalog-ingest/.env.prod.runtime
 
-# Source the environment variables
-source infra/cloud-run/catalog-ingest/.env
+# Edit both files with your deploy and runtime values
+vim infra/cloud-run/catalog-ingest/.env.deploy
+vim apps/catalog-ingest/.env.prod.runtime
 
 # Make scripts executable
 chmod +x infra/cloud-run/catalog-ingest/deploy.sh
@@ -77,7 +77,7 @@ chmod +x infra/cloud-run/catalog-ingest/deploy.sh
 ./infra/cloud-run/catalog-ingest/deploy.sh
 
 # Or use Cloud Build for CI/CD
-gcloud builds submit --config=infra/cloud-run/catalog-ingest/cloudbuild.yaml --substitutions=_AIVEN_POSTGRES_URL="postgresql://..."
+gcloud builds submit --config=infra/cloud-run/catalog-ingest/cloudbuild.yaml --substitutions=_CATALOG_POSTGRES_URL="postgresql://...",_CATALOG_POSTGRES_CERTIFICATE="..."
 ```
 
 ### 3. Manual Execution
@@ -95,13 +95,21 @@ gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=ca
 
 ## Configuration
 
-### Environment Variables
+### Deploy Configuration
 
-| Variable            | Description                  | Default         | Required |
-| ------------------- | ---------------------------- | --------------- | -------- |
-| `PROJECT_ID`        | GCP Project ID               | -               | Yes      |
-| `REGION`            | GCP Region                   | asia-northeast1 | Yes      |
-| `AIVEN_POSTGRES_URL` | PostgreSQL connection string | -               | Yes      |
+| Variable     | Description    | Default         | Required |
+| ------------ | -------------- | --------------- | -------- |
+| `PROJECT_ID` | GCP Project ID | -               | Yes      |
+| `REGION`     | GCP Region     | asia-northeast1 | Yes      |
+
+### Runtime Environment
+
+Runtime values are loaded from `apps/catalog-ingest/.env.prod.runtime`.
+
+| Variable                       | Description                  | Required |
+| ------------------------------ | ---------------------------- | -------- |
+| `CATALOG_POSTGRES_URL`         | PostgreSQL connection string | Yes      |
+| `CATALOG_POSTGRES_CERTIFICATE` | PostgreSQL CA certificate    | No       |
 
 ### Schedule Configuration
 
@@ -142,8 +150,7 @@ Adjust in `deploy.sh` or `cloudbuild.yaml` as needed.
 bun install
 
 # Run the crawler locally
-AIVEN_POSTGRES_URL=your_connection_string \
-bun --filter=@litomi/catalog-ingest start
+bun --filter=@litomi/catalog-ingest start:local
 ```
 
 ### Building the Docker Image Locally
@@ -185,8 +192,8 @@ Monitor job performance in the Cloud Console:
 ### Common Issues
 
 1. **"Missing required environment variables"**
-   - Ensure all required environment variables are set in your `.env` file
-   - Verify the deployment script is reading the correct `.env` file
+   - Ensure deploy values are set in `infra/cloud-run/catalog-ingest/.env.deploy`
+   - Ensure runtime values are set in `apps/catalog-ingest/.env.prod.runtime`
 
 2. **"Failed to build/push Docker image"**
    - Run `gcloud auth configure-docker asia-northeast1-docker.pkg.dev`
@@ -197,7 +204,7 @@ Monitor job performance in the Cloud Console:
    - Ensure App Engine is created in your project
 
 4. **Database connection errors**
-   - Verify `AIVEN_POSTGRES_URL` is correct and includes SSL mode
+   - Verify `CATALOG_POSTGRES_URL` is correct and includes SSL mode
    - Check database allows connections from Cloud Run
 
 5. **Job timeout**

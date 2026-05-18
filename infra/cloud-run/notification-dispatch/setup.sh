@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # Initial setup script for Cloud Run deployment
-# Load environment variables or use defaults
+# Load deploy configuration.
+DEPLOY_ENV_FILE=${DEPLOY_ENV_FILE:-"infra/cloud-run/notification-dispatch/.env.deploy"}
+
 set -a
-if [ -f "infra/cloud-run/notification-dispatch/.env" ]; then
-  source infra/cloud-run/notification-dispatch/.env
+if [ -f "${DEPLOY_ENV_FILE}" ]; then
+  source "${DEPLOY_ENV_FILE}"
 fi
 set +a
 
@@ -22,10 +24,10 @@ if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "Please set the required environment variables:"
     echo "  export PROJECT_ID=your-gcp-project-id"
     echo ""
-    echo "Or copy env.template to .env and source it:"
-    echo "  cp infra/cloud-run/notification-dispatch/env.template infra/cloud-run/notification-dispatch/.env"
-    echo "  # Edit infra/cloud-run/notification-dispatch/.env with your values"
-    echo "  source infra/cloud-run/notification-dispatch/.env"
+    echo "Or copy .env.deploy.example to .env.deploy and source it:"
+    echo "  cp infra/cloud-run/notification-dispatch/.env.deploy.example infra/cloud-run/notification-dispatch/.env.deploy"
+    echo "  # Edit infra/cloud-run/notification-dispatch/.env.deploy with your deploy values"
+    echo "  source infra/cloud-run/notification-dispatch/.env.deploy"
     exit 1
 fi
 
@@ -150,8 +152,9 @@ echo "=== Setup Complete ==="
 echo ""
 echo "Next steps:"
 echo "1. Set your environment variables:"
-echo "   cp infra/cloud-run/notification-dispatch/env.template infra/cloud-run/notification-dispatch/.env"
-echo "   # Edit infra/cloud-run/notification-dispatch/.env with your values"
+echo "   cp infra/cloud-run/notification-dispatch/.env.deploy.example infra/cloud-run/notification-dispatch/.env.deploy"
+echo "   cp apps/notification-dispatch/.env.prod.runtime.example apps/notification-dispatch/.env.prod.runtime"
+echo "   # Edit both files with your deploy and runtime values"
 echo ""
 echo "2. Run the deployment script:"
 echo "   ./infra/cloud-run/notification-dispatch/deploy.sh"

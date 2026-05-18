@@ -1,43 +1,99 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
-  "globalEnv": [
-    "APP_ORIGIN",
-    "BUILD_OUTPUT",
-    "CI",
-    "COMMIT_SHA",
-    "NEXT_PUBLIC_API_ORIGIN",
-    "NEXT_PUBLIC_APP_ENV",
-    "NEXT_PUBLIC_APP_ORIGIN",
-    "NEXT_PUBLIC_COMMIT_SHA",
-    "NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN",
-    "NEXT_PUBLIC_EDGE_PROXY_ORIGIN",
-    "NEXT_PUBLIC_GTM_ID",
-    "NEXT_PUBLIC_GTM_SCRIPT_URL",
-    "NEXT_PUBLIC_IMAGE_PROXY_ORIGIN",
-    "NEXT_PUBLIC_IOS_TESTFLIGHT_URL",
-    "NEXT_PUBLIC_SENTRY_DSN",
-    "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
-    "NEXT_PUBLIC_VAPID_PUBLIC_KEY",
-    "NODE_ENV"
-  ],
-  "globalPassThroughEnv": [
-    "POSTGRES_URL",
-    "SENTRY_AUTH_TOKEN",
-    "SENTRY_ORG",
-    "SENTRY_PROJECT",
-    "SUPABASE_CERTIFICATE"
-  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "dist/**"]
+    },
+    "@litomi/edge-proxy#build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "CI",
+        "NEXT_PUBLIC_API_ORIGIN",
+        "NEXT_PUBLIC_APP_ORIGIN",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "VERCEL_ENV",
+        "VERCEL_GIT_COMMIT_SHA"
+      ],
+      "passThroughEnv": ["SENTRY_AUTH_TOKEN", "SENTRY_ORG", "SENTRY_PROJECT"],
+      "inputs": ["$TURBO_DEFAULT$", ".env.prod.build"],
+      "outputs": [".next/**"]
+    },
+    "@litomi/web#build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "ANALYZE",
+        "BUILD_OUTPUT",
+        "CI",
+        "COMMIT_SHA",
+        "NEXT_PUBLIC_API_ORIGIN",
+        "NEXT_PUBLIC_APP_ENV",
+        "NEXT_PUBLIC_APP_ORIGIN",
+        "NEXT_PUBLIC_COMMIT_SHA",
+        "NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN",
+        "NEXT_PUBLIC_EDGE_PROXY_ORIGIN",
+        "NEXT_PUBLIC_GTM_ID",
+        "NEXT_PUBLIC_GTM_SCRIPT_URL",
+        "NEXT_PUBLIC_IMAGE_PROXY_ORIGIN",
+        "NEXT_PUBLIC_IOS_TESTFLIGHT_URL",
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+        "NEXT_PUBLIC_VAPID_PUBLIC_KEY"
+      ],
+      "passThroughEnv": [
+        "APP_ORIGIN",
+        "APP_POSTGRES_CERTIFICATE",
+        "APP_POSTGRES_URL",
+        "CATALOG_POSTGRES_CERTIFICATE",
+        "CATALOG_POSTGRES_URL",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT"
+      ],
+      "inputs": ["$TURBO_DEFAULT$", ".env.prod.build"],
+      "outputs": [".next/**"]
     },
     "dev": {
       "dependsOn": ["^build"],
       "cache": false,
       "persistent": true
     },
+    "dev:prod": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    },
     "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "start:local": {
+      "cache": false
+    },
+    "start:prod": {
+      "cache": false
+    },
+    "@litomi/api#start:local": {
+      "cache": false,
+      "persistent": true
+    },
+    "@litomi/api#start:prod": {
+      "cache": false,
+      "persistent": true
+    },
+    "@litomi/edge-proxy#start:local": {
+      "cache": false,
+      "persistent": true
+    },
+    "@litomi/edge-proxy#start:prod": {
+      "cache": false,
+      "persistent": true
+    },
+    "@litomi/web#start:local": {
+      "cache": false,
+      "persistent": true
+    },
+    "@litomi/web#start:prod": {
       "cache": false,
       "persistent": true
     },

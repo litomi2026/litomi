@@ -1,7 +1,7 @@
 'use client'
 
 import { WebtoonList, WebtoonListItem } from '@litomi/crawler/crawler/webtoon/types'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { BookOpen, Heart, Loader2 } from 'lucide-react'
 import Link from 'next/link'

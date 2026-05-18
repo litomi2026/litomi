@@ -1,6 +1,6 @@
 'use client'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { sendGTMEvent } from '@next/third-parties/google'
 
 type AnalyticsParams = Record<string, AnalyticsValue | undefined>

@@ -8,7 +8,6 @@ import { safeParseJSON } from '@litomi/std'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
-import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
@@ -24,7 +23,6 @@ export default function MyInfoSync() {
   // NOTE: 로그인 사용자의 경우 GA, Amplitude 아이디를 설정해요
   useEffect(() => {
     if (userId) {
-      amplitude.setUserId(userId)
       identify(userId)
     }
   }, [userId])

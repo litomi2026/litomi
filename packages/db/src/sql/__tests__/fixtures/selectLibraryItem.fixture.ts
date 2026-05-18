@@ -46,7 +46,7 @@ const whereMock = mock((whereClause: SQL) => {
 const fromMock = mock(() => ({ where: whereMock }))
 const selectMock = mock(() => ({ from: fromMock }))
 
-mock.module('@litomi/db/database/supabase/drizzle', () => ({
+mock.module('@litomi/db/database/app/drizzle', () => ({
   db: {
     select: selectMock,
   },

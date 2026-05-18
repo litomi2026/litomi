@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@litomi/db/database/supabase/library'
+import { db } from '@litomi/db/database/app/drizzle'
+import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
 import 'server-only'
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@litomi/domain/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@litomi/domain/constants/policy'

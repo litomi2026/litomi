@@ -4,11 +4,12 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./env/client": "./src/env/client.ts",
-    "./env/server.common": "./src/env/server.common.ts",
-    "./env/server.hono": "./src/env/server.hono.ts",
-    "./env/server.next": "./src/env/server.next.ts",
-    "./env/server.next.build": "./src/env/server.next.build.ts"
+    "./cli": "./src/cli.ts",
+    "./client": "./src/client.ts",
+    "./server.common": "./src/server.common.ts",
+    "./server.hono": "./src/server.hono.ts",
+    "./server.next": "./src/server.next.ts",
+    "./server.next.build": "./src/server.next.build.ts"
   },
   "scripts": {
     "type": "tsc --noEmit"

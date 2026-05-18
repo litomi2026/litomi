@@ -1,7 +1,7 @@
 'use client'
 
 import { LocalStorageKey } from '@litomi/domain/constants/storage'
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 

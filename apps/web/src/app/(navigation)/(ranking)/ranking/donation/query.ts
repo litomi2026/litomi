@@ -1,7 +1,7 @@
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateGroupList } from '@litomi/catalog/translation/group'
-import { db } from '@litomi/db/database/supabase/drizzle'
-import { DONATION_RECIPIENT_TYPE, pointDonationRecipientTable } from '@litomi/db/database/supabase/points'
+import { db } from '@litomi/db/database/app/drizzle'
+import { DONATION_RECIPIENT_TYPE, pointDonationRecipientTable } from '@litomi/db/database/app/points'
 import { desc, sum } from 'drizzle-orm'
 
 export type DonationRankingItem = {

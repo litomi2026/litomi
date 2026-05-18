@@ -1,6 +1,6 @@
 import 'server-only'
-import { env as commonEnv } from '@litomi/env/env/server.common'
-import { env } from '@litomi/env/env/server.hono'
+import { env as commonEnv } from '@litomi/env/server.common'
+import { env } from '@litomi/env/server.hono'
 import { sec } from '@litomi/std'
 
 const { APP_ORIGIN } = commonEnv

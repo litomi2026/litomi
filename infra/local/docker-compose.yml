@@ -1,17 +1,34 @@
 services:
-  litomi:
-    image: postgres:17-alpine
-    container_name: postgres-test
+  app-postgres:
+    image: postgres:18-alpine
+    container_name: litomi-app-postgres
     environment:
       POSTGRES_USER: test_user
       POSTGRES_PASSWORD: test_password
-      POSTGRES_DB: test_db
+      POSTGRES_DB: app_db
     ports:
       - '5434:5432'
     volumes:
-      - test-db-data:/var/lib/postgresql/data
+      - app-db-data:/var/lib/postgresql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U test_user -d test_db']
+      test: ['CMD-SHELL', 'pg_isready -U test_user -d app_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  catalog-postgres:
+    image: postgres:18-alpine
+    container_name: litomi-catalog-postgres
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: catalog_db
+    ports:
+      - '5435:5432'
+    volumes:
+      - catalog-db-data:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U test_user -d catalog_db']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -35,5 +52,6 @@ services:
       - redis
 
 volumes:
-  test-db-data:
+  app-db-data:
+  catalog-db-data:
   redis-data:

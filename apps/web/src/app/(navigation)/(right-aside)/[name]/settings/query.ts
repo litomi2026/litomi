@@ -1,6 +1,6 @@
-import { authSessionFamilyTable } from '@litomi/db/database/supabase/auth'
+import { authSessionFamilyTable } from '@litomi/db/database/app/auth'
 import 'server-only'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import { and, eq, isNull } from 'drizzle-orm'
 
 export async function revokeAllSessionsByUserId(userId: number, now: Date) {

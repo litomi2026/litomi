@@ -1,6 +1,6 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
-import { env } from '@litomi/env/env/client'
+import { env } from '@litomi/env/client'
 import { whitelistSearchParams } from '@litomi/std'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
