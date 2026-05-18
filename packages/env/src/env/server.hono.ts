@@ -10,6 +10,5 @@ export const env = createEnv({
     GA_PROPERTY_ID: z.string().optional(),
   },
   runtimeEnv: process.env,
-  isServer: true,
   emptyStringAsUndefined: true,
 })

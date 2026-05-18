@@ -10,7 +10,6 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
-import 'server-only'
 
 export const dmcaReporterRoleEnum = pgEnum('dmca_reporter_role', ['COPYRIGHT_OWNER', 'AUTHORIZED_AGENT'])
 
