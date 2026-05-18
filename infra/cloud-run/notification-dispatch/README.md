@@ -5,13 +5,13 @@ Cloud Run deployment configuration for the notification dispatch job. The app co
 ## Prerequisites
 
 ```zsh
-cp infra/cloud-run/notification-dispatch/env.template infra/cloud-run/notification-dispatch/.env
+cp infra/cloud-run/notification-dispatch/.env.deploy.example infra/cloud-run/notification-dispatch/.env.deploy
+cp apps/notification-dispatch/.env.prod.runtime.example apps/notification-dispatch/.env.prod.runtime
 ```
 
-Edit `.env` with your project, registry, service account, database, and VAPID values.
+Edit `.env.deploy` with deploy settings, and `.env.prod.runtime` with app runtime values.
 
 ```zsh
-source infra/cloud-run/notification-dispatch/.env
 ./infra/cloud-run/notification-dispatch/setup.sh
 ```
 
@@ -28,7 +28,7 @@ For Cloud Build:
 ```zsh
 gcloud builds submit \
   --config=infra/cloud-run/notification-dispatch/cloudbuild.yaml \
-  --substitutions=_POSTGRES_URL="postgresql://...",_NEXT_PUBLIC_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
+  --substitutions=_APP_ORIGIN="https://...",_APP_POSTGRES_URL="postgresql://...",_NEXT_PUBLIC_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
 ```
 
 ## Scheduling
@@ -49,7 +49,7 @@ Common schedules:
 ## Local Development
 
 ```zsh
-bun --filter=@litomi/notification-dispatch start
+bun --filter=@litomi/notification-dispatch start:local
 ```
 
 ```zsh

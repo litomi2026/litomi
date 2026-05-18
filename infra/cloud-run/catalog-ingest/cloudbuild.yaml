@@ -1,5 +1,5 @@
 # Cloud Build configuration for deploying the catalog ingester job
-# Usage: gcloud builds submit --config=infra/cloud-run/catalog-ingest/cloudbuild.yaml --substitutions=_AIVEN_POSTGRES_URL="postgresql://...",_REGION=asia-northeast1
+# Usage: gcloud builds submit --config=infra/cloud-run/catalog-ingest/cloudbuild.yaml --substitutions=_CATALOG_POSTGRES_URL="postgresql://...",_CATALOG_POSTGRES_CERTIFICATE="...",_REGION=asia-northeast1
 
 substitutions:
   _JOB_NAME: catalog-ingest
@@ -7,7 +7,8 @@ substitutions:
   _ARTIFACT_REGISTRY_REPO: cloud-run-jobs
   _SERVICE_ACCOUNT_NAME: catalog-ingest-sa
   _JOB_SCHEDULE: '0 * * * *'
-  _AIVEN_POSTGRES_URL: ''
+  _CATALOG_POSTGRES_URL: ''
+  _CATALOG_POSTGRES_CERTIFICATE: ''
 
 steps:
   # Create Artifact Registry repository if it doesn't exist
@@ -54,7 +55,8 @@ steps:
       - '--cpu=2'
       - '--service-account=${_SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com'
       - '--set-env-vars=NODE_ENV=production'
-      - '--set-env-vars=AIVEN_POSTGRES_URL=${_AIVEN_POSTGRES_URL}'
+      - '--set-env-vars=CATALOG_POSTGRES_URL=${_CATALOG_POSTGRES_URL}'
+      - '--set-env-vars=CATALOG_POSTGRES_CERTIFICATE=${_CATALOG_POSTGRES_CERTIFICATE}'
       - '--project=${PROJECT_ID}'
 
   # Set up Cloud Scheduler

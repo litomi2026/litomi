@@ -24,8 +24,8 @@ if [ -f ".env" ]; then
     set +a
 else
     echo "⚠️  .env file not found."
-    echo "   Creating .env from template..."
-    cp .env.template .env
+    echo "   Creating .env from example..."
+    cp .env.example .env
     echo "   Please edit .env and add your CLOUDFLARE_API_TOKEN"
     echo "   Create a token at: https://dash.cloudflare.com/profile/api-tokens"
     exit 1

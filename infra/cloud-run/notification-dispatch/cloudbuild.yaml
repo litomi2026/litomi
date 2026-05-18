@@ -1,5 +1,5 @@
 # Cloud Build configuration for deploying the notification dispatch job
-# Usage: gcloud builds submit --config=infra/cloud-run/notification-dispatch/cloudbuild.yaml --substitutions=_POSTGRES_URL="postgresql://...",_NEXT_PUBLIC_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
+# Usage: gcloud builds submit --config=infra/cloud-run/notification-dispatch/cloudbuild.yaml --substitutions=_APP_ORIGIN="https://...",_APP_POSTGRES_URL="postgresql://...",_NEXT_PUBLIC_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
 
 substitutions:
   _JOB_NAME: notification-dispatch
@@ -7,7 +7,9 @@ substitutions:
   _ARTIFACT_REGISTRY_REPO: cloud-run-jobs
   _SERVICE_ACCOUNT_NAME: notification-dispatch-sa
   _JOB_SCHEDULE: '0 * * * *'
-  _POSTGRES_URL: ''
+  _APP_ORIGIN: ''
+  _APP_POSTGRES_URL: ''
+  _APP_POSTGRES_CERTIFICATE: ''
   _NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
   _VAPID_PRIVATE_KEY: ''
 
@@ -56,7 +58,9 @@ steps:
       - '--cpu=2'
       - '--service-account=${_SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com'
       - '--set-env-vars=NODE_ENV=production'
-      - '--set-env-vars=POSTGRES_URL=${_POSTGRES_URL}'
+      - '--set-env-vars=APP_ORIGIN=${_APP_ORIGIN}'
+      - '--set-env-vars=APP_POSTGRES_URL=${_APP_POSTGRES_URL}'
+      - '--set-env-vars=APP_POSTGRES_CERTIFICATE=${_APP_POSTGRES_CERTIFICATE}'
       - '--set-env-vars=NEXT_PUBLIC_VAPID_PUBLIC_KEY=${_NEXT_PUBLIC_VAPID_PUBLIC_KEY}'
       - '--set-env-vars=VAPID_PRIVATE_KEY=${_VAPID_PRIVATE_KEY}'
       - '--project=${PROJECT_ID}'
