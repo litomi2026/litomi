@@ -7,6 +7,10 @@ import type { ReactNode } from 'react'
 import { getReaderMessages } from '#reader/model/readerMessages'
 import { createContext, useContext } from 'react'
 
+type ReaderNoticeHandlerContextValue = {
+  onNotice?: ReaderNoticeHandler
+}
+
 type ReaderRuntimeProviderProps = {
   children: ReactNode
   locale: ReaderLocale
@@ -14,20 +18,15 @@ type ReaderRuntimeProviderProps = {
   onNotice?: ReaderNoticeHandler
 }
 
-const missingReaderNoticeHandlerContext = Symbol('missing-reader-notice-handler-context')
-
 const ReaderMessagesContext = createContext<ReaderMessages | null>(null)
-
-const ReaderNoticeHandlerContext = createContext<
-  ReaderNoticeHandler | typeof missingReaderNoticeHandlerContext | undefined
->(missingReaderNoticeHandlerContext)
+const ReaderNoticeHandlerContext = createContext<ReaderNoticeHandlerContextValue | null>(null)
 
 export function ReaderRuntimeProvider({ children, locale, messages, onNotice }: ReaderRuntimeProviderProps) {
   const resolvedMessages = getReaderMessages(locale, messages)
 
   return (
     <ReaderMessagesContext.Provider value={resolvedMessages}>
-      <ReaderNoticeHandlerContext.Provider value={onNotice}>{children}</ReaderNoticeHandlerContext.Provider>
+      <ReaderNoticeHandlerContext.Provider value={{ onNotice }}>{children}</ReaderNoticeHandlerContext.Provider>
     </ReaderMessagesContext.Provider>
   )
 }
@@ -43,11 +42,11 @@ export function useReaderMessages() {
 }
 
 export function useReaderNoticeHandler() {
-  const onNotice = useContext(ReaderNoticeHandlerContext)
+  const context = useContext(ReaderNoticeHandlerContext)
 
-  if (onNotice === missingReaderNoticeHandlerContext) {
+  if (!context) {
     throw new Error('ReaderRuntimeProvider is required to use reader notices.')
   }
 
-  return onNotice
+  return context.onNotice
 }
