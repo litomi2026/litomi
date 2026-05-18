@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001",
-    "build": "next build",
-    "start": "next start --port 3001",
+    "dev": "bun run dev:local",
+    "dev:local": "bun --env-file=.env.local next dev --port 3001",
+    "dev:prod": "bun --env-file=.env.prod.dev next dev --port 3001",
+    "build": "bun --env-file=.env.prod.build next build",
+    "start": "bun run start:prod",
+    "start:local": "bun --env-file=.env.local next start --port 3001",
+    "start:prod": "bun --env-file=.env.prod.runtime next start --port 3001",
     "type": "tsc --noEmit"
   },
   "dependencies": {

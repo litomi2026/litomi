@@ -11,9 +11,13 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev --filter=@litomi/web --filter=@litomi/edge-proxy --filter=@litomi/api",
+    "dev": "bun run dev:local",
+    "dev:local": "turbo dev --filter=@litomi/web --filter=@litomi/edge-proxy --filter=@litomi/api",
+    "dev:prod": "turbo dev:prod --filter=@litomi/web --filter=@litomi/edge-proxy --filter=@litomi/api",
     "build": "turbo build",
-    "start": "turbo start --filter=@litomi/web --filter=@litomi/edge-proxy --filter=@litomi/api",
+    "start": "bun run start:prod",
+    "start:local": "turbo start:local --filter=@litomi/web --filter=@litomi/edge-proxy --filter=@litomi/api",
+    "start:prod": "turbo start:prod --filter=@litomi/web --filter=@litomi/edge-proxy --filter=@litomi/api",
     "lint": "eslint --fix",
     "format": "prettier --write .",
     "type": "tsc -p tsconfig.json --noEmit && turbo type",

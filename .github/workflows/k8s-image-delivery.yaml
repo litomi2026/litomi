@@ -92,11 +92,13 @@ jobs:
             COMMIT_SHA=${{ github.sha }}
             ${{ steps.load_public_env.outputs.build_args }}
           secrets: |
-            POSTGRES_URL=${{ secrets.POSTGRES_URL }}
+            APP_POSTGRES_URL=${{ secrets.APP_POSTGRES_URL }}
+            "APP_POSTGRES_CERTIFICATE=${{ secrets.APP_POSTGRES_CERTIFICATE }}"
+            CATALOG_POSTGRES_URL=${{ secrets.CATALOG_POSTGRES_URL }}
+            "CATALOG_POSTGRES_CERTIFICATE=${{ secrets.CATALOG_POSTGRES_CERTIFICATE }}"
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
-            "SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}"
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
 
@@ -114,11 +116,13 @@ jobs:
             COMMIT_SHA=${{ github.sha }}
             ${{ steps.load_public_env.outputs.build_args }}
           secrets: |
-            POSTGRES_URL=${{ secrets.POSTGRES_URL }}
+            APP_POSTGRES_URL=${{ secrets.APP_POSTGRES_URL }}
+            "APP_POSTGRES_CERTIFICATE=${{ secrets.APP_POSTGRES_CERTIFICATE }}"
+            CATALOG_POSTGRES_URL=${{ secrets.CATALOG_POSTGRES_URL }}
+            "CATALOG_POSTGRES_CERTIFICATE=${{ secrets.CATALOG_POSTGRES_CERTIFICATE }}"
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
-            "SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}"
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
 
