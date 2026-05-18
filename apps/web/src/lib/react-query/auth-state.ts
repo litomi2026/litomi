@@ -1,6 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query'
 
-import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 
@@ -12,6 +11,5 @@ export function handleUnauthorizedError(queryClient: QueryClient) {
     predicate: (query) => query.queryKey.length > 1,
   })
 
-  amplitude.reset()
   identify(null)
 }

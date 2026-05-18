@@ -11,9 +11,7 @@ import {
   THEME_COLOR,
 } from '@litomi/domain/constants'
 import { env } from '@litomi/env/client'
-import { env as serverEnv } from '@litomi/env/server.next'
 import { GoogleTagManager } from '@next/third-parties/google'
-import dynamic from 'next/dynamic'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
@@ -31,10 +29,6 @@ import OverlayHost from '@/components/ui/OverlayHost'
 import QueryProvider from '@/lib/react-query/QueryProvider'
 
 const { NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_GTM_SCRIPT_URL } = env
-const { AMPLITUDE_API_KEY } = serverEnv
-
-// NOTE: 사용하지 않을 수 있어서 dynamic import
-const Amplitude = dynamic(() => import('@/lib/amplitude/Amplitude'))
 
 const PretendardVariable = localFont({
   src: '../fonts/PretendardVariable.400-700.3713.woff2',
@@ -132,7 +126,6 @@ export default function RootLayout({ children }: Readonly<Props>) {
         {(NEXT_PUBLIC_GTM_ID || NEXT_PUBLIC_GTM_SCRIPT_URL) && (
           <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} gtmScriptUrl={NEXT_PUBLIC_GTM_SCRIPT_URL} />
         )}
-        {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
         <p className="h-0 overflow-hidden tracking-widest invisible">
           <SEOText />
         </p>
