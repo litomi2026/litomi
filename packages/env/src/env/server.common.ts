@@ -1,25 +1,26 @@
-import { sec } from '@litomi/std'
 import 'server-only'
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
 export const env = createEnv({
   server: {
-    AIVEN_POSTGRES_URL: z.string().default('postgresql://test_user:test_password@localhost:5434/test_db'),
-    AIVEN_CERTIFICATE: z.string().optional(),
     APP_ORIGIN: z.url().default('http://localhost:3000'),
+    APP_POSTGRES_URL: z.url().default('postgresql://test_user:test_password@localhost:5434/app_db'),
+    APP_POSTGRES_CERTIFICATE: z.string().optional(),
+    APP_POSTGRES_POOL_MAX: z.coerce.number().int().positive().default(2),
+    APP_POSTGRES_IDLE_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(20),
+    APP_POSTGRES_CONNECT_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(10),
+    APP_POSTGRES_APPLICATION_NAME: z.string().default('litomi-app-local'),
+    CATALOG_POSTGRES_URL: z.url().default('postgresql://test_user:test_password@localhost:5435/catalog_db'),
+    CATALOG_POSTGRES_CERTIFICATE: z.string().optional(),
+    CATALOG_POSTGRES_POOL_MAX: z.coerce.number().int().positive().default(3),
+    CATALOG_POSTGRES_IDLE_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(20),
+    CATALOG_POSTGRES_CONNECT_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(10),
+    CATALOG_POSTGRES_APPLICATION_NAME: z.string().default('litomi-catalog-local'),
     JWT_SECRET_ACCESS_TOKEN: z.string().default('123'),
     JWT_SECRET_REFRESH_TOKEN: z.string().default('456'),
     JWT_SECRET_TRUSTED_DEVICE: z.string().default('789'),
-    POSTGRES_URL: z.string().default('postgresql://test_user:test_password@localhost:5434/test_db'),
-    SECONDARY_POSTGRES_URL: z.string().default('postgresql://test_user:test_password@localhost:5434/secondary_test_db'),
-    POSTGRES_POOL_MAX: z.coerce.number().int().positive().default(2),
-    POSTGRES_IDLE_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(20),
-    POSTGRES_CONNECT_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(10),
-    POSTGRES_MAX_LIFETIME_SECONDS: z.coerce.number().int().positive().default(sec('30 minutes')),
-    POSTGRES_APPLICATION_NAME: z.string().default('litomi-local'),
     REDIS_URL: z.url().default('redis://redis:6380'),
-    SUPABASE_CERTIFICATE: z.string().optional(),
 
     TOTP_ENCRYPTION_KEY: z
       .string()

@@ -21,11 +21,13 @@
     "NODE_ENV"
   ],
   "globalPassThroughEnv": [
-    "POSTGRES_URL",
+    "APP_POSTGRES_CERTIFICATE",
+    "APP_POSTGRES_URL",
+    "CATALOG_POSTGRES_CERTIFICATE",
+    "CATALOG_POSTGRES_URL",
     "SENTRY_AUTH_TOKEN",
     "SENTRY_ORG",
-    "SENTRY_PROJECT",
-    "SUPABASE_CERTIFICATE"
+    "SENTRY_PROJECT"
   ],
   "tasks": {
     "build": {

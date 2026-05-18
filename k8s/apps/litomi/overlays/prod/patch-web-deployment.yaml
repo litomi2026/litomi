@@ -8,5 +8,7 @@ spec:
       containers:
         - name: web
           env:
-            - name: POSTGRES_APPLICATION_NAME
+            - name: APP_POSTGRES_APPLICATION_NAME
               value: litomi-web
+            - name: CATALOG_POSTGRES_APPLICATION_NAME
+              value: litomi-web-catalog

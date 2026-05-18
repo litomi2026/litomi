@@ -27,8 +27,8 @@ export const nextBuildEnv = createEnv({
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().default(env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
 
     // Next.js server build requirements
-    POSTGRES_URL: z.url().default('postgresql://test_user:test_password@localhost:5434/test_db'),
-    REDIS_URL: z.url().default('redis://redis:6380'),
+    APP_POSTGRES_URL: z.url(),
+    CATALOG_POSTGRES_URL: z.url(),
     SENTRY_AUTH_TOKEN: z.string().optional(),
     SENTRY_ORG: z.string().optional(),
     SENTRY_PROJECT: z.string().optional(),

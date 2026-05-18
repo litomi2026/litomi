@@ -3,7 +3,7 @@ import type { Manga } from '@litomi/domain/types/manga'
 import { Locale } from '@litomi/catalog/translation/common'
 import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
 import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
-import { db } from '@litomi/db/database/supabase/drizzle'
+import { db } from '@litomi/db/database/app/drizzle'
 import { sql } from 'drizzle-orm'
 
 import { MangaNotificationProcessor } from './MangaNotificationProcessor'
@@ -31,7 +31,7 @@ const log = {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 async function crawlAndNotify() {
-  const requiredEnvVars = ['POSTGRES_URL', 'NEXT_PUBLIC_VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY']
+  const requiredEnvVars = ['APP_POSTGRES_URL', 'NEXT_PUBLIC_VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY']
   const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName])
 
   if (missingEnvVars.length > 0) {

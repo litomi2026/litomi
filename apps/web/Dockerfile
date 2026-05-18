@@ -57,8 +57,10 @@ COPY apps/web ./apps/web
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=false \
     --mount=type=secret,id=SENTRY_ORG,env=SENTRY_ORG,required=false \
     --mount=type=secret,id=SENTRY_PROJECT,env=SENTRY_PROJECT,required=false \
-    --mount=type=secret,id=POSTGRES_URL,env=POSTGRES_URL,required=false \
-    --mount=type=secret,id=SUPABASE_CERTIFICATE,env=SUPABASE_CERTIFICATE,required=false \
+    --mount=type=secret,id=APP_POSTGRES_URL,env=APP_POSTGRES_URL,required=false \
+    --mount=type=secret,id=APP_POSTGRES_CERTIFICATE,env=APP_POSTGRES_CERTIFICATE,required=false \
+    --mount=type=secret,id=CATALOG_POSTGRES_URL,env=CATALOG_POSTGRES_URL,required=false \
+    --mount=type=secret,id=CATALOG_POSTGRES_CERTIFICATE,env=CATALOG_POSTGRES_CERTIFICATE,required=false \
     COMMIT_SHA="$COMMIT_SHA" bun run build --filter=@litomi/web \
   # Strip `sourceMappingURL` references (prevents browser `*.map` requests).
   && find apps/web/.next/static -type f -name '*.js' -exec sed -i -E 's@//# sourceMappingURL=.*$@@g' {} + \
