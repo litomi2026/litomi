@@ -2,16 +2,13 @@ import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import postgres from 'postgres'
 
-type ApplySupabaseFunctionsOptions = {
+type ApplyAppFunctionsOptions = {
   directory?: string
   log?: (message: string) => void
 }
 
-export async function applySupabaseFunctions(
-  rawUrl: string,
-  options: ApplySupabaseFunctionsOptions = {},
-) {
-  const functionsDirectory = options.directory ?? path.join(process.cwd(), 'src', 'database', 'supabase', 'functions')
+export async function applyAppFunctions(url: string, options: ApplyAppFunctionsOptions = {}) {
+  const functionsDirectory = options.directory ?? path.join(process.cwd(), 'src', 'database', 'app', 'functions')
   const files = await readSqlFiles(functionsDirectory)
   const log = options.log ?? (() => {})
 
@@ -20,7 +17,15 @@ export async function applySupabaseFunctions(
     return
   }
 
-  const client = createPostgresClient(rawUrl)
+  const client = postgres(url, {
+    max: 1,
+    idle_timeout: 5,
+    connect_timeout: 5,
+    prepare: false,
+    ssl: process.env.APP_POSTGRES_CERTIFICATE
+      ? { ca: process.env.APP_POSTGRES_CERTIFICATE, rejectUnauthorized: true }
+      : 'require',
+  })
 
   try {
     for (const file of files) {
@@ -32,37 +37,6 @@ export async function applySupabaseFunctions(
   } finally {
     await client.end({ timeout: 5 })
   }
-}
-
-export function withLocalSslDisabled(rawUrl: string) {
-  const url = new URL(rawUrl)
-
-  if (isLocalHost(url.hostname) && !url.searchParams.has('sslmode')) {
-    url.searchParams.set('sslmode', 'disable')
-  }
-
-  return url.toString()
-}
-
-function createPostgresClient(rawUrl: string) {
-  const resolvedUrl = withLocalSslDisabled(rawUrl)
-  const url = new URL(resolvedUrl)
-
-  return postgres(resolvedUrl, {
-    max: 1,
-    idle_timeout: 5,
-    connect_timeout: 5,
-    prepare: false,
-    ssl: isLocalHost(url.hostname)
-      ? false
-      : process.env.SUPABASE_CERTIFICATE
-        ? { ca: process.env.SUPABASE_CERTIFICATE, rejectUnauthorized: true }
-        : ('prefer' as const),
-  })
-}
-
-function isLocalHost(hostname: string) {
-  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1'
 }
 
 async function readSqlFiles(functionsDirectory: string) {

@@ -3,19 +3,18 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 import postgres from 'postgres'
 
-import { applyAppFunctions, withLocalSslDisabled } from '../packages/db/scripts/app/applyAppFunctions'
+import { applyAppFunctions } from '../packages/db/scripts/app/applyAppFunction'
 
 dotenv.config({ path: '.env.development' })
 
 const DEFAULT_BACKEND_INTEGRATION_POSTGRES_URL =
   'postgresql://test_user:test_password@localhost:5434/litomi_backend_integration_test'
 
-const rawTestDatabaseUrl = process.env.BACKEND_INTEGRATION_POSTGRES_URL ?? DEFAULT_BACKEND_INTEGRATION_POSTGRES_URL
-const testDatabaseUrl = withLocalSslDisabled(rawTestDatabaseUrl)
+const testDatabaseUrl = process.env.BACKEND_INTEGRATION_POSTGRES_URL ?? DEFAULT_BACKEND_INTEGRATION_POSTGRES_URL
 const testDatabaseName = getDatabaseName(testDatabaseUrl)
 
 if (!testDatabaseName) {
-  console.error(`Could not resolve a database name from BACKEND_INTEGRATION_POSTGRES_URL: ${rawTestDatabaseUrl}`)
+  console.error(`Could not resolve a database name from BACKEND_INTEGRATION_POSTGRES_URL: ${testDatabaseUrl}`)
   process.exit(1)
 }
 
