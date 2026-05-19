@@ -1,15 +1,13 @@
-import { normalizeValue } from '@litomi/catalog/translation/common'
+import {
+  type POSTV1NotificationCriteriaBody,
+  postV1NotificationCriteriaBodySchema,
+  type POSTV1NotificationCriteriaResponse,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/app/notification'
-import {
-  MAX_CRITERIA_NAME_LENGTH,
-  MAX_CRITERIA_PER_USER,
-  MAX_NOTIFICATION_CRITERIA_CONDITIONS,
-} from '@litomi/domain/constants/policy'
-import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { MAX_CRITERIA_PER_USER } from '@litomi/domain/constants/policy'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -43,68 +41,9 @@ type TransactionResult =
       kind: 'limit'
     }
 
-const MAX_VALUE_LENGTH = 100
-
-const notificationCriteriaConditionSchema = z.object({
-  type: z
-    .number()
-    .int()
-    .min(NotificationConditionType.SERIES, '올바른 조건 타입을 선택해 주세요')
-    .max(NotificationConditionType.UPLOADER, '올바른 조건 타입을 선택해 주세요')
-    .transform((value) => value as NotificationConditionType),
-  value: z
-    .string()
-    .min(1, '조건 값을 입력해 주세요')
-    .max(MAX_VALUE_LENGTH, `조건 값은 ${MAX_VALUE_LENGTH}자 이하여야 해요`)
-    .transform((value) => normalizeValue(value)),
-  isExcluded: z.boolean().optional().default(false),
-})
-
-const notificationCriteriaConditionsSchema = z
-  .array(notificationCriteriaConditionSchema)
-  .min(1, '최소 1개 조건이 필요해요')
-  .max(MAX_NOTIFICATION_CRITERIA_CONDITIONS, `최대 ${MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 추가할 수 있어요`)
-  .superRefine((conditions, ctx) => {
-    const seen = new Set<string>()
-
-    for (const [index, condition] of conditions.entries()) {
-      const key = `${condition.type}:${condition.value}`
-
-      if (seen.has(key)) {
-        ctx.addIssue({
-          code: 'custom',
-          message: '같은 조건은 한 번만 추가할 수 있어요',
-          path: [index, 'value'],
-        })
-        continue
-      }
-
-      seen.add(key)
-    }
-  })
-
-const bodySchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, '알림 이름을 입력해 주세요')
-    .max(MAX_CRITERIA_NAME_LENGTH, `알림 이름은 ${MAX_CRITERIA_NAME_LENGTH}자 이하여야 해요`),
-  conditions: notificationCriteriaConditionsSchema,
-  isActive: z.boolean().optional().default(true),
-})
-
-export type POSTV1NotificationCriteriaBody = z.input<typeof bodySchema>
-
-export type POSTV1NotificationCriteriaResponse = {
-  createdAt: number
-  id: number
-  isActive: boolean
-  name: string
-}
-
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', bodySchema), async (c) => {
+route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { conditions, isActive, name } = c.req.valid('json')
 

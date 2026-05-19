@@ -1,13 +1,16 @@
+import {
+  getV1LibraryListQuerySchema,
+  type GETV1LibraryListResponse,
+  type LibraryListItem,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable, libraryTable, pinnedLibraryTable } from '@litomi/db/database/app/library'
 import { decodeLibraryListCursor, encodeLibraryListCursor } from '@litomi/domain/common/cursor'
-import { LIBRARIES_PER_PAGE } from '@litomi/domain/constants/policy'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, lt, ne, or, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -15,32 +18,9 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const querySchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(LIBRARIES_PER_PAGE).default(LIBRARIES_PER_PAGE),
-  scope: z.enum(['all', 'me', 'public', 'pinned']),
-})
-
-export type GETV1LibraryListResponse = {
-  libraries: LibraryListItem[]
-  nextCursor: string | null
-}
-
-export type LibraryListItem = {
-  id: number
-  userId: number
-  name: string
-  description: string | null
-  color: string | null
-  icon: string | null
-  isPublic: boolean
-  createdAt: number
-  itemCount: number
-}
-
 const libraryListRoutes = new Hono<Env>()
 
-libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+libraryListRoutes.get('/', zProblemValidator('query', getV1LibraryListQuerySchema), async (c) => {
   const { cursor, limit, scope: listScope } = c.req.valid('query')
   const userId = c.get('userId')
 

@@ -5,6 +5,12 @@ import { z } from 'zod'
 
 import type { ReferredPost } from '../post/referred-post'
 
+export const postIdParamSchema = z.object({
+  id: z.coerce.number().int().positive(),
+})
+
+export type PostIdParam = z.infer<typeof postIdParamSchema>
+
 export const postSchema = z.object({
   id: z.number(),
   createdAt: z.date(),

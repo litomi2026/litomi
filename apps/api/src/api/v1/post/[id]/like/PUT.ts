@@ -1,8 +1,8 @@
+import { postIdParamSchema, type PUTV1PostIdLikeResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { postLikeTable } from '@litomi/db/database/app/post'
 import { isPostgresError } from '@litomi/db/database/error'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -10,17 +10,9 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const paramsSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-export type PUTV1PostIdLikeResponse = {
-  liked: true
-}
-
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, zProblemValidator('param', paramsSchema), async (c) => {
+route.put('/', requireAuth, zProblemValidator('param', postIdParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: postId } = c.req.valid('param')
 

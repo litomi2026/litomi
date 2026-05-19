@@ -1,3 +1,5 @@
+import type { GETV1MeFollowingResponse } from '@litomi/contracts'
+
 import { db } from '@litomi/db/database/app/drizzle'
 import { userFollowTable } from '@litomi/db/database/app/user'
 import { eq } from 'drizzle-orm'
@@ -7,10 +9,6 @@ import type { Env } from '@/app'
 
 import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
-
-export type GETV1MeFollowingResponse = {
-  userIds: number[]
-}
 
 const route = new Hono<Env>()
 

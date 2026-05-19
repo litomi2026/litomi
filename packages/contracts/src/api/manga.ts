@@ -56,6 +56,12 @@ export const postV1MangaIdReportResponseSchema = z.object({
 
 export type POSTV1MangaIdReportResponse = z.infer<typeof postV1MangaIdReportResponseSchema>
 
+export const getV1MangaIdReportResponseSchema = z.object({
+  alreadyReported: z.boolean(),
+})
+
+export type GETV1MangaIdReportResponse = z.infer<typeof getV1MangaIdReportResponseSchema>
+
 export const mangaIdParamSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
 })

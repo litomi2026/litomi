@@ -1,8 +1,8 @@
+import { libraryIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable, pinnedLibraryTable } from '@litomi/db/database/app/library'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,13 +14,9 @@ import { zProblemValidator } from '@/utils/validator'
 
 import { getPinnedLibraryLimit } from './limit'
 
-const paramsSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
 const routes = new Hono<Env>()
 
-routes.post('/', requireAuth, requireAdult, zProblemValidator('param', paramsSchema), async (c) => {
+routes.post('/', requireAuth, requireAdult, zProblemValidator('param', libraryIdParamSchema), async (c) => {
   const { id: libraryId } = c.req.valid('param')
   const userId = c.get('userId')!
 

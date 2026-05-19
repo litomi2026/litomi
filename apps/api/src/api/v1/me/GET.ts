@@ -1,8 +1,10 @@
+import type { AdultVerificationStatus, GETV1MeResponse } from '@litomi/contracts'
+
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
 import { db } from '@litomi/db/database/app/drizzle'
 import { userSettingsTable, userTable } from '@litomi/db/database/app/user'
-import { resolveUserSettings, type UserSettings } from '@litomi/domain/utils/user-settings'
+import { resolveUserSettings } from '@litomi/domain/utils/user-settings'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
@@ -11,21 +13,6 @@ import type { Env } from '@/app'
 import { privateCacheControl } from '@/utils/cache-control'
 import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
-
-export type AdultVerificationStatus = 'adult' | 'not_adult' | 'unverified'
-
-export type GETV1MeResponse = {
-  id: number
-  loginId: string
-  name: string
-  nickname: string
-  imageURL: string | null
-  adultVerification: {
-    required: boolean
-    status: AdultVerificationStatus
-  }
-  settings: UserSettings
-}
 
 const route = new Hono<Env>()
 

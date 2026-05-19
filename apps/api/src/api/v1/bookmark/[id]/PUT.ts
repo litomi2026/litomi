@@ -1,9 +1,8 @@
+import { bookmarkMangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
 import { bookmarkTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -20,18 +19,9 @@ const ErrorCode = {
   BOOKMARK_LIMIT_REACHED: 'BOOKMARK_LIMIT_REACHED',
 } as const
 
-const paramSchema = z.object({
-  id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
-})
-
-export type PUTV1BookmarkIdResponse = {
-  mangaId: number
-  createdAt: number
-}
-
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, requireAdult, zProblemValidator('param', paramSchema), async (c) => {
+route.put('/', requireAuth, requireAdult, zProblemValidator('param', bookmarkMangaIdParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: mangaId } = c.req.valid('param')
 

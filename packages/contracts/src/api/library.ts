@@ -1,6 +1,8 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
+import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import {
+  LIBRARIES_PER_PAGE,
   LIBRARY_ITEMS_PER_PAGE,
   MAX_LIBRARY_DESCRIPTION_LENGTH,
   MAX_LIBRARY_ICON_LENGTH,
@@ -8,12 +10,20 @@ import {
   MAX_MANGA_ID,
   MAX_READING_HISTORY_LAST_PAGE,
   RATING_PER_PAGE,
+  READING_HISTORY_PER_PAGE,
 } from '@litomi/domain/constants/policy'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT, RatingSort } from '@litomi/domain/library/sort'
 import { isSingleEmoji } from '@litomi/domain/utils/emoji'
 import { z } from 'zod'
 
 const catalogMangaSchema = z.custom<Manga>()
+const positiveIntegerParamSchema = z.coerce.number().int().positive()
+
+export const libraryIdParamSchema = z.object({
+  id: positiveIntegerParamSchema,
+})
+
+export type LibraryIdParam = z.infer<typeof libraryIdParamSchema>
 
 export const libraryIconSchema = z
   .string()
@@ -56,6 +66,14 @@ export const libraryListItemSchema = z.object({
 
 export type LibraryListItem = z.infer<typeof libraryListItemSchema>
 
+export const getV1LibraryListQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().max(LIBRARIES_PER_PAGE).default(LIBRARIES_PER_PAGE),
+  scope: z.enum(['all', 'me', 'public', 'pinned']),
+})
+
+export type GETV1LibraryListQuery = z.infer<typeof getV1LibraryListQuerySchema>
+
 export const getV1LibraryListResponseSchema = z.object({
   libraries: z.array(libraryListItemSchema),
   nextCursor: z.string().nullable(),
@@ -66,6 +84,12 @@ export type GETV1LibraryListResponse = z.infer<typeof getV1LibraryListResponseSc
 export const getV1LibraryResponseSchema = libraryListItemSchema
 
 export type GETV1LibraryResponse = z.infer<typeof getV1LibraryResponseSchema>
+
+export const getV1LibraryIdQuerySchema = z.object({
+  scope: z.enum(['public', 'me']),
+})
+
+export type GETV1LibraryIdQuery = z.infer<typeof getV1LibraryIdQuerySchema>
 
 export const postV1LibraryBodySchema = libraryMutationBodySchema
 
@@ -110,6 +134,18 @@ export const getLibraryItemsQuerySchema = z.object({
 
 export type GETLibraryItemsQuery = z.infer<typeof getLibraryItemsQuerySchema>
 
+export const getV1ReadingHistoryQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(POINT_CONSTANTS.HISTORY_MAX_EXPANSION)
+    .default(READING_HISTORY_PER_PAGE),
+})
+
+export type GETV1ReadingHistoryQuery = z.infer<typeof getV1ReadingHistoryQuerySchema>
+
 export const readingHistoryItemSchema = z.object({
   mangaId: z.number(),
   lastPage: z.number(),
@@ -128,7 +164,10 @@ export type GETV1ReadingHistoryResponse = z.infer<typeof getV1ReadingHistoryResp
 export const deleteV1ReadingHistoryBodySchema = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('selected'),
-    mangaIds: z.array(z.coerce.number().int().positive().max(MAX_MANGA_ID)).min(1),
+    mangaIds: z
+      .array(z.coerce.number().int().positive().max(MAX_MANGA_ID))
+      .min(1)
+      .max(POINT_CONSTANTS.HISTORY_MAX_EXPANSION),
   }),
   z.object({ mode: z.literal('all') }),
 ])
@@ -209,24 +248,34 @@ export const deleteV1LibraryItemResponseSchema = z.object({
 
 export type DELETEV1LibraryItemResponse = z.infer<typeof deleteV1LibraryItemResponseSchema>
 
+export const libraryMangaItemSchema = z.object({
+  mangaId: z.number(),
+  createdAt: z.number(),
+  manga: catalogMangaSchema.optional(),
+  library: z.object({
+    id: z.number(),
+    name: z.string(),
+    color: z.string().nullable(),
+    icon: z.string().nullable(),
+  }),
+})
+
+export type LibraryMangaItem = z.infer<typeof libraryMangaItemSchema>
+
 export const getV1LibraryMangaResponseSchema = z.object({
-  items: z.array(
-    z.object({
-      mangaId: z.number(),
-      createdAt: z.number(),
-      manga: catalogMangaSchema.optional(),
-      library: z.object({
-        id: z.number(),
-        name: z.string(),
-        color: z.string().nullable(),
-        icon: z.string().nullable(),
-      }),
-    }),
-  ),
+  items: z.array(libraryMangaItemSchema),
   nextCursor: z.string().nullable(),
 })
 
 export type GETV1LibraryMangaResponse = z.infer<typeof getV1LibraryMangaResponseSchema>
+
+export const getV1LibraryMangaQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
+  scope: z.enum(['public', 'me']),
+})
+
+export type GETV1LibraryMangaQuery = z.infer<typeof getV1LibraryMangaQuerySchema>
 
 export const ratingItemSchema = z.object({
   createdAt: z.number(),

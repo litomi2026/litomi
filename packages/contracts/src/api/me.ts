@@ -131,6 +131,12 @@ export const deleteV1MeSessionResponseSchema = z.object({
 
 export type DELETEV1MeSessionResponse = z.infer<typeof deleteV1MeSessionResponseSchema>
 
+export const deleteV1MeSessionParamSchema = z.object({
+  id: z.uuid(),
+})
+
+export type DELETEV1MeSessionParam = z.infer<typeof deleteV1MeSessionParamSchema>
+
 export const getV1MeFollowingResponseSchema = z.object({
   userIds: z.array(z.number()),
 })

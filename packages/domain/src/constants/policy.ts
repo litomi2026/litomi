@@ -40,6 +40,7 @@ export const READING_HISTORY_PER_PAGE = 25
 export const RATING_PER_PAGE = 25
 export const POST_PER_PAGE = 25
 export const LIBRARY_ITEMS_PER_PAGE = 25
+export const TAGS_PER_PAGE = 100
 export const LINK_PENDING_DELAY = 500
 export const SCROLL_THRESHOLD_PX = 10
 export const REALTIME_PAGE_VIEW_MIN_THRESHOLD = 10

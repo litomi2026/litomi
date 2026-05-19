@@ -1,54 +1,25 @@
 import { translateTag } from '@litomi/catalog/translation/tag'
+import { getV1TagQuerySchema, type GETV1TagResponse, type TagCategoryParam, type TagItem } from '@litomi/contracts'
 import { catalogDB } from '@litomi/db/database/catalog/drizzle'
 import { mangaTable } from '@litomi/db/database/catalog/schema'
-import { Locale } from '@litomi/domain/locale'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
 import { zProblemValidator } from '@/utils/validator'
 
-const TAGS_PER_PAGE = 100
-
-const CategoryParam = ['female', 'male', 'mixed', 'other'] as const
-type CategoryParam = (typeof CategoryParam)[number]
-
-const categoryToNumber: Record<CategoryParam, number> = {
+const categoryToNumber: Record<TagCategoryParam, number> = {
   female: 0,
   male: 1,
   mixed: 2,
   other: 3,
 }
 
-const querySchema = z.object({
-  category: z.enum(CategoryParam),
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(TAGS_PER_PAGE).default(TAGS_PER_PAGE),
-  locale: z.enum(Locale).default(Locale.KO),
-})
-
-export type GETV1TagResponse = {
-  tags: TagItem[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-}
-
 type TagCountRow = {
   value: string
-  count: number
-}
-
-type TagItem = {
-  value: string
-  label: string
   count: number
 }
 
@@ -58,7 +29,7 @@ type TotalCountRow = {
 
 const tagRoutes = new Hono<Env>()
 
-tagRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+tagRoutes.get('/', zProblemValidator('query', getV1TagQuerySchema), async (c) => {
   const { category, page, limit, locale } = c.req.valid('query')
   const categoryNumber = categoryToNumber[category]
   const offset = (page - 1) * limit

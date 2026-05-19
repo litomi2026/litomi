@@ -1,8 +1,8 @@
+import { type PUTV1UserIdFollowResponse, userIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { userFollowTable } from '@litomi/db/database/app/user'
 import { isPostgresError } from '@litomi/db/database/error'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -10,17 +10,9 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const paramsSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-export type PUTV1UserIdFollowResponse = {
-  following: true
-}
-
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, zProblemValidator('param', paramsSchema), async (c) => {
+route.put('/', requireAuth, zProblemValidator('param', userIdParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: targetUserId } = c.req.valid('param')
 

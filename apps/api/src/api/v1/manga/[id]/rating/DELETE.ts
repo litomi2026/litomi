@@ -1,9 +1,8 @@
+import { mangaIdParamSchema } from '@litomi/contracts'
 import { userRatingTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -11,13 +10,9 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const paramSchema = z.object({
-  id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
-})
-
 const route = new Hono<Env>()
 
-route.delete('/:id/rating', requireAuth, zProblemValidator('param', paramSchema), async (c) => {
+route.delete('/:id/rating', requireAuth, zProblemValidator('param', mangaIdParamSchema), async (c) => {
   const userId = c.get('userId')!
 
   const { id: mangaId } = c.req.valid('param')

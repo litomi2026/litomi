@@ -1,11 +1,10 @@
-import { patchV1LibraryIdBodySchema, type PATCHV1LibraryIdResponse } from '@litomi/contracts'
+import { libraryIdParamSchema, patchV1LibraryIdBodySchema, type PATCHV1LibraryIdResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
 import { hexColorToInt } from '@litomi/domain/utils/color'
 import { normalizeString } from '@litomi/std'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,16 +13,12 @@ import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/utils
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const paramSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
 const route = new Hono<Env>()
 
 route.patch(
   '/',
   requireAuth,
-  zProblemValidator('param', paramSchema),
+  zProblemValidator('param', libraryIdParamSchema),
   zProblemValidator('json', patchV1LibraryIdBodySchema),
   async (c) => {
     const userId = c.get('userId')!

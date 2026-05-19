@@ -1,10 +1,9 @@
+import { type GETV1MangaIdReportResponse, mangaIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { mangaReportTable } from '@litomi/db/database/app/report'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import ms from 'ms'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,19 +13,11 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const paramSchema = z.object({
-  id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
-})
-
-export type GETV1MangaIdReportResponse = {
-  alreadyReported: boolean
-}
-
 const REPORT_DEDUPE_TTL_MS = ms('30 days')
 
 const route = new Hono<Env>()
 
-route.get('/:id/report', requireAuth, requireAdult, zProblemValidator('param', paramSchema), async (c) => {
+route.get('/:id/report', requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema), async (c) => {
   const userId = c.get('userId')!
 
   const { id: mangaId } = c.req.valid('param')

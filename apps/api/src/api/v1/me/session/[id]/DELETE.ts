@@ -1,5 +1,5 @@
+import { deleteV1MeSessionParamSchema, type DELETEV1MeSessionResponse } from '@litomi/contracts'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -7,15 +7,11 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 import { revokeSessionFamilyByIdForUser } from '../query'
-import { type DELETEV1MeSessionResponse, getCurrentSessionFamilyId } from '../shared'
-
-const sessionParamSchema = z.object({
-  id: z.uuid(),
-})
+import { getCurrentSessionFamilyId } from '../shared'
 
 const route = new Hono<Env>()
 
-route.delete('/', zProblemValidator('param', sessionParamSchema), async (c) => {
+route.delete('/', zProblemValidator('param', deleteV1MeSessionParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
   const now = new Date()
