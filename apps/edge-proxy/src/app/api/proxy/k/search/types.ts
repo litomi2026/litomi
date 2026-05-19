@@ -1,4 +1,4 @@
-import type { Locale } from '@litomi/catalog/translation/common'
+import type { Locale } from '@litomi/domain/locale'
 import type { Manga } from '@litomi/domain/types/manga'
 
 export enum Sort {

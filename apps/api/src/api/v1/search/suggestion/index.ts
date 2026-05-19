@@ -1,9 +1,8 @@
-import { Locale } from '@litomi/catalog/translation/common'
+import { getSearchSuggestionsQuerySchema, type GETSearchSuggestionsResponse } from '@litomi/contracts'
 import { queryBlacklist } from '@litomi/domain/search/suggestion'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,17 +13,7 @@ import { suggestionTrie } from './suggestion-trie'
 
 const suggestionRoutes = new Hono<Env>()
 
-const querySchema = z.object({
-  locale: z.enum(Locale).default(Locale.KO),
-  query: z.string().trim().min(2).max(200),
-})
-
-export type GETSearchSuggestionsResponse = {
-  label: string
-  value: string
-}[]
-
-suggestionRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+suggestionRoutes.get('/', zProblemValidator('query', getSearchSuggestionsQuerySchema), async (c) => {
   const { locale, query } = c.req.valid('query')
 
   if (queryBlacklist.some((regex) => regex.test(query))) {

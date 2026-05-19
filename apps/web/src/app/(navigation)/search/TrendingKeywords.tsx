@@ -1,6 +1,6 @@
 'use client'
 
-import { Locale } from '@litomi/catalog/translation/common'
+import { Locale } from '@litomi/domain/locale'
 import { View } from '@litomi/std'
 import { ChevronRight } from 'lucide-react'
 import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'

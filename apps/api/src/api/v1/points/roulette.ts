@@ -1,10 +1,10 @@
+import { postV1RouletteSpinRequestSchema, type POSTV1RouletteSpinResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { pointTransactionTable, userPointsTable } from '@litomi/db/database/app/points'
 import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { assertRouletteConfig, ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/constants/roulette'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,29 +14,9 @@ import { zProblemValidator } from '@/utils/validator'
 
 assertRouletteConfig(ROULETTE_CONFIG)
 
-export type POSTV1RouletteSpinRequest = {
-  bet: number
-}
-
-export type POSTV1RouletteSpinResponse = {
-  balance: number
-  bet: number
-  payout: number
-  net: number
-  landed: {
-    id: RouletteSegment['id']
-    label: string
-    payoutMultiplierX100: number
-  }
-}
-
 const route = new Hono<Env>()
 
-const requestSchema = z.object({
-  bet: z.coerce.number().int().min(ROULETTE_CONFIG.minBet).max(ROULETTE_CONFIG.maxBet).positive(),
-})
-
-route.post('/spin', requireAuth, zProblemValidator('json', requestSchema), async (c) => {
+route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinRequestSchema), async (c) => {
   const userId = c.get('userId')!
   const { bet } = c.req.valid('json')
 

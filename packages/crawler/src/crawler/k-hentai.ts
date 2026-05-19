@@ -2,7 +2,6 @@ import type { Manga } from '@litomi/domain/types/manga'
 
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateCharacterList } from '@litomi/catalog/translation/character'
-import { Locale } from '@litomi/catalog/translation/common'
 import { translateGroupList } from '@litomi/catalog/translation/group'
 import { translateLanguageList } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
@@ -12,6 +11,7 @@ import { NotFoundError, ParseError, UpstreamServerError } from '@litomi/crawler/
 import { ProxyClient, type ProxyClientConfig, type ProxyRequestInit } from '@litomi/crawler/crawler/proxy'
 import { isUpstreamServerError } from '@litomi/crawler/crawler/proxy-utils'
 import { MangaSource, tagCategoryNameToInt } from '@litomi/domain/database/enum'
+import { Locale } from '@litomi/domain/locale'
 import { convertCamelCaseToKebabCase } from '@litomi/std'
 import ms from 'ms'
 

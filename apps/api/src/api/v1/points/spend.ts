@@ -1,9 +1,9 @@
+import { postV1PointSpendRequestSchema, type POSTV1PointSpendResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { pointTransactionTable, userExpansionTable, userItemTable, userPointsTable } from '@litomi/db/database/app/points'
 import { ITEM_TYPE, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { and, eq, sql, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -15,19 +15,7 @@ import { getExpansionConfig, getSpendMeta, isBookmarkItemId } from './util'
 
 const route = new Hono<Env>()
 
-const spendSchema = z.object({
-  type: z.enum(['library', 'history', 'pinned_library', 'rating', 'bookmark', 'badge', 'theme']),
-  itemId: z.string().optional(),
-})
-
-export type POSTV1PointSpendRequest = z.infer<typeof spendSchema>
-
-export type POSTV1PointSpendResponse = {
-  balance: number
-  spent: number
-}
-
-route.post('/', requireAuth, zProblemValidator('json', spendSchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSchema), async (c) => {
   const userId = c.get('userId')!
 
   type TransactionResult = { ok: false; status: number; detail?: string } | { ok: true; balance: number; spent: number }

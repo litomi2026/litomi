@@ -1,7 +1,7 @@
-import { Locale } from '@litomi/catalog/translation/common'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { catalogDB } from '@litomi/db/database/catalog/drizzle'
 import { mangaTable } from '@litomi/db/database/catalog/schema'
+import { Locale } from '@litomi/domain/locale'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { sql } from 'drizzle-orm'

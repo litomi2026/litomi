@@ -1,9 +1,10 @@
 import 'server-only'
+import { Locale } from '@litomi/domain/locale'
 
 import { getArtistSponsors } from '../sponsor/artist'
 import artistTranslationJSON from './artist.json'
 import { translateCategory } from './category'
-import { Locale, Multilingual, normalizeValue, translateValue } from './common'
+import { Multilingual, normalizeValue, translateValue } from './common'
 
 const ARTIST_TRANSLATION: Record<string, Multilingual> = artistTranslationJSON
 

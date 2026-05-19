@@ -1,4 +1,3 @@
-import { Locale } from '@litomi/catalog/translation/common'
 import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
 import {
   createCacheControlHeaders,
@@ -6,6 +5,7 @@ import {
   handleRouteError,
 } from '@litomi/crawler/crawler/proxy-utils'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
+import { Locale } from '@litomi/domain/locale'
 import { sec } from '@litomi/std'
 import z from 'zod'
 

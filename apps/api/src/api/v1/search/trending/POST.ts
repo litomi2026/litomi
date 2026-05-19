@@ -1,25 +1,14 @@
+import { postV1SearchTrendingBodySchema, type POSTV1SearchTrendingResponse } from '@litomi/contracts'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
 import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 import { zProblemValidator } from '@/utils/validator'
 
-const bodySchema = z.object({
-  keywords: z.array(z.string().min(1).max(100)).min(1).max(10),
-})
-
-export type POSTV1SearchTrendingBody = z.infer<typeof bodySchema>
-
-export type POSTV1SearchTrendingResponse = {
-  success: boolean
-  tracked: number
-}
-
 const trendingPostRoutes = new Hono<Env>()
 
-trendingPostRoutes.post('/', zProblemValidator('json', bodySchema), async (c) => {
+trendingPostRoutes.post('/', zProblemValidator('json', postV1SearchTrendingBodySchema), async (c) => {
   const { keywords } = c.req.valid('json')
 
   await Promise.all(keywords.map((keyword) => trendingKeywordsService.trackSearch(keyword)))

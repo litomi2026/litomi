@@ -1,41 +1,22 @@
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateCategory } from '@litomi/catalog/translation/category'
 import { translateCharacterList } from '@litomi/catalog/translation/character'
-import { Locale, normalizeValue } from '@litomi/catalog/translation/common'
+import { normalizeValue } from '@litomi/catalog/translation/common'
 import { translateGroupList } from '@litomi/catalog/translation/group'
 import { translateLanguage } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
+import { getTrendingKeywordsQuerySchema, type GETTrendingKeywordsResponse, TrendingType } from '@litomi/contracts'
+import { Locale } from '@litomi/domain/locale'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
 import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 import { zProblemValidator } from '@/utils/validator'
-
-enum TrendingType {
-  HOURLY = 'hourly',
-  DAILY = 'daily',
-  WEEKLY = 'weekly',
-}
-
-const querySchema = z.object({
-  limit: z.coerce.number().int().positive().max(10).default(10),
-  locale: z.enum(Locale).default(Locale.KO),
-  type: z.enum(TrendingType).default(TrendingType.HOURLY),
-})
-
-export type GETTrendingKeywordsResponse = {
-  keywords: {
-    value: string
-    label: string
-  }[]
-  updatedAt: Date
-}
 
 const trendingRoutes = new Hono<Env>()
 
@@ -181,7 +162,7 @@ function translateTrendingKeyword(keyword: string, locale: Locale): string {
   return segments.join(', ')
 }
 
-trendingRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+trendingRoutes.get('/', zProblemValidator('query', getTrendingKeywordsQuerySchema), async (c) => {
   const { limit, locale, type } = c.req.valid('query')
 
   const { keywords = [], cacheMaxAge } = {

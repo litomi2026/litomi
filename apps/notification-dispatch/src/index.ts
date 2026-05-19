@@ -1,9 +1,9 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
-import { Locale } from '@litomi/catalog/translation/common'
 import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
 import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
 import { db } from '@litomi/db/database/app/drizzle'
+import { Locale } from '@litomi/domain/locale'
 import { sql } from 'drizzle-orm'
 
 import { MangaNotificationProcessor } from './MangaNotificationProcessor'

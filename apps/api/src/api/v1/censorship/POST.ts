@@ -1,35 +1,18 @@
+import { postV1CensorshipCreateBodySchema, type POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 import { userCensorshipTable } from '@litomi/db/database/app/censorship'
 import { db } from '@litomi/db/database/app/drizzle'
 import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const createSchema = z.object({
-  items: z
-    .array(
-      z.object({
-        key: z.enum(CensorshipKey),
-        value: z.string().trim().min(1).max(256),
-        level: z.enum(CensorshipLevel),
-      }),
-    )
-    .min(1)
-    .max(100),
-})
-
-export type POSTV1CensorshipCreateBody = z.infer<typeof createSchema>
-export type POSTV1CensorshipCreateResponse = { ids: number[] }
-
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', createSchema), async (c) => {
+route.post('/', zProblemValidator('json', postV1CensorshipCreateBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { items } = c.req.valid('json')
 

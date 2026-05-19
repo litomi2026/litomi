@@ -1,7 +1,8 @@
 import 'server-only'
+import { Locale } from '@litomi/domain/locale'
 
 import { translateCategory } from './category'
-import { Locale, Multilingual, normalizeValue, translateValue } from './common'
+import { Multilingual, normalizeValue, translateValue } from './common'
 import typeTranslationJSON from './type.json'
 
 const TYPE_TRANSLATION: Record<string, Multilingual> = typeTranslationJSON

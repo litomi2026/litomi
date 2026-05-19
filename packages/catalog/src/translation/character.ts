@@ -1,9 +1,10 @@
 import 'server-only'
+import { Locale } from '@litomi/domain/locale'
 
 import { getCharacterSponsors } from '../sponsor/character'
 import { translateCategory } from './category'
 import characterTranslationJSON from './character.json'
-import { Locale, Multilingual, normalizeValue, translateValue } from './common'
+import { Multilingual, normalizeValue, translateValue } from './common'
 
 const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslationJSON
 

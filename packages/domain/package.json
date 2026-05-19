@@ -18,6 +18,7 @@
     "./database/zod": "./src/database/zod.ts",
     "./generated/emojis": "./src/generated/emojis.ts",
     "./library/sort": "./src/library/sort.ts",
+    "./locale": "./src/locale.ts",
     "./notification/filter": "./src/notification/filter.ts",
     "./post/filter": "./src/post/filter.ts",
     "./search/query-key-alias": "./src/search/query-key-alias.ts",

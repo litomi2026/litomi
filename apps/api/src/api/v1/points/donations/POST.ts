@@ -1,3 +1,4 @@
+import { postV1PointsDonationCreateRequestSchema, type POSTV1PointsDonationCreateResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import {
   DONATION_RECIPIENT_TYPE,
@@ -9,7 +10,6 @@ import {
 import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -19,29 +19,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-const createSchema = z.object({
-  totalAmount: z.coerce.number().int().positive(),
-  recipients: z
-    .array(
-      z.object({
-        type: z.enum(['artist', 'group']),
-        value: z.string().trim().min(1).max(200),
-      }),
-    )
-    .min(1)
-    .max(20),
-})
-
-export type POSTV1PointsDonationCreateRequest = z.infer<typeof createSchema>
-
-export type POSTV1PointsDonationCreateResponse = {
-  balance: number
-  donationId: number
-  totalAmount: number
-  recipients: Array<{ type: 'artist' | 'group'; value: string; amount: number }>
-}
-
-route.post('/', requireAuth, zProblemValidator('json', createSchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreateRequestSchema), async (c) => {
   const userId = c.get('userId')!
   const { totalAmount, recipients } = c.req.valid('json')
   const recipientKeys = new Set<string>()

@@ -1,3 +1,5 @@
+import type { GETV1PointsResponse } from '@litomi/contracts'
+
 import { db } from '@litomi/db/database/app/drizzle'
 import { userPointsTable } from '@litomi/db/database/app/points'
 import { eq } from 'drizzle-orm'
@@ -8,12 +10,6 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
-
-export type GETV1PointsResponse = {
-  balance: number
-  totalEarned: number
-  totalSpent: number
-}
 
 const route = new Hono<Env>()
 
