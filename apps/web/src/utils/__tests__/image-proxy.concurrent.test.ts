@@ -78,9 +78,6 @@ describe('만화 이미지 프록시 유틸', () => {
         page: 1,
         variant: 'thumbnail',
       }),
-    ).toEqual([
-      'https://khentai-t.siam-cdn.net/0/0/456',
-      'https://cdn.imagedeliveries.com/456/thumbnails/cover.webp',
-    ])
+    ).toEqual(['https://khentai-t.siam-cdn.net/0/0/456', 'https://cdn.imagedeliveries.com/456/thumbnails/cover.webp'])
   })
 })

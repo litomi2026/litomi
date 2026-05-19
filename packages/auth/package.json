@@ -18,6 +18,8 @@
     "./two-factor-backup-code": "./src/two-factor-backup-code.ts"
   },
   "scripts": {
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
     "type": "tsc --noEmit"
   },
   "dependencies": {

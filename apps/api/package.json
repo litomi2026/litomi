@@ -8,6 +8,8 @@
     "dev:local": "bun run --conditions=react-server --env-file=.env.local --watch src/server.ts",
     "dev:prod": "bun run --conditions=react-server --env-file=.env.prod.dev --watch src/server.ts",
     "build": "bun build --compile --conditions=react-server --minify --sourcemap src/server.ts --target=bun --outfile dist/litomi-api",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
     "docker:build": "docker build -f Dockerfile -t litomi-api-local ../..",
     "docker:run": "docker run --rm -p 3002:3002 --env-file .env.prod.runtime litomi-api-local",
     "start": "bun run start:prod",

@@ -86,15 +86,15 @@ describe('게시글 캐시 헬퍼', () => {
     applyPostLikeCountDeltaInPostLists(queryClient, 1, 1)
 
     expect(
-      queryClient.getQueryData<InfiniteData<GETV1PostResponse>>(QueryKeys.posts(PostFilter.RECOMMEND))?.pages[0]?.posts[0]
-        ?.likeCount,
+      queryClient.getQueryData<InfiniteData<GETV1PostResponse>>(QueryKeys.posts(PostFilter.RECOMMEND))?.pages[0]
+        ?.posts[0]?.likeCount,
     ).toBe(1)
 
     restorePostLikeInPostLists(queryClient, 1, snapshot)
 
     expect(
-      queryClient.getQueryData<InfiniteData<GETV1PostResponse>>(QueryKeys.posts(PostFilter.RECOMMEND))?.pages[0]?.posts[0]
-        ?.likeCount,
+      queryClient.getQueryData<InfiniteData<GETV1PostResponse>>(QueryKeys.posts(PostFilter.RECOMMEND))?.pages[0]
+        ?.posts[0]?.likeCount,
     ).toBe(0)
   })
 

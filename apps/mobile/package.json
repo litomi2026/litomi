@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "doctor": "bunx cap doctor",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
     "assets:generate": "node scripts/generate-native-assets.mjs",
     "sync": "bunx cap sync",
     "sync:android": "bunx cap sync android",

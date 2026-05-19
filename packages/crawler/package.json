@@ -19,6 +19,8 @@
   },
   "scripts": {
     "exhentai:fullimg": "bun scripts/exhentaiFullimgLinks.ts",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
     "type": "tsc --noEmit"
   },
   "dependencies": {

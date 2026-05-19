@@ -1,8 +1,4 @@
-import type {
-  GETV1PostLikedResponse,
-  GETV1PostResponse,
-  Post,
-} from '@litomi/contracts'
+import type { GETV1PostLikedResponse, GETV1PostResponse, Post } from '@litomi/contracts'
 import type { InfiniteData, QueryClient, QueryKey } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'

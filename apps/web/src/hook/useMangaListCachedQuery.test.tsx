@@ -1,6 +1,10 @@
 import '@test/setup.dom'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
-import { createTestQueryClient, createTestQueryClientWrapper, renderWithTestQueryClient } from '@test/utils/query-client'
+import {
+  createTestQueryClient,
+  createTestQueryClientWrapper,
+  renderWithTestQueryClient,
+} from '@test/utils/query-client'
 import { cleanup, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
@@ -241,7 +245,8 @@ describe('useMangaListCachedQuery', () => {
       expect(view.getByText('Manga 101')).toBeTruthy()
     })
 
-    const afterListCalls = fetchController?.calls.filter(({ url }) => url.pathname === '/api/proxy/manga/101').length ?? 0
+    const afterListCalls =
+      fetchController?.calls.filter(({ url }) => url.pathname === '/api/proxy/manga/101').length ?? 0
 
     view.rerender(<SingleMangaTitle mangaId={101} />)
 
@@ -249,7 +254,8 @@ describe('useMangaListCachedQuery', () => {
       expect(view.getByText('Manga 101')).toBeTruthy()
     })
 
-    const afterSingleCalls = fetchController?.calls.filter(({ url }) => url.pathname === '/api/proxy/manga/101').length ?? 0
+    const afterSingleCalls =
+      fetchController?.calls.filter(({ url }) => url.pathname === '/api/proxy/manga/101').length ?? 0
 
     view.rerender(<MangaTitleList mangaIds={[101]} />)
 
@@ -257,7 +263,8 @@ describe('useMangaListCachedQuery', () => {
       expect(view.getByText('Manga 101')).toBeTruthy()
     })
 
-    const afterListAgainCalls = fetchController?.calls.filter(({ url }) => url.pathname === '/api/proxy/manga/101').length ?? 0
+    const afterListAgainCalls =
+      fetchController?.calls.filter(({ url }) => url.pathname === '/api/proxy/manga/101').length ?? 0
 
     expect(afterListCalls).toBe(1)
     expect(afterSingleCalls).toBe(1)

@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/catalog-ingest",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
     "docker:build": "docker build -f Dockerfile -t litomi-catalog-ingest-local ../..",
     "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-catalog-ingest-local",
     "start": "bun run start:prod",

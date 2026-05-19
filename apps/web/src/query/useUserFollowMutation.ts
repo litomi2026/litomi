@@ -1,6 +1,10 @@
 'use client'
 
-import type { DELETEV1UserIdFollowResponse, GETV1MeFollowingResponse, PUTV1UserIdFollowResponse } from '@litomi/contracts'
+import type {
+  DELETEV1UserIdFollowResponse,
+  GETV1MeFollowingResponse,
+  PUTV1UserIdFollowResponse,
+} from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
