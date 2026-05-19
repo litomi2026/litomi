@@ -1,7 +1,7 @@
 import '@test/setup.dom'
 import type { GETV1BookmarkResponse } from '@litomi/contracts'
 
-import { CollectionItemSort } from '@litomi/contracts'
+import { CollectionItemSort } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestNavigationWrapper } from '@test/utils/navigation'

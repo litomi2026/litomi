@@ -1,4 +1,5 @@
-import { CollectionItemSort, PostFilter, RatingSort } from '@litomi/contracts'
+import { CollectionItemSort, RatingSort } from '@litomi/domain/library/sort'
+import { PostFilter } from '@litomi/domain/post/filter'
 
 export const QueryKeys = {
   me: ['me'],

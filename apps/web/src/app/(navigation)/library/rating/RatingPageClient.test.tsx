@@ -1,6 +1,6 @@
 import type { GETV1RatingsResponse } from '@litomi/contracts'
 
-import { isGroupedRatingSort, RatingSort } from '@litomi/contracts'
+import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestNavigationWrapper } from '@test/utils/navigation'

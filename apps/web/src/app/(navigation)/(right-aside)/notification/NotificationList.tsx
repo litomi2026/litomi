@@ -1,6 +1,6 @@
 'use client'
 
-import { NotificationFilter } from '@litomi/contracts'
+import { NotificationFilter } from '@litomi/domain/notification/filter'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'

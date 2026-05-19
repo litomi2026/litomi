@@ -1,5 +1,5 @@
 import { Locale } from '@litomi/catalog/translation/common'
-import { queryBlacklist } from '@litomi/contracts'
+import { queryBlacklist } from '@litomi/domain/search/suggestion'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'

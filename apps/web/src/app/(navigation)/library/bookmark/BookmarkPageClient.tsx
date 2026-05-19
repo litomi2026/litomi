@@ -2,7 +2,7 @@
 
 import type { GETV1BookmarkResponse } from '@litomi/contracts'
 
-import { COLLECTION_ITEM_SORT_OPTIONS, CollectionItemSort } from '@litomi/contracts'
+import { CollectionItemSort } from '@litomi/domain/library/sort'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -25,6 +25,7 @@ import { createLoadingManga } from '@/utils/manga-placeholder'
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
+import { COLLECTION_ITEM_SORT_OPTIONS } from '../sort-options'
 import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkUploadButton from './BookmarkUploadButton'
 import NotFound from './NotFound'

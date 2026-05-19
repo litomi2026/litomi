@@ -1,10 +1,11 @@
 import type { GETNotificationResponse } from '@litomi/contracts'
 
-import { getNotificationQuerySchema, NotificationFilter } from '@litomi/contracts'
+import { getNotificationQuerySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { notificationTable } from '@litomi/db/database/app/notification'
 import { NOTIFICATION_PER_PAGE } from '@litomi/domain/constants/policy'
 import { NotificationType } from '@litomi/domain/database/enum'
+import { NotificationFilter } from '@litomi/domain/notification/filter'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
 

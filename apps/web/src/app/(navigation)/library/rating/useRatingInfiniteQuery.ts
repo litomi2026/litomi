@@ -1,6 +1,6 @@
 import type { GETV1RatingsResponse } from '@litomi/contracts'
 
-import { RatingSort } from '@litomi/contracts'
+import { RatingSort } from '@litomi/domain/library/sort'
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 

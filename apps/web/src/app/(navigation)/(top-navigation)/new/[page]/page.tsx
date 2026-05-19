@@ -1,7 +1,7 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { nativeGridSponsorPlacement } from '@litomi/contracts'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
+import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'

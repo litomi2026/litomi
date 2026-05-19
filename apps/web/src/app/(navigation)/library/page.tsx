@@ -1,6 +1,6 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { nativeGridSponsorPlacement } from '@litomi/contracts'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { View } from '@litomi/std'
 import { Metadata } from 'next'
 import { z } from 'zod'

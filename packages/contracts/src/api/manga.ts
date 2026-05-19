@@ -1,4 +1,4 @@
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
+import { MAX_MANGA_ID, MAX_READING_HISTORY_LAST_PAGE } from '@litomi/domain/constants/policy'
 import { z } from 'zod'
 
 export const getV1MangaIdHistoryResponseSchema = z.number()
@@ -6,7 +6,7 @@ export const getV1MangaIdHistoryResponseSchema = z.number()
 export type GETV1MangaIdHistoryResponse = z.infer<typeof getV1MangaIdHistoryResponseSchema>
 
 export const postV1MangaIdHistoryBodySchema = z.object({
-  lastPage: z.coerce.number().int().positive(),
+  lastPage: z.coerce.number().int().positive().max(MAX_READING_HISTORY_LAST_PAGE),
 })
 
 export type POSTV1MangaIdHistoryBody = z.infer<typeof postV1MangaIdHistoryBodySchema>

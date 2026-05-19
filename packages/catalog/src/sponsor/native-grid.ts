@@ -1,5 +1,5 @@
 import 'server-only'
-import type { NativeGridSponsor, NativeGridSponsorPlacement } from '@litomi/contracts'
+import type { NativeGridSponsor, NativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 
 import { getRandomDecimal } from '@litomi/std'
 
