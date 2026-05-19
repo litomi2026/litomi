@@ -1,11 +1,15 @@
+import type { Manga } from '@litomi/domain/types/manga'
+
 import { MAX_BOOKMARK_BATCH_SIZE, MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { z } from 'zod'
 
 const mangaIdSchema = z.coerce.number().int().positive().max(MAX_MANGA_ID)
+const catalogMangaSchema = z.custom<Manga>()
 
 export const bookmarkSchema = z.object({
   mangaId: z.number(),
   createdAt: z.number(),
+  manga: catalogMangaSchema.optional(),
 })
 
 export type Bookmark = z.infer<typeof bookmarkSchema>

@@ -1,5 +1,6 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
+import { litomiClient } from '@litomi/crawler/crawler/litomi'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
@@ -91,9 +92,12 @@ export default async function LibraryDetailPage({ params, searchParams }: PagePr
     libraryItemRows.pop()
   }
 
+  const catalogMangaMap = await litomiClient.getMangas(libraryItemRows.map(({ mangaId }) => mangaId))
+
   const items = libraryItemRows.map((item) => ({
     mangaId: item.mangaId,
     createdAt: item.createdAt.getTime(),
+    manga: catalogMangaMap.get(item.mangaId),
   }))
 
   const nextCursor = hasNext ? getNextCollectionItemCursor(libraryItemRows[libraryItemRows.length - 1]) : null

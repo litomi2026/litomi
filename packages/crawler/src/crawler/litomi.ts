@@ -10,7 +10,7 @@ import { translateType } from '@litomi/catalog/translation/type'
 import { catalogDB } from '@litomi/db/database/catalog/drizzle'
 import { mangaTable } from '@litomi/db/database/catalog/schema'
 import { tagCategoryIntToName } from '@litomi/domain/database/enum'
-import { eq, sql } from 'drizzle-orm'
+import { eq, inArray, sql } from 'drizzle-orm'
 import ms from 'ms'
 
 import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker'
@@ -56,6 +56,19 @@ class LitomiClient {
    */
   async getManga(id: number): Promise<Manga | null> {
     return this.circuitBreaker.execute(() => this.selectMangaById(id))
+  }
+
+  /**
+   * Fetch multiple mangas by ID from the database.
+   */
+  async getMangas(ids: readonly number[]): Promise<Map<number, Manga>> {
+    const uniqueIds = Array.from(new Set(ids))
+
+    if (uniqueIds.length === 0) {
+      return new Map()
+    }
+
+    return this.circuitBreaker.execute(() => this.selectMangasByIds(uniqueIds))
   }
 
   /**
@@ -147,6 +160,31 @@ class LitomiClient {
     }
 
     return this.convertDatabaseToManga(result)
+  }
+
+  private async selectMangasByIds(ids: number[]): Promise<Map<number, Manga>> {
+    const results = await catalogDB
+      .select({
+        id: mangaTable.id,
+        title: mangaTable.title,
+        description: mangaTable.description,
+        lines: mangaTable.lines,
+        type: mangaTable.type,
+        count: mangaTable.count,
+        createdAt: mangaTable.createdAt,
+        artists: mangaTable.artists,
+        characters: mangaTable.characters,
+        series: mangaTable.series,
+        groups: mangaTable.groups,
+        languages: mangaTable.languages,
+        uploader: mangaTable.uploader,
+        tagValues: mangaTable.tagValues,
+        tagCategories: mangaTable.tagCategories,
+      })
+      .from(mangaTable)
+      .where(inArray(mangaTable.id, ids))
+
+    return new Map(results.map((result) => [result.id, this.convertDatabaseToManga(result)]))
   }
 }
 

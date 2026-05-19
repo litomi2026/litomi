@@ -1,5 +1,6 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
+import { litomiClient } from '@litomi/crawler/crawler/litomi'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { selectBookmark } from '@litomi/db/sql/selectBookmark'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
@@ -61,10 +62,13 @@ export default async function BookmarkPage({ searchParams }: PageProps<'/library
     bookmarks.pop()
   }
 
+  const catalogMangaMap = await litomiClient.getMangas(bookmarks.map(({ mangaId }) => mangaId))
+
   const initialData = {
     bookmarks: bookmarks.map((b) => ({
       mangaId: b.mangaId,
       createdAt: b.createdAt.getTime(),
+      manga: catalogMangaMap.get(b.mangaId),
     })),
     nextCursor: hasNextPage ? getNextCollectionItemCursor(bookmarks[bookmarks.length - 1]) : null,
   }
