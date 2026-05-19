@@ -1,7 +1,6 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { twoFactorTable } from '@litomi/db/database/app/two-factor'
 import { userTable } from '@litomi/db/database/app/user'
 import { passwordSchema } from '@litomi/domain/database/zod'

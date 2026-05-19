@@ -8,16 +8,16 @@ import {
 } from '@litomi/crawler/crawler/proxy-utils'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/constants/policy'
 import { RouteProps } from '@litomi/domain/types/nextjs'
-import { env } from '@litomi/env/client'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { sec } from '@litomi/std'
 import { checkBotId } from 'botid/server'
+
+import { createProxyHeaders, withProxyHeaders } from '@/util/http'
 
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
 
-const { NEXT_PUBLIC_APP_ORIGIN } = env
 const BOT_ID_ALLOWED_FRONTEND_HOSTS = ['litomi.in', 'stg.litomi.in']
 
 type Params = {
@@ -136,8 +136,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         },
       })
 
-      const headers = new Headers(errorHeaders)
-      headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
+      const headers = createProxyHeaders(errorHeaders)
       headers.set(DEGRADED_HEADER, '1')
       headers.set(DEGRADED_REASON_HEADER, 'IMAGES_ONLY')
 
@@ -162,18 +161,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       },
     })
 
-    const headers = new Headers(successHeaders)
-    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
+    const headers = createProxyHeaders(successHeaders)
     return Response.json(manga, { headers })
   } catch (error) {
-    const response = handleRouteError(error, request)
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-    return response
+    return withProxyHeaders(handleRouteError(error, request))
   }
-}
-
-function createProxyHeaders(init?: HeadersInit): Headers {
-  const headers = new Headers(init)
-  headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-  return headers
 }

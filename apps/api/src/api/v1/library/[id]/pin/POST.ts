@@ -1,6 +1,5 @@
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable, pinnedLibraryTable } from '@litomi/db/database/app/library'
-import 'server-only'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'

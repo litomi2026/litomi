@@ -10,7 +10,6 @@ import { translateType } from '@litomi/catalog/translation/type'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import type { Env } from '@/app'

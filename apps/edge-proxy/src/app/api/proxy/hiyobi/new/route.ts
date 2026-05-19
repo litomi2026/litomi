@@ -6,13 +6,12 @@ import {
   handleRouteError,
 } from '@litomi/crawler/crawler/proxy-utils'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
-import { env } from '@litomi/env/client'
 import { sec } from '@litomi/std'
 import z from 'zod'
 
-export const runtime = 'edge'
+import { createProxyHeaders, withProxyHeaders } from '@/util/http'
 
-const { NEXT_PUBLIC_APP_ORIGIN } = env
+export const runtime = 'edge'
 
 const GETProxyHiyobiNewSchema = z.object({
   page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
@@ -29,8 +28,8 @@ export async function GET(request: Request) {
       status: 400,
       code: 'bad-request',
       detail: '잘못된 요청이에요',
+      headers: createProxyHeaders(),
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -41,15 +40,15 @@ export async function GET(request: Request) {
       status: 499,
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
+      headers: createProxyHeaders(),
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
   try {
     const mangas = await hiyobiClient.fetchMangas({ page, locale })
 
-    const headers = new Headers(
+    const headers = createProxyHeaders(
       createCacheControlHeaders({
         vercel: {
           maxAge: sec('6 hours'),
@@ -63,12 +62,8 @@ export async function GET(request: Request) {
       }),
     )
 
-    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-
     return Response.json(mangas, { headers })
   } catch (error) {
-    const response = handleRouteError(error, request)
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-    return response
+    return withProxyHeaders(handleRouteError(error, request))
   }
 }

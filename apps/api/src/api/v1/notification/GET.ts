@@ -1,6 +1,5 @@
 import { NotificationFilter } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { notificationTable } from '@litomi/db/database/app/notification'
 import { NOTIFICATION_PER_PAGE } from '@litomi/domain/constants/policy'
 import { NotificationType } from '@litomi/domain/database/enum'

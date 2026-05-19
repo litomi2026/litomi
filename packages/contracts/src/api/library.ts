@@ -1,3 +1,5 @@
+import type { Manga } from '@litomi/domain/types/manga'
+
 import {
   MAX_LIBRARY_DESCRIPTION_LENGTH,
   MAX_LIBRARY_ICON_LENGTH,
@@ -7,6 +9,7 @@ import {
 import { z } from 'zod'
 
 export const MAX_READING_HISTORY_LAST_PAGE = 32767
+const catalogMangaSchema = z.custom<Manga>()
 
 export const libraryIconSchema = z
   .string()
@@ -86,7 +89,7 @@ export const deleteV1LibraryIdResponseSchema = z.object({
 export type DELETEV1LibraryIdResponse = z.infer<typeof deleteV1LibraryIdResponseSchema>
 
 export const getLibraryItemsResponseSchema = z.object({
-  items: z.array(z.object({ mangaId: z.number(), createdAt: z.number() })),
+  items: z.array(z.object({ mangaId: z.number(), createdAt: z.number(), manga: catalogMangaSchema.optional() })),
   nextCursor: z.string().nullable(),
 })
 
@@ -196,6 +199,7 @@ export const getV1LibraryMangaResponseSchema = z.object({
     z.object({
       mangaId: z.number(),
       createdAt: z.number(),
+      manga: catalogMangaSchema.optional(),
       library: z.object({
         id: z.number(),
         name: z.string(),

@@ -10,6 +10,8 @@ import { env } from '@litomi/env/client'
 import { chance, sec } from '@litomi/std'
 import { waitUntil } from '@vercel/functions'
 
+import { createProxyHeaders, withProxyHeaders } from '@/util/http'
+
 import type { GETProxyKSearchResponse } from './types'
 
 import { GETProxyKSearchSchema } from './schema'
@@ -21,7 +23,7 @@ type POSTSearchTrendingBody = {
 
 export const runtime = 'edge'
 
-const { NEXT_PUBLIC_API_ORIGIN, NEXT_PUBLIC_APP_ORIGIN } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function GET(request: Request) {
   const requestSignal = request.signal
@@ -34,8 +36,8 @@ export async function GET(request: Request) {
       status: 400,
       code: 'bad-request',
       detail: '잘못된 요청이에요',
+      headers: createProxyHeaders(),
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -69,8 +71,8 @@ export async function GET(request: Request) {
       status: 400,
       code: 'query-too-long',
       detail: '검색어가 너무 길어요',
+      headers: createProxyHeaders(),
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -98,8 +100,8 @@ export async function GET(request: Request) {
       status: 499,
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
+      headers: createProxyHeaders(),
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -147,13 +149,10 @@ export async function GET(request: Request) {
       nextCursor,
     }
 
-    const headers = new Headers(getCacheControlHeader(params))
-    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
+    const headers = createProxyHeaders(getCacheControlHeader(params))
     return Response.json(response, { headers })
   } catch (error) {
-    const response = handleRouteError(error, request)
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
-    return response
+    return withProxyHeaders(handleRouteError(error, request))
   }
 }
 

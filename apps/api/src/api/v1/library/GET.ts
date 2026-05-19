@@ -1,6 +1,5 @@
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable, libraryTable, pinnedLibraryTable } from '@litomi/db/database/app/library'
-import 'server-only'
 import { decodeLibraryListCursor, encodeLibraryListCursor } from '@litomi/domain/common/cursor'
 import { LIBRARIES_PER_PAGE } from '@litomi/domain/constants/policy'
 import { intToHexColor } from '@litomi/domain/utils/color'

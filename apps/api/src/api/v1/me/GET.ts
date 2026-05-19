@@ -1,6 +1,5 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
-import 'server-only'
 import { db } from '@litomi/db/database/app/drizzle'
 import { userSettingsTable, userTable } from '@litomi/db/database/app/user'
 import { resolveUserSettings, type UserSettings } from '@litomi/domain/utils/user-settings'

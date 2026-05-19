@@ -1,6 +1,7 @@
 'use client'
 
 import type { NativeGridSponsor } from '@litomi/contracts'
+import type { Manga } from '@litomi/domain/types/manga'
 
 import { twMerge } from 'tailwind-merge'
 
@@ -18,12 +19,18 @@ type Props = {
 }
 
 type RankingItem = {
+  manga?: Manga
   mangaId: number
 }
 
 export default function RankingList({ className, nativeGridSponsor, rankings }: Props) {
   const mangaIds = rankings.map((r) => r.mangaId)
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds })
+
+  const { mangaMap } = useMangaListCachedQuery({
+    mangaIds,
+    catalogMangas: rankings.map(({ manga }) => manga),
+  })
+
   const { isVisible } = useMangaCensorship()
   const visibleRankings = rankings.filter((ranking) => isVisible(mangaMap.get(ranking.mangaId)))
 

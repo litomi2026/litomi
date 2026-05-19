@@ -1,6 +1,5 @@
 import { userCensorshipTable } from '@litomi/db/database/app/censorship'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { sql } from 'drizzle-orm'

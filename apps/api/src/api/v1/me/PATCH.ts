@@ -1,6 +1,5 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { userTable } from '@litomi/db/database/app/user'
 import { isPostgresError } from '@litomi/db/database/error'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@litomi/domain/database/zod'

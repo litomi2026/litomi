@@ -1,4 +1,3 @@
-import 'server-only'
 import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@litomi/auth/cookie'
 import { hashSessionToken } from '@litomi/auth/session'
 import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/app/auth'

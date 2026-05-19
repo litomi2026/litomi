@@ -1,5 +1,4 @@
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { MAX_BOOKMARK_BATCH_SIZE, MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { Hono } from 'hono'
 import { z } from 'zod'

@@ -1,6 +1,7 @@
+import type { Manga } from '@litomi/domain/types/manga'
+
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
-import 'server-only'
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@litomi/domain/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { intToHexColor } from '@litomi/domain/utils/color'
@@ -13,6 +14,7 @@ import { z } from 'zod'
 import type { Env } from '@/app'
 
 import { privateCacheControl } from '@/utils/cache-control'
+import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -30,6 +32,7 @@ export type GETV1LibraryMangaResponse = {
 export type LibraryMangaItem = {
   mangaId: number
   createdAt: number
+  manga?: Manga
   library: {
     id: number
     name: string
@@ -131,10 +134,12 @@ libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) =
     const hasNextPage = rows.length > limit
     const pageRows = hasNextPage ? rows.slice(0, limit) : rows
     const lastRow = pageRows[pageRows.length - 1]
+    const catalogMangaMap = await getCatalogMangaMap(pageRows.map(({ mangaId }) => mangaId))
 
     const items: LibraryMangaItem[] = pageRows.map((row) => ({
       mangaId: row.mangaId,
       createdAt: row.createdAt.getTime(),
+      manga: catalogMangaMap.get(row.mangaId),
       library: {
         id: row.libraryId,
         name: row.libraryName,

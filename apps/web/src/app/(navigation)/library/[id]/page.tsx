@@ -2,8 +2,8 @@ import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
+import { selectLibraryItem } from '@litomi/db/query/library-item'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
-import { selectLibraryItem } from '@litomi/db/sql/selectLibraryItem'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { LIBRARY_ITEMS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { View } from '@litomi/std'
@@ -12,6 +12,8 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
 import { z } from 'zod'
+
+import { getCatalogMangaMap } from '@/utils/catalog-manga.server'
 
 import LibraryItemsClient from './LibraryItemsClient'
 
@@ -91,9 +93,12 @@ export default async function LibraryDetailPage({ params, searchParams }: PagePr
     libraryItemRows.pop()
   }
 
+  const catalogMangaMap = await getCatalogMangaMap(libraryItemRows.map(({ mangaId }) => mangaId))
+
   const items = libraryItemRows.map((item) => ({
     mangaId: item.mangaId,
     createdAt: item.createdAt.getTime(),
+    manga: catalogMangaMap.get(item.mangaId),
   }))
 
   const nextCursor = hasNext ? getNextCollectionItemCursor(libraryItemRows[libraryItemRows.length - 1]) : null

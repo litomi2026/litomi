@@ -1,5 +1,4 @@
-import { selectBookmarkId } from '@litomi/db/sql/selectBookmark'
-import 'server-only'
+import { selectBookmarkId } from '@litomi/db/query/bookmark'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

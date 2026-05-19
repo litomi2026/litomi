@@ -52,7 +52,7 @@ mock.module('@litomi/db/database/app/drizzle', () => ({
   },
 }))
 
-const { selectLibraryItem } = await import('../../selectLibraryItem')
+const { selectLibraryItem } = await import('../../library-item')
 
 describe('selectLibraryItem', () => {
   beforeEach(() => {

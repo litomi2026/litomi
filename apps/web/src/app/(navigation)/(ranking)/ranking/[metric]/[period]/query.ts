@@ -5,6 +5,8 @@ import { TOP_MANGA_PER_PAGE } from '@litomi/domain/constants/policy'
 import { avg, count, desc, gte, sql } from 'drizzle-orm'
 import ms from 'ms'
 
+import { getCatalogMangaMap } from '@/utils/catalog-manga.server'
+
 import { MetricParam, PeriodParam } from '../../../common'
 
 export async function getRankingData(metric: MetricParam, period: PeriodParam) {
@@ -123,7 +125,12 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
     return null
   }
 
-  return rankings
+  const catalogMangaMap = await getCatalogMangaMap(rankings.map(({ mangaId }) => mangaId))
+
+  return rankings.map((ranking) => ({
+    ...ranking,
+    manga: catalogMangaMap.get(ranking.mangaId),
+  }))
 }
 
 function getPeriodStart(period: PeriodParam): Date | null {

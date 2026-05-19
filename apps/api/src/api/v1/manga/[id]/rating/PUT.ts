@@ -1,6 +1,5 @@
 import { userRatingTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { userExpansionTable } from '@litomi/db/database/app/points'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import { MAX_MANGA_ID, MAX_RATINGS_PER_USER } from '@litomi/domain/constants/policy'

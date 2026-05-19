@@ -1,7 +1,6 @@
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { userSettingsTable } from '@litomi/db/database/app/user'
-import { readUserSettings } from '@litomi/db/query/user-settings.query'
+import { readUserSettings } from '@litomi/db/query/user-settings'
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { Hono } from 'hono'
 import { z } from 'zod'

@@ -1,5 +1,4 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
-import 'server-only'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

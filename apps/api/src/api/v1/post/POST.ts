@@ -1,5 +1,4 @@
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { postTable } from '@litomi/db/database/app/post'
 import { isPostgresError } from '@litomi/db/database/error'
 import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/constants/policy'

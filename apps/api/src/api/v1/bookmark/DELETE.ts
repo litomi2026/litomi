@@ -1,6 +1,5 @@
 import { bookmarkTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { MAX_BOOKMARK_BATCH_SIZE, MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'

@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import 'server-only'
 import { z } from 'zod'
 
 import type { Env } from '@/app'

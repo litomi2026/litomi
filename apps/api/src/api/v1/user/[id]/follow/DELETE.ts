@@ -1,6 +1,5 @@
 import { db } from '@litomi/db/database/app/drizzle'
 import { userFollowTable } from '@litomi/db/database/app/user'
-import 'server-only'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'

@@ -1,5 +1,4 @@
 import { redisClient } from '@litomi/db/database/redis'
-import 'server-only'
 import { sec } from '@litomi/std'
 import ms from 'ms'
 

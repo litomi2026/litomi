@@ -1,7 +1,8 @@
+import type { Manga } from '@litomi/domain/types/manga'
+
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
-import 'server-only'
+import { selectBookmark } from '@litomi/db/query/bookmark'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
-import { selectBookmark } from '@litomi/db/sql/selectBookmark'
 import { decodeBookmarkCursor } from '@litomi/domain/common/cursor'
 import { BOOKMARKS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { Hono } from 'hono'
@@ -11,6 +12,7 @@ import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
+import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -23,6 +25,7 @@ const querySchema = z.object({
 export type Bookmark = {
   mangaId: number
   createdAt: number
+  manga?: Manga
 }
 
 export type GETV1BookmarkResponse = {
@@ -63,11 +66,13 @@ route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) =
     const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows
     const lastBookmark = bookmarks[bookmarks.length - 1]
     const nextCursor = hasNextPage ? getNextCollectionItemCursor(lastBookmark) : null
+    const catalogMangaMap = await getCatalogMangaMap(bookmarks.map(({ mangaId }) => mangaId))
 
     const response = {
       bookmarks: bookmarks.map(({ mangaId, createdAt }) => ({
         mangaId,
         createdAt: createdAt.getTime(),
+        manga: catalogMangaMap.get(mangaId),
       })),
       nextCursor,
     }

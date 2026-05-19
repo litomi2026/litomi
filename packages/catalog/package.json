@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./manga": "./src/manga.ts",
     "./sponsor/native-grid": "./src/sponsor/native-grid.ts",
     "./translation/artist": "./src/translation/artist.ts",
     "./translation/category": "./src/translation/category.ts",

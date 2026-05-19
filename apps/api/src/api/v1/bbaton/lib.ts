@@ -1,4 +1,3 @@
-import 'server-only'
 import { env } from '@litomi/env/server.hono'
 import { z } from 'zod'
 
