@@ -1,4 +1,4 @@
-import type { AuthenticationResponseJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/server'
+import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/server'
 
 import { BACKUP_CODE_PATTERN, LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { z } from 'zod'
@@ -120,8 +120,28 @@ export const postV1AuthPasskeyOptionsResponseSchema = z.object({
 
 export type POSTV1AuthPasskeyOptionsResponse = z.infer<typeof postV1AuthPasskeyOptionsResponseSchema>
 
+const passkeyClientExtensionResultsSchema = z.object({
+  appid: z.boolean().optional(),
+  credProps: z.object({ rk: z.boolean().optional() }).optional(),
+  hmacCreateSecret: z.boolean().optional(),
+})
+
+const passkeyAuthenticationResponseSchema = z.object({
+  id: z.string(),
+  rawId: z.string(),
+  response: z.object({
+    authenticatorData: z.string(),
+    clientDataJSON: z.string(),
+    signature: z.string(),
+    userHandle: z.string().optional(),
+  }),
+  type: z.literal('public-key'),
+  authenticatorAttachment: z.enum(['cross-platform', 'platform']).optional(),
+  clientExtensionResults: passkeyClientExtensionResultsSchema,
+})
+
 export const postV1AuthPasskeyVerifyRequestSchema = z.object({
-  authentication: z.custom<AuthenticationResponseJSON>(),
+  authentication: passkeyAuthenticationResponseSchema,
   remember: z.boolean().default(false),
   turnstileToken: z.string().nullable().optional(),
 })
