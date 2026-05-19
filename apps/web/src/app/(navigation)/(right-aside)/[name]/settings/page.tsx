@@ -1,7 +1,7 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/database/app/drizzle'
 import { twoFactorTable } from '@litomi/db/database/app/two-factor'
-import { readUserSettings } from '@litomi/db/query/user-settings.query'
+import { readUserSettings } from '@litomi/db/query/user-settings'
 import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
 import { getUsernameFromParam } from '@litomi/std'
 import { ErrorBoundary } from '@suspensive/react'

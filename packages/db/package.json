@@ -23,13 +23,13 @@
     "./database/app/schema": "./src/database/app/schema.ts",
     "./database/app/two-factor": "./src/database/app/two-factor.ts",
     "./database/app/user": "./src/database/app/user.ts",
-    "./query/user-settings.query": "./src/query/user-settings.query.ts",
+    "./query/bookmark": "./src/query/bookmark.ts",
+    "./query/library-item": "./src/query/library-item.ts",
+    "./query/post-comment": "./src/query/post-comment.ts",
+    "./query/post": "./src/query/post.ts",
+    "./query/user-settings": "./src/query/user-settings.ts",
     "./sql/collection-item-sort": "./src/sql/collection-item-sort.ts",
-    "./sql/rating-sort": "./src/sql/rating-sort.ts",
-    "./sql/selectBookmark": "./src/sql/selectBookmark.ts",
-    "./sql/selectLibraryItem": "./src/sql/selectLibraryItem.ts",
-    "./sql/selectPost": "./src/sql/selectPost.ts",
-    "./sql/selectPostComment": "./src/sql/selectPostComment.ts"
+    "./sql/rating-sort": "./src/sql/rating-sort.ts"
   },
   "scripts": {
     "push:local": "bun run push:local:app && bun run push:local:catalog",

@@ -1,4 +1,4 @@
-import { selectBookmark } from '@litomi/db/sql/selectBookmark'
+import { selectBookmark } from '@litomi/db/query/bookmark'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

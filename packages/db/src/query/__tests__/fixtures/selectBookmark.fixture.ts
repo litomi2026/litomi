@@ -52,7 +52,7 @@ mock.module('@litomi/db/database/app/drizzle', () => ({
   },
 }))
 
-const { selectBookmark } = await import('../../selectBookmark')
+const { selectBookmark } = await import('../../bookmark')
 
 describe('selectBookmark', () => {
   beforeEach(() => {
