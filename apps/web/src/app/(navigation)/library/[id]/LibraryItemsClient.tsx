@@ -90,8 +90,13 @@ export default function LibraryItemsClient({
   const libraryItems = itemsData?.pages.flatMap((page) => page.items) ?? []
   const canAutoLoadMore = !shouldBlockPrivate && Boolean(hasNextPage) && !isFetchNextPageError
   const showLoadingSkeleton = (isLoading && libraryItems.length === 0) || isFetchingNextPage
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: libraryItems.map((item) => item.mangaId) })
   const { heavySignature, isVisible } = useMangaCensorship()
+
+  const { mangaMap } = useMangaListCachedQuery({
+    mangaIds: libraryItems.map((item) => item.mangaId),
+    catalogMangas: libraryItems.map(({ manga }) => manga),
+  })
+
   const visibleLibraryItems = libraryItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
 
   const items = visibleLibraryItems.map<LibraryGridItem>(({ mangaId }) => ({

@@ -7,9 +7,9 @@ import { QueryKey, useQueries, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import pLimit from 'p-limit'
 import pThrottle from 'p-throttle'
-import { useMemo } from 'react'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
+import { createLoadingManga } from '@/utils/manga-placeholder'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
@@ -31,6 +31,10 @@ const throttle = pThrottle({
 const mangaMetadataRequestExecutor = throttle(concurrencyLimit)
 
 interface Options {
+  /**
+   * Catalog DB metadata to render without populating the edge-proxy manga cache.
+   */
+  catalogMangas?: readonly (Manga | undefined)[]
   /**
    * Custom garbage collection time for individual manga cache
    * @default 2 hours
@@ -63,12 +67,22 @@ class InactiveQueuedMangaRequestError extends Error {
  * ```
  */
 export default function useMangaListCachedQuery({
+  catalogMangas = [],
   mangaIds,
   staleTime = DEFAULT_STALE_TIME,
   gcTime = DEFAULT_GC_TIME,
 }: Options) {
-  const uniqueMangaIds = useMemo(() => Array.from(new Set(mangaIds)), [mangaIds])
+  const uniqueMangaIds = Array.from(new Set(mangaIds))
+  const catalogMangaMap = new Map<number, Manga>()
   const queryClient = useQueryClient()
+
+  for (const manga of catalogMangas) {
+    if (!manga) {
+      continue
+    }
+
+    catalogMangaMap.set(manga.id, withThumbnailFallback(manga))
+  }
 
   function scheduleErrorCacheCleanup(queryKey: QueryKey) {
     setTimeout(() => {
@@ -92,6 +106,11 @@ export default function useMangaListCachedQuery({
 
       if (isDegradedResponse(response.headers)) {
         scheduleErrorCacheCleanup(queryKey)
+        const previousManga = queryClient.getQueryData<Manga>(queryKey)
+
+        if (previousManga && data.images && data.images.length > 0) {
+          return { ...previousManga, images: data.images }
+        }
       }
 
       return data
@@ -115,23 +134,22 @@ export default function useMangaListCachedQuery({
       queryFn: () => fetchManga(id),
       staleTime,
       gcTime,
+      enabled: !catalogMangaMap.has(id),
     })),
   })
 
-  const mangaMap = useMemo(() => {
-    const map = new Map<number, Manga>()
+  const mangaMap = new Map<number, Manga>()
 
-    for (let i = 0; i < uniqueMangaIds.length; i++) {
-      const id = uniqueMangaIds[i]
-      const query = queries[i]
+  for (let i = 0; i < uniqueMangaIds.length; i++) {
+    const id = uniqueMangaIds[i]
+    const query = queries[i]
 
-      if (query.data) {
-        map.set(id, query.data)
-      }
+    const manga = query.data ?? catalogMangaMap.get(id)
+
+    if (manga) {
+      mangaMap.set(id, manga)
     }
-
-    return map
-  }, [uniqueMangaIds, queries])
+  }
 
   const isLoading = queries.some((query) => query.isLoading)
   const isFetching = queries.some((query) => query.isFetching)
@@ -140,5 +158,19 @@ export default function useMangaListCachedQuery({
     mangaMap,
     isLoading,
     isFetching,
+  }
+}
+
+function withThumbnailFallback(manga: Manga): Manga {
+  if (manga.images && manga.images.length > 0) {
+    return manga
+  }
+
+  const loadingManga = createLoadingManga(manga.id)
+
+  return {
+    ...loadingManga,
+    ...manga,
+    images: loadingManga.images,
   }
 }

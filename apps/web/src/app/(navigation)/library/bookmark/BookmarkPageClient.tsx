@@ -51,15 +51,21 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { exit, isSelectionMode } = useLibrarySelection()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
+  const { heavySignature, isVisible } = useMangaCensorship()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useBookmarkInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
 
-  const bookmarkIds = data?.pages.flatMap((page) => page.bookmarks.map((bookmark) => bookmark.mangaId)) ?? []
+  const bookmarks = data?.pages.flatMap((page) => page.bookmarks) ?? []
+  const bookmarkIds = bookmarks.map((bookmark) => bookmark.mangaId)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const showLoadingSkeleton = (isLoading && bookmarkIds.length === 0) || isFetchingNextPage
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: bookmarkIds })
-  const { heavySignature, isVisible } = useMangaCensorship()
+
+  const { mangaMap } = useMangaListCachedQuery({
+    mangaIds: bookmarkIds,
+    catalogMangas: bookmarks.map(({ manga }) => manga),
+  })
+
   const visibleBookmarkIds = bookmarkIds.filter((mangaId) => isVisible(mangaMap.get(mangaId)))
 
   const items = visibleBookmarkIds.map<BookmarkGridItem>((mangaId) => ({

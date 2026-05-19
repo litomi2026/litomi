@@ -1,6 +1,7 @@
 'use client'
 
 import type { NativeGridSponsor } from '@litomi/contracts'
+import type { Manga } from '@litomi/domain/types/manga'
 
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { Library } from 'lucide-react'
@@ -41,6 +42,7 @@ type Library = {
 type LibraryItem = {
   mangaId: number
   createdAt: number
+  manga?: Manga
   library: Library
 }
 
@@ -61,6 +63,7 @@ type Props = {
 export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: Readonly<Props>) {
   const [view, setView] = useState<View>(initialView)
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
+  const { heavySignature, isVisible } = useMangaCensorship()
 
   const {
     data,
@@ -73,8 +76,11 @@ export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: 
 
   const libraryItems = mergeUniqueLibraryItems(data?.pages)
   const mangaIds = libraryItems.map((item) => item.mangaId)
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds })
-  const { heavySignature, isVisible } = useMangaCensorship()
+
+  const { mangaMap } = useMangaListCachedQuery({
+    mangaIds,
+    catalogMangas: libraryItems.map(({ manga }) => manga),
+  })
 
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const isInitialLoading = libraryItems.length === 0 && isLibraryPending
