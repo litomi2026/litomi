@@ -1,4 +1,4 @@
-import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
+import type { POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey'
 import { authenticationLimiter, type PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
@@ -25,20 +25,6 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 import { readCredentialByCredentialId, touchCredentialUse } from './query'
-
-export type POSTV1AuthPasskeyVerifyRequest = {
-  authentication: AuthenticationResponseJSON
-  remember: boolean
-  turnstileToken?: string | null
-}
-
-export type POSTV1AuthPasskeyVerifyResponse = {
-  id: number
-  loginId: string
-  name: string
-  lastLoginAt: Date | null
-  lastLogoutAt: Date | null
-}
 
 const verifyAuthenticationSchema = z.object({
   id: z.string(),

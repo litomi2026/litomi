@@ -1,14 +1,13 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
+import { deleteV1MeBodySchema, type DELETEV1MeResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { twoFactorTable } from '@litomi/db/database/app/two-factor'
 import { userTable } from '@litomi/db/database/app/user'
-import { passwordSchema } from '@litomi/domain/database/zod'
 import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -17,18 +16,6 @@ import { lockUserRowForUpdate } from '@/utils/lock-user-row'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const deleteMyAccountSchema = z.object({
-  password: passwordSchema,
-  token: z.string().length(6).regex(/^\d+$/).optional(),
-})
-
-export type DELETEV1MeBody = z.infer<typeof deleteMyAccountSchema>
-
-export type DELETEV1MeResponse = {
-  loginId: string
-  message: string
-}
-
 const accountDeletionLimiter = new RateLimiter({
   ...RateLimitPresets.strict(),
   keyPrefix: 'rl:delete-account:',
@@ -36,7 +23,7 @@ const accountDeletionLimiter = new RateLimiter({
 
 const route = new Hono<Env>()
 
-route.delete('/', zProblemValidator('json', deleteMyAccountSchema), async (c) => {
+route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { password, token } = c.req.valid('json')
   const { allowed, retryAfter } = await accountDeletionLimiter.check(String(userId))

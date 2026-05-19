@@ -1,8 +1,8 @@
+import { deleteV1LibraryRatingBodySchema, type DELETEV1LibraryRatingResponse } from '@litomi/contracts'
 import { userRatingTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -10,16 +10,9 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const deleteBodySchema = z.object({
-  mangaIds: z.array(z.coerce.number().int().positive()).min(1).max(100),
-})
-
-export type DELETEV1LibraryRatingBody = z.infer<typeof deleteBodySchema>
-export type DELETEV1LibraryRatingResponse = { deletedCount: number }
-
 const route = new Hono<Env>()
 
-route.delete('/', requireAuth, zProblemValidator('json', deleteBodySchema), async (c) => {
+route.delete('/', requireAuth, zProblemValidator('json', deleteV1LibraryRatingBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { mangaIds } = c.req.valid('json')
   const requestedMangaIds = [...new Set(mangaIds)]

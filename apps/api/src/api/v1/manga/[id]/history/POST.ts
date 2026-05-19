@@ -1,33 +1,18 @@
+import { mangaIdParamSchema, postV1MangaIdHistoryBodySchema } from '@litomi/contracts'
 import { readingHistoryTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { readUserSettings } from '@litomi/db/query/user-settings'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
-import {
-  enforceHistoryLimit,
-  getUserHistoryLimitInTx,
-  MAX_READING_HISTORY_LAST_PAGE,
-} from '@/api/v1/library/history/shared'
+import { enforceHistoryLimit, getUserHistoryLimitInTx } from '@/api/v1/library/history/shared'
 import { requireAdult } from '@/middleware/adult'
 import { requireAuth } from '@/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/utils/lock-user-row'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
-
-const paramSchema = z.object({
-  id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
-})
-
-const postBodySchema = z.object({
-  lastPage: z.coerce.number().int().positive().max(MAX_READING_HISTORY_LAST_PAGE),
-})
-
-export type POSTV1MangaIdHistoryBody = z.infer<typeof postBodySchema>
 
 const route = new Hono<Env>()
 
@@ -35,8 +20,8 @@ route.post(
   '/:id/history',
   requireAuth,
   requireAdult,
-  zProblemValidator('param', paramSchema),
-  zProblemValidator('json', postBodySchema),
+  zProblemValidator('param', mangaIdParamSchema),
+  zProblemValidator('json', postV1MangaIdHistoryBodySchema),
   async (c) => {
     const userId = c.get('userId')!
     const { id: mangaId } = c.req.valid('param')

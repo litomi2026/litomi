@@ -1,12 +1,8 @@
-import type { Manga } from '@litomi/domain/types/manga'
-
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
+import { getV1BookmarkQuerySchema, type GETV1BookmarkResponse } from '@litomi/contracts'
 import { selectBookmark } from '@litomi/db/query/bookmark'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { decodeBookmarkCursor } from '@litomi/domain/common/cursor'
-import { BOOKMARKS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -16,26 +12,9 @@ import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const querySchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).default(BOOKMARKS_PER_PAGE),
-  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
-})
-
-export type Bookmark = {
-  mangaId: number
-  createdAt: number
-  manga?: Manga
-}
-
-export type GETV1BookmarkResponse = {
-  bookmarks: Bookmark[]
-  nextCursor: string | null
-}
-
 const route = new Hono<Env>()
 
-route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) => {
+route.get('/', requireAuth, zProblemValidator('query', getV1BookmarkQuerySchema), async (c) => {
   const userId = c.get('userId')!
 
   try {

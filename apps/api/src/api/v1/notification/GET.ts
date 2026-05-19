@@ -1,11 +1,12 @@
-import { NotificationFilter } from '@litomi/contracts'
+import type { GETNotificationResponse } from '@litomi/contracts'
+
+import { getNotificationQuerySchema, NotificationFilter } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { notificationTable } from '@litomi/db/database/app/notification'
 import { NOTIFICATION_PER_PAGE } from '@litomi/domain/constants/policy'
 import { NotificationType } from '@litomi/domain/database/enum'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -13,29 +14,9 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const querySchema = z.object({
-  nextId: z.coerce.number().optional(),
-  filter: z.union([z.enum(NotificationFilter), z.array(z.enum(NotificationFilter))]).optional(),
-})
-
-export type GETNotificationResponse = {
-  notifications: {
-    id: number
-    userId: number
-    createdAt: Date
-    type: number
-    read: boolean
-    title: string
-    body: string
-    data: string | null
-    sentAt: Date | null
-  }[]
-  hasNextPage: boolean
-}
-
 const route = new Hono<Env>()
 
-route.get('/', zProblemValidator('query', querySchema), async (c) => {
+route.get('/', zProblemValidator('query', getNotificationQuerySchema), async (c) => {
   const userId = c.get('userId')!
 
   try {

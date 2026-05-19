@@ -2,12 +2,11 @@ import { verifyPKCEChallenge } from '@litomi/auth/pkce-server'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { verifyBackupCode } from '@litomi/auth/two-factor-backup-code'
+import { postV1AuthLogin2FARequestSchema, type POSTV1AuthLogin2FAResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
-import { BACKUP_CODE_PATTERN } from '@litomi/domain/constants/policy'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -27,25 +26,6 @@ import {
 } from './query'
 import { getTrustedBrowserCookieConfig, signTrustedBrowserToken } from './util'
 
-export type POSTV1AuthLogin2FARequest = {
-  authorizationCode: string
-  codeVerifier: string
-  fingerprint: string
-  remember: boolean
-  token: string
-  trustBrowser: boolean
-}
-
-export type POSTV1AuthLogin2FAResponse = {
-  id: number
-  loginId: string
-  name: string
-  lastLoginAt: Date | null
-  lastLogoutAt: Date | null
-  isBackupCode: boolean
-  backupCodeCount: number
-}
-
 type SuccessfulTokenVerification = Extract<TokenVerificationResult, { ok: true }>
 
 type TokenVerificationResult =
@@ -60,18 +40,9 @@ type TokenVerificationResult =
       backupCodeCount: number
     }
 
-const verifyTwoFactorRequestSchema = z.object({
-  codeVerifier: z.string().min(43).max(255),
-  fingerprint: z.string().min(1).max(255),
-  authorizationCode: z.string().min(1).max(255),
-  remember: z.boolean().default(false),
-  token: z.union([z.string().length(6).regex(/^\d+$/), z.string().length(9).regex(new RegExp(BACKUP_CODE_PATTERN))]),
-  trustBrowser: z.boolean().default(false),
-})
-
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', verifyTwoFactorRequestSchema), async (c) => {
+route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), async (c) => {
   const { authorizationCode, codeVerifier, fingerprint, remember, token, trustBrowser } = c.req.valid('json')
   const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 

@@ -1,10 +1,9 @@
+import { postV1PostBodySchema, type POSTV1PostResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { postTable } from '@litomi/db/database/app/post'
 import { isPostgresError } from '@litomi/db/database/error'
-import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/constants/policy'
 import { PostType } from '@litomi/domain/database/enum'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -12,19 +11,9 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const createPostSchema = z.object({
-  content: z.string().min(2).max(MAX_POST_CONTENT_LENGTH),
-  mangaId: z.coerce.number().int().positive().nullable().optional(),
-  parentPostId: z.coerce.number().int().positive().nullable().optional(),
-  referredPostId: z.coerce.number().int().positive().nullable().optional(),
-})
-
-export type POSTV1PostBody = z.infer<typeof createPostSchema>
-export type POSTV1PostResponse = { id: number }
-
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, zProblemValidator('json', createPostSchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', postV1PostBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { content, mangaId, parentPostId, referredPostId } = c.req.valid('json')
 

@@ -1,14 +1,13 @@
 import { initiatePKCEChallenge } from '@litomi/auth/pkce-server'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
+import { postV1AuthLoginRequestSchema, type POSTV1AuthLoginResponse } from '@litomi/contracts'
 import { COOKIE_DOMAIN } from '@litomi/domain/constants'
 import { CookieKey } from '@litomi/domain/constants/storage'
-import { loginIdSchema, passwordSchema } from '@litomi/domain/database/zod'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { compare } from 'bcryptjs'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -22,43 +21,9 @@ import { hasActiveTwoFactor, readLoginUserByLoginId, touchTrustedBrowserLastUsed
 import { DUMMY_PASSWORD_HASH, ensureAllowed, loginIdLimiter, loginIpLimiter } from './shared'
 import { verifyTrustedBrowserToken } from './util'
 
-export type POSTV1AuthLoginAuthenticatedResponse = {
-  nextStep: 'authenticated'
-  id: number
-  loginId: string
-  name: string
-  lastLoginAt: Date | null
-  lastLogoutAt: Date | null
-}
-
-export type POSTV1AuthLoginRequest = {
-  loginId: string
-  password: string
-  remember: boolean
-  turnstileToken: string
-  codeChallenge: string
-  fingerprint: string
-}
-
-export type POSTV1AuthLoginResponse = POSTV1AuthLoginAuthenticatedResponse | POSTV1AuthLoginTwoFactorResponse
-
-export type POSTV1AuthLoginTwoFactorResponse = {
-  nextStep: 'two_factor_required'
-  authorizationCode: string
-}
-
-const loginRequestSchema = z.object({
-  loginId: loginIdSchema,
-  password: passwordSchema,
-  remember: z.boolean().default(false),
-  turnstileToken: z.string().min(1).max(2048),
-  codeChallenge: z.string().min(43).max(255),
-  fingerprint: z.string().min(1).max(255),
-})
-
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', loginRequestSchema), async (c) => {
+route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (c) => {
   const { codeChallenge, fingerprint, loginId, password, remember, turnstileToken } = c.req.valid('json')
   const remoteIP = getRequestIP(c.req.raw.headers)
   const validator = new TurnstileValidator()

@@ -1,15 +1,14 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
+import { patchV1MePasswordBodySchema, type PATCHV1MePasswordResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { twoFactorTable } from '@litomi/db/database/app/two-factor'
 import { userTable } from '@litomi/db/database/app/user'
 import { SALT_ROUNDS } from '@litomi/domain/constants'
-import { passwordSchema } from '@litomi/domain/database/zod'
 import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { compare, hash } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -19,19 +18,6 @@ import { zProblemValidator } from '@/utils/validator'
 
 import { revokeAllSessionsByUserId } from '../session/query'
 
-const patchMyPasswordSchema = z.object({
-  currentPassword: z.string().min(1, '현재 비밀번호를 입력해 주세요'),
-  newPassword: passwordSchema,
-  token: z.string().length(6).regex(/^\d+$/).optional(),
-})
-
-export type PATCHV1MePasswordBody = z.infer<typeof patchMyPasswordSchema>
-
-export type PATCHV1MePasswordResponse = {
-  clearedCurrentSession: true
-  message: string
-}
-
 const passwordChangeLimiter = new RateLimiter({
   ...RateLimitPresets.strict(),
   keyPrefix: 'rl:change-password:',
@@ -39,7 +25,7 @@ const passwordChangeLimiter = new RateLimiter({
 
 const route = new Hono<Env>()
 
-route.patch('/', zProblemValidator('json', patchMyPasswordSchema), async (c) => {
+route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { currentPassword, newPassword, token } = c.req.valid('json')
   const { allowed, retryAfter } = await passwordChangeLimiter.check(String(userId))

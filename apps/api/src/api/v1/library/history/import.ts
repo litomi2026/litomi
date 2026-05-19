@@ -1,10 +1,11 @@
+import type { POSTV1LibraryHistoryImportBody, POSTV1LibraryHistoryImportResponse } from '@litomi/contracts'
+
+import { postV1LibraryHistoryImportBodySchema } from '@litomi/contracts'
 import { readingHistoryTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { readUserSettings } from '@litomi/db/query/user-settings'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,29 +15,11 @@ import { lockUserRowForUpdate } from '@/utils/lock-user-row'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { enforceHistoryLimit, getUserHistoryLimitInTx, MAX_READING_HISTORY_LAST_PAGE } from './shared'
-
-const localHistorySchema = z.object({
-  mangaId: z.coerce.number().int().positive().max(MAX_MANGA_ID),
-  lastPage: z.coerce.number().int().positive().max(MAX_READING_HISTORY_LAST_PAGE),
-  updatedAt: z.coerce.number().int().positive(),
-})
-
-const postBodySchema = z.object({
-  localHistories: z.array(localHistorySchema).min(1).max(100),
-})
-
-export type POSTV1LibraryHistoryImportBody = z.infer<typeof postBodySchema>
-
-export type POSTV1LibraryHistoryImportResponse = {
-  importedCount: number
-  skippedCount: number
-  synced: boolean
-}
+import { enforceHistoryLimit, getUserHistoryLimitInTx } from './shared'
 
 const route = new Hono<Env>()
 
-route.post('/import', requireAuth, requireAdult, zProblemValidator('json', postBodySchema), async (c) => {
+route.post('/import', requireAuth, requireAdult, zProblemValidator('json', postV1LibraryHistoryImportBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { localHistories } = c.req.valid('json')
 
