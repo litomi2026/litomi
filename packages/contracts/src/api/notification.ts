@@ -72,6 +72,29 @@ export const notificationCriteriaConditionSchema = z.object({
   isExcluded: z.boolean().optional().default(false),
 })
 
+export const notificationCriteriaConditionsSchema = z
+  .array(notificationCriteriaConditionSchema)
+  .min(1, '최소 1개 조건이 필요해요')
+  .max(MAX_NOTIFICATION_CRITERIA_CONDITIONS, `최대 ${MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 추가할 수 있어요`)
+  .superRefine((conditions, ctx) => {
+    const seen = new Set<string>()
+
+    for (const [index, condition] of conditions.entries()) {
+      const key = `${condition.type}:${condition.value}`
+
+      if (seen.has(key)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: '같은 조건은 한 번만 추가할 수 있어요',
+          path: [index, 'value'],
+        })
+        continue
+      }
+
+      seen.add(key)
+    }
+  })
+
 export const postV1NotificationCriteriaBodySchema = z.object({
   name: z
     .string()
