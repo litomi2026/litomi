@@ -1,19 +1,25 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
 import {
+  LIBRARY_ITEMS_PER_PAGE,
   MAX_LIBRARY_DESCRIPTION_LENGTH,
   MAX_LIBRARY_ICON_LENGTH,
   MAX_LIBRARY_NAME_LENGTH,
   MAX_MANGA_ID,
+  MAX_READING_HISTORY_LAST_PAGE,
+  RATING_PER_PAGE,
 } from '@litomi/domain/constants/policy'
+import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT, RatingSort } from '@litomi/domain/library/sort'
+import { isSingleEmoji } from '@litomi/domain/utils/emoji'
 import { z } from 'zod'
 
-export const MAX_READING_HISTORY_LAST_PAGE = 32767
 const catalogMangaSchema = z.custom<Manga>()
 
 export const libraryIconSchema = z
   .string()
+  .trim()
   .max(MAX_LIBRARY_ICON_LENGTH, '이모지는 하나만 입력할 수 있어요')
+  .refine(isSingleEmoji, '이모지는 하나만 입력할 수 있어요')
   .nullable()
   .optional()
 
@@ -94,6 +100,15 @@ export const getLibraryItemsResponseSchema = z.object({
 })
 
 export type GETLibraryItemsResponse = z.infer<typeof getLibraryItemsResponseSchema>
+
+export const getLibraryItemsQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
+  scope: z.enum(['public', 'me']),
+  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+})
+
+export type GETLibraryItemsQuery = z.infer<typeof getLibraryItemsQuerySchema>
 
 export const readingHistoryItemSchema = z.object({
   mangaId: z.number(),
@@ -228,6 +243,14 @@ export const getV1RatingsResponseSchema = z.object({
 })
 
 export type GETV1RatingsResponse = z.infer<typeof getV1RatingsResponseSchema>
+
+export const getV1RatingsQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().max(RATING_PER_PAGE).default(RATING_PER_PAGE),
+  sort: z.enum(RatingSort).default(RatingSort.UPDATED_DESC),
+})
+
+export type GETV1RatingsQuery = z.infer<typeof getV1RatingsQuerySchema>
 
 export const deleteV1LibraryRatingBodySchema = z.object({
   mangaIds: z.array(z.coerce.number().int().positive()).min(1).max(100),
