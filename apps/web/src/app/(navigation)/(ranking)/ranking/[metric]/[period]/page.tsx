@@ -1,5 +1,5 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { NativeGridSponsorPlacement } from '@litomi/contracts'
+import { nativeGridSponsorPlacement } from '@litomi/contracts'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -65,7 +65,7 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
 
   const { metric, period } = validation.data
   const rankings = await getRankingData(metric, period)
-  const nativeGridSponsor = getNativeGridSponsor(NativeGridSponsorPlacement.RANKING)
+  const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.RANKING)
 
   if (!rankings) {
     notFound()

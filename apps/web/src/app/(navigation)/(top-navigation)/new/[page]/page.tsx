@@ -1,5 +1,5 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { NativeGridSponsorPlacement } from '@litomi/contracts'
+import { nativeGridSponsorPlacement } from '@litomi/contracts'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
 import { Metadata } from 'next'
@@ -39,7 +39,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
   }
 
   const { page } = validation.data
-  const nativeGridSponsor = getNativeGridSponsor(NativeGridSponsorPlacement.NEW)
+  const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.NEW)
 
   return (
     <>
