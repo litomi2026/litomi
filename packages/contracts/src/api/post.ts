@@ -1,5 +1,6 @@
-import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/constants/policy'
+import { MAX_POST_CONTENT_LENGTH, POST_PER_PAGE } from '@litomi/domain/constants/policy'
 import { PostType } from '@litomi/domain/database/enum'
+import { PostFilter } from '@litomi/domain/post/filter'
 import { z } from 'zod'
 
 import type { ReferredPost } from '../post/referred-post'
@@ -36,6 +37,18 @@ export const getV1PostResponseSchema = z.object({
 })
 
 export type GETV1PostResponse = z.infer<typeof getV1PostResponseSchema>
+
+export const postFilterSchema = z.enum(PostFilter)
+
+export const getV1PostQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().max(POST_PER_PAGE).default(POST_PER_PAGE),
+  mangaId: z.coerce.number().int().positive().optional(),
+  filter: postFilterSchema.optional(),
+  username: z.string().min(1).max(32).optional(),
+})
+
+export type GETV1PostQuery = z.infer<typeof getV1PostQuerySchema>
 
 export const postV1PostBodySchema = z.object({
   content: z.string().min(2).max(MAX_POST_CONTENT_LENGTH),

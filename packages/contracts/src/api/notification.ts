@@ -1,8 +1,7 @@
 import { MAX_CRITERIA_NAME_LENGTH, MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
 import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { NotificationFilter } from '@litomi/domain/notification/filter'
 import { z } from 'zod'
-
-import { NotificationFilter } from '../notification/types'
 
 export const notificationSchema = z.object({
   id: z.number(),
@@ -85,3 +84,10 @@ export const postV1NotificationCriteriaResponseSchema = z.object({
 export type POSTV1NotificationCriteriaResponse = z.infer<typeof postV1NotificationCriteriaResponseSchema>
 
 export const notificationFilterSchema = z.enum(NotificationFilter)
+
+export const getNotificationQuerySchema = z.object({
+  nextId: z.coerce.number().optional(),
+  filter: z.union([notificationFilterSchema, z.array(notificationFilterSchema)]).optional(),
+})
+
+export type GETNotificationQuery = z.infer<typeof getNotificationQuerySchema>
