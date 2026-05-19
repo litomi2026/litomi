@@ -1,3 +1,5 @@
+import type { GETV1LibrarySummaryResponse } from '@litomi/contracts'
+
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { createCacheControl } from '@litomi/http/cache-control'
@@ -10,12 +12,6 @@ import type { Env } from '@/app'
 import { requireAdult } from '@/middleware/adult'
 import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
-
-export type GETV1LibrarySummaryResponse = {
-  bookmarkCount: number
-  historyCount: number
-  ratingCount: number
-}
 
 const librarySummaryRoutes = new Hono<Env>()
 

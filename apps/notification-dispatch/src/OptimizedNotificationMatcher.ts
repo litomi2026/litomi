@@ -6,6 +6,7 @@ import {
   notificationCriteriaTable,
 } from '@litomi/db/database/app/notification'
 import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { and, count, eq, inArray, or, SQL, sql } from 'drizzle-orm'
 
 export interface MangaMetadata {
@@ -256,32 +257,32 @@ export class OptimizedNotificationMatcher {
 
     // Series
     if (metadata.series?.length) {
-      valueMap.set(NotificationConditionType.SERIES, new Set(metadata.series.map((s) => this.normalizeValue(s))))
+      valueMap.set(NotificationConditionType.SERIES, new Set(metadata.series.map((s) => normalizeValue(s))))
     }
 
     // Characters
     if (metadata.characters?.length) {
-      valueMap.set(NotificationConditionType.CHARACTER, new Set(metadata.characters.map((c) => this.normalizeValue(c))))
+      valueMap.set(NotificationConditionType.CHARACTER, new Set(metadata.characters.map((c) => normalizeValue(c))))
     }
 
     // Tags
     if (metadata.tags?.length) {
-      valueMap.set(NotificationConditionType.TAG, new Set(metadata.tags.map((t) => this.normalizeValue(t))))
+      valueMap.set(NotificationConditionType.TAG, new Set(metadata.tags.map((t) => normalizeValue(t))))
     }
 
     // Artists
     if (metadata.artists?.length) {
-      valueMap.set(NotificationConditionType.ARTIST, new Set(metadata.artists.map((a) => this.normalizeValue(a))))
+      valueMap.set(NotificationConditionType.ARTIST, new Set(metadata.artists.map((a) => normalizeValue(a))))
     }
 
     // Groups
     if (metadata.groups?.length) {
-      valueMap.set(NotificationConditionType.GROUP, new Set(metadata.groups.map((g) => this.normalizeValue(g))))
+      valueMap.set(NotificationConditionType.GROUP, new Set(metadata.groups.map((g) => normalizeValue(g))))
     }
 
     // Languages
     if (metadata.languages?.length) {
-      valueMap.set(NotificationConditionType.LANGUAGE, new Set(metadata.languages.map((l) => this.normalizeValue(l))))
+      valueMap.set(NotificationConditionType.LANGUAGE, new Set(metadata.languages.map((l) => normalizeValue(l))))
     }
 
     // Uploader
@@ -290,9 +291,5 @@ export class OptimizedNotificationMatcher {
     }
 
     return valueMap
-  }
-
-  private normalizeValue(value: string): string {
-    return value.trim().toLowerCase().replace(/\s+/g, '_')
   }
 }

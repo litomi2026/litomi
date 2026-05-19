@@ -1,6 +1,6 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { NativeGridSponsorPlacement } from '@litomi/contracts'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { View } from '@litomi/std'
 import { Metadata } from 'next'
 import { z } from 'zod'
@@ -32,7 +32,7 @@ export default async function LibraryPage({ searchParams }: PageProps<'/library'
   }
 
   const { view } = validation.data
-  const nativeGridSponsor = getNativeGridSponsor(NativeGridSponsorPlacement.LIBRARY_HOME)
+  const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.LIBRARY_HOME)
 
   return <AllLibraryMangaView initialView={view} nativeGridSponsor={nativeGridSponsor} />
 }

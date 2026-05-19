@@ -1,13 +1,12 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
+import { postV1BBatonUnlinkBodySchema, type POSTV1BBatonUnlinkResponse } from '@litomi/contracts'
 import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
 import { db } from '@litomi/db/database/app/drizzle'
 import { twoFactorTable } from '@litomi/db/database/app/two-factor'
 import { userTable } from '@litomi/db/database/app/user'
-import { passwordSchema } from '@litomi/domain/database/zod'
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -17,16 +16,9 @@ import { zProblemValidator } from '@/utils/validator'
 
 import { reissueAuthCookies } from './query'
 
-export type POSTV1BBatonUnlinkResponse = { ok: true }
-
-const schema = z.object({
-  password: passwordSchema,
-  token: z.string().length(6).regex(/^\d+$/).optional(),
-})
-
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, zProblemValidator('json', schema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySchema), async (c) => {
   const userId = c.get('userId')!
 
   try {

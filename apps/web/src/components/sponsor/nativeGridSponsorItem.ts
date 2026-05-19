@@ -1,4 +1,4 @@
-import type { NativeGridSponsor } from '@litomi/contracts'
+import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 import type { Key } from 'react'
 
 export type NativeGridSponsorItem = {

@@ -1,3 +1,5 @@
+import type { POSTV1BBatonAttemptResponse } from '@litomi/contracts'
+
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
@@ -8,11 +10,6 @@ import { problemResponse } from '@/utils/problem'
 import { checkBBatonRateLimit } from './rate-limit'
 import { storeBBatonOAuthAttempt } from './state'
 import { BBATON_ATTEMPT_TTL_SECONDS, buildAuthorizeUrl, createBBatonState } from './utils'
-
-export type POSTV1BBatonAttemptResponse = {
-  authorizeUrl: string
-  expiresIn: number
-}
 
 const route = new Hono<Env>()
 

@@ -1,3 +1,4 @@
+import { postV1PointTurnstileRequestSchema, type POSTV1PointTurnstileResponse } from '@litomi/contracts'
 import { COOKIE_DOMAIN } from '@litomi/domain/constants'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { getRequestIP } from '@litomi/http/request'
@@ -5,7 +6,6 @@ import TurnstileValidator from '@litomi/http/turnstile'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 import ms from 'ms'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -15,17 +15,11 @@ import { zProblemValidator } from '@/utils/validator'
 
 import { POINTS_TURNSTILE_TTL_SECONDS, signPointsTurnstileToken } from '../util-turnstile-cookie'
 
-export type POSTV1PointTurnstileResponse = { verified: true; expiresInSeconds: number }
-
 const route = new Hono<Env>()
 
 const turnstileValidator = new TurnstileValidator(ms('10 seconds'), 1)
 
-const requestSchema = z.object({
-  token: z.string().min(1).max(2048),
-})
-
-route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', postV1PointTurnstileRequestSchema), async (c) => {
   const userId = c.get('userId')!
   const { token } = c.req.valid('json')
   const remoteIP = getRequestIP(c.req.raw.headers)

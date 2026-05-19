@@ -1,5 +1,13 @@
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateGroupList } from '@litomi/catalog/translation/group'
+import {
+  getV1PointsDonationRecipientQuerySchema,
+  type GETV1PointsDonationRecipientResponse,
+  type GETV1PointsDonationsMeItem,
+  getV1PointsDonationsMeQuerySchema,
+  type GETV1PointsDonationsMeRecipient,
+  type GETV1PointsDonationsMeResponse,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import {
   DONATION_RECIPIENT_TYPE,
@@ -11,7 +19,6 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, inArray, lt, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -22,15 +29,6 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-const recipientQuerySchema = z.object({
-  type: z.enum(['artist', 'group']),
-  value: z.string().min(1),
-})
-
-export type GETV1PointsDonationRecipientResponse = {
-  totalReceived: number
-}
-
 const publicDailyCacheControl = createCacheControl({
   public: true,
   maxAge: 3,
@@ -38,7 +36,7 @@ const publicDailyCacheControl = createCacheControl({
   swr: sec('1 day'),
 })
 
-route.get('/recipient', zProblemValidator('query', recipientQuerySchema), async (c) => {
+route.get('/recipient', zProblemValidator('query', getV1PointsDonationRecipientQuerySchema), async (c) => {
   const { type, value } = c.req.valid('query')
   const recipientValue = value.trim()
   const recipientType = type === 'artist' ? DONATION_RECIPIENT_TYPE.ARTIST : DONATION_RECIPIENT_TYPE.GROUP
@@ -64,32 +62,9 @@ route.get('/recipient', zProblemValidator('query', recipientQuerySchema), async 
   }
 })
 
-const meQuerySchema = z.object({
-  cursor: z.coerce.number().int().positive().optional(),
-})
-
-export type GETV1PointsDonationsMeItem = {
-  id: number
-  totalAmount: number
-  createdAt: string
-  recipients: GETV1PointsDonationsMeRecipient[]
-}
-
-export type GETV1PointsDonationsMeRecipient = {
-  type: 'artist' | 'group'
-  value: string
-  label: string
-  amount: number
-}
-
-export type GETV1PointsDonationsMeResponse = {
-  items: GETV1PointsDonationsMeItem[]
-  nextCursor: number | null
-}
-
 const PER_PAGE = 20
 
-route.get('/me', requireAuth, zProblemValidator('query', meQuerySchema), async (c) => {
+route.get('/me', requireAuth, zProblemValidator('query', getV1PointsDonationsMeQuerySchema), async (c) => {
   const userId = c.get('userId')!
   const { cursor } = c.req.valid('query')
 

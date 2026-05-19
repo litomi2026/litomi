@@ -1,8 +1,8 @@
+import { postV1BookmarkImportBodySchema, type POSTV1BookmarkImportResponse } from '@litomi/contracts'
 import { bookmarkTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,26 +14,9 @@ import { zProblemValidator } from '@/utils/validator'
 
 import { BookmarkLimitReachedError, saveBookmarks } from './save'
 
-export type POSTV1BookmarkImportResponse = {
-  imported: number
-  skipped: number
-}
-
-const importSchema = z.object({
-  mode: z.enum(['merge', 'replace']),
-  bookmarks: z
-    .array(
-      z.object({
-        mangaId: z.number().int().positive(),
-        createdAt: z.coerce.date().optional(),
-      }),
-    )
-    .min(1),
-})
-
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, requireAdult, zProblemValidator('json', importSchema), async (c) => {
+route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1BookmarkImportBodySchema), async (c) => {
   const userId = c.get('userId')!
 
   const { bookmarks, mode } = c.req.valid('json')

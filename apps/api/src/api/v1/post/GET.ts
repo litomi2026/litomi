@@ -1,12 +1,12 @@
-import { PostFilter, ReferredPost } from '@litomi/contracts'
+import type { GETV1PostResponse } from '@litomi/contracts'
+
+import { getV1PostQuerySchema } from '@litomi/contracts'
 import selectPost from '@litomi/db/query/post'
 import { decodePostCursor, encodePostCursor } from '@litomi/domain/common/cursor'
-import { POST_PER_PAGE } from '@litomi/domain/constants/policy'
-import { PostType } from '@litomi/domain/database/enum'
+import { PostFilter } from '@litomi/domain/post/filter'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,46 +14,9 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const querySchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(POST_PER_PAGE).default(POST_PER_PAGE),
-  mangaId: z.coerce.number().int().positive().optional(),
-  filter: z.enum(PostFilter).optional(),
-  username: z.string().min(1).max(32).optional(),
-})
-
-export type GETV1PostResponse = {
-  posts: Post[]
-  nextCursor: string | null
-}
-
-export type Post = {
-  id: number
-  createdAt: Date
-  content: string | null
-  type: PostType
-  author: {
-    id: number
-    name: string
-    nickname: string
-    imageURL: string | null
-  } | null
-  mangaId: number | null
-  parentPostId: number | null
-  likeCount: number
-  commentCount: number
-  repostCount: number
-  viewCount?: number
-  referredPost: ReferredPost | null
-
-  // TODO(2026-04-12)
-  imageURLs?: string[] | null
-  bookmarkCount?: number
-}
-
 const route = new Hono<Env>()
 
-route.get('/', zProblemValidator('query', querySchema), async (c) => {
+route.get('/', zProblemValidator('query', getV1PostQuerySchema), async (c) => {
   const { cursor, limit, mangaId, filter, username } = c.req.valid('query')
   const decodedCursor = cursor ? decodePostCursor(cursor) : null
   const currentUserId = c.get('userId')

@@ -1,9 +1,13 @@
+import {
+  getV1PointTransactionQuerySchema,
+  type GETV1PointTransactionResponse,
+  type Transaction,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { pointTransactionTable } from '@litomi/db/database/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -13,29 +17,11 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-export type GETV1PointTransactionResponse = {
-  items: Transaction[]
-  nextCursor: number | null
-}
-
-export type Transaction = {
-  id: number
-  type: 'earn' | 'spend'
-  amount: number
-  balanceAfter: number
-  description: string | null
-  createdAt: string
-}
-
 const route = new Hono<Env>()
 
 const PER_PAGE = 20
 
-const querySchema = z.object({
-  cursor: z.coerce.number().int().positive().optional(),
-})
-
-route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema), async (c) => {
+route.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1PointTransactionQuerySchema), async (c) => {
   const userId = c.get('userId')!
 
   const { cursor } = c.req.valid('query')

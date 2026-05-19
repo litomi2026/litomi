@@ -1,8 +1,8 @@
+import { postV1BBatonCompleteBodySchema } from '@litomi/contracts'
 import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
 import { db } from '@litomi/db/database/app/drizzle'
 import { isPostgresError } from '@litomi/db/database/error'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -16,14 +16,9 @@ import { checkBBatonRateLimit } from './rate-limit'
 import { consumeBBatonOAuthAttempt } from './state'
 import { getBBatonRedirectURI, parseBirthYear } from './utils'
 
-const completeSchema = z.object({
-  code: z.string().min(1).max(2048),
-  state: z.string().regex(/^[0-9a-f]{64}$/),
-})
-
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', postV1BBatonCompleteBodySchema), async (c) => {
   const userId = c.get('userId')!
 
   try {

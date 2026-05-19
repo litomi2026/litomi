@@ -1,7 +1,6 @@
+import { postV1BookmarkBodySchema, type POSTV1BookmarkResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
-import { MAX_BOOKMARK_BATCH_SIZE, MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -13,21 +12,9 @@ import { zProblemValidator } from '@/utils/validator'
 
 import { BookmarkLimitReachedError, saveBookmarks } from './save'
 
-const postBodySchema = z.object({
-  mangaIds: z.array(z.coerce.number().int().positive().max(MAX_MANGA_ID)).min(1).max(MAX_BOOKMARK_BATCH_SIZE),
-})
-
-export type POSTV1BookmarkBody = z.infer<typeof postBodySchema>
-
-export type POSTV1BookmarkResponse = {
-  createdMangaIds: number[]
-  duplicateCount: number
-  overflowCount: number
-}
-
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, requireAdult, zProblemValidator('json', postBodySchema), async (c) => {
+route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1BookmarkBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { mangaIds } = c.req.valid('json')
 

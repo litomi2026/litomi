@@ -2,7 +2,7 @@
 
 import type { GETV1PointsDonationsMeRecipient } from '@litomi/contracts'
 
-import { normalizeValue } from '@litomi/catalog/translation/common'
+import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { formatDistanceToNow, formatLocalDate, formatNumber } from '@litomi/std'
 import { Trash2 } from 'lucide-react'
 import Link from 'next/link'

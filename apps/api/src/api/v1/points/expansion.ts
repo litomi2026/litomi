@@ -1,3 +1,5 @@
+import type { GETV1PointExpansionResponse } from '@litomi/contracts'
+
 import { db } from '@litomi/db/database/app/drizzle'
 import { userExpansionTable } from '@litomi/db/database/app/points'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
@@ -16,24 +18,6 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
-
-export type ExpansionInfo = {
-  base: number
-  extra: number
-  current: number
-  max: number
-  canExpand: boolean
-  price: number
-  unit: number
-}
-
-export type GETV1PointExpansionResponse = {
-  library: ExpansionInfo
-  history: ExpansionInfo
-  rating: ExpansionInfo
-  bookmark: ExpansionInfo
-  pinnedLibrary: ExpansionInfo
-}
 
 const route = new Hono<Env>()
 

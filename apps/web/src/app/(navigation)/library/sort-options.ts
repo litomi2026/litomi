@@ -1,11 +1,4 @@
-export enum CollectionItemSort {
-  CREATED_DESC = 'created-desc',
-  CREATED_ASC = 'created-asc',
-  MANGA_ID_DESC = 'manga-id-desc',
-  MANGA_ID_ASC = 'manga-id-asc',
-}
-
-export const DEFAULT_COLLECTION_ITEM_SORT = CollectionItemSort.CREATED_DESC
+import { CollectionItemSort } from '@litomi/domain/library/sort'
 
 export const COLLECTION_ITEM_SORT_OPTIONS = [
   { value: CollectionItemSort.CREATED_DESC, label: '최근 추가순' },

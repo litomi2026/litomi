@@ -1,15 +1,12 @@
-import type { Manga } from '@litomi/domain/types/manga'
-
+import { getV1LibraryMangaQuerySchema, type GETV1LibraryMangaResponse, type LibraryMangaItem } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@litomi/domain/common/cursor'
-import { LIBRARY_ITEMS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, lt, or } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -18,32 +15,9 @@ import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const querySchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
-  scope: z.enum(['public', 'me']),
-})
-
-export type GETV1LibraryMangaResponse = {
-  items: LibraryMangaItem[]
-  nextCursor: string | null
-}
-
-export type LibraryMangaItem = {
-  mangaId: number
-  createdAt: number
-  manga?: Manga
-  library: {
-    id: number
-    name: string
-    color: string | null
-    icon: string | null
-  }
-}
-
 const libraryMangaRoutes = new Hono<Env>()
 
-libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySchema), async (c) => {
   const { cursor, limit, scope } = c.req.valid('query')
   const userId = c.get('userId')
 

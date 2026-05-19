@@ -1,3 +1,4 @@
+import { deleteV1LibraryItemBodySchema, type DELETEV1LibraryItemResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
 import { and, eq, inArray, sql } from 'drizzle-orm'
@@ -8,11 +9,11 @@ import type { Env } from '@/app'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { deleteItemBodySchema, DELETEV1LibraryItemResponse, LibraryItemError } from './schema'
+import { LibraryItemError } from './error'
 
 const route = new Hono<Env>()
 
-route.delete('/', zProblemValidator('json', deleteItemBodySchema), async (c) => {
+route.delete('/', zProblemValidator('json', deleteV1LibraryItemBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { libraryId, mangaIds } = c.req.valid('json')
   const requestedMangaIds = [...new Set(mangaIds)]

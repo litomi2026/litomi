@@ -1,3 +1,5 @@
+import type { POSTV1AuthLogoutResponse } from '@litomi/contracts'
+
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { Hono } from 'hono'
@@ -10,10 +12,6 @@ import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
 
 import { hashToken, revokeCurrentSessionByTokenHash } from '../session.query'
-
-export type POSTV1AuthLogoutResponse = {
-  loginId: string | null
-}
 
 const route = new Hono<Env>()
 

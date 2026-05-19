@@ -1,17 +1,14 @@
-import type { Manga } from '@litomi/domain/types/manga'
-
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
+import { getLibraryItemsQuerySchema, type GETLibraryItemsResponse, libraryIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
 import { selectLibraryItem } from '@litomi/db/query/library-item'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { decodeLibraryIdCursor } from '@litomi/domain/common/cursor'
-import { LIBRARY_ITEMS_PER_PAGE } from '@litomi/domain/constants/policy'
+import { DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -20,22 +17,6 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
-
-const paramsSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-const querySchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
-  scope: z.enum(['public', 'me']),
-  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
-})
-
-export type GETLibraryItemsResponse = {
-  items: { mangaId: number; createdAt: number; manga?: Manga }[]
-  nextCursor: string | null
-}
 
 const routes = new Hono<Env>()
 
@@ -46,7 +27,7 @@ const sharedCacheControl = createCacheControl({
   swr: sec('10 minutes'),
 })
 
-routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('query', querySchema), async (c) => {
+routes.get('/', zProblemValidator('param', libraryIdParamSchema), zProblemValidator('query', getLibraryItemsQuerySchema), async (c) => {
   const { id: libraryId } = c.req.valid('param')
   const { cursor, limit, scope, sort } = c.req.valid('query')
   const userId = c.get('userId')

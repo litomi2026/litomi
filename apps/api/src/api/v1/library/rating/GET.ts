@@ -1,13 +1,11 @@
-import { RatingSort } from '@litomi/contracts'
+import { getV1RatingsQuerySchema, type GETV1RatingsResponse } from '@litomi/contracts'
 import { userRatingTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { buildRatingWhereClause, getNextRatingCursor, getRatingOrderByClauses } from '@litomi/db/sql/rating-sort'
 import { decodeRatingCursor } from '@litomi/domain/common/cursor'
-import { RATING_PER_PAGE } from '@litomi/domain/constants/policy'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -16,27 +14,9 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const querySchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(RATING_PER_PAGE).default(RATING_PER_PAGE),
-  sort: z.enum(RatingSort).default(RatingSort.UPDATED_DESC),
-})
-
-export type GETV1RatingsResponse = {
-  items: RatingItem[]
-  nextCursor: string | null
-}
-
-type RatingItem = {
-  createdAt: number
-  mangaId: number
-  rating: number
-  updatedAt: number
-}
-
 const route = new Hono<Env>()
 
-route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) => {
+route.get('/', requireAuth, zProblemValidator('query', getV1RatingsQuerySchema), async (c) => {
   const userId = c.get('userId')!
   const { cursor, limit, sort } = c.req.valid('query')
   const decodedCursor = cursor ? decodeRatingCursor(cursor) : null

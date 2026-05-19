@@ -1,12 +1,11 @@
+import { postV1AuthSignupRequestSchema, type POSTV1AuthSignupResponse } from '@litomi/contracts'
 import { SALT_ROUNDS } from '@litomi/domain/constants'
-import { loginIdSchema, nicknameSchema, passwordSchema } from '@litomi/domain/database/zod'
 import { generateRandomNickname, generateRandomProfileImage } from '@litomi/domain/utils/nickname'
 import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { hash } from 'bcryptjs'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -16,45 +15,12 @@ import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-export type POSTV1AuthSignupRequest = {
-  loginId: string
-  nickname?: string
-  password: string
-  passwordConfirm: string
-  turnstileToken: string
-}
-
-export type POSTV1AuthSignupResponse = {
-  userId: number
-  loginId: string
-  name: string
-  nickname: string
-}
-
-const signupRequestSchema = z
-  .object({
-    loginId: loginIdSchema,
-    password: passwordSchema,
-    passwordConfirm: z.string(),
-    nickname: z
-      .union([nicknameSchema, z.literal(''), z.undefined()])
-      .transform((value) => (value ? value : generateRandomNickname())),
-    turnstileToken: z.string().min(1).max(2048),
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    error: '비밀번호와 비밀번호 확인 값이 일치하지 않아요',
-    path: ['passwordConfirm'],
-  })
-  .refine((data) => data.loginId !== data.password, {
-    error: '아이디와 비밀번호는 같을 수 없어요',
-    path: ['password'],
-  })
-
 const signupLimiter = new RateLimiter(RateLimitPresets.strict())
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', signupRequestSchema), async (c) => {
-  const { loginId, nickname, password, turnstileToken } = c.req.valid('json')
+route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async (c) => {
+  const { loginId, nickname: requestedNickname, password, turnstileToken } = c.req.valid('json')
+  const nickname = requestedNickname ? requestedNickname : generateRandomNickname()
   const validator = new TurnstileValidator()
   const remoteIP = getRequestIP(c.req.raw.headers)
 

@@ -1,25 +1,17 @@
+import { deleteV1NotificationBodySchema, type DELETEV1NotificationResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { notificationTable } from '@litomi/db/database/app/notification'
-import { MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const deleteBodySchema = z.object({
-  ids: z.array(z.coerce.number().int().positive()).min(1).max(MAX_NOTIFICATION_COUNT),
-})
-
-export type DELETEV1NotificationBody = z.infer<typeof deleteBodySchema>
-export type DELETEV1NotificationResponse = { ids: number[] }
-
 const route = new Hono<Env>()
 
-route.delete('/', zProblemValidator('json', deleteBodySchema), async (c) => {
+route.delete('/', zProblemValidator('json', deleteV1NotificationBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { ids } = c.req.valid('json')
 

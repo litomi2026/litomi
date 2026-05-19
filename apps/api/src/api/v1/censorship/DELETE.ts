@@ -1,25 +1,17 @@
+import { deleteV1CensorshipDeleteBodySchema, type DELETEV1CensorshipDeleteResponse } from '@litomi/contracts'
 import { userCensorshipTable } from '@litomi/db/database/app/censorship'
 import { db } from '@litomi/db/database/app/drizzle'
-import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const deleteSchema = z.object({
-  ids: z.array(z.coerce.number().int().positive()).min(1).max(MAX_CENSORSHIPS_PER_USER),
-})
-
-export type DELETEV1CensorshipDeleteBody = z.infer<typeof deleteSchema>
-export type DELETEV1CensorshipDeleteResponse = { ids: number[] }
-
 const route = new Hono<Env>()
 
-route.delete('/', zProblemValidator('json', deleteSchema), async (c) => {
+route.delete('/', zProblemValidator('json', deleteV1CensorshipDeleteBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { ids } = c.req.valid('json')
 

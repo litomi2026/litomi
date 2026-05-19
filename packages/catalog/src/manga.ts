@@ -1,10 +1,10 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
 import { tagCategoryIntToName } from '@litomi/domain/database/enum'
+import { Locale } from '@litomi/domain/locale'
 
 import { translateArtistList } from './translation/artist'
 import { translateCharacterList } from './translation/character'
-import { Locale } from './translation/common'
 import { translateGroupList } from './translation/group'
 import { translateLanguageList } from './translation/language'
 import { translateSeriesList } from './translation/series'

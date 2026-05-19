@@ -1,3 +1,4 @@
+import { postV1LibraryItemAddBodySchema, type POSTV1LibraryItemAddResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/constants/policy'
@@ -9,11 +10,11 @@ import type { Env } from '@/app'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { addItemBodySchema, LibraryItemError, POSTV1LibraryItemAddResponse } from './schema'
+import { LibraryItemError } from './error'
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', addItemBodySchema), async (c) => {
+route.post('/', zProblemValidator('json', postV1LibraryItemAddBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { mangaId, libraryIds } = c.req.valid('json')
   const requestedLibraryIds = [...new Set(libraryIds)].sort((a, b) => a - b)

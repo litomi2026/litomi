@@ -7,8 +7,6 @@ import { and, desc, eq, notInArray, sum } from 'drizzle-orm'
 
 export type SessionDBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
-export const MAX_READING_HISTORY_LAST_PAGE = 32767
-
 export async function enforceHistoryLimit(tx: SessionDBTransaction, userId: number, limit: number) {
   await tx
     .delete(readingHistoryTable)

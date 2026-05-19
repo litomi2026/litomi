@@ -1,3 +1,4 @@
+import { postV1PointTokenRequestSchema, type POSTV1PointTokenResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { adImpressionTokenTable, pointTransactionTable } from '@litomi/db/database/app/points'
 import { COOKIE_DOMAIN } from '@litomi/domain/constants'
@@ -6,7 +7,6 @@ import { CookieKey } from '@litomi/domain/constants/storage'
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -16,19 +16,9 @@ import { zProblemValidator } from '@/utils/validator'
 
 import { verifyPointsTurnstileToken } from './util-turnstile-cookie'
 
-export type POSTV1PointTokenResponse = {
-  token: string
-  expiresAt: string
-  dailyRemaining: number
-}
-
 const route = new Hono<Env>()
 
-const requestSchema = z.object({
-  adSlotId: z.string().min(1).max(50),
-})
-
-route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSchema), async (c) => {
   const userId = c.get('userId')!
 
   const turnstileCookie = getCookie(c, CookieKey.POINTS_TURNSTILE)

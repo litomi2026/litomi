@@ -1,3 +1,5 @@
+import type { GETV1BookmarkIdResponse } from '@litomi/contracts'
+
 import { selectBookmarkId } from '@litomi/db/query/bookmark'
 import { Hono } from 'hono'
 
@@ -6,10 +8,6 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
-
-export type GETV1BookmarkIdResponse = {
-  mangaIds: number[]
-}
 
 const route = new Hono<Env>()
 

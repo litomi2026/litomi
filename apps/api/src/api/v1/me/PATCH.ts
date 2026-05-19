@@ -1,11 +1,10 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import { patchV1MeBodySchema, type PATCHV1MeResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { userTable } from '@litomi/db/database/app/user'
 import { isPostgresError } from '@litomi/db/database/error'
-import { imageURLSchema, nameSchema, nicknameSchema } from '@litomi/domain/database/zod'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -13,28 +12,9 @@ import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const patchMyProfileSchema = z
-  .object({
-    name: nameSchema.optional(),
-    nickname: nicknameSchema.optional(),
-    imageURL: imageURLSchema.nullable().optional(),
-  })
-  .refine((value) => Object.values(value).some((item) => item !== undefined), {
-    message: '변경할 정보를 입력해 주세요',
-  })
-
-export type PATCHV1MeBody = z.infer<typeof patchMyProfileSchema>
-
-export type PATCHV1MeResponse = {
-  message: string
-  name: string
-  nickname: string
-  imageURL: string | null
-}
-
 const route = new Hono<Env>()
 
-route.patch('/', zProblemValidator('json', patchMyProfileSchema), async (c) => {
+route.patch('/', zProblemValidator('json', patchV1MeBodySchema), async (c) => {
   const userId = c.get('userId')!
   const patch = c.req.valid('json')
 

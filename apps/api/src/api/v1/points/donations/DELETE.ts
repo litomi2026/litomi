@@ -1,8 +1,8 @@
+import { deleteV1PointsDonationParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { pointDonationTable } from '@litomi/db/database/app/points'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -12,11 +12,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-const deleteParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-route.delete('/:id', requireAuth, zProblemValidator('param', deleteParamSchema), async (c) => {
+route.delete('/:id', requireAuth, zProblemValidator('param', deleteV1PointsDonationParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
 

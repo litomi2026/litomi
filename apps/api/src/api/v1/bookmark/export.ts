@@ -1,3 +1,5 @@
+import type { GETV1BookmarkExportResponse } from '@litomi/contracts'
+
 import { selectBookmark } from '@litomi/db/query/bookmark'
 import { Hono } from 'hono'
 
@@ -6,15 +8,6 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
-
-export type ExportBookmark = {
-  mangaId: number
-  createdAt: number
-}
-
-export type GETV1BookmarkExportResponse = {
-  bookmarks: ExportBookmark[]
-}
 
 const route = new Hono<Env>()
 

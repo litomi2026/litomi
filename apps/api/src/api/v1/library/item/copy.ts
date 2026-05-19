@@ -1,3 +1,4 @@
+import { postV1LibraryItemCopyBodySchema, type POSTV1LibraryItemCopyResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/constants/policy'
@@ -9,11 +10,11 @@ import type { Env } from '@/app'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { copyItemBodySchema, LibraryItemError, POSTV1LibraryItemCopyResponse } from './schema'
+import { LibraryItemError } from './error'
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', copyItemBodySchema), async (c) => {
+route.post('/', zProblemValidator('json', postV1LibraryItemCopyBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { mangaIds, toLibraryId } = c.req.valid('json')
   const requestedMangaIds = [...new Set(mangaIds)]

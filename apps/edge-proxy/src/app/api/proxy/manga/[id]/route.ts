@@ -1,4 +1,3 @@
-import { Locale } from '@litomi/catalog/translation/common'
 import { fetchMangaFromMultiSources } from '@litomi/crawler/common/manga'
 import {
   calculateOptimalCacheDuration,
@@ -7,6 +6,7 @@ import {
   handleRouteError,
 } from '@litomi/crawler/crawler/proxy-utils'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/constants/policy'
+import { Locale } from '@litomi/domain/locale'
 import { RouteProps } from '@litomi/domain/types/nextjs'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { sec } from '@litomi/std'

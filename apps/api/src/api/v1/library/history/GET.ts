@@ -1,13 +1,11 @@
+import { getV1ReadingHistoryQuerySchema, type GETV1ReadingHistoryResponse } from '@litomi/contracts'
 import { readingHistoryTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@litomi/domain/common/cursor'
-import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
-import { READING_HISTORY_PER_PAGE } from '@litomi/domain/constants/policy'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, lt, or, SQL } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -17,25 +15,9 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const querySchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().positive().max(POINT_CONSTANTS.HISTORY_MAX_EXPANSION).default(READING_HISTORY_PER_PAGE),
-})
-
-export type GETV1ReadingHistoryResponse = {
-  items: ReadingHistoryItem[]
-  nextCursor: string | null
-}
-
-export type ReadingHistoryItem = {
-  mangaId: number
-  lastPage: number
-  updatedAt: number
-}
-
 const libraryHistoryRoutes = new Hono<Env>()
 
-libraryHistoryRoutes.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema), async (c) => {
+libraryHistoryRoutes.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1ReadingHistoryQuerySchema), async (c) => {
   const userId = c.get('userId')!
   const { cursor, limit } = c.req.valid('query')
   const decodedCursor = cursor ? decodeReadingHistoryCursor(cursor) : null

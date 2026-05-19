@@ -58,6 +58,37 @@ export const postV1PointsDonationCreateResponseSchema = z.object({
 
 export type POSTV1PointsDonationCreateResponse = z.infer<typeof postV1PointsDonationCreateResponseSchema>
 
+export const getV1PointsDonationRecipientQuerySchema = z.object({
+  type: z.enum(['artist', 'group']),
+  value: z.string().min(1),
+})
+
+export type GETV1PointsDonationRecipientQuery = z.infer<typeof getV1PointsDonationRecipientQuerySchema>
+
+export const getV1PointsDonationRecipientResponseSchema = z.object({
+  totalReceived: z.number(),
+})
+
+export type GETV1PointsDonationRecipientResponse = z.infer<typeof getV1PointsDonationRecipientResponseSchema>
+
+export const getV1PointsDonationsMeQuerySchema = z.object({
+  cursor: z.coerce.number().int().positive().optional(),
+})
+
+export type GETV1PointsDonationsMeQuery = z.infer<typeof getV1PointsDonationsMeQuerySchema>
+
+export const deleteV1PointsDonationParamSchema = z.object({
+  id: z.coerce.number().int().positive(),
+})
+
+export type DELETEV1PointsDonationParam = z.infer<typeof deleteV1PointsDonationParamSchema>
+
+export const postV1PointEarnRequestSchema = z.object({
+  token: z.string().length(64),
+})
+
+export type POSTV1PointEarnRequest = z.infer<typeof postV1PointEarnRequestSchema>
+
 export const postV1PointEarnResponseSchema = z.object({
   balance: z.number(),
   earned: z.number(),
@@ -130,6 +161,12 @@ export const postV1PointTokenResponseSchema = z.object({
 
 export type POSTV1PointTokenResponse = z.infer<typeof postV1PointTokenResponseSchema>
 
+export const postV1PointTokenRequestSchema = z.object({
+  adSlotId: z.string().min(1).max(50),
+})
+
+export type POSTV1PointTokenRequest = z.infer<typeof postV1PointTokenRequestSchema>
+
 export const transactionSchema = z.object({
   id: z.number(),
   type: z.enum(['earn', 'spend']),
@@ -140,6 +177,12 @@ export const transactionSchema = z.object({
 })
 
 export type Transaction = z.infer<typeof transactionSchema>
+
+export const getV1PointTransactionQuerySchema = z.object({
+  cursor: z.coerce.number().int().positive().optional(),
+})
+
+export type GETV1PointTransactionQuery = z.infer<typeof getV1PointTransactionQuerySchema>
 
 export const getV1PointTransactionResponseSchema = z.object({
   items: z.array(transactionSchema),
@@ -154,6 +197,12 @@ export const getV1PointTurnstileResponseSchema = z.object({
 })
 
 export type GETV1PointTurnstileResponse = z.infer<typeof getV1PointTurnstileResponseSchema>
+
+export const postV1PointTurnstileRequestSchema = z.object({
+  token: z.string().min(1).max(2048),
+})
+
+export type POSTV1PointTurnstileRequest = z.infer<typeof postV1PointTurnstileRequestSchema>
 
 export const postV1PointTurnstileResponseSchema = getV1PointTurnstileResponseSchema
 

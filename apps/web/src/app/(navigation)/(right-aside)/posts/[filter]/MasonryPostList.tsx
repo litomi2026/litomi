@@ -2,7 +2,7 @@
 
 import type { Post } from '@litomi/contracts'
 
-import { PostFilter } from '@litomi/contracts'
+import { PostFilter } from '@litomi/domain/post/filter'
 import { Frown, Repeat } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode, useEffect, useMemo, useState } from 'react'

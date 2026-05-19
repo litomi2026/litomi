@@ -1,12 +1,12 @@
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateCharacterList } from '@litomi/catalog/translation/character'
-import { Locale } from '@litomi/catalog/translation/common'
 import { translateGroupList } from '@litomi/catalog/translation/group'
 import { translateLanguageList } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
 import { MangaSource } from '@litomi/domain/database/enum'
+import { Locale } from '@litomi/domain/locale'
 import { Manga, MangaTag } from '@litomi/domain/types/manga'
 import ms from 'ms'
 

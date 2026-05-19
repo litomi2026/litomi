@@ -1,8 +1,8 @@
 import 'server-only'
+import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import type { Multilingual } from './common'
 
-import { normalizeValue } from './common'
 import languageTranslationJSON from './language.json'
 
 const LANGUAGE_TRANSLATION: Record<string, Multilingual> = languageTranslationJSON

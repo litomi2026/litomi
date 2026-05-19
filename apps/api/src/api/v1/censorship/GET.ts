@@ -1,11 +1,9 @@
+import { getV1CensorshipQuerySchema, type GETV1CensorshipResponse } from '@litomi/contracts'
 import { userCensorshipTable } from '@litomi/db/database/app/censorship'
 import { db } from '@litomi/db/database/app/drizzle'
 import { encodeCensorshipCursor } from '@litomi/domain/common/cursor'
-import { CENSORSHIPS_PER_PAGE, MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -13,27 +11,9 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const querySchema = z.object({
-  cursor: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(MAX_CENSORSHIPS_PER_USER).default(CENSORSHIPS_PER_PAGE),
-})
-
-export type CensorshipItem = {
-  id: number
-  key: CensorshipKey
-  value: string
-  level: CensorshipLevel
-  createdAt: number
-}
-
-export type GETV1CensorshipResponse = {
-  censorships: CensorshipItem[]
-  nextCursor: string | null
-}
-
 const route = new Hono<Env>()
 
-route.get('/', zProblemValidator('query', querySchema), async (c) => {
+route.get('/', zProblemValidator('query', getV1CensorshipQuerySchema), async (c) => {
   const userId = c.get('userId')!
   const { cursor, limit } = c.req.valid('query')
 

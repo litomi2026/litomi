@@ -1,4 +1,4 @@
-export const NativeGridSponsorPlacement = {
+export const nativeGridSponsorPlacement = {
   LIBRARY_HOME: 'public_grid_library_home',
   NEW: 'public_grid_new',
   RANDOM: 'public_grid_random',
@@ -20,4 +20,4 @@ export type NativeGridSponsor = {
   title: string
 }
 
-export type NativeGridSponsorPlacement = (typeof NativeGridSponsorPlacement)[keyof typeof NativeGridSponsorPlacement]
+export type NativeGridSponsorPlacement = (typeof nativeGridSponsorPlacement)[keyof typeof nativeGridSponsorPlacement]

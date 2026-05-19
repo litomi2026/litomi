@@ -1,4 +1,4 @@
-import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/server'
+import type { POSTV1AuthPasskeyOptionsResponse } from '@litomi/contracts'
 
 import { getPasskeyAuthenticationAttemptCookieConfig } from '@litomi/auth/cookie'
 import { WEBAUTHN_RP_ID } from '@litomi/auth/passkey'
@@ -13,11 +13,6 @@ import { setCookie } from 'hono/cookie'
 import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
-
-export type POSTV1AuthPasskeyOptionsResponse = {
-  options: PublicKeyCredentialRequestOptionsJSON
-  turnstileRequired: boolean
-}
 
 const route = new Hono<Env>()
 

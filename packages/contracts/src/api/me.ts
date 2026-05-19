@@ -21,9 +21,16 @@ const nicknameSchema = z
   .max(32, { error: '닉네임은 최대 32자까지 입력할 수 있어요' })
 
 const imageURLSchema = z
-  .string()
   .url('프로필 이미지 주소가 URL 형식이 아니에요')
   .max(256, '프로필 이미지 URL은 최대 256자까지 입력할 수 있어요')
+  .refine((value) => {
+    try {
+      const { protocol } = new URL(value)
+      return protocol === 'http:' || protocol === 'https:'
+    } catch {
+      return false
+    }
+  }, '프로필 이미지 URL은 http 또는 https만 사용할 수 있어요')
 
 export const AdultVerificationStatus = {
   ADULT: 'adult',
@@ -123,6 +130,12 @@ export const deleteV1MeSessionResponseSchema = z.object({
 })
 
 export type DELETEV1MeSessionResponse = z.infer<typeof deleteV1MeSessionResponseSchema>
+
+export const deleteV1MeSessionParamSchema = z.object({
+  id: z.uuid(),
+})
+
+export type DELETEV1MeSessionParam = z.infer<typeof deleteV1MeSessionParamSchema>
 
 export const getV1MeFollowingResponseSchema = z.object({
   userIds: z.array(z.number()),

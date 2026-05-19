@@ -1,3 +1,5 @@
+import type { GETV1PostLikedResponse } from '@litomi/contracts'
+
 import { db } from '@litomi/db/database/app/drizzle'
 import { postLikeTable } from '@litomi/db/database/app/post'
 import { eq } from 'drizzle-orm'
@@ -8,10 +10,6 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
-
-export type GETV1PostLikedResponse = {
-  postIds: number[]
-}
 
 const route = new Hono<Env>()
 

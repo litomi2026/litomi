@@ -1,11 +1,15 @@
+import {
+  mangaIdParamSchema,
+  putV1MangaIdRatingRequestSchema,
+  type PUTV1MangaIdRatingResponse,
+} from '@litomi/contracts'
 import { userRatingTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { userExpansionTable } from '@litomi/db/database/app/points'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
-import { MAX_MANGA_ID, MAX_RATINGS_PER_USER } from '@litomi/domain/constants/policy'
+import { MAX_RATINGS_PER_USER } from '@litomi/domain/constants/policy'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -19,28 +23,13 @@ const ErrorCode = {
   RATING_INSERT_FAILED: 'RATING_INSERT_FAILED',
 } as const
 
-const paramSchema = z.object({
-  id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
-})
-
-const putBodySchema = z.object({
-  rating: z.coerce.number().int().min(1).max(5),
-})
-
-export type PUTV1MangaIdRatingRequest = z.infer<typeof putBodySchema>
-
-export type PUTV1MangaIdRatingResponse = {
-  rating: number
-  updatedAt: number
-}
-
 const route = new Hono<Env>()
 
 route.put(
   '/:id/rating',
   requireAuth,
-  zProblemValidator('param', paramSchema),
-  zProblemValidator('json', putBodySchema),
+  zProblemValidator('param', mangaIdParamSchema),
+  zProblemValidator('json', putV1MangaIdRatingRequestSchema),
   async (c) => {
     const userId = c.get('userId')!
 

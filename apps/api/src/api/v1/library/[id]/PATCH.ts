@@ -1,11 +1,10 @@
+import { libraryIdParamSchema, patchV1LibraryIdBodySchema, type PATCHV1LibraryIdResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/constants/policy'
 import { hexColorToInt } from '@litomi/domain/utils/color'
 import { normalizeString } from '@litomi/std'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -14,41 +13,13 @@ import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/utils
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { libraryIconSchema } from '../schema'
-
-const paramSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-const bodySchema = z.object({
-  name: z
-    .string()
-    .min(1, '서재 이름을 입력해 주세요')
-    .max(MAX_LIBRARY_NAME_LENGTH, `이름은 ${MAX_LIBRARY_NAME_LENGTH}자 이하여야 해요`),
-  description: z
-    .string()
-    .max(MAX_LIBRARY_DESCRIPTION_LENGTH, `설명은 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자 이하여야 해요`)
-    .nullable()
-    .optional(),
-  color: z
-    .string()
-    .regex(/^#[0-9A-F]{6}$/i, '올바른 색상 코드를 입력해 주세요')
-    .nullable()
-    .optional(),
-  icon: libraryIconSchema,
-  isPublic: z.boolean().optional().default(false),
-})
-
-export type PATCHV1LibraryIdBody = z.infer<typeof bodySchema>
-export type PATCHV1LibraryIdResponse = { id: number }
-
 const route = new Hono<Env>()
 
 route.patch(
   '/',
   requireAuth,
-  zProblemValidator('param', paramSchema),
-  zProblemValidator('json', bodySchema),
+  zProblemValidator('param', libraryIdParamSchema),
+  zProblemValidator('json', patchV1LibraryIdBodySchema),
   async (c) => {
     const userId = c.get('userId')!
     const { id: libraryId } = c.req.valid('param')

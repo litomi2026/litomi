@@ -1,26 +1,19 @@
+import type { PATCHV1NotificationReadAllResponse, PATCHV1NotificationReadResponse } from '@litomi/contracts'
+
+import { patchV1NotificationReadBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { notificationTable } from '@litomi/db/database/app/notification'
-import { MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const markAsReadBodySchema = z.object({
-  ids: z.array(z.coerce.number().int().positive()).min(1).max(MAX_NOTIFICATION_COUNT),
-})
-
-export type PATCHV1NotificationReadAllResponse = { updatedCount: number }
-export type PATCHV1NotificationReadBody = z.infer<typeof markAsReadBodySchema>
-export type PATCHV1NotificationReadResponse = { ids: number[] }
-
 const route = new Hono<Env>()
 
-route.patch('/read', zProblemValidator('json', markAsReadBodySchema), async (c) => {
+route.patch('/read', zProblemValidator('json', patchV1NotificationReadBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { ids } = c.req.valid('json')
 

@@ -1,4 +1,4 @@
-import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
+import { CENSORSHIPS_PER_PAGE, MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { z } from 'zod'
 
@@ -11,6 +11,13 @@ export const censorshipItemSchema = z.object({
 })
 
 export type CensorshipItem = z.infer<typeof censorshipItemSchema>
+
+export const getV1CensorshipQuerySchema = z.object({
+  cursor: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().positive().max(MAX_CENSORSHIPS_PER_USER).default(CENSORSHIPS_PER_PAGE),
+})
+
+export type GETV1CensorshipQuery = z.infer<typeof getV1CensorshipQuerySchema>
 
 export const getV1CensorshipResponseSchema = z.object({
   censorships: z.array(censorshipItemSchema),

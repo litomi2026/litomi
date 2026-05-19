@@ -1,7 +1,7 @@
 import type { GETV1BookmarkResponse } from '@litomi/contracts'
 
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
 import { BOOKMARKS_PER_PAGE } from '@litomi/domain/constants/policy'
+import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 

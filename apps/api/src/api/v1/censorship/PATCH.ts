@@ -1,36 +1,17 @@
+import { patchV1CensorshipUpdateBodySchema, type PATCHV1CensorshipUpdateResponse } from '@litomi/contracts'
 import { userCensorshipTable } from '@litomi/db/database/app/censorship'
 import { db } from '@litomi/db/database/app/drizzle'
-import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const updateSchema = z.object({
-  items: z
-    .array(
-      z.object({
-        id: z.coerce.number().int().positive(),
-        key: z.enum(CensorshipKey),
-        value: z.string().trim().min(1).max(256),
-        level: z.enum(CensorshipLevel),
-      }),
-    )
-    .min(1)
-    .max(MAX_CENSORSHIPS_PER_USER),
-})
-
-export type PATCHV1CensorshipUpdateBody = z.infer<typeof updateSchema>
-export type PATCHV1CensorshipUpdateResponse = { ids: number[] }
-
 const route = new Hono<Env>()
 
-route.patch('/', zProblemValidator('json', updateSchema), async (c) => {
+route.patch('/', zProblemValidator('json', patchV1CensorshipUpdateBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { items } = c.req.valid('json')
 

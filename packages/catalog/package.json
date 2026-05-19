@@ -25,7 +25,6 @@
     "type": "tsc --noEmit"
   },
   "dependencies": {
-    "@litomi/contracts": "workspace:*",
     "@litomi/domain": "workspace:*",
     "@litomi/std": "workspace:*",
     "server-only": "^0.0.1"

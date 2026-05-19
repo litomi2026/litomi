@@ -1,12 +1,27 @@
-import type { ReferredPost } from '@litomi/contracts'
-
-import { PostFilter } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { postLikeTable, postTable } from '@litomi/db/database/app/post'
 import { userFollowTable, userTable } from '@litomi/db/database/app/user'
 import { PostType } from '@litomi/domain/database/enum'
+import { PostFilter } from '@litomi/domain/post/filter'
 import { and, count, desc, eq, inArray, isNotNull, lt, or, SQL } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
+
+type DeletedReferredPost = {
+  isDeleted: true
+}
+
+type LiveReferredPost = {
+  isDeleted?: false
+  id: number
+  createdAt: Date
+  content?: string | null
+  author?: {
+    id: number
+    nickname: string
+    name: string
+    imageURL?: string | null
+  } | null
+}
 
 type Params = {
   limit?: number
@@ -20,6 +35,8 @@ type Params = {
   username?: string
   currentUserId?: number
 }
+
+type ReferredPostRow = DeletedReferredPost | LiveReferredPost
 
 export default async function selectPost({
   limit,
@@ -217,14 +234,14 @@ export default async function selectPost({
 
       const referredPost =
         post.type === PostType.REPOST && referredPostId === null
-          ? ({ isDeleted: true } satisfies ReferredPost)
+          ? ({ isDeleted: true } satisfies ReferredPostRow)
           : referredPostInnerId !== null && referredPostCreatedAt !== null
             ? ({
                 id: referredPostInnerId,
                 createdAt: referredPostCreatedAt,
                 content: referredPostContent,
                 author: referredPostAuthor,
-              } satisfies ReferredPost)
+              } satisfies ReferredPostRow)
             : null
 
       return {

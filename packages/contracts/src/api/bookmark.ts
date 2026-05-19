@@ -1,10 +1,17 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
-import { MAX_BOOKMARK_BATCH_SIZE, MAX_MANGA_ID } from '@litomi/domain/constants/policy'
+import { BOOKMARKS_PER_PAGE, MAX_BOOKMARK_BATCH_SIZE, MAX_MANGA_ID } from '@litomi/domain/constants/policy'
+import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { z } from 'zod'
 
 const mangaIdSchema = z.coerce.number().int().positive().max(MAX_MANGA_ID)
 const catalogMangaSchema = z.custom<Manga>()
+
+export const bookmarkMangaIdParamSchema = z.object({
+  id: mangaIdSchema,
+})
+
+export type BookmarkMangaIdParam = z.infer<typeof bookmarkMangaIdParamSchema>
 
 export const bookmarkSchema = z.object({
   mangaId: z.number(),
@@ -20,6 +27,14 @@ export const getV1BookmarkResponseSchema = z.object({
 })
 
 export type GETV1BookmarkResponse = z.infer<typeof getV1BookmarkResponseSchema>
+
+export const getV1BookmarkQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).default(BOOKMARKS_PER_PAGE),
+  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+})
+
+export type GETV1BookmarkQuery = z.infer<typeof getV1BookmarkQuerySchema>
 
 export const postV1BookmarkBodySchema = z.object({
   mangaIds: z.array(mangaIdSchema).min(1).max(MAX_BOOKMARK_BATCH_SIZE),
@@ -51,6 +66,8 @@ export const putV1BookmarkIdResponseSchema = z.object({
   mangaId: z.number(),
   createdAt: z.number(),
 })
+
+export type DELETEV1BookmarkIdResponse = void
 
 export type PUTV1BookmarkIdResponse = z.infer<typeof putV1BookmarkIdResponseSchema>
 

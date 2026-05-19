@@ -1,8 +1,8 @@
+import { type DELETEV1LibraryIdResponse, libraryIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -10,15 +10,9 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const paramsSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-export type DELETEV1LibraryIdResponse = { id: number }
-
 const route = new Hono<Env>()
 
-route.delete('/', requireAuth, zProblemValidator('param', paramsSchema), async (c) => {
+route.delete('/', requireAuth, zProblemValidator('param', libraryIdParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: libraryId } = c.req.valid('param')
 

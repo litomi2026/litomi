@@ -1,6 +1,6 @@
 'use client'
 
-import type { NativeGridSponsor } from '@litomi/contracts'
+import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 
 import { View } from '@litomi/std'
 

@@ -1,13 +1,13 @@
+import { postV1LibraryBodySchema, type POSTV1LibraryResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
 import { userExpansionTable } from '@litomi/db/database/app/points'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
-import { MAX_LIBRARIES_PER_USER, MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/constants/policy'
+import { MAX_LIBRARIES_PER_USER } from '@litomi/domain/constants/policy'
 import { hexColorToInt } from '@litomi/domain/utils/color'
 import { normalizeString } from '@litomi/std'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -17,39 +17,13 @@ import { lockUserRowForUpdate } from '@/utils/lock-user-row'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { libraryIconSchema } from './schema'
-
-export type POSTV1LibraryResponse = {
-  id: number
-  createdAt: number
-}
-
 const ErrorCode = {
   LIBRARY_LIMIT_REACHED: 'LIBRARY_LIMIT_REACHED',
 } as const
 
-const postBodySchema = z.object({
-  name: z
-    .string()
-    .min(1, '서재 이름을 입력해 주세요')
-    .max(MAX_LIBRARY_NAME_LENGTH, `이름은 ${MAX_LIBRARY_NAME_LENGTH}자 이하여야 해요`),
-  description: z
-    .string()
-    .max(MAX_LIBRARY_DESCRIPTION_LENGTH, `설명은 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자 이하여야 해요`)
-    .nullable()
-    .optional(),
-  color: z
-    .string()
-    .regex(/^#[0-9A-F]{6}$/i, '올바른 색상 코드를 입력해 주세요')
-    .nullable()
-    .optional(),
-  icon: libraryIconSchema,
-  isPublic: z.boolean().optional().default(false),
-})
-
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, zProblemValidator('json', postBodySchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { name, description, color, icon, isPublic } = c.req.valid('json')
 

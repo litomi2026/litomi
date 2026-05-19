@@ -6,8 +6,6 @@ import idDeleteRoute from './[id]/DELETE'
 import allDeleteRoute from './all/DELETE'
 import othersDeleteRoute from './others/DELETE'
 
-export type { DELETEV1MeSessionResponse } from './shared'
-
 const route = new Hono<Env>()
 
 route.route('/all', allDeleteRoute)
