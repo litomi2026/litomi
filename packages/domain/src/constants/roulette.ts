@@ -10,8 +10,10 @@ export type RouletteConfig = {
   segments: RouletteSegment[]
 }
 
+export const ROULETTE_SEGMENT_IDS = ['boost', 'double', 'jackpot', 'lose'] as const
+
 export type RouletteSegment = {
-  id: 'boost' | 'double' | 'jackpot' | 'lose'
+  id: RouletteSegmentId
   label: string
   /**
    * Relative probability weight.
@@ -27,6 +29,8 @@ export type RouletteSegment = {
    */
   payoutMultiplierX100: number
 }
+
+export type RouletteSegmentId = (typeof ROULETTE_SEGMENT_IDS)[number]
 
 /**
  * Design goals:

@@ -1,5 +1,3 @@
-import type { Manga } from '@litomi/domain/types/manga'
-
 import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import {
   LIBRARIES_PER_PAGE,
@@ -16,7 +14,8 @@ import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT, RatingSort } from '@l
 import { isSingleEmoji } from '@litomi/domain/utils/emoji'
 import { z } from 'zod'
 
-const catalogMangaSchema = z.custom<Manga>()
+import { catalogMangaSchema } from '../catalog/manga'
+
 const positiveIntegerParamSchema = z.coerce.number().int().positive()
 
 export const libraryIdParamSchema = z.object({

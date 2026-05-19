@@ -1,5 +1,3 @@
-import type { UserSettings } from '@litomi/domain/utils/user-settings'
-
 import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { z } from 'zod'
 
@@ -46,6 +44,15 @@ export const adultVerificationStatusSchema = z.enum([
 
 export type AdultVerificationStatus = z.infer<typeof adultVerificationStatusSchema>
 
+export const userSettingsSchema = z.object({
+  historySyncEnabled: z.boolean(),
+  adultVerifiedAdVisible: z.boolean(),
+  defaultCensorshipEnabled: z.boolean(),
+  autoDeletionDay: z.number().int().min(0).max(1500),
+})
+
+export type UserSettings = z.infer<typeof userSettingsSchema>
+
 export const getV1MeResponseSchema = z.object({
   id: z.number(),
   loginId: z.string(),
@@ -56,7 +63,7 @@ export const getV1MeResponseSchema = z.object({
     required: z.boolean(),
     status: adultVerificationStatusSchema,
   }),
-  settings: z.custom<UserSettings>(),
+  settings: userSettingsSchema,
 })
 
 export type GETV1MeResponse = z.infer<typeof getV1MeResponseSchema>

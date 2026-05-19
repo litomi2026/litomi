@@ -58,12 +58,7 @@ export const patchV1NotificationReadAllResponseSchema = z.object({
 export type PATCHV1NotificationReadAllResponse = z.infer<typeof patchV1NotificationReadAllResponseSchema>
 
 export const notificationCriteriaConditionSchema = z.object({
-  type: z
-    .number()
-    .int()
-    .min(NotificationConditionType.SERIES, '올바른 조건 타입을 선택해 주세요')
-    .max(NotificationConditionType.UPLOADER, '올바른 조건 타입을 선택해 주세요')
-    .transform((value) => value as NotificationConditionType),
+  type: z.enum(NotificationConditionType, { error: '올바른 조건 타입을 선택해 주세요' }),
   value: z
     .string()
     .min(1, '조건 값을 입력해 주세요')

@@ -1,4 +1,4 @@
-import { ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/constants/roulette'
+import { ROULETTE_CONFIG, ROULETTE_SEGMENT_IDS } from '@litomi/domain/constants/roulette'
 import { z } from 'zod'
 
 export const getV1PointsResponseSchema = z.object({
@@ -131,7 +131,7 @@ export const postV1RouletteSpinResponseSchema = z.object({
   payout: z.number(),
   net: z.number(),
   landed: z.object({
-    id: z.custom<RouletteSegment['id']>(),
+    id: z.enum(ROULETTE_SEGMENT_IDS),
     label: z.string(),
     payoutMultiplierX100: z.number(),
   }),
