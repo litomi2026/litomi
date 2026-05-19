@@ -1,4 +1,4 @@
-import { index, integer, pgTable, primaryKey, smallint, text, timestamp, unique } from 'drizzle-orm/pg-core'
+import { integer, pgTable, smallint, text, timestamp } from 'drizzle-orm/pg-core'
 
 export const mangaTable = pgTable('manga', {
   id: integer().primaryKey(),
