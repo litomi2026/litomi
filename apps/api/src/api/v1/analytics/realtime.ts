@@ -1,3 +1,5 @@
+import type { GETV1AnalyticsRealtimeResponse, PageRanking } from '@litomi/contracts'
+
 import { BetaAnalyticsDataClient } from '@google-analytics/data'
 import { SHORT_NAME } from '@litomi/domain/constants'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/constants/policy'
@@ -11,17 +13,6 @@ import type { Env } from '@/app'
 import { problemResponse } from '@/utils/problem'
 
 const { GA_PROPERTY_ID } = env
-
-export type GETV1AnalyticsRealtimeResponse = {
-  totalActiveUsers: number
-  pageRanking: PageRanking[]
-  timestamp: Date
-}
-
-export type PageRanking = {
-  page: string
-  activeUsers: number
-}
 
 const analyticsClient = new BetaAnalyticsDataClient({ fallback: 'rest' })
 
@@ -70,7 +61,7 @@ realtimeRoutes.get('/', async (c) => {
     const response: GETV1AnalyticsRealtimeResponse = {
       totalActiveUsers,
       pageRanking,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
     }
 
     const cacheControl = createCacheControl({

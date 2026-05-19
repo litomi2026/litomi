@@ -1,5 +1,7 @@
 'use client'
 
+import type { GETV1AnalyticsRealtimeResponse } from '@litomi/contracts'
+
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/constants/policy'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
@@ -13,17 +15,6 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 import { useRealtimeStore } from './store'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
-
-interface PageRankingItem {
-  activeUsers: number
-  page: string
-}
-
-interface RealtimeData {
-  pageRanking: PageRankingItem[]
-  timestamp: string
-  totalActiveUsers: number
-}
 
 export default function RealtimeRanking() {
   const isLive = useRealtimeStore((store) => store.isLive)
@@ -129,8 +120,8 @@ export default function RealtimeRanking() {
   )
 }
 
-async function fetchRealtimeAnalytics(): Promise<RealtimeData> {
+async function fetchRealtimeAnalytics(): Promise<GETV1AnalyticsRealtimeResponse> {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/analytics/realtime`
-  const { data } = await fetchWithErrorHandling<RealtimeData>(url)
+  const { data } = await fetchWithErrorHandling<GETV1AnalyticsRealtimeResponse>(url)
   return data
 }
