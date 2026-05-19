@@ -49,10 +49,6 @@ export function catalogMangaRecordsToMangaMap(records: readonly CatalogMangaReco
 
 export function catalogMangaRecordToManga(record: CatalogMangaRecord): Manga {
   const locale = Locale.KO
-  const tags = record.tagValues.map((value, index) => ({
-    value,
-    category: record.tagCategories[index] ?? 3,
-  }))
 
   return {
     id: record.id,
@@ -69,7 +65,12 @@ export function catalogMangaRecordToManga(record: CatalogMangaRecord): Manga {
     group: translateGroupList(record.groups, locale),
     languages: translateLanguageList(record.languages, locale),
     uploader: record.uploader ?? undefined,
-    tags: tags
+
+    tags: record.tagValues
+      .map((value, index) => ({
+        value,
+        category: record.tagCategories[index] ?? 3,
+      }))
       .sort((a, b) => a.category - b.category)
       .map(({ category, value }) => translateTag(tagCategoryIntToName[category] ?? 'other', value, locale))
       .sort((a, b) => {
