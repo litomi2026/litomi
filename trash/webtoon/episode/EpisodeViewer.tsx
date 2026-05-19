@@ -1,6 +1,5 @@
 'use client'
 
-import { WebtoonEpisode } from '@litomi/crawler/crawler/webtoon/types'
 import { Manga } from '@litomi/domain/types/manga'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
@@ -10,6 +9,8 @@ import { useSearchParams } from 'next/navigation'
 import MangaReader from '@/app/manga/[id]/MangaReader'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
+
+import { WebtoonEpisode } from '../types'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 

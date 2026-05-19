@@ -1,6 +1,5 @@
 'use client'
 
-import { WebtoonSeries } from '@litomi/crawler/crawler/webtoon/types'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
@@ -9,6 +8,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
+
+import { WebtoonSeries } from '../../../webtoon/types'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 

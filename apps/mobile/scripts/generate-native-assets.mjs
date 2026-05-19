@@ -66,7 +66,9 @@ async function main() {
     ...androidForegroundTargets.map(([target, size]) =>
       makePaddedSquare(path.resolve(mobileDir, target), size, transparent, 0.76),
     ),
-    ...androidSplashTargets.map(([target, width, height]) => makeSplash(path.resolve(mobileDir, target), width, height)),
+    ...androidSplashTargets.map(([target, width, height]) =>
+      makeSplash(path.resolve(mobileDir, target), width, height),
+    ),
     makePaddedSquare(path.resolve(mobileDir, iosIconTarget[0]), iosIconTarget[1], white),
     ...iosSplashTargets.map(([target, width, height]) => makeSplash(path.resolve(mobileDir, target), width, height)),
   ])

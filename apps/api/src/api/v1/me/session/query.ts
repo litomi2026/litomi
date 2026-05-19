@@ -2,7 +2,9 @@ import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/databa
 import { db } from '@litomi/db/database/app/drizzle'
 import { and, eq, isNull, ne } from 'drizzle-orm'
 
-type SessionFamilyWriteExecutor = Pick<Parameters<Parameters<typeof db.transaction>[0]>[0], 'update'> | Pick<typeof db, 'update'>
+type SessionFamilyWriteExecutor =
+  | Pick<Parameters<Parameters<typeof db.transaction>[0]>[0], 'update'>
+  | Pick<typeof db, 'update'>
 
 export async function readCurrentSessionFamilyIdByTokenHash(userId: number, tokenHash: string) {
   const [family] = await db

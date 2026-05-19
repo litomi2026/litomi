@@ -17,73 +17,79 @@ import { zProblemValidator } from '@/utils/validator'
 
 const libraryHistoryRoutes = new Hono<Env>()
 
-libraryHistoryRoutes.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1ReadingHistoryQuerySchema), async (c) => {
-  const userId = c.get('userId')!
-  const { cursor, limit } = c.req.valid('query')
-  const decodedCursor = cursor ? decodeReadingHistoryCursor(cursor) : null
+libraryHistoryRoutes.get(
+  '/',
+  requireAuth,
+  requireAdult,
+  zProblemValidator('query', getV1ReadingHistoryQuerySchema),
+  async (c) => {
+    const userId = c.get('userId')!
+    const { cursor, limit } = c.req.valid('query')
+    const decodedCursor = cursor ? decodeReadingHistoryCursor(cursor) : null
 
-  if (cursor && !decodedCursor) {
-    return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
-  }
+    if (cursor && !decodedCursor) {
+      return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
+    }
 
-  const conditions: (SQL | undefined)[] = [eq(readingHistoryTable.userId, userId)]
+    const conditions: (SQL | undefined)[] = [eq(readingHistoryTable.userId, userId)]
 
-  if (decodedCursor) {
-    conditions.push(
-      or(
-        lt(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
-        and(
-          eq(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
-          lt(readingHistoryTable.mangaId, decodedCursor.mangaId),
+    if (decodedCursor) {
+      conditions.push(
+        or(
+          lt(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
+          and(
+            eq(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
+            lt(readingHistoryTable.mangaId, decodedCursor.mangaId),
+          ),
         ),
-      ),
-    )
-  }
+      )
+    }
 
-  const query = db
-    .select({
-      mangaId: readingHistoryTable.mangaId,
-      lastPage: readingHistoryTable.lastPage,
-      updatedAt: readingHistoryTable.updatedAt,
-    })
-    .from(readingHistoryTable)
-    .where(and(...conditions))
-    .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
-    .limit(limit + 1)
+    const query = db
+      .select({
+        mangaId: readingHistoryTable.mangaId,
+        lastPage: readingHistoryTable.lastPage,
+        updatedAt: readingHistoryTable.updatedAt,
+      })
+      .from(readingHistoryTable)
+      .where(and(...conditions))
+      .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
+      .limit(limit + 1)
 
-  try {
-    const rows = await query
+    try {
+      const rows = await query
 
-    const cacheControl = decodedCursor
-      ? createCacheControl({
-          private: true,
-          maxAge: sec('1 hour'),
-        })
-      : privateCacheControl
+      const cacheControl = decodedCursor
+        ? createCacheControl({
+            private: true,
+            maxAge: sec('1 hour'),
+          })
+        : privateCacheControl
 
-    if (rows.length === 0) {
-      const result = { items: [], nextCursor: null }
+      if (rows.length === 0) {
+        const result = { items: [], nextCursor: null }
+        return c.json<GETV1ReadingHistoryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+      }
+
+      const hasNextPage = rows.length > limit
+      const items = hasNextPage ? rows.slice(0, limit) : rows
+      const lastItem = items[items.length - 1]
+
+      const result = {
+        items: items.map((row) => ({
+          mangaId: row.mangaId,
+          lastPage: row.lastPage,
+          updatedAt: row.updatedAt.getTime(),
+        })),
+        nextCursor: hasNextPage ? encodeReadingHistoryCursor(lastItem.updatedAt.getTime(), lastItem.mangaId) : null,
+      }
+
       return c.json<GETV1ReadingHistoryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    } catch (error) {
+      console.error(error)
+      return problemResponse(c, { status: 500, detail: '감상 기록을 불러오지 못했어요' })
     }
-
-    const hasNextPage = rows.length > limit
-    const items = hasNextPage ? rows.slice(0, limit) : rows
-    const lastItem = items[items.length - 1]
-
-    const result = {
-      items: items.map((row) => ({
-        mangaId: row.mangaId,
-        lastPage: row.lastPage,
-        updatedAt: row.updatedAt.getTime(),
-      })),
-      nextCursor: hasNextPage ? encodeReadingHistoryCursor(lastItem.updatedAt.getTime(), lastItem.mangaId) : null,
-    }
-
-    return c.json<GETV1ReadingHistoryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
-  } catch (error) {
-    console.error(error)
-    return problemResponse(c, { status: 500, detail: '감상 기록을 불러오지 못했어요' })
-  }
-})
+  },
+)
 
 export default libraryHistoryRoutes

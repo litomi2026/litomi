@@ -1,6 +1,11 @@
 import { postV1PointSpendRequestSchema, type POSTV1PointSpendResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
-import { pointTransactionTable, userExpansionTable, userItemTable, userPointsTable } from '@litomi/db/database/app/points'
+import {
+  pointTransactionTable,
+  userExpansionTable,
+  userItemTable,
+  userPointsTable,
+} from '@litomi/db/database/app/points'
 import { ITEM_TYPE, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { and, eq, sql, sum } from 'drizzle-orm'
 import { Hono } from 'hono'

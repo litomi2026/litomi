@@ -2,10 +2,7 @@ import type { SQL } from 'drizzle-orm'
 
 import { bookmarkTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
-import {
-  getCollectionItemCursorCondition,
-  getCollectionItemOrderByClauses,
-} from '@litomi/db/sql/collection-item-sort'
+import { getCollectionItemCursorCondition, getCollectionItemOrderByClauses } from '@litomi/db/sql/collection-item-sort'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
