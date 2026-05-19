@@ -1,6 +1,11 @@
 'use client'
 
-import type { DELETEV1LibraryRatingBody, GETV1LibrarySummaryResponse, GETV1MangaIdRatingResponse, GETV1RatingsResponse } from '@litomi/contracts'
+import type {
+  DELETEV1LibraryRatingBody,
+  GETV1LibrarySummaryResponse,
+  GETV1MangaIdRatingResponse,
+  GETV1RatingsResponse,
+} from '@litomi/contracts'
 import type { InfiniteData } from '@tanstack/react-query'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'

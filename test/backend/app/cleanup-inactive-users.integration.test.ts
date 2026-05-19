@@ -206,9 +206,9 @@ describe('cleanup_inactive_users()', () => {
 })
 
 async function cleanupInactiveUsers(batchSize: number = 100) {
-  const rows = (await db.execute(
-    sql`select public.cleanup_inactive_users(${batchSize}) as deleted_count`,
-  )) as Array<{ deleted_count: number }>
+  const rows = (await db.execute(sql`select public.cleanup_inactive_users(${batchSize}) as deleted_count`)) as Array<{
+    deleted_count: number
+  }>
 
   return Number(rows[0]?.deleted_count ?? 0)
 }

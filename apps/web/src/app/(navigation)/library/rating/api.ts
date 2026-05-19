@@ -1,7 +1,4 @@
-import type {
-  DELETEV1LibraryRatingBody,
-  DELETEV1LibraryRatingResponse,
-} from '@litomi/contracts'
+import type { DELETEV1LibraryRatingBody, DELETEV1LibraryRatingResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
 

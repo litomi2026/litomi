@@ -34,6 +34,8 @@
   },
   "scripts": {
     "push:local": "bun run push:local:app && bun run push:local:catalog",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
     "push:local:app": "bun --env-file=.env.local drizzle-kit push --config=drizzle.app.config.ts --force && bun --env-file=.env.local scripts/app/pushAppFunction.ts",
     "push:local:catalog": "bun --env-file=.env.local drizzle-kit push --config=drizzle.catalog.config.ts --force",
     "push:prod": "bun run push:prod:app && bun run push:prod:catalog",

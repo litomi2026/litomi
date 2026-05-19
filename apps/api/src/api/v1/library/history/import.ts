@@ -19,59 +19,65 @@ import { enforceHistoryLimit, getUserHistoryLimitInTx } from './shared'
 
 const route = new Hono<Env>()
 
-route.post('/import', requireAuth, requireAdult, zProblemValidator('json', postV1LibraryHistoryImportBodySchema), async (c) => {
-  const userId = c.get('userId')!
-  const { localHistories } = c.req.valid('json')
+route.post(
+  '/import',
+  requireAuth,
+  requireAdult,
+  zProblemValidator('json', postV1LibraryHistoryImportBodySchema),
+  async (c) => {
+    const userId = c.get('userId')!
+    const { localHistories } = c.req.valid('json')
 
-  try {
-    const settings = await readUserSettings(userId)
+    try {
+      const settings = await readUserSettings(userId)
 
-    if (!settings.historySyncEnabled) {
-      return c.json<POSTV1LibraryHistoryImportResponse>({
-        importedCount: 0,
-        skippedCount: localHistories.length,
-        synced: false,
-      })
-    }
-
-    const values = Array.from(getLatestLocalHistories(localHistories).values()).map((item) => ({
-      userId,
-      mangaId: item.mangaId,
-      lastPage: item.lastPage,
-      updatedAt: new Date(item.updatedAt),
-    }))
-
-    const importedCount = await db.transaction(async (tx) => {
-      await lockUserRowForUpdate(tx, userId)
-
-      const inserted = await tx
-        .insert(readingHistoryTable)
-        .values(values)
-        .onConflictDoUpdate({
-          target: [readingHistoryTable.userId, readingHistoryTable.mangaId],
-          set: {
-            lastPage: sql`excluded.${sql.identifier(readingHistoryTable.lastPage.name)}`,
-            updatedAt: sql`excluded.${sql.identifier(readingHistoryTable.updatedAt.name)}`,
-          },
+      if (!settings.historySyncEnabled) {
+        return c.json<POSTV1LibraryHistoryImportResponse>({
+          importedCount: 0,
+          skippedCount: localHistories.length,
+          synced: false,
         })
-        .returning({ mangaId: readingHistoryTable.mangaId })
+      }
 
-      const userHistoryLimit = await getUserHistoryLimitInTx(tx, userId)
-      await enforceHistoryLimit(tx, userId, userHistoryLimit)
+      const values = Array.from(getLatestLocalHistories(localHistories).values()).map((item) => ({
+        userId,
+        mangaId: item.mangaId,
+        lastPage: item.lastPage,
+        updatedAt: new Date(item.updatedAt),
+      }))
 
-      return inserted.length
-    })
+      const importedCount = await db.transaction(async (tx) => {
+        await lockUserRowForUpdate(tx, userId)
 
-    return c.json<POSTV1LibraryHistoryImportResponse>({
-      importedCount,
-      skippedCount: localHistories.length - importedCount,
-      synced: true,
-    })
-  } catch (error) {
-    console.error(error)
-    return problemResponse(c, { status: 500, detail: '읽기 기록 동기화 중 오류가 발생했어요' })
-  }
-})
+        const inserted = await tx
+          .insert(readingHistoryTable)
+          .values(values)
+          .onConflictDoUpdate({
+            target: [readingHistoryTable.userId, readingHistoryTable.mangaId],
+            set: {
+              lastPage: sql`excluded.${sql.identifier(readingHistoryTable.lastPage.name)}`,
+              updatedAt: sql`excluded.${sql.identifier(readingHistoryTable.updatedAt.name)}`,
+            },
+          })
+          .returning({ mangaId: readingHistoryTable.mangaId })
+
+        const userHistoryLimit = await getUserHistoryLimitInTx(tx, userId)
+        await enforceHistoryLimit(tx, userId, userHistoryLimit)
+
+        return inserted.length
+      })
+
+      return c.json<POSTV1LibraryHistoryImportResponse>({
+        importedCount,
+        skippedCount: localHistories.length - importedCount,
+        synced: true,
+      })
+    } catch (error) {
+      console.error(error)
+      return problemResponse(c, { status: 500, detail: '읽기 기록 동기화 중 오류가 발생했어요' })
+    }
+  },
+)
 
 function getLatestLocalHistories(localHistories: POSTV1LibraryHistoryImportBody['localHistories']) {
   const deduped = new Map<number, POSTV1LibraryHistoryImportBody['localHistories'][number]>()

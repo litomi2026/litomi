@@ -32,7 +32,9 @@ async function main() {
 
   await mkdir(dirname(OUTPUT_PATH), { recursive: true })
   await Bun.write(OUTPUT_PATH, output)
-  console.log(`Generated ${emojis.length} emojis from Unicode Emoji ${version} at ${path.relative(PACKAGE_ROOT, OUTPUT_PATH)}`)
+  console.log(
+    `Generated ${emojis.length} emojis from Unicode Emoji ${version} at ${path.relative(PACKAGE_ROOT, OUTPUT_PATH)}`,
+  )
 }
 
 function parseFullyQualifiedEmojis(source: string): string[] {

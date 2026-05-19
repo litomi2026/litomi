@@ -35,6 +35,8 @@
   },
   "scripts": {
     "generate:emoji": "bun scripts/generateEmojiList.ts",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
     "type": "tsc --noEmit"
   },
   "dependencies": {

@@ -1,6 +1,5 @@
 'use client'
 
-import { WebtoonList, WebtoonListItem } from '@litomi/crawler/crawler/webtoon/types'
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { BookOpen, Heart, Loader2 } from 'lucide-react'
@@ -13,6 +12,8 @@ import CustomSelect from '@/components/ui/CustomSelect'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
+
+import { WebtoonList, WebtoonListItem } from '../../webtoon/types'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 

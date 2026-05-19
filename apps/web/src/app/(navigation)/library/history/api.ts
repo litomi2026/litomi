@@ -1,7 +1,4 @@
-import type {
-  DELETEV1ReadingHistoryBody,
-  DELETEV1ReadingHistoryResponse,
-} from '@litomi/contracts'
+import type { DELETEV1ReadingHistoryBody, DELETEV1ReadingHistoryResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
 

@@ -63,6 +63,8 @@ describe('GET /api/v1/post?filter=0', () => {
 
     expect(body.nextCursor).toBeNull()
     expect(body.posts.map((post: { id: number }) => post.id)).toEqual([newest.id, oldest.id])
-    expect(body.posts.every((post: { author: { id: number } | null }) => post.author?.id !== unfollowedUser.id)).toBe(true)
+    expect(body.posts.every((post: { author: { id: number } | null }) => post.author?.id !== unfollowedUser.id)).toBe(
+      true,
+    )
   })
 })

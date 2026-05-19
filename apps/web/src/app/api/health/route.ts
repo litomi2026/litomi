@@ -6,4 +6,3 @@ export function GET() {
     timestamp: new Date().toISOString(),
   })
 }
-

@@ -106,10 +106,7 @@ function renderProfileEditButton(
   },
   options?: Parameters<typeof renderWithTestQueryClient>[1],
 ) {
-  return renderWithTestQueryClient(
-    <ProfileEditButton mePromise={createFulfilledThenable(me)} />,
-    options,
-  )
+  return renderWithTestQueryClient(<ProfileEditButton mePromise={createFulfilledThenable(me)} />, options)
 }
 
 describe('ProfileEditButton', () => {

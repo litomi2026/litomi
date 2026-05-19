@@ -1,10 +1,6 @@
 'use client'
 
-import type {
-  GETV1MeResponse,
-  PATCHV1MeBody,
-  PATCHV1MeResponse,
-} from '@litomi/contracts'
+import type { GETV1MeResponse, PATCHV1MeBody, PATCHV1MeResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

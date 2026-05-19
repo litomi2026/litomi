@@ -1,7 +1,13 @@
 'use server'
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { decryptTOTPSecret, encryptTOTPSecret, generateQRCode, TOTP_CONFIG, verifyTOTPToken } from '@litomi/auth/two-factor'
+import {
+  decryptTOTPSecret,
+  encryptTOTPSecret,
+  generateQRCode,
+  TOTP_CONFIG,
+  verifyTOTPToken,
+} from '@litomi/auth/two-factor'
 import { generateBackupCodes } from '@litomi/auth/two-factor-backup-code'
 import { db } from '@litomi/db/database/app/drizzle'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/database/app/two-factor'

@@ -102,6 +102,19 @@
       "outputs": []
     },
     "lint": {
+      "cache": false,
+      "outputs": []
+    },
+    "//#lint:root": {
+      "cache": false,
+      "outputs": []
+    },
+    "format": {
+      "cache": false,
+      "outputs": []
+    },
+    "//#format:root": {
+      "cache": false,
       "outputs": []
     }
   }

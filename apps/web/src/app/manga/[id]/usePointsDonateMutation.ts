@@ -1,7 +1,4 @@
-import type {
-  POSTV1PointsDonationCreateRequest,
-  POSTV1PointsDonationCreateResponse,
-} from '@litomi/contracts'
+import type { POSTV1PointsDonationCreateRequest, POSTV1PointsDonationCreateResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

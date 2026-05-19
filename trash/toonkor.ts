@@ -6,11 +6,11 @@ import {
   WebtoonListItem,
   WebtoonSeries,
   WebtoonSeriesEpisode,
-} from '@litomi/crawler/crawler/webtoon/types'
+} from '../apps/web/src/app/webtoon/types'
 import ms from 'ms'
 
-import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServerError } from './proxy-utils'
+import { ProxyClient, ProxyClientConfig } from '@litomi/crawler/crawler/proxy'
+import { isUpstreamServerError } from '@litomi/crawler/crawler/proxy-utils'
 
 export type ToonkorParams = {
   /** toonkor 도메인 (e.g., 'tkor079.com') */

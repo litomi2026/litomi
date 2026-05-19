@@ -32,6 +32,8 @@
   },
   "scripts": {
     "build": "bun ../../tools/buildReactPackage.ts .",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
     "type": "tsc -p tsconfig.dev.json --noEmit"
   },
   "dependencies": {

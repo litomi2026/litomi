@@ -6,11 +6,7 @@ import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './Vi
 
 describe('chunkVirtualMangaGridItems', () => {
   test('chunks items while preserving their global item indexes', () => {
-    const items: VirtualMangaGridItem[] = [
-      { key: 'first' },
-      { key: 'promotion' },
-      { key: 'second' },
-    ]
+    const items: VirtualMangaGridItem[] = [{ key: 'first' }, { key: 'promotion' }, { key: 'second' }]
 
     expect(chunkVirtualMangaGridItems(items, 2)).toEqual([
       {
