@@ -1,5 +1,4 @@
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { postLikeTable } from '@litomi/db/database/app/post'
 import { isPostgresError } from '@litomi/db/database/error'
 import { Hono } from 'hono'

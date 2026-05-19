@@ -1,4 +1,3 @@
-import 'server-only'
 import { BetaAnalyticsDataClient } from '@google-analytics/data'
 import { SHORT_NAME } from '@litomi/domain/constants'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/constants/policy'

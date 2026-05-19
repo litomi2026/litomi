@@ -1,6 +1,5 @@
 import { readingHistoryTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@litomi/domain/common/cursor'
 import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import { READING_HISTORY_PER_PAGE } from '@litomi/domain/constants/policy'

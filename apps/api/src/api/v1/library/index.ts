@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import 'server-only'
 
 import type { Env } from '@/app'
 

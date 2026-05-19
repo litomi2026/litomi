@@ -1,5 +1,4 @@
 import { PostFilter, ReferredPost } from '@litomi/contracts'
-import 'server-only'
 import selectPost from '@litomi/db/sql/selectPost'
 import { decodePostCursor, encodePostCursor } from '@litomi/domain/common/cursor'
 import { POST_PER_PAGE } from '@litomi/domain/constants/policy'

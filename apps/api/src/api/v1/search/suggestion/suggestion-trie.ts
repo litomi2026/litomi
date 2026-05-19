@@ -12,7 +12,6 @@ import tagSingleSexTranslations from '@litomi/catalog/translation/tag-single-sex
 import tagUnisexTranslations from '@litomi/catalog/translation/tag-unisex.json'
 import { getAllTypesWithLabels } from '@litomi/catalog/translation/type'
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@litomi/contracts'
-import 'server-only'
 
 import SuggestionTrie, { SuggestionItem } from './trie'
 

@@ -1,4 +1,3 @@
-import 'server-only'
 import { env as commonEnv } from '@litomi/env/server.common'
 import { env } from '@litomi/env/server.hono'
 import { sec } from '@litomi/std'

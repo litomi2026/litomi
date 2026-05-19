@@ -1,6 +1,5 @@
 import { readingHistoryTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { readUserSettings } from '@litomi/db/query/user-settings.query'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { sql } from 'drizzle-orm'

@@ -1,6 +1,8 @@
+import type { Manga } from '@litomi/domain/types/manga'
+
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
+import { litomiClient } from '@litomi/crawler/crawler/litomi'
 import { db } from '@litomi/db/database/app/drizzle'
-import 'server-only'
 import { libraryTable } from '@litomi/db/database/app/library'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { selectLibraryItem } from '@litomi/db/sql/selectLibraryItem'
@@ -31,7 +33,7 @@ const querySchema = z.object({
 })
 
 export type GETLibraryItemsResponse = {
-  items: { mangaId: number; createdAt: number }[]
+  items: { mangaId: number; createdAt: number; manga?: Manga }[]
   nextCursor: string | null
 }
 
@@ -93,10 +95,12 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
 
     const hasNextPage = fetchedItems.length > limit
     const pageItems = hasNextPage ? fetchedItems.slice(0, limit) : fetchedItems
+    const catalogMangaMap = await litomiClient.getMangas(pageItems.map(({ mangaId }) => mangaId))
 
     const items = pageItems.map((item) => ({
       mangaId: item.mangaId,
       createdAt: item.createdAt.getTime(),
+      manga: catalogMangaMap.get(item.mangaId),
     }))
 
     const lastItem = items[items.length - 1]

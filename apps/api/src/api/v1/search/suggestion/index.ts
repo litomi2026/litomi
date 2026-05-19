@@ -1,5 +1,4 @@
 import { Locale } from '@litomi/catalog/translation/common'
-import 'server-only'
 import { queryBlacklist } from '@litomi/contracts'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'

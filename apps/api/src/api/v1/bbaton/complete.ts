@@ -1,5 +1,4 @@
 import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
-import 'server-only'
 import { db } from '@litomi/db/database/app/drizzle'
 import { isPostgresError } from '@litomi/db/database/error'
 import { Hono } from 'hono'

@@ -1,5 +1,4 @@
 import { RatingSort } from '@litomi/contracts'
-import 'server-only'
 import { userRatingTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { buildRatingWhereClause, getNextRatingCursor, getRatingOrderByClauses } from '@litomi/db/sql/rating-sort'
