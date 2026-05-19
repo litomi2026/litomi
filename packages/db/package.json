@@ -24,6 +24,7 @@
     "./database/app/two-factor": "./src/database/app/two-factor.ts",
     "./database/app/user": "./src/database/app/user.ts",
     "./query/bookmark": "./src/query/bookmark.ts",
+    "./query/catalog-manga": "./src/query/catalog-manga.ts",
     "./query/library-item": "./src/query/library-item.ts",
     "./query/post-comment": "./src/query/post-comment.ts",
     "./query/post": "./src/query/post.ts",

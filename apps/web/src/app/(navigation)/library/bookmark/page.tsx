@@ -1,13 +1,14 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
-import { litomiClient } from '@litomi/crawler/crawler/litomi'
-import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { selectBookmark } from '@litomi/db/query/bookmark'
+import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { BOOKMARKS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { View } from '@litomi/std'
 import { Metadata } from 'next'
 import { z } from 'zod'
+
+import { getCatalogMangaMap } from '@/utils/catalog-manga.server'
 
 import BookmarkPageClient from './BookmarkPageClient'
 import NotFound from './NotFound'
@@ -62,7 +63,7 @@ export default async function BookmarkPage({ searchParams }: PageProps<'/library
     bookmarks.pop()
   }
 
-  const catalogMangaMap = await litomiClient.getMangas(bookmarks.map(({ mangaId }) => mangaId))
+  const catalogMangaMap = await getCatalogMangaMap(bookmarks.map(({ mangaId }) => mangaId))
 
   const initialData = {
     bookmarks: bookmarks.map((b) => ({

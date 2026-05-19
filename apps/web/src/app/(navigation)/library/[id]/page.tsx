@@ -1,10 +1,9 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
-import { litomiClient } from '@litomi/crawler/crawler/litomi'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
-import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { selectLibraryItem } from '@litomi/db/query/library-item'
+import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { LIBRARY_ITEMS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { View } from '@litomi/std'
@@ -13,6 +12,8 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
 import { z } from 'zod'
+
+import { getCatalogMangaMap } from '@/utils/catalog-manga.server'
 
 import LibraryItemsClient from './LibraryItemsClient'
 
@@ -92,7 +93,7 @@ export default async function LibraryDetailPage({ params, searchParams }: PagePr
     libraryItemRows.pop()
   }
 
-  const catalogMangaMap = await litomiClient.getMangas(libraryItemRows.map(({ mangaId }) => mangaId))
+  const catalogMangaMap = await getCatalogMangaMap(libraryItemRows.map(({ mangaId }) => mangaId))
 
   const items = libraryItemRows.map((item) => ({
     mangaId: item.mangaId,

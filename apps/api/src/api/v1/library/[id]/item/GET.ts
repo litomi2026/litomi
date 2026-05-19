@@ -1,11 +1,10 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/contracts'
-import { litomiClient } from '@litomi/crawler/crawler/litomi'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryTable } from '@litomi/db/database/app/library'
-import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { selectLibraryItem } from '@litomi/db/query/library-item'
+import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { decodeLibraryIdCursor } from '@litomi/domain/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { createCacheControl } from '@litomi/http/cache-control'
@@ -18,6 +17,7 @@ import type { Env } from '@/app'
 
 import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/utils/adult-gate'
 import { privateCacheControl } from '@/utils/cache-control'
+import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -95,7 +95,7 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
 
     const hasNextPage = fetchedItems.length > limit
     const pageItems = hasNextPage ? fetchedItems.slice(0, limit) : fetchedItems
-    const catalogMangaMap = await litomiClient.getMangas(pageItems.map(({ mangaId }) => mangaId))
+    const catalogMangaMap = await getCatalogMangaMap(pageItems.map(({ mangaId }) => mangaId))
 
     const items = pageItems.map((item) => ({
       mangaId: item.mangaId,

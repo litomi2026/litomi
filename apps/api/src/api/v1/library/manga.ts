@@ -1,6 +1,5 @@
 import type { Manga } from '@litomi/domain/types/manga'
 
-import { litomiClient } from '@litomi/crawler/crawler/litomi'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@litomi/domain/common/cursor'
@@ -15,6 +14,7 @@ import { z } from 'zod'
 import type { Env } from '@/app'
 
 import { privateCacheControl } from '@/utils/cache-control'
+import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -134,7 +134,7 @@ libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) =
     const hasNextPage = rows.length > limit
     const pageRows = hasNextPage ? rows.slice(0, limit) : rows
     const lastRow = pageRows[pageRows.length - 1]
-    const catalogMangaMap = await litomiClient.getMangas(pageRows.map(({ mangaId }) => mangaId))
+    const catalogMangaMap = await getCatalogMangaMap(pageRows.map(({ mangaId }) => mangaId))
 
     const items: LibraryMangaItem[] = pageRows.map((row) => ({
       mangaId: row.mangaId,
