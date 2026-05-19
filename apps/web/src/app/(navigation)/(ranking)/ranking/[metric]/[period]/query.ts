@@ -1,3 +1,4 @@
+import { litomiClient } from '@litomi/crawler/crawler/litomi'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/database/app/activity'
 import { db } from '@litomi/db/database/app/drizzle'
 import { libraryItemTable } from '@litomi/db/database/app/library'
@@ -123,7 +124,12 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
     return null
   }
 
-  return rankings
+  const catalogMangaMap = await litomiClient.getMangas(rankings.map(({ mangaId }) => mangaId))
+
+  return rankings.map((ranking) => ({
+    ...ranking,
+    manga: catalogMangaMap.get(ranking.mangaId),
+  }))
 }
 
 function getPeriodStart(period: PeriodParam): Date | null {
