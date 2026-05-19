@@ -21,7 +21,6 @@
     "./locale": "./src/locale.ts",
     "./notification/filter": "./src/notification/filter.ts",
     "./post/filter": "./src/post/filter.ts",
-    "./search/normalize": "./src/search/normalize.ts",
     "./search/query-key-alias": "./src/search/query-key-alias.ts",
     "./search/suggestion": "./src/search/suggestion.ts",
     "./sponsor/native-grid": "./src/sponsor/native-grid.ts",
@@ -31,6 +30,7 @@
     "./utils/emoji": "./src/utils/emoji.ts",
     "./utils/manga": "./src/utils/manga.ts",
     "./utils/nickname": "./src/utils/nickname.ts",
+    "./utils/normalize-value": "./src/utils/normalize-value.ts",
     "./utils/user-settings": "./src/utils/user-settings.ts"
   },
   "scripts": {

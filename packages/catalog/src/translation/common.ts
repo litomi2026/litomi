@@ -14,10 +14,6 @@ export type MultilingualMultiLabels = {
   'zh-TW'?: string | string[]
 }
 
-export function normalizeValue(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, '_')
-}
-
 export function translateValue(
   dict: Record<string, Multilingual>,
   normalizedValue: string,

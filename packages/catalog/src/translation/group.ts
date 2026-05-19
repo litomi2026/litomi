@@ -1,8 +1,9 @@
 import 'server-only'
 import { Locale } from '@litomi/domain/locale'
+import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { translateCategory } from './category'
-import { Multilingual, normalizeValue, translateValue } from './common'
+import { Multilingual, translateValue } from './common'
 import groupTranslationJSON from './group.json'
 
 const GROUP_TRANSLATION: Record<string, Multilingual> = groupTranslationJSON

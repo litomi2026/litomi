@@ -1,7 +1,8 @@
 import 'server-only'
 import { MangaTag } from '@litomi/domain/types/manga'
+import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
-import { Multilingual, MultilingualMultiLabels, normalizeValue } from './common'
+import { Multilingual, MultilingualMultiLabels } from './common'
 import tagCategoryJSON from './tag-category.json'
 import tagMixedJSON from './tag-mixed.json'
 import tagOtherJSON from './tag-other.json'
