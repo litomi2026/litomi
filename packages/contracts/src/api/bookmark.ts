@@ -7,6 +7,12 @@ import { z } from 'zod'
 const mangaIdSchema = z.coerce.number().int().positive().max(MAX_MANGA_ID)
 const catalogMangaSchema = z.custom<Manga>()
 
+export const bookmarkMangaIdParamSchema = z.object({
+  id: mangaIdSchema,
+})
+
+export type BookmarkMangaIdParam = z.infer<typeof bookmarkMangaIdParamSchema>
+
 export const bookmarkSchema = z.object({
   mangaId: z.number(),
   createdAt: z.number(),
@@ -60,6 +66,8 @@ export const putV1BookmarkIdResponseSchema = z.object({
   mangaId: z.number(),
   createdAt: z.number(),
 })
+
+export type DELETEV1BookmarkIdResponse = void
 
 export type PUTV1BookmarkIdResponse = z.infer<typeof putV1BookmarkIdResponseSchema>
 

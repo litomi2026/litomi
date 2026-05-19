@@ -1,3 +1,5 @@
+import type { DELETEV1MeSessionResponse } from '@litomi/contracts'
+
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { Hono } from 'hono'
 
@@ -5,8 +7,6 @@ import type { Env } from '@/app'
 
 import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
-
-import type { DELETEV1MeSessionResponse } from '../shared'
 
 import { revokeAllSessionsByUserId } from '../query'
 

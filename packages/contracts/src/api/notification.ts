@@ -1,6 +1,11 @@
-import { MAX_CRITERIA_NAME_LENGTH, MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
+import {
+  MAX_CRITERIA_NAME_LENGTH,
+  MAX_NOTIFICATION_COUNT,
+  MAX_NOTIFICATION_CRITERIA_CONDITIONS,
+} from '@litomi/domain/constants/policy'
 import { NotificationConditionType } from '@litomi/domain/database/enum'
 import { NotificationFilter } from '@litomi/domain/notification/filter'
+import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { z } from 'zod'
 
 export const notificationSchema = z.object({
@@ -57,8 +62,13 @@ export const notificationCriteriaConditionSchema = z.object({
     .number()
     .int()
     .min(NotificationConditionType.SERIES, '올바른 조건 타입을 선택해 주세요')
-    .max(NotificationConditionType.UPLOADER, '올바른 조건 타입을 선택해 주세요'),
-  value: z.string().min(1, '조건 값을 입력해 주세요').max(100, '조건 값은 100자 이하여야 해요'),
+    .max(NotificationConditionType.UPLOADER, '올바른 조건 타입을 선택해 주세요')
+    .transform((value) => value as NotificationConditionType),
+  value: z
+    .string()
+    .min(1, '조건 값을 입력해 주세요')
+    .max(100, '조건 값은 100자 이하여야 해요')
+    .transform((value) => normalizeValue(value)),
   isExcluded: z.boolean().optional().default(false),
 })
 
@@ -68,7 +78,7 @@ export const postV1NotificationCriteriaBodySchema = z.object({
     .trim()
     .min(1, '알림 이름을 입력해 주세요')
     .max(MAX_CRITERIA_NAME_LENGTH, `알림 이름은 ${MAX_CRITERIA_NAME_LENGTH}자 이하여야 해요`),
-  conditions: z.array(notificationCriteriaConditionSchema).min(1).max(20),
+  conditions: notificationCriteriaConditionsSchema,
   isActive: z.boolean().optional().default(true),
 })
 

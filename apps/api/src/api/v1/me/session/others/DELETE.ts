@@ -1,3 +1,5 @@
+import type { DELETEV1MeSessionResponse } from '@litomi/contracts'
+
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
@@ -5,7 +7,7 @@ import type { Env } from '@/app'
 import { problemResponse } from '@/utils/problem'
 
 import { revokeOtherSessionFamiliesByUserId } from '../query'
-import { type DELETEV1MeSessionResponse, getCurrentSessionFamilyId } from '../shared'
+import { getCurrentSessionFamilyId } from '../shared'
 
 const route = new Hono<Env>()
 

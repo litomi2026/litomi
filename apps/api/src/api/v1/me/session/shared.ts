@@ -7,11 +7,6 @@ import type { Env } from '@/app'
 
 import { readCurrentSessionFamilyIdByTokenHash } from './query'
 
-export type DELETEV1MeSessionResponse = {
-  clearedCurrentSession: boolean
-  message: string
-}
-
 export async function getCurrentSessionFamilyId(c: Context<Env>, userId: number) {
   const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
 
