@@ -1,3 +1,5 @@
+import type { GETUnreadCountResponse } from '@litomi/contracts'
+
 import { db } from '@litomi/db/database/app/drizzle'
 import { notificationTable } from '@litomi/db/database/app/notification'
 import { createCacheControl } from '@litomi/http/cache-control'
@@ -7,8 +9,6 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
-
-export type GETUnreadCountResponse = number
 
 const unreadCountRoutes = new Hono<Env>()
 

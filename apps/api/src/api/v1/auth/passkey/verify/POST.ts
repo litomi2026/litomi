@@ -1,9 +1,8 @@
-import type { POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts'
-
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey'
 import { authenticationLimiter, type PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
 import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
+import { postV1AuthPasskeyVerifyRequestSchema, type POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { COOKIE_DOMAIN } from '@litomi/domain/constants'
 import { CookieKey } from '@litomi/domain/constants/storage'
@@ -14,7 +13,6 @@ import TurnstileValidator from '@litomi/http/turnstile'
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
-import { z } from 'zod'
 
 import type { Env } from '@/app'
 
@@ -26,30 +24,11 @@ import { zProblemValidator } from '@/utils/validator'
 
 import { readCredentialByCredentialId, touchCredentialUse } from './query'
 
-const verifyAuthenticationSchema = z.object({
-  id: z.string(),
-  rawId: z.string(),
-  response: z.object({
-    authenticatorData: z.string(),
-    clientDataJSON: z.string(),
-    signature: z.string(),
-    userHandle: z.string().optional(),
-  }),
-  type: z.literal('public-key'),
-  clientExtensionResults: z.record(z.string(), z.unknown()).optional().default({}),
-})
-
-const verifyAuthenticationRequestSchema = z.object({
-  authentication: verifyAuthenticationSchema,
-  remember: z.boolean().default(false),
-  turnstileToken: z.string().nullable().optional(),
-})
-
 const verifyAuthenticationLimiter = new RateLimiter(RateLimitPresets.strict())
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', verifyAuthenticationRequestSchema), async (c) => {
+route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema), async (c) => {
   const remoteIP = getRequestIP(c.req.raw.headers)
   const { authentication, remember, turnstileToken } = c.req.valid('json')
   const { allowed, retryAfter } = await verifyAuthenticationLimiter.check(authentication.id)

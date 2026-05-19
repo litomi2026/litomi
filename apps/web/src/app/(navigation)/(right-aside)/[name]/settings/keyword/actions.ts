@@ -1,6 +1,7 @@
 'use server'
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { postV1NotificationCriteriaBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/database/app/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/app/notification'
 import { MAX_CRITERIA_PER_USER } from '@litomi/domain/constants/policy'
@@ -19,7 +20,7 @@ import {
 } from '@/utils/action-response'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
-import { createCriteriaSchema, deleteCriteriaSchema, updateCriteriaSchema } from './schema'
+import { deleteCriteriaSchema, updateCriteriaSchema } from './schema'
 
 export async function createNotificationCriteria(formData: FormData) {
   const userId = await getUserIdFromCookie()
@@ -28,7 +29,7 @@ export async function createNotificationCriteria(formData: FormData) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
-  const validation = createCriteriaSchema.safeParse({
+  const validation = postV1NotificationCriteriaBodySchema.safeParse({
     name: formData.get('name'),
     conditions: JSON.parse((formData.get('conditions') as string) || '[]'),
     isActive: formData.get('isActive') === 'true',

@@ -1,5 +1,3 @@
-import type { AuthenticationResponseJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/server'
-
 import { BACKUP_CODE_PATTERN, LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
 import { z } from 'zod'
 
@@ -113,15 +111,62 @@ export const postV1AuthSignupResponseSchema = z.object({
 
 export type POSTV1AuthSignupResponse = z.infer<typeof postV1AuthSignupResponseSchema>
 
+const authenticatorTransportSchema = z.enum(['ble', 'cable', 'hybrid', 'internal', 'nfc', 'smart-card', 'usb'])
+const publicKeyCredentialHintSchema = z.enum(['hybrid', 'security-key', 'client-device'])
+const userVerificationRequirementSchema = z.enum(['discouraged', 'preferred', 'required'])
+
+const authenticationExtensionsClientInputsSchema = z.object({
+  appid: z.string().optional(),
+  credProps: z.boolean().optional(),
+  hmacCreateSecret: z.boolean().optional(),
+  minPinLength: z.boolean().optional(),
+})
+
+const publicKeyCredentialDescriptorSchema = z.object({
+  id: z.string(),
+  type: z.literal('public-key'),
+  transports: z.array(authenticatorTransportSchema).optional(),
+})
+
+const publicKeyCredentialRequestOptionsSchema = z.object({
+  challenge: z.string(),
+  timeout: z.number().optional(),
+  rpId: z.string().optional(),
+  allowCredentials: z.array(publicKeyCredentialDescriptorSchema).optional(),
+  userVerification: userVerificationRequirementSchema.optional(),
+  hints: z.array(publicKeyCredentialHintSchema).optional(),
+  extensions: authenticationExtensionsClientInputsSchema.optional(),
+})
+
 export const postV1AuthPasskeyOptionsResponseSchema = z.object({
-  options: z.custom<PublicKeyCredentialRequestOptionsJSON>(),
+  options: publicKeyCredentialRequestOptionsSchema,
   turnstileRequired: z.boolean(),
 })
 
 export type POSTV1AuthPasskeyOptionsResponse = z.infer<typeof postV1AuthPasskeyOptionsResponseSchema>
 
+const passkeyClientExtensionResultsSchema = z.object({
+  appid: z.boolean().optional(),
+  credProps: z.object({ rk: z.boolean().optional() }).optional(),
+  hmacCreateSecret: z.boolean().optional(),
+})
+
+const passkeyAuthenticationResponseSchema = z.object({
+  id: z.string(),
+  rawId: z.string(),
+  response: z.object({
+    authenticatorData: z.string(),
+    clientDataJSON: z.string(),
+    signature: z.string(),
+    userHandle: z.string().optional(),
+  }),
+  type: z.literal('public-key'),
+  authenticatorAttachment: z.enum(['cross-platform', 'platform']).optional(),
+  clientExtensionResults: passkeyClientExtensionResultsSchema,
+})
+
 export const postV1AuthPasskeyVerifyRequestSchema = z.object({
-  authentication: z.custom<AuthenticationResponseJSON>(),
+  authentication: passkeyAuthenticationResponseSchema,
   remember: z.boolean().default(false),
   turnstileToken: z.string().nullable().optional(),
 })

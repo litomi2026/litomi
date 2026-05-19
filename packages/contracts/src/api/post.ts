@@ -3,7 +3,7 @@ import { PostType } from '@litomi/domain/database/enum'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { z } from 'zod'
 
-import type { ReferredPost } from '../post/referred-post'
+import { referredPostSchema } from '../post/referred-post'
 
 export const postIdParamSchema = z.object({
   id: z.coerce.number().int().positive(),
@@ -30,7 +30,7 @@ export const postSchema = z.object({
   commentCount: z.number(),
   repostCount: z.number(),
   viewCount: z.number().optional(),
-  referredPost: z.custom<ReferredPost>().nullable(),
+  referredPost: referredPostSchema.nullable(),
   imageURLs: z.array(z.string()).nullable().optional(),
   bookmarkCount: z.number().optional(),
 })
