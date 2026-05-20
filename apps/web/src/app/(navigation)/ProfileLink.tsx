@@ -10,7 +10,7 @@ type Props = {
   className?: string
 }
 
-export default function ProfileLink({ className }: Readonly<Props>) {
+export default function ProfileLink({ className }: Props) {
   const { data: me } = useMeQuery()
   const name = me?.name ?? ''
   const href = `/@${name}`

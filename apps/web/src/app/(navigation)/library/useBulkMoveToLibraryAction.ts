@@ -20,7 +20,7 @@ type Options = {
 export default function useBulkMoveToLibraryAction({
   currentLibraryId,
   libraries,
-}: Readonly<Options>): BulkActionDescriptor {
+}: Options): BulkActionDescriptor {
   const queryClient = useQueryClient()
   const { exit, selectedCount, selectedIds } = useLibrarySelection()
 

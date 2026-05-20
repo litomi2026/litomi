@@ -51,7 +51,7 @@ const LANGUAGE_CODES: Record<string, string> = {
   rewrite: 'R',
 }
 
-export default function MangaLanguageLink({ className = '', language, searchParams }: Readonly<Props>) {
+export default function MangaLanguageLink({ className = '', language, searchParams }: Props) {
   const { href, isActive } = getSearchFilter(`language:${language}`, searchParams)
 
   return (

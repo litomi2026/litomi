@@ -8,7 +8,7 @@ type Props = {
   onLocationChange: (geolocation: { lat: number; lon: number }) => void
 }
 
-export default function PostGeolocationButton({ disabled, onLocationChange }: Readonly<Props>) {
+export default function PostGeolocationButton({ disabled, onLocationChange }: Props) {
   function handleClick() {
     if (!navigator.geolocation) {
       toast.warning('위치 정보를 가져올 수 없어요')

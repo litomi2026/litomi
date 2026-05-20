@@ -5,7 +5,7 @@ interface Props extends Omit<ComponentProps<'input'>, 'onToggle'> {
   onToggle?: (enabled: boolean) => void
 }
 
-export default function Toggle({ className = '', title, onToggle, ...props }: Readonly<Props>) {
+export default function Toggle({ className = '', title, onToggle, ...props }: Props) {
   return (
     <label
       className={twMerge('inline-flex items-center', props.disabled ? 'cursor-not-allowed' : 'cursor-pointer')}

@@ -21,7 +21,7 @@ type Props = {
   onOpenChange: (open: boolean) => void
 }
 
-export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, open, onOpenChange }: Readonly<Props>) {
+export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, open, onOpenChange }: Props) {
   const router = useRouter()
   const queryClient = useQueryClient()
 

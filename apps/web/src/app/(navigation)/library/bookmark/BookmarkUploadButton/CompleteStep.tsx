@@ -8,7 +8,7 @@ type Props = {
   isVisible: boolean
 }
 
-export function CompleteStep({ importResult, isVisible }: Readonly<Props>) {
+export function CompleteStep({ importResult, isVisible }: Props) {
   return (
     <div
       aria-hidden={!isVisible}

@@ -11,7 +11,7 @@ type Props = {
 
 export default memo(CensorshipStats)
 
-function CensorshipStats({ censorships }: Readonly<Props>) {
+function CensorshipStats({ censorships }: Props) {
   const levelCount = useMemo(() => {
     return censorships.reduce(
       (acc, censorship) => {

@@ -21,7 +21,7 @@ type Props = {
   urls: string[]
 }
 
-export default function PostImages({ className = '', urls }: Readonly<Props>) {
+export default function PostImages({ className = '', urls }: Props) {
   const postImageURLs = urls.slice(0, 4)
   const length = postImageURLs.length
 

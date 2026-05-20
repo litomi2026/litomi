@@ -16,7 +16,7 @@ type Options = {
   libraries: BulkTargetLibrary[]
 }
 
-export default function useBulkCopyToLibraryAction({ libraries }: Readonly<Options>): BulkActionDescriptor {
+export default function useBulkCopyToLibraryAction({ libraries }: Options): BulkActionDescriptor {
   const queryClient = useQueryClient()
   const { exit, selectedCount, selectedIds } = useLibrarySelection()
 

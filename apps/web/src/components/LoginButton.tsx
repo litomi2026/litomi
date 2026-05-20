@@ -11,7 +11,7 @@ type Props = {
   children: ReactNode
 }
 
-export default function LoginButton({ children }: Readonly<Props>) {
+export default function LoginButton({ children }: Props) {
   const pathname = usePathname()
 
   return (

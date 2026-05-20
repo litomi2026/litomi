@@ -63,7 +63,7 @@ export default function useServerAction<T extends ActionResponse, TActionArgs ex
   onError,
   shouldSetResponse = true,
   silentNetworkError,
-}: Readonly<Props<T, TActionArgs>>) {
+}: Props<T, TActionArgs>) {
   const [response, setResponse] = useState<T>()
   const [isPending, startTransition] = useTransition()
   const queryClient = useQueryClient()

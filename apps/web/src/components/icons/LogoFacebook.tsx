@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function LogoFacebook(props: Readonly<ComponentProps<'svg'>>) {
+export default function LogoFacebook(props: ComponentProps<'svg'>) {
   return (
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path

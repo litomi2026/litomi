@@ -13,7 +13,7 @@ type Props = {
   username: string
 }
 
-export default function UserPostList({ username }: Readonly<Props>) {
+export default function UserPostList({ username }: Props) {
   const { data: me } = useMeQuery()
   const isCurrentUser = me?.name === username
 

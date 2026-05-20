@@ -10,7 +10,7 @@ type Props = {
   userId: number
 }
 
-export default async function DataExportSection({ userId }: Readonly<Props>) {
+export default async function DataExportSection({ userId }: Props) {
   const counts = await getDataCounts(userId)
 
   return <DataExportSectionClient counts={counts} />

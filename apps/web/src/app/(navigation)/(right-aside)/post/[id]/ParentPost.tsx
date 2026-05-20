@@ -12,7 +12,7 @@ type Props = {
   post: TPost
 }
 
-export default function ParentPost({ post }: Readonly<Props>) {
+export default function ParentPost({ post }: Props) {
   const author = post.author
   const referredPost = post.referredPost
 

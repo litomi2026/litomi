@@ -14,7 +14,7 @@ const TOOLBAR_BUTTON_CLASS_NAME =
 const CTA_BUTTON_CLASS_NAME =
   'w-full rounded-2xl border-2 border-zinc-800 bg-zinc-900 px-6 py-3 font-semibold text-zinc-100 transition hover:border-zinc-700 hover:bg-zinc-800'
 
-export default function BookmarkUploadButton({ variant = 'toolbar' }: Readonly<Props>) {
+export default function BookmarkUploadButton({ variant = 'toolbar' }: Props) {
   const setIsOpen = useBookmarkUploadModalStore((store) => store.setIsOpen)
 
   const className = {

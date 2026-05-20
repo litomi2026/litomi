@@ -18,7 +18,7 @@ type Props = {
   tags: MangaTag[]
 }
 
-export default function MangaTagList({ className = '', searchParams, tags }: Readonly<Props>) {
+export default function MangaTagList({ className = '', searchParams, tags }: Props) {
   const [selectedTag, setSelectedTag] = useState<MangaTag | null>(null)
   const { data: censorshipsMap } = useCensorshipsMapQuery()
 

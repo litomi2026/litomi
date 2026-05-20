@@ -26,7 +26,7 @@ const DATA_CONFIG: Record<DataType, { label: string; icon: ReactNode }> = {
 
 const ALL_TYPES = Object.keys(DATA_CONFIG) as DataType[]
 
-export default function DataExportSectionClient({ counts }: Readonly<Props>) {
+export default function DataExportSectionClient({ counts }: Props) {
   const [isPending, startTransition] = useTransition()
   const [selected, setSelected] = useState<Set<DataType>>(new Set(ALL_TYPES))
 

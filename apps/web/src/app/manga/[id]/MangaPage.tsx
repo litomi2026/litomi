@@ -24,7 +24,7 @@ type Props = {
   initialManga?: Manga | null
 }
 
-export default function MangaPage({ id, initialManga }: Readonly<Props>) {
+export default function MangaPage({ id, initialManga }: Props) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const unlockTimeoutRef = useRef<number>(null)
   const { data: me } = useMeQuery()

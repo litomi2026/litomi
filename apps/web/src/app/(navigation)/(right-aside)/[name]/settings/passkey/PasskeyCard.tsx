@@ -19,7 +19,7 @@ type Props = {
   passkeySignalData: PasskeySignalData
 }
 
-export default function PasskeyCard({ passkey, passkeySignalData }: Readonly<Props>) {
+export default function PasskeyCard({ passkey, passkeySignalData }: Props) {
   const { deviceType, createdAt, credentialId, lastUsedAt, transports, id } = passkey
   const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)

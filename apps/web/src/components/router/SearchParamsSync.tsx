@@ -7,7 +7,7 @@ type Props = {
   onUpdate: (searchParams: ReadonlyURLSearchParams) => void
 }
 
-export default function SearchParamsSync({ onUpdate }: Readonly<Props>) {
+export default function SearchParamsSync({ onUpdate }: Props) {
   return (
     <Suspense fallback={null}>
       <SearchParamsSyncInner onUpdate={onUpdate} />
@@ -15,7 +15,7 @@ export default function SearchParamsSync({ onUpdate }: Readonly<Props>) {
   )
 }
 
-function SearchParamsSyncInner({ onUpdate }: Readonly<Props>) {
+function SearchParamsSyncInner({ onUpdate }: Props) {
   const searchParams = useSearchParams()
 
   useEffect(() => {

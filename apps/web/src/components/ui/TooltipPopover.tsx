@@ -32,7 +32,7 @@ export default function TooltipPopover({
   className = '',
   disabled,
   buttonClassName = '',
-}: Readonly<Props>) {
+}: Props) {
   const [isActive, setIsActive] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 

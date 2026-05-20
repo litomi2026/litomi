@@ -30,7 +30,7 @@ export default function DeletePostDialog({
   open,
   postId,
   redirectOnDelete = false,
-}: Readonly<Props>) {
+}: Props) {
   const router = useRouter()
   const queryClient = useQueryClient()
 

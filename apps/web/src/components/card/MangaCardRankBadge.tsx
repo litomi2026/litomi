@@ -5,7 +5,7 @@ type Props = {
   className?: string
 }
 
-export default function MangaCardRankBadge({ rank, className = '' }: Readonly<Props>) {
+export default function MangaCardRankBadge({ rank, className = '' }: Props) {
   const isTopRank = rank <= 3
 
   return (

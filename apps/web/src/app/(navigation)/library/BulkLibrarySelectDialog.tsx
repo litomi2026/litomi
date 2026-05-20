@@ -27,7 +27,7 @@ export default function BulkLibrarySelectDialog({
   onSelectLibrary,
   open,
   title,
-}: Readonly<Props>) {
+}: Props) {
   return (
     <Dialog ariaLabel={ariaLabel} onClose={onClose} open={open}>
       <DialogHeader onClose={onClose} title={title} />

@@ -39,7 +39,7 @@ type Props = {
   onOpenChange: (open: boolean) => void
 }
 
-export default function LibraryEditModal({ library, open, onOpenChange }: Readonly<Props>) {
+export default function LibraryEditModal({ library, open, onOpenChange }: Props) {
   const [isPublic, setIsPublic] = useState(library.isPublic)
   const [selectedColor, setSelectedColor] = useState(library.color || DEFAULT_LIBRARY_COLOR)
   const [selectedIcon, setSelectedIcon] = useState(library.icon || DEFAULT_LIBRARY_ICON)

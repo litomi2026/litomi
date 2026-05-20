@@ -26,7 +26,7 @@ export default function CensorshipCard({
   isSelected,
   isDeleting = false,
   onToggleSelect,
-}: Readonly<Props>) {
+}: Props) {
   const { key, value, level, createdAt } = censorship
   const [isEditing, setIsEditing] = useState(false)
 

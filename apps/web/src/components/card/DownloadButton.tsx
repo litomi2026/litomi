@@ -91,7 +91,7 @@ export default function DownloadButton({ manga, className = '' }: Props) {
   )
 }
 
-export function DownloadButtonError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
+export function DownloadButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
   useEffect(() => {
     toast.error('다운로드 중 오류가 발생했어요')
   }, [error])
