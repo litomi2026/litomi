@@ -260,24 +260,46 @@ jobs:
 
           python3 - <<'PY'
           import os
-          import re
           from pathlib import Path
 
           path = Path(os.environ["OVERLAY_FILE"])
-          text = path.read_text()
+          lines = path.read_text().splitlines(keepends=True)
 
           replacements = {
               "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
               "litomi-api": os.environ["IMAGE_API_DIGEST"],
           }
 
-          for name, digest in replacements.items():
-              pattern = rf"(- name: {re.escape(name)}\n\s+newName: [^\n]+\n)(?:\s+newTag: \S+\n|\s+digest: \S+\n)"
-              text, count = re.subn(pattern, lambda match: f"{match.group(1)}    digest: {digest}\n", text, count=1)
-              if count != 1:
-                  raise SystemExit(f"Failed to update digest for {name} in {path}")
+          def update_image_digest(image_name: str, digest: str) -> None:
+              start = next((index for index, line in enumerate(lines) if line.strip() == f"- name: {image_name}"), None)
+              if start is None:
+                  raise SystemExit(f"Failed to find image entry for {image_name} in {path}")
 
-          path.write_text(text)
+              end = next(
+                  (index for index in range(start + 1, len(lines)) if lines[index].strip().startswith("- name: ")),
+                  len(lines),
+              )
+
+              for index in range(start + 1, end):
+                  if lines[index].lstrip().startswith(("digest:", "newTag:")):
+                      lines[index] = f"    digest: {digest}\n"
+                      return
+
+              insert_at = next(
+                  (index + 1 for index in range(start + 1, end) if lines[index].lstrip().startswith("newName:")),
+                  None,
+              )
+              if insert_at is None:
+                  raise SystemExit(f"Failed to find newName for {image_name} in {path}")
+
+              lines.insert(insert_at, f"    digest: {digest}\n")
+
+          for name, digest in replacements.items():
+              if not digest:
+                  raise SystemExit(f"Missing digest for {name}")
+              update_image_digest(name, digest)
+
+          path.write_text("".join(lines))
           PY
 
       - name: Commit staging image digest updates
@@ -329,11 +351,10 @@ jobs:
 
           python3 - <<'PY'
           import os
-          import re
           from pathlib import Path
 
           path = Path(os.environ["OVERLAY_FILE"])
-          text = path.read_text()
+          lines = path.read_text().splitlines(keepends=True)
 
           replacements = {
               "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
@@ -341,13 +362,36 @@ jobs:
               "litomi-cataloger": os.environ["IMAGE_CATALOGER_DIGEST"],
           }
 
-          for name, digest in replacements.items():
-              pattern = rf"(- name: {re.escape(name)}\n\s+newName: [^\n]+\n)(?:\s+newTag: \S+\n|\s+digest: \S+\n)"
-              text, count = re.subn(pattern, lambda match: f"{match.group(1)}    digest: {digest}\n", text, count=1)
-              if count != 1:
-                  raise SystemExit(f"Failed to update digest for {name} in {path}")
+          def update_image_digest(image_name: str, digest: str) -> None:
+              start = next((index for index, line in enumerate(lines) if line.strip() == f"- name: {image_name}"), None)
+              if start is None:
+                  raise SystemExit(f"Failed to find image entry for {image_name} in {path}")
 
-          path.write_text(text)
+              end = next(
+                  (index for index in range(start + 1, len(lines)) if lines[index].strip().startswith("- name: ")),
+                  len(lines),
+              )
+
+              for index in range(start + 1, end):
+                  if lines[index].lstrip().startswith(("digest:", "newTag:")):
+                      lines[index] = f"    digest: {digest}\n"
+                      return
+
+              insert_at = next(
+                  (index + 1 for index in range(start + 1, end) if lines[index].lstrip().startswith("newName:")),
+                  None,
+              )
+              if insert_at is None:
+                  raise SystemExit(f"Failed to find newName for {image_name} in {path}")
+
+              lines.insert(insert_at, f"    digest: {digest}\n")
+
+          for name, digest in replacements.items():
+              if not digest:
+                  raise SystemExit(f"Missing digest for {name}")
+              update_image_digest(name, digest)
+
+          path.write_text("".join(lines))
           PY
 
       - name: Create or update production promotion PR
