@@ -111,6 +111,7 @@ function abortSignalAny(signals: AbortSignal[]): AbortSignal {
     return AbortSignal.any(signals)
   }
 
+  // NOTE: Edge 런타임에 AbortSignal.any가 없을 수 있어 직접 구현해요.
   const controller = new AbortController()
 
   for (const signal of signals) {
