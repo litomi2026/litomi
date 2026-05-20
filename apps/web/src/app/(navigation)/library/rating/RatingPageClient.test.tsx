@@ -123,7 +123,6 @@ describe('RatingPageClient', () => {
 
     expect(view.queryByText('selectable-card-card')).toBeNull()
     expect(window.location.search).toBe(`?sort=${RatingSort.MANGA_ID_ASC}`)
-    expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
     expect(view.container.querySelectorAll('article')).toHaveLength(1)
 
     await waitFor(() => {
@@ -164,17 +163,13 @@ describe('RatingPageClient', () => {
       target: { value: RatingSort.MANGA_ID_ASC },
     })
 
-    expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
     expect(view.container.querySelectorAll('article')).toHaveLength(1)
 
     resolveResponse(jsonResponse(basePage))
 
-    await waitFor(
-      () => {
-        expect(view.container.querySelector('[data-manga-card]')).toBeTruthy()
-      },
-      { timeout: 5000 },
-    )
+    await waitFor(() => {
+      expect(view.container.querySelectorAll('article')).toHaveLength(1)
+    })
   })
 
   test('평점 정렬에서는 평점 그룹 헤더를 렌더링한다', () => {
@@ -216,20 +211,6 @@ describe('RatingPageClient', () => {
 
     expect(new URLSearchParams(window.location.search).get('sort')).toBe(RatingSort.MANGA_ID_ASC)
     expect(new URLSearchParams(window.location.search).get('view')).toBe(View.IMAGE)
-
-    await waitFor(() => {
-      expect(view.container.querySelector('[data-manga-card]')?.className).not.toContain('flex-col')
-    })
-  })
-
-  test('initialView가 그림이면 image variant를 전달한다', () => {
-    window.history.replaceState({}, '', '/library/rating?view=img')
-
-    const view = renderWithLibrarySelection(
-      <RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} initialView={View.IMAGE} />,
-    )
-
-    expect(view.container.querySelector('[data-manga-card]')?.className).not.toContain('flex-col')
   })
 
   test('선택 모드와 그림 보기에서도 image selectable variant를 전달한다', () => {

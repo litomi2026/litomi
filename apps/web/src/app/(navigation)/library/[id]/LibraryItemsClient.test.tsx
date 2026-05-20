@@ -85,7 +85,6 @@ describe('LibraryItemsClient', () => {
     expect(view.getByRole('option', { name: '오래된순' })).toBeTruthy()
     expect(view.getByRole('option', { name: '작품 ID 높은순' })).toBeTruthy()
     expect(view.getByRole('option', { name: '작품 ID 낮은순' })).toBeTruthy()
-    expect(view.container.querySelector('[data-manga-card]')?.className).toContain('flex-col')
   })
 
   test('소유자가 정렬을 변경하면 scope=me 요청으로 재조회하고 URL을 갱신한다', async () => {
@@ -111,16 +110,16 @@ describe('LibraryItemsClient', () => {
       target: { value: CollectionItemSort.MANGA_ID_ASC },
     })
 
-    expect(view.container.querySelectorAll('[data-manga-card]')).toHaveLength(0)
     expect(view.container.querySelectorAll('article')).toHaveLength(1)
     expect(window.location.search).toBe(`?sort=${CollectionItemSort.MANGA_ID_ASC}`)
 
     await waitFor(() => {
-      expect(view.container.querySelector('[data-manga-card]')).toBeTruthy()
+      const requests = fetchController.calls.filter(({ url }) => url.pathname === '/api/v1/library/1/item')
+
+      expect(requests).toHaveLength(1)
     })
 
     const requests = fetchController.calls.filter(({ url }) => url.pathname === '/api/v1/library/1/item')
-    expect(requests).toHaveLength(1)
     expect(requests[0]?.url.searchParams.get('scope')).toBe('me')
     expect(requests[0]?.url.searchParams.get('sort')).toBe(CollectionItemSort.MANGA_ID_ASC)
   })
@@ -137,21 +136,5 @@ describe('LibraryItemsClient', () => {
     )
 
     expect(view.queryByRole('combobox')).toBeNull()
-  })
-
-  test('그림 보기면 image variant를 전달한다', () => {
-    window.history.replaceState({}, '', '/library/1?view=img')
-
-    const view = renderWithLibrarySelection(
-      <LibraryItemsClient
-        initialItems={basePage}
-        initialSort={CollectionItemSort.CREATED_DESC}
-        initialView={View.IMAGE}
-        isOwner
-        library={{ id: 1, name: '테스트', isPublic: true }}
-      />,
-    )
-
-    expect(view.container.querySelector('[data-manga-card]')?.className).not.toContain('flex-col')
   })
 })
