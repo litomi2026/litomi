@@ -96,7 +96,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     //   })
     // }
 
-    const manga = await fetchMangaFromMultiSources({ id, locale })
+    const manga = await fetchMangaFromMultiSources({ id, locale, signal: request.signal })
 
     if (!manga) {
       const isPermanentlyMissing = id <= LAST_VERIFIED_MANGA_ID

@@ -21,6 +21,7 @@ type HentaiPawSlide = {
 type MangaFetchParams = {
   id: number
   revalidate?: number
+  signal?: AbortSignal
 }
 
 const HENTAIPAW_CONFIG: ProxyClientConfig = {
@@ -54,13 +55,13 @@ class HentaiPawClient {
     this.client = new ProxyClient(HENTAIPAW_CONFIG)
   }
 
-  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
-    const html = await this.client.fetch<string>(`/articles/${id}`, { next: { revalidate } }, true)
+  async fetchManga({ id, revalidate, signal }: MangaFetchParams): Promise<Manga | null> {
+    const html = await this.client.fetch<string>(`/articles/${id}`, { next: { revalidate }, signal }, true)
     return this.parseMangaFromHTML(html, id)
   }
 
-  async fetchMangaImages({ id, revalidate }: MangaFetchParams): Promise<string[] | null> {
-    const html = await this.client.fetch<string>(`/viewer?articleId=${id}`, { next: { revalidate } }, true)
+  async fetchMangaImages({ id, revalidate, signal }: MangaFetchParams): Promise<string[] | null> {
+    const html = await this.client.fetch<string>(`/viewer?articleId=${id}`, { next: { revalidate }, signal }, true)
     return this.extractImageURLsFromHTML(html)
   }
 

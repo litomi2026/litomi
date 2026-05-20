@@ -157,6 +157,7 @@ type MangaFetchParams = {
   id: number
   locale: Locale
   revalidate?: number
+  signal?: AbortSignal
 }
 
 type TagCategory = (typeof VALID_TAG_CATEGORIES)[number]
@@ -235,8 +236,8 @@ class KHentaiClient {
     this.fallbackClient = new ProxyClient(KOHENTAI_CONFIG)
   }
 
-  async fetchManga({ id, locale, revalidate }: MangaFetchParams) {
-    const gallery = await this.fetchGallery({ id, revalidate })
+  async fetchManga({ id, locale, revalidate, signal }: MangaFetchParams) {
+    const gallery = await this.fetchGallery({ id, revalidate, signal })
 
     if (!gallery) {
       return null
@@ -259,8 +260,8 @@ class KHentaiClient {
     }
   }
 
-  async fetchMangaImages({ id, revalidate }: { id: number; revalidate?: number }) {
-    const gallery = await this.fetchGallery({ id, revalidate })
+  async fetchMangaImages({ id, revalidate, signal }: { id: number; revalidate?: number; signal?: AbortSignal }) {
+    const gallery = await this.fetchGallery({ id, revalidate, signal })
 
     if (!gallery) {
       return null
@@ -332,9 +333,9 @@ class KHentaiClient {
     }
   }
 
-  private async fetchGallery({ id, revalidate }: { id: number; revalidate?: number }) {
+  private async fetchGallery({ id, revalidate, signal }: { id: number; revalidate?: number; signal?: AbortSignal }) {
     try {
-      const html = await this.client.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
+      const html = await this.client.fetch<string>(`/r/${id}`, { next: { revalidate }, signal }, true)
       return this.parseGalleryFromHTML(html, id)
     } catch (error) {
       if (error instanceof NotFoundError) {
@@ -342,7 +343,7 @@ class KHentaiClient {
       }
 
       if (error instanceof UpstreamServerError && error.statusCode === 403) {
-        const html = await this.fallbackClient.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
+        const html = await this.fallbackClient.fetch<string>(`/r/${id}`, { next: { revalidate }, signal }, true)
         return this.parseGalleryFromHTML(html, id)
       }
 

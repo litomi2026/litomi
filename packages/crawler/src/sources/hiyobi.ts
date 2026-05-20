@@ -50,12 +50,14 @@ type MangaFetchParams = {
   id: number
   locale: Locale
   revalidate?: number
+  signal?: AbortSignal
 }
 
 type MangaListFetchParams = {
   page: number
   locale: Locale
   revalidate?: number
+  signal?: AbortSignal
 }
 
 const hiyobiTypeNumberToName: Record<number, string> = {
@@ -127,9 +129,10 @@ class HiyobiClient {
     this.imageClient = new ProxyClient(HIYOBI_IMAGE_CONFIG)
   }
 
-  async fetchManga({ id, locale, revalidate }: MangaFetchParams) {
+  async fetchManga({ id, locale, revalidate, signal }: MangaFetchParams) {
     const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, {
       next: { revalidate },
+      signal,
     })
 
     if (!manga.id) {
@@ -139,23 +142,28 @@ class HiyobiClient {
     return this.convertHiyobiToManga(manga, locale)
   }
 
-  async fetchMangaImages({ id, revalidate }: { id: number; revalidate?: number }) {
+  async fetchMangaImages({ id, revalidate, signal }: { id: number; revalidate?: number; signal?: AbortSignal }) {
     const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, {
       next: { revalidate },
+      signal,
     })
 
     return hiyobiImages.map((image) => image.url)
   }
 
-  async fetchMangas({ page, locale, revalidate }: MangaListFetchParams) {
-    const response = await this.client.fetch<{ list: HiyobiManga[] }>(`/list/${page}`, { next: { revalidate } })
+  async fetchMangas({ page, locale, revalidate, signal }: MangaListFetchParams) {
+    const response = await this.client.fetch<{ list: HiyobiManga[] }>(`/list/${page}`, {
+      next: { revalidate },
+      signal,
+    })
     return response.list.filter((manga) => manga.id).map((manga) => this.convertHiyobiToManga(manga, locale))
   }
 
-  async fetchRandomMangas({ locale, revalidate }: { locale: Locale; revalidate?: number }) {
+  async fetchRandomMangas({ locale, revalidate, signal }: { locale: Locale; revalidate?: number; signal?: AbortSignal }) {
     const mangas = await this.client.fetch<HiyobiManga[]>('/random', {
       method: 'POST',
       next: { revalidate },
+      signal,
     })
 
     return mangas.map((manga) => this.convertHiyobiToManga(manga, locale))

@@ -3,7 +3,7 @@ import { Locale } from '@litomi/domain/locale'
 import { Manga, MangaError } from '@litomi/domain/types/manga'
 import { sec } from '@litomi/std'
 
-import { AllSourcesFailedError, NotFoundError } from '../core/errors'
+import { AllSourcesFailedError, isAbortError, NotFoundError } from '../core/errors'
 import { hentaiPawClient } from '../sources/hentai-paw'
 import { hentKorClient } from '../sources/hentkor'
 import { hitomiClient } from '../sources/hitomi/hitomi'
@@ -13,20 +13,21 @@ import { kHentaiClient } from '../sources/k-hentai'
 type MangaFetchParams = {
   id: number
   locale: Locale
+  signal?: AbortSignal
 }
 
-export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParams) {
+export async function fetchMangaFromMultiSources({ id, locale, signal }: MangaFetchParams) {
   const revalidate = sec('60 days')
 
   const sources = [
     // 1. hiyobi (한국어 작품만 지원)
     async () => {
-      const manga = await hiyobiClient.fetchManga({ id, locale, revalidate })
+      const manga = await hiyobiClient.fetchManga({ id, locale, revalidate, signal })
       if (!manga) {
         return null
       }
 
-      const images = await hiyobiClient.fetchMangaImages({ id })
+      const images = await hiyobiClient.fetchMangaImages({ id, signal })
       if (!images || images.length === 0) {
         return null
       }
@@ -38,22 +39,22 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
 
     // 2. hitomi (한국어 작품만 이미지 지원, 나머지 작품은 이미지 없음)
     async () => {
-      const manga = await hitomiClient.fetchManga({ id, locale })
+      const manga = await hitomiClient.fetchManga({ id, locale, signal })
       const hasKorean = manga?.languages?.some((l) => l.value === 'korean')
       return hasKorean ? manga : null
     },
 
     // 3. kHentai
-    () => kHentaiClient.fetchManga({ id, locale }),
+    () => kHentaiClient.fetchManga({ id, locale, signal }),
 
     // 4. hentaiPaw
     async () => {
-      const manga = await hentaiPawClient.fetchManga({ id, revalidate })
+      const manga = await hentaiPawClient.fetchManga({ id, revalidate, signal })
       if (!manga) {
         return null
       }
 
-      const images = await hentaiPawClient.fetchMangaImages({ id, revalidate })
+      const images = await hentaiPawClient.fetchMangaImages({ id, revalidate, signal })
       if (!images || images.length === 0) {
         return null
       }
@@ -76,6 +77,7 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
 
   for (const fetchSource of sources) {
     try {
+      signal?.throwIfAborted()
       const manga = await fetchSource()
 
       if (!manga || manga.id !== id) {
@@ -88,6 +90,10 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
       if (e instanceof NotFoundError) {
         notFoundCount++
       } else {
+        if (isAbortError(e)) {
+          throw e
+        }
+
         lastError = e instanceof Error ? e : new Error(String(e))
       }
     }

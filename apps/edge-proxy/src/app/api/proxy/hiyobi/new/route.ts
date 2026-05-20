@@ -44,7 +44,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const mangas = await hiyobiClient.fetchMangas({ page, locale })
+    const mangas = await hiyobiClient.fetchMangas({ page, locale, signal: request.signal })
 
     const headers = createProxyHeaders(
       createCacheControlHeaders({

@@ -19,6 +19,7 @@ type MangaFetchParams = {
   id: number
   locale: Locale
   revalidate?: number
+  signal?: AbortSignal
 }
 
 const HITOMI_CONFIG: ProxyClientConfig = {
@@ -55,9 +56,9 @@ class HitomiClient {
     this.client = new ProxyClient(HITOMI_CONFIG)
   }
 
-  async fetchManga({ id, locale, revalidate }: MangaFetchParams) {
+  async fetchManga({ id, locale, revalidate, signal }: MangaFetchParams) {
     try {
-      const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate } }, true)
+      const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate }, signal }, true)
       const gallery = await this.parseGalleryFromJS(jsText, id)
 
       if (gallery.id !== id.toString()) {
