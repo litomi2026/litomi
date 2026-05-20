@@ -1,5 +1,5 @@
 import { CircuitBreaker, type CircuitBreakerConfig } from './CircuitBreaker'
-import { NotFoundError, UpstreamServerError } from './errors'
+import { NotFoundError, TimeoutError, UpstreamServerError } from './errors'
 import { RetryConfig, retryWithBackoff } from './retry'
 
 export const PROXY_HEADERS = {
@@ -53,25 +53,31 @@ export class ProxyClient {
     const url = `${this.config.baseURL}${path}`
 
     const execute = async () => {
-      let signal: AbortSignal | null | undefined
+      const timeoutSignal = this.config.requestTimeout ? AbortSignal.timeout(this.config.requestTimeout) : undefined
 
-      if (this.config.requestTimeout) {
-        const timeoutSignal = AbortSignal.timeout(this.config.requestTimeout)
-        signal = options.signal ? abortSignalAny([options.signal, timeoutSignal]) : timeoutSignal
-      } else {
-        signal = options.signal
+      const signal =
+        options.signal && timeoutSignal ? abortSignalAny([options.signal, timeoutSignal]) : (options.signal ?? timeoutSignal)
+
+      let response: Response
+
+      try {
+        response = await fetch(url, {
+          ...options,
+          signal,
+          headers: {
+            ...PROXY_HEADERS,
+            ...this.config.defaultHeaders,
+            ...options.headers,
+          },
+          redirect: options.redirect || 'follow',
+        })
+      } catch (error) {
+        if (timeoutSignal?.aborted) {
+          throw new TimeoutError(undefined, { url })
+        }
+
+        throw error
       }
-
-      const response = await fetch(url, {
-        ...options,
-        signal,
-        headers: {
-          ...PROXY_HEADERS,
-          ...this.config.defaultHeaders,
-          ...options.headers,
-        },
-        redirect: options.redirect || 'follow',
-      })
 
       if (response.status === 404) {
         throw new NotFoundError(undefined, { url })
@@ -92,7 +98,9 @@ export class ProxyClient {
       return { data, finalUrl: response.url }
     }
 
-    const wrappedWithRetry = this.config.retry ? () => retryWithBackoff(execute, this.config.retry, { url }) : execute
+    const wrappedWithRetry = this.config.retry
+      ? () => retryWithBackoff(execute, this.config.retry, { context: { url }, signal: options.signal ?? undefined })
+      : execute
 
     return this.circuitBreaker ? this.circuitBreaker.execute(wrappedWithRetry) : wrappedWithRetry()
   }
