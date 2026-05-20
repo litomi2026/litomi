@@ -5,6 +5,7 @@ namespace: litomi-prod
 
 resources:
   - ../../base
+  - cataloger-cronjob.yaml
   - hpa-api.yaml
   - hpa-web.yaml
   - namespace.yaml
@@ -43,3 +44,6 @@ images:
   - name: litomi-api
     newName: ghcr.io/litomi2026/litomi-api
     digest: sha256:f2e1104be8e1f493d21d58387fdc0448387fbbc2b530975bd0fbf02e6cedbce7
+  - name: litomi-cataloger
+    newName: ghcr.io/litomi2026/litomi-cataloger
+    newTag: main

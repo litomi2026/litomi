@@ -67,6 +67,26 @@ bootstrap 변경을 강제로 반영하려면 아래 옵션을 사용해요.
 
 `k8s/platform/velero/RUNBOOK.backup-dr.md` 참고
 
+### Cataloger CronJob
+
+`cataloger`는 production에서만 Kubernetes CronJob으로 실행해요.
+
+- **스케줄**: 매일 `21:00 UTC` (`0 21 * * *`)
+- **리소스**: `k8s/apps/litomi/overlays/prod/cataloger-cronjob.yaml`
+- **이미지**: `ghcr.io/litomi2026/litomi-cataloger`
+- **알림**: `k8s/platform/monitoring/prometheusrule-litomi-cataloger.yaml`
+
+```zsh
+sudo kubectl -n litomi-prod get cronjob litomi-cataloger
+sudo kubectl -n litomi-prod get jobs -l app=litomi-cataloger
+```
+
+수동 실행이 필요하면 CronJob에서 임시 Job을 만들어요.
+
+```zsh
+sudo kubectl -n litomi-prod create job --from=cronjob/litomi-cataloger litomi-cataloger-manual-$(date +%Y%m%d%H%M)
+```
+
 ### 관측 (로그/트레이싱/블랙박스)
 
 `k8s/platform/monitoring/RUNBOOK.logs-tracing-blackbox.md` 참고
