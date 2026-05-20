@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load deploy configuration and app runtime environment.
-DEPLOY_ENV_FILE=${DEPLOY_ENV_FILE:-"infra/cloud-run/notification-dispatch/.env.deploy"}
-RUNTIME_ENV_FILE=${RUNTIME_ENV_FILE:-"apps/notification-dispatch/.env.prod.runtime"}
+DEPLOY_ENV_FILE=${DEPLOY_ENV_FILE:-"infra/cloud-run/notifier/.env.deploy"}
+RUNTIME_ENV_FILE=${RUNTIME_ENV_FILE:-"apps/notifier/.env.prod.runtime"}
 
 set -a
 if [ -f "${DEPLOY_ENV_FILE}" ]; then
@@ -15,9 +15,9 @@ set +a
 
 PROJECT_ID=${PROJECT_ID:-"your-project-id"}
 REGION=${REGION:-"asia-northeast1"}
-JOB_NAME=${JOB_NAME:-"notification-dispatch"}
+JOB_NAME=${JOB_NAME:-"notifier"}
 ARTIFACT_REGISTRY_REPO=${ARTIFACT_REGISTRY_REPO:-"cloud-run-jobs"}
-SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"notification-dispatch-sa"}
+SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"notifier-sa"}
 IMAGE_NAME="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}/${JOB_NAME}"
 SERVICE_ACCOUNT="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 SCHEDULER_JOB_NAME="${JOB_NAME}-schedule"
@@ -28,8 +28,8 @@ if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "❌ Error: PROJECT_ID environment variable not set"
     echo ""
     echo "Please copy .env.deploy.example to .env.deploy and configure it:"
-    echo "  cp infra/cloud-run/notification-dispatch/.env.deploy.example infra/cloud-run/notification-dispatch/.env.deploy"
-    echo "  # Edit infra/cloud-run/notification-dispatch/.env.deploy with your deploy values"
+    echo "  cp infra/cloud-run/notifier/.env.deploy.example infra/cloud-run/notifier/.env.deploy"
+    echo "  # Edit infra/cloud-run/notifier/.env.deploy with your deploy values"
     exit 1
 fi
 
@@ -44,8 +44,8 @@ if [ "${#missing_runtime_env_vars[@]}" -gt 0 ]; then
     echo "❌ Error: missing runtime environment variables: ${missing_runtime_env_vars[*]}"
     echo ""
     echo "Please create the runtime env file:"
-    echo "  cp apps/notification-dispatch/.env.prod.runtime.example apps/notification-dispatch/.env.prod.runtime"
-    echo "  # Edit apps/notification-dispatch/.env.prod.runtime with production runtime values"
+    echo "  cp apps/notifier/.env.prod.runtime.example apps/notifier/.env.prod.runtime"
+    echo "  # Edit apps/notifier/.env.prod.runtime with production runtime values"
     exit 1
 fi
 
@@ -96,7 +96,7 @@ gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 
 # Build and push the Docker image
 echo "Building and pushing Docker image for linux/amd64 platform..."
-if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f apps/notification-dispatch/Dockerfile .; then
+if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f apps/notifier/Dockerfile .; then
   echo "Failed to build/push Docker image. Please check the error messages above."
   echo ""
   echo "Common fixes:"

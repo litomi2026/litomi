@@ -1,11 +1,11 @@
 # Cloud Build configuration for deploying the catalog ingester job
-# Usage: gcloud builds submit --config=infra/cloud-run/catalog-ingest/cloudbuild.yaml --substitutions=_CATALOG_POSTGRES_URL="postgresql://...",_CATALOG_POSTGRES_CERTIFICATE="...",_REGION=asia-northeast1
+# Usage: gcloud builds submit --config=infra/cloud-run/cataloger/cloudbuild.yaml --substitutions=_CATALOG_POSTGRES_URL="postgresql://...",_CATALOG_POSTGRES_CERTIFICATE="...",_REGION=asia-northeast1
 
 substitutions:
-  _JOB_NAME: catalog-ingest
+  _JOB_NAME: cataloger
   _REGION: asia-northeast1
   _ARTIFACT_REGISTRY_REPO: cloud-run-jobs
-  _SERVICE_ACCOUNT_NAME: catalog-ingest-sa
+  _SERVICE_ACCOUNT_NAME: cataloger-sa
   _JOB_SCHEDULE: '0 * * * *'
   _CATALOG_POSTGRES_URL: ''
   _CATALOG_POSTGRES_CERTIFICATE: ''
@@ -34,7 +34,7 @@ steps:
       - '-t'
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/${_JOB_NAME}'
       - '-f'
-      - 'apps/catalog-ingest/Dockerfile'
+      - 'apps/cataloger/Dockerfile'
       - '--push'
       - '.'
 

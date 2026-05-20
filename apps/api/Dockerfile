@@ -6,10 +6,10 @@ WORKDIR /app
 
 COPY bun.lock package.json ./
 COPY apps/api/package.json ./apps/api/package.json
-COPY apps/catalog-ingest/package.json ./apps/catalog-ingest/package.json
+COPY apps/cataloger/package.json ./apps/cataloger/package.json
 COPY apps/edge-proxy/package.json ./apps/edge-proxy/package.json
 COPY apps/mobile/package.json ./apps/mobile/package.json
-COPY apps/notification-dispatch/package.json ./apps/notification-dispatch/package.json
+COPY apps/notifier/package.json ./apps/notifier/package.json
 COPY apps/web/package.json ./apps/web/package.json
 COPY packages ./packages
 

@@ -1,14 +1,14 @@
 {
-  "name": "@litomi/notification-dispatch",
+  "name": "@litomi/notifier",
   "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/notification-dispatch",
+    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/notifier",
     "lint": "eslint . --fix",
     "format": "prettier --write . --ignore-path ../../.gitignore",
-    "docker:build": "docker build -f Dockerfile -t litomi-notification-dispatch-local ../..",
-    "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-notification-dispatch-local",
+    "docker:build": "docker build -f Dockerfile -t litomi-notifier-local ../..",
+    "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-notifier-local",
     "start": "bun run start:prod",
     "start:local": "bun --conditions=react-server --env-file=.env.local src/index.ts",
     "start:prod": "bun --conditions=react-server --env-file=.env.prod.runtime src/index.ts",

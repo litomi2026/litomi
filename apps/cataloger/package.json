@@ -1,14 +1,14 @@
 {
-  "name": "@litomi/catalog-ingest",
+  "name": "@litomi/cataloger",
   "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/catalog-ingest",
+    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/cataloger",
     "lint": "eslint . --fix",
     "format": "prettier --write . --ignore-path ../../.gitignore",
-    "docker:build": "docker build -f Dockerfile -t litomi-catalog-ingest-local ../..",
-    "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-catalog-ingest-local",
+    "docker:build": "docker build -f Dockerfile -t litomi-cataloger-local ../..",
+    "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-cataloger-local",
     "start": "bun run start:prod",
     "start:local": "bun --conditions=react-server --env-file=.env.local src/index.ts",
     "start:prod": "bun --conditions=react-server --env-file=.env.prod.runtime src/index.ts",

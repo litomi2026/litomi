@@ -1,11 +1,11 @@
 # Cloud Build configuration for deploying the notification dispatch job
-# Usage: gcloud builds submit --config=infra/cloud-run/notification-dispatch/cloudbuild.yaml --substitutions=_APP_ORIGIN="https://...",_APP_POSTGRES_URL="postgresql://...",_NEXT_PUBLIC_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
+# Usage: gcloud builds submit --config=infra/cloud-run/notifier/cloudbuild.yaml --substitutions=_APP_ORIGIN="https://...",_APP_POSTGRES_URL="postgresql://...",_NEXT_PUBLIC_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
 
 substitutions:
-  _JOB_NAME: notification-dispatch
+  _JOB_NAME: notifier
   _REGION: asia-northeast1
   _ARTIFACT_REGISTRY_REPO: cloud-run-jobs
-  _SERVICE_ACCOUNT_NAME: notification-dispatch-sa
+  _SERVICE_ACCOUNT_NAME: notifier-sa
   _JOB_SCHEDULE: '0 * * * *'
   _APP_ORIGIN: ''
   _APP_POSTGRES_URL: ''
@@ -37,7 +37,7 @@ steps:
       - '-t'
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/${_JOB_NAME}'
       - '-f'
-      - 'apps/notification-dispatch/Dockerfile'
+      - 'apps/notifier/Dockerfile'
       - '--push'
       - '.'
 

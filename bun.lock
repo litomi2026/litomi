@@ -74,8 +74,8 @@
         "typescript": "^5.9.3",
       },
     },
-    "apps/catalog-ingest": {
-      "name": "@litomi/catalog-ingest",
+    "apps/cataloger": {
+      "name": "@litomi/cataloger",
       "version": "1.1.0",
       "dependencies": {
         "@litomi/catalog": "workspace:*",
@@ -132,8 +132,8 @@
         "sharp": "^0.34.5",
       },
     },
-    "apps/notification-dispatch": {
-      "name": "@litomi/notification-dispatch",
+    "apps/notifier": {
+      "name": "@litomi/notifier",
       "version": "1.1.0",
       "dependencies": {
         "@litomi/catalog": "workspace:*",
@@ -673,7 +673,7 @@
 
     "@litomi/catalog": ["@litomi/catalog@workspace:packages/catalog"],
 
-    "@litomi/catalog-ingest": ["@litomi/catalog-ingest@workspace:apps/catalog-ingest"],
+    "@litomi/cataloger": ["@litomi/cataloger@workspace:apps/cataloger"],
 
     "@litomi/contracts": ["@litomi/contracts@workspace:packages/contracts"],
 
@@ -693,7 +693,7 @@
 
     "@litomi/mobile": ["@litomi/mobile@workspace:apps/mobile"],
 
-    "@litomi/notification-dispatch": ["@litomi/notification-dispatch@workspace:apps/notification-dispatch"],
+    "@litomi/notifier": ["@litomi/notifier@workspace:apps/notifier"],
 
     "@litomi/notifications": ["@litomi/notifications@workspace:packages/notifications"],
 

@@ -54,43 +54,43 @@ The catalog ingest job operates automatically with the following workflow:
 cd /path/to/litomi
 
 # Copy the deploy configuration example
-cp infra/cloud-run/catalog-ingest/.env.deploy.example infra/cloud-run/catalog-ingest/.env.deploy
+cp infra/cloud-run/cataloger/.env.deploy.example infra/cloud-run/cataloger/.env.deploy
 
 # Copy the app runtime environment example
-cp apps/catalog-ingest/.env.prod.runtime.example apps/catalog-ingest/.env.prod.runtime
+cp apps/cataloger/.env.prod.runtime.example apps/cataloger/.env.prod.runtime
 
 # Edit both files with your deploy and runtime values
-vim infra/cloud-run/catalog-ingest/.env.deploy
-vim apps/catalog-ingest/.env.prod.runtime
+vim infra/cloud-run/cataloger/.env.deploy
+vim apps/cataloger/.env.prod.runtime
 
 # Make scripts executable
-chmod +x infra/cloud-run/catalog-ingest/deploy.sh
+chmod +x infra/cloud-run/cataloger/deploy.sh
 
 # Run the deployment script
-./infra/cloud-run/catalog-ingest/deploy.sh
+./infra/cloud-run/cataloger/deploy.sh
 ```
 
 ### 2. Deploy the Job
 
 ```bash
 # Deploy using the deployment script
-./infra/cloud-run/catalog-ingest/deploy.sh
+./infra/cloud-run/cataloger/deploy.sh
 
 # Or use Cloud Build for CI/CD
-gcloud builds submit --config=infra/cloud-run/catalog-ingest/cloudbuild.yaml --substitutions=_CATALOG_POSTGRES_URL="postgresql://...",_CATALOG_POSTGRES_CERTIFICATE="..."
+gcloud builds submit --config=infra/cloud-run/cataloger/cloudbuild.yaml --substitutions=_CATALOG_POSTGRES_URL="postgresql://...",_CATALOG_POSTGRES_CERTIFICATE="..."
 ```
 
 ### 3. Manual Execution
 
 ```bash
 # Execute the job manually
-gcloud run jobs execute catalog-ingest --region=asia-northeast1
+gcloud run jobs execute cataloger --region=asia-northeast1
 
 # View execution history
-gcloud run jobs executions list --job=catalog-ingest --region=asia-northeast1
+gcloud run jobs executions list --job=cataloger --region=asia-northeast1
 
 # View logs
-gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=catalog-ingest" --limit=50
+gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=cataloger" --limit=50
 ```
 
 ## Configuration
@@ -104,7 +104,7 @@ gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=ca
 
 ### Runtime Environment
 
-Runtime values are loaded from `apps/catalog-ingest/.env.prod.runtime`.
+Runtime values are loaded from `apps/cataloger/.env.prod.runtime`.
 
 | Variable                       | Description                  | Required |
 | ------------------------------ | ---------------------------- | -------- |
@@ -124,7 +124,7 @@ The job schedule is configured during deployment (not via environment variables)
 To update the schedule:
 
 ```bash
-gcloud scheduler jobs update http catalog-ingest-schedule \
+gcloud scheduler jobs update http cataloger-schedule \
   --schedule="NEW_CRON_EXPRESSION" \
   --location=asia-northeast1
 ```
@@ -150,17 +150,17 @@ Adjust in `deploy.sh` or `cloudbuild.yaml` as needed.
 bun install
 
 # Run the crawler locally
-bun --filter=@litomi/catalog-ingest start:local
+bun --filter=@litomi/cataloger start:local
 ```
 
 ### Building the Docker Image Locally
 
 ```bash
 # Build for local testing
-bun --filter=@litomi/catalog-ingest docker:build
+bun --filter=@litomi/cataloger docker:build
 
 # Run locally
-bun --filter=@litomi/catalog-ingest docker:run
+bun --filter=@litomi/cataloger docker:run
 ```
 
 ## Monitoring
@@ -169,13 +169,13 @@ bun --filter=@litomi/catalog-ingest docker:run
 
 ```bash
 # Recent logs
-gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=catalog-ingest" \
+gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=cataloger" \
   --project=YOUR_PROJECT_ID \
   --limit=50 \
   --format=json
 
 # Stream logs
-gcloud alpha logging tail "resource.type=cloud_run_job AND resource.labels.job_name=catalog-ingest" \
+gcloud alpha logging tail "resource.type=cloud_run_job AND resource.labels.job_name=cataloger" \
   --project=YOUR_PROJECT_ID
 ```
 
@@ -184,7 +184,7 @@ gcloud alpha logging tail "resource.type=cloud_run_job AND resource.labels.job_n
 Monitor job performance in the Cloud Console:
 
 1. Go to Cloud Run → Jobs
-2. Select `catalog-ingest`
+2. Select `cataloger`
 3. View Metrics tab for execution history, duration, and success rate
 
 ## Troubleshooting
@@ -192,8 +192,8 @@ Monitor job performance in the Cloud Console:
 ### Common Issues
 
 1. **"Missing required environment variables"**
-   - Ensure deploy values are set in `infra/cloud-run/catalog-ingest/.env.deploy`
-   - Ensure runtime values are set in `apps/catalog-ingest/.env.prod.runtime`
+   - Ensure deploy values are set in `infra/cloud-run/cataloger/.env.deploy`
+   - Ensure runtime values are set in `apps/cataloger/.env.prod.runtime`
 
 2. **"Failed to build/push Docker image"**
    - Run `gcloud auth configure-docker asia-northeast1-docker.pkg.dev`
@@ -217,17 +217,17 @@ To remove all resources:
 
 ```bash
 # Delete the Cloud Run job
-gcloud run jobs delete catalog-ingest --region=asia-northeast1
+gcloud run jobs delete cataloger --region=asia-northeast1
 
 # Delete the Cloud Scheduler job
-gcloud scheduler jobs delete catalog-ingest-schedule --location=asia-northeast1
+gcloud scheduler jobs delete cataloger-schedule --location=asia-northeast1
 
 # Delete Docker images from Artifact Registry
 gcloud artifacts docker images delete \
-  asia-northeast1-docker.pkg.dev/PROJECT_ID/cloud-run-jobs/catalog-ingest
+  asia-northeast1-docker.pkg.dev/PROJECT_ID/cloud-run-jobs/cataloger
 
 # Delete the service account (optional)
-gcloud iam service-accounts delete catalog-ingest-sa@PROJECT_ID.iam.gserviceaccount.com
+gcloud iam service-accounts delete cataloger-sa@PROJECT_ID.iam.gserviceaccount.com
 ```
 
 ## Cost Optimization

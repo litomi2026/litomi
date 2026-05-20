@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load deploy configuration and app runtime environment.
-DEPLOY_ENV_FILE=${DEPLOY_ENV_FILE:-"infra/cloud-run/catalog-ingest/.env.deploy"}
-RUNTIME_ENV_FILE=${RUNTIME_ENV_FILE:-"apps/catalog-ingest/.env.prod.runtime"}
+DEPLOY_ENV_FILE=${DEPLOY_ENV_FILE:-"infra/cloud-run/cataloger/.env.deploy"}
+RUNTIME_ENV_FILE=${RUNTIME_ENV_FILE:-"apps/cataloger/.env.prod.runtime"}
 
 set -a
 if [ -f "${DEPLOY_ENV_FILE}" ]; then
@@ -16,9 +16,9 @@ set +a
 # Configuration
 PROJECT_ID=${PROJECT_ID:-"your-project-id"}
 REGION=${REGION:-"asia-northeast1"}
-JOB_NAME=${JOB_NAME:-"catalog-ingest"}
+JOB_NAME=${JOB_NAME:-"cataloger"}
 ARTIFACT_REGISTRY_REPO=${ARTIFACT_REGISTRY_REPO:-"cloud-run-jobs"}
-SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"catalog-ingest-sa"}
+SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"cataloger-sa"}
 IMAGE_NAME="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}/${JOB_NAME}"
 SERVICE_ACCOUNT="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 SCHEDULER_JOB_NAME="${JOB_NAME}-schedule"
@@ -31,8 +31,8 @@ if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "❌ Error: PROJECT_ID environment variable not set"
     echo ""
     echo "Please copy .env.deploy.example to .env.deploy and configure it:"
-    echo "  cp infra/cloud-run/catalog-ingest/.env.deploy.example infra/cloud-run/catalog-ingest/.env.deploy"
-    echo "  # Edit infra/cloud-run/catalog-ingest/.env.deploy with your deploy values"
+    echo "  cp infra/cloud-run/cataloger/.env.deploy.example infra/cloud-run/cataloger/.env.deploy"
+    echo "  # Edit infra/cloud-run/cataloger/.env.deploy with your deploy values"
     exit 1
 fi
 
@@ -40,8 +40,8 @@ if [ -z "${CATALOG_POSTGRES_URL:-}" ]; then
     echo "❌ Error: CATALOG_POSTGRES_URL environment variable not set"
     echo ""
     echo "Please create the runtime env file:"
-    echo "  cp apps/catalog-ingest/.env.prod.runtime.example apps/catalog-ingest/.env.prod.runtime"
-    echo "  # Edit apps/catalog-ingest/.env.prod.runtime with production runtime values"
+    echo "  cp apps/cataloger/.env.prod.runtime.example apps/cataloger/.env.prod.runtime"
+    echo "  # Edit apps/cataloger/.env.prod.runtime with production runtime values"
     exit 1
 fi
 
@@ -98,7 +98,7 @@ gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 
 # Build and push the Docker image
 echo "Building and pushing Docker image for linux/amd64 platform..."
-if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f apps/catalog-ingest/Dockerfile .; then
+if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f apps/cataloger/Dockerfile .; then
   echo "❌ Failed to build/push Docker image. Please check the error messages above."
   echo ""
   echo "Common fixes:"
