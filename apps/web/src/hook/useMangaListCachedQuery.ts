@@ -17,14 +17,14 @@ const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 const DEFAULT_STALE_TIME = ms('1 hour')
 const DEFAULT_GC_TIME = ms('2 hours')
 const ERROR_CACHE_CLEANUP_DELAY = ms('30 seconds')
-const MAX_CONCURRENT_MANGA_METADATA_REQUESTS = 2
-const MAX_MANGA_METADATA_REQUESTS_PER_SECOND = 3
+const MAX_CONCURRENT_MANGA_METADATA_REQUESTS = 3
+const MAX_MANGA_METADATA_REQUESTS_PER_INTERVAL = 15
 
 const concurrencyLimit = pLimit(MAX_CONCURRENT_MANGA_METADATA_REQUESTS)
 
 const throttle = pThrottle({
-  limit: MAX_MANGA_METADATA_REQUESTS_PER_SECOND,
-  interval: ms('1 second'),
+  limit: MAX_MANGA_METADATA_REQUESTS_PER_INTERVAL,
+  interval: ms('10 seconds'),
   strict: true,
 })
 
