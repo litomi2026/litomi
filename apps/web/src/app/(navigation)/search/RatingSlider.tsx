@@ -20,7 +20,7 @@ type Props = {
 
 export default memo(RatingSlider)
 
-function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly<Props>) {
+function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Props) {
   const sliderRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState<'max' | 'min' | null>(null)
 

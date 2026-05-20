@@ -49,7 +49,7 @@ export function ImportModeOption({
   showBadge,
   showWarning,
   title,
-}: Readonly<Props>) {
+}: Props) {
   const isSelected = currentMode === mode
   const colorClasses = colors[colorScheme]
 

@@ -11,9 +11,9 @@ import Reader, {
   type ReadingProgressSaveOptions,
 } from '@litomi/image-reader'
 import { useQueryClient } from '@tanstack/react-query'
-import { MessageCircle } from 'lucide-react'
+import { Hash, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
@@ -28,6 +28,7 @@ import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 import FullscreenButton from './FullscreenButton'
 import LastPage from './LastPage'
 import MangaDetailButton from './MangaDetailButton'
+import MangaIdJumpForm from './MangaIdJumpForm'
 import { createMangaReaderPages, type MangaReaderPage } from './mangaReaderPages'
 import ShareButton from './ShareButton'
 import useMangaReadingHistory from './useMangaReadingHistory'
@@ -43,11 +44,12 @@ const TOP_BUTTON_CLASS_NAME =
   'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70'
 
 export default function MangaReader({ manga }: Props) {
-  const pages = createMangaReaderPages(manga)
-  const { data: me } = useMeQuery()
+  const [isMangaIdJumpOpen, setIsMangaIdJumpOpen] = useState(false)
   const { lastPage } = useMangaReadingHistory(manga.id)
+  const { data: me } = useMeQuery()
   const queryClient = useQueryClient()
 
+  const pages = createMangaReaderPages(manga)
   const locale = getLocaleFromCookie() || 'ko'
   const adultState = getAdultState(me)
   const canSyncReadingProgress = hasAdultAccess(adultState) && me?.settings.historySyncEnabled === true
@@ -135,13 +137,28 @@ export default function MangaReader({ manga }: Props) {
   return (
     <Reader
       header={
-        <div className="flex gap-2 items-center justify-between p-3 select-none" role="toolbar">
+        <div
+          className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-2 gap-y-2 items-center p-3 select-none"
+          role="toolbar"
+        >
           <div className="flex gap-1">
             <BackButton className={TOP_BUTTON_CLASS_NAME} fallbackUrl="/" />
             <FullscreenButton className={TOP_BUTTON_CLASS_NAME} />
           </div>
-          <MangaDetailButton className={`${TOP_BUTTON_CLASS_NAME} hover:underline`} manga={manga} />
-          <div className="flex gap-1">
+          <MangaDetailButton className={`${TOP_BUTTON_CLASS_NAME} min-w-0 hover:underline`} manga={manga} />
+          <div className="flex gap-1 items-center">
+            <MangaIdJumpForm className="hidden w-30 md:flex" currentMangaId={manga.id} />
+            <button
+              aria-controls="mobile-manga-id-jump"
+              aria-expanded={isMangaIdJumpOpen}
+              aria-label="작품 번호로 이동"
+              className={`${TOP_BUTTON_CLASS_NAME} md:hidden`}
+              onClick={() => setIsMangaIdJumpOpen((prev) => !prev)}
+              title="작품 번호로 이동"
+              type="button"
+            >
+              <Hash className="size-6" />
+            </button>
             <Link
               aria-label="리뷰 보기"
               className={TOP_BUTTON_CLASS_NAME}
@@ -153,6 +170,15 @@ export default function MangaReader({ manga }: Props) {
             </Link>
             <ShareButton className={TOP_BUTTON_CLASS_NAME} manga={manga} />
           </div>
+          {isMangaIdJumpOpen && (
+            <MangaIdJumpForm
+              autoFocus
+              className="col-span-3 flex md:hidden"
+              currentMangaId={manga.id}
+              formId="mobile-manga-id-jump"
+              onNavigate={() => setIsMangaIdJumpOpen(false)}
+            />
+          )}
         </div>
       }
       locale={locale}

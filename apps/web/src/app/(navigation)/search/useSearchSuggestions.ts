@@ -13,7 +13,7 @@ type Props = {
   keyword: string
 }
 
-export default function useSearchSuggestions({ keyword }: Readonly<Props>) {
+export default function useSearchSuggestions({ keyword }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
 
   const debouncedKeyword = useDebouncedValue({

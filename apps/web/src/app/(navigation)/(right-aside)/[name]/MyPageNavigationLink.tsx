@@ -10,7 +10,7 @@ type Props = {
   label: string
 }
 
-export default function MyPageNavigationLink({ href, label }: Readonly<Props>) {
+export default function MyPageNavigationLink({ href, label }: Props) {
   const pathname = usePathname()
 
   return (

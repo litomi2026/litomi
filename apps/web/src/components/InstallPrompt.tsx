@@ -144,7 +144,7 @@ export default function InstallPrompt() {
   )
 }
 
-function GuideStep({ children, step, Icon }: Readonly<InstallStepProps>) {
+function GuideStep({ children, step, Icon }: InstallStepProps) {
   return (
     <li className="bg-zinc-950/85 p-2 relative pr-10">
       <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ function GuideStep({ children, step, Icon }: Readonly<InstallStepProps>) {
   )
 }
 
-function PromptPanel({ description, icon: Icon, title }: Readonly<PromptPanelProps>) {
+function PromptPanel({ description, icon: Icon, title }: PromptPanelProps) {
   return (
     <div className="flex items-start gap-3.5 p-2">
       <Icon className="size-5 text-zinc-200 shrink-0" />

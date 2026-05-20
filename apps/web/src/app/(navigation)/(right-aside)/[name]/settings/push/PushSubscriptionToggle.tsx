@@ -20,7 +20,7 @@ type Props = {
   endpoints: string[]
 }
 
-export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
+export default function PushSubscriptionToggle({ endpoints }: Props) {
   const [isPending, setIsPending] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const { name } = useParams<Params>()

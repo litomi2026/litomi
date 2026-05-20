@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function LogoDiscord(props: Readonly<ComponentProps<'svg'>>) {
+export default function LogoDiscord(props: ComponentProps<'svg'>) {
   return (
     <svg viewBox="0 -28.5 256 256" {...props}>
       <path

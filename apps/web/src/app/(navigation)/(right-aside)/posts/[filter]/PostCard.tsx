@@ -19,7 +19,7 @@ type Props = {
   showMangaCover?: boolean
 }
 
-export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
+export default function PostCard({ post, showMangaCover }: Props) {
   const author = post.author
   const authorNickname = author?.nickname
   const content = post.content ?? ''

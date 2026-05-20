@@ -336,7 +336,7 @@ function ActionLink({ children, external = true, href, variant }: ActionLinkProp
   )
 }
 
-function FaqPanel({ items }: Readonly<{ items: FaqItem[] }>) {
+function FaqPanel({ items }: { items: FaqItem[] }) {
   return (
     <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4">
       <p className="text-sm font-semibold text-zinc-100">자주 묻는 질문</p>

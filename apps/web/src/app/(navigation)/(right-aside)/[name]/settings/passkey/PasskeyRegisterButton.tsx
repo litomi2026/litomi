@@ -14,7 +14,7 @@ type Props = {
   passkeySignalData: PasskeySignalData
 }
 
-export default function PasskeyRegisterButton({ passkeySignalData }: Readonly<Props>) {
+export default function PasskeyRegisterButton({ passkeySignalData }: Props) {
   const [, dispatchAction, isPending] = useServerAction({
     action: verifyRegistration,
     onSuccess: async ({ credentialId, message }) => {

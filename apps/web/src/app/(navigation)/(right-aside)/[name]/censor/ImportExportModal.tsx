@@ -36,7 +36,7 @@ type Props = {
 
 type Tab = 'export' | 'import'
 
-export default function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
+export default function ImportExportModal({ open, onClose, censorships }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('export')
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')

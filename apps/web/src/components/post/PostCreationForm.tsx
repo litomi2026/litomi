@@ -38,7 +38,7 @@ export default function PostCreationForm({
   mangaId,
   parentPostId,
   referredPostId,
-}: Readonly<Props>) {
+}: Props) {
   const [content, setContent] = useState('')
   const [hasFocusedBefore, setHasFocusedBefore] = useState(false)
   const { data: me } = useMeQuery()

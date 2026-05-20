@@ -1,10 +1,6 @@
-'use client'
-
-import { useSearchParams } from 'next/navigation'
-
-export function useSearchFilter(filterPattern: string) {
-  const searchParams = useSearchParams()
-  const query = searchParams.get('query') ?? ''
+export function getSearchFilter(filterPattern: string, searchParams = '') {
+  const params = new URLSearchParams(searchParams)
+  const query = params.get('query') ?? ''
   const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const wordBoundaryRegex = new RegExp(`\\b${escapedPattern}\\b`)
   const isActive = wordBoundaryRegex.test(query)
@@ -15,11 +11,10 @@ export function useSearchFilter(filterPattern: string) {
       ? `${query} ${filterPattern}`
       : filterPattern
 
-  const newSearchParams = new URLSearchParams(searchParams)
-  newSearchParams.set('query', newQuery)
+  params.set('query', newQuery)
 
   return {
-    href: `/search?${newSearchParams}`,
+    href: `/search?${params}`,
     isActive,
   }
 }

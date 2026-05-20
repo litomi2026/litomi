@@ -10,7 +10,7 @@ type Props = {
   className?: string
 }
 
-export default function NavigationWithMobileMenu({ children, className }: Readonly<Props>) {
+export default function NavigationWithMobileMenu({ children, className }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleMenuClick = useCallback(() => {

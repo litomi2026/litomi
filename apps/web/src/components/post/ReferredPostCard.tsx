@@ -12,7 +12,7 @@ type Props = {
   referredPost: ReferredPost
 }
 
-export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
+export default function ReferredPostCard({ referredPost }: Props) {
   if (referredPost.isDeleted) {
     return (
       <div className="grid min-w-0 overflow-hidden rounded-2xl border-2 border-zinc-700 bg-zinc-950/50">

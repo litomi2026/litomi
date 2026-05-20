@@ -38,7 +38,7 @@ type Props = {
   className?: string
 }
 
-export default function CreateLibraryButton({ className = '' }: Readonly<Props>) {
+export default function CreateLibraryButton({ className = '' }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedColor, setSelectedColor] = useState(DEFAULT_LIBRARY_COLOR)
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_LIBRARY_ICON)

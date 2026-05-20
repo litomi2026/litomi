@@ -60,7 +60,7 @@ type Props = {
   nativeGridSponsor?: NativeGridSponsor | null
 }
 
-export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: Readonly<Props>) {
+export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: Props) {
   const [view, setView] = useState<View>(initialView)
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { heavySignature, isVisible } = useMangaCensorship()

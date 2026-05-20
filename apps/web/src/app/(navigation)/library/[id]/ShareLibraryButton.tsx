@@ -13,7 +13,7 @@ type Props = {
   }
 }
 
-export default function ShareLibraryButton({ className = '', library }: Readonly<Props>) {
+export default function ShareLibraryButton({ className = '', library }: Props) {
   const { id, name } = library
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCopied, setIsCopied] = useState(false)

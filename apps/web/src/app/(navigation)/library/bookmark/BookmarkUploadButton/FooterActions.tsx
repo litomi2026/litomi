@@ -13,7 +13,7 @@ const BUTTON_CLASS =
 const PRIMARY_BUTTON_CLASS =
   'flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-foreground rounded-xl transition border-2 border-transparent hover:from-blue-500 hover:to-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:ring-offset-2 focus:ring-offset-zinc-900'
 
-export function FooterActions({ importState, onClose, onImport, onReset }: Readonly<Props>) {
+export function FooterActions({ importState, onClose, onImport, onReset }: Props) {
   if (importState === 'idle') {
     return (
       <button className={`w-full ${BUTTON_CLASS}`} onClick={onClose} type="button">

@@ -7,7 +7,7 @@ import { type ComponentProps, useEffect, useState } from 'react'
 
 type Props = Omit<ComponentProps<typeof Link>, 'href'>
 
-export default function LoginPageLink({ className = '', children, ...props }: Readonly<Props>) {
+export default function LoginPageLink({ className = '', children, ...props }: Props) {
   const pathname = usePathname()
   const [searchParams, setSearchParams] = useState('')
   const fullPath = `${pathname}?${searchParams}`

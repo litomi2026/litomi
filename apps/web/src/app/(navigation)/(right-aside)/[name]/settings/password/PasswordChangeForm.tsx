@@ -26,7 +26,7 @@ type Props = {
   isTwoFactorEnabled: boolean
 }
 
-export default function PasswordChangeForm({ isTwoFactorEnabled }: Readonly<Props>) {
+export default function PasswordChangeForm({ isTwoFactorEnabled }: Props) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const formRef = useRef<HTMLFormElement | null>(null)

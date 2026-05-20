@@ -5,7 +5,7 @@ import NotificationSettingsLink from './NotificationSettingsLink'
 export default function Layout({ children }: LayoutProps<'/notification'>) {
   return (
     <>
-      <div className="flex items-center gap-3 p-4 pt-safe">
+      <div className="flex items-center gap-3 p-4 pt-safe mt-4">
         <IconBell className="size-9 p-2 bg-zinc-800/50 rounded-xl text-brand" />
         <div className="flex-1">
           <div className="w-full flex items-center justify-between gap-2">

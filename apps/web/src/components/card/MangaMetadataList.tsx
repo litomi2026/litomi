@@ -1,19 +1,23 @@
-import { Suspense } from 'react'
-
 import MangaMetadataLink from './MangaMetadataLink'
 
 type Props = {
-  labeledValues: { value: string; label: string }[]
   filterType: string
+  labeledValues: { value: string; label: string }[]
+  searchParams?: string
 }
 
-export default function MangaMetadataList({ labeledValues, filterType }: Props) {
+export default function MangaMetadataList({ filterType, labeledValues, searchParams }: Props) {
   return (
     <ul className="break-all">
       {labeledValues.map(({ value, label }, i) => (
-        <Suspense key={value}>
-          <MangaMetadataLink filterType={filterType} i={i} label={label} value={value} />
-        </Suspense>
+        <MangaMetadataLink
+          filterType={filterType}
+          i={i}
+          key={value}
+          label={label}
+          searchParams={searchParams}
+          value={value}
+        />
       ))}
     </ul>
   )

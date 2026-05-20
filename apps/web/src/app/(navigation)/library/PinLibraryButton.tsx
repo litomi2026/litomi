@@ -17,7 +17,7 @@ type Props = {
   library?: LibraryListItem
 }
 
-export default function PinLibraryButton({ className = '', libraryId, library }: Readonly<Props>) {
+export default function PinLibraryButton({ className = '', libraryId, library }: Props) {
   const { guardAdultAccess, me } = useAdultAccessGuard()
   const { mutate, isPending } = usePinLibraryMutation()
   const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id, enabled: !!me })

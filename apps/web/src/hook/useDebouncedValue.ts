@@ -5,7 +5,7 @@ type Props<T> = {
   delay: number
 }
 
-export default function useDebouncedValue<T>({ value, delay }: Readonly<Props<T>>) {
+export default function useDebouncedValue<T>({ value, delay }: Props<T>) {
   const [debouncedValue, setDebouncedValue] = useState<T>(value)
   const debounceTimerRef = useRef<NodeJS.Timeout | undefined>(undefined)
 

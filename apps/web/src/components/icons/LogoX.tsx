@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function LogoX(props: Readonly<ComponentProps<'svg'>>) {
+export default function LogoX(props: ComponentProps<'svg'>) {
   return (
     <svg viewBox="0 0 300 271" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path

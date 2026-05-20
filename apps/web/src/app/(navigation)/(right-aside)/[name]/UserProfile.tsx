@@ -7,7 +7,7 @@ type Props = {
   username: string
 }
 
-export default async function UserProfile({ username }: Readonly<Props>) {
+export default async function UserProfile({ username }: Props) {
   const user = await resolveUser(username)
   return <UserProfileView user={user} />
 }

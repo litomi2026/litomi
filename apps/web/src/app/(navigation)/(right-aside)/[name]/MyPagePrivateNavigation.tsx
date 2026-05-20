@@ -7,7 +7,7 @@ type Props = {
   username: string
 }
 
-export default async function MyPagePrivateNavigation({ username }: Readonly<Props>) {
+export default async function MyPagePrivateNavigation({ username }: Props) {
   const userId = await getUserIdFromCookie()
 
   if (userId && username) {

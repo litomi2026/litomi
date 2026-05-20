@@ -16,7 +16,7 @@ type Props = {
   variant: View
 }
 
-export default function SelectableMangaCard({ className, index, manga, variant }: Readonly<Props>) {
+export default function SelectableMangaCard({ className, index, manga, variant }: Props) {
   const { selectedIds, toggle } = useLibrarySelection()
   const isSelected = selectedIds.has(manga.id)
 

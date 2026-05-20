@@ -25,7 +25,7 @@ type Props = {
 
 const STORAGE_KEY = 'litomi.sexFortune.userId'
 
-export default function SexFortune({ todayKey }: Readonly<Props>) {
+export default function SexFortune({ todayKey }: Props) {
   const { data: me, isLoading: isMeLoading } = useMeQuery()
   const { copy, copied } = useClipboard()
   const [userKey, setUserKey] = useState<string | null>(null)

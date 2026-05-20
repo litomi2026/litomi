@@ -16,7 +16,7 @@ type Options = {
   libraryId?: number
 }
 
-export default function useBulkRemoveFromLibraryAction({ libraryId }: Readonly<Options>): BulkActionDescriptor {
+export default function useBulkRemoveFromLibraryAction({ libraryId }: Options): BulkActionDescriptor {
   const queryClient = useQueryClient()
   const { exit, selectedCount, selectedIds } = useLibrarySelection()
 

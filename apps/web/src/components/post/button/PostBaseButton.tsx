@@ -6,7 +6,7 @@ type Props = {
   onClick?: () => void
 }
 
-export default function PostBaseButton({ disabled, children, onClick }: Readonly<Props>) {
+export default function PostBaseButton({ disabled, children, onClick }: Props) {
   return (
     <label
       aria-disabled={disabled}

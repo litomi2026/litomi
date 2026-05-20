@@ -24,7 +24,7 @@ type Props = {
   className?: string
 }
 
-export default function LibraryManagementMenu({ library, className = '' }: Readonly<Props>) {
+export default function LibraryManagementMenu({ library, className = '' }: Props) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 

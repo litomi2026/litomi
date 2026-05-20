@@ -10,7 +10,7 @@ type Props = {
   setImportMode: (mode: ImportMode) => void
 }
 
-export function PreviewStep({ importMode, isVisible, previewData, setImportMode }: Readonly<Props>) {
+export function PreviewStep({ importMode, isVisible, previewData, setImportMode }: Props) {
   return (
     <div
       aria-hidden={!isVisible}

@@ -24,7 +24,7 @@ type Props = {
   }
 }
 
-export default function ActiveFilters({ filters }: Readonly<Props>) {
+export default function ActiveFilters({ filters }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 

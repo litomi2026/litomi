@@ -11,7 +11,7 @@ type Props = {
   message: string
 }
 
-export default function Error400({ message }: Readonly<Props>) {
+export default function Error400({ message }: Props) {
   return (
     <main className="flex flex-col grow justify-center items-center gap-8 text-center px-4">
       <div className="space-y-3 max-w-md">

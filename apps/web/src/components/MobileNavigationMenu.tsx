@@ -28,7 +28,7 @@ type Props = {
 
 type SelectedIconStyle = 'fill-soft' | 'fill' | 'stroke'
 
-export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
+export default function MobileNavigationMenu({ onClose }: Props) {
   const pathname = usePathname()
   const { data: me } = useMeQuery()
   const username = me?.name ?? ''

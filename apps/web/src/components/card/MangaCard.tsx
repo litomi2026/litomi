@@ -3,7 +3,7 @@ import { getViewerLink } from '@litomi/domain/utils/manga'
 import { View } from '@litomi/std'
 import { ErrorBoundary } from '@suspensive/react'
 import { ExternalLink } from 'lucide-react'
-import { ReactNode, Suspense } from 'react'
+import { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import BookmarkButton, { BookmarkButtonError } from './BookmarkButton'
@@ -24,6 +24,7 @@ type Props = {
   manga: Manga
   index?: number
   rank?: number
+  searchParams?: string
   className?: string
   showSearchFromNextButton?: boolean
   variant?: View
@@ -55,6 +56,7 @@ export default function MangaCard({
   manga,
   index = 0,
   rank,
+  searchParams = '',
   className = '',
   showSearchFromNextButton,
   variant = View.CARD,
@@ -62,6 +64,9 @@ export default function MangaCard({
   const { id, artists, characters, date, group, series, images, tags, title, type, count, languages, uploader } = manga
   const viewerLink = getViewerLink(id)
   const config = VARIANT_CONFIG[variant]
+  const parsedSearchParams = new URLSearchParams(searchParams)
+  const query = parsedSearchParams.get('query')
+  const isDefaultSearchSort = !parsedSearchParams.get('sort')
 
   return (
     <article
@@ -82,70 +87,63 @@ export default function MangaCard({
                 target="_blank"
               >
                 <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 wrap-break-word break-all">
-                  <Suspense>
-                    <MangaTitle title={title} />
-                  </Suspense>
+                  <MangaTitle query={query} title={title} />
                   <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
                 </h4>
               </a>
               {languages && languages.length > 0 && (
-                <Suspense>
-                  <MangaLanguageLink key={languages[0].value} language={languages[0].value} />
-                </Suspense>
+                <MangaLanguageLink key={languages[0].value} language={languages[0].value} searchParams={searchParams} />
               )}
             </div>
             {type && (
               <div className="flex gap-1">
                 <dt>종류</dt>
-                <Suspense>
-                  <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
-                </Suspense>
+                <MangaMetadataLink
+                  filterType="type"
+                  label={type.label}
+                  searchParams={searchParams}
+                  value={type.value}
+                />
               </div>
             )}
             {artists && artists.length > 0 && (
               <div className="flex gap-1">
                 <dt>작가</dt>
-                <MangaMetadataListWithLink filterType="artist" items={artists} />
+                <MangaMetadataListWithLink filterType="artist" items={artists} searchParams={searchParams} />
               </div>
             )}
             {group && group.length > 0 && (
               <div className="flex gap-1">
                 <dt>그룹</dt>
-                <MangaMetadataList filterType="group" labeledValues={group} />
+                <MangaMetadataList filterType="group" labeledValues={group} searchParams={searchParams} />
               </div>
             )}
             {series && series.length > 0 && (
               <div className="flex gap-1">
                 <dt>시리즈</dt>
-                <MangaMetadataList filterType="series" labeledValues={series} />
+                <MangaMetadataList filterType="series" labeledValues={series} searchParams={searchParams} />
               </div>
             )}
             {characters && characters.length > 0 && (
               <div className="flex gap-1">
                 <dt>캐릭터</dt>
-                <MangaMetadataListWithLink filterType="character" items={characters} />
+                <MangaMetadataListWithLink filterType="character" items={characters} searchParams={searchParams} />
               </div>
             )}
             {uploader && (
               <div className="flex gap-1">
                 <dt>업로더</dt>
-                <Suspense>
-                  <MangaMetadataLink filterType="uploader" value={uploader} />
-                </Suspense>
+                <MangaMetadataLink filterType="uploader" searchParams={searchParams} value={uploader} />
               </div>
             )}
             {tags && tags.length > 0 && (
-              <Suspense>
-                <MangaTagList className="font-semibold" tags={tags} />
-              </Suspense>
+              <MangaTagList className="font-semibold" searchParams={searchParams} tags={tags} />
             )}
           </dl>
           <div className="grid gap-2">
             <MangaCardStats manga={manga} />
             <div className="flex text-xs justify-between items-center gap-1">
-              <Suspense>
-                <MangaIdLink id={id} viewerLink={viewerLink} />
-              </Suspense>
+              <MangaIdLink id={id} searchParams={searchParams} viewerLink={viewerLink} />
               {date && <MangaCardDate manga={manga} />}
             </div>
             <div
@@ -160,9 +158,7 @@ export default function MangaCard({
                 <BookmarkButton className="flex-1" manga={manga} />
               </ErrorBoundary>
               {showSearchFromNextButton ? (
-                <Suspense>
-                  <SearchFromHereButton className="flex-1" mangaId={id} />
-                </Suspense>
+                <SearchFromHereButton className="flex-1" isDefaultSort={isDefaultSearchSort} mangaId={id} />
               ) : images?.length === count ? (
                 <DownloadButton className="flex-1" manga={manga} />
               ) : null}

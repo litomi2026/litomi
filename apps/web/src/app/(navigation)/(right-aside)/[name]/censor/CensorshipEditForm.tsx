@@ -25,7 +25,7 @@ type Props = {
   onEditCompleted: () => void
 }
 
-export default function CensorshipEditForm({ censorship, onEditCompleted }: Readonly<Props>) {
+export default function CensorshipEditForm({ censorship, onEditCompleted }: Props) {
   const { id, key, value, level } = censorship
   const queryClient = useQueryClient()
   const inputId = useId()

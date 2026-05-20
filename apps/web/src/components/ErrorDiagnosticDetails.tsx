@@ -3,11 +3,11 @@
 import { env } from '@litomi/env/client'
 import { useState } from 'react'
 
-type Props = Readonly<{
+type Props = {
   digest?: string
   errorMessage?: string
   pathname?: string | null
-}>
+}
 
 export default function ErrorDiagnosticDetails({ digest, errorMessage, pathname }: Props) {
   const [capturedAt] = useState(() => new Date())
@@ -49,7 +49,7 @@ export default function ErrorDiagnosticDetails({ digest, errorMessage, pathname 
   )
 }
 
-function DiagnosticRow({ label, value }: Readonly<{ label: string; value: string }>) {
+function DiagnosticRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-3 border-b border-zinc-900 pb-1 last:border-b-0 last:pb-0">
       <span className="shrink-0 text-zinc-500">{label}</span>

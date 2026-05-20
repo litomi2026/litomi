@@ -1,19 +1,18 @@
 'use client'
 
 import { Loader2, Search } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useCallback, useTransition } from 'react'
 
 type Props = {
-  mangaId: number
   className?: string
+  isDefaultSort: boolean
+  mangaId: number
 }
 
-export default function SearchFromHereButton({ mangaId, className = '' }: Readonly<Props>) {
+export default function SearchFromHereButton({ className = '', isDefaultSort, mangaId }: Props) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
-  const isDefaultSort = !searchParams.get('sort')
   const isDisabled = !isDefaultSort || isPending
 
   const handleSearchFromHere = useCallback(() => {

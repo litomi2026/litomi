@@ -6,7 +6,7 @@ import { type ComponentProps, useEffect, useState } from 'react'
 
 type Props = Omit<ComponentProps<typeof Link>, 'href'>
 
-export default function SignupLink({ children, ...props }: Readonly<Props>) {
+export default function SignupLink({ children, ...props }: Props) {
   const [href, setHref] = useState('/auth/signup')
 
   useEffect(() => {

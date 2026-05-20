@@ -9,7 +9,7 @@ type Props = {
 }
 
 // NOTE: 클라이언트에서 렌더링해야 로컬 기기 시간으로 표시됨
-export default function MangaCardDate({ manga }: Readonly<Props>) {
+export default function MangaCardDate({ manga }: Props) {
   if (!manga.date) {
     return null
   }

@@ -308,12 +308,13 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                 className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!(isLatestSort || isOldestSort)}
                 id="next-id"
-                min={FILTER_CONFIG['next-id'].min}
-                onChange={(e) => handleFilterChange('next-id', e.target.value)}
-                pattern="[0-9]*"
+                inputMode="numeric"
+                maxLength={5}
+                onChange={(e) => handleFilterChange('next-id', e.target.value.replace(/\D/g, ''))}
+                pattern="[1-9][0-9]*"
                 placeholder={FILTER_CONFIG['next-id'].placeholder}
                 title={isLatestSort || isOldestSort ? '' : '기본순 또는 오래된순 정렬일 때만 사용할 수 있어요'}
-                type={FILTER_CONFIG['next-id'].type}
+                type="text"
                 value={filters['next-id'] ?? ''}
               />
               <p aria-disabled={!(isLatestSort || isOldestSort)} className="mt-1 text-xs text-zinc-500">

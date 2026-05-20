@@ -40,7 +40,7 @@ type Props = ComponentProps<'li'> & {
   isThread?: boolean
 }
 
-export default function XPostCard({ post, isThread, className = '', ...props }: Readonly<Props>) {
+export default function XPostCard({ post, isThread, className = '', ...props }: Props) {
   const author = post.author
   const referredPost = post.referredPost
   const imageURLs = post.imageURLs

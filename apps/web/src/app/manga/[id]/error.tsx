@@ -12,7 +12,7 @@ type Props = {
   reset: () => void
 }
 
-export default function ErrorPage({ error, reset }: Readonly<Props>) {
+export default function ErrorPage({ error, reset }: Props) {
   const cooldown = useCooldown()
   const pathname = usePathname()
 
