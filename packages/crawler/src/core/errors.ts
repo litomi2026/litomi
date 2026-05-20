@@ -146,6 +146,18 @@ export function isRetryableError(error: unknown): boolean {
   return false
 }
 
+export function isUpstreamServerError(error: unknown): boolean {
+  if (error instanceof UpstreamServerError) {
+    return error.statusCode >= 500
+  }
+
+  if (error instanceof Error) {
+    return error.name === 'AbortError'
+  }
+
+  return false
+}
+
 export function normalizeError(error: unknown, defaultMessage = '알 수 없는 오류가 발생했어요.'): ProxyError {
   if (error instanceof ProxyError) {
     return error

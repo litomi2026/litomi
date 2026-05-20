@@ -1,3 +1,12 @@
+export type CreateProblemDetailsResponseOptions = {
+  code: string
+  detail?: string
+  headers?: HeadersInit
+  instance?: string
+  status: number
+  title?: string
+}
+
 export type InvalidParam = {
   name: string
   reason: string
@@ -38,6 +47,24 @@ export type ValidationProblemDetails = ProblemDetails & {
 }
 
 export const PROBLEM_CONTENT_TYPE = 'application/problem+json'
+
+export function createProblemDetailsResponse(request: Request, options: CreateProblemDetailsResponseOptions): Response {
+  const url = new URL(request.url)
+  const instance = options.instance ?? url.pathname + url.search
+
+  const problem: ProblemDetails = {
+    type: createProblemTypeUrl(url.origin, options.code),
+    title: options.title ?? getStatusTitle(options.status),
+    status: options.status,
+    detail: options.detail,
+    instance,
+  }
+
+  const headers = new Headers(options.headers)
+  headers.set('Content-Type', PROBLEM_CONTENT_TYPE)
+
+  return new Response(JSON.stringify(problem), { status: options.status, headers })
+}
 
 export function createProblemTypeUrl(origin: string, code: string): string {
   const safeOrigin = trimTrailingSlashes(origin)
