@@ -1,18 +1,18 @@
 # Notification Dispatch - Cloud Run Job
 
-Cloud Run deployment configuration for the notification dispatch job. The app code and Dockerfile live in `apps/notification-dispatch`; this directory owns Cloud Run, Cloud Build, Scheduler, and environment wiring.
+Cloud Run deployment configuration for the notification dispatch job. The app code and Dockerfile live in `apps/notifier`; this directory owns Cloud Run, Cloud Build, Scheduler, and environment wiring.
 
 ## Prerequisites
 
 ```zsh
-cp infra/cloud-run/notification-dispatch/.env.deploy.example infra/cloud-run/notification-dispatch/.env.deploy
-cp apps/notification-dispatch/.env.prod.runtime.example apps/notification-dispatch/.env.prod.runtime
+cp infra/cloud-run/notifier/.env.deploy.example infra/cloud-run/notifier/.env.deploy
+cp apps/notifier/.env.prod.runtime.example apps/notifier/.env.prod.runtime
 ```
 
 Edit `.env.deploy` with deploy settings, and `.env.prod.runtime` with app runtime values.
 
 ```zsh
-./infra/cloud-run/notification-dispatch/setup.sh
+./infra/cloud-run/notifier/setup.sh
 ```
 
 Run setup once per project/region.
@@ -20,14 +20,14 @@ Run setup once per project/region.
 ## Deployment
 
 ```zsh
-./infra/cloud-run/notification-dispatch/deploy.sh
+./infra/cloud-run/notifier/deploy.sh
 ```
 
 For Cloud Build:
 
 ```zsh
 gcloud builds submit \
-  --config=infra/cloud-run/notification-dispatch/cloudbuild.yaml \
+  --config=infra/cloud-run/notifier/cloudbuild.yaml \
   --substitutions=_APP_ORIGIN="https://...",_APP_POSTGRES_URL="postgresql://...",_NEXT_PUBLIC_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
 ```
 
@@ -49,12 +49,12 @@ Common schedules:
 ## Local Development
 
 ```zsh
-bun --filter=@litomi/notification-dispatch start:local
+bun --filter=@litomi/notifier start:local
 ```
 
 ```zsh
-bun --filter=@litomi/notification-dispatch docker:build
-bun --filter=@litomi/notification-dispatch docker:run
+bun --filter=@litomi/notifier docker:build
+bun --filter=@litomi/notifier docker:run
 ```
 
 ## Monitoring

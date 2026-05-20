@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: litomi-cataloger
+  labels:
+    app: litomi-cataloger
+spec:
+  schedule: '0 21 * * *'
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      parallelism: 1
+      completions: 1
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app: litomi-cataloger
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: Never
+          containers:
+            - name: cataloger
+              image: litomi-cataloger:prod
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - configMapRef:
+                    name: litomi-common-env
+              env:
+                - name: CATALOG_POSTGRES_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: litomi-api-secret
+                      key: AIVEN_POSTGRES_URL
+                - name: CATALOG_POSTGRES_CERTIFICATE
+                  valueFrom:
+                    secretKeyRef:
+                      name: litomi-api-secret
+                      key: AIVEN_CERTIFICATE
+                - name: CATALOG_POSTGRES_APPLICATION_NAME
+                  value: litomi-cataloger
+                - name: CATALOG_POSTGRES_POOL_MAX
+                  value: '1'
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  cpu: 1000m
+                  memory: 256Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop:
+                    - ALL
+                seccompProfile:
+                  type: RuntimeDefault

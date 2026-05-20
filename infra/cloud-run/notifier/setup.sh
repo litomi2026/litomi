@@ -2,7 +2,7 @@
 
 # Initial setup script for Cloud Run deployment
 # Load deploy configuration.
-DEPLOY_ENV_FILE=${DEPLOY_ENV_FILE:-"infra/cloud-run/notification-dispatch/.env.deploy"}
+DEPLOY_ENV_FILE=${DEPLOY_ENV_FILE:-"infra/cloud-run/notifier/.env.deploy"}
 
 set -a
 if [ -f "${DEPLOY_ENV_FILE}" ]; then
@@ -12,9 +12,9 @@ set +a
 
 PROJECT_ID=${PROJECT_ID:-"your-project-id"}
 REGION=${REGION:-"asia-northeast1"}
-JOB_NAME=${JOB_NAME:-"notification-dispatch"}
+JOB_NAME=${JOB_NAME:-"notifier"}
 ARTIFACT_REGISTRY_REPO=${ARTIFACT_REGISTRY_REPO:-"cloud-run-jobs"}
-SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"notification-dispatch-sa"}
+SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"notifier-sa"}
 SERVICE_ACCOUNT="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
 # Check for required environment variables
@@ -25,9 +25,9 @@ if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "  export PROJECT_ID=your-gcp-project-id"
     echo ""
     echo "Or copy .env.deploy.example to .env.deploy and source it:"
-    echo "  cp infra/cloud-run/notification-dispatch/.env.deploy.example infra/cloud-run/notification-dispatch/.env.deploy"
-    echo "  # Edit infra/cloud-run/notification-dispatch/.env.deploy with your deploy values"
-    echo "  source infra/cloud-run/notification-dispatch/.env.deploy"
+    echo "  cp infra/cloud-run/notifier/.env.deploy.example infra/cloud-run/notifier/.env.deploy"
+    echo "  # Edit infra/cloud-run/notifier/.env.deploy with your deploy values"
+    echo "  source infra/cloud-run/notifier/.env.deploy"
     exit 1
 fi
 
@@ -152,10 +152,10 @@ echo "=== Setup Complete ==="
 echo ""
 echo "Next steps:"
 echo "1. Set your environment variables:"
-echo "   cp infra/cloud-run/notification-dispatch/.env.deploy.example infra/cloud-run/notification-dispatch/.env.deploy"
-echo "   cp apps/notification-dispatch/.env.prod.runtime.example apps/notification-dispatch/.env.prod.runtime"
+echo "   cp infra/cloud-run/notifier/.env.deploy.example infra/cloud-run/notifier/.env.deploy"
+echo "   cp apps/notifier/.env.prod.runtime.example apps/notifier/.env.prod.runtime"
 echo "   # Edit both files with your deploy and runtime values"
 echo ""
 echo "2. Run the deployment script:"
-echo "   ./infra/cloud-run/notification-dispatch/deploy.sh"
+echo "   ./infra/cloud-run/notifier/deploy.sh"
 echo ""
