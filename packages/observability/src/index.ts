@@ -1,1 +1,1 @@
-export { createSentryInitOptions } from './monitoring/sentry/common'
+export { createSentryInitOptions } from './sentry'
