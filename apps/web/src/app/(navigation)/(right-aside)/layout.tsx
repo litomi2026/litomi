@@ -2,6 +2,7 @@ import { ChevronRight, Flame } from 'lucide-react'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
+import { MangaCardSkeleton } from '@/components/card/MangaCard'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 
 import { MetricParam, PeriodParam } from '../(ranking)/common'
@@ -34,7 +35,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
               </Link>
             </div>
           </div>
-          <Suspense>
+          <Suspense fallback={<DailyRankingFallback />}>
             <DailyRanking />
           </Suspense>
         </div>
@@ -52,4 +53,13 @@ async function DailyRanking() {
   }
 
   return <RankingList className="gap-3 p-3" rankings={rankings.slice(0, 5)} />
+}
+
+function DailyRankingFallback() {
+  return (
+    <ul className="grid gap-3 p-3">
+      <MangaCardSkeleton />
+      <MangaCardSkeleton />
+    </ul>
+  )
 }
