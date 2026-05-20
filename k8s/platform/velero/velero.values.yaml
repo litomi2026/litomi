@@ -81,7 +81,7 @@ schedules:
   daily:
     schedule: '0 3 * * *'
     template:
-      ttl: '720h' # 30d
+      ttl: '336h' # 14d
       storageLocation: default
       includedNamespaces:
         - vault
