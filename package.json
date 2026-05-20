@@ -21,7 +21,7 @@
     "lint": "turbo run lint lint:root",
     "lint:root": "eslint --fix . --ignore-pattern apps/** --ignore-pattern packages/**",
     "format": "turbo run format format:root",
-    "format:root": "prettier --write .",
+    "format:root": "prettier --write '*.{js,mjs,cjs,ts,tsx,json,jsonc,md,mdx,yml,yaml,css,html}' '.prettierrc' '.vscode/**/*.{json,jsonc,md}' 'infra/**/*.{js,mjs,cjs,ts,tsx,json,jsonc,md,mdx,yml,yaml,css,html}' 'k8s/**/*.{js,mjs,cjs,ts,tsx,json,jsonc,md,mdx,yml,yaml,css,html}' 'test/**/*.{js,mjs,cjs,ts,tsx,json,jsonc,md,mdx,yml,yaml,css,html}' 'tools/**/*.{js,mjs,cjs,ts,tsx,json,jsonc,md,mdx,yml,yaml,css,html}' --ignore-path .gitignore",
     "type": "tsc -p tsconfig.json --noEmit && turbo type",
     "prepare": "husky",
     "clean": "rm -rf .next .turbo apps/web/.next apps/edge-proxy/.next apps/api/dist apps/cataloger/dist apps/notifier/dist node_modules/.cache",

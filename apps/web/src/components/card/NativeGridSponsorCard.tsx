@@ -47,10 +47,6 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
     }),
   })
 
-  useEffect(() => {
-    setImageIndex(0)
-  }, [sponsor.creativeId, imageCount])
-
   function handleSponsorClick() {
     track(
       'select_promotion',
@@ -66,6 +62,10 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
       }),
     )
   }
+
+  useEffect(() => {
+    setImageIndex(0)
+  }, [sponsor.creativeId, imageCount])
 
   return (
     <article
