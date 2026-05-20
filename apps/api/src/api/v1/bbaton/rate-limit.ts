@@ -1,4 +1,4 @@
-import { redisClient } from '@litomi/db/database/redis'
+import { redisClient } from '@litomi/db/redis'
 import { sec } from '@litomi/std'
 
 type Action = 'attempt' | 'complete'

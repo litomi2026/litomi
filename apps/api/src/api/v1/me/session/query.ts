@@ -1,5 +1,5 @@
-import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/app/auth'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/app/auth'
 import { and, eq, isNull, ne } from 'drizzle-orm'
 
 type SessionFamilyWriteExecutor =

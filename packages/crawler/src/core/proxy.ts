@@ -1,6 +1,5 @@
-import { CircuitBreaker, type CircuitBreakerConfig } from '@litomi/crawler/crawler/CircuitBreaker'
-import { NotFoundError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
-
+import { CircuitBreaker, type CircuitBreakerConfig } from './CircuitBreaker'
+import { NotFoundError, TimeoutError, UpstreamServerError } from './errors'
 import { RetryConfig, retryWithBackoff } from './retry'
 
 export const PROXY_HEADERS = {
@@ -54,25 +53,31 @@ export class ProxyClient {
     const url = `${this.config.baseURL}${path}`
 
     const execute = async () => {
-      let signal: AbortSignal | null | undefined
+      const timeoutSignal = this.config.requestTimeout ? AbortSignal.timeout(this.config.requestTimeout) : undefined
 
-      if (this.config.requestTimeout) {
-        const timeoutSignal = AbortSignal.timeout(this.config.requestTimeout)
-        signal = options.signal ? abortSignalAny([options.signal, timeoutSignal]) : timeoutSignal
-      } else {
-        signal = options.signal
+      const signal =
+        options.signal && timeoutSignal ? abortSignalAny([options.signal, timeoutSignal]) : (options.signal ?? timeoutSignal)
+
+      let response: Response
+
+      try {
+        response = await fetch(url, {
+          ...options,
+          signal,
+          headers: {
+            ...PROXY_HEADERS,
+            ...this.config.defaultHeaders,
+            ...options.headers,
+          },
+          redirect: options.redirect || 'follow',
+        })
+      } catch (error) {
+        if (timeoutSignal?.aborted) {
+          throw new TimeoutError(undefined, { url })
+        }
+
+        throw error
       }
-
-      const response = await fetch(url, {
-        ...options,
-        signal,
-        headers: {
-          ...PROXY_HEADERS,
-          ...this.config.defaultHeaders,
-          ...options.headers,
-        },
-        redirect: options.redirect || 'follow',
-      })
 
       if (response.status === 404) {
         throw new NotFoundError(undefined, { url })
@@ -93,7 +98,9 @@ export class ProxyClient {
       return { data, finalUrl: response.url }
     }
 
-    const wrappedWithRetry = this.config.retry ? () => retryWithBackoff(execute, this.config.retry, { url }) : execute
+    const wrappedWithRetry = this.config.retry
+      ? () => retryWithBackoff(execute, this.config.retry, { context: { url }, signal: options.signal ?? undefined })
+      : execute
 
     return this.circuitBreaker ? this.circuitBreaker.execute(wrappedWithRetry) : wrappedWithRetry()
   }
@@ -104,6 +111,7 @@ function abortSignalAny(signals: AbortSignal[]): AbortSignal {
     return AbortSignal.any(signals)
   }
 
+  // NOTE: Edge 런타임에 AbortSignal.any가 없을 수 있어 직접 구현해요.
   const controller = new AbortController()
 
   for (const signal of signals) {

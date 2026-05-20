@@ -1,6 +1,6 @@
 import { deleteV1PointsDonationParamSchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { pointDonationTable } from '@litomi/db/database/app/points'
+import { db } from '@litomi/db/app'
+import { pointDonationTable } from '@litomi/db/app/points'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

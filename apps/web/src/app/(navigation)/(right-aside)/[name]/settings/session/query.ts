@@ -1,6 +1,6 @@
-import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/app/auth'
+import { db } from '@litomi/db/app'
 import 'server-only'
-import { db } from '@litomi/db/database/app/drizzle'
+import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/app/auth'
 import { and, desc, eq, gt, isNull } from 'drizzle-orm'
 
 export async function readCurrentSessionFamilyIdByTokenHash(userId: number, tokenHash: string) {

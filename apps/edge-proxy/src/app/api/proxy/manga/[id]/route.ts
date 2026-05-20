@@ -1,18 +1,15 @@
-import { fetchMangaFromMultiSources } from '@litomi/crawler/common/manga'
-import {
-  calculateOptimalCacheDuration,
-  createCacheControlHeaders,
-  createProblemDetailsResponse,
-  handleRouteError,
-} from '@litomi/crawler/crawler/proxy-utils'
+import { fetchMangaFromMultiSources } from '@litomi/crawler/manga/multi-source'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/constants/policy'
 import { Locale } from '@litomi/domain/locale'
 import { RouteProps } from '@litomi/domain/types/nextjs'
+import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
+import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std'
 import { checkBotId } from 'botid/server'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
+import { calculateOptimalCacheDuration, handleRouteError } from '@/util/proxy-route'
 
 import { GETProxyMangaIdSchema } from './schema'
 
@@ -99,7 +96,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     //   })
     // }
 
-    const manga = await fetchMangaFromMultiSources({ id, locale })
+    const manga = await fetchMangaFromMultiSources({ id, locale, signal: request.signal })
 
     if (!manga) {
       const isPermanentlyMissing = id <= LAST_VERIFIED_MANGA_ID

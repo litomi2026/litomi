@@ -53,6 +53,16 @@ export class CircuitBreakerError extends ProxyError {
   }
 }
 
+export class ClientClosedRequestError extends ProxyError {
+  readonly errorCode = 'client-closed-request'
+  readonly isRetryable = false
+  readonly statusCode = 499
+
+  constructor(message = '요청이 취소됐어요', context?: Record<string, unknown>) {
+    super(message, context)
+  }
+}
+
 export class InternalError extends ProxyError {
   readonly errorCode = 'internal-error'
   readonly isRetryable = true
@@ -95,7 +105,7 @@ export class ParseError extends ProxyError {
 
 export class TimeoutError extends ProxyError {
   readonly errorCode = 'request-timeout'
-  readonly isRetryable = true
+  readonly isRetryable = false
   readonly statusCode = 408
 
   constructor(message = '요청 시간이 초과됐어요', context?: Record<string, unknown>) {
@@ -121,29 +131,32 @@ export class UpstreamServerError extends ProxyError {
   }
 }
 
+export function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError'
+}
+
 export function isRetryableError(error: unknown): boolean {
   if (error instanceof ProxyError) {
     return error.isRetryable
   }
 
   if (error instanceof Error) {
-    if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+    if (isAbortError(error) || isTimeoutError(error)) {
       return false
     }
 
-    const message = error.message.toLowerCase()
-
-    return (
-      message.includes('network') ||
-      message.includes('fetch') ||
-      message.includes('timeout') ||
-      message.includes('econnreset') ||
-      message.includes('econnrefused') ||
-      message.includes('socket hang up')
-    )
+    return isNetworkError(error)
   }
 
   return false
+}
+
+export function isUpstreamServerError(error: unknown): boolean {
+  if (error instanceof UpstreamServerError) {
+    return error.statusCode >= 500
+  }
+
+  return isNetworkError(error) || isTimeoutError(error)
 }
 
 export function normalizeError(error: unknown, defaultMessage = '알 수 없는 오류가 발생했어요.'): ProxyError {
@@ -152,19 +165,15 @@ export function normalizeError(error: unknown, defaultMessage = '알 수 없는 
   }
 
   if (error instanceof Error) {
-    const message = error.message.toLowerCase()
+    if (isAbortError(error)) {
+      return new ClientClosedRequestError()
+    }
 
-    if (error.name === 'AbortError' || message.includes('timeout')) {
+    if (isTimeoutError(error)) {
       return new TimeoutError()
     }
 
-    if (
-      message.includes('fetch') ||
-      message.includes('network') ||
-      message.includes('econnreset') ||
-      message.includes('econnrefused') ||
-      message.includes('socket hang up')
-    ) {
+    if (isNetworkError(error)) {
       return new NetworkError()
     }
 
@@ -172,4 +181,37 @@ export function normalizeError(error: unknown, defaultMessage = '알 수 없는 
   }
 
   return new InternalError(defaultMessage)
+}
+
+function isNetworkError(error: unknown): boolean {
+  if (error instanceof NetworkError) {
+    return true
+  }
+
+  if (!(error instanceof Error)) {
+    return false
+  }
+
+  const message = error.message.toLowerCase()
+
+  return (
+    message.includes('network') ||
+    message.includes('fetch') ||
+    message.includes('econnreset') ||
+    message.includes('econnrefused') ||
+    message.includes('socket hang up')
+  )
+}
+
+function isTimeoutError(error: unknown): boolean {
+  if (error instanceof TimeoutError) {
+    return true
+  }
+
+  if (!(error instanceof Error)) {
+    return false
+  }
+
+  const message = error.message.toLowerCase()
+  return error.name === 'TimeoutError' || message.includes('timeout') || message.includes('timed out')
 }

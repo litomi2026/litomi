@@ -1,7 +1,7 @@
 import type { GETV1PointExpansionResponse } from '@litomi/contracts'
 
-import { db } from '@litomi/db/database/app/drizzle'
-import { userExpansionTable } from '@litomi/db/database/app/points'
+import { db } from '@litomi/db/app'
+import { userExpansionTable } from '@litomi/db/app/points'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import {
   MAX_BOOKMARKS_PER_USER,

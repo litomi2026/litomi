@@ -1,9 +1,9 @@
 import type { AdultVerificationStatus, GETV1MeResponse } from '@litomi/contracts'
 
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
-import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
-import { db } from '@litomi/db/database/app/drizzle'
-import { userSettingsTable, userTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
+import { userSettingsTable, userTable } from '@litomi/db/app/user'
 import { resolveUserSettings } from '@litomi/domain/utils/user-settings'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'

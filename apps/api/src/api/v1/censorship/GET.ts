@@ -1,6 +1,6 @@
 import { getV1CensorshipQuerySchema, type GETV1CensorshipResponse } from '@litomi/contracts'
-import { userCensorshipTable } from '@litomi/db/database/app/censorship'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { encodeCensorshipCursor } from '@litomi/domain/common/cursor'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'

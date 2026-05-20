@@ -7,13 +7,13 @@ import { translateLanguageList } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
-import { NotFoundError, ParseError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
-import { ProxyClient, type ProxyClientConfig, type ProxyRequestInit } from '@litomi/crawler/crawler/proxy'
-import { isUpstreamServerError } from '@litomi/crawler/crawler/proxy-utils'
 import { MangaSource, tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import { Locale } from '@litomi/domain/locale'
 import { convertCamelCaseToKebabCase } from '@litomi/std'
 import ms from 'ms'
+
+import { isUpstreamServerError, NotFoundError, ParseError, UpstreamServerError } from '../core/errors'
+import { ProxyClient, type ProxyClientConfig, type ProxyRequestInit } from '../core/proxy'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: 'doujinshi',
@@ -157,6 +157,7 @@ type MangaFetchParams = {
   id: number
   locale: Locale
   revalidate?: number
+  signal?: AbortSignal
 }
 
 type TagCategory = (typeof VALID_TAG_CATEGORIES)[number]
@@ -235,8 +236,8 @@ class KHentaiClient {
     this.fallbackClient = new ProxyClient(KOHENTAI_CONFIG)
   }
 
-  async fetchManga({ id, locale, revalidate }: MangaFetchParams) {
-    const gallery = await this.fetchGallery({ id, revalidate })
+  async fetchManga({ id, locale, revalidate, signal }: MangaFetchParams) {
+    const gallery = await this.fetchGallery({ id, revalidate, signal })
 
     if (!gallery) {
       return null
@@ -259,8 +260,8 @@ class KHentaiClient {
     }
   }
 
-  async fetchMangaImages({ id, revalidate }: { id: number; revalidate?: number }) {
-    const gallery = await this.fetchGallery({ id, revalidate })
+  async fetchMangaImages({ id, revalidate, signal }: { id: number; revalidate?: number; signal?: AbortSignal }) {
+    const gallery = await this.fetchGallery({ id, revalidate, signal })
 
     if (!gallery) {
       return null
@@ -332,9 +333,9 @@ class KHentaiClient {
     }
   }
 
-  private async fetchGallery({ id, revalidate }: { id: number; revalidate?: number }) {
+  private async fetchGallery({ id, revalidate, signal }: { id: number; revalidate?: number; signal?: AbortSignal }) {
     try {
-      const html = await this.client.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
+      const html = await this.client.fetch<string>(`/r/${id}`, { next: { revalidate }, signal }, true)
       return this.parseGalleryFromHTML(html, id)
     } catch (error) {
       if (error instanceof NotFoundError) {
@@ -342,7 +343,7 @@ class KHentaiClient {
       }
 
       if (error instanceof UpstreamServerError && error.statusCode === 403) {
-        const html = await this.fallbackClient.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
+        const html = await this.fallbackClient.fetch<string>(`/r/${id}`, { next: { revalidate }, signal }, true)
         return this.parseGalleryFromHTML(html, id)
       }
 

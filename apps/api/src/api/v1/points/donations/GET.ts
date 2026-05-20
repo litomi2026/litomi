@@ -8,13 +8,13 @@ import {
   type GETV1PointsDonationsMeRecipient,
   type GETV1PointsDonationsMeResponse,
 } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
 import {
   DONATION_RECIPIENT_TYPE,
   pointDonationRecipientTable,
   pointDonationTable,
   pointTransactionTable,
-} from '@litomi/db/database/app/points'
+} from '@litomi/db/app/points'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, inArray, lt, sum } from 'drizzle-orm'

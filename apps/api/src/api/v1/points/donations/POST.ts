@@ -1,12 +1,12 @@
 import { postV1PointsDonationCreateRequestSchema, type POSTV1PointsDonationCreateResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
 import {
   DONATION_RECIPIENT_TYPE,
   pointDonationRecipientTable,
   pointDonationTable,
   pointTransactionTable,
   userPointsTable,
-} from '@litomi/db/database/app/points'
+} from '@litomi/db/app/points'
 import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'

@@ -1,7 +1,7 @@
 import { postV1BBatonCompleteBodySchema } from '@litomi/contracts'
-import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
-import { db } from '@litomi/db/database/app/drizzle'
-import { isPostgresError } from '@litomi/db/database/error'
+import { db } from '@litomi/db/app'
+import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
+import { isPostgresError } from '@litomi/db/error'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

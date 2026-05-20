@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/app/drizzle'
-import { userExpansionTable } from '@litomi/db/database/app/points'
+import { db } from '@litomi/db/app'
+import { userExpansionTable } from '@litomi/db/app/points'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
 import { MAX_PINNED_LIBRARIES_PER_USER } from '@litomi/domain/constants/policy'
 import { and, eq, sum } from 'drizzle-orm'

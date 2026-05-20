@@ -1,7 +1,7 @@
 'use server'
 
 import { PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
-import { redisClient } from '@litomi/db/database/redis'
+import { redisClient } from '@litomi/db/redis'
 import { ChallengeType } from '@litomi/domain/database/enum'
 import { sec } from '@litomi/std'
 

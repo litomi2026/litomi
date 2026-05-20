@@ -2,9 +2,9 @@
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { getAndDeleteChallenge, storeChallenge } from '@litomi/auth/redis-challenge'
-import { db } from '@litomi/db/database/app/drizzle'
-import { credentialTable } from '@litomi/db/database/app/passkey'
-import { userTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { credentialTable } from '@litomi/db/app/passkey'
+import { userTable } from '@litomi/db/app/user'
 import { MAX_CREDENTIALS_PER_USER } from '@litomi/domain/constants/policy'
 import { ChallengeType, encodeDeviceType } from '@litomi/domain/database/enum'
 import { captureException } from '@sentry/nextjs'

@@ -1,7 +1,7 @@
 import ms from 'ms'
 
-import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServerError } from './proxy-utils'
+import { isUpstreamServerError } from '../core/errors'
+import { ProxyClient, ProxyClientConfig } from '../core/proxy'
 
 const HENTKOR_CONFIG: ProxyClientConfig = {
   baseURL: 'https://hentkor.net',

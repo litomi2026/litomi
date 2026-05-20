@@ -5,7 +5,7 @@ import { afterAll, afterEach, describe, expect, it, mock } from 'bun:test'
 const getdelMock = mock(async (): Promise<unknown | null> => null)
 const setMock = mock(async (): Promise<'OK'> => 'OK')
 
-mock.module('@litomi/db/database/redis', () => ({
+mock.module('@litomi/db/redis', () => ({
   redisClient: {
     getdel: getdelMock,
     set: setMock,

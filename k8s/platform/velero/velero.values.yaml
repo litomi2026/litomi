@@ -79,7 +79,7 @@ nodeAgent:
 # - GitOps로 리소스는 복원되지만, PV 데이터(Vault/Prometheus 등)는 별도 백업이 필요해요.
 schedules:
   daily:
-    schedule: '0 3 * * *'
+    schedule: '0 21 * * *'
     template:
       ttl: '336h' # 14d
       storageLocation: default

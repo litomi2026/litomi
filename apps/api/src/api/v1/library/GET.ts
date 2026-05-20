@@ -1,6 +1,6 @@
 import { getV1LibraryListQuerySchema, type GETV1LibraryListResponse, type LibraryListItem } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { libraryItemTable, libraryTable, pinnedLibraryTable } from '@litomi/db/database/app/library'
+import { db } from '@litomi/db/app'
+import { libraryItemTable, libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
 import { decodeLibraryListCursor, encodeLibraryListCursor } from '@litomi/domain/common/cursor'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'

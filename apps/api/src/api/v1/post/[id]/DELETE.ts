@@ -1,6 +1,6 @@
 import { postIdParamSchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { postTable } from '@litomi/db/database/app/post'
+import { db } from '@litomi/db/app'
+import { postTable } from '@litomi/db/app/post'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

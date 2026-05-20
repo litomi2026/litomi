@@ -1,5 +1,6 @@
-import { isRetryableError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
 import { captureException } from '@sentry/core'
+
+import { isRetryableError, UpstreamServerError } from './errors'
 
 // Configuration for retry logic
 export interface RetryConfig {
@@ -8,6 +9,11 @@ export interface RetryConfig {
   jitter: boolean
   maxDelay: number
   maxRetries: number
+}
+
+type RetryOptions = {
+  context?: Record<string, unknown>
+  signal?: AbortSignal
 }
 
 export const DEFAULT_RETRY_CONFIG: RetryConfig = {
@@ -22,7 +28,7 @@ export const DEFAULT_RETRY_CONFIG: RetryConfig = {
 export async function retryWithBackoff<T>(
   fn: () => Promise<T>,
   config: RetryConfig = DEFAULT_RETRY_CONFIG,
-  context?: Record<string, unknown>,
+  options: RetryOptions = {},
 ): Promise<T> {
   let lastError: unknown
   let delay = config.initialDelay
@@ -44,7 +50,7 @@ export async function retryWithBackoff<T>(
           captureException(error, {
             level: 'warning',
             tags: { retry_attempt: attempt + 1 },
-            extra: { ...context, delay, cause: error.cause },
+            extra: { ...options.context, delay, cause: error.cause },
           })
         }
         break
@@ -62,7 +68,7 @@ export async function retryWithBackoff<T>(
       }
 
       // Wait before retrying
-      await new Promise((resolve) => setTimeout(resolve, currentDelay))
+      await sleep(currentDelay, options.signal)
 
       // Increase delay for next attempt (only if not using Retry-After)
       if (!retryAfterDelay) {
@@ -91,4 +97,28 @@ function parseRetryAfter(retryAfter: string | null | undefined): number | null {
   }
 
   return null
+}
+
+function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  if (!signal) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
+
+  if (signal.aborted) {
+    signal.throwIfAborted()
+  }
+
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      signal.removeEventListener('abort', abort)
+      resolve()
+    }, ms)
+
+    const abort = () => {
+      clearTimeout(timeoutId)
+      reject(signal.reason)
+    }
+
+    signal.addEventListener('abort', abort, { once: true })
+  })
 }

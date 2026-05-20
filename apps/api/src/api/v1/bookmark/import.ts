@@ -1,6 +1,6 @@
 import { postV1BookmarkImportBodySchema, type POSTV1BookmarkImportResponse } from '@litomi/contracts'
-import { bookmarkTable } from '@litomi/db/database/app/activity'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { bookmarkTable } from '@litomi/db/app/activity'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

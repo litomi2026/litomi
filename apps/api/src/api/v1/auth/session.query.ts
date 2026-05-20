@@ -7,8 +7,8 @@ import {
 import { type SessionWriteExecutor } from '@litomi/auth/query/session.query'
 import { hashSessionToken } from '@litomi/auth/session'
 import { issuePersistentSession } from '@litomi/auth/session/persistent-session'
-import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/app/auth'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/app/auth'
 import { and, eq, isNull } from 'drizzle-orm'
 
 type IssueAuthCookiesInput = {

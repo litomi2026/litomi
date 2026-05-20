@@ -1,6 +1,6 @@
 import { postV1PointTokenRequestSchema, type POSTV1PointTokenResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { adImpressionTokenTable, pointTransactionTable } from '@litomi/db/database/app/points'
+import { db } from '@litomi/db/app'
+import { adImpressionTokenTable, pointTransactionTable } from '@litomi/db/app/points'
 import { COOKIE_DOMAIN } from '@litomi/domain/constants'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { CookieKey } from '@litomi/domain/constants/storage'

@@ -1,6 +1,6 @@
 import { getV1ReadingHistoryQuerySchema, type GETV1ReadingHistoryResponse } from '@litomi/contracts'
-import { readingHistoryTable } from '@litomi/db/database/app/activity'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { readingHistoryTable } from '@litomi/db/app/activity'
 import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@litomi/domain/common/cursor'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'

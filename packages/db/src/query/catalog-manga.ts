@@ -1,8 +1,8 @@
 import 'server-only'
 import { eq, inArray } from 'drizzle-orm'
 
-import { catalogDB } from '../database/catalog/drizzle'
-import { mangaTable } from '../database/catalog/schema'
+import { catalogDB } from '../catalog/db'
+import { mangaTable } from '../catalog/schema'
 
 const catalogMangaColumns = {
   id: mangaTable.id,

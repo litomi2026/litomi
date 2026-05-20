@@ -269,8 +269,6 @@
       "dependencies": {
         "@litomi/catalog": "workspace:*",
         "@litomi/domain": "workspace:*",
-        "@litomi/env": "workspace:*",
-        "@litomi/http": "workspace:*",
         "@litomi/std": "workspace:*",
         "@sentry/core": "10.47.0",
         "ms": "^2.1.3",

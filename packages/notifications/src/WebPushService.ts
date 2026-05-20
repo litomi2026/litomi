@@ -1,8 +1,8 @@
 import 'server-only'
 import type { PushSubscription } from 'web-push'
 
-import { db } from '@litomi/db/database/app/drizzle'
-import { pushSettingsTable, webPushTable } from '@litomi/db/database/app/notification'
+import { db } from '@litomi/db/app'
+import { pushSettingsTable, webPushTable } from '@litomi/db/app/notification'
 import { env as clientEnv } from '@litomi/env/client'
 import { env as commonEnv } from '@litomi/env/server.common'
 import { env as serverEnv } from '@litomi/env/server.next'

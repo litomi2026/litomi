@@ -1,6 +1,6 @@
 import { type GETV1MangaIdHistoryResponse, mangaIdParamSchema } from '@litomi/contracts'
-import { readingHistoryTable } from '@litomi/db/database/app/activity'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { readingHistoryTable } from '@litomi/db/app/activity'
 import { readUserSettings } from '@litomi/db/query/user-settings'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'

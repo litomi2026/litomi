@@ -1,12 +1,12 @@
 'use server'
 
+import { db } from '@litomi/db/app'
 import {
   dmcaCounterNoticeTable,
   dmcaCounterTargetTable,
   dmcaNoticeTable,
   dmcaNoticeTargetTable,
-} from '@litomi/db/database/app/dmca'
-import { db } from '@litomi/db/database/app/drizzle'
+} from '@litomi/db/app/dmca'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { normalizeString } from '@litomi/std'
 import { captureException } from '@sentry/nextjs'

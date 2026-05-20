@@ -1,6 +1,6 @@
 import { deleteV1BookmarkBodySchema, type DELETEV1BookmarkResponse } from '@litomi/contracts'
-import { bookmarkTable } from '@litomi/db/database/app/activity'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { bookmarkTable } from '@litomi/db/app/activity'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 

@@ -1,7 +1,7 @@
 import type { GETV1LibrarySummaryResponse } from '@litomi/contracts'
 
-import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/database/app/activity'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/app/activity'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { sql } from 'drizzle-orm'

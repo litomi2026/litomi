@@ -1,6 +1,6 @@
 import { libraryIdParamSchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { pinnedLibraryTable } from '@litomi/db/database/app/library'
+import { db } from '@litomi/db/app'
+import { pinnedLibraryTable } from '@litomi/db/app/library'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

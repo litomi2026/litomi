@@ -9,9 +9,9 @@ import {
   verifyTOTPToken,
 } from '@litomi/auth/two-factor'
 import { generateBackupCodes } from '@litomi/auth/two-factor-backup-code'
-import { db } from '@litomi/db/database/app/drizzle'
-import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/database/app/two-factor'
-import { userTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
+import { userTable } from '@litomi/db/app/user'
 import { captureException } from '@sentry/nextjs'
 import { and, eq, gt, isNull, sql } from 'drizzle-orm'
 import ms from 'ms'

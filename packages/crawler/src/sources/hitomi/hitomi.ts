@@ -5,14 +5,13 @@ import { translateLanguageList } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
-import { NotFoundError, ParseError } from '@litomi/crawler/crawler/errors'
-import { ProxyClient, type ProxyClientConfig } from '@litomi/crawler/crawler/proxy'
-import { isUpstreamServerError } from '@litomi/crawler/crawler/proxy-utils'
 import { MangaSource } from '@litomi/domain/database/enum'
 import { Locale } from '@litomi/domain/locale'
 import { Manga } from '@litomi/domain/types/manga'
 import ms from 'ms'
 
+import { isUpstreamServerError, NotFoundError, ParseError } from '../../core/errors'
+import { ProxyClient, type ProxyClientConfig } from '../../core/proxy'
 import { HitomiFile, HitomiGallery, Tag } from './types'
 import { urlFromUrlFromHash } from './utils'
 
@@ -20,6 +19,7 @@ type MangaFetchParams = {
   id: number
   locale: Locale
   revalidate?: number
+  signal?: AbortSignal
 }
 
 const HITOMI_CONFIG: ProxyClientConfig = {
@@ -56,9 +56,9 @@ class HitomiClient {
     this.client = new ProxyClient(HITOMI_CONFIG)
   }
 
-  async fetchManga({ id, locale, revalidate }: MangaFetchParams) {
+  async fetchManga({ id, locale, revalidate, signal }: MangaFetchParams) {
     try {
-      const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate } }, true)
+      const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate }, signal }, true)
       const gallery = await this.parseGalleryFromJS(jsText, id)
 
       if (gallery.id !== id.toString()) {

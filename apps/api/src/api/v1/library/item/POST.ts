@@ -1,6 +1,6 @@
 import { postV1LibraryItemAddBodySchema, type POSTV1LibraryItemAddResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
+import { db } from '@litomi/db/app'
+import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/constants/policy'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'

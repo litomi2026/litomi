@@ -1,6 +1,6 @@
 import { type GETV1MangaIdReportResponse, mangaIdParamSchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { mangaReportTable } from '@litomi/db/database/app/report'
+import { db } from '@litomi/db/app'
+import { mangaReportTable } from '@litomi/db/app/report'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import ms from 'ms'

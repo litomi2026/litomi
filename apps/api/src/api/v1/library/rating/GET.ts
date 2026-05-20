@@ -1,6 +1,6 @@
 import { getV1RatingsQuerySchema, type GETV1RatingsResponse } from '@litomi/contracts'
-import { userRatingTable } from '@litomi/db/database/app/activity'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { userRatingTable } from '@litomi/db/app/activity'
 import { buildRatingWhereClause, getNextRatingCursor, getRatingOrderByClauses } from '@litomi/db/sql/rating-sort'
 import { decodeRatingCursor } from '@litomi/domain/common/cursor'
 import { createCacheControl } from '@litomi/http/cache-control'

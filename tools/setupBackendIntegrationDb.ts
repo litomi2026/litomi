@@ -36,7 +36,7 @@ await runCommand(['bunx', 'drizzle-kit', 'push', '--config=drizzle.app.config.ts
 
 console.log('[backend-test-db] applying app function SQL')
 await applyAppFunctions(testDatabaseUrl, {
-  directory: path.join(dbPackageDirectory, 'src/database/app/functions'),
+  directory: path.join(dbPackageDirectory, 'src/app/functions'),
   log: (message) => console.log(`[backend-test-db] ${message}`),
 })
 

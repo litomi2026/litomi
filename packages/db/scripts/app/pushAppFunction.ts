@@ -8,7 +8,7 @@ const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 
 try {
   await applyAppFunctions(env.APP_POSTGRES_URL_DIRECT, {
-    directory: path.join(packageRoot, 'src/database/app/functions'),
+    directory: path.join(packageRoot, 'src/app/functions'),
     log: (message) => console.log(`[app-functions] ${message}`),
   })
 } catch (error) {

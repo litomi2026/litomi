@@ -6,7 +6,7 @@ const { APP_POSTGRES_CERTIFICATE } = env
 const { APP_POSTGRES_URL_DIRECT } = cliEnv
 
 export default defineConfig({
-  schema: 'src/database/app/schema.ts',
+  schema: 'src/app/schema.ts',
   dialect: 'postgresql',
   dbCredentials: {
     url: APP_POSTGRES_URL_DIRECT,

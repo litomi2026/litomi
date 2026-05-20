@@ -1,7 +1,7 @@
-import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/database/app/auth'
+import { db } from '@litomi/db/app'
 import 'server-only'
-import { bbatonVerificationTable } from '@litomi/db/database/app/bbaton'
-import { db } from '@litomi/db/database/app/drizzle'
+import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/app/auth'
+import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { and, eq, isNull } from 'drizzle-orm'
 
 export type SessionFamilyInsert = typeof authSessionFamilyTable.$inferInsert

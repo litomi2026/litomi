@@ -4,18 +4,15 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./common/manga": "./src/common/manga.ts",
-    "./crawler/CircuitBreaker": "./src/crawler/CircuitBreaker.ts",
-    "./crawler/errors": "./src/crawler/errors.ts",
-    "./crawler/hentai-paw": "./src/crawler/hentai-paw.ts",
-    "./crawler/hentkor": "./src/crawler/hentkor.ts",
-    "./crawler/hitomi/hitomi": "./src/crawler/hitomi/hitomi.ts",
-    "./crawler/hiyobi": "./src/crawler/hiyobi.ts",
-    "./crawler/k-hentai": "./src/crawler/k-hentai.ts",
-    "./crawler/proxy": "./src/crawler/proxy.ts",
-    "./crawler/proxy-utils": "./src/crawler/proxy-utils.ts",
-    "./crawler/toonkor": "./src/crawler/toonkor.ts",
-    "./crawler/webtoon/types": "./src/crawler/webtoon/types.ts"
+    "./core/CircuitBreaker": "./src/core/CircuitBreaker.ts",
+    "./core/errors": "./src/core/errors.ts",
+    "./core/proxy": "./src/core/proxy.ts",
+    "./manga/multi-source": "./src/manga/multi-source.ts",
+    "./sources/hentai-paw": "./src/sources/hentai-paw.ts",
+    "./sources/hentkor": "./src/sources/hentkor.ts",
+    "./sources/hitomi/hitomi": "./src/sources/hitomi/hitomi.ts",
+    "./sources/hiyobi": "./src/sources/hiyobi.ts",
+    "./sources/k-hentai": "./src/sources/k-hentai.ts"
   },
   "scripts": {
     "exhentai:fullimg": "bun scripts/exhentaiFullimgLinks.ts",
@@ -26,8 +23,6 @@
   "dependencies": {
     "@litomi/catalog": "workspace:*",
     "@litomi/domain": "workspace:*",
-    "@litomi/env": "workspace:*",
-    "@litomi/http": "workspace:*",
     "@litomi/std": "workspace:*",
     "@sentry/core": "10.47.0",
     "ms": "^2.1.3",
