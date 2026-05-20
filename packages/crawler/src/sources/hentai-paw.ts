@@ -11,8 +11,8 @@ import { Manga } from '@litomi/domain/types/manga'
 import ms from 'ms'
 import { parse } from 'node-html-parser'
 
-import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServerError } from './proxy-utils'
+import { isUpstreamServerError } from '../core/errors'
+import { ProxyClient, ProxyClientConfig } from '../core/proxy'
 
 type HentaiPawSlide = {
   src: string

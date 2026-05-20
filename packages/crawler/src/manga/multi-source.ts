@@ -1,13 +1,14 @@
-import { AllSourcesFailedError, NotFoundError } from '@litomi/crawler/crawler/errors'
-import { hentaiPawClient } from '@litomi/crawler/crawler/hentai-paw'
-import { hentKorClient } from '@litomi/crawler/crawler/hentkor'
-import { hitomiClient } from '@litomi/crawler/crawler/hitomi/hitomi'
-import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
-import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
 import { tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import { Locale } from '@litomi/domain/locale'
 import { Manga, MangaError } from '@litomi/domain/types/manga'
 import { sec } from '@litomi/std'
+
+import { AllSourcesFailedError, NotFoundError } from '../core/errors'
+import { hentaiPawClient } from '../sources/hentai-paw'
+import { hentKorClient } from '../sources/hentkor'
+import { hitomiClient } from '../sources/hitomi/hitomi'
+import { hiyobiClient } from '../sources/hiyobi'
+import { kHentaiClient } from '../sources/k-hentai'
 
 type MangaFetchParams = {
   id: number

@@ -10,8 +10,8 @@ import { Locale } from '@litomi/domain/locale'
 import { Manga, MangaTag } from '@litomi/domain/types/manga'
 import ms from 'ms'
 
-import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServerError } from './proxy-utils'
+import { isUpstreamServerError } from '../core/errors'
+import { ProxyClient, ProxyClientConfig } from '../core/proxy'
 
 type HiyobiImage = {
   height: number

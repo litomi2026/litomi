@@ -1,6 +1,6 @@
 import type { LabeledValue, Manga } from '@litomi/domain/types/manga'
 
-import { kHentaiClient, type KHentaiMangaSearchOptions } from '@litomi/crawler/crawler/k-hentai'
+import { kHentaiClient, type KHentaiMangaSearchOptions } from '@litomi/crawler/sources/k-hentai'
 import { catalogDB } from '@litomi/db/catalog'
 import { mangaTable } from '@litomi/db/catalog/schema'
 import { MangaType, TagCategory, tagCategoryNameToInt } from '@litomi/domain/database/enum'

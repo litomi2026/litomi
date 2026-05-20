@@ -1,6 +1,5 @@
-import { CircuitBreaker, type CircuitBreakerConfig } from '@litomi/crawler/crawler/CircuitBreaker'
-import { NotFoundError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
-
+import { CircuitBreaker, type CircuitBreakerConfig } from './CircuitBreaker'
+import { NotFoundError, UpstreamServerError } from './errors'
 import { RetryConfig, retryWithBackoff } from './retry'
 
 export const PROXY_HEADERS = {

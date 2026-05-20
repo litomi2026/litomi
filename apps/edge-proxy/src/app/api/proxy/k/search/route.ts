@@ -1,16 +1,14 @@
-import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@litomi/crawler/crawler/k-hentai'
-import {
-  createCacheControlHeaders,
-  createProblemDetailsResponse,
-  handleRouteError,
-} from '@litomi/crawler/crawler/proxy-utils'
+import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@litomi/crawler/sources/k-hentai'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { Locale } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
+import { createCacheControlHeaders } from '@litomi/http/cache-control'
+import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { chance, sec } from '@litomi/std'
 import { waitUntil } from '@vercel/functions'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
+import { handleRouteError } from '@/util/proxy-route'
 
 import type { GETProxyKSearchResponse } from './types'
 

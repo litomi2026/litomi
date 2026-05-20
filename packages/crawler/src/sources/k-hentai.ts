@@ -7,13 +7,13 @@ import { translateLanguageList } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
-import { NotFoundError, ParseError, UpstreamServerError } from '@litomi/crawler/crawler/errors'
-import { ProxyClient, type ProxyClientConfig, type ProxyRequestInit } from '@litomi/crawler/crawler/proxy'
-import { isUpstreamServerError } from '@litomi/crawler/crawler/proxy-utils'
 import { MangaSource, tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import { Locale } from '@litomi/domain/locale'
 import { convertCamelCaseToKebabCase } from '@litomi/std'
 import ms from 'ms'
+
+import { isUpstreamServerError, NotFoundError, ParseError, UpstreamServerError } from '../core/errors'
+import { ProxyClient, type ProxyClientConfig, type ProxyRequestInit } from '../core/proxy'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: 'doujinshi',
