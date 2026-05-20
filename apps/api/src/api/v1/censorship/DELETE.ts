@@ -1,6 +1,6 @@
 import { deleteV1CensorshipDeleteBodySchema, type DELETEV1CensorshipDeleteResponse } from '@litomi/contracts'
-import { userCensorshipTable } from '@litomi/db/database/app/censorship'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
 

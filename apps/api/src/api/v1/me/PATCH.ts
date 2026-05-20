@@ -1,8 +1,8 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { patchV1MeBodySchema, type PATCHV1MeResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { userTable } from '@litomi/db/database/app/user'
-import { isPostgresError } from '@litomi/db/database/error'
+import { db } from '@litomi/db/app'
+import { userTable } from '@litomi/db/app/user'
+import { isPostgresError } from '@litomi/db/error'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

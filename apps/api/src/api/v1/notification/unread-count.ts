@@ -1,7 +1,7 @@
 import type { GETUnreadCountResponse } from '@litomi/contracts'
 
-import { db } from '@litomi/db/database/app/drizzle'
-import { notificationTable } from '@litomi/db/database/app/notification'
+import { db } from '@litomi/db/app'
+import { notificationTable } from '@litomi/db/app/notification'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'

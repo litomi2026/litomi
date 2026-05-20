@@ -1,6 +1,6 @@
 import { getV1LibraryIdQuerySchema, type GETV1LibraryResponse, libraryIdParamSchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { libraryItemTable, libraryTable } from '@litomi/db/database/app/library'
+import { db } from '@litomi/db/app'
+import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'

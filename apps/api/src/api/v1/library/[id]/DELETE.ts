@@ -1,6 +1,6 @@
 import { type DELETEV1LibraryIdResponse, libraryIdParamSchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { libraryTable } from '@litomi/db/database/app/library'
+import { db } from '@litomi/db/app'
+import { libraryTable } from '@litomi/db/app/library'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

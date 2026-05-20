@@ -1,6 +1,6 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { db } from '@litomi/db/database/app/drizzle'
-import { libraryTable } from '@litomi/db/database/app/library'
+import { db } from '@litomi/db/app'
+import { libraryTable } from '@litomi/db/app/library'
 import { selectLibraryItem } from '@litomi/db/query/library-item'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'

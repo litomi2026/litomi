@@ -1,6 +1,6 @@
 import { bookmarkMangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
-import { bookmarkTable } from '@litomi/db/database/app/activity'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { bookmarkTable } from '@litomi/db/app/activity'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

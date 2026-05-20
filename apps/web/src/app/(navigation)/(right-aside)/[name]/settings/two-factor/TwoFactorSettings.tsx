@@ -1,6 +1,6 @@
 import { JWTType, verifyJWT } from '@litomi/auth/jwt'
-import { db } from '@litomi/db/database/app/drizzle'
-import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/database/app/two-factor'
+import { db } from '@litomi/db/app'
+import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { and, eq, isNull, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'

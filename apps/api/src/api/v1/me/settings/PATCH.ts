@@ -1,6 +1,6 @@
 import { patchV1MeSettingsBodySchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { userSettingsTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { userSettingsTable } from '@litomi/db/app/user'
 import { readUserSettings } from '@litomi/db/query/user-settings'
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { Hono } from 'hono'

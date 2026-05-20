@@ -1,7 +1,7 @@
 import type { Post } from '@litomi/contracts'
 
-import { db } from '@litomi/db/database/app/drizzle'
-import { postTable } from '@litomi/db/database/app/post'
+import { db } from '@litomi/db/app'
+import { postTable } from '@litomi/db/app/post'
 import 'server-only'
 import selectPost from '@litomi/db/query/post'
 import selectPostComment from '@litomi/db/query/post-comment'

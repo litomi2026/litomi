@@ -3,7 +3,7 @@ import { authenticationLimiter, type PasskeyAuthenticationAttempt } from '@litom
 import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { postV1AuthPasskeyVerifyRequestSchema, type POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
 import { COOKIE_DOMAIN } from '@litomi/domain/constants'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { ChallengeType } from '@litomi/domain/database/enum'

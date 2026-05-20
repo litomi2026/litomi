@@ -1,7 +1,7 @@
 import type { GETV1PointsResponse } from '@litomi/contracts'
 
-import { db } from '@litomi/db/database/app/drizzle'
-import { userPointsTable } from '@litomi/db/database/app/points'
+import { db } from '@litomi/db/app'
+import { userPointsTable } from '@litomi/db/app/points'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

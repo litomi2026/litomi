@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/app/drizzle'
-import { credentialTable } from '@litomi/db/database/app/passkey'
+import { db } from '@litomi/db/app'
+import { credentialTable } from '@litomi/db/app/passkey'
 import { eq } from 'drizzle-orm'
 
 export type PasskeyVerifyTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]

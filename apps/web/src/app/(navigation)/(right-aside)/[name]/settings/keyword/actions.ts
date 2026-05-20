@@ -2,8 +2,8 @@
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { postV1NotificationCriteriaBodySchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/app/notification'
+import { db } from '@litomi/db/app'
+import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'
 import { MAX_CRITERIA_PER_USER } from '@litomi/domain/constants/policy'
 import { captureException } from '@sentry/nextjs'
 import { and, count, eq, sql } from 'drizzle-orm'

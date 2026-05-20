@@ -3,8 +3,8 @@ import {
   postV1NotificationCriteriaBodySchema,
   type POSTV1NotificationCriteriaResponse,
 } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/database/app/notification'
+import { db } from '@litomi/db/app'
+import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'
 import { MAX_CRITERIA_PER_USER } from '@litomi/domain/constants/policy'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'

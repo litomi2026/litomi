@@ -1,7 +1,7 @@
-import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/database/app/activity'
-import { userCensorshipTable } from '@litomi/db/database/app/censorship'
-import { db } from '@litomi/db/database/app/drizzle'
-import { libraryTable } from '@litomi/db/database/app/library'
+import { db } from '@litomi/db/app'
+import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/app/activity'
+import { userCensorshipTable } from '@litomi/db/app/censorship'
+import { libraryTable } from '@litomi/db/app/library'
 import { eq } from 'drizzle-orm'
 
 import DataExportSectionClient from './DataExportSectionClient'

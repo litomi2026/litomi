@@ -1,6 +1,6 @@
 import { userIdParamSchema } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { userFollowTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { userFollowTable } from '@litomi/db/app/user'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

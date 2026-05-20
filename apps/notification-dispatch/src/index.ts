@@ -2,7 +2,7 @@ import type { Manga } from '@litomi/domain/types/manga'
 
 import { hiyobiClient } from '@litomi/crawler/crawler/hiyobi'
 import { kHentaiClient } from '@litomi/crawler/crawler/k-hentai'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
 import { Locale } from '@litomi/domain/locale'
 import { sql } from 'drizzle-orm'
 

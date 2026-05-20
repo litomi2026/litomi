@@ -1,6 +1,6 @@
 import { postV1RouletteSpinRequestSchema, type POSTV1RouletteSpinResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { pointTransactionTable, userPointsTable } from '@litomi/db/database/app/points'
+import { db } from '@litomi/db/app'
+import { pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
 import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
 import { assertRouletteConfig, ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/constants/roulette'
 import { eq, sql } from 'drizzle-orm'

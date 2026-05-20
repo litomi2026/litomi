@@ -1,7 +1,7 @@
 import type { GETV1PostLikedResponse } from '@litomi/contracts'
 
-import { db } from '@litomi/db/database/app/drizzle'
-import { postLikeTable } from '@litomi/db/database/app/post'
+import { db } from '@litomi/db/app'
+import { postLikeTable } from '@litomi/db/app/post'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

@@ -1,6 +1,6 @@
-import { db } from '@litomi/db/database/app/drizzle'
-import { trustedBrowserTable, twoFactorTable } from '@litomi/db/database/app/two-factor'
-import { userTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { trustedBrowserTable, twoFactorTable } from '@litomi/db/app/two-factor'
+import { userTable } from '@litomi/db/app/user'
 import { and, eq, gt, isNull } from 'drizzle-orm'
 
 export async function hasActiveTwoFactor(userId: number) {

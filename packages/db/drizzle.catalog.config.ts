@@ -6,7 +6,7 @@ const { CATALOG_POSTGRES_CERTIFICATE } = env
 const { CATALOG_POSTGRES_URL_DIRECT } = cliEnv
 
 export default defineConfig({
-  schema: 'src/database/catalog/schema.ts',
+  schema: 'src/catalog/schema.ts',
   dialect: 'postgresql',
   dbCredentials: {
     url: CATALOG_POSTGRES_URL_DIRECT,

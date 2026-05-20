@@ -1,6 +1,6 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { userRatingTable } from '@litomi/db/database/app/activity'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
+import { userRatingTable } from '@litomi/db/app/activity'
 import { getNextRatingCursor, getRatingOrderByClauses } from '@litomi/db/sql/rating-sort'
 import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { RATING_PER_PAGE } from '@litomi/domain/constants/policy'

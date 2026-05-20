@@ -1,4 +1,4 @@
-import { bookmarkTable } from '@litomi/db/database/app/activity'
+import { bookmarkTable } from '@litomi/db/app/activity'
 import { and, count, eq, inArray } from 'drizzle-orm'
 
 import { type BookmarkTx, getBookmarkLimit } from './limit'

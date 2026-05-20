@@ -1,6 +1,6 @@
 'use server'
 
-import { redisClient } from '@litomi/db/database/redis'
+import { redisClient } from '@litomi/db/redis'
 import { sec } from '@litomi/std'
 import crypto from 'crypto'
 

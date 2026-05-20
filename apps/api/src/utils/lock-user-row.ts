@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/app/drizzle'
-import { userTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { userTable } from '@litomi/db/app/user'
 import { eq } from 'drizzle-orm'
 
 export type UserRowLockTx = Parameters<Parameters<typeof db.transaction>[0]>[0]

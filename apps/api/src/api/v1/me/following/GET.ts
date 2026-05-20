@@ -1,7 +1,7 @@
 import type { GETV1MeFollowingResponse } from '@litomi/contracts'
 
-import { db } from '@litomi/db/database/app/drizzle'
-import { userFollowTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { userFollowTable } from '@litomi/db/app/user'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 

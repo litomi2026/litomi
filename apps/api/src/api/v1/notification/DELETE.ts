@@ -1,6 +1,6 @@
 import { deleteV1NotificationBodySchema, type DELETEV1NotificationResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { notificationTable } from '@litomi/db/database/app/notification'
+import { db } from '@litomi/db/app'
+import { notificationTable } from '@litomi/db/app/notification'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
 

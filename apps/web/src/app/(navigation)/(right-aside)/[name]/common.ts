@@ -1,5 +1,5 @@
-import { db } from '@litomi/db/database/app/drizzle'
-import { userFollowTable, userTable } from '@litomi/db/database/app/user'
+import { db } from '@litomi/db/app'
+import { userFollowTable, userTable } from '@litomi/db/app/user'
 import { eq, or, sql } from 'drizzle-orm'
 import { cache } from 'react'
 

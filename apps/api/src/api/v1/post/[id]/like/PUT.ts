@@ -1,7 +1,7 @@
 import { postIdParamSchema, type PUTV1PostIdLikeResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { postLikeTable } from '@litomi/db/database/app/post'
-import { isPostgresError } from '@litomi/db/database/error'
+import { db } from '@litomi/db/app'
+import { postLikeTable } from '@litomi/db/app/post'
+import { isPostgresError } from '@litomi/db/error'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

@@ -1,5 +1,5 @@
 import { postV1BookmarkBodySchema, type POSTV1BookmarkResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
+import { db } from '@litomi/db/app'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

@@ -1,7 +1,7 @@
 import { postV1PostBodySchema, type POSTV1PostResponse } from '@litomi/contracts'
-import { db } from '@litomi/db/database/app/drizzle'
-import { postTable } from '@litomi/db/database/app/post'
-import { isPostgresError } from '@litomi/db/database/error'
+import { db } from '@litomi/db/app'
+import { postTable } from '@litomi/db/app/post'
+import { isPostgresError } from '@litomi/db/error'
 import { PostType } from '@litomi/domain/database/enum'
 import { Hono } from 'hono'
 
