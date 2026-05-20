@@ -43,11 +43,7 @@ images:
     digest: sha256:6879c3d4c1db67d60e10f57a534d850a8088ded0a112c23b5f57a9244295e819
   - name: litomi-api
     newName: ghcr.io/litomi2026/litomi-api
-<<<<<<< stage
-    digest: sha256:f2e1104be8e1f493d21d58387fdc0448387fbbc2b530975bd0fbf02e6cedbce7
+    digest: sha256:d9360cce629e7e28158ab1da744eb0d2ecdd540f94a363bff21040b529353157
   - name: litomi-cataloger
     newName: ghcr.io/litomi2026/litomi-cataloger
-    newTag: main
-=======
-    digest: sha256:d9360cce629e7e28158ab1da744eb0d2ecdd540f94a363bff21040b529353157
->>>>>>> main
+    digest: sha256:8f1a8f65a1397de3593eda632adf28a4665f1dd7dfaa3c5fdce8c64d879422c9
