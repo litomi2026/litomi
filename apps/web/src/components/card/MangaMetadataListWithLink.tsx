@@ -1,6 +1,5 @@
 import { LabeledValue } from '@litomi/domain/types/manga'
 import { ExternalLink } from 'lucide-react'
-import { Suspense } from 'react'
 
 import MangaMetadataLink from './MangaMetadataLink'
 
@@ -13,18 +12,17 @@ type MangaMetadataWithLink = {
 type Props = {
   filterType: string
   items: MangaMetadataWithLink[]
+  searchParams?: string
 }
 
 const MAX_LABEL_LENGTH = 8
 
-export default function MangaMetadataListWithLink({ filterType, items }: Props) {
+export default function MangaMetadataListWithLink({ filterType, items, searchParams }: Props) {
   return (
     <ul className="break-all">
       {items.map(({ value, label, links }, i) => (
         <li className="inline" key={value}>
-          <Suspense>
-            <MangaMetadataLink filterType={filterType} i={i} label={label} value={value} />
-          </Suspense>
+          <MangaMetadataLink filterType={filterType} i={i} label={label} searchParams={searchParams} value={value} />
           {links && (
             <span className="inline">
               <a

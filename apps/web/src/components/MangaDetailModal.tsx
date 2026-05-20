@@ -7,13 +7,12 @@ import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { create } from 'zustand'
 
 import BookmarkButton, { BookmarkButtonError } from '@/components/card/BookmarkButton'
 import DownloadButton, { DownloadButtonError } from '@/components/card/DownloadButton'
 import MangaCardStats from '@/components/card/MangaCardStats'
-import MangaMetadataLabel from '@/components/card/MangaMetadataLabel'
 import MangaMetadataLink from '@/components/card/MangaMetadataLink'
 import MangaMetadataList from '@/components/card/MangaMetadataList'
 import MangaMetadataListWithLink from '@/components/card/MangaMetadataListWithLink'
@@ -137,9 +136,7 @@ export function MangaDetailModal() {
             <div className="flex gap-2 min-w-0">
               <strong>품번</strong>
               <div className="min-w-0 flex-1">
-                <Suspense>
-                  <MangaMetadataLink filterType="id" value={id?.toString() ?? ''} />
-                </Suspense>
+                <MangaMetadataLink filterType="id" value={id?.toString() ?? ''} />
               </div>
             </div>
             {languages && languages.length > 0 && (
@@ -154,9 +151,7 @@ export function MangaDetailModal() {
               <div className="flex gap-2 min-w-0">
                 <strong>종류</strong>
                 <div className="min-w-0 flex-1">
-                  <Suspense>
-                    <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
-                  </Suspense>
+                  <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
                 </div>
               </div>
             )}
@@ -196,9 +191,7 @@ export function MangaDetailModal() {
               <div className="flex gap-2 min-w-0">
                 <strong>업로더</strong>
                 <div className="min-w-0 flex-1">
-                  <Suspense>
-                    <MangaMetadataLink filterType="uploader" value={uploader} />
-                  </Suspense>
+                  <MangaMetadataLink filterType="uploader" value={uploader} />
                 </div>
               </div>
             )}
@@ -211,16 +204,12 @@ export function MangaDetailModal() {
                     href={`/search?to=${Math.ceil(new Date(date).getTime() / 1000) + 60}`}
                     prefetch={false}
                   >
-                    <MangaMetadataLabel>{dayjs(date).format('YYYY-MM-DD HH:mm')}</MangaMetadataLabel>
+                    {dayjs(date).format('YYYY-MM-DD HH:mm')}
                   </Link>
                 </div>
               </div>
             )}
-            {tags && tags.length > 0 && (
-              <Suspense>
-                <MangaTagList className="font-medium" tags={tags} />
-              </Suspense>
-            )}
+            {tags && tags.length > 0 && <MangaTagList className="font-medium" tags={tags} />}
             <MangaCardStats manga={manga} />
           </div>
 

@@ -1,15 +1,14 @@
-'use client'
-
 import { CN, DE, ES, FR, HU, IT, JP, KR, NL, PT, RU, TH, US, VN } from 'country-flag-icons/react/3x2'
-import { Globe, Loader2, Meh, Pencil } from 'lucide-react'
-import Link, { useLinkStatus } from 'next/link'
+import { Globe, Meh, Pencil } from 'lucide-react'
+import Link from 'next/link'
 import { ReactNode } from 'react'
 
-import { useSearchFilter } from './useSearchFilter'
+import { getSearchFilter } from './searchFilter'
 
 type Props = {
-  language: string
   className?: string
+  language: string
+  searchParams?: string
 }
 
 // Language to emoji flag mapping
@@ -52,8 +51,8 @@ const LANGUAGE_CODES: Record<string, string> = {
   rewrite: 'R',
 }
 
-export default function MangaLanguageLink({ language, className = '' }: Readonly<Props>) {
-  const { href, isActive } = useSearchFilter(`language:${language}`)
+export default function MangaLanguageLink({ className = '', language, searchParams }: Readonly<Props>) {
+  const { href, isActive } = getSearchFilter(`language:${language}`, searchParams)
 
   return (
     <Link
@@ -70,20 +69,13 @@ export default function MangaLanguageLink({ language, className = '' }: Readonly
 }
 
 function LanguageBadgeContent({ language }: { language: string }) {
-  const { pending } = useLinkStatus()
   const flag = LANGUAGE_FLAGS[language.toLowerCase()] || <Globe className="text-brand-start" />
   const code = LANGUAGE_CODES[language.toLowerCase()] || language.toUpperCase().slice(0, 2)
 
   return (
-    <>
-      <Loader2
-        aria-hidden={!pending}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition aria-hidden:opacity-0 text-foreground p-0.5 size-5 shrink-0 animate-spin"
-      />
-      <span aria-hidden={pending} className="flex items-center gap-1 aria-hidden:opacity-0 transition">
-        <span className="text-base leading-none [&>svg]:size-[1em]">{flag}</span>
-        <span className="text-xs font-mono uppercase group-hover:underline group-focus:underline">{code}</span>
-      </span>
-    </>
+    <span className="flex items-center gap-1 transition">
+      <span className="text-base leading-none [&>svg]:size-[1em]">{flag}</span>
+      <span className="text-xs font-mono uppercase group-hover:underline group-focus:underline">{code}</span>
+    </span>
   )
 }

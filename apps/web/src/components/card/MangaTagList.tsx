@@ -4,23 +4,22 @@ import type { CensorshipItem } from '@litomi/contracts'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 import { MangaTag } from '@litomi/domain/types/manga'
-import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 
 import MangaTagLink from './MangaTagLink'
+import { getSearchFilter } from './searchFilter'
 import TagOptionsSheet from './TagOptionsSheet'
 
 type Props = {
   className?: string
+  searchParams?: string
   tags: MangaTag[]
 }
 
-export default function MangaTagList({ className = '', tags }: Readonly<Props>) {
+export default function MangaTagList({ className = '', searchParams, tags }: Readonly<Props>) {
   const [selectedTag, setSelectedTag] = useState<MangaTag | null>(null)
-  const searchParams = useSearchParams()
-  const query = searchParams.get('query') ?? ''
   const { data: censorshipsMap } = useCensorshipsMapQuery()
 
   return (
@@ -28,7 +27,7 @@ export default function MangaTagList({ className = '', tags }: Readonly<Props>) 
       <ul className={`flex flex-wrap gap-1 ${className}`}>
         {tags.map((tag) => {
           const filterPattern = `${tag.category}:${tag.value}`
-          const { href, isActive } = getSearchFilter(filterPattern, query, searchParams)
+          const { href, isActive } = getSearchFilter(filterPattern, searchParams)
           const isCensored = checkIfLightCensored(tag.category, tag.value, censorshipsMap)
 
           return (
@@ -69,24 +68,6 @@ function checkIfLightCensored(category: string, value: string, censorships: Map<
   const matched = censorships.get(`${categoryKey}:${value}`) || censorships.get(`${CensorshipKey.TAG}:${value}`)
 
   return matched?.level === CensorshipLevel.LIGHT
-}
-
-function getSearchFilter(filterPattern: string, query: string, searchParams: URLSearchParams) {
-  const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const wordBoundaryRegex = new RegExp(`\\b${escapedPattern}\\b`)
-  const isActive = wordBoundaryRegex.test(query)
-
-  const newQuery = isActive
-    ? query.replace(wordBoundaryRegex, '').replace(/\s+/g, ' ').trim()
-    : [query, filterPattern].filter(Boolean).join(' ')
-
-  const newSearchParams = new URLSearchParams(searchParams)
-  newSearchParams.set('query', newQuery)
-
-  return {
-    href: `/search?${newSearchParams}`,
-    isActive,
-  }
 }
 
 function mapTagCategoryToCensorshipKey(category: string) {

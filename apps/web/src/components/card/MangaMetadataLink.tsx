@@ -1,20 +1,17 @@
-'use client'
-
 import Link from 'next/link'
 
-import { useSearchFilter } from '@/components/card/useSearchFilter'
-
-import MangaMetadataLabel from './MangaMetadataLabel'
+import { getSearchFilter } from './searchFilter'
 
 type Props = {
-  value: string
-  label?: string
   filterType: string
   i?: number
+  label?: string
+  searchParams?: string
+  value: string
 }
 
-export default function MangaMetadataLink({ value, label, filterType, i = 0 }: Props) {
-  const { href, isActive } = useSearchFilter(`${filterType}:${value}`)
+export default function MangaMetadataLink({ filterType, i = 0, label, searchParams, value }: Props) {
+  const { href, isActive } = getSearchFilter(`${filterType}:${value}`, searchParams)
 
   return (
     <>
@@ -25,7 +22,7 @@ export default function MangaMetadataLink({ value, label, filterType, i = 0 }: P
         href={href}
         prefetch={false}
       >
-        <MangaMetadataLabel>{label || value}</MangaMetadataLabel>
+        {label || value}
       </Link>
     </>
   )

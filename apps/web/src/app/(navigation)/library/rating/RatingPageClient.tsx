@@ -41,11 +41,11 @@ const SORT_OPTIONS: { value: RatingSort; label: string }[] = [
 ]
 
 type MangaListProps = {
+  isFetchingNextPage?: boolean
+  isSelectionMode: boolean
   items: { mangaId: number; rating: number }[]
   mangaMap: Map<number, Manga>
   ratingIndexMap: Map<number, number>
-  isSelectionMode: boolean
-  isFetchingNextPage?: boolean
   view: View
 }
 
@@ -164,7 +164,7 @@ export default function RatingPageClient({ initialData, initialSort, initialView
   )
 }
 
-function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchingNextPage, view }: MangaListProps) {
+function MangaList({ isFetchingNextPage, isSelectionMode, items, mangaMap, ratingIndexMap, view }: MangaListProps) {
   return (
     <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
       {items.map(({ mangaId, rating }) => {

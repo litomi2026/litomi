@@ -47,6 +47,7 @@ type SearchResultItem = LoadingItem | MangaItem | NativeGridSponsorItem
 
 export default function SearchResult({ header, nativeGridSponsor }: Props) {
   const searchParams = useSearchParams()
+  const searchParamsString = searchParams.toString()
   const view = getViewFromSearchParams(searchParams)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
@@ -67,7 +68,7 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
 
   const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
   const visibleMangas = mangas.filter(isVisible)
-  const measurementKey = `${searchParams.toString()}:${heavySignature}`
+  const measurementKey = `${searchParamsString}:${heavySignature}`
   const scrollRestorationKey = `search-results:${measurementKey}`
   const showRefreshButton = searchParams.get('sort') === 'random'
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
@@ -121,7 +122,15 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
       case 'loading':
         return <MangaCardSkeleton variant={view} />
       case 'manga':
-        return <MangaCard index={item.mangaIndex} manga={item.manga} showSearchFromNextButton variant={view} />
+        return (
+          <MangaCard
+            index={item.mangaIndex}
+            manga={item.manga}
+            searchParams={searchParamsString}
+            showSearchFromNextButton
+            variant={view}
+          />
+        )
       case 'native-grid-sponsor':
         return <NativeGridSponsorCard sponsor={item.sponsor} variant={view} />
     }
