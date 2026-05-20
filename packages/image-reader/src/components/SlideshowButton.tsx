@@ -135,7 +135,7 @@ export default function SlideshowButton<TPage extends ReaderPage>({
             title={messages.slideshowTitle}
           />
           <DialogBody>
-            <div className="grid grid-cols-[auto_1fr] items-center gap-4 whitespace-nowrap [&_h4]:font-semibold">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-4 whitespace-nowrap">
               <label htmlFor={intervalInputId}>{messages.intervalLabel}</label>
               <div className="flex items-center gap-2">
                 <input

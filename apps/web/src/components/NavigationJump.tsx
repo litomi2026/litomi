@@ -16,9 +16,17 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
 
   function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
-    const page = inputRef.current?.value
-    if (!page) return
+    const page = Number(inputRef.current?.value)
+
+    if (!Number.isSafeInteger(page) || page < 1 || page > totalPages) {
+      return
+    }
+
     router.push(`${hrefPrefix}${page}${hrefSuffix}`)
+  }
+
+  function handleInput(event: React.FormEvent<HTMLInputElement>) {
+    event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '')
   }
 
   return (
@@ -29,14 +37,14 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
       <input
         className="w-14 p-1 border border-zinc-200 rounded focus:outline-none focus:ring-1 focus:ring-zinc-300"
         id="page-input"
-        max={totalPages}
-        min="1"
+        inputMode="numeric"
         name="page"
-        pattern="[0-9]*"
+        onInput={handleInput}
+        pattern="[1-9][0-9]*"
         placeholder={`${totalPages}`}
         ref={inputRef}
         required
-        type="number"
+        type="text"
       />
       <button
         aria-label="특정 페이지로 이동"
