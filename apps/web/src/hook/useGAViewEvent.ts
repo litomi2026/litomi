@@ -2,13 +2,13 @@ import ms from 'ms'
 import { useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import { track } from '@/lib/analytics/browser'
+import { type AnalyticsParams, track } from '@/lib/analytics/browser'
 
 import { useLatestRef } from './useLatestRef'
 
 type Options = {
   eventName: string
-  eventParams?: Record<string, string>
+  eventParams?: AnalyticsParams
 }
 
 export default function useGAViewEvent({ eventName, eventParams }: Options) {

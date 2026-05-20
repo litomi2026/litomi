@@ -3,9 +3,14 @@
 import { env } from '@litomi/env/client'
 import { sendGTMEvent } from '@next/third-parties/google'
 
-type AnalyticsParams = Record<string, AnalyticsValue | undefined>
-type AnalyticsScalar = boolean | number | string | Date | null
-type AnalyticsValue = AnalyticsScalar | AnalyticsScalar[]
+export type AnalyticsParams = Record<string, AnalyticsValue | undefined>
+
+type AnalyticsObject = {
+  readonly [key: string]: AnalyticsPrimitive | undefined
+}
+
+type AnalyticsPrimitive = boolean | number | string | null
+type AnalyticsValue = AnalyticsPrimitive | Date | readonly (AnalyticsObject | AnalyticsPrimitive)[]
 
 const { NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_GTM_SCRIPT_URL } = env
 
@@ -35,34 +40,27 @@ function isGoogleTagManagerEnabled() {
   return Boolean(NEXT_PUBLIC_GTM_ID || NEXT_PUBLIC_GTM_SCRIPT_URL)
 }
 
-function normalizeParams(params?: AnalyticsParams) {
+function normalizeParams(params?: AnalyticsParams): Record<string, unknown> | undefined {
   if (!params) {
     return
   }
 
-  const normalizedEntries = Object.entries(params).flatMap(([key, value]) => {
+  let normalizedParams: Record<string, unknown> | undefined
+
+  for (const [key, value] of Object.entries(params)) {
     if (value === undefined) {
-      return []
+      continue
     }
 
-    if (Array.isArray(value)) {
-      return [[key, value.map(normalizeScalar)]]
+    normalizedParams ??= {}
+
+    if (value instanceof Date) {
+      normalizedParams[key] = value.toISOString()
+      continue
     }
 
-    return [[key, normalizeScalar(value)]]
-  })
-
-  if (normalizedEntries.length === 0) {
-    return
+    normalizedParams[key] = value
   }
 
-  return Object.fromEntries(normalizedEntries)
-}
-
-function normalizeScalar(value: AnalyticsScalar) {
-  if (value instanceof Date) {
-    return value.toISOString()
-  }
-
-  return value
+  return normalizedParams
 }

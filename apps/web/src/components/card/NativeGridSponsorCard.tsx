@@ -4,12 +4,12 @@ import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 
 import { View } from '@litomi/std'
 import { ExternalLink } from 'lucide-react'
-import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'
+import { createPromotionEventParams } from '@/lib/analytics/promotion'
 
 type Props = {
   className?: string
@@ -23,7 +23,6 @@ const IMAGE_FRAME_CLASS_NAMES = {
 } as const
 
 export default function NativeGridSponsorCard({ className, sponsor, variant = View.CARD }: Props) {
-  const pathname = usePathname()
   const imageCount = sponsor.imageUrls.length
   const [imageIndex, setImageIndex] = useState(0)
 
@@ -37,16 +36,15 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
 
   const { ref: cardRef } = useGAViewEvent({
     eventName: 'view_promotion',
-    eventParams: {
+    eventParams: createPromotionEventParams({
       campaign_id: sponsor.campaignId,
       creative_id: sponsor.creativeId,
       creative_name: 'native_grid_card',
       creative_slot: sponsor.placementId,
-      location_id: pathname,
+      itemIndex: sponsor.position,
       promotion_id: sponsor.id,
       promotion_name: sponsor.title,
-      slot_position: String(sponsor.position + 1),
-    },
+    }),
   })
 
   useEffect(() => {
@@ -54,17 +52,19 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
   }, [sponsor.creativeId, imageCount])
 
   function handleSponsorClick() {
-    track('select_promotion', {
-      campaign_id: sponsor.campaignId,
-      creative_id: sponsor.creativeId,
-      creative_name: 'native_grid_card',
-      creative_slot: sponsor.placementId,
-      destination: sponsor.targetUrl,
-      location_id: pathname,
-      promotion_id: sponsor.id,
-      promotion_name: sponsor.title,
-      slot_position: String(sponsor.position + 1),
-    })
+    track(
+      'select_promotion',
+      createPromotionEventParams({
+        campaign_id: sponsor.campaignId,
+        creative_id: sponsor.creativeId,
+        creative_name: 'native_grid_card',
+        creative_slot: sponsor.placementId,
+        destination: sponsor.targetUrl,
+        itemIndex: sponsor.position,
+        promotion_id: sponsor.id,
+        promotion_name: sponsor.title,
+      }),
+    )
   }
 
   return (

@@ -170,21 +170,6 @@
                   {
                     "type": "TEMPLATE",
                     "key": "name",
-                    "value": "location_id"
-                  },
-                  {
-                    "type": "TEMPLATE",
-                    "key": "value",
-                    "value": "{{DLV - location_id}}"
-                  }
-                ]
-              },
-              {
-                "type": "MAP",
-                "map": [
-                  {
-                    "type": "TEMPLATE",
-                    "key": "name",
                     "value": "promotion_id"
                   },
                   {
@@ -215,12 +200,12 @@
                   {
                     "type": "TEMPLATE",
                     "key": "name",
-                    "value": "slot_position"
+                    "value": "items"
                   },
                   {
                     "type": "TEMPLATE",
                     "key": "value",
-                    "value": "{{DLV - slot_position}}"
+                    "value": "{{DLV - items}}"
                   }
                 ]
               }
@@ -344,21 +329,6 @@
                   {
                     "type": "TEMPLATE",
                     "key": "name",
-                    "value": "location_id"
-                  },
-                  {
-                    "type": "TEMPLATE",
-                    "key": "value",
-                    "value": "{{DLV - location_id}}"
-                  }
-                ]
-              },
-              {
-                "type": "MAP",
-                "map": [
-                  {
-                    "type": "TEMPLATE",
-                    "key": "name",
                     "value": "promotion_id"
                   },
                   {
@@ -389,12 +359,12 @@
                   {
                     "type": "TEMPLATE",
                     "key": "name",
-                    "value": "slot_position"
+                    "value": "items"
                   },
                   {
                     "type": "TEMPLATE",
                     "key": "value",
-                    "value": "{{DLV - slot_position}}"
+                    "value": "{{DLV - items}}"
                   }
                 ]
               }
@@ -708,32 +678,6 @@
       {
         "accountId": "6271292129",
         "containerId": "247564775",
-        "variableId": "17",
-        "name": "DLV - location_id",
-        "type": "v",
-        "parameter": [
-          {
-            "type": "INTEGER",
-            "key": "dataLayerVersion",
-            "value": "2"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "setDefaultValue",
-            "value": "false"
-          },
-          {
-            "type": "TEMPLATE",
-            "key": "name",
-            "value": "location_id"
-          }
-        ],
-        "fingerprint": "1779029325789",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6271292129",
-        "containerId": "247564775",
         "variableId": "18",
         "name": "DLV - promotion_id",
         "type": "v",
@@ -786,8 +730,8 @@
       {
         "accountId": "6271292129",
         "containerId": "247564775",
-        "variableId": "20",
-        "name": "DLV - slot_position",
+        "variableId": "21",
+        "name": "DLV - items",
         "type": "v",
         "parameter": [
           {
@@ -803,10 +747,10 @@
           {
             "type": "TEMPLATE",
             "key": "name",
-            "value": "slot_position"
+            "value": "items"
           }
         ],
-        "fingerprint": "1779029325792",
+        "fingerprint": "1779029325793",
         "formatValue": {}
       }
     ],
