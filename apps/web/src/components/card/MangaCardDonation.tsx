@@ -1,48 +1,36 @@
 'use client'
 
 import { Heart } from 'lucide-react'
-import { usePathname } from 'next/navigation'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'
+import { createPromotionEventParams } from '@/lib/analytics/promotion'
 
 import LogoDiscord from '../icons/LogoDiscord'
 import { MangaCardSkeleton } from './MangaCard'
 
 export default function MangaCardDonation() {
-  const pathname = usePathname()
-
   const { ref: cardRef } = useGAViewEvent({
     eventName: 'view_promotion',
-    eventParams: {
+    eventParams: createPromotionEventParams({
       promotion_id: 'litomi_donation_card',
       promotion_name: '리토미 후원',
       creative_name: 'donation_card',
       creative_slot: 'content_feed',
-      location_id: pathname,
-    },
+    }),
   })
 
-  function handleSocialClick(platform: string) {
-    track('select_promotion', {
-      promotion_id: `litomi_social_${platform}`,
-      promotion_name: '소셜 링크',
-      creative_name: 'donation_card',
-      creative_slot: 'social_section',
-      location_id: pathname,
-      destination: platform,
-    })
-  }
-
-  function handleDonationClick(platform: string) {
-    track('select_promotion', {
-      promotion_id: `litomi_donation_${platform}`,
-      promotion_name: '후원 플랫폼',
-      creative_name: 'donation_card',
-      creative_slot: 'donation_section',
-      location_id: pathname,
-      destination: platform,
-    })
+  function handlePromotionClick(destination: string) {
+    track(
+      'select_promotion',
+      createPromotionEventParams({
+        promotion_id: 'litomi_donation_card',
+        promotion_name: '리토미 후원',
+        creative_name: 'donation_card',
+        creative_slot: 'content_feed',
+        destination,
+      }),
+    )
   }
 
   return (
@@ -67,7 +55,7 @@ export default function MangaCardDonation() {
               <a
                 className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
                 href="https://discord.gg/xTrbQaxpyD"
-                onClick={() => handleSocialClick('discord')}
+                onClick={() => handlePromotionClick('discord')}
                 rel="noopener"
                 target="_blank"
               >
@@ -82,7 +70,7 @@ export default function MangaCardDonation() {
               <a
                 className="p-3 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://patreon.com/litomi"
-                onClick={() => handleDonationClick('patreon')}
+                onClick={() => handlePromotionClick('patreon')}
                 rel="noopener"
                 target="_blank"
               >
@@ -91,7 +79,7 @@ export default function MangaCardDonation() {
               <a
                 className="py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://opencollective.com/litomi"
-                onClick={() => handleDonationClick('open_collective')}
+                onClick={() => handlePromotionClick('open_collective')}
                 rel="noopener"
                 target="_blank"
               >
