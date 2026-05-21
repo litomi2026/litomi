@@ -1,18 +1,23 @@
 'use client'
 
+import type { DELETEV1NotificationCriteriaIdResponse, PATCHV1NotificationCriteriaIdResponse } from '@litomi/contracts'
+
 import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { formatDistanceToNow } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
-import dayjs from 'dayjs'
+import { useMutation } from '@tanstack/react-query'
 import { BellOff, Edit3, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
+import type { ProblemDetailsError } from '@/utils/react-query-error'
+
 import IconBell from '@/components/icons/IconBell'
-import useServerAction from '@/hook/useServerAction'
 
 import type { NotificationCriteria } from './types'
 
-import { deleteNotificationCriteria, toggleNotificationCriteria } from './actions'
+import { deleteNotificationCriteria, updateNotificationCriteria } from './api'
 
 interface NotificationCriteriaCardProps {
   criterion: NotificationCriteria
@@ -29,65 +34,68 @@ const CONDITION_TYPE_LABELS: Record<number, string> = {
   [NotificationConditionType.UPLOADER]: '업로더',
 }
 
+const LOCAL_MUTATION_ERROR_STATUSES = [400, 404, 409] as const
+
 export default function NotificationCriteriaCard({ criterion, onEdit }: NotificationCriteriaCardProps) {
-  const [, dispatchToggle, isToggling] = useServerAction({
-    action: toggleNotificationCriteria,
+  const router = useRouter()
+
+  const toggleMutation = useMutation<
+    PATCHV1NotificationCriteriaIdResponse,
+    ProblemDetailsError,
+    { id: number; isActive: boolean }
+  >({
+    mutationFn: ({ id, isActive }) => updateNotificationCriteria(id, { isActive }),
+
     onSuccess: (data) => {
-      toast.success(data.isActive ? '알림을 활성화했어요' : '알림을 비활성화했어요')
+      if (data.isActive) {
+        toast.success('알림을 활성화했어요')
+      }
+
+      router.refresh()
     },
-    shouldSetResponse: false,
+
+    onError: (error) => {
+      if (isLocalMutationError(error.status)) {
+        toast.warning(error.problem.detail ?? '알림 기준 상태를 변경하지 못했어요')
+      }
+    },
+
+    meta: {
+      suppressGlobalErrorToastForStatuses: LOCAL_MUTATION_ERROR_STATUSES,
+    },
   })
 
-  const [, dispatchDelete, isDeleting] = useServerAction({
-    action: deleteNotificationCriteria,
+  const deleteMutation = useMutation<DELETEV1NotificationCriteriaIdResponse, ProblemDetailsError, number>({
+    mutationFn: deleteNotificationCriteria,
+
     onSuccess: () => {
-      toast.success('알림 기준을 삭제했어요')
+      router.refresh()
     },
-    shouldSetResponse: false,
+
+    onError: (error) => {
+      if (isLocalMutationError(error.status)) {
+        toast.warning(error.problem.detail ?? '알림 기준을 삭제하지 못했어요')
+      }
+    },
+
+    meta: {
+      suppressGlobalErrorToastForStatuses: LOCAL_MUTATION_ERROR_STATUSES,
+    },
   })
 
-  const handleToggle = (_newState: boolean) => {
-    const formData = new FormData()
-    formData.append('id', criterion.id.toString())
-    formData.append('isActive', criterion.isActive.toString())
+  const isToggling = toggleMutation.isPending
+  const isDeleting = deleteMutation.isPending
 
-    dispatchToggle(formData)
+  function handleToggle(isActive: boolean) {
+    toggleMutation.mutate({ id: criterion.id, isActive })
   }
 
-  const handleDelete = () => {
+  function handleDelete() {
     if (!confirm('이 알림 기준을 삭제할까요?')) {
       return
     }
 
-    const formData = new FormData()
-    formData.append('id', criterion.id.toString())
-
-    dispatchDelete(formData)
-  }
-
-  const getRelativeTime = (date: Date | null) => {
-    if (!date) return null
-    const now = dayjs()
-    const target = dayjs(date)
-    const diffDays = now.diff(target, 'day')
-
-    if (diffDays === 0) {
-      const diffHours = now.diff(target, 'hour')
-      if (diffHours === 0) {
-        const diffMinutes = now.diff(target, 'minute')
-        return `${diffMinutes}분 전`
-      }
-      return `${diffHours}시간 전`
-    } else if (diffDays === 1) {
-      return '어제'
-    } else if (diffDays < 7) {
-      return `${diffDays}일 전`
-    } else if (diffDays < 30) {
-      return `${Math.floor(diffDays / 7)}주 전`
-    } else if (diffDays < 365) {
-      return `${Math.floor(diffDays / 30)}달 전`
-    }
-    return target.format('YYYY년 M월 D일')
+    deleteMutation.mutate(criterion.id)
   }
 
   return (
@@ -150,7 +158,9 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
             )}
             {criterion.matchCount > 0 && criterion.lastMatchedAt && <span className="text-zinc-600">·</span>}
             {criterion.lastMatchedAt && (
-              <p className="text-xs sm:text-sm text-zinc-500">마지막 {getRelativeTime(criterion.lastMatchedAt)}</p>
+              <p className="text-xs sm:text-sm text-zinc-500">
+                마지막 {formatDistanceToNow(new Date(criterion.lastMatchedAt))}
+              </p>
             )}
           </div>
           <div className="flex flex-wrap gap-1.5 mt-3">
@@ -180,4 +190,8 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
       )}
     </div>
   )
+}
+
+function isLocalMutationError(status: number): boolean {
+  return LOCAL_MUTATION_ERROR_STATUSES.includes(status as (typeof LOCAL_MUTATION_ERROR_STATUSES)[number])
 }
