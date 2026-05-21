@@ -1,9 +1,8 @@
 import { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
-import { sec } from '@litomi/std'
-import { and, count, desc, ne, sql } from 'drizzle-orm'
+import { and, count, desc, eq, ne } from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 import { Eye } from 'lucide-react'
-import { unstable_cache } from 'next/cache'
 
 import MangaCardList from './MangaCardList'
 
@@ -28,30 +27,20 @@ export default async function AlsoViewedSection({ mangaId }: Props) {
   )
 }
 
-const getAlsoViewed = unstable_cache(
-  async (mangaId: number): Promise<number[]> => {
-    const result = await db
-      .select({
-        mangaId: readingHistoryTable.mangaId,
-        score: count(),
-      })
-      .from(readingHistoryTable)
-      .where(
-        and(
-          sql`${readingHistoryTable.userId} IN (
-            SELECT ${readingHistoryTable.userId}
-            FROM ${readingHistoryTable}
-            WHERE ${readingHistoryTable.mangaId} = ${mangaId}
-          )`,
-          ne(readingHistoryTable.mangaId, mangaId),
-        ),
-      )
-      .groupBy(readingHistoryTable.mangaId)
-      .orderBy(({ score }) => desc(score))
-      .limit(10)
+async function getAlsoViewed(mangaId: number): Promise<number[]> {
+  const targetHistory = alias(readingHistoryTable, 'target_history')
 
-    return result.map((r) => r.mangaId)
-  },
-  ['also-viewed'],
-  { tags: ['also-viewed'], revalidate: sec('1 week') },
-)
+  const result = await db
+    .select({
+      mangaId: readingHistoryTable.mangaId,
+      score: count(),
+    })
+    .from(targetHistory)
+    .innerJoin(readingHistoryTable, eq(readingHistoryTable.userId, targetHistory.userId))
+    .where(and(eq(targetHistory.mangaId, mangaId), ne(readingHistoryTable.mangaId, mangaId)))
+    .groupBy(readingHistoryTable.mangaId)
+    .orderBy(({ score }) => desc(score))
+    .limit(10)
+
+  return result.map((r) => r.mangaId)
+}

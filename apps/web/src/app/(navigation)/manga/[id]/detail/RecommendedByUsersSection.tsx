@@ -1,9 +1,8 @@
 import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
-import { sec } from '@litomi/std'
-import { and, count, desc, ne, sql } from 'drizzle-orm'
+import { and, count, desc, eq, gte, ne } from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 import { Star } from 'lucide-react'
-import { unstable_cache } from 'next/cache'
 
 import MangaCardList from './MangaCardList'
 
@@ -28,32 +27,27 @@ export default async function RecommendedByUsersSection({ mangaId }: Props) {
   )
 }
 
-const getRecommendedByUsers = unstable_cache(
-  async (mangaId: number): Promise<number[]> => {
-    const result = await db
-      .select({
-        mangaId: userRatingTable.mangaId,
-        score: count(),
-      })
-      .from(userRatingTable)
-      .where(
-        and(
-          sql`${userRatingTable.userId} IN (
-            SELECT ${userRatingTable.userId}
-            FROM ${userRatingTable}
-            WHERE ${userRatingTable.mangaId} = ${mangaId}
-              AND ${userRatingTable.rating} >= 4
-          )`,
-          ne(userRatingTable.mangaId, mangaId),
-          sql`${userRatingTable.rating} >= 4`,
-        ),
-      )
-      .groupBy(userRatingTable.mangaId)
-      .orderBy(({ score }) => desc(score))
-      .limit(10)
+async function getRecommendedByUsers(mangaId: number): Promise<number[]> {
+  const targetRating = alias(userRatingTable, 'target_rating')
 
-    return result.map((r) => r.mangaId)
-  },
-  ['recommended-by-users'],
-  { tags: ['recommended-by-users'], revalidate: sec('1 week') },
-)
+  const result = await db
+    .select({
+      mangaId: userRatingTable.mangaId,
+      score: count(),
+    })
+    .from(targetRating)
+    .innerJoin(userRatingTable, eq(userRatingTable.userId, targetRating.userId))
+    .where(
+      and(
+        eq(targetRating.mangaId, mangaId),
+        gte(targetRating.rating, 4),
+        ne(userRatingTable.mangaId, mangaId),
+        gte(userRatingTable.rating, 4),
+      ),
+    )
+    .groupBy(userRatingTable.mangaId)
+    .orderBy(({ score }) => desc(score))
+    .limit(10)
+
+  return result.map((r) => r.mangaId)
+}

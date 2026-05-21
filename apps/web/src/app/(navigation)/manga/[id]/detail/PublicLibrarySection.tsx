@@ -1,10 +1,8 @@
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { intToHexColor } from '@litomi/domain/utils/color'
-import { sec } from '@litomi/std'
-import { and, desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import { Library } from 'lucide-react'
-import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 
 type Props = {
@@ -51,22 +49,19 @@ export default async function PublicLibrarySection({ mangaId }: Props) {
   )
 }
 
-const getPublicLibraries = unstable_cache(
-  async (mangaId: number) =>
-    db
-      .select({
-        id: libraryTable.id,
-        name: libraryTable.name,
-        description: libraryTable.description,
-        color: libraryTable.color,
-        icon: libraryTable.icon,
-        itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
-      })
-      .from(libraryItemTable)
-      .innerJoin(libraryTable, eq(libraryItemTable.libraryId, libraryTable.id))
-      .where(and(eq(libraryItemTable.mangaId, mangaId), eq(libraryTable.isPublic, true)))
-      .orderBy(({ itemCount }) => [desc(itemCount), desc(libraryTable.createdAt)])
-      .limit(10),
-  ['public-libraries'],
-  { tags: ['public-libraries'], revalidate: sec('1 week') },
-)
+async function getPublicLibraries(mangaId: number) {
+  return db
+    .select({
+      id: libraryTable.id,
+      name: libraryTable.name,
+      description: libraryTable.description,
+      color: libraryTable.color,
+      icon: libraryTable.icon,
+      itemCount: db.$count(libraryItemTable, eq(libraryItemTable.libraryId, libraryTable.id)),
+    })
+    .from(libraryItemTable)
+    .innerJoin(libraryTable, eq(libraryItemTable.libraryId, libraryTable.id))
+    .where(and(eq(libraryItemTable.mangaId, mangaId), eq(libraryTable.isPublic, true)))
+    .orderBy(({ itemCount }) => [desc(itemCount), desc(libraryTable.createdAt)])
+    .limit(10)
+}

@@ -27,6 +27,7 @@ export const readingHistoryTable = pgTable(
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
     index('idx_reading_history_updated_at').on(table.userId, table.updatedAt.desc()),
+    index('idx_reading_history_manga_user').on(table.mangaId, table.userId),
   ],
 )
 
@@ -41,5 +42,8 @@ export const userRatingTable = pgTable(
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
+  (table) => [
+    primaryKey({ columns: [table.userId, table.mangaId] }),
+    index('idx_user_rating_manga_rating_user').on(table.mangaId, table.rating, table.userId),
+  ],
 )
