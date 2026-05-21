@@ -7,7 +7,7 @@
     "enabled": true,
     "endsAt": "2026-06-03T18:00:00+09:00",
     "id": "vote-choice-native-grid",
-    "imageUrls": ["/image/sponsor/vote-choice.svg"],
+    "imageUrls": ["/image/sponsor/vote-choice.avif"],
     "label": "공익 광고",
     "placements": [
       "public_grid_library_home",
@@ -30,7 +30,7 @@
     "enabled": true,
     "endsAt": "2026-06-03T18:00:00+09:00",
     "id": "vote-bookmark-native-grid",
-    "imageUrls": ["/image/sponsor/vote-bookmark.svg"],
+    "imageUrls": ["/image/sponsor/vote-bookmark.avif"],
     "label": "공익 광고",
     "placements": [
       "public_grid_library_home",
@@ -53,7 +53,7 @@
     "enabled": true,
     "endsAt": "2026-06-03T18:00:00+09:00",
     "id": "vote-pardon-native-grid",
-    "imageUrls": ["/image/sponsor/vote-pardon.svg"],
+    "imageUrls": ["/image/sponsor/vote-pardon.avif"],
     "label": "공익 광고",
     "placements": [
       "public_grid_library_home",
@@ -72,7 +72,7 @@
     "campaignId": "vote-encouragement-2026-local",
     "creativeId": "vote-economy-card-v1",
     "ctaLabel": "투표소 확인하기",
-    "description": "누가 책임질지는 직접 판단하세요. 환율과 부채는 결국 내 월급, 내 물가, 내 미래에 닿습니다.",
+    "description": "환율과 부채는 내 월급, 내 물가, 내 미래에 닿습니다. 누가 책임질지는 직접 판단하세요.",
     "enabled": true,
     "endsAt": "2026-06-03T18:00:00+09:00",
     "id": "vote-economy-native-grid",

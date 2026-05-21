@@ -87,7 +87,7 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
         >
           <img alt={sponsor.title} className="size-full object-contain" loading="lazy" src={imageUrl} />
         </a>
-        <div className="pointer-events-none absolute left-2 top-2 z-10 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md bg-zinc-950/85 px-2 py-1 text-xs font-semibold text-foreground shadow-sm ring-1 ring-white/10 backdrop-blur">
+        <div className="pointer-events-none absolute right-2 top-2 z-10 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md bg-zinc-950/85 px-2 py-1 text-xs font-semibold text-foreground shadow-sm ring-1 ring-white/10 backdrop-blur">
           <span className="shrink-0 text-brand">{disclosureLabel}</span>
           {advertiserLabel && <span className="min-w-0 truncate text-zinc-300">{advertiserLabel}</span>}
         </div>
