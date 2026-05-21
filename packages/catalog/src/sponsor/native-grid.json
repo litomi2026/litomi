@@ -1,5 +1,97 @@
 [
   {
+    "campaignId": "vote-encouragement-2026-local",
+    "creativeId": "vote-choice-card-v1",
+    "ctaLabel": "투표소 확인하기",
+    "description": "투표는 익명이에요. 오늘 볼 작품 고르듯, 내 한 표도 직접 찍어요.",
+    "enabled": true,
+    "endsAt": "2026-06-03T18:00:00+09:00",
+    "id": "vote-choice-native-grid",
+    "imageUrls": ["/image/sponsor/vote-choice.avif"],
+    "label": "공익 광고",
+    "placements": [
+      "public_grid_library_home",
+      "public_grid_new",
+      "public_grid_random",
+      "public_grid_ranking",
+      "public_grid_search"
+    ],
+    "position": 4,
+    "startsAt": "2026-05-21T00:00:00+09:00",
+    "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
+    "title": "취향을 직접 고르듯, 후보도 직접 골라요.",
+    "weight": 1
+  },
+  {
+    "campaignId": "vote-encouragement-2026-local",
+    "creativeId": "vote-bookmark-card-v1",
+    "ctaLabel": "투표소 확인하기",
+    "description": "투표일 전에 30초만 확인해요. 투표 장소만 알아도 반은 끝이에요.",
+    "enabled": true,
+    "endsAt": "2026-06-03T18:00:00+09:00",
+    "id": "vote-bookmark-native-grid",
+    "imageUrls": ["/image/sponsor/vote-bookmark.avif"],
+    "label": "공익 광고",
+    "placements": [
+      "public_grid_library_home",
+      "public_grid_new",
+      "public_grid_random",
+      "public_grid_ranking",
+      "public_grid_search"
+    ],
+    "position": 4,
+    "startsAt": "2026-05-21T00:00:00+09:00",
+    "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
+    "title": "북마크하듯, 내 투표도 미리 챙겨요.",
+    "weight": 1
+  },
+  {
+    "campaignId": "vote-encouragement-2026-local",
+    "creativeId": "vote-pardon-card-v1",
+    "ctaLabel": "투표소 확인하기",
+    "description": "사면도, 복권도 결국 권력이 정해요. 기록은 지워져도, 선택은 남아요.",
+    "enabled": true,
+    "endsAt": "2026-06-03T18:00:00+09:00",
+    "id": "vote-pardon-native-grid",
+    "imageUrls": ["/image/sponsor/vote-pardon.avif"],
+    "label": "공익 광고",
+    "placements": [
+      "public_grid_library_home",
+      "public_grid_new",
+      "public_grid_random",
+      "public_grid_ranking",
+      "public_grid_search"
+    ],
+    "position": 4,
+    "startsAt": "2026-05-21T00:00:00+09:00",
+    "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
+    "title": "입시비리도, 횡령도 사면되는 세상. 내 표까지 비워둘 건가요?",
+    "weight": 1
+  },
+  {
+    "campaignId": "vote-encouragement-2026-local",
+    "creativeId": "vote-economy-card-v1",
+    "ctaLabel": "투표소 확인하기",
+    "description": "환율과 부채는 내 월급, 내 물가, 내 미래에 닿아요. 누가 책임질지는 직접 판단하세요.",
+    "enabled": true,
+    "endsAt": "2026-06-03T18:00:00+09:00",
+    "id": "vote-economy-native-grid",
+    "imageUrls": ["/image/sponsor/vote-economy.avif"],
+    "label": "공익 광고",
+    "placements": [
+      "public_grid_library_home",
+      "public_grid_new",
+      "public_grid_random",
+      "public_grid_ranking",
+      "public_grid_search"
+    ],
+    "position": 4,
+    "startsAt": "2026-05-21T00:00:00+09:00",
+    "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
+    "title": "원화는 약해지고, 나랏빚은 불어났습니다",
+    "weight": 1
+  },
+  {
     "campaignId": "bdsm-test",
     "creativeId": "bdsm-test-card-v1",
     "description": "안전하고 건전한 BDSM 플레이를 위한 지식 학습 공간",
@@ -36,6 +128,6 @@
       ]
     },
     "title": "BDSM 지식 테스트",
-    "weight": 1
+    "weight": 10
   }
 ]

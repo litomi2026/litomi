@@ -30,6 +30,7 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
   const imageUrl = sponsor.imageUrls[activeImageIndex]
   const disclosureLabel = sponsor.label.trim() || '광고'
   const advertiserLabel = sponsor.advertiserName?.trim()
+  const ctaLabel = sponsor.ctaLabel?.trim() || '사이트 열기'
   const sponsorContextLabel = [disclosureLabel, advertiserLabel].filter(Boolean).join(', ')
   const imageLinkLabel = `${sponsorContextLabel}: ${sponsor.title} 이미지 열기, 새 탭에서 열림`
   const sponsorLinkLabel = `${sponsorContextLabel}: ${sponsor.title} 광고주 사이트 열기, 새 탭에서 열림`
@@ -86,7 +87,7 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
         >
           <img alt={sponsor.title} className="size-full object-contain" loading="lazy" src={imageUrl} />
         </a>
-        <div className="pointer-events-none absolute left-2 top-2 z-10 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md bg-zinc-950/85 px-2 py-1 text-xs font-semibold text-foreground shadow-sm ring-1 ring-white/10 backdrop-blur">
+        <div className="pointer-events-none absolute right-2 top-2 z-10 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md bg-zinc-950/85 px-2 py-1 text-xs font-semibold text-foreground shadow-sm ring-1 ring-white/10 backdrop-blur">
           <span className="shrink-0 text-brand">{disclosureLabel}</span>
           {advertiserLabel && <span className="min-w-0 truncate text-zinc-300">{advertiserLabel}</span>}
         </div>
@@ -123,7 +124,7 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
           <p className="line-clamp-3 wrap-break-word text-sm leading-6 text-zinc-400">{sponsor.description}</p>
         </div>
         <div className="flex items-center justify-between gap-2 rounded-lg border border-brand/30 bg-brand/10 px-2.5 py-2 text-sm font-bold text-brand transition group-hover:bg-brand/15">
-          <span className="min-w-0 truncate">사이트 열기</span>
+          <span className="min-w-0 truncate">{ctaLabel}</span>
           <ExternalLink aria-hidden className="size-4 shrink-0" />
         </div>
       </a>

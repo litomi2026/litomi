@@ -10,6 +10,7 @@ export type NativeGridSponsor = {
   advertiserName?: string
   campaignId: string
   creativeId: string
+  ctaLabel?: string
   description: string
   id: string
   imageUrls: readonly string[]
