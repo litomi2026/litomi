@@ -137,21 +137,17 @@ export default function MangaReader({ manga }: Props) {
   return (
     <Reader
       header={
-        <div
-          className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-2 gap-y-2 items-center p-3 select-none"
-          role="toolbar"
-        >
-          <div className="flex gap-1">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-y-2 items-center p-2 select-none" role="toolbar">
+          <div className="flex">
             <BackButton className={TOP_BUTTON_CLASS_NAME} fallbackUrl="/" />
             <FullscreenButton className={TOP_BUTTON_CLASS_NAME} />
           </div>
           <MangaDetailButton className={`${TOP_BUTTON_CLASS_NAME} min-w-0 hover:underline`} manga={manga} />
-          <div className="flex gap-1 items-center">
+          <div className="flex items-center">
             <MangaIdJumpForm className="hidden w-30 md:flex" currentMangaId={manga.id} />
             <button
               aria-controls="mobile-manga-id-jump"
               aria-expanded={isMangaIdJumpOpen}
-              aria-label="작품 번호로 이동"
               className={`${TOP_BUTTON_CLASS_NAME} md:hidden`}
               onClick={() => setIsMangaIdJumpOpen((prev) => !prev)}
               title="작품 번호로 이동"
@@ -160,7 +156,6 @@ export default function MangaReader({ manga }: Props) {
               <Hash className="size-6" />
             </button>
             <Link
-              aria-label="리뷰 보기"
               className={TOP_BUTTON_CLASS_NAME}
               href={`/manga/${manga.id}/detail`}
               prefetch={false}

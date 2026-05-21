@@ -1,10 +1,13 @@
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/constants/policy'
 import { PostFilter } from '@litomi/domain/post/filter'
+import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
 import { Book } from 'lucide-react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import PostList from '@/app/(navigation)/(right-aside)/posts/[filter]/MasonryPostList'
+import { getManga } from '@/app/manga/[id]/common.server'
 import RatingInput from '@/app/manga/[id]/RatingInput/RatingInput'
 import { mangaSchema } from '@/app/manga/[id]/schema'
 import BackButton from '@/components/BackButton'
@@ -26,13 +29,22 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]/detail
   }
 
   const { id } = validation.data
+  const manga = await getManga(id)
+  const title = `${(manga?.title ?? `작품 #${id}`).slice(0, MAX_MANGA_TITLE_LENGTH)} 상세`
+  const description = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
 
   return {
-    title: `작품 상세 #${id}`,
-    openGraph: {
-      ...defaultOpenGraph,
-      title: `작품 상세 #${id} - ${SHORT_NAME}`,
-      url: `${APP_ORIGIN}/manga/${id}/detail`,
+    title,
+    description,
+    ...generateOpenGraphMetadata({
+      title,
+      description,
+      images: createKHentaiThumbnailCoverURL(id),
+      url: `/manga/${id}/detail`,
+    }),
+    alternates: {
+      canonical: `/manga/${id}/detail`,
+      languages: { ko: `/manga/${id}/detail` },
     },
   }
 }

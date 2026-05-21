@@ -2,7 +2,8 @@
 
 import { ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { type FormEvent, useId } from 'react'
+import { useId } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 type Props = {
   currentMangaId: number
@@ -12,21 +13,15 @@ type Props = {
   onNavigate?: () => void
 }
 
-export default function MangaIdJumpForm({
-  autoFocus,
-  className = '',
-  currentMangaId,
-  formId,
-  onNavigate,
-}: Props) {
+export default function MangaIdJumpForm({ autoFocus, className = '', currentMangaId, formId, onNavigate }: Props) {
   const inputId = useId()
   const router = useRouter()
 
-  function handleInput(event: FormEvent<HTMLInputElement>) {
+  function handleInput(event: React.InputEvent<HTMLInputElement>) {
     event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '')
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
@@ -45,7 +40,7 @@ export default function MangaIdJumpForm({
   return (
     <form
       aria-label="작품 번호로 이동"
-      className={`items-center gap-1 rounded-full bg-zinc-900/70 p-1 ring-1 ring-zinc-700/80 ${className}`}
+      className={twMerge('items-center gap-1 rounded-full bg-zinc-900 p-1', className)}
       id={formId}
       onSubmit={handleSubmit}
     >
@@ -55,7 +50,7 @@ export default function MangaIdJumpForm({
       <input
         autoComplete="off"
         autoFocus={autoFocus}
-        className="h-8 min-w-0 flex-1 rounded-full bg-transparent px-2 text-sm tabular-nums text-foreground placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/70"
+        className="h-8 min-w-0 flex-1 rounded-full bg-transparent px-2 text-base tabular-nums text-foreground placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/70 sm:text-sm"
         id={inputId}
         inputMode="numeric"
         maxLength={9}
@@ -68,8 +63,8 @@ export default function MangaIdJumpForm({
         type="text"
       />
       <button
-        aria-label="작품 번호로 이동"
         className="rounded-full p-1.5 transition hover:bg-zinc-800 active:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
+        title="작품 번호로 이동"
         type="submit"
       >
         <ArrowRight className="size-5" />

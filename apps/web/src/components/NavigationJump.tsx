@@ -25,7 +25,7 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
     router.push(`${hrefPrefix}${page}${hrefSuffix}`)
   }
 
-  function handleInput(event: React.FormEvent<HTMLInputElement>) {
+  function handleInput(event: React.InputEvent<HTMLInputElement>) {
     event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '')
   }
 

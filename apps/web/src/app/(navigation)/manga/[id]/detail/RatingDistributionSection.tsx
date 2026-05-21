@@ -1,9 +1,7 @@
 import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
-import { sec } from '@litomi/std'
 import { count, eq } from 'drizzle-orm'
 import { BarChart3, Star } from 'lucide-react'
-import { unstable_cache } from 'next/cache'
 
 type Props = {
   mangaId: number
@@ -64,17 +62,14 @@ export default async function RatingDistributionSection({ mangaId }: Props) {
   )
 }
 
-const getRatingDistribution = unstable_cache(
-  async (mangaId: number): Promise<RatingDistribution[]> =>
-    db
-      .select({
-        rating: userRatingTable.rating,
-        count: count(),
-      })
-      .from(userRatingTable)
-      .where(eq(userRatingTable.mangaId, mangaId))
-      .groupBy(userRatingTable.rating)
-      .orderBy(userRatingTable.rating),
-  ['rating-distribution'],
-  { tags: ['rating-distribution'], revalidate: sec('1 week') },
-)
+async function getRatingDistribution(mangaId: number): Promise<RatingDistribution[]> {
+  return db
+    .select({
+      rating: userRatingTable.rating,
+      count: count(),
+    })
+    .from(userRatingTable)
+    .where(eq(userRatingTable.mangaId, mangaId))
+    .groupBy(userRatingTable.rating)
+    .orderBy(userRatingTable.rating)
+}
