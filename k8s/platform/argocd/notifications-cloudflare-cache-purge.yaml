@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  labels:
+    app.kubernetes.io/name: argocd-notifications-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  service.webhook.cloudflare-cache-purge: |
+    url: https://api.cloudflare.com
+    headers:
+      - name: Authorization
+        value: Bearer $cloudflareApiToken
+      - name: Content-Type
+        value: application/json
+
+  template.cloudflare-cache-purge: |
+    webhook:
+      cloudflare-cache-purge:
+        method: POST
+        path: /client/v4/zones/{{ .secrets.cloudflareZoneId }}/purge_cache
+        body: |
+          {"hosts":["{{ index .app.metadata.annotations "litomi.in/cloudflare-cache-purge-hostname" }}"]}
+
+  trigger.on-litomi-deployed: |
+    when: app.status?.operationState?.phase in ['Succeeded'] and app.status?.health?.status == 'Healthy'
+    oncePer: app.status?.operationState?.syncResult?.revision
+    send: [cloudflare-cache-purge]

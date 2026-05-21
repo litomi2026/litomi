@@ -40,6 +40,7 @@ declare -ra VAULT_ROLE_SPECS=(
 
 declare -ra REQUIRED_SEED_FILES=(
   "argocd/github-repo-creds.env"
+  "argocd/cloudflare-cache-purge-secret.env"
   "litomi-prod/litomi-backend-secret.env"
   "litomi-stg/litomi-backend-secret.env"
   "cloudflared/cloudflared-token.env"
@@ -53,6 +54,7 @@ declare -ra REQUIRED_SEED_FILES=(
 
 declare -ra REQUIRED_CLUSTER_SECRETS=(
   "argocd|github-repo-creds"
+  "argocd|argocd-notifications-secret"
   "litomi-prod|litomi-backend-secret"
   "litomi-stg|litomi-backend-secret"
   "cloudflared|cloudflared-token"
