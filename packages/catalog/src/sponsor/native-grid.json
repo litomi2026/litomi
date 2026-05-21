@@ -49,7 +49,7 @@
     "campaignId": "vote-encouragement-2026-local",
     "creativeId": "vote-pardon-card-v1",
     "ctaLabel": "투표소 확인하기",
-    "description": "사면도, 복권도 결국 권력이 정합니다. 기록은 지워져도, 표는 남습니다.",
+    "description": "사면도, 복권도 결국 권력이 정합니다. 기록은 지워져도, 선택은 남습니다.",
     "enabled": true,
     "endsAt": "2026-06-03T18:00:00+09:00",
     "id": "vote-pardon-native-grid",
