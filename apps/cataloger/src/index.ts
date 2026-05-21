@@ -4,7 +4,7 @@ import { connect, type DetailedPeerCertificate, type PeerCertificate } from 'nod
 
 import { crawlMangas } from './crawl'
 
-const K_HENTAI_HOSTNAME = 'k-hentai.org'
+const TLS_PROBE_HOSTNAMES = ['k-hentai.org', 'kohentai.org', 'example.com', 'www.google.com', 'api.github.com']
 const TLS_PROBE_TIMEOUT_MS = 10_000
 const CA_BUNDLE_PATHS = ['/etc/ssl/certs/ca-certificates.crt', '/etc/ssl/cert.pem', '/etc/pki/tls/certs/ca-bundle.crt']
 
@@ -60,20 +60,17 @@ main()
 
 async function logKHentaiTLSProbe() {
   try {
-    const [addresses, caBundles, tlsProbe] = await Promise.all([
-      lookup(K_HENTAI_HOSTNAME, { all: true }).catch((error: unknown) => ({
-        error: toErrorLog(error),
-      })),
+    const [hosts, caBundles] = await Promise.all([
+      Promise.all(TLS_PROBE_HOSTNAMES.map(probeHost)),
       Promise.all(CA_BUNDLE_PATHS.map(statCABundle)),
-      probeTLSCertificate(K_HENTAI_HOSTNAME),
     ])
 
     console.log(
       JSON.stringify({
         severity: 'INFO',
-        message: 'K-Hentai TLS probe',
+        message: 'Cataloger HTTPS TLS probe',
         probe: {
-          hostname: K_HENTAI_HOSTNAME,
+          hostnames: TLS_PROBE_HOSTNAMES,
           runtime: {
             bun: typeof Bun === 'undefined' ? undefined : Bun.version,
             node: process.version,
@@ -89,15 +86,25 @@ async function logKHentaiTLSProbe() {
             sslCertFile: process.env.SSL_CERT_FILE,
             sslCertDir: process.env.SSL_CERT_DIR,
           },
-          dns: addresses,
           caBundles,
-          tls: tlsProbe,
+          hosts,
         },
       }),
     )
   } catch (error) {
     log.warn('K-Hentai TLS probe failed:', error)
   }
+}
+
+async function probeHost(hostname: string) {
+  const [dns, tls] = await Promise.all([
+    lookup(hostname, { all: true }).catch((error: unknown) => ({
+      error: toErrorLog(error),
+    })),
+    probeTLSCertificate(hostname),
+  ])
+
+  return { hostname, dns, tls }
 }
 
 async function probeTLSCertificate(hostname: string) {
