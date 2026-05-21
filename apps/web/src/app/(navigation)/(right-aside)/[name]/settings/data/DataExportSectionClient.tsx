@@ -1,13 +1,17 @@
 'use client'
 
+import type { POSTV1MeExportBody, POSTV1MeExportResponse } from '@litomi/contracts'
+import type { ReactNode } from 'react'
+
+import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Bookmark, Check, Clock, Download, Library, Loader2, ShieldCheck, Star } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
+import type { ProblemDetailsError } from '@/utils/react-query-error'
+
 import { downloadBlob } from '@/utils/download'
-import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { exportUserData } from './api'
 
@@ -34,105 +38,96 @@ const DATA_CONFIG: Record<DataType, { label: string; icon: ReactNode }> = {
 }
 
 const ALL_TYPES = Object.keys(DATA_CONFIG) as DataType[]
+const DATA_TYPE_VALUES = new Set<string>(ALL_TYPES)
 
 export default function DataExportSectionClient({ counts }: Props) {
-  const [isPending, setIsPending] = useState(false)
-  const [selected, setSelected] = useState<Set<DataType>>(new Set(ALL_TYPES))
+  const exportMutation = useMutation<POSTV1MeExportResponse, ProblemDetailsError, POSTV1MeExportBody>({
+    mutationFn: exportUserData,
 
-  function toggleType(type: DataType) {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(type)) {
-        next.delete(type)
-      } else {
-        next.add(type)
+    onSuccess: (data) => {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      downloadBlob(blob, `litomi-${dayjs().format('YYYY-MM-DD')}.json`)
+      toast.success('데이터를 성공적으로 내보냈어요')
+    },
+
+    onError: (error) => {
+      if (error.status === 400) {
+        toast.warning(error.problem.detail || '요청을 처리할 수 없어요')
       }
-      return next
-    })
-  }
+    },
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    meta: {
+      suppressGlobalErrorToastForStatuses: [400],
+    },
+  })
+
+  const isPending = exportMutation.isPending
+
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if (isPending) {
       return
     }
 
-    if (selected.size === 0) {
+    const formData = new FormData(e.currentTarget)
+    const selectedTypes = new Set(formData.getAll('types').filter(isDataType))
+
+    if (selectedTypes.size === 0) {
       toast.warning('내보낼 데이터를 선택해 주세요')
       return
     }
 
-    try {
-      setIsPending(true)
-      const formData = new FormData(e.currentTarget)
-
-      const data = await exportUserData({
-        password: String(formData.get('password')),
-        includeHistory: selected.has('history'),
-        includeBookmarks: selected.has('bookmarks'),
-        includeRatings: selected.has('ratings'),
-        includeLibraries: selected.has('libraries'),
-        includeCensorships: selected.has('censorships'),
-      })
-
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-      downloadBlob(blob, `litomi-${dayjs().format('YYYY-MM-DD')}.json`)
-      toast.success('데이터를 성공적으로 내보냈어요')
-    } catch (error) {
-      if (error instanceof ProblemDetailsError) {
-        if (error.status >= 500) {
-          toast.error('요청을 처리할 수 없어요')
-        } else {
-          toast.warning(error.problem.detail || '요청을 처리할 수 없어요')
-        }
-      } else {
-        toast.error('요청을 처리할 수 없어요')
-      }
-    } finally {
-      setIsPending(false)
-    }
+    exportMutation.mutate({
+      password: String(formData.get('password') ?? ''),
+      includeHistory: selectedTypes.has('history'),
+      includeBookmarks: selectedTypes.has('bookmarks'),
+      includeRatings: selectedTypes.has('ratings'),
+      includeLibraries: selectedTypes.has('libraries'),
+      includeCensorships: selectedTypes.has('censorships'),
+    })
   }
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
-      <div className="space-y-3">
-        <p className="text-sm text-zinc-400">내보낼 데이터를 선택하세요</p>
+      <fieldset className="space-y-3">
+        <legend className="text-sm text-zinc-400">내보낼 데이터를 선택하세요</legend>
         <div className="grid sm:grid-cols-2 gap-2">
-          {ALL_TYPES.map((type) => {
-            const isChecked = selected.has(type)
-            return (
-              <button
-                aria-pressed={isChecked}
+          {ALL_TYPES.map((type) => (
+            <label
+              className={twMerge(
+                'flex items-center gap-2 p-3 rounded-lg border-2 transition text-left cursor-pointer',
+                'border-zinc-700 bg-zinc-800/30 hover:border-zinc-600',
+                'has-[input:checked]:border-brand has-[input:checked]:bg-brand/10',
+                'has-[input:disabled]:cursor-not-allowed has-[input:disabled]:opacity-60',
+              )}
+              key={type}
+            >
+              <input
+                className="peer sr-only"
+                defaultChecked
+                disabled={isPending}
+                name="types"
+                type="checkbox"
+                value={type}
+              />
+              <span
+                aria-hidden
                 className={twMerge(
-                  'flex items-center gap-2 p-3 rounded-lg border-2 transition text-left',
-                  'border-zinc-700 bg-zinc-800/30 hover:border-zinc-600',
-                  'aria-pressed:border-brand aria-pressed:bg-brand/10',
+                  'size-4 shrink-0 rounded border-2 transition-all flex items-center justify-center',
+                  'border-zinc-600 bg-zinc-800 peer-checked:border-brand peer-checked:[&>svg]:opacity-100',
+                  'peer-focus-visible:ring-2 peer-focus-visible:ring-brand peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background',
                 )}
-                key={type}
-                onClick={() => toggleType(type)}
-                type="button"
               >
-                <div
-                  aria-hidden
-                  className={twMerge(
-                    'size-4 shrink-0 rounded border-2 transition-all flex items-center justify-center',
-                    'border-zinc-600 bg-zinc-800',
-                  )}
-                  data-checked={isChecked || undefined}
-                >
-                  {isChecked && <Check className="size-3 text-brand" />}
-                </div>
-                <div className={`transition ${isChecked ? 'text-brand' : 'text-zinc-400'}`}>
-                  {DATA_CONFIG[type].icon}
-                </div>
-                <span className="flex-1 min-w-0 text-sm font-medium truncate">{DATA_CONFIG[type].label}</span>
-                {counts && <span className="text-xs text-zinc-500 shrink-0">{counts[type].toLocaleString()}</span>}
-              </button>
-            )
-          })}
+                <Check className="size-3 text-brand opacity-0 transition" />
+              </span>
+              <span className="text-zinc-400 transition peer-checked:text-brand">{DATA_CONFIG[type].icon}</span>
+              <span className="flex-1 min-w-0 text-sm font-medium truncate">{DATA_CONFIG[type].label}</span>
+              {counts && <span className="text-xs text-zinc-500 shrink-0">{counts[type].toLocaleString()}</span>}
+            </label>
+          ))}
         </div>
-      </div>
+      </fieldset>
       <div className="space-y-2">
         <label className="text-sm text-zinc-400" htmlFor="export-password">
           비밀번호 확인
@@ -170,4 +165,8 @@ export default function DataExportSectionClient({ counts }: Props) {
       </button>
     </form>
   )
+}
+
+function isDataType(value: FormDataEntryValue): value is DataType {
+  return typeof value === 'string' && DATA_TYPE_VALUES.has(value)
 }

@@ -30,8 +30,18 @@ route.post('/', zProblemValidator('json', postV1MeExportBodySchema), async (c) =
     const dummyHash = '$2b$10$dummyhashfortimingattackprevention'
     const isValidPassword = await compare(password, user?.passwordHash ?? dummyHash)
 
-    if (!user || !isValidPassword) {
-      return problemResponse(c, { status: 401, detail: '인증에 실패했어요' })
+    if (!user) {
+      return problemResponse(c, {
+        status: 401,
+        detail: '로그인 정보가 없거나 만료됐어요',
+      })
+    }
+
+    if (!isValidPassword) {
+      return problemResponse(c, {
+        status: 400,
+        detail: '입력을 확인해 주세요',
+      })
     }
 
     const exportData: POSTV1MeExportResponse = {
