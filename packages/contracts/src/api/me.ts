@@ -116,6 +116,19 @@ export const patchV1MeSettingsBodySchema = z
 
 export type PATCHV1MeSettingsBody = z.infer<typeof patchV1MeSettingsBodySchema>
 
+export const postV1MeExportBodySchema = z.object({
+  password: passwordSchema,
+  includeHistory: z.boolean(),
+  includeBookmarks: z.boolean(),
+  includeRatings: z.boolean(),
+  includeLibraries: z.boolean(),
+  includeCensorships: z.boolean(),
+})
+
+export type POSTV1MeExportBody = z.infer<typeof postV1MeExportBodySchema>
+
+export type POSTV1MeExportResponse = Record<string, unknown>
+
 export const patchV1MePasswordBodySchema = z.object({
   currentPassword: z.string().min(1, '현재 비밀번호를 입력해 주세요'),
   newPassword: passwordSchema,

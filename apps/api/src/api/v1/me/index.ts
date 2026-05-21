@@ -5,6 +5,7 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 
 import deleteRoute from './DELETE'
+import exportRoutes from './export'
 import followingRoutes from './following'
 import getRoute from './GET'
 import passwordRoutes from './password'
@@ -18,6 +19,7 @@ route.use('*', requireAuth)
 route.route('/', getRoute)
 route.route('/', patchRoute)
 route.route('/', deleteRoute)
+route.route('/export', exportRoutes)
 route.route('/password', passwordRoutes)
 route.route('/following', followingRoutes)
 route.route('/session', sessionRoutes)

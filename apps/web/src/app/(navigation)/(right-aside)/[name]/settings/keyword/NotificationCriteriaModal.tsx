@@ -1,17 +1,29 @@
 'use client'
 
+import type {
+  PATCHV1NotificationCriteriaIdBody,
+  PATCHV1NotificationCriteriaIdResponse,
+  POSTV1NotificationCriteriaBody,
+  POSTV1NotificationCriteriaResponse,
+} from '@litomi/contracts'
+
+import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/constants/policy'
+import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { getInvalidParams } from '@litomi/http/problem-details'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
+import { useMutation } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import useServerAction, { getFieldError } from '@/hook/useServerAction'
+import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { NotificationCriteria } from './types'
 
-import { createNotificationCriteria, updateNotificationCriteria } from './actions'
-import ConditionInput from './ConditionInput'
+import { createNotificationCriteria, updateNotificationCriteria } from './api'
+import ConditionInput, { type ConditionInputRow } from './ConditionInput'
 
 interface Props {
   editingCriteria: NotificationCriteria | null
@@ -19,98 +31,136 @@ interface Props {
   onClose: () => void
 }
 
+type SaveNotificationCriteriaResponse = PATCHV1NotificationCriteriaIdResponse | POSTV1NotificationCriteriaResponse
+
+type SaveNotificationCriteriaVariables =
+  | {
+      body: PATCHV1NotificationCriteriaIdBody
+      criteriaId: number
+      mode: 'update'
+    }
+  | {
+      body: POSTV1NotificationCriteriaBody
+      mode: 'create'
+    }
+
+const LOCAL_MUTATION_ERROR_STATUSES: readonly number[] = [400, 403, 404, 409]
+
 export default function NotificationCriteriaModal({ isOpen, onClose, editingCriteria }: Props) {
-  const formRef = useRef<HTMLFormElement>(null)
-  const [conditionCount, setConditionCount] = useState(editingCriteria?.conditions.length || 1)
+  const [conditionRows, setConditionRows] = useState<ConditionInputRow[]>(() =>
+    getInitialConditionRows(editingCriteria),
+  )
+
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const router = useRouter()
   const nameId = useId()
+  const formKey = `${isOpen ? 'open' : 'closed'}:${editingCriteria?.id ?? 'new'}:${editingCriteria?.updatedAt.getTime() ?? 0}`
+
   const labelClassName = 'block text-sm font-medium text-zinc-300 mb-1'
+  const nameError = fieldErrors.name
 
-  const processAndSubmit = async (formData: FormData) => {
-    const conditionCountFromForm = parseInt(formData.get('conditionCount')?.toString() || '1')
-    const conditions = []
-
-    for (let i = 0; i < conditionCountFromForm; i++) {
-      const type = formData.get(`condition-type-${i}`)
-      const value = formData.get(`condition-value-${i}`)
-      const isExcluded = formData.get(`condition-excluded-${i}`) === 'on'
-
-      if (type && value && value.toString().trim()) {
-        conditions.push({
-          type: parseInt(type.toString()),
-          value: value.toString().trim(),
-          isExcluded,
-        })
+  const saveMutation = useMutation<
+    SaveNotificationCriteriaResponse,
+    ProblemDetailsError,
+    SaveNotificationCriteriaVariables
+  >({
+    mutationFn: (variables) => {
+      if (variables.mode === 'update') {
+        return updateNotificationCriteria(variables.criteriaId, variables.body)
       }
-    }
 
-    const processedData = new FormData()
-    processedData.append('name', formData.get('name') ?? '')
-    processedData.append('conditions', JSON.stringify(conditions))
-    processedData.append('isActive', 'true')
+      return createNotificationCriteria(variables.body)
+    },
 
-    if (editingCriteria) {
-      processedData.append('id', editingCriteria.id.toString())
-      return updateNotificationCriteria(processedData)
-    } else {
-      return createNotificationCriteria(processedData)
-    }
-  }
-
-  const [response, dispatchAction, isPending] = useServerAction({
-    action: processAndSubmit,
-    onSuccess: (data) => {
-      toast.success(data)
+    onSuccess: (_data, variables) => {
+      toast.success(variables.mode === 'update' ? '알림 기준을 수정했어요' : '알림 기준을 생성했어요')
+      router.refresh()
       onClose()
+    },
+
+    onError: (error) => {
+      setFieldErrors(Object.fromEntries(getInvalidParams(error.problem).map((param) => [param.name, param.reason])))
+
+      if (LOCAL_MUTATION_ERROR_STATUSES.includes(error.status)) {
+        toast.warning(error.problem.detail || '입력을 확인해 주세요')
+      }
+    },
+
+    meta: {
+      suppressGlobalErrorToastForStatuses: LOCAL_MUTATION_ERROR_STATUSES,
     },
   })
 
-  const nameError = getFieldError(response, 'name')
+  const isPending = saveMutation.isPending
 
-  const handleAddCondition = () => {
-    setConditionCount((prev) => Math.min(prev + 1, 10))
-  }
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault()
 
-  const handleRemoveCondition = (index: number) => {
-    // Get the current values before removing
-    const form = formRef.current
-    if (!form) return
-
-    const conditions: Array<{ type: string; value: string }> = []
-
-    // Collect all current values except the one being removed
-    for (let i = 0; i < conditionCount; i++) {
-      if (i === index) continue
-
-      const typeField = form.elements.namedItem(`condition-type-${i}`)
-      const valueField = form.elements.namedItem(`condition-value-${i}`)
-
-      if (typeField instanceof HTMLSelectElement && valueField instanceof HTMLInputElement) {
-        conditions.push({
-          type: typeField.value,
-          value: valueField.value,
-        })
-      }
+    if (isPending) {
+      return
     }
 
-    // Update condition count
-    setConditionCount((prev) => Math.max(prev - 1, 1))
+    const formData = new FormData(event.currentTarget)
+    const conditionTypes = formData.getAll('condition-type')
+    const conditionValues = formData.getAll('condition-value')
+    const excludedConditionIds = new Set(formData.getAll('condition-excluded'))
 
-    // Restore values after DOM updates
-    setTimeout(() => {
-      conditions.forEach((condition, newIndex) => {
-        const typeField = form.elements.namedItem(`condition-type-${newIndex}`)
-        const valueField = form.elements.namedItem(`condition-value-${newIndex}`)
+    const payloadConditions = conditionRows.flatMap((row, index) => {
+      const type = conditionTypes[index]
+      const value = conditionValues[index]
 
-        if (typeField instanceof HTMLSelectElement) typeField.value = condition.type
-        if (valueField instanceof HTMLInputElement) valueField.value = condition.value
-      })
-    }, 0)
+      if (typeof type !== 'string' || typeof value !== 'string') {
+        return []
+      }
+
+      const trimmedValue = value.trim()
+
+      if (!trimmedValue) {
+        return []
+      }
+
+      return [
+        {
+          type: Number.parseInt(type),
+          value: trimmedValue,
+          isExcluded: excludedConditionIds.has(row.id),
+        },
+      ]
+    })
+
+    const baseBody = {
+      name: String(formData.get('name') ?? ''),
+      conditions: payloadConditions,
+    }
+
+    setFieldErrors({})
+
+    if (editingCriteria) {
+      saveMutation.mutate({ mode: 'update', criteriaId: editingCriteria.id, body: baseBody })
+      return
+    }
+
+    saveMutation.mutate({ mode: 'create', body: { ...baseBody, isActive: true } })
   }
 
-  // NOTE: 모달이 열릴 때 조건 개수 설정
+  function handleAddCondition() {
+    setConditionRows((prev) => {
+      if (prev.length >= MAX_NOTIFICATION_CRITERIA_CONDITIONS) {
+        return prev
+      }
+
+      return [...prev, createConditionInputRow(crypto.randomUUID())]
+    })
+  }
+
+  function handleRemoveCondition(index: number) {
+    setConditionRows((prev) => (prev.length <= 1 ? prev : prev.filter((_, rowIndex) => rowIndex !== index)))
+  }
+
   useEffect(() => {
     if (isOpen) {
-      setConditionCount(editingCriteria?.conditions.length || 1)
+      setConditionRows(getInitialConditionRows(editingCriteria))
+      setFieldErrors({})
     }
   }, [editingCriteria, isOpen])
 
@@ -121,16 +171,10 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
       onClose={onClose}
       open={isOpen}
     >
-      <form
-        action={dispatchAction}
-        className="flex flex-1 flex-col min-h-0"
-        key={editingCriteria?.id || 'new'}
-        ref={formRef}
-      >
+      <form className="flex flex-1 flex-col min-h-0" key={formKey} onSubmit={handleSubmit}>
         <DialogHeader onClose={onClose} title={editingCriteria ? '알림 조건 수정' : '새 알림 만들기'} />
 
         <DialogBody className="flex flex-col gap-4">
-          <input name="conditionCount" type="hidden" value={conditionCount} />
           <p className="text-sm text-zinc-500 -mt-2">관심있는 작품을 놓치지 않도록 알림 조건을 설정하세요</p>
           <div>
             <label className={labelClassName} htmlFor={nameId}>
@@ -160,14 +204,13 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               포함 조건은 모두 만족해야 하고, 제외 조건이 하나라도 있으면 알림을 받지 않아요
             </p>
             <div className="space-y-2">
-              {Array.from({ length: conditionCount }, (_, index) => (
+              {conditionRows.map((row, index) => (
                 <ConditionInput
-                  index={index}
-                  initialCondition={editingCriteria?.conditions[index]}
                   isPending={isPending}
-                  key={index}
+                  key={row.id}
                   onRemove={() => handleRemoveCondition(index)}
-                  showRemoveButton={conditionCount > 1}
+                  row={row}
+                  showRemoveButton={conditionRows.length > 1}
                 />
               ))}
             </div>
@@ -176,7 +219,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
                 'inline-flex items-center gap-2 px-3 py-2 text-sm text-brand hover:bg-zinc-800/50',
                 'rounded-lg disabled:opacity-50 transition',
               )}
-              disabled={isPending || conditionCount >= 10}
+              disabled={isPending || conditionRows.length >= MAX_NOTIFICATION_CRITERIA_CONDITIONS}
               onClick={handleAddCondition}
               type="button"
             >
@@ -184,12 +227,12 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               조건 추가
             </button>
 
-            {conditionCount >= 10 && (
+            {conditionRows.length >= MAX_NOTIFICATION_CRITERIA_CONDITIONS && (
               <p className="flex items-center gap-2 text-xs text-yellow-500">
                 <span className="inline-block w-4 h-4 rounded bg-yellow-500/10 text-yellow-500 text-center leading-4 text-[10px] font-medium">
                   !
                 </span>
-                최대 10개 조건까지 추가 가능해요
+                최대 {MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 추가 가능해요
               </p>
             )}
           </div>
@@ -221,5 +264,33 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
         </DialogFooter>
       </form>
     </Dialog>
+  )
+}
+
+function createConditionInputRow(
+  id: string,
+  initialCondition?: ConditionInputRow['initialCondition'],
+): ConditionInputRow {
+  return {
+    id,
+    initialCondition: initialCondition ?? {
+      type: NotificationConditionType.SERIES,
+      value: '',
+      isExcluded: false,
+    },
+  }
+}
+
+function getInitialConditionRows(editingCriteria: NotificationCriteria | null): ConditionInputRow[] {
+  if (!editingCriteria) {
+    return [createConditionInputRow('new-0')]
+  }
+
+  return editingCriteria.conditions.map((condition, index) =>
+    createConditionInputRow(`criteria-${editingCriteria.id}-${index}`, {
+      type: condition.type as NonNullable<ConditionInputRow['initialCondition']>['type'],
+      value: condition.value,
+      isExcluded: condition.isExcluded === true,
+    }),
   )
 }

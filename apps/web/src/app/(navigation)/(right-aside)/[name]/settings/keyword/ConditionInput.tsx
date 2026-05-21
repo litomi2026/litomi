@@ -1,31 +1,37 @@
 'use client'
 
+import type { POSTV1NotificationCriteriaBody } from '@litomi/contracts'
+
 import { NotificationConditionType, NotificationConditionTypeNames } from '@litomi/domain/database/enum'
 import { Trash2 } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
 import CustomSelect from '@/components/ui/CustomSelect'
 
-interface Props {
-  index: number
+export type ConditionInputRow = {
+  id: string
   initialCondition?: {
-    type: number
-    value: string
     isExcluded?: boolean
+    type: POSTV1NotificationCriteriaBody['conditions'][number]['type']
+    value: string
   }
+}
+
+interface Props {
   isPending: boolean
   onRemove: () => void
+  row: ConditionInputRow
   showRemoveButton: boolean
 }
 
-export default function ConditionInput({ index, initialCondition, isPending, onRemove, showRemoveButton }: Props) {
+export default function ConditionInput({ isPending, onRemove, row, showRemoveButton }: Props) {
   return (
     <div className="flex flex-col sm:flex-row gap-2">
       <CustomSelect
         className="sm:w-40"
-        defaultValue={(initialCondition?.type || NotificationConditionType.SERIES).toString()}
+        defaultValue={(row.initialCondition?.type ?? NotificationConditionType.SERIES).toString()}
         disabled={isPending}
-        name={`condition-type-${index}`}
+        name="condition-type"
         options={Object.entries(NotificationConditionTypeNames).map(([value, label]) => ({
           value,
           label,
@@ -40,25 +46,26 @@ export default function ConditionInput({ index, initialCondition, isPending, onR
               'min-w-0 flex-1 text-base px-3 py-2 bg-transparent placeholder-zinc-500',
               'focus:outline-none disabled:opacity-50 transition',
             )}
-            defaultValue={initialCondition?.value || ''}
+            defaultValue={row.initialCondition?.value ?? ''}
             disabled={isPending}
-            name={`condition-value-${index}`}
+            name="condition-value"
             placeholder="검색어 입력 (공백은 _로)"
             required
             type="text"
           />
           <label
             className="shrink-0 whitespace-nowrap flex items-center px-2.5 sm:px-3 text-xs font-medium transition-colors border-l border-zinc-700 cursor-pointer text-zinc-400 hover:bg-zinc-700/50 has-[input:checked]:bg-red-900/25 has-[input:checked]:text-red-300 has-[input:checked]:border-red-800/40 has-[input:checked]:hover:bg-red-900/35"
-            htmlFor={`condition-excluded-${index}`}
+            htmlFor={`condition-excluded-${row.id}`}
             title="클릭하여 포함/제외 전환"
           >
             <input
               className="sr-only peer"
-              defaultChecked={initialCondition?.isExcluded}
+              defaultChecked={row.initialCondition?.isExcluded}
               disabled={isPending}
-              id={`condition-excluded-${index}`}
-              name={`condition-excluded-${index}`}
+              id={`condition-excluded-${row.id}`}
+              name="condition-excluded"
               type="checkbox"
+              value={row.id}
             />
             <span className="peer-checked:hidden">포함</span>
             <span className="peer-checked:inline hidden">제외</span>

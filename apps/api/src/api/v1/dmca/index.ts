@@ -1,5 +1,3 @@
-'use server'
-
 import { db } from '@litomi/db/app'
 import {
   dmcaCounterNoticeTable,
@@ -7,13 +5,16 @@ import {
   dmcaNoticeTable,
   dmcaNoticeTargetTable,
 } from '@litomi/db/app/dmca'
+import { APP_ORIGIN } from '@litomi/domain/constants'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { normalizeString } from '@litomi/std'
-import { captureException } from '@sentry/nextjs'
-import { redirect } from 'next/navigation'
+import { type Context, Hono } from 'hono'
 import { z } from 'zod'
 
+import type { Env } from '@/app'
+
 const langSchema = z.enum(['ko', 'en']).default('ko')
+
 type Lang = z.infer<typeof langSchema>
 
 const reporterRoleSchema = z.enum(['COPYRIGHT_OWNER', 'AUTHORIZED_AGENT'])
@@ -21,12 +22,12 @@ const reporterRoleSchema = z.enum(['COPYRIGHT_OWNER', 'AUTHORIZED_AGENT'])
 const noticeFormSchema = z.object({
   lang: langSchema,
   reporterName: z.string().trim().min(1).max(128),
-  reporterEmail: z.string().trim().email().max(320),
+  reporterEmail: z.email().trim().max(320),
   reporterAddress: z.string().trim().min(1).max(10_000),
   reporterPhone: z.string().trim().min(1).max(32),
   reporterRole: reporterRoleSchema,
   copyrightedWorkDescription: z.string().trim().min(1).max(100_000),
-  copyrightedWorkURL: z.string().trim().max(10_000).optional(),
+  copyrightedWorkURL: z.url().trim().max(10_000).optional(),
   infringingReferencesRaw: z.string().trim().min(1).max(100_000),
   goodFaithConfirmed: z.boolean(),
   perjuryConfirmed: z.boolean(),
@@ -36,10 +37,10 @@ const noticeFormSchema = z.object({
 const counterFormSchema = z.object({
   lang: langSchema,
   claimantName: z.string().trim().min(1).max(128),
-  claimantEmail: z.string().trim().email().max(320),
+  claimantEmail: z.email().trim().max(320),
   claimantAddress: z.string().trim().min(1).max(10_000),
   claimantPhone: z.string().trim().min(1).max(32),
-  relatedNoticeId: z.string().trim().uuid().optional(),
+  relatedNoticeId: z.uuid().trim().optional(),
   claimDetails: z.string().trim().min(1).max(100_000),
   evidenceLinks: z.string().trim().max(100_000).optional(),
   infringingReferencesRaw: z.string().trim().min(1).max(100_000),
@@ -50,7 +51,10 @@ const counterFormSchema = z.object({
 
 const MAX_TARGETS_PER_SUBMISSION = 200
 
-export async function submitDmcaCounterNotice(formData: FormData) {
+const route = new Hono<Env>()
+
+route.post('/counter', async (c) => {
+  const formData = await c.req.raw.formData()
   const lang = getLangFromFormData(formData)
 
   const payload = {
@@ -69,15 +73,16 @@ export async function submitDmcaCounterNotice(formData: FormData) {
   }
 
   const validation = counterFormSchema.safeParse(payload)
+
   if (!validation.success) {
-    redirect(`/doc/dmca/counter?lang=${lang}&error=invalid`)
+    return redirectTo(c, '/doc/dmca/counter', lang, 'invalid')
   }
 
   const data = validation.data
   const mangaIds = extractMangaIdsFromText(data.infringingReferencesRaw)
 
   if (mangaIds.length === 0) {
-    redirect(`/doc/dmca/counter?lang=${lang}&error=no-target`)
+    return redirectTo(c, '/doc/dmca/counter', lang, 'no-target')
   }
 
   const counterId = crypto.randomUUID()
@@ -108,15 +113,15 @@ export async function submitDmcaCounterNotice(formData: FormData) {
       )
     })
   } catch (error) {
-    console.error('submitDmcaCounterNotice error:', error)
-    captureException(error)
-    redirect(`/doc/dmca/counter?lang=${lang}&error=server`)
+    console.error('submitDmcaCounterNotice:', error)
+    return redirectTo(c, '/doc/dmca/counter', lang, 'server')
   }
 
-  redirect(`/doc/dmca/counter/success?lang=${lang}&case=${counterId}`)
-}
+  return redirectTo(c, '/doc/dmca/counter/success', lang, undefined, counterId)
+})
 
-export async function submitDmcaNotice(formData: FormData) {
+route.post('/notice', async (c) => {
+  const formData = await c.req.raw.formData()
   const lang = getLangFromFormData(formData)
 
   const payload = {
@@ -135,15 +140,16 @@ export async function submitDmcaNotice(formData: FormData) {
   }
 
   const validation = noticeFormSchema.safeParse(payload)
+
   if (!validation.success) {
-    redirect(`/doc/dmca?lang=${lang}&error=invalid`)
+    return redirectTo(c, '/doc/dmca', lang, 'invalid')
   }
 
   const data = validation.data
   const mangaIds = extractMangaIdsFromText(data.infringingReferencesRaw)
 
   if (mangaIds.length === 0) {
-    redirect(`/doc/dmca?lang=${lang}&error=no-target`)
+    return redirectTo(c, '/doc/dmca', lang, 'no-target')
   }
 
   const noticeId = crypto.randomUUID()
@@ -174,18 +180,16 @@ export async function submitDmcaNotice(formData: FormData) {
       )
     })
   } catch (error) {
-    console.error('submitDmcaNotice error:', error)
-    captureException(error)
-    redirect(`/doc/dmca?lang=${lang}&error=server`)
+    console.error('submitDmcaNotice:', error)
+    return redirectTo(c, '/doc/dmca', lang, 'server')
   }
 
-  redirect(`/doc/dmca/success?lang=${lang}&case=${noticeId}`)
-}
+  return redirectTo(c, '/doc/dmca/success', lang, undefined, noticeId)
+})
 
 function extractMangaIdsFromText(text: string): number[] {
   const ids: number[] = []
 
-  // 1) whole-line numeric ids
   for (const line of text.split('\n')) {
     const trimmed = line.trim()
     if (!trimmed) continue
@@ -195,7 +199,6 @@ function extractMangaIdsFromText(text: string): number[] {
     }
   }
 
-  // 2) URLs like /manga/123
   const urlRegex = /\/manga\/(\d+)/g
   for (const match of text.matchAll(urlRegex)) {
     const n = Number(match[1])
@@ -209,3 +212,20 @@ function getLangFromFormData(formData: FormData): Lang {
   const raw = formData.get('lang')
   return langSchema.parse(typeof raw === 'string' ? raw : undefined)
 }
+
+function redirectTo(c: Context<Env>, path: string, lang: Lang, error?: string, caseId?: string) {
+  const url = new URL(path, APP_ORIGIN)
+  url.searchParams.set('lang', lang)
+
+  if (error) {
+    url.searchParams.set('error', error)
+  }
+
+  if (caseId) {
+    url.searchParams.set('case', caseId)
+  }
+
+  return c.redirect(url.toString(), 303)
+}
+
+export default route

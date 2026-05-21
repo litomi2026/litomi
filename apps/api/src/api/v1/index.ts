@@ -8,6 +8,7 @@ import authRoutes from './auth'
 import bbatonRoutes from './bbaton'
 import bookmarkRoutes from './bookmark'
 import censorshipRoutes from './censorship'
+import dmcaRoutes from './dmca'
 import libraryRoutes from './library'
 import mangaRoutes from './manga'
 import meRoutes from './me'
@@ -26,6 +27,7 @@ v1Routes.route('/auth', authRoutes)
 v1Routes.route('/bbaton', bbatonRoutes)
 v1Routes.route('/bookmark', bookmarkRoutes)
 v1Routes.route('/censorship', censorshipRoutes)
+v1Routes.route('/dmca', dmcaRoutes)
 v1Routes.route('/library', libraryRoutes)
 v1Routes.route('/manga', mangaRoutes)
 v1Routes.route('/me', meRoutes)
