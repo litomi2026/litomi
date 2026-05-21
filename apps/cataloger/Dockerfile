@@ -20,6 +20,7 @@ COPY apps/cataloger ./apps/cataloger
 
 # Build the application
 RUN bun build --compile \
+  --compile-exec-argv=--use-system-ca \
   --conditions=react-server \
   --minify \
   --sourcemap \
