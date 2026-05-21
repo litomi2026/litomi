@@ -28,7 +28,7 @@ RUN bun build --compile \
   --outfile cataloger
 
 # Runtime stage
-FROM gcr.io/distroless/base-debian12:nonroot
+FROM gcr.io/distroless/base-nossl-debian12:nonroot
 
 ENV NODE_ENV=production
 WORKDIR /home
