@@ -46,4 +46,4 @@ images:
     digest: sha256:53ddf626b18165bbafeb227008a33f039fed069da4f5fb546b8df121f4f5cd0c
   - name: litomi-cataloger
     newName: ghcr.io/litomi2026/litomi-cataloger
-    digest: sha256:130b819a96c81a8b86b289da77204a837a0bbe06e380825632db59c04a60f5a8
+    digest: sha256:fde444fb9aec64678f83af4ca8fd33e6af001ae3cd08714d4b43b10aae84ada8
