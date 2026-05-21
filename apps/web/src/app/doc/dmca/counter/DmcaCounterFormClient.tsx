@@ -1,5 +1,6 @@
 'use client'
 
+import { env } from '@litomi/env/client'
 import { useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -29,17 +30,15 @@ type Lang = 'en' | 'ko'
 type Props = {
   dmcaEmail: string
   lang: Lang
-  submitAction: SubmitAction
   t: FormCopy
 }
-
-type SubmitAction = (formData: FormData) => Promise<void> | void
 
 const inputClass =
   'w-full rounded-xl border border-zinc-800 bg-zinc-950/60 p-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-700'
 const textareaClass = `${inputClass} min-h-28 resize-y`
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
-export default function DmcaCounterFormClient({ dmcaEmail, lang, submitAction, t }: Props) {
+export default function DmcaCounterFormClient({ dmcaEmail, lang, t }: Props) {
   const formRef = useRef<HTMLFormElement | null>(null)
   const [template, setTemplate] = useState<string>('')
   const [isGenerating, setIsGenerating] = useState(false)
@@ -81,7 +80,7 @@ export default function DmcaCounterFormClient({ dmcaEmail, lang, submitAction, t
 
   return (
     <div className="grid gap-4">
-      <form action={submitAction} className="grid gap-6" ref={formRef}>
+      <form action={`${NEXT_PUBLIC_API_ORIGIN}/api/v1/dmca/counter`} className="grid gap-6" method="post" ref={formRef}>
         <input name="lang" type="hidden" value={lang} />
 
         <section className="grid gap-3">

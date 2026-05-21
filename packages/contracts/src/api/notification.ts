@@ -111,6 +111,38 @@ export const postV1NotificationCriteriaResponseSchema = z.object({
 
 export type POSTV1NotificationCriteriaResponse = z.infer<typeof postV1NotificationCriteriaResponseSchema>
 
+export const notificationCriteriaIdParamSchema = z.object({
+  id: z.coerce.number().int().positive(),
+})
+
+export type NotificationCriteriaIdParam = z.infer<typeof notificationCriteriaIdParamSchema>
+
+export const patchV1NotificationCriteriaIdBodySchema = z
+  .object({
+    name: postV1NotificationCriteriaBodySchema.shape.name.optional(),
+    conditions: notificationCriteriaConditionsSchema.optional(),
+    isActive: z.boolean().optional(),
+  })
+  .refine((value) => Object.values(value).some((item) => item !== undefined), {
+    message: '변경할 알림 기준 정보를 입력해 주세요',
+  })
+
+export type PATCHV1NotificationCriteriaIdBody = z.input<typeof patchV1NotificationCriteriaIdBodySchema>
+
+export const patchV1NotificationCriteriaIdResponseSchema = z.object({
+  id: z.number(),
+  isActive: z.boolean(),
+  name: z.string(),
+})
+
+export type PATCHV1NotificationCriteriaIdResponse = z.infer<typeof patchV1NotificationCriteriaIdResponseSchema>
+
+export const deleteV1NotificationCriteriaIdResponseSchema = z.object({
+  id: z.number(),
+})
+
+export type DELETEV1NotificationCriteriaIdResponse = z.infer<typeof deleteV1NotificationCriteriaIdResponseSchema>
+
 export const notificationFilterSchema = z.enum(NotificationFilter)
 
 export const getNotificationQuerySchema = z.object({

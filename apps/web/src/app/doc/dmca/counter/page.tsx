@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { z } from 'zod'
 
-import { submitDmcaCounterNotice } from '../actions'
 import DmcaCounterFormClient from './DmcaCounterFormClient'
 
 const searchParamsSchema = z.object({
@@ -175,7 +174,7 @@ export default async function Page({ searchParams }: PageProps<'/doc/dmca/counte
         )}
 
         <div className="mt-6">
-          <DmcaCounterFormClient dmcaEmail={DMCA_EMAIL} lang={lang} submitAction={submitDmcaCounterNotice} t={tForm} />
+          <DmcaCounterFormClient dmcaEmail={DMCA_EMAIL} lang={lang} t={tForm} />
         </div>
       </div>
     </div>
