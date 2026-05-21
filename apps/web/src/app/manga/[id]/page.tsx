@@ -34,16 +34,16 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
   }
 
   const manga = await getManga(id)
-  const slicedTitle = manga?.title?.slice(0, MAX_MANGA_TITLE_LENGTH) || '작품'
-  const slicedDescription = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
+  const title = manga?.title?.slice(0, MAX_MANGA_TITLE_LENGTH) || `작품 #${id}`
+  const description = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
 
   return {
-    title: `${slicedTitle}`,
-    description: slicedDescription,
+    title,
+    description,
     ...generateOpenGraphMetadata({
-      title: slicedTitle,
-      description: slicedDescription,
-      images: manga?.images?.[0]?.original?.url ?? createKHentaiThumbnailCoverURL(id),
+      title,
+      description,
+      images: createKHentaiThumbnailCoverURL(id),
       url: `/manga/${id}`,
     }),
     alternates: {
