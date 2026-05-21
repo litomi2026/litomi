@@ -54,8 +54,8 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const router = useRouter()
   const nameId = useId()
-  const formKey = `${isOpen ? 'open' : 'closed'}:${editingCriteria?.id ?? 'new'}:${editingCriteria?.updatedAt.getTime() ?? 0}`
 
+  const formKey = `${isOpen ? 'open' : 'closed'}:${editingCriteria?.id ?? 'new'}:${editingCriteria?.updatedAt.getTime() ?? 0}`
   const labelClassName = 'block text-sm font-medium text-zinc-300 mb-1'
   const nameError = fieldErrors.name
 
