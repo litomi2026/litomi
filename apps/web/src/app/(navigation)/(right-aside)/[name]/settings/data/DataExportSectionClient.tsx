@@ -2,13 +2,22 @@
 
 import dayjs from 'dayjs'
 import { Bookmark, Check, Clock, Download, Library, Loader2, ShieldCheck, Star } from 'lucide-react'
-import { type ReactNode, useState, useTransition } from 'react'
+import { type ReactNode, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import { downloadBlob } from '@/utils/download'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { type DataCounts, exportUserData } from './actions'
+import { exportUserData } from './api'
+
+type DataCounts = {
+  history: number
+  bookmarks: number
+  ratings: number
+  libraries: number
+  censorships: number
+}
 
 type DataType = 'bookmarks' | 'censorships' | 'history' | 'libraries' | 'ratings'
 
@@ -27,7 +36,7 @@ const DATA_CONFIG: Record<DataType, { label: string; icon: ReactNode }> = {
 const ALL_TYPES = Object.keys(DATA_CONFIG) as DataType[]
 
 export default function DataExportSectionClient({ counts }: Props) {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
   const [selected, setSelected] = useState<Set<DataType>>(new Set(ALL_TYPES))
 
   function toggleType(type: DataType) {
@@ -42,20 +51,24 @@ export default function DataExportSectionClient({ counts }: Props) {
     })
   }
 
-  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    if (isPending) {
+      return
+    }
 
     if (selected.size === 0) {
       toast.warning('내보낼 데이터를 선택해 주세요')
       return
     }
 
-    const formData = new FormData(e.currentTarget)
-    const password = String(formData.get('password'))
+    try {
+      setIsPending(true)
+      const formData = new FormData(e.currentTarget)
 
-    startTransition(async () => {
-      const result = await exportUserData({
-        password,
+      const data = await exportUserData({
+        password: String(formData.get('password')),
         includeHistory: selected.has('history'),
         includeBookmarks: selected.has('bookmarks'),
         includeRatings: selected.has('ratings'),
@@ -63,22 +76,22 @@ export default function DataExportSectionClient({ counts }: Props) {
         includeCensorships: selected.has('censorships'),
       })
 
-      if (!result.ok) {
-        const errorMessage =
-          typeof result.error === 'string' ? result.error : Object.values(result.error as object).join(', ')
-
-        if (result.status >= 500) {
-          toast.error('요청을 처리할 수 없어요')
-        } else {
-          toast.warning(errorMessage || '요청을 처리할 수 없어요')
-        }
-        return
-      }
-
-      const blob = new Blob([result.data], { type: 'application/json' })
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
       downloadBlob(blob, `litomi-${dayjs().format('YYYY-MM-DD')}.json`)
       toast.success('데이터를 성공적으로 내보냈어요')
-    })
+    } catch (error) {
+      if (error instanceof ProblemDetailsError) {
+        if (error.status >= 500) {
+          toast.error('요청을 처리할 수 없어요')
+        } else {
+          toast.warning(error.problem.detail || '요청을 처리할 수 없어요')
+        }
+      } else {
+        toast.error('요청을 처리할 수 없어요')
+      }
+    } finally {
+      setIsPending(false)
+    }
   }
 
   return (

@@ -1,53 +1,25 @@
-'use server'
-
-import { getUserIdFromCookie } from '@litomi/auth/cookie'
+import { postV1MeExportBodySchema, type POSTV1MeExportResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/app/activity'
 import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { userTable } from '@litomi/db/app/user'
-import { passwordSchema } from '@litomi/domain/database/zod'
-import { captureException } from '@sentry/nextjs'
 import { compare } from 'bcryptjs'
 import { eq, inArray } from 'drizzle-orm'
-import { z } from 'zod'
+import { Hono } from 'hono'
 
-import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
+import type { Env } from '@/app'
 
-const exportDataSchema = z.object({
-  password: passwordSchema,
-  includeHistory: z.boolean(),
-  includeBookmarks: z.boolean(),
-  includeRatings: z.boolean(),
-  includeLibraries: z.boolean(),
-  includeCensorships: z.boolean(),
-})
+import { problemResponse } from '@/utils/problem'
+import { zProblemValidator } from '@/utils/validator'
 
-export type DataCounts = {
-  history: number
-  bookmarks: number
-  ratings: number
-  libraries: number
-  censorships: number
-}
+const route = new Hono<Env>()
 
-export type ExportDataInput = z.infer<typeof exportDataSchema>
-
-export async function exportUserData(input: ExportDataInput) {
-  const userId = await getUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  const validation = exportDataSchema.safeParse(input)
-
-  if (!validation.success) {
-    return badRequest('잘못된 요청이에요')
-  }
+route.post('/', zProblemValidator('json', postV1MeExportBodySchema), async (c) => {
+  const userId = c.get('userId')!
 
   const { password, includeHistory, includeBookmarks, includeRatings, includeLibraries, includeCensorships } =
-    validation.data
+    c.req.valid('json')
 
   try {
     const [user] = await db
@@ -55,16 +27,14 @@ export async function exportUserData(input: ExportDataInput) {
       .from(userTable)
       .where(eq(userTable.id, userId))
 
-    // NOTE: 타이밍 공격 방지
     const dummyHash = '$2b$10$dummyhashfortimingattackprevention'
     const isValidPassword = await compare(password, user?.passwordHash ?? dummyHash)
 
     if (!user || !isValidPassword) {
-      return unauthorized('인증에 실패했어요')
+      return problemResponse(c, { status: 401, detail: '인증에 실패했어요' })
     }
 
-    // 선택된 데이터만 조회
-    const exportData: Record<string, unknown> = {
+    const exportData: POSTV1MeExportResponse = {
       exportedAt: new Date().toISOString(),
     }
 
@@ -138,16 +108,19 @@ export async function exportUserData(input: ExportDataInput) {
     }
 
     if (libraries) {
-      const libraryIds = libraries.map((l) => l.id)
+      const libraryIds = libraries.map((library) => library.id)
 
-      const allItems = await db
-        .select({
-          libraryId: libraryItemTable.libraryId,
-          mangaId: libraryItemTable.mangaId,
-          createdAt: libraryItemTable.createdAt,
-        })
-        .from(libraryItemTable)
-        .where(inArray(libraryItemTable.libraryId, libraryIds))
+      const allItems =
+        libraryIds.length > 0
+          ? await db
+              .select({
+                libraryId: libraryItemTable.libraryId,
+                mangaId: libraryItemTable.mangaId,
+                createdAt: libraryItemTable.createdAt,
+              })
+              .from(libraryItemTable)
+              .where(inArray(libraryItemTable.libraryId, libraryIds))
+          : []
 
       const itemsByLibraryId = Map.groupBy(allItems, (item) => item.libraryId)
 
@@ -162,9 +135,11 @@ export async function exportUserData(input: ExportDataInput) {
       }))
     }
 
-    return ok(JSON.stringify(exportData, null, 2))
+    return c.json<POSTV1MeExportResponse>(exportData)
   } catch (error) {
-    captureException(error)
-    return internalServerError('데이터 내보내기 중 오류가 발생했어요')
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '데이터 내보내기 중 오류가 발생했어요' })
   }
-}
+})
+
+export default route
