@@ -59,6 +59,7 @@ export function getNativeGridSponsor(
     advertiserName: sponsor.advertiserName,
     campaignId: sponsor.campaignId,
     creativeId: sponsor.creativeId,
+    ctaLabel: sponsor.ctaLabel,
     description: sponsor.description,
     id: sponsor.id,
     imageUrls: sponsor.imageUrls,
