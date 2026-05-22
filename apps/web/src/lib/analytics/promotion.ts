@@ -5,7 +5,6 @@ type PromotionEventParams = {
   creative_id?: string
   creative_name: string
   creative_slot: string
-  destination?: string
   itemIndex?: number
   promotion_id: string
   promotion_name: string

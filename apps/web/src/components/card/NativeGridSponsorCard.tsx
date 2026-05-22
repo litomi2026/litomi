@@ -74,7 +74,7 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
     eventParams: createPromotionEventParams({
       campaign_id: sponsor.campaignId,
       creative_id: sponsor.creativeId,
-      creative_name: 'native_grid_card',
+      creative_name: 'native-grid-card',
       creative_slot: sponsor.placementId,
       itemIndex: sponsor.position,
       promotion_id: sponsor.id,
@@ -88,9 +88,8 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
       createPromotionEventParams({
         campaign_id: sponsor.campaignId,
         creative_id: sponsor.creativeId,
-        creative_name: 'native_grid_card',
+        creative_name: 'native-grid-card',
         creative_slot: sponsor.placementId,
-        destination: sponsor.targetUrl,
         itemIndex: sponsor.position,
         promotion_id: sponsor.id,
         promotion_name: sponsor.title,
