@@ -3,7 +3,7 @@
     "campaignId": "roh-memorial-2026",
     "creativeId": "roh-memorial-523-card-v1",
     "ctaLabel": "민주평화통일자문회의 제50차 상임위원회 연설",
-    "description": "2026년 5월 23일, 노무현 대통령 서거 17주기를 맞아 각자의 자리에서 조용히 기억합니다.",
+    "description": "2026년 5월 23일, 노무현 대통령 서거 17주기를 맞아 각자의 자리에서 조용히 기억해요.",
     "enabled": true,
     "endsAt": "2026-05-24T00:00:00+09:00",
     "id": "roh-memorial-523-native-grid",
@@ -118,7 +118,7 @@
     "priority": 1,
     "startsAt": "2026-05-21T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
-    "title": "원화는 약해지고, 나랏빚은 불어났습니다"
+    "title": "원화는 약해지고, 나랏빚은 불어났어요"
   },
   {
     "campaignId": "bdsm-test",
