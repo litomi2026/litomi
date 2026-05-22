@@ -50,6 +50,7 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
   const sponsorContextLabel = [disclosureLabel, advertiserLabel].filter(Boolean).join(', ')
   const imageLinkLabel = `${sponsorContextLabel}: ${sponsor.title} 이미지 열기, 새 탭에서 열림`
   const sponsorLinkLabel = `${sponsorContextLabel}: ${sponsor.title} 광고주 사이트 열기, 새 탭에서 열림`
+  const viewEventCooldownKey = `${sponsor.id}:${sponsor.placementId}:${sponsor.creativeId}`
   const theme = sponsor.theme
 
   const themeStyle: NativeGridSponsorCardStyle = {
@@ -68,6 +69,7 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
   }
 
   const { ref: cardRef } = useGAViewEvent({
+    cooldownKey: viewEventCooldownKey,
     eventName: 'view_promotion',
     eventParams: createPromotionEventParams({
       campaign_id: sponsor.campaignId,
