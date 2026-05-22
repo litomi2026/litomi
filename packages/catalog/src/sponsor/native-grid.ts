@@ -10,9 +10,9 @@ type NativeGridSponsorConfig = Omit<NativeGridSponsor, 'placementId'> & {
   endsAt?: string
   id: string
   placements: readonly string[]
+  priority: number
   startsAt?: string
   targeting?: { keywords?: readonly string[] }
-  weight: number
 }
 
 const TARGETABLE_TAG_CATEGORIES = new Set(['female', 'male', 'mixed', 'other', 'tag'])
@@ -49,7 +49,7 @@ export function getNativeGridSponsor(
     )
   })
 
-  const sponsor = pickWeightedSponsor(activeSponsors)
+  const sponsor = pickHighestPrioritySponsor(activeSponsors)
 
   if (!sponsor) {
     return null
@@ -107,21 +107,26 @@ function parseSearchTargetingKeywords(searchQuery?: string | null) {
   return { excluded, included }
 }
 
-function pickWeightedSponsor(sponsors: NativeGridSponsorConfig[]) {
+function pickHighestPrioritySponsor(sponsors: NativeGridSponsorConfig[]) {
   if (sponsors.length === 0) {
     return null
   }
 
-  const totalWeight = sponsors.reduce((sum, sponsor) => sum + sponsor.weight, 0)
-  let cursor = getRandomDecimal() * totalWeight
+  let highestPriority = -Infinity
+  let highestPrioritySponsors: NativeGridSponsorConfig[] = []
 
   for (const sponsor of sponsors) {
-    cursor -= sponsor.weight
+    if (sponsor.priority > highestPriority) {
+      highestPriority = sponsor.priority
+      highestPrioritySponsors = [sponsor]
+      continue
+    }
 
-    if (cursor <= 0) {
-      return sponsor
+    if (sponsor.priority === highestPriority) {
+      highestPrioritySponsors.push(sponsor)
     }
   }
 
-  return sponsors[sponsors.length - 1]
+  const randomIndex = Math.floor(getRandomDecimal() * highestPrioritySponsors.length)
+  return highestPrioritySponsors[randomIndex]
 }

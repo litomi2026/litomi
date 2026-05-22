@@ -17,6 +17,7 @@
       "public_grid_search"
     ],
     "position": 2,
+    "priority": 523,
     "startsAt": "2026-05-23T00:00:00+09:00",
     "targetUrl": "https://www.youtube.com/watch?v=FpFEnYgVM4g&t=3414s",
     "theme": {
@@ -25,8 +26,7 @@
       "foregroundColor": "#fff8df",
       "mutedColor": "#c9c1ad"
     },
-    "title": "5월 23일, 기억하겠습니다.",
-    "weight": 523
+    "title": "5월 23일, 기억하겠습니다."
   },
   {
     "campaignId": "vote-encouragement-2026-local",
@@ -46,10 +46,10 @@
       "public_grid_search"
     ],
     "position": 4,
+    "priority": 1,
     "startsAt": "2026-05-21T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
-    "title": "취향을 직접 고르듯, 후보도 직접 골라요.",
-    "weight": 1
+    "title": "취향을 직접 고르듯, 후보도 직접 골라요."
   },
   {
     "campaignId": "vote-encouragement-2026-local",
@@ -69,10 +69,10 @@
       "public_grid_search"
     ],
     "position": 4,
+    "priority": 1,
     "startsAt": "2026-05-21T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
-    "title": "북마크하듯, 내 투표도 미리 챙겨요.",
-    "weight": 1
+    "title": "북마크하듯, 내 투표도 미리 챙겨요."
   },
   {
     "campaignId": "vote-encouragement-2026-local",
@@ -92,10 +92,10 @@
       "public_grid_search"
     ],
     "position": 4,
+    "priority": 1,
     "startsAt": "2026-05-21T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
-    "title": "입시비리도, 횡령도 사면되는 세상. 내 표까지 비워둘 건가요?",
-    "weight": 1
+    "title": "입시비리도, 횡령도 사면되는 세상. 내 표까지 비워둘 건가요?"
   },
   {
     "campaignId": "vote-encouragement-2026-local",
@@ -115,10 +115,10 @@
       "public_grid_search"
     ],
     "position": 4,
+    "priority": 1,
     "startsAt": "2026-05-21T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
-    "title": "원화는 약해지고, 나랏빚은 불어났습니다",
-    "weight": 1
+    "title": "원화는 약해지고, 나랏빚은 불어났습니다"
   },
   {
     "campaignId": "bdsm-test",
@@ -130,6 +130,7 @@
     "label": "광고",
     "placements": ["public_grid_search"],
     "position": 3,
+    "priority": 10,
     "targetUrl": "https://bdsm.vercel.app",
     "targeting": {
       "keywords": [
@@ -156,7 +157,6 @@
         "forniphilia"
       ]
     },
-    "title": "BDSM 지식 테스트",
-    "weight": 10
+    "title": "BDSM 지식 테스트"
   }
 ]
