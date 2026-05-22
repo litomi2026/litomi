@@ -10,7 +10,6 @@ import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
-import { privateCacheControl } from '@/utils/cache-control'
 import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
@@ -18,27 +17,11 @@ import { zProblemValidator } from '@/utils/validator'
 const libraryMangaRoutes = new Hono<Env>()
 
 libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySchema), async (c) => {
-  const { cursor, limit, scope } = c.req.valid('query')
-  const userId = c.get('userId')
-
-  if (scope === 'me') {
-    if (!userId) {
-      return problemResponse(c, { status: 401, detail: '로그인 정보가 없거나 만료됐어요' })
-    }
-  }
-
+  const { cursor, limit } = c.req.valid('query')
   const decodedCursor = cursor ? decodeLibraryIdCursor(cursor) : null
 
   if (cursor && !decodedCursor) {
     return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
-  }
-
-  const baseConditions = []
-
-  if (scope === 'me') {
-    baseConditions.push(eq(libraryTable.userId, userId!))
-  } else {
-    baseConditions.push(eq(libraryTable.isPublic, true))
   }
 
   const perManga = db
@@ -52,7 +35,7 @@ libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySch
     })
     .from(libraryItemTable)
     .innerJoin(libraryTable, eq(libraryItemTable.libraryId, libraryTable.id))
-    .where(and(...baseConditions))
+    .where(eq(libraryTable.isPublic, true))
     .orderBy(libraryItemTable.mangaId, desc(libraryItemTable.createdAt), desc(libraryItemTable.libraryId))
     .as('per_manga')
 
@@ -91,16 +74,13 @@ libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySch
   try {
     const rows = await query
 
-    const sharedCacheControl = createCacheControl({
-      public: true,
-      maxAge: 3,
-      sMaxAge: sec('6 hours'),
-      swr: sec('10 minutes'),
-    })
-
-    const cacheControl = scope === 'public' ? sharedCacheControl : privateCacheControl
-
     if (rows.length === 0) {
+      const cacheControl = createCacheControl({
+        public: true,
+        maxAge: 3,
+        sMaxAge: sec('5 minutes'),
+      })
+
       const result = { items: [], nextCursor: null }
       return c.json<GETV1LibraryMangaResponse>(result, { headers: { 'Cache-Control': cacheControl } })
     }
@@ -126,6 +106,13 @@ libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySch
       hasNextPage && lastRow ? encodeLibraryIdCursor(lastRow.createdAt.getTime(), lastRow.mangaId) : null
 
     const result = { items, nextCursor }
+
+    const cacheControl = createCacheControl({
+      public: true,
+      maxAge: 3,
+      sMaxAge: decodedCursor ? sec('1 day') : sec('3 hours'),
+      swr: sec('1 day'),
+    })
 
     return c.json<GETV1LibraryMangaResponse>(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {

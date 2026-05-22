@@ -271,7 +271,6 @@ export type GETV1LibraryMangaResponse = z.infer<typeof getV1LibraryMangaResponse
 export const getV1LibraryMangaQuerySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
-  scope: z.enum(['public', 'me']),
 })
 
 export type GETV1LibraryMangaQuery = z.infer<typeof getV1LibraryMangaQuerySchema>

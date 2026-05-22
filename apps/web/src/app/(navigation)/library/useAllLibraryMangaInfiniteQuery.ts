@@ -8,16 +8,14 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
-export async function fetchAllLibraryMangas({ cursor, userId }: { cursor: string | null; userId?: number }) {
-  const params = new URLSearchParams()
-  params.set('scope', userId ? 'me' : 'public')
+export async function fetchAllLibraryMangas({ cursor }: { cursor: string | null }) {
+  const url = new URL('/api/v1/library/manga', NEXT_PUBLIC_API_ORIGIN)
 
   if (cursor) {
-    params.set('cursor', cursor)
+    url.searchParams.set('cursor', cursor)
   }
 
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/manga?${params}`
-  const { data } = await fetchWithErrorHandling<GETV1LibraryMangaResponse>(url, { credentials: 'include' })
+  const { data } = await fetchWithErrorHandling<GETV1LibraryMangaResponse>(url)
   return data
 }
 

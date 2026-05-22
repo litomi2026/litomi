@@ -123,7 +123,13 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
           rel="sponsored noopener noreferrer"
           target="_blank"
         >
-          <img alt={sponsor.title} className="size-full object-contain" loading="lazy" src={imageUrl} />
+          <img
+            alt={sponsor.title}
+            className="size-full object-contain"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            src={imageUrl}
+          />
         </a>
         <div className="pointer-events-none absolute right-2 top-2 z-10 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md bg-(--native-grid-sponsor-label-background) px-2 py-1 text-xs font-semibold text-(--native-grid-sponsor-foreground) shadow-sm ring-1 ring-white/10 backdrop-blur">
           <span className="shrink-0 text-(--native-grid-sponsor-accent)">{disclosureLabel}</span>
@@ -149,27 +155,29 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
           </div>
         )}
       </div>
-      <a
-        aria-label={sponsorLinkLabel}
-        className="flex grow flex-col justify-between gap-3 border-t-2 border-(--native-grid-sponsor-border) p-3 focus:outline-none"
-        href={sponsor.targetUrl}
-        onClick={handleSponsorClick}
-        rel="sponsored noopener noreferrer"
-        target="_blank"
-      >
-        <div className="grid gap-2">
-          <h3 className="line-clamp-2 wrap-break-word text-base font-bold leading-5 text-(--native-grid-sponsor-foreground)">
-            {sponsor.title}
-          </h3>
-          <p className="line-clamp-3 wrap-break-word text-sm leading-6 text-(--native-grid-sponsor-muted)">
-            {sponsor.description}
-          </p>
-        </div>
-        <div className="flex items-center justify-between gap-2 rounded-lg border border-(--native-grid-sponsor-cta-border) bg-(--native-grid-sponsor-cta-background) px-2.5 py-2 text-sm font-bold text-(--native-grid-sponsor-accent) transition group-hover:bg-(--native-grid-sponsor-cta-hover-background)">
-          <span className="min-w-0 truncate">{ctaLabel}</span>
-          <ExternalLink aria-hidden className="size-4 shrink-0" />
-        </div>
-      </a>
+      {variant === View.CARD && (
+        <a
+          aria-label={sponsorLinkLabel}
+          className="flex grow flex-col justify-between gap-3 border-t-2 border-(--native-grid-sponsor-border) p-3 focus:outline-none"
+          href={sponsor.targetUrl}
+          onClick={handleSponsorClick}
+          rel="sponsored noopener noreferrer"
+          target="_blank"
+        >
+          <div className="grid gap-2">
+            <h3 className="line-clamp-2 wrap-break-word text-base font-bold leading-5 text-(--native-grid-sponsor-foreground)">
+              {sponsor.title}
+            </h3>
+            <p className="line-clamp-3 wrap-break-word text-sm leading-6 text-(--native-grid-sponsor-muted)">
+              {sponsor.description}
+            </p>
+          </div>
+          <div className="flex items-center justify-between gap-2 rounded-lg border border-(--native-grid-sponsor-cta-border) bg-(--native-grid-sponsor-cta-background) px-2.5 py-2 text-sm font-bold text-(--native-grid-sponsor-accent) transition group-hover:bg-(--native-grid-sponsor-cta-hover-background)">
+            <span className="min-w-0 truncate">{ctaLabel}</span>
+            <ExternalLink aria-hidden className="size-4 shrink-0" />
+          </div>
+        </a>
+      )}
     </article>
   )
 }

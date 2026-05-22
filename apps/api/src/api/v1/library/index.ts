@@ -11,10 +11,10 @@ import libraryPinPostRoutes from './[id]/pin/POST'
 import libraryGetRoutes from './GET'
 import libraryHistoryRoutes from './history'
 import libraryItemRoutes from './item'
-import libraryMangaRoutes from './manga'
+import libraryMangaRoutes from './manga/GET'
 import libraryPostRoutes from './POST'
 import libraryRatingRoutes from './rating/route'
-import librarySummaryRoutes from './summary'
+import librarySummaryRoutes from './summary/GET'
 
 const libraryRoutes = new Hono<Env>()
 
