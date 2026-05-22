@@ -25,7 +25,7 @@
     "type": "tsc -p tsconfig.json --noEmit && turbo type",
     "prepare": "husky",
     "clean": "rm -rf .next .turbo apps/web/.next apps/edge-proxy/.next apps/api/dist apps/cataloger/dist apps/notifier/dist node_modules/.cache",
-    "db:reset": "docker compose -f infra/local/docker-compose.yml down -v && docker compose -f infra/local/docker-compose.yml up -d --wait && bun --filter=@litomi/db push:local",
+    "db:reset": "docker compose down -v && docker compose up -d --wait && bun --filter=@litomi/db push:local",
     "test": "bun test",
     "test:backend:integration": "bun tools/setupBackendIntegrationDb.ts && bun test ./test/backend --max-concurrency 1",
     "test:watch": "bun test --watch",
