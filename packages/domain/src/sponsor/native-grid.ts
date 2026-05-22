@@ -18,7 +18,15 @@ export type NativeGridSponsor = {
   placementId: NativeGridSponsorPlacement
   position: number
   targetUrl: string
+  theme?: NativeGridSponsorTheme
   title: string
 }
 
 export type NativeGridSponsorPlacement = (typeof nativeGridSponsorPlacement)[keyof typeof nativeGridSponsorPlacement]
+
+export type NativeGridSponsorTheme = {
+  accentColor?: string
+  backgroundColor?: string
+  foregroundColor?: string
+  mutedColor?: string
+}

@@ -6,6 +6,12 @@
 - 이 repo의 아키텍처 기본값을 바꾸는 변경은 사용자 확인 없이 진행하지 않는다.
 - 구조 변경 전에는 관련 문서를 먼저 읽고, 문서와 충돌하면 먼저 질문한다.
 
+## Repo Rules
+
+- 이 repository는 public repo다.
+- 커밋되는 모든 파일은 공개될 수 있다고 가정한다.
+- secret, token, private key, credential, 계정 정보, 민감한 운영 정보는 커밋하지 않는다.
+
 ## Web Rules
 
 - `apps/web`는 App Router + Server Components + Tailwind를 사용한다.
