@@ -7,19 +7,28 @@ import { type AnalyticsParams, track } from '@/lib/analytics/browser'
 import { useLatestRef } from './useLatestRef'
 
 type Options = {
+  cooldownKey?: string
+  cooldownMs?: number
   eventName: string
   eventParams?: AnalyticsParams
 }
 
 const VIEW_EVENT_VISIBLE_DURATION = ms('1 second')
+const viewEventCooldownMsByKey = new Map<string, number>()
 
-export default function useGAViewEvent({ eventName, eventParams }: Options) {
+type ViewEventTrackingState = {
+  cooldownKey?: string
+  cooldownMs?: number
+  isViewed: { current: boolean }
+}
+
+export default function useGAViewEvent({ cooldownKey, cooldownMs = ms('1 minute'), eventName, eventParams }: Options) {
   const isViewed = useRef(false)
   const eventParamsRef = useLatestRef(eventParams)
   const { ref, inView } = useInView({ threshold: 0.5 })
 
   useEffect(() => {
-    if (!inView || isViewed.current) {
+    if (!inView || isViewEventTracked({ cooldownKey, cooldownMs, isViewed })) {
       return
     }
 
@@ -31,12 +40,16 @@ export default function useGAViewEvent({ eventName, eventParams }: Options) {
         timer = undefined
       }
 
-      if (document.visibilityState !== 'visible' || isViewed.current) {
+      if (document.visibilityState !== 'visible' || isViewEventTracked({ cooldownKey, cooldownMs, isViewed })) {
         return
       }
 
       timer = setTimeout(() => {
-        isViewed.current = true
+        if (isViewEventTracked({ cooldownKey, cooldownMs, isViewed })) {
+          return
+        }
+
+        markViewEventTracked({ cooldownKey, isViewed })
         track(eventName, eventParamsRef.current)
       }, VIEW_EVENT_VISIBLE_DURATION)
     }
@@ -51,7 +64,24 @@ export default function useGAViewEvent({ eventName, eventParams }: Options) {
 
       document.removeEventListener('visibilitychange', scheduleViewEvent)
     }
-  }, [eventName, eventParamsRef, inView])
+  }, [cooldownKey, cooldownMs, eventName, eventParamsRef, inView])
 
   return { ref }
+}
+
+function isViewEventTracked({ cooldownKey, cooldownMs = 0, isViewed }: ViewEventTrackingState) {
+  if (!cooldownKey || cooldownMs <= 0) {
+    return isViewed.current
+  }
+
+  const trackedAt = viewEventCooldownMsByKey.get(cooldownKey)
+  return trackedAt !== undefined && Date.now() - trackedAt < cooldownMs
+}
+
+function markViewEventTracked({ cooldownKey, isViewed }: ViewEventTrackingState) {
+  isViewed.current = true
+
+  if (cooldownKey) {
+    viewEventCooldownMsByKey.set(cooldownKey, Date.now())
+  }
 }
