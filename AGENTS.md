@@ -6,6 +6,11 @@
 - 이 repo의 아키텍처 기본값을 바꾸는 변경은 사용자 확인 없이 진행하지 않는다.
 - 구조 변경 전에는 관련 문서를 먼저 읽고, 문서와 충돌하면 먼저 질문한다.
 
+## Repo Role
+
+- 이 repo는 앱 소스 코드를 관리한다.
+- Cloudflare Terraform 코드는 sibling repo `../litomi-ops`에 있다.
+
 ## Repo Rules
 
 - 이 repository는 public repo다.
