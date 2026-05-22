@@ -13,22 +13,21 @@ export default function MangaCardDonation() {
   const { ref: cardRef } = useGAViewEvent({
     eventName: 'view_promotion',
     eventParams: createPromotionEventParams({
-      promotion_id: 'litomi_donation_card',
+      promotion_id: 'litomi-donation-card',
       promotion_name: '리토미 후원',
-      creative_name: 'donation_card',
-      creative_slot: 'content_feed',
+      creative_name: 'donation-card',
+      creative_slot: 'content-feed',
     }),
   })
 
-  function handlePromotionClick(destination: string) {
+  function handlePromotionClick(creativeName: string) {
     track(
       'select_promotion',
       createPromotionEventParams({
-        promotion_id: 'litomi_donation_card',
+        promotion_id: 'litomi-donation-card',
         promotion_name: '리토미 후원',
-        creative_name: 'donation_card',
-        creative_slot: 'content_feed',
-        destination,
+        creative_name: creativeName,
+        creative_slot: 'content-feed',
       }),
     )
   }
@@ -55,7 +54,7 @@ export default function MangaCardDonation() {
               <a
                 className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
                 href="https://discord.gg/xTrbQaxpyD"
-                onClick={() => handlePromotionClick('discord')}
+                onClick={() => handlePromotionClick('donation-card-discord')}
                 rel="noopener"
                 target="_blank"
               >
@@ -70,7 +69,7 @@ export default function MangaCardDonation() {
               <a
                 className="p-3 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://patreon.com/litomi"
-                onClick={() => handlePromotionClick('patreon')}
+                onClick={() => handlePromotionClick('donation-card-patreon')}
                 rel="noopener"
                 target="_blank"
               >
@@ -79,7 +78,7 @@ export default function MangaCardDonation() {
               <a
                 className="py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://opencollective.com/litomi"
-                onClick={() => handlePromotionClick('open_collective')}
+                onClick={() => handlePromotionClick('donation-card-open-collective')}
                 rel="noopener"
                 target="_blank"
               >
