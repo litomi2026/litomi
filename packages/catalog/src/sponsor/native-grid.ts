@@ -67,6 +67,7 @@ export function getNativeGridSponsor(
     placementId,
     position: sponsor.position,
     targetUrl: sponsor.targetUrl,
+    theme: sponsor.theme,
     title: sponsor.title,
   }
 }

@@ -1,5 +1,34 @@
 [
   {
+    "campaignId": "roh-memorial-2026",
+    "creativeId": "roh-memorial-523-card-v1",
+    "ctaLabel": "민주평화통일자문회의 제50차 상임위원회 연설",
+    "description": "2026년 5월 23일, 노무현 대통령 서거 17주기를 맞아 각자의 자리에서 조용히 기억합니다.",
+    "enabled": true,
+    "endsAt": "2026-05-24T00:00:00+09:00",
+    "id": "roh-memorial-523-native-grid",
+    "imageUrls": ["https://www.knowhow.or.kr/data/new_board/202605/202605181779092067.jpg"],
+    "label": "공익 캠페인",
+    "placements": [
+      "public_grid_library_home",
+      "public_grid_new",
+      "public_grid_random",
+      "public_grid_ranking",
+      "public_grid_search"
+    ],
+    "position": 2,
+    "startsAt": "2026-05-23T00:00:00+09:00",
+    "targetUrl": "https://www.youtube.com/watch?v=FpFEnYgVM4g&t=3414s",
+    "theme": {
+      "accentColor": "#f4c430",
+      "backgroundColor": "#13140f",
+      "foregroundColor": "#fff8df",
+      "mutedColor": "#c9c1ad"
+    },
+    "title": "5월 23일, 기억하겠습니다.",
+    "weight": 523
+  },
+  {
     "campaignId": "vote-encouragement-2026-local",
     "creativeId": "vote-choice-card-v1",
     "ctaLabel": "투표소 확인하기",
