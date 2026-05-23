@@ -1,9 +1,6 @@
-create or replace function public.cleanup_inactive_users(batch_size integer default 100)
-returns integer
-language sql
-security definer
-set search_path = ''
-as $function$
+create or replace function public.cleanup_inactive_users (batch_size integer default 100) returns integer language sql security definer
+set
+  search_path = '' as $function$
   with lock_attempt as (
     select pg_try_advisory_xact_lock(2026041412) as locked
   ),
@@ -23,4 +20,7 @@ as $function$
   from deleted_users;
 $function$;
 
-revoke execute on function public.cleanup_inactive_users(integer) from public;
+revoke
+execute on function public.cleanup_inactive_users (integer)
+from
+  public;

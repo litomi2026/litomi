@@ -1,19 +1,16 @@
-drop function if exists public.get_inactive_user_cleanup_candidates(integer, timestamptz, boolean);
+drop function if exists public.get_inactive_user_cleanup_candidates (integer, timestamptz, boolean);
 
-create or replace function public.get_inactive_user_cleanup_candidates(
+create or replace function public.get_inactive_user_cleanup_candidates (
   batch_size integer default 100,
   run_at timestamptz default now()
-)
-returns table (
+) returns table (
   user_id bigint,
   effective_last_activity_at timestamptz,
   session_valid_until timestamptz,
   effective_auto_deletion_day integer
-)
-language sql
-stable
-set search_path = ''
-as $function$
+) language sql stable
+set
+  search_path = '' as $function$
   select
     u.id,
     candidate.effective_last_activity_at,
@@ -56,4 +53,7 @@ as $function$
   limit greatest(coalesce(batch_size, 0), 0);
 $function$;
 
-revoke execute on function public.get_inactive_user_cleanup_candidates(integer, timestamptz) from public;
+revoke
+execute on function public.get_inactive_user_cleanup_candidates (integer, timestamptz)
+from
+  public;
