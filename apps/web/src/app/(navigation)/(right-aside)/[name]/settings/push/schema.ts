@@ -18,11 +18,6 @@ export const unsubscribeSchema = z.object({
   username: z.string().min(1),
 })
 
-export const testNotificationSchema = z.object({
-  message: z.string().min(1),
-  endpoint: z.url(),
-})
-
 export const updatePushSettingsSchema = z.object({
   username: z.string().min(1),
   quietEnabled: z.boolean().optional(),

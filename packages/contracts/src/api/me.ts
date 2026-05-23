@@ -202,6 +202,19 @@ export const deleteV1MePushSubscriptionResponseSchema = z.object({
 
 export type DELETEV1MePushSubscriptionResponse = z.infer<typeof deleteV1MePushSubscriptionResponseSchema>
 
+export const postV1MePushSubscriptionTestBodySchema = z.object({
+  endpoint: z.url(),
+  message: z.string().min(1),
+})
+
+export type POSTV1MePushSubscriptionTestBody = z.infer<typeof postV1MePushSubscriptionTestBodySchema>
+
+export const postV1MePushSubscriptionTestResponseSchema = z.object({
+  message: z.string(),
+})
+
+export type POSTV1MePushSubscriptionTestResponse = z.infer<typeof postV1MePushSubscriptionTestResponseSchema>
+
 export const getV1MeFollowingResponseSchema = z.object({
   userIds: z.array(z.number()),
 })

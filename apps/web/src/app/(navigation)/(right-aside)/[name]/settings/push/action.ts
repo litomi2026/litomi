@@ -2,8 +2,7 @@
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/app'
-import { notificationTable, pushSettingsTable } from '@litomi/db/app/notification'
-import { NotificationType } from '@litomi/domain/database/enum'
+import { pushSettingsTable } from '@litomi/db/app/notification'
 import { WebPushService } from '@litomi/notifications'
 import { captureException } from '@sentry/nextjs'
 import { revalidatePath } from 'next/cache'
@@ -13,7 +12,6 @@ import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import {
   subscriptionSchema,
-  testNotificationSchema,
   unsubscribeSchema,
   updatePushSettingsSchema,
 } from './schema'
@@ -41,47 +39,6 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
   } catch (error) {
     captureException(error, { tags: { action: 'subscribeToNotifications' } })
     return internalServerError('푸시 알림을 활성화하지 못했어요')
-  }
-}
-
-export async function testNotification(data: Record<string, unknown>) {
-  const userId = await getUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  const validation = testNotificationSchema.safeParse(data)
-
-  if (!validation.success) {
-    return badRequest(flattenZodFieldErrors(validation.error))
-  }
-
-  const { message, endpoint } = validation.data
-  const notificationService = WebPushService.getInstance()
-
-  try {
-    await notificationService.sendTestWebPushToEndpoint(userId, endpoint, {
-      title: '테스트 알림',
-      body: message,
-      icon: '/icon.png',
-      badge: '/badge.png',
-      data: { url: 'https://litomi.in' },
-    })
-
-    await db.insert(notificationTable).values({
-      userId,
-      type: NotificationType.TEST,
-      title: '테스트 알림',
-      body: message,
-      data: null,
-      sentAt: new Date(),
-    })
-
-    return ok('현재 브라우저에 테스트 알림을 보냈어요')
-  } catch (error) {
-    captureException(error, { tags: { action: 'testNotification' } })
-    return internalServerError('테스트 푸시 알림 발송 중 오류가 발생했어요')
   }
 }
 
