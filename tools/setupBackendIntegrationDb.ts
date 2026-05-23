@@ -4,8 +4,6 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import postgres from 'postgres'
 
-import { applyAppFunctions } from '../packages/db/scripts/app/applyAppFunction'
-
 const repositoryRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
 const dbPackageDirectory = path.join(repositoryRoot, 'packages/db')
 
@@ -34,10 +32,12 @@ await runCommand(['bunx', 'drizzle-kit', 'push', '--config=drizzle.app.config.ts
   },
 })
 
-console.log('[backend-test-db] applying app function SQL')
-await applyAppFunctions(testDatabaseUrl, {
-  directory: path.join(dbPackageDirectory, 'src/app/functions'),
-  log: (message) => console.log(`[backend-test-db] ${message}`),
+console.log('[backend-test-db] applying app SQL')
+await runCommand(['bun', 'scripts/app/syncAppSql.ts'], {
+  cwd: dbPackageDirectory,
+  env: {
+    APP_POSTGRES_URL_DIRECT: testDatabaseUrl,
+  },
 })
 
 console.log(`[backend-test-db] ready: ${testDatabaseName}`)

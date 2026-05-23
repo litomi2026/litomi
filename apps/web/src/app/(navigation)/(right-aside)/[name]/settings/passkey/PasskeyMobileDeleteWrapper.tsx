@@ -3,8 +3,9 @@
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
-import { PasskeySignalData } from './common'
-import PasskeyDeleteButton from './PasskeyDeleteButton'
+import type { PasskeySignalData } from './common'
+
+import PasskeyDeleteDialog from './PasskeyDeleteDialog'
 
 type Props = {
   children: React.ReactNode
@@ -18,11 +19,11 @@ export default function PasskeyMobileDeleteWrapper({ children, credentialId, id,
   const [touchStart, setTouchStart] = useState(0)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  function handleTouchStart(e: React.TouchEvent) {
     setTouchStart(e.touches[0].clientX)
   }
 
-  const handleTouchMove = (e: React.TouchEvent) => {
+  function handleTouchMove(e: React.TouchEvent) {
     const currentX = e.touches[0].clientX
     const diff = touchStart - currentX
 
@@ -31,7 +32,7 @@ export default function PasskeyMobileDeleteWrapper({ children, credentialId, id,
     }
   }
 
-  const handleTouchEnd = () => {
+  function handleTouchEnd() {
     if (swipeX > 60) {
       setSwipeX(80)
       setShowConfirmModal(true)
@@ -40,9 +41,12 @@ export default function PasskeyMobileDeleteWrapper({ children, credentialId, id,
     }
   }
 
-  const handleCancel = () => {
-    setShowConfirmModal(false)
-    setSwipeX(0)
+  function handleOpenChange(open: boolean) {
+    setShowConfirmModal(open)
+
+    if (!open) {
+      setSwipeX(0)
+    }
   }
 
   return (
@@ -64,11 +68,10 @@ export default function PasskeyMobileDeleteWrapper({ children, credentialId, id,
       >
         {children}
       </div>
-      <PasskeyDeleteButton
+      <PasskeyDeleteDialog
         credentialId={credentialId}
         id={id}
-        onCancel={handleCancel}
-        onOpenChange={setShowConfirmModal}
+        onOpenChange={handleOpenChange}
         open={showConfirmModal}
         passkeySignalData={passkeySignalData}
       />

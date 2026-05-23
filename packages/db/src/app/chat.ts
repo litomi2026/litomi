@@ -16,7 +16,7 @@ export const characterTable = pgTable(
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_character_user_id').on(table.userId), index('idx_character_visibility').on(table.visibility)],
-)
+).enableRLS()
 
 export const promptTable = pgTable(
   'prompt',
@@ -39,7 +39,7 @@ export const promptTable = pgTable(
     index('idx_prompt_visibility').on(table.visibility),
     index('idx_prompt_tags').using('gin', table.tags),
   ],
-)
+).enableRLS()
 
 export const threadTable = pgTable(
   'thread',
@@ -64,7 +64,7 @@ export const threadTable = pgTable(
     index('idx_thread_user_id_updated_at').on(table.userId, table.updatedAt.desc()),
     index('idx_thread_visibility').on(table.visibility),
   ],
-)
+).enableRLS()
 
 export const messageTable = pgTable(
   'message',
@@ -81,4 +81,4 @@ export const messageTable = pgTable(
     index('idx_message_thread_id').on(table.threadId),
     index('idx_message_thread_id_created_at').on(table.threadId, table.createdAt.desc()),
   ],
-)
+).enableRLS()

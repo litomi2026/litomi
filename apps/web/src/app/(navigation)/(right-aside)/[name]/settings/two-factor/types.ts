@@ -1,3 +1,12 @@
+export type TrustedBrowser = {
+  id: number
+  browserName: string | null
+  lastUsedAt: Date | null
+  createdAt: Date
+  expiresAt: Date
+  isCurrentBrowser: boolean
+}
+
 export interface TwoFactorSetupData {
   expiresAt: Date
   qrCode: string
@@ -8,12 +17,5 @@ export interface TwoFactorStatus {
   createdAt?: Date
   lastUsedAt?: Date | null
   remainingBackupCodes: number
-  trustedBrowsers?: {
-    id: number
-    browserName: string | null
-    lastUsedAt: Date | null
-    createdAt: Date
-    expiresAt: Date
-    isCurrentBrowser: boolean
-  }[]
+  trustedBrowsers?: TrustedBrowser[]
 }

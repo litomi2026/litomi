@@ -21,4 +21,4 @@ export const credentialTable = pgTable(
     index('idx_credential_user_id').on(table.userId),
     unique('idx_credential_credential_id').on(table.credentialId),
   ],
-)
+).enableRLS()

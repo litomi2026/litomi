@@ -1,7 +1,8 @@
 import { Key, Shield } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
-import { Passkey, PasskeySignalData } from './common'
+import type { Passkey, PasskeySignalData } from './common'
+
 import PasskeyDeleteButton from './PasskeyDeleteButton'
 import PasskeyMobileDeleteWrapper from './PasskeyMobileDeleteWrapper'
 import {
@@ -15,7 +16,6 @@ import {
 
 type Props = {
   passkey: Passkey
-  enableMobileSwipe?: boolean
   passkeySignalData: PasskeySignalData
 }
 
@@ -49,7 +49,7 @@ export default function PasskeyCard({ passkey, passkeySignalData }: Props) {
             </h3>
             <PasskeyDeleteButton
               className={twMerge(
-                'opacity-0 sm:opacity-100 -my-2 -mx-1 p-2 text-zinc-600 rounded-xl transition',
+                'opacity-0 -my-2 -mx-1 p-2 text-zinc-600 rounded-xl transition sm:opacity-100',
                 'hover:text-red-400 hover:bg-red-900/10 group-hover/card:opacity-100',
               )}
               credentialId={credentialId}
@@ -92,7 +92,7 @@ export default function PasskeyCard({ passkey, passkeySignalData }: Props) {
         </div>
 
         {isPlatform && (
-          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand/80 to-transparent opacity-0 group-hover/card:opacity-100 transition" />
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-brand/80 to-transparent opacity-0 group-hover/card:opacity-100 transition" />
         )}
       </div>
     </PasskeyMobileDeleteWrapper>

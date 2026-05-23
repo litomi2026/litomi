@@ -22,7 +22,7 @@ export const userTable = pgTable('user', {
   passwordHash: text('password_hash').notNull(),
   nickname: varchar({ length: 32 }).notNull(),
   imageURL: varchar('image_url', { length: 256 }),
-})
+}).enableRLS()
 
 export const userSettingsTable = pgTable('user_settings', {
   userId: bigint('user_id', { mode: 'number' })
@@ -33,7 +33,7 @@ export const userSettingsTable = pgTable('user_settings', {
   adultVerifiedAdVisible: boolean('adult_verified_ad_visible').notNull().default(false),
   defaultCensorshipEnabled: boolean('default_censorship_enabled').notNull().default(true),
   autoDeletionDay: smallint('auto_deletion_day').notNull().default(90), // 0 = disabled
-})
+}).enableRLS()
 
 export const userFollowTable = pgTable(
   'user_follow',
@@ -51,4 +51,4 @@ export const userFollowTable = pgTable(
     index('idx_user_follow_followee_id').on(table.followeeId),
     check('user_follow_no_self_follow', sql`${table.followerId} <> ${table.followeeId}`),
   ],
-)
+).enableRLS()

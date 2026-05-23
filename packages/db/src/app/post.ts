@@ -36,7 +36,7 @@ export const postTable = pgTable(
     index('idx_post_parent_post_id').on(table.parentPostId),
     index('idx_post_referred_post_id').on(table.referredPostId),
   ],
-)
+).enableRLS()
 
 export const postLikeTable = pgTable(
   'post_like',
@@ -50,4 +50,4 @@ export const postLikeTable = pgTable(
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.postId] }), index('idx_post_like_post_id').on(table.postId)],
-)
+).enableRLS()

@@ -1,9 +1,6 @@
-create or replace function public.cleanup_auth_session_tables()
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $function$
+create or replace function public.cleanup_auth_session_tables () returns void language plpgsql security definer
+set
+  search_path = '' as $function$
 begin
   delete from public.auth_session_token as token
   using public.auth_session_family as family

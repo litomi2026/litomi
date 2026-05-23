@@ -11,6 +11,8 @@ const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'siam-cdn.net',
   'litomi.in',
   'zrocdn.xyz',
+  'hiromi.b-cdn.net',
+  'nhentai.net',
 ] as const
 
 const IMAGE_PROXY_ROUTE_EXTENSION = '.webp'
@@ -54,16 +56,22 @@ export function createLitomiProxyMangaImageURL({
 
 export function createThirdPartyMangaImageURLs({ mangaId, page, variant }: MangaImageProxyParams): string[] {
   if (variant === 'thumbnail') {
-    return page === 1
-      ? [createKHentaiThumbnailCoverURL(mangaId), createHentaiPawThumbnailCoverURL(mangaId)]
-      : [createHentaiPawThumbnailPageURL(mangaId, page)]
+    if (page === 1) {
+      return [
+        createKHentaiThumbnailCoverURL(mangaId),
+        createHiromiThumbnailCoverPageURL(mangaId),
+        createHentaiPawThumbnailCoverURL(mangaId),
+      ]
+    }
+
+    return [createHentaiPawThumbnailPageURL(mangaId, page)]
   }
 
   return [
     createHarpiPageURL(mangaId, page, 'avif'),
     createHarpiPageURL(mangaId, page, 'webp'),
     createHentkorPageURL(mangaId, page),
-    createNHentaiPageURL(mangaId, page),
+    createZroCDNPageURL(mangaId, page),
   ]
 }
 
@@ -188,7 +196,21 @@ function createHentkorPageURL(mangaId: number, page: number): string {
   return `https://cdn.hentkor.net/pages/${mangaId}/${page}.avif`
 }
 
+function createHiromiThumbnailCoverPageURL(mangaId: number): string {
+  return `https://hiromi.b-cdn.net/tn/${mangaId}.jpg`
+}
+
+// TODO: 서브 도메인 계산 로직을 알아야 해요.
 function createNHentaiPageURL(mangaId: number, page: number): string {
+  return `https://i1.nhentai.net/galleries/${mangaId}/${page}.jpg`
+}
+
+// TODO: 서브 도메인 계산 로직을 알아야 해요.
+function createNHentaiThumbnailCoverURL(mangaId: number): string {
+  return `https://t2.nhentai.net/galleries/${mangaId}/cover.webp.webp`
+}
+
+function createZroCDNPageURL(mangaId: number, page: number): string {
   return `https://zrocdn.xyz/galleries/${mangaId}/${page}.jpg`
 }
 

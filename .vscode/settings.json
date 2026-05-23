@@ -8,10 +8,13 @@
   "files.eol": "\n",
   "search.exclude": {
     "**/.git": true,
+    "**/.next": true,
     "**/out": true
   },
+  "SQL-Formatter-VSCode.dialect": "postgresql",
   "turboConsoleLog.logMessagePrefix": "👀",
   "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[sql]": { "editor.defaultFormatter": "ReneSaarsoo.sql-formatter-vsc" },
   "[svg]": { "editor.defaultFormatter": "jock.svg" },
   "[terraform]": { "editor.defaultFormatter": "hashicorp.terraform" }
 }
