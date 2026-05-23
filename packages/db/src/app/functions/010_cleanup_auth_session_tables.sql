@@ -2,7 +2,7 @@ create or replace function public.cleanup_auth_session_tables()
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $function$
 begin
   delete from public.auth_session_token as token
@@ -20,3 +20,5 @@ begin
     or family.idle_expires_at <= now();
 end;
 $function$;
+
+revoke execute on function public.cleanup_auth_session_tables() from public;
