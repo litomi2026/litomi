@@ -33,6 +33,7 @@ export async function getDonationRanking(): Promise<DonationRankingItem[]> {
 
   const artistValues: string[] = []
   const groupValues: string[] = []
+
   for (const r of rows) {
     if (r.recipientType === DONATION_RECIPIENT_TYPE.ARTIST) {
       artistValues.push(r.recipientValue)

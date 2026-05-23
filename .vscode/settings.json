@@ -8,6 +8,7 @@
   "files.eol": "\n",
   "search.exclude": {
     "**/.git": true,
+    "**/.next": true,
     "**/out": true
   },
   "SQL-Formatter-VSCode.dialect": "postgresql",
