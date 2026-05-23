@@ -1,59 +1,59 @@
 'use client'
 
-import { formatDistanceToNow } from '@litomi/std'
+import type { DELETEV1MeTrustedBrowserAllResponse, DELETEV1MeTrustedBrowserResponse } from '@litomi/contracts'
+
+import { formatDistanceFromNow, formatDistanceToNow } from '@litomi/std'
+import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Loader2, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { twMerge } from 'tailwind-merge'
 
-import useServerAction from '@/hook/useServerAction'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { revokeAllTrustedBrowsers, revokeTrustedBrowser } from '../action-trusted-browser'
+import type { TrustedBrowser } from '../types'
+
+import { revokeAllTrustedBrowsers, revokeTrustedBrowser } from '../api'
 
 type Props = {
   trustedBrowsers: TrustedBrowser[]
 }
 
-type TrustedBrowser = {
-  id: number
-  browserName: string | null
-  lastUsedAt: Date | null
-  createdAt: Date
-  expiresAt: Date
-  isCurrentBrowser: boolean
-}
-
 export default function TrustedBrowsers({ trustedBrowsers }: Props) {
   const [browsers, setBrowsers] = useState<TrustedBrowser[]>(trustedBrowsers)
 
-  const [, dispatchRevokeSingle, isRevokingSingle] = useServerAction({
-    action: revokeTrustedBrowser,
-    onSuccess: (_, [formData]) => {
-      const trustedBrowserId = Number(formData.get('trustedBrowserId'))
-      setBrowsers((prev) => prev.filter((d) => d.id !== trustedBrowserId))
-      toast.success('브라우저가 제거됐어요')
+  const revokeSingleMutation = useMutation<DELETEV1MeTrustedBrowserResponse, ProblemDetailsError, number>({
+    mutationFn: revokeTrustedBrowser,
+    onSuccess: ({ id, message }) => {
+      setBrowsers((prev) => prev.filter((browser) => browser.id !== id))
+      toast.success(message)
     },
+    onError: (error) => toast.error(error.message),
   })
 
-  const [, dispatchRevokeAll, isRevokingAll] = useServerAction({
-    action: revokeAllTrustedBrowsers,
-    onSuccess: () => {
+  const revokeAllMutation = useMutation<DELETEV1MeTrustedBrowserAllResponse, ProblemDetailsError>({
+    mutationFn: revokeAllTrustedBrowsers,
+    onSuccess: ({ message }) => {
       setBrowsers([])
-      toast.success('모든 브라우저가 제거됐어요')
+      toast.success(message)
     },
+    onError: (error) => toast.error(error.message),
   })
 
-  function handleRevokeDevice(e: React.SubmitEvent<HTMLFormElement>) {
+  function handleRevokeDevice(id: number) {
     if (!confirm('해당 브라우저를 신뢰 목록에서 제거할까요?')) {
-      e.preventDefault()
+      return
     }
+
+    revokeSingleMutation.mutate(id)
   }
 
-  function handleRevokeAll(e: React.SubmitEvent<HTMLFormElement>) {
+  function handleRevokeAll() {
     if (!confirm('모든 브라우저를 신뢰 목록에서 제거할까요? 다음 로그인 시 모든 브라우저에서 2단계 인증이 필요해요.')) {
-      e.preventDefault()
+      return
     }
+
+    revokeAllMutation.mutate()
   }
 
   return (
@@ -64,15 +64,16 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
           <p className="mt-1 text-sm text-zinc-400">신뢰하는 브라우저에서는 2단계 인증 없이 로그인할 수 있어요</p>
         </div>
         {browsers.length > 0 && (
-          <form action={dispatchRevokeAll} className="shrink-0" onSubmit={handleRevokeAll}>
+          <div className="shrink-0">
             <button
               className="text-sm text-red-400 hover:text-red-300 transition disabled:opacity-50"
-              disabled={isRevokingAll}
-              type="submit"
+              disabled={revokeAllMutation.isPending}
+              onClick={handleRevokeAll}
+              type="button"
             >
-              {isRevokingAll ? <Loader2 className="size-4 animate-spin" /> : '모두 제거'}
+              {revokeAllMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : '모두 제거'}
             </button>
-          </form>
+          </div>
         )}
       </div>
 
@@ -83,63 +84,59 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
         </div>
       ) : (
         <div className="space-y-2">
-          {browsers.map((browser) => {
-            const { browserName, lastUsedAt, expiresAt, id, isCurrentBrowser } = browser
-            const { lastUsed, expiresIn } = formatBrowserInfo(browser)
-
-            return (
-              <div
-                className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 p-4"
-                key={id}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-zinc-400">{getDeviceIcon(browserName)}</div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-zinc-200 line-clamp-1">
-                        {browserName || '알 수 없는 브라우저'}
+          {browsers.map(({ browserName, lastUsedAt, expiresAt, id, isCurrentBrowser }) => (
+            <div
+              className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 p-4"
+              key={id}
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-zinc-400">{getDeviceIcon(browserName)}</div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-zinc-200 line-clamp-1">
+                      {browserName || '알 수 없는 브라우저'}
+                    </span>
+                    {isCurrentBrowser && (
+                      <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs text-green-400 shrink-0">
+                        현재
                       </span>
-                      {isCurrentBrowser && (
-                        <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs text-green-400 shrink-0">
-                          현재
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
-                      {lastUsedAt && (
-                        <span
-                          className="text-zinc-400"
-                          title={`${dayjs(lastUsedAt).format('YYYY년 M월 D일 HH:mm')} 사용`}
-                        >
-                          {lastUsed}
-                          <span className="hidden sm:inline"> 사용</span>
-                        </span>
-                      )}
-                      {lastUsedAt && <span>•</span>}
-                      <span title={`${dayjs(expiresAt).format('YYYY년 M월 D일 HH:mm')} 만료`}>
-                        {expiresIn}
-                        <span className="hidden sm:inline"> 만료</span>
+                    )}
+                  </div>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
+                    {lastUsedAt && (
+                      <span
+                        className="text-zinc-400"
+                        title={`${dayjs(lastUsedAt).format('YYYY년 M월 D일 HH:mm')} 사용`}
+                      >
+                        {formatDistanceToNow(new Date(lastUsedAt))}
+                        <span className="hidden sm:inline"> 사용</span>
                       </span>
-                    </div>
+                    )}
+                    {lastUsedAt && <span>•</span>}
+                    <span title={`${dayjs(expiresAt).format('YYYY년 M월 D일 HH:mm')} 만료`}>
+                      {formatDistanceFromNow(new Date(expiresAt)) || '이미'}
+                      <span className="hidden sm:inline"> 만료</span>
+                    </span>
                   </div>
                 </div>
-                <form action={dispatchRevokeSingle} onSubmit={handleRevokeDevice}>
-                  <input name="trustedBrowserId" type="hidden" value={id} />
-                  <button
-                    className={twMerge(
-                      'rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-red-400',
-                      'disabled:opacity-50 transition',
-                    )}
-                    disabled={isRevokingSingle}
-                    title="제거"
-                    type="submit"
-                  >
-                    {isRevokingSingle ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
-                  </button>
-                </form>
               </div>
-            )
-          })}
+              <div>
+                <button
+                  className="rounded-lg p-2 text-zinc-400 transition hover:bg-zinc-800 hover:text-red-400 disabled:opacity-50"
+                  disabled={revokeSingleMutation.isPending}
+                  onClick={() => handleRevokeDevice(id)}
+                  title="제거"
+                  type="button"
+                >
+                  {revokeSingleMutation.isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
       <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
@@ -153,31 +150,6 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
       </div>
     </div>
   )
-}
-
-function formatBrowserInfo(browser: TrustedBrowser) {
-  const lastUsed = browser.lastUsedAt ? formatDistanceToNow(new Date(browser.lastUsedAt)) : null
-  const now = dayjs()
-  const expiresAt = dayjs(browser.expiresAt)
-  const daysUntilExpiry = expiresAt.diff(now, 'day')
-
-  let expiresIn: string
-  if (daysUntilExpiry <= 0) {
-    expiresIn = '만료됨'
-  } else if (daysUntilExpiry === 1) {
-    expiresIn = '내일 만료'
-  } else if (daysUntilExpiry < 7) {
-    expiresIn = `${daysUntilExpiry}일 후`
-  } else if (daysUntilExpiry < 30) {
-    expiresIn = `${Math.floor(daysUntilExpiry / 7)}주 후`
-  } else {
-    expiresIn = `${Math.floor(daysUntilExpiry / 30)}달 후`
-  }
-
-  return {
-    lastUsed,
-    expiresIn,
-  }
 }
 
 function getDeviceIcon(deviceName: string | null) {
