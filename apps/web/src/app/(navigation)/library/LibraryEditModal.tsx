@@ -18,7 +18,6 @@ import { twMerge } from 'tailwind-merge'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { updateLibrary } from './api'
 import { getRandomLibraryColor } from './libraryColorInput'
@@ -52,11 +51,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
   const updateLibraryMutation = useMutation({
     mutationFn: ({ body, libraryId }: { libraryId: number; body: PATCHV1LibraryIdBody }) =>
       updateLibrary(libraryId, body),
-    onError: (error) => {
-      if (error instanceof ProblemDetailsError) {
-        toast.warning(error.message || '입력을 확인해 주세요')
-      }
-    },
+
     onSuccess: ({ id: updatedLibraryId }, { body }) => {
       const nextName = body.name.trim()
       const nextDescription = normalizeString(body.description)

@@ -42,8 +42,6 @@ export default function PasskeyDeleteDialog({ credentialId, id, open, onOpenChan
       onOpenChange(false)
       router.refresh()
     },
-
-    onError: (error) => toast.error(error.message),
   })
 
   return (

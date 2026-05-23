@@ -65,8 +65,6 @@ export default function SessionList({ sessions, hasCurrentPersistentSession }: P
       clearMeCache(queryClient)
       router.refresh()
     }
-
-    toast.error(error.message)
   }
 
   function handleRevokeSession(familyId: string) {

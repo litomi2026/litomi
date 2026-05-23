@@ -5,7 +5,6 @@ import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { BulkActionDescriptor } from './bulkActionTypes'
 
@@ -34,9 +33,6 @@ export default function useBulkRemoveFromLibraryAction({ libraryId }: Options): 
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(variables.libraryId) })
       exit()
-    },
-    onError: (error) => {
-      toast.warning(error instanceof ProblemDetailsError ? error.problem.detail : '서재에서 작품을 제거하지 못했어요')
     },
   })
 

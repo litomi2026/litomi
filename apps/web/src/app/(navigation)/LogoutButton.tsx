@@ -17,9 +17,6 @@ export default function LogoutButton() {
         identify(null)
         track('logout')
       },
-      onError: (error) => {
-        toast.error(error.message || '로그아웃 중 오류가 발생했어요')
-      },
     })
   }
 

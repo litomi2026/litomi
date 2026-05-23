@@ -45,7 +45,6 @@ export default function useDeleteDonationMutation() {
       if (context?.previous) {
         queryClient.setQueryData(QueryKeys.myDonations, context.previous)
       }
-      toast.error('삭제에 실패했어요')
     },
     onSuccess: () => {
       toast.success('삭제했어요')
