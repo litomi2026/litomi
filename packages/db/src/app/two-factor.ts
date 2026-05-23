@@ -11,7 +11,7 @@ export const twoFactorTable = pgTable('two_factor', {
   lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
   expiresAt: timestamp('expires_at', { withTimezone: true }),
   secret: text().notNull(),
-})
+}).enableRLS()
 
 export const twoFactorBackupCodeTable = pgTable(
   'two_factor_backup_code',
@@ -22,7 +22,7 @@ export const twoFactorBackupCodeTable = pgTable(
     codeHash: text('code_hash').notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.codeHash] })],
-)
+).enableRLS()
 
 export const trustedBrowserTable = pgTable(
   'trusted_browser',
@@ -38,4 +38,4 @@ export const trustedBrowserTable = pgTable(
     browserName: text('browser_name'),
   },
   (table) => [unique('idx_trusted_browser_unique').on(table.userId, table.browserId)],
-)
+).enableRLS()
