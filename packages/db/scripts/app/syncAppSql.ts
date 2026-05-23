@@ -79,8 +79,8 @@ async function syncAppSQL(url: string) {
 
   try {
     await applySqlDirectory(client, {
-      directory: path.join(packageRoot, 'src/app/functions'),
-      label: 'app-functions',
+      directory: path.join(packageRoot, 'src/app/function'),
+      label: 'app-function',
     })
 
     await syncCronSQL(client, path.join(packageRoot, 'src/app/cron'))
