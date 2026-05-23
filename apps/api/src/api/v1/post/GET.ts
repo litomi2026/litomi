@@ -67,7 +67,7 @@ function getPostListCacheControl({ cursor, filter }: { cursor?: string; filter?:
   return createCacheControl({
     public: true,
     maxAge: 3,
-    sMaxAge: sec('5 minutes'),
-    swr: 30,
+    sMaxAge: sec('1 minute'),
+    swr: sec('1 hour'),
   })
 }
