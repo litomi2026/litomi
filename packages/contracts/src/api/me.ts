@@ -157,6 +157,25 @@ export const deleteV1MeSessionParamSchema = z.object({
 
 export type DELETEV1MeSessionParam = z.infer<typeof deleteV1MeSessionParamSchema>
 
+export const deleteV1MeTrustedBrowserParamSchema = z.object({
+  id: z.coerce.number().int().positive(),
+})
+
+export type DELETEV1MeTrustedBrowserParam = z.infer<typeof deleteV1MeTrustedBrowserParamSchema>
+
+export const deleteV1MeTrustedBrowserResponseSchema = z.object({
+  id: z.number(),
+  message: z.string(),
+})
+
+export type DELETEV1MeTrustedBrowserResponse = z.infer<typeof deleteV1MeTrustedBrowserResponseSchema>
+
+export const deleteV1MeTrustedBrowserAllResponseSchema = z.object({
+  message: z.string(),
+})
+
+export type DELETEV1MeTrustedBrowserAllResponse = z.infer<typeof deleteV1MeTrustedBrowserAllResponseSchema>
+
 export const getV1MeFollowingResponseSchema = z.object({
   userIds: z.array(z.number()),
 })
