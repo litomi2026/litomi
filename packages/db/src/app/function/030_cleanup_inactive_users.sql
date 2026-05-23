@@ -19,8 +19,3 @@ set
   select count(*)::integer
   from deleted_users;
 $function$;
-
-revoke
-execute on function public.cleanup_inactive_users (integer)
-from
-  public;

@@ -1,5 +1,3 @@
-drop function if exists public.get_inactive_user_cleanup_candidates (integer, timestamptz, boolean);
-
 create or replace function public.get_inactive_user_cleanup_candidates (
   batch_size integer default 100,
   run_at timestamptz default now()
@@ -52,8 +50,3 @@ set
   ) asc, u.id asc
   limit greatest(coalesce(batch_size, 0), 0);
 $function$;
-
-revoke
-execute on function public.get_inactive_user_cleanup_candidates (integer, timestamptz)
-from
-  public;

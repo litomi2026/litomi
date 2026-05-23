@@ -17,8 +17,3 @@ begin
     or family.idle_expires_at <= now();
 end;
 $function$;
-
-revoke
-execute on function public.cleanup_auth_session_tables ()
-from
-  public;

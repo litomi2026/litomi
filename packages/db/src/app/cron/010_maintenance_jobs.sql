@@ -29,7 +29,7 @@ do $$
 declare
   job_name constant text := 'litomi-app-cleanup-inactive-users';
   job_schedule constant text := '5 21 * * *';
-  job_command constant text := 'select public.cleanup_inactive_users(100);';
+  job_command constant text := 'select public.cleanup_inactive_users(200);';
   existing_job_id bigint;
 begin
   select jobid into existing_job_id
