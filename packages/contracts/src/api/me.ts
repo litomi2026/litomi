@@ -189,18 +189,52 @@ export const deleteV1MePasskeyResponseSchema = z.object({
 
 export type DELETEV1MePasskeyResponse = z.infer<typeof deleteV1MePasskeyResponseSchema>
 
-export const deleteV1MePushSubscriptionParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
+const pushSubscriptionSchema = z.object({
+  endpoint: z.url(),
+  keys: z.object({
+    p256dh: z.string().min(1),
+    auth: z.string().min(1),
+  }),
 })
 
-export type DELETEV1MePushSubscriptionParam = z.infer<typeof deleteV1MePushSubscriptionParamSchema>
+export const postV1MePushSubscriptionBodySchema = z.object({
+  subscription: pushSubscriptionSchema,
+  userAgent: z.string().optional(),
+})
 
-export const deleteV1MePushSubscriptionResponseSchema = z.object({
+export type POSTV1MePushSubscriptionBody = z.infer<typeof postV1MePushSubscriptionBodySchema>
+
+export const postV1MePushSubscriptionResponseSchema = z.object({
   id: z.number(),
   message: z.string(),
 })
 
+export type POSTV1MePushSubscriptionResponse = z.infer<typeof postV1MePushSubscriptionResponseSchema>
+
+export const deleteV1MePushSubscriptionBodySchema = z.object({
+  endpoint: z.url(),
+})
+
+export type DELETEV1MePushSubscriptionBody = z.infer<typeof deleteV1MePushSubscriptionBodySchema>
+
+export const deleteV1MePushSubscriptionResponseSchema = z.object({
+  message: z.string(),
+})
+
 export type DELETEV1MePushSubscriptionResponse = z.infer<typeof deleteV1MePushSubscriptionResponseSchema>
+
+export const deleteV1MePushSubscriptionIdParamSchema = z.object({
+  id: z.coerce.number().int().positive(),
+})
+
+export type DELETEV1MePushSubscriptionIdParam = z.infer<typeof deleteV1MePushSubscriptionIdParamSchema>
+
+export const deleteV1MePushSubscriptionIdResponseSchema = z.object({
+  id: z.number(),
+  message: z.string(),
+})
+
+export type DELETEV1MePushSubscriptionIdResponse = z.infer<typeof deleteV1MePushSubscriptionIdResponseSchema>
 
 export const postV1MePushTestBodySchema = z.object({
   endpoint: z.url(),

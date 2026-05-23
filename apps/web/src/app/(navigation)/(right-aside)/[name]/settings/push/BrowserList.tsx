@@ -1,6 +1,6 @@
 'use client'
 
-import type { DELETEV1MePushSubscriptionResponse } from '@litomi/contracts'
+import type { DELETEV1MePushSubscriptionIdResponse } from '@litomi/contracts'
 
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
@@ -30,7 +30,7 @@ export default function BrowserList({ webPushes }: Props) {
   const router = useRouter()
   const [currentEndpoint, setCurrentEndpoint] = useState<string | null>(null)
 
-  const deleteMutation = useMutation<DELETEV1MePushSubscriptionResponse, ProblemDetailsError, number>({
+  const deleteMutation = useMutation<DELETEV1MePushSubscriptionIdResponse, ProblemDetailsError, number>({
     mutationFn: deletePushSubscription,
     onSuccess: ({ message }) => {
       toast.success(message)

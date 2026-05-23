@@ -1,4 +1,4 @@
-import { deleteV1MePushSubscriptionParamSchema, type DELETEV1MePushSubscriptionResponse } from '@litomi/contracts'
+import { deleteV1MePushSubscriptionIdParamSchema, type DELETEV1MePushSubscriptionIdResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { webPushTable } from '@litomi/db/app/notification'
 import { and, eq } from 'drizzle-orm'
@@ -11,7 +11,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.delete('/', zProblemValidator('param', deleteV1MePushSubscriptionParamSchema), async (c) => {
+route.delete('/', zProblemValidator('param', deleteV1MePushSubscriptionIdParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
 
@@ -25,7 +25,7 @@ route.delete('/', zProblemValidator('param', deleteV1MePushSubscriptionParamSche
       return problemResponse(c, { status: 404, detail: '브라우저를 찾을 수 없어요' })
     }
 
-    return c.json<DELETEV1MePushSubscriptionResponse>({
+    return c.json<DELETEV1MePushSubscriptionIdResponse>({
       id: deleted.id,
       message: '푸시 알림을 해제했어요',
     })
