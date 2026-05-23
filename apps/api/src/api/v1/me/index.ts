@@ -11,8 +11,7 @@ import getRoute from './GET'
 import passkeyRoutes from './passkey'
 import passwordRoutes from './password'
 import patchRoute from './PATCH'
-import pushSettingsRoutes from './push-settings'
-import pushSubscriptionRoutes from './push-subscription'
+import pushRoutes from './push'
 import sessionRoutes from './session'
 import settingsRoutes from './settings'
 import trustedBrowserRoutes from './trusted-browser'
@@ -26,8 +25,7 @@ route.route('/', deleteRoute)
 route.route('/export', exportRoutes)
 route.route('/password', passwordRoutes)
 route.route('/passkey', passkeyRoutes)
-route.route('/push-settings', pushSettingsRoutes)
-route.route('/push-subscription', pushSubscriptionRoutes)
+route.route('/push', pushRoutes)
 route.route('/following', followingRoutes)
 route.route('/session', sessionRoutes)
 route.route('/settings', settingsRoutes)

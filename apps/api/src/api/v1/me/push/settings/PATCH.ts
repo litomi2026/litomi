@@ -18,10 +18,7 @@ route.patch('/', zProblemValidator('json', patchV1MePushSettingsBodySchema), asy
   try {
     await db
       .insert(pushSettingsTable)
-      .values({
-        userId,
-        ...updateValues,
-      })
+      .values({ userId, ...updateValues })
       .onConflictDoUpdate({
         target: pushSettingsTable.userId,
         set: updateValues,

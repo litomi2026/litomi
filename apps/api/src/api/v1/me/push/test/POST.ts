@@ -1,4 +1,4 @@
-import { postV1MePushSubscriptionTestBodySchema, type POSTV1MePushSubscriptionTestResponse } from '@litomi/contracts'
+import { postV1MePushTestBodySchema, type POSTV1MePushTestResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
 import { NotificationType } from '@litomi/domain/database/enum'
@@ -12,7 +12,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', postV1MePushSubscriptionTestBodySchema), async (c) => {
+route.post('/', zProblemValidator('json', postV1MePushTestBodySchema), async (c) => {
   const userId = c.get('userId')!
   const { endpoint, message } = c.req.valid('json')
   const notificationService = WebPushService.getInstance()
@@ -35,7 +35,7 @@ route.post('/', zProblemValidator('json', postV1MePushSubscriptionTestBodySchema
       sentAt: new Date(),
     })
 
-    return c.json<POSTV1MePushSubscriptionTestResponse>({ message: '현재 브라우저에 테스트 알림을 보냈어요' })
+    return c.json<POSTV1MePushTestResponse>({ message: '현재 브라우저에 테스트 알림을 보냈어요' })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '테스트 푸시 알림 발송 중 오류가 발생했어요' })

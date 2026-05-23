@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1MePushSubscriptionTestBody, POSTV1MePushSubscriptionTestResponse } from '@litomi/contracts'
+import type { POSTV1MePushTestBody, POSTV1MePushTestResponse } from '@litomi/contracts'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { BellRing } from 'lucide-react'
@@ -23,11 +23,7 @@ export default function PushTestButton({ endpoints }: Props) {
   const [hasTestedOnce, setHasTestedOnce] = useState(false)
   const queryClient = useQueryClient()
 
-  const testMutation = useMutation<
-    POSTV1MePushSubscriptionTestResponse,
-    ProblemDetailsError,
-    POSTV1MePushSubscriptionTestBody
-  >({
+  const testMutation = useMutation<POSTV1MePushTestResponse, ProblemDetailsError, POSTV1MePushTestBody>({
     mutationFn: sendTestPushNotification,
     onSuccess: ({ message }) => {
       toast.success(message)

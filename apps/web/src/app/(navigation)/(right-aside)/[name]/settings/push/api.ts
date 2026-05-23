@@ -2,8 +2,8 @@ import type {
   DELETEV1MePushSubscriptionResponse,
   PATCHV1MePushSettingsBody,
   PATCHV1MePushSettingsResponse,
-  POSTV1MePushSubscriptionTestBody,
-  POSTV1MePushSubscriptionTestResponse,
+  POSTV1MePushTestBody,
+  POSTV1MePushTestResponse,
 } from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
@@ -13,7 +13,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function deletePushSubscription(id: number) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/push-subscription/${id}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/push/subscription/${id}`
 
   const { data } = await fetchWithErrorHandling<DELETEV1MePushSubscriptionResponse>(url, {
     method: 'DELETE',
@@ -23,10 +23,10 @@ export async function deletePushSubscription(id: number) {
   return data
 }
 
-export async function sendTestPushNotification(body: POSTV1MePushSubscriptionTestBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/push-subscription/test`
+export async function sendTestPushNotification(body: POSTV1MePushTestBody) {
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/push/test`
 
-  const { data } = await fetchWithErrorHandling<POSTV1MePushSubscriptionTestResponse>(url, {
+  const { data } = await fetchWithErrorHandling<POSTV1MePushTestResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -37,7 +37,7 @@ export async function sendTestPushNotification(body: POSTV1MePushSubscriptionTes
 }
 
 export async function updatePushSettings(body: PATCHV1MePushSettingsBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/push-settings`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/push/settings`
 
   const { data } = await fetchWithErrorHandling<PATCHV1MePushSettingsResponse>(url, {
     method: 'PATCH',
