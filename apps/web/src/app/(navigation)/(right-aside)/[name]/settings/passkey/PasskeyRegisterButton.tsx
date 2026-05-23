@@ -1,13 +1,16 @@
 'use client'
 
+import type { POSTV1MePasskeyVerifyBody, POSTV1MePasskeyVerifyResponse } from '@litomi/contracts'
+
 import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { startRegistration } from '@simplewebauthn/browser'
+import { useMutation } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
-import useServerAction from '@/hook/useServerAction'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { getRegistrationOptions, verifyRegistration } from './action-register'
+import { requestPasskeyRegistrationOptions, verifyPasskeyRegistration } from './api'
 import { PasskeySignalData } from './common'
 
 type Props = {
@@ -15,8 +18,8 @@ type Props = {
 }
 
 export default function PasskeyRegisterButton({ passkeySignalData }: Props) {
-  const [, dispatchAction, isPending] = useServerAction({
-    action: verifyRegistration,
+  const verifyMutation = useMutation<POSTV1MePasskeyVerifyResponse, ProblemDetailsError, POSTV1MePasskeyVerifyBody>({
+    mutationFn: verifyPasskeyRegistration,
     onSuccess: async ({ credentialId, message }) => {
       await signalCurrentPasskeyUserDetails({
         ...passkeySignalData,
@@ -25,34 +28,37 @@ export default function PasskeyRegisterButton({ passkeySignalData }: Props) {
 
       toast.success(message)
     },
-    shouldSetResponse: false,
   })
 
   async function handleRegisterPasskey() {
     try {
-      const optionsResult = await getRegistrationOptions()
+      const { options } = await requestPasskeyRegistrationOptions()
+      const registrationResponse = await startRegistration({ optionsJSON: options })
 
-      if (!optionsResult.ok) {
-        if (optionsResult.status >= 500) {
+      verifyMutation.mutate({ registration: registrationResponse })
+    } catch (error) {
+      if (error instanceof ProblemDetailsError) {
+        if (error.status >= 500) {
           toast.error('패스키 등록 중 오류가 발생했어요')
         } else {
-          toast.warning(optionsResult.error)
+          toast.warning(error.message)
         }
         return
       }
 
-      const registrationResponse = await startRegistration({ optionsJSON: optionsResult.data })
-      dispatchAction(registrationResponse)
-    } catch (error) {
       if (error instanceof Error) {
-        if (error.name === 'NotAllowedError') {
-          toast.info('패스키 등록이 취소됐어요')
-        } else if (error.name === 'InvalidStateError') {
-          toast.info('이미 등록된 패스키가 있어요')
-        } else if (error.name === 'NotSupportedError') {
-          toast.warning('이 브라우저는 패스키를 지원하지 않아요')
-        } else {
-          toast.error('패스키 등록 중 오류가 발생했어요')
+        switch (error.name) {
+          case 'InvalidStateError':
+            toast.info('이미 등록된 패스키가 있어요')
+            return
+          case 'NotAllowedError':
+            toast.info('패스키 등록이 취소됐어요')
+            return
+          case 'NotSupportedError':
+            toast.warning('이 브라우저는 패스키를 지원하지 않아요')
+            return
+          default:
+            toast.error('패스키 등록 중 오류가 발생했어요')
         }
       }
     }
@@ -61,10 +67,10 @@ export default function PasskeyRegisterButton({ passkeySignalData }: Props) {
   return (
     <button
       className="flex items-center gap-2 group rounded-full border-brand/70 bg-brand/5 border-2 px-5 py-2.5 text-sm font-medium transition disabled:opacity-50"
-      disabled={isPending}
+      disabled={verifyMutation.isPending}
       onClick={handleRegisterPasskey}
     >
-      {isPending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+      {verifyMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
       패스키 추가
     </button>
   )
