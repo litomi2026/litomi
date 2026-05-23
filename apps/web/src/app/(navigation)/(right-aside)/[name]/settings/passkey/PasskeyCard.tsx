@@ -1,7 +1,8 @@
 import { Key, Shield } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
-import { Passkey, PasskeySignalData } from './common'
+import type { Passkey, PasskeySignalData } from './common'
+
 import PasskeyDeleteButton from './PasskeyDeleteButton'
 import PasskeyMobileDeleteWrapper from './PasskeyMobileDeleteWrapper'
 import {
@@ -15,7 +16,6 @@ import {
 
 type Props = {
   passkey: Passkey
-  enableMobileSwipe?: boolean
   passkeySignalData: PasskeySignalData
 }
 

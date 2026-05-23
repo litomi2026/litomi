@@ -176,6 +176,19 @@ export const deleteV1MeTrustedBrowserAllResponseSchema = z.object({
 
 export type DELETEV1MeTrustedBrowserAllResponse = z.infer<typeof deleteV1MeTrustedBrowserAllResponseSchema>
 
+export const deleteV1MePasskeyParamSchema = z.object({
+  id: z.coerce.number().int().positive(),
+})
+
+export type DELETEV1MePasskeyParam = z.infer<typeof deleteV1MePasskeyParamSchema>
+
+export const deleteV1MePasskeyResponseSchema = z.object({
+  id: z.number(),
+  message: z.string(),
+})
+
+export type DELETEV1MePasskeyResponse = z.infer<typeof deleteV1MePasskeyResponseSchema>
+
 export const getV1MeFollowingResponseSchema = z.object({
   userIds: z.array(z.number()),
 })
