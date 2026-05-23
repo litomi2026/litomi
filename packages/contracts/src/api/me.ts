@@ -189,6 +189,19 @@ export const deleteV1MePasskeyResponseSchema = z.object({
 
 export type DELETEV1MePasskeyResponse = z.infer<typeof deleteV1MePasskeyResponseSchema>
 
+export const deleteV1MePushSubscriptionParamSchema = z.object({
+  id: z.coerce.number().int().positive(),
+})
+
+export type DELETEV1MePushSubscriptionParam = z.infer<typeof deleteV1MePushSubscriptionParamSchema>
+
+export const deleteV1MePushSubscriptionResponseSchema = z.object({
+  id: z.number(),
+  message: z.string(),
+})
+
+export type DELETEV1MePushSubscriptionResponse = z.infer<typeof deleteV1MePushSubscriptionResponseSchema>
+
 export const getV1MeFollowingResponseSchema = z.object({
   userIds: z.array(z.number()),
 })

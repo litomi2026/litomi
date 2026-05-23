@@ -2,48 +2,21 @@
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/app'
-import { notificationTable, pushSettingsTable, webPushTable } from '@litomi/db/app/notification'
+import { notificationTable, pushSettingsTable } from '@litomi/db/app/notification'
 import { NotificationType } from '@litomi/domain/database/enum'
 import { WebPushService } from '@litomi/notifications'
 import { captureException } from '@sentry/nextjs'
-import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 import { badRequest, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import {
-  removeDeviceSchema,
   subscriptionSchema,
   testNotificationSchema,
   unsubscribeSchema,
   updatePushSettingsSchema,
 } from './schema'
-
-export async function removeDevice(params: Record<string, unknown>) {
-  const userId = await getUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  const validation = removeDeviceSchema.safeParse(params)
-
-  if (!validation.success) {
-    return badRequest(flattenZodFieldErrors(validation.error))
-  }
-
-  const { deviceId, username } = validation.data
-
-  try {
-    await db.delete(webPushTable).where(and(eq(webPushTable.id, deviceId), eq(webPushTable.userId, userId)))
-    revalidatePath(`/${username}/settings`)
-    return ok('푸시 알림을 해제했어요')
-  } catch (error) {
-    captureException(error, { tags: { action: 'removeDevice' } })
-    return internalServerError('푸시 알림을 해제하지 못했어요')
-  }
-}
 
 export async function subscribeToNotifications(data: Record<string, unknown>) {
   const userId = await getUserIdFromCookie()

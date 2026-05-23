@@ -31,8 +31,3 @@ export const updatePushSettingsSchema = z.object({
   batchEnabled: z.boolean().optional(),
   maxDaily: z.coerce.number().min(1).max(999).optional(),
 })
-
-export const removeDeviceSchema = z.object({
-  deviceId: z.number(),
-  username: z.string().min(1),
-})
