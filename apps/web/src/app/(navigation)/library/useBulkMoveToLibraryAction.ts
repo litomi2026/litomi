@@ -5,7 +5,6 @@ import { FolderInput } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { BulkActionDescriptor, BulkTargetLibrary } from './bulkActionTypes'
 
@@ -37,9 +36,6 @@ export default function useBulkMoveToLibraryAction({
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(fromLibraryId) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(toLibraryId) })
       exit()
-    },
-    onError: (error) => {
-      toast.warning(error instanceof ProblemDetailsError ? error.problem.detail : '작품을 이동하지 못했어요')
     },
   })
 

@@ -28,7 +28,6 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
       setBrowsers((prev) => prev.filter((browser) => browser.id !== id))
       toast.success(message)
     },
-    onError: (error) => toast.error(error.message),
   })
 
   const revokeAllMutation = useMutation<DELETEV1MeTrustedBrowserAllResponse, ProblemDetailsError>({
@@ -37,7 +36,6 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
       setBrowsers([])
       toast.success(message)
     },
-    onError: (error) => toast.error(error.message),
   })
 
   function handleRevokeDevice(id: number) {

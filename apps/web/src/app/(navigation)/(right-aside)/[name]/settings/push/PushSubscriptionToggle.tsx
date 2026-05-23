@@ -1,17 +1,15 @@
 'use client'
 
 import { env } from '@litomi/env/client'
-import { getUsernameFromParam } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
-import { useParams } from 'next/navigation'
+import { useMutation } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import useServerAction from '@/hook/useServerAction'
 import { checkIOSDevice, checkIOSSafari, urlBase64ToUint8Array } from '@/utils/browser'
 
-import { Params } from '../../common'
-import { subscribeToNotifications, unsubscribeFromNotifications } from './action'
+import { createPushSubscription, deletePushSubscriptionByEndpoint } from './api'
 import { getCurrentBrowserEndpoint } from './common'
 
 const { NEXT_PUBLIC_VAPID_PUBLIC_KEY } = env
@@ -21,42 +19,22 @@ type Props = {
 }
 
 export default function PushSubscriptionToggle({ endpoints }: Props) {
-  const [isPending, setIsPending] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
-  const { name } = useParams<Params>()
-  const username = getUsernameFromParam(name)
+  const router = useRouter()
 
-  useEffect(() => {
-    if (endpoints.length > 0) {
-      ;(async () => {
-        const currentEndpoint = await getCurrentBrowserEndpoint()
-
-        if (currentEndpoint && endpoints.includes(currentEndpoint)) {
-          setIsSubscribed(true)
-        }
-      })()
-    }
-  }, [endpoints])
-
-  const [_, dispatchSubscriptionAction] = useServerAction({
-    action: subscribeToNotifications,
-    onSuccess: (data) => {
-      setIsSubscribed(true)
-      toast.success(data)
+  const pushSubscriptionMutation = useMutation({
+    mutationFn: (enabled: boolean) => {
+      if (enabled) {
+        return subscribeNotification()
+      } else {
+        return unsubscribeNotification()
+      }
     },
-    shouldSetResponse: false,
-  })
-
-  const [__, dispatchUnsubscriptionAction] = useServerAction({
-    action: unsubscribeFromNotifications,
-    onSuccess: (data) => {
-      setIsSubscribed(false)
-      toast.success(data)
-    },
-    shouldSetResponse: false,
   })
 
   async function subscribeNotification() {
+    let subscription: PushSubscription | null = null
+
     if (!('Notification' in window)) {
       if (checkIOSSafari()) {
         toast.warning('iOS에서는 "홈 화면에 추가"한 뒤에 알림을 받을 수 있어요')
@@ -74,8 +52,6 @@ export default function PushSubscriptionToggle({ endpoints }: Props) {
     }
 
     try {
-      setIsPending(true)
-
       const permission = await Notification.requestPermission()
 
       if (permission === 'denied') {
@@ -83,66 +59,90 @@ export default function PushSubscriptionToggle({ endpoints }: Props) {
         return
       }
 
+      if (permission !== 'granted') {
+        toast.warning('알림 권한을 허용해야 푸시 알림을 받을 수 있어요')
+        return
+      }
+
       const registration = await navigator.serviceWorker.ready
 
-      const subscription = await registration.pushManager.subscribe({
+      subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
       })
 
-      dispatchSubscriptionAction({
-        subscription: subscription.toJSON(),
+      const { keys } = subscription.toJSON()
+
+      if (!keys?.p256dh || !keys.auth) {
+        toast.warning('푸시 구독 정보를 읽지 못했어요')
+        return
+      }
+
+      const { message } = await createPushSubscription({
+        subscription: {
+          endpoint: subscription.endpoint,
+          keys: {
+            p256dh: keys.p256dh,
+            auth: keys.auth,
+          },
+        },
         userAgent: navigator.userAgent,
-        username,
       })
+
+      setIsSubscribed(true)
+      toast.success(message)
+      router.refresh()
     } catch (error) {
-      console.error('requestNotificationPermission:', error)
-      toast.error('알림 활성화 중 오류가 발생했어요')
-    } finally {
-      setIsPending(false)
+      if (subscription) {
+        await subscription.unsubscribe().catch(() => undefined)
+      }
+
+      throw error
     }
   }
 
   async function unsubscribeNotification() {
-    try {
-      setIsPending(true)
+    const registration = await navigator.serviceWorker.ready
+    const subscription = await registration.pushManager.getSubscription()
 
-      const registration = await navigator.serviceWorker.ready
-      const subscription = await registration.pushManager.getSubscription()
+    if (!subscription) {
+      setIsSubscribed(false)
+      toast.success('알림이 비활성화됐어요')
+      return
+    }
 
-      if (!subscription) {
-        toast.success('알림이 비활성화됐어요')
-        return
+    const { message } = await deletePushSubscriptionByEndpoint({ endpoint: subscription.endpoint })
+    await subscription.unsubscribe().catch(() => undefined)
+
+    setIsSubscribed(false)
+    toast.success(message)
+    router.refresh()
+  }
+
+  useEffect(() => {
+    let canceled = false
+
+    async function syncSubscriptionStatus() {
+      const currentEndpoint = await getCurrentBrowserEndpoint()
+
+      if (!canceled) {
+        setIsSubscribed(Boolean(currentEndpoint && endpoints.includes(currentEndpoint)))
       }
-
-      await subscription.unsubscribe()
-
-      dispatchUnsubscriptionAction({
-        endpoint: subscription.endpoint,
-        username,
-      })
-    } catch (error) {
-      console.error('unsubscribeNotification:', error)
-      toast.error('알림 비활성화 중 오류가 발생했어요')
-    } finally {
-      setIsPending(false)
     }
-  }
 
-  function handleToggle(enabled: boolean) {
-    if (enabled) {
-      subscribeNotification()
-    } else {
-      unsubscribeNotification()
+    syncSubscriptionStatus()
+
+    return () => {
+      canceled = true
     }
-  }
+  }, [endpoints])
 
   return (
     <Toggle
       checked={isSubscribed}
       className="w-12 sm:w-14 peer-checked:bg-brand/80 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
-      disabled={isPending}
-      onToggle={handleToggle}
+      disabled={pushSubscriptionMutation.isPending}
+      onToggle={pushSubscriptionMutation.mutate}
     />
   )
 }

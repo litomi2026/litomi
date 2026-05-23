@@ -1,15 +1,18 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import type { POSTV1MePushTestBody, POSTV1MePushTestResponse } from '@litomi/contracts'
+
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { BellRing } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import useServerAction from '@/hook/useServerAction'
+import type { ProblemDetailsError } from '@/utils/react-query-error'
+
 import { QueryKeys } from '@/lib/react-query/query-keys'
 
-import { testNotification } from './action'
+import { sendTestPushNotification } from './api'
 import { getCurrentBrowserEndpoint } from './common'
 
 type Props = {
@@ -20,14 +23,13 @@ export default function PushTestButton({ endpoints }: Props) {
   const [hasTestedOnce, setHasTestedOnce] = useState(false)
   const queryClient = useQueryClient()
 
-  const [_, dispatchTestNotification, isPending] = useServerAction({
-    action: testNotification,
-    onSuccess: (data) => {
-      toast.success(data)
+  const testMutation = useMutation<POSTV1MePushTestResponse, ProblemDetailsError, POSTV1MePushTestBody>({
+    mutationFn: sendTestPushNotification,
+    onSuccess: ({ message }) => {
+      toast.success(message)
       setHasTestedOnce(true)
       queryClient.invalidateQueries({ queryKey: QueryKeys.notification })
     },
-    shouldSetResponse: false,
   })
 
   async function handleTestNotification() {
@@ -38,7 +40,7 @@ export default function PushTestButton({ endpoints }: Props) {
       return
     }
 
-    dispatchTestNotification({
+    testMutation.mutate({
       message: `${new Date().toLocaleString()}`,
       endpoint,
     })
@@ -54,7 +56,7 @@ export default function PushTestButton({ endpoints }: Props) {
         'shadow-sm hover:shadow-md hover:shadow-zinc-900/50',
         'disabled:opacity-50 active:scale-98',
       )}
-      disabled={isPending}
+      disabled={testMutation.isPending}
       onClick={handleTestNotification}
       type="button"
     >

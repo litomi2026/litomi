@@ -5,7 +5,6 @@ import { Copy } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { BulkActionDescriptor, BulkTargetLibrary } from './bulkActionTypes'
 
@@ -32,9 +31,6 @@ export default function useBulkCopyToLibraryAction({ libraries }: Options): Bulk
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(toLibraryId) })
       exit()
-    },
-    onError: (error) => {
-      toast.warning(error instanceof ProblemDetailsError ? error.problem.detail : '작품을 복사하지 못했어요')
     },
   })
 

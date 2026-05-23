@@ -13,7 +13,6 @@ import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { BulkActionDescriptor } from '../bulkActionTypes'
 
@@ -52,9 +51,6 @@ export default function useBulkDeleteRatingAction(): BulkActionDescriptor {
       }
 
       exit()
-    },
-    onError: (error) => {
-      toast.warning(error instanceof ProblemDetailsError ? error.problem.detail : '평가를 삭제하지 못했어요')
     },
   })
 

@@ -42,12 +42,10 @@ export default function DeletePostDialog({
       removePostFromPostLists(queryClient, mutatingPostId)
       return { snapshot }
     },
-    onError: (error, _postId, context) => {
+    onError: (_error, _postId, context) => {
       if (context?.snapshot) {
         restorePostLists(queryClient, context.snapshot)
       }
-
-      toast.warning(error.problem.detail)
     },
     onSuccess: () => {
       toast.success('글을 삭제했어요')

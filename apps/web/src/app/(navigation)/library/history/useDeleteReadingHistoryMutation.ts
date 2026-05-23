@@ -56,10 +56,6 @@ export default function useDeleteReadingHistoryMutation({ source, onSuccess }: O
 
       onSuccess?.()
     },
-
-    onError: (error) => {
-      toast.warning(error instanceof Error ? error.message : '감상 기록을 삭제하지 못했어요')
-    },
   })
 }
 

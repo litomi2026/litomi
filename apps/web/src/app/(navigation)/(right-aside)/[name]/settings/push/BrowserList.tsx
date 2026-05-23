@@ -1,18 +1,20 @@
 'use client'
 
-import { getUsernameFromParam } from '@litomi/std'
+import type { DELETEV1MePushSubscriptionIdResponse } from '@litomi/contracts'
+
+import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Monitor, Smartphone, Trash2 } from 'lucide-react'
-import { useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import useServerAction from '@/hook/useServerAction'
+import type { ProblemDetailsError } from '@/utils/react-query-error'
+
 import { formatDeviceInfo } from '@/utils/push-device'
 
-import { Params } from '../../common'
-import { removeDevice } from './action'
+import { deletePushSubscription } from './api'
 import { getCurrentBrowserEndpoint } from './common'
 
 type Props = {
@@ -25,27 +27,23 @@ type Props = {
 }
 
 export default function BrowserList({ webPushes }: Props) {
+  const router = useRouter()
   const [currentEndpoint, setCurrentEndpoint] = useState<string | null>(null)
-  const { name } = useParams<Params>()
-  const username = getUsernameFromParam(name)
 
-  const [_, dispatchRemoveDevice] = useServerAction({
-    action: removeDevice,
-    onSuccess: (data) => {
-      toast.success(data)
+  const deleteMutation = useMutation<DELETEV1MePushSubscriptionIdResponse, ProblemDetailsError, number>({
+    mutationFn: deletePushSubscription,
+    onSuccess: ({ message }) => {
+      toast.success(message)
+      router.refresh()
     },
   })
 
-  async function handleRemoveDevice(deviceId: number) {
-    if (!username) {
-      return
-    }
-
+  function handleRemoveDevice(deviceId: number) {
     if (!confirm('이 브라우저의 푸시 알림을 비활성화하시겠어요?')) {
       return
     }
 
-    dispatchRemoveDevice({ deviceId, username })
+    deleteMutation.mutate(deviceId)
   }
 
   // NOTE: 현재 브라우저 푸시 정보 가져오기
@@ -114,6 +112,7 @@ export default function BrowserList({ webPushes }: Props) {
               <button
                 aria-label="기기 제거"
                 className="p-2.5 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition"
+                disabled={deleteMutation.isPending}
                 onClick={() => handleRemoveDevice(webPush.id)}
                 type="button"
               >

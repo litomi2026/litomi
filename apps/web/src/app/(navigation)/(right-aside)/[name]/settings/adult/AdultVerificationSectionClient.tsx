@@ -14,7 +14,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import BBatonButton from '@/svg/BBatonButton'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling, ProblemDetailsError, UserVisibleError } from '@/utils/react-query-error'
 
 import AdultVerificationHelp from './AdultVerificationHelp'
 import BBatonUnlinkSection from './BBatonUnlinkSection'
@@ -66,7 +66,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
       const popup = window.open(authorizeUrl, BBATON_POPUP_WINDOW_NAME, 'width=420,height=580')
 
       if (!popup) {
-        throw { status: 0, error: '팝업을 열 수 없어요. 팝업 차단을 해제해 주세요.' }
+        throw new UserVisibleError('팝업을 열 수 없어요. 팝업 차단을 해제해 주세요.')
       }
 
       setIsVerifyingUI(true)
@@ -107,11 +107,11 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
       return data
     },
-    onSuccess: () => {},
+
     onError: (error) => {
       setIsVerifyingUI(false)
       isVerifyingRef.current = false
-      toast.error(getErrorMessage(error))
+
       if (error instanceof ProblemDetailsError && error.status === 401) {
         router.refresh()
       }
@@ -257,23 +257,4 @@ export default function AdultVerificationSectionClient({ initialVerification, is
       {initialVerification && <BBatonUnlinkSection isTwoFactorEnabled={isTwoFactorEnabled} />}
     </div>
   )
-}
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof ProblemDetailsError) {
-    return error.message
-  }
-
-  if (typeof error === 'object' && error !== null && 'error' in error) {
-    const message = (error as { error?: unknown }).error
-    if (typeof message === 'string' && message.length > 0) {
-      return message
-    }
-  }
-
-  if (error instanceof Error && !navigator.onLine) {
-    return '네트워크 연결을 확인해 주세요.'
-  }
-
-  return '인증에 실패했어요. 다시 시도해 주세요.'
 }

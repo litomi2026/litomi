@@ -1,11 +1,40 @@
 [
   {
+    "campaignId": "suneung-2027-public-info",
+    "creativeId": "suneung-2027-exam-day-card-v1",
+    "ctaLabel": "공식 발표 보기",
+    "description": "시험장 안팎의 모두에게 무사한 하루가 되길 바라요.",
+    "enabled": true,
+    "endsAt": "2026-11-20T00:00:00+09:00",
+    "id": "suneung-2027-exam-day-native-grid",
+    "imageUrls": ["https://cdn.baronews-k.com/news/photo/202601/2479_11472_828.png"],
+    "label": "공익 캠페인",
+    "placements": [
+      "public_grid_library_home",
+      "public_grid_new",
+      "public_grid_random",
+      "public_grid_ranking",
+      "public_grid_search"
+    ],
+    "position": 1,
+    "priority": 2027,
+    "startsAt": "2026-11-19T00:00:00+09:00",
+    "targetUrl": "https://www.korea.kr/briefing/policyBriefingView.do?newsId=156752001",
+    "theme": {
+      "accentColor": "#7dd3fc",
+      "backgroundColor": "#10151f",
+      "foregroundColor": "#f8fafc",
+      "mutedColor": "#cbd5e1"
+    },
+    "title": "오늘, 수능을 치르는 날"
+  },
+  {
     "campaignId": "roh-memorial-2026",
     "creativeId": "roh-memorial-523-card-v1",
     "ctaLabel": "민주평화통일자문회의 제50차 상임위원회 연설",
-    "description": "2026년 5월 23일, 노무현 대통령 서거 17주기를 맞아 각자의 자리에서 조용히 기억해요.",
+    "description": "2027년 5월 23일, 노무현 대통령 서거 18주기를 맞아 각자의 자리에서 조용히 기억해요.",
     "enabled": true,
-    "endsAt": "2026-05-24T00:00:00+09:00",
+    "endsAt": "2027-05-24T00:00:00+09:00",
     "id": "roh-memorial-523-native-grid",
     "imageUrls": ["https://www.knowhow.or.kr/data/new_board/202605/202605181779092067.jpg"],
     "label": "공익 캠페인",
@@ -18,7 +47,7 @@
     ],
     "position": 1,
     "priority": 523,
-    "startsAt": "2026-05-23T00:00:00+09:00",
+    "startsAt": "2027-05-23T00:00:00+09:00",
     "targetUrl": "https://www.youtube.com/watch?v=FpFEnYgVM4g&t=3414s",
     "theme": {
       "accentColor": "#f4c430",
@@ -47,7 +76,7 @@
     ],
     "position": 4,
     "priority": 1,
-    "startsAt": "2026-05-21T00:00:00+09:00",
+    "startsAt": "2026-05-27T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
     "title": "취향을 직접 고르듯, 후보도 직접 골라요."
   },
@@ -70,7 +99,7 @@
     ],
     "position": 4,
     "priority": 1,
-    "startsAt": "2026-05-21T00:00:00+09:00",
+    "startsAt": "2026-05-27T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
     "title": "북마크하듯, 내 투표도 미리 챙겨요."
   },
@@ -93,7 +122,7 @@
     ],
     "position": 4,
     "priority": 1,
-    "startsAt": "2026-05-21T00:00:00+09:00",
+    "startsAt": "2026-05-27T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
     "title": "입시비리도, 횡령도 사면되는 세상. 내 표까지 비워둘 건가요?"
   },
@@ -116,7 +145,7 @@
     ],
     "position": 4,
     "priority": 1,
-    "startsAt": "2026-05-21T00:00:00+09:00",
+    "startsAt": "2026-05-27T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
     "title": "원화는 약해지고, 나랏빚은 불어났어요"
   },

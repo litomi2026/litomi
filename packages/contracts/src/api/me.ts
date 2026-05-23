@@ -189,6 +189,82 @@ export const deleteV1MePasskeyResponseSchema = z.object({
 
 export type DELETEV1MePasskeyResponse = z.infer<typeof deleteV1MePasskeyResponseSchema>
 
+const pushSubscriptionSchema = z.object({
+  endpoint: z.url(),
+  keys: z.object({
+    p256dh: z.string().min(1),
+    auth: z.string().min(1),
+  }),
+})
+
+export const postV1MePushSubscriptionBodySchema = z.object({
+  subscription: pushSubscriptionSchema,
+  userAgent: z.string().optional(),
+})
+
+export type POSTV1MePushSubscriptionBody = z.infer<typeof postV1MePushSubscriptionBodySchema>
+
+export const postV1MePushSubscriptionResponseSchema = z.object({
+  id: z.number(),
+  message: z.string(),
+})
+
+export type POSTV1MePushSubscriptionResponse = z.infer<typeof postV1MePushSubscriptionResponseSchema>
+
+export const deleteV1MePushSubscriptionBodySchema = z.object({
+  endpoint: z.url(),
+})
+
+export type DELETEV1MePushSubscriptionBody = z.infer<typeof deleteV1MePushSubscriptionBodySchema>
+
+export const deleteV1MePushSubscriptionResponseSchema = z.object({
+  message: z.string(),
+})
+
+export type DELETEV1MePushSubscriptionResponse = z.infer<typeof deleteV1MePushSubscriptionResponseSchema>
+
+export const deleteV1MePushSubscriptionIdParamSchema = z.object({
+  id: z.coerce.number().int().positive(),
+})
+
+export type DELETEV1MePushSubscriptionIdParam = z.infer<typeof deleteV1MePushSubscriptionIdParamSchema>
+
+export const deleteV1MePushSubscriptionIdResponseSchema = z.object({
+  id: z.number(),
+  message: z.string(),
+})
+
+export type DELETEV1MePushSubscriptionIdResponse = z.infer<typeof deleteV1MePushSubscriptionIdResponseSchema>
+
+export const postV1MePushTestBodySchema = z.object({
+  endpoint: z.url(),
+  message: z.string().min(1),
+})
+
+export type POSTV1MePushTestBody = z.infer<typeof postV1MePushTestBodySchema>
+
+export const postV1MePushTestResponseSchema = z.object({
+  message: z.string(),
+})
+
+export type POSTV1MePushTestResponse = z.infer<typeof postV1MePushTestResponseSchema>
+
+export const patchV1MePushSettingsBodySchema = z.object({
+  quietEnabled: z.boolean(),
+  quietStart: z.number().int().min(0).max(23),
+  quietEnd: z.number().int().min(0).max(23),
+  batchEnabled: z.boolean(),
+  maxDaily: z.number().int().min(1).max(999),
+})
+
+export type PATCHV1MePushSettingsBody = z.infer<typeof patchV1MePushSettingsBodySchema>
+
+export const patchV1MePushSettingsResponseSchema = z.object({
+  message: z.string(),
+})
+
+export type PATCHV1MePushSettingsResponse = z.infer<typeof patchV1MePushSettingsResponseSchema>
+
 export const getV1MeFollowingResponseSchema = z.object({
   userIds: z.array(z.number()),
 })
