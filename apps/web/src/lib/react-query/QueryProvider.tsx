@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import MyInfoSync from '@/components/MyInfoSync'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError, UserVisibleError } from '@/utils/react-query-error'
 
 import { handleUnauthorizedError } from './auth-state'
 
@@ -148,6 +148,11 @@ const queryClient = new QueryClient({
         } else if (error.status >= 400) {
           toast.warning(error.message || '요청을 처리할 수 없어요')
         }
+        return
+      }
+
+      if (error instanceof UserVisibleError) {
+        toast.error(error.message)
         return
       }
 

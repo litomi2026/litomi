@@ -50,6 +50,10 @@ export class ProblemDetailsError extends Error {
   }
 }
 
+export class UserVisibleError extends Error {
+  readonly name = 'UserVisibleError'
+}
+
 export async function fetchWithErrorHandling<T>(
   input: string | Request | URL,
   init?: RequestInit,
