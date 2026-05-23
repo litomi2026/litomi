@@ -1,23 +1,21 @@
 'use client'
 
-import { getTimezoneOffsetHours, getUsernameFromParam, localToUtcHour, utcToLocalHour } from '@litomi/std'
+import type { PATCHV1MePushSettingsBody, PATCHV1MePushSettingsResponse } from '@litomi/contracts'
+import type { ReactNode } from 'react'
+
+import { getTimezoneOffsetHours, localToUtcHour, utcToLocalHour } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
+import { useMutation } from '@tanstack/react-query'
 import { Loader2, Moon } from 'lucide-react'
-import { useParams } from 'next/navigation'
-import { ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
+import type { ProblemDetailsError } from '@/utils/react-query-error'
+
 import CustomSelect from '@/components/ui/CustomSelect'
-import useServerAction, { getFormField } from '@/hook/useServerAction'
 
-import { Params } from '../../common'
-import { updatePushSettings } from './action'
-
-const hourOptions = Array.from({ length: 24 }, (_, i) => ({
-  value: i,
-  label: `${String(i).padStart(2, '0')}:00`,
-}))
+import { updatePushSettings } from './api'
 
 type Props = {
   initialSettings: {
@@ -30,44 +28,45 @@ type Props = {
 }
 
 export default function PushSettingsForm({ initialSettings }: Props) {
-  const { name: username } = useParams<Params>()
+  const router = useRouter()
   const localQuietStart = utcToLocalHour(initialSettings.quietStart)
+
+  const updateMutation = useMutation<PATCHV1MePushSettingsResponse, ProblemDetailsError, PATCHV1MePushSettingsBody>({
+    mutationFn: updatePushSettings,
+    onSuccess: ({ message }) => {
+      toast.success(message)
+      router.refresh()
+    },
+  })
+
+  const isPending = updateMutation.isPending
   const localQuietEnd = utcToLocalHour(initialSettings.quietEnd)
   const offset = getTimezoneOffsetHours()
   const offsetStr = offset >= 0 ? `+${offset}` : `${offset}`
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const timezoneInfo = `${timezone} UTC${offsetStr}`
 
-  function handleSubmit(formData: FormData) {
-    const quietStart = formData.get('quietStart')
-    const quietEnd = formData.get('quietEnd')
+  const hourOptions = Array.from({ length: 24 }, (_, i) => ({
+    value: i,
+    label: `${String(i).padStart(2, '0')}:00`,
+  }))
 
-    if (quietStart !== null) {
-      formData.set('quietStart', String(localToUtcHour(Number(quietStart))))
-    }
-    if (quietEnd !== null) {
-      formData.set('quietEnd', String(localToUtcHour(Number(quietEnd))))
-    }
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault()
 
-    return updatePushSettings(formData)
+    const formData = new FormData(e.currentTarget)
+
+    updateMutation.mutate({
+      quietEnabled: formData.has('quietEnabled'),
+      quietStart: localToUtcHour(Number(formData.get('quietStart'))),
+      quietEnd: localToUtcHour(Number(formData.get('quietEnd'))),
+      batchEnabled: formData.has('batchEnabled'),
+      maxDaily: Number(formData.get('maxDaily')),
+    })
   }
 
-  const [response, dispatchAction, isPending] = useServerAction({
-    action: handleSubmit,
-    onSuccess: (data) => {
-      toast.success(data)
-    },
-  })
-
-  const defaultQuietEnabled = getDefaultChecked(getFormField(response, 'quietEnabled')) ?? initialSettings.quietEnabled
-  const defaultQuietStart = getFormField(response, 'quietStart') ?? localQuietStart
-  const defaultQuietEnd = getFormField(response, 'quietEnd') ?? localQuietEnd
-  const defaultBatchEnabled = getDefaultChecked(getFormField(response, 'batchEnabled')) ?? initialSettings.batchEnabled
-  const defaultMaxDaily = getFormField(response, 'maxDaily') ?? initialSettings.maxDaily
-
   return (
-    <form action={dispatchAction} className="grid gap-3">
-      <input name="username" type="hidden" value={getUsernameFromParam(username)} />
+    <form className="grid gap-3" onSubmit={handleSubmit}>
       <ToggleSection
         description={<span suppressHydrationWarning>{`설정한 시간에는 알림을 보내지 않아요 (${timezoneInfo})`}</span>}
         icon={<Moon className="size-4 shrink-0 text-zinc-400" />}
@@ -76,14 +75,14 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         <Toggle
           aria-label="방해 금지 시간 활성화"
           className="w-12 sm:w-14 peer-checked:bg-brand/80"
-          defaultChecked={defaultQuietEnabled}
+          defaultChecked={initialSettings.quietEnabled}
           name="quietEnabled"
         />
         <div className="grid grid-cols-2 gap-2 whitespace-nowrap sm:flex sm:items-center sm:gap-3">
           <div className="flex items-center gap-2">
             <CustomSelect
               className="w-full sm:w-24"
-              defaultValue={defaultQuietStart.toString()}
+              defaultValue={localQuietStart.toString()}
               key={localQuietStart}
               name="quietStart"
               options={hourOptions.map((option) => ({
@@ -96,7 +95,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
           <div className="flex items-center gap-2">
             <CustomSelect
               className="w-full sm:w-24"
-              defaultValue={defaultQuietEnd.toString()}
+              defaultValue={localQuietEnd.toString()}
               key={localQuietEnd}
               name="quietEnd"
               options={hourOptions.map((option) => ({
@@ -112,14 +111,14 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         <Toggle
           aria-label="스마트 알림 활성화"
           className="w-12 sm:w-14 peer-checked:bg-brand/80"
-          defaultChecked={defaultBatchEnabled}
+          defaultChecked={initialSettings.batchEnabled}
           name="batchEnabled"
         />
       </ToggleSection>
       <ToggleSection description="하루 최대 알림 개수" title="일일 제한">
         <CustomSelect
           className="min-w-[80px]"
-          defaultValue={defaultMaxDaily.toString()}
+          defaultValue={initialSettings.maxDaily.toString()}
           key={initialSettings.maxDaily}
           name="maxDaily"
           options={[
@@ -148,14 +147,6 @@ export default function PushSettingsForm({ initialSettings }: Props) {
       </button>
     </form>
   )
-}
-
-function getDefaultChecked(value?: string) {
-  if (typeof value === 'string') {
-    return value === 'on'
-  }
-
-  return value
 }
 
 function ToggleSection({

@@ -1,5 +1,7 @@
 import type {
   DELETEV1MePushSubscriptionResponse,
+  PATCHV1MePushSettingsBody,
+  PATCHV1MePushSettingsResponse,
   POSTV1MePushSubscriptionTestBody,
   POSTV1MePushSubscriptionTestResponse,
 } from '@litomi/contracts'
@@ -26,6 +28,19 @@ export async function sendTestPushNotification(body: POSTV1MePushSubscriptionTes
 
   const { data } = await fetchWithErrorHandling<POSTV1MePushSubscriptionTestResponse>(url, {
     method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+
+  return data
+}
+
+export async function updatePushSettings(body: PATCHV1MePushSettingsBody) {
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/push-settings`
+
+  const { data } = await fetchWithErrorHandling<PATCHV1MePushSettingsResponse>(url, {
+    method: 'PATCH',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),

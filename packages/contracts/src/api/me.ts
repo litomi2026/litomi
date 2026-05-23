@@ -215,6 +215,22 @@ export const postV1MePushSubscriptionTestResponseSchema = z.object({
 
 export type POSTV1MePushSubscriptionTestResponse = z.infer<typeof postV1MePushSubscriptionTestResponseSchema>
 
+export const patchV1MePushSettingsBodySchema = z.object({
+  quietEnabled: z.boolean(),
+  quietStart: z.number().int().min(0).max(23),
+  quietEnd: z.number().int().min(0).max(23),
+  batchEnabled: z.boolean(),
+  maxDaily: z.number().int().min(1).max(999),
+})
+
+export type PATCHV1MePushSettingsBody = z.infer<typeof patchV1MePushSettingsBodySchema>
+
+export const patchV1MePushSettingsResponseSchema = z.object({
+  message: z.string(),
+})
+
+export type PATCHV1MePushSettingsResponse = z.infer<typeof patchV1MePushSettingsResponseSchema>
+
 export const getV1MeFollowingResponseSchema = z.object({
   userIds: z.array(z.number()),
 })

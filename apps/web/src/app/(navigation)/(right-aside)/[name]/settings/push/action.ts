@@ -1,8 +1,6 @@
 'use server'
 
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { db } from '@litomi/db/app'
-import { pushSettingsTable } from '@litomi/db/app/notification'
 import { WebPushService } from '@litomi/notifications'
 import { captureException } from '@sentry/nextjs'
 import { revalidatePath } from 'next/cache'
@@ -13,7 +11,6 @@ import { flattenZodFieldErrors } from '@/utils/form-error'
 import {
   subscriptionSchema,
   unsubscribeSchema,
-  updatePushSettingsSchema,
 } from './schema'
 
 export async function subscribeToNotifications(data: Record<string, unknown>) {
@@ -65,48 +62,5 @@ export async function unsubscribeFromNotifications(data: Record<string, unknown>
   } catch (error) {
     captureException(error, { tags: { action: 'unsubscribeFromNotifications' } })
     return internalServerError('푸시 알림 비활성화 중 오류가 발생했어요')
-  }
-}
-
-export async function updatePushSettings(formData: FormData) {
-  const userId = await getUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인이 필요해요')
-  }
-
-  const validation = updatePushSettingsSchema.safeParse({
-    username: formData.get('username'),
-    quietEnabled: formData.has('quietEnabled'),
-    quietStart: formData.get('quietStart'),
-    quietEnd: formData.get('quietEnd'),
-    batchEnabled: formData.has('batchEnabled'),
-    maxDaily: formData.get('maxDaily'),
-  })
-
-  if (!validation.success) {
-    return badRequest(flattenZodFieldErrors(validation.error), formData)
-  }
-
-  const { username, ...rest } = validation.data
-  const updateValues = { ...rest, updatedAt: new Date() }
-
-  try {
-    await db
-      .insert(pushSettingsTable)
-      .values({
-        userId,
-        ...updateValues,
-      })
-      .onConflictDoUpdate({
-        target: pushSettingsTable.userId,
-        set: updateValues,
-      })
-
-    revalidatePath(`/@${username}`)
-    return ok('푸시 알림을 설정했어요')
-  } catch (error) {
-    captureException(error, { tags: { action: 'updateNotificationSettings' } })
-    return internalServerError('푸시 알림 설정 중 오류가 발생했어요', formData)
   }
 }
