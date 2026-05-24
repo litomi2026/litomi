@@ -1,6 +1,6 @@
 'use client'
 
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { CookieKey } from '@litomi/http/cookie'
 import { CN, JP, KR, TW, US } from 'country-flag-icons/react/3x2'
 import Cookies from 'js-cookie'
 import { Check, Globe } from 'lucide-react'

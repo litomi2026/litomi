@@ -1,4 +1,4 @@
-import type { ImageWithVariants } from '@litomi/domain/types/manga'
+import type { ImageWithVariants } from '@litomi/domain/manga/model'
 
 import type { MangaImagePictures } from '@/components/MangaImage'
 

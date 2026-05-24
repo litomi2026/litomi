@@ -1,10 +1,10 @@
 'use client'
 
-import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { env } from '@litomi/env/client'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 
+import { LocalStorageKey } from '@/storage'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

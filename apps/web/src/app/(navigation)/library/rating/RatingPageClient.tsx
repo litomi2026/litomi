@@ -3,7 +3,7 @@
 import type { GETV1RatingsResponse } from '@litomi/contracts'
 
 import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
-import { Manga } from '@litomi/domain/types/manga'
+import { Manga } from '@litomi/domain/manga/model'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { Star } from 'lucide-react'
 import { ReadonlyURLSearchParams } from 'next/navigation'

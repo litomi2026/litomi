@@ -1,7 +1,7 @@
 import type { GETV1PointTurnstileResponse } from '@litomi/contracts'
 
-import { COOKIE_DOMAIN } from '@litomi/domain/constants/security'
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { COOKIE_DOMAIN } from '@litomi/http/cookie'
+import { CookieKey } from '@litomi/http/cookie'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 

@@ -1,7 +1,7 @@
 import { postV1MePushTestBodySchema, type POSTV1MePushTestResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
-import { NotificationType } from '@litomi/domain/database/enum'
+import { NotificationType } from '@litomi/domain/notification/model'
 import { WebPushService } from '@litomi/notifications'
 import { Hono } from 'hono'
 

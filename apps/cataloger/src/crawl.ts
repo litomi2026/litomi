@@ -1,10 +1,10 @@
-import type { LabeledValue, Manga } from '@litomi/domain/types/manga'
+import type { LabeledValue, Manga } from '@litomi/domain/manga/model'
 
 import { kHentaiClient, type KHentaiMangaSearchOptions } from '@litomi/crawler/sources/k-hentai'
 import { catalogDB } from '@litomi/db/catalog'
 import { mangaTable } from '@litomi/db/catalog/schema'
-import { MangaType, TagCategory, tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import { Locale } from '@litomi/domain/locale'
+import { MangaType, TagCategory, tagCategoryNameToInt } from '@litomi/domain/manga/model'
 import dayjs from 'dayjs'
 import { max, min, sql } from 'drizzle-orm'
 

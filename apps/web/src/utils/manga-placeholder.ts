@@ -1,4 +1,4 @@
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { MAX_THUMBNAIL_IMAGES } from '@litomi/domain/constants/policy'
 import { createThirdPartyMangaImageURLs } from '@litomi/http/image-proxy'

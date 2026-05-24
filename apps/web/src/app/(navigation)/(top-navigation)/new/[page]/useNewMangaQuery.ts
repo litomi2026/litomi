@@ -1,4 +1,4 @@
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { Locale } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'

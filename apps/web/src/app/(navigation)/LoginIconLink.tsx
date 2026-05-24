@@ -1,6 +1,7 @@
-import { SearchParamKey } from '@litomi/domain/constants/storage'
 import { LogIn } from 'lucide-react'
 import { usePathname, useSearchParams } from 'next/navigation'
+
+import { SearchParamKey } from '@/storage'
 
 import SelectableLink from './SelectableLink'
 

@@ -1,4 +1,4 @@
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
 import { selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'

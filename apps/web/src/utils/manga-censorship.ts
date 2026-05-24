@@ -1,8 +1,8 @@
 import type { CensorshipItem } from '@litomi/contracts'
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@litomi/domain/constants/json'
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 
 export type MangaCensorshipMatch = {
   censoringReasons?: string[]

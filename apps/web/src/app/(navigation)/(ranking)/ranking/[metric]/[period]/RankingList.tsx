@@ -1,7 +1,7 @@
 'use client'
 
+import type { Manga } from '@litomi/domain/manga/model'
 import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
-import type { Manga } from '@litomi/domain/types/manga'
 
 import { twMerge } from 'tailwind-merge'
 

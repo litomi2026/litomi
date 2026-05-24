@@ -2,7 +2,7 @@
 
 import type { DELETEV1CensorshipDeleteResponse } from '@litomi/contracts'
 
-import { CensorshipKey } from '@litomi/domain/database/enum'
+import { CensorshipKey } from '@litomi/domain/censorship/model'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Filter, Loader2, MoreHorizontal, Search } from 'lucide-react'

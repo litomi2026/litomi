@@ -2,7 +2,6 @@
 
 import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@litomi/contracts'
 
-import { SearchParamKey } from '@litomi/domain/constants/storage'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -11,6 +10,7 @@ import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { identify, track } from '@/lib/analytics/browser'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
+import { SearchParamKey } from '@/storage'
 import { sanitizeRedirect } from '@/utils'
 
 import { signup } from './api'

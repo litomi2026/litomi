@@ -1,7 +1,7 @@
 import { getV1LibraryMangaQuerySchema, type GETV1LibraryMangaResponse, type LibraryMangaItem } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
-import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@litomi/domain/common/cursor'
+import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@litomi/db/cursor'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'

@@ -1,4 +1,4 @@
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { hiyobiClient } from '@litomi/crawler/sources/hiyobi'
 import { kHentaiClient } from '@litomi/crawler/sources/k-hentai'

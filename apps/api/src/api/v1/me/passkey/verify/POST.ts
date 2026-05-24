@@ -3,7 +3,7 @@ import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
 import { postV1MePasskeyVerifyBodySchema, type POSTV1MePasskeyVerifyResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
-import { ChallengeType, encodeDeviceType } from '@litomi/domain/database/enum'
+import { ChallengeType, encodeDeviceType } from '@litomi/domain/auth/model'
 import { verifyRegistrationResponse } from '@simplewebauthn/server'
 import { Hono } from 'hono'
 

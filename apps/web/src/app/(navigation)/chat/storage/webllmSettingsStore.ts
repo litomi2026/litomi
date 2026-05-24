@@ -1,8 +1,9 @@
 'use client'
 
-import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+
+import { LocalStorageKey } from '@/storage'
 
 import { type CustomWebLLMModel, DEFAULT_MODEL_ID, type ModelId } from '../lib/webllmModel'
 

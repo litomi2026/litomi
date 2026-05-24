@@ -1,6 +1,6 @@
 'use client'
 
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { Check, SquarePen } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { twMerge } from 'tailwind-merge'

@@ -1,7 +1,7 @@
 'use client'
 
-import { NotificationType } from '@litomi/domain/database/enum'
-import { NotificationData } from '@litomi/domain/database/type'
+import { NotificationType } from '@litomi/domain/notification/model'
+import { NotificationData } from '@litomi/domain/notification/model'
 import { formatDistanceToNow } from '@litomi/std'
 import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
 import Link from 'next/link'

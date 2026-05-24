@@ -1,5 +1,5 @@
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@litomi/domain/constants/json'
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
 
 export const CENSORSHIP_KEY_LABELS: Record<CensorshipKey, string> = {
   [CensorshipKey.ARTIST]: '작가',

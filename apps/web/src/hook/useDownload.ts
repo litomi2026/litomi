@@ -1,4 +1,4 @@
-import type { ImageWithVariants } from '@litomi/domain/types/manga'
+import type { ImageWithVariants } from '@litomi/domain/manga/model'
 
 import { createLitomiProxyMangaImageURL, createThirdPartyMangaImageURLs } from '@litomi/http/image-proxy'
 import { useCallback, useState } from 'react'

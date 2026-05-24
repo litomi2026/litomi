@@ -1,4 +1,4 @@
-import { Manga } from '@litomi/domain/types/manga'
+import { Manga } from '@litomi/domain/manga/model'
 import { getViewerLink } from '@litomi/domain/utils/manga'
 import { View } from '@litomi/std'
 import Link from 'next/link'

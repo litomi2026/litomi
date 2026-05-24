@@ -1,11 +1,11 @@
 'use client'
 
-import type { ErrorProps } from '@litomi/domain/types/nextjs'
-
 import { env } from '@litomi/env/client'
 import * as Sentry from '@sentry/nextjs'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
+import type { ErrorProps } from '@/types/nextjs'
 
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import ErrorDiagnosticDetails from '@/components/ErrorDiagnosticDetails'

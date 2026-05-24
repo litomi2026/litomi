@@ -1,7 +1,7 @@
 import type { POSTV1AuthLogoutResponse } from '@litomi/contracts'
 
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { CookieKey } from '@litomi/http/cookie'
 import { Hono } from 'hono'
 import { getCookie } from 'hono/cookie'
 

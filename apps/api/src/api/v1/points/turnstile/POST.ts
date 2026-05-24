@@ -1,6 +1,6 @@
 import { postV1PointTurnstileRequestSchema, type POSTV1PointTurnstileResponse } from '@litomi/contracts'
-import { COOKIE_DOMAIN } from '@litomi/domain/constants/security'
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { COOKIE_DOMAIN } from '@litomi/http/cookie'
+import { CookieKey } from '@litomi/http/cookie'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { Hono } from 'hono'

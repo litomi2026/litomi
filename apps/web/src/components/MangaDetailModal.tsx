@@ -1,7 +1,7 @@
 'use client'
 
 import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/constants/policy'
-import { Manga } from '@litomi/domain/types/manga'
+import { Manga } from '@litomi/domain/manga/model'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'

@@ -1,6 +1,6 @@
 'use client'
 
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { View } from '@litomi/std'
 

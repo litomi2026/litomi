@@ -1,5 +1,5 @@
 import '@test/setup.base'
-import { ChallengeType } from '@litomi/domain/database/enum'
+import { ChallengeType } from '@litomi/domain/auth/model'
 import { afterAll, afterEach, describe, expect, it, mock } from 'bun:test'
 
 const getdelMock = mock(async (): Promise<unknown | null> => null)

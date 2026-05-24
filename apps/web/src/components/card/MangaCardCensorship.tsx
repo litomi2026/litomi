@@ -1,8 +1,8 @@
 'use client'
 
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
-import { CensorshipLevel } from '@litomi/domain/database/enum'
+import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { Eye, EyeOff } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'

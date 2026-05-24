@@ -1,12 +1,13 @@
 import { fetchMangaFromMultiSources } from '@litomi/crawler/manga/multi-source'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/constants/policy'
 import { Locale } from '@litomi/domain/locale'
-import { RouteProps } from '@litomi/domain/types/nextjs'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std'
 import { checkBotId } from 'botid/server'
+
+import type { RouteProps } from '@/types/nextjs'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { calculateOptimalCacheDuration, handleRouteError } from '@/util/proxy-route'

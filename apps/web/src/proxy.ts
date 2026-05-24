@@ -2,7 +2,7 @@ import { applyCookieConfigs, getAuthCookieClearConfigs } from '@litomi/auth/cook
 import { JWTType, verifyJWT } from '@litomi/auth/jwt'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { refreshSession } from '@litomi/auth/session/persistent-session'
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { CookieKey } from '@litomi/http/cookie'
 import { getRequestUserAgent } from '@litomi/http/request'
 import { getPathLengthBlockStatus } from '@litomi/std'
 import { NextRequest, NextResponse } from 'next/server'

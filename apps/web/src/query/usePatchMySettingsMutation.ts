@@ -2,12 +2,12 @@
 
 import type { GETV1MeResponse, PATCHV1MeSettingsBody } from '@litomi/contracts'
 
-import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
+import { LocalStorageKey } from '@/storage'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

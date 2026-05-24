@@ -1,10 +1,10 @@
-import type { NotificationData } from '@litomi/domain/database/type'
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
+import type { NotificationData } from '@litomi/domain/notification/model'
 
 import { db } from '@litomi/db/app'
 import { mangaSeenTable, notificationTable } from '@litomi/db/app/notification'
 import { MAX_MANGA_TITLE_LENGTH, MAX_NOTIFICATION_COUNT } from '@litomi/domain/constants/policy'
-import { NotificationType } from '@litomi/domain/database/enum'
+import { NotificationType } from '@litomi/domain/notification/model'
 import { getViewerLink } from '@litomi/domain/utils/manga'
 import { type WebPushMessage, WebPushService } from '@litomi/notifications'
 import { and, count, desc, gte, inArray, isNull, sql } from 'drizzle-orm'

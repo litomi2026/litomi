@@ -1,6 +1,6 @@
 import { JWTType, signJWT } from '@litomi/auth/jwt'
-import { COOKIE_DOMAIN } from '@litomi/domain/constants/security'
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { COOKIE_DOMAIN } from '@litomi/http/cookie'
+import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'
 
 type SignTrustedBrowserTokenInput = {
