@@ -68,7 +68,7 @@ export default function PasskeyNameDialog({
     <Dialog ariaLabel={title} className="sm:max-w-sm" onClose={handleClose} open={open}>
       <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
         <DialogHeader onClose={handleClose} title={title} />
-        <DialogBody className="grid gap-3 p-5">
+        <DialogBody className="flex flex-col gap-3 p-5">
           <label className="text-sm font-medium text-zinc-300" htmlFor={inputId}>
             패스키 이름
           </label>

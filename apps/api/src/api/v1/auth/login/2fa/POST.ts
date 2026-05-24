@@ -49,6 +49,7 @@ route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), asyn
   if (!challengeData.valid) {
     return problemResponse(c, {
       status: 401,
+      code: 'login-challenge-expired',
       detail: '인증이 만료됐어요. 새로고침 후 시도해 주세요.',
     })
   }
@@ -78,6 +79,7 @@ route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), asyn
         return {
           ok: false,
           status: 401,
+          code: 'login-challenge-expired',
           detail: '인증이 만료됐어요. 새로고침 후 시도해 주세요.',
         } as const
       }

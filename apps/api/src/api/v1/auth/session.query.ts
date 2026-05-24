@@ -48,16 +48,19 @@ export async function issueAuthCookies({
 
 export async function revokeCurrentSessionByTokenHash(tokenHash: string, now: Date) {
   const [token] = await db
-    .select({ familyId: authSessionTokenTable.familyId })
+    .select({ familyId: authSessionTokenTable.familyId, userId: authSessionFamilyTable.userId })
     .from(authSessionTokenTable)
+    .innerJoin(authSessionFamilyTable, eq(authSessionFamilyTable.id, authSessionTokenTable.familyId))
     .where(eq(authSessionTokenTable.tokenHash, tokenHash))
 
   if (!token) {
-    return
+    return null
   }
 
   await db
     .update(authSessionFamilyTable)
     .set({ revokedAt: now, lastUsedAt: now })
     .where(and(eq(authSessionFamilyTable.id, token.familyId), isNull(authSessionFamilyTable.revokedAt)))
+
+  return { userId: token.userId }
 }
