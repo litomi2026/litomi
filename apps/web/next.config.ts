@@ -110,7 +110,6 @@ const nextConfig: NextConfig = {
     '@litomi/domain',
     '@litomi/env',
     '@litomi/http',
-    '@litomi/notifications',
     '@litomi/observability',
     '@litomi/std',
     '@litomi/ui',

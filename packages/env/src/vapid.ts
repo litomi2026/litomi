@@ -1,0 +1,2 @@
+export const DEFAULT_VAPID_PUBLIC_KEY =
+  'BE2STQk_ZAdkzk0yacENGIQQbMhz54tgMDwryE0-d_I1irGlpbBMGs9ooYJMnONCZ9jzvWIOPIiGl7V8nXCh5w4'

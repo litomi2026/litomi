@@ -3,15 +3,11 @@ import type { PushSubscription } from 'web-push'
 
 import { db } from '@litomi/db/app'
 import { pushSettingsTable, webPushTable } from '@litomi/db/app/notification'
-import { env as clientEnv } from '@litomi/env/client'
 import { env as commonEnv } from '@litomi/env/server.common'
-import { env as serverEnv } from '@litomi/env/server.next'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import webpush from 'web-push'
 
-const { NEXT_PUBLIC_VAPID_PUBLIC_KEY } = clientEnv
-const { APP_ORIGIN } = commonEnv
-const { VAPID_PRIVATE_KEY } = serverEnv
+const { APP_ORIGIN, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } = commonEnv
 
 const WEB_PUSH_CONCURRENCY = 25
 const vapidSubject = new URL(APP_ORIGIN)
@@ -24,7 +20,7 @@ if (vapidSubject.protocol !== 'https:') {
   vapidSubject.protocol = 'https:'
 }
 
-webpush.setVapidDetails(vapidSubject.origin, NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+webpush.setVapidDetails(vapidSubject.origin, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 
 export interface WebPushMessage {
   messageId?: number

@@ -26,6 +26,7 @@ process.env.JWT_SECRET_REFRESH_TOKEN ??= 'test-jwt-refresh'
 process.env.JWT_SECRET_TRUSTED_DEVICE ??= 'test-jwt-trusted'
 process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ??=
   'BE2STQk_ZAdkzk0yacENGIQQbMhz54tgMDwryE0-d_I1irGlpbBMGs9ooYJMnONCZ9jzvWIOPIiGl7V8nXCh5w4'
+process.env.VAPID_PUBLIC_KEY ??= process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
 process.env.TOTP_ENCRYPTION_KEY ??= '0'.repeat(64)
 process.env.TURNSTILE_SECRET_KEY ??= 'test-turnstile-secret'
 process.env.UPSTASH_KV_REST_API_TOKEN ??= 'local_dev_token'

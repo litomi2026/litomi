@@ -34,7 +34,7 @@ if [ "$PROJECT_ID" = "your-project-id" ]; then
 fi
 
 missing_runtime_env_vars=()
-for env_var in APP_ORIGIN APP_POSTGRES_URL NEXT_PUBLIC_VAPID_PUBLIC_KEY VAPID_PRIVATE_KEY; do
+for env_var in APP_ORIGIN APP_POSTGRES_URL VAPID_PUBLIC_KEY VAPID_PRIVATE_KEY; do
   if [ -z "${!env_var:-}" ]; then
     missing_runtime_env_vars+=("${env_var}")
   fi
@@ -117,7 +117,7 @@ ENV_ARGS=(
   "--set-env-vars=NODE_ENV=production"
   "--set-env-vars=APP_ORIGIN=${APP_ORIGIN}"
   "--set-env-vars=APP_POSTGRES_URL=${APP_POSTGRES_URL}"
-  "--set-env-vars=NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}"
+  "--set-env-vars=VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}"
   "--set-env-vars=VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}"
 )
 if [ -n "${APP_POSTGRES_CERTIFICATE:-}" ]; then

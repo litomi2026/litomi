@@ -28,7 +28,7 @@ For Cloud Build:
 ```zsh
 gcloud builds submit \
   --config=infra/cloud-run/notifier/cloudbuild.yaml \
-  --substitutions=_APP_ORIGIN="https://...",_APP_POSTGRES_URL="postgresql://...",_NEXT_PUBLIC_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
+  --substitutions=_APP_ORIGIN="https://...",_APP_POSTGRES_URL="postgresql://...",_VAPID_PUBLIC_KEY="...",_VAPID_PRIVATE_KEY="..."
 ```
 
 ## Scheduling

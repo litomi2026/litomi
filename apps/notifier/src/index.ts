@@ -31,7 +31,7 @@ const log = {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 async function crawlAndNotify() {
-  const requiredEnvVars = ['APP_ORIGIN', 'APP_POSTGRES_URL', 'NEXT_PUBLIC_VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY']
+  const requiredEnvVars = ['APP_ORIGIN', 'APP_POSTGRES_URL', 'VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY']
   const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName])
 
   if (missingEnvVars.length > 0) {
