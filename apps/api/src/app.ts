@@ -5,7 +5,7 @@ import { compress } from 'hono/compress'
 import { contextStorage } from 'hono/context-storage'
 import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
-import { etag } from 'hono/etag'
+import { etag, RETAINED_304_HEADERS } from 'hono/etag'
 import { ipRestriction } from 'hono/ip-restriction'
 import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
@@ -52,7 +52,7 @@ app.use(
 
 // NOTE: /api 미들웨어
 app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
-app.use('/api/*', etag())
+app.use('/api/*', etag({ retainedHeaders: [...RETAINED_304_HEADERS, 'set-cookie'] }))
 
 // NOTE: /i 미들웨어
 app.use(
