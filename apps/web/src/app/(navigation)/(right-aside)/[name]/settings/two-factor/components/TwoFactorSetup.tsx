@@ -1,18 +1,19 @@
 'use client'
 
+import { useMutation } from '@tanstack/react-query'
 import { Check, Copy, Loader2 } from 'lucide-react'
+import { type FormEvent } from 'react'
 import { toast } from 'sonner'
 
 import useClipboard from '@/hook/useClipboard'
-import useServerAction, { getFormField } from '@/hook/useServerAction'
 
 import type { TwoFactorSetupData } from '../types'
 
-import { verifyAndEnableTwoFactor } from '../actions'
+import { verifyTwoFactorSetup } from '../api'
 import OneTimeCodeInput from './OneTimeCodeInput'
 
 interface Props {
-  onSuccess: (backupcodes: string[]) => void
+  onSuccess: (backupCodes: string[]) => void
   setupData: TwoFactorSetupData
 }
 
@@ -20,15 +21,26 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
   const { copy, copied } = useClipboard()
   const { qrCode, secret } = setupData
 
-  const [response, verifyAction, isVerifying] = useServerAction({
-    action: verifyAndEnableTwoFactor,
-    onSuccess: (backupcodes) => {
-      onSuccess(backupcodes)
+  const verifyMutation = useMutation({
+    mutationFn: verifyTwoFactorSetup,
+    onSuccess: ({ backupCodes }) => {
+      onSuccess(backupCodes)
       toast.success('2단계 인증이 활성화됐어요')
     },
   })
 
-  const defaultToken = getFormField(response, 'token')
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (!event.currentTarget.reportValidity()) {
+      return
+    }
+
+    const formData = new FormData(event.currentTarget)
+    const token = String(formData.get('token') ?? '')
+
+    verifyMutation.mutate({ token })
+  }
 
   return (
     <div className="grid gap-6 py-3">
@@ -58,18 +70,18 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
           </div>
         </div>
       </div>
-      <form action={verifyAction} className="grid gap-3">
+      <form className="grid gap-3" onSubmit={handleSubmit}>
         <label className="block text-sm font-medium text-center text-zinc-300" htmlFor="token">
           인증 앱의 6자리 코드를 입력하세요
         </label>
-        <OneTimeCodeInput defaultValue={defaultToken} />
+        <OneTimeCodeInput disabled={verifyMutation.isPending} />
         <button
           className="w-full rounded-lg bg-brand px-4 py-3 font-medium text-background hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50 transition"
-          disabled={isVerifying}
-          title={isVerifying ? '코드 확인 중' : '6자리 코드를 입력하세요'}
+          disabled={verifyMutation.isPending}
+          title={verifyMutation.isPending ? '코드 확인 중' : '6자리 코드를 입력하세요'}
           type="submit"
         >
-          {isVerifying ? (
+          {verifyMutation.isPending ? (
             <span className="flex items-center justify-center">
               <Loader2 className="mr-2 size-5 animate-spin" />
               코드 확인 중
