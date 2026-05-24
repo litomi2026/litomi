@@ -50,26 +50,6 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
       break
     }
 
-    // TODO: 지금은 데이터가 부족해서 추후 추가하기
-    // case MetricParam.POST: {
-    //   query = db
-    //     .select({
-    //       mangaId: sql<number>`${postTable.mangaId}`,
-    //       score: count(postTable.userId),
-    //     })
-    //     .from(postTable)
-    //     .where(isNotNull(postTable.mangaId))
-    //     .groupBy(postTable.mangaId)
-    //     .orderBy(({ score }) => desc(score))
-    //     .limit(MANGA_TOP_PER_PAGE)
-    //     .$dynamic()
-    //
-    //   if (periodStart) {
-    //     query = query.where(and(isNotNull(postTable.mangaId), gte(postTable.createdAt, periodStart)))
-    //   }
-    //   break
-    // }
-
     case MetricParam.RATING: {
       // 베이지안 평균 (Weighted Rating)
       // WR = (v / (v + m)) * R + (m / (v + m)) * C
