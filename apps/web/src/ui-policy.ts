@@ -1,0 +1,8 @@
+export const MAX_THUMBNAIL_IMAGES = 4
+export const MANGA_INITIAL_LINES = 1
+export const TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT = 6
+export const DONATION_CARD_INTERVAL = 20
+export const MAX_RECENT_SEARCHES = 5
+export const SUGGESTION_DEBOUNCE_MS = 500
+export const LINK_PENDING_DELAY = 500
+export const SCROLL_THRESHOLD_PX = 10

@@ -2,8 +2,8 @@ import 'server-only'
 
 import type { JWTPayload } from 'jose'
 
-import { CookieKey } from '@litomi/domain/constants/storage'
 import { env } from '@litomi/env/server.common'
+import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'
 import { jwtVerify, SignJWT } from 'jose'
 

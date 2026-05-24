@@ -1,5 +1,5 @@
 import 'server-only'
-import { MangaTag } from '@litomi/domain/types/manga'
+import { MangaTag } from '@litomi/domain/manga/model'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { Multilingual, MultilingualMultiLabels } from './common'
