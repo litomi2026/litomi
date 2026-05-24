@@ -21,17 +21,21 @@ route.post('/', async (c) => {
   const now = new Date()
 
   try {
+    let sessionUserId: number | undefined
+
     if (refreshToken) {
       const tokenHash = hashToken(refreshToken)
-      await revokeCurrentSessionByTokenHash(tokenHash, now)
+      sessionUserId = (await revokeCurrentSessionByTokenHash(tokenHash, now))?.userId
     }
 
-    if (!userId) {
+    const logoutUserId = userId ?? sessionUserId
+
+    if (!logoutUserId) {
       applyAuthCookie(c, getAuthCookieClearConfigs())
       return c.json<POSTV1AuthLogoutResponse>({ loginId: null })
     }
 
-    const user = await touchUserLogoutAtAndReturnLoginId(userId, now)
+    const user = await touchUserLogoutAtAndReturnLoginId(logoutUserId, now)
 
     if (!user) {
       applyAuthCookie(c, getAuthCookieClearConfigs())
