@@ -1,16 +1,15 @@
 'use client'
 
+import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { type FormEvent, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import useServerAction, { getFormField } from '@/hook/useServerAction'
-
 import type { TwoFactorStatus } from '../types'
 
-import { regenerateBackupCodes, removeTwoFactor } from '../actions'
+import { disableTwoFactor, regenerateTwoFactorBackupCodes } from '../api'
 import OneTimeCodeInput from './OneTimeCodeInput'
 import TrustedBrowsers from './TrustedBrowsers'
 
@@ -114,36 +113,49 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
 }
 
 function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) {
-  const [response, disableAction, isDisabling] = useServerAction({
-    action: removeTwoFactor,
+  const disableMutation = useMutation({
+    mutationFn: disableTwoFactor,
     onSuccess,
   })
 
-  const defaultToken = getFormField(response, 'token')
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (!event.currentTarget.reportValidity()) {
+      return
+    }
+
+    const formData = new FormData(event.currentTarget)
+    const token = String(formData.get('token') ?? '')
+
+    disableMutation.mutate({ token })
+  }
 
   return (
-    <form action={disableAction} className="grid gap-3">
+    <form className="grid gap-3" onSubmit={handleSubmit}>
       <div className="rounded-lg bg-red-900/20 border border-red-900 p-4">
         <p className="text-sm text-red-500">2단계 인증을 비활성화하면 계정 보안이 약해져요. 계속할까요?</p>
       </div>
-      <OneTimeCodeInput defaultValue={defaultToken} />
+      <OneTimeCodeInput disabled={disableMutation.isPending} />
       <div className="flex gap-3">
         <button
           className={twMerge(
             'flex-1 rounded-lg bg-red-900 px-4 py-3 font-medium text-foreground transition',
             'hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50',
           )}
-          disabled={isDisabling}
+          disabled={disableMutation.isPending}
           type="submit"
         >
-          {isDisabling ? <Loader2 className="size-4 mx-auto animate-spin" /> : '비활성화'}
+          {disableMutation.isPending ? <Loader2 className="size-4 mx-auto animate-spin" /> : '비활성화'}
         </button>
         <button
           className={twMerge(
             'flex-1 rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 transition',
             'hover:bg-zinc-700',
           )}
+          disabled={disableMutation.isPending}
           onClick={onCancel}
+          type="button"
         >
           취소
         </button>
@@ -153,38 +165,51 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
 }
 
 function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCodesFormProps) {
-  const [response, regenerateAction, isRegenerating] = useServerAction({
-    action: regenerateBackupCodes,
-    onSuccess,
+  const regenerateMutation = useMutation({
+    mutationFn: regenerateTwoFactorBackupCodes,
+    onSuccess: ({ backupCodes }) => onSuccess(backupCodes),
   })
 
-  const defaultToken = getFormField(response, 'token')
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (!event.currentTarget.reportValidity()) {
+      return
+    }
+
+    const formData = new FormData(event.currentTarget)
+    const token = String(formData.get('token') ?? '')
+
+    regenerateMutation.mutate({ token })
+  }
 
   return (
-    <form action={regenerateAction} className="grid gap-3">
+    <form className="grid gap-3" onSubmit={handleSubmit}>
       <div className="rounded-lg bg-yellow-900/20 border border-yellow-800 p-4">
         <p className="text-sm text-yellow-500">
           새로운 복구 코드를 생성하면 기존 복구 코드는 모두 무효화돼요. 계속할까요?
         </p>
       </div>
-      <OneTimeCodeInput defaultValue={defaultToken} />
+      <OneTimeCodeInput disabled={regenerateMutation.isPending} />
       <div className="flex gap-3">
         <button
           className={twMerge(
             'flex-1 rounded-lg bg-brand px-4 py-3 font-medium text-background transition',
             'hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50',
           )}
-          disabled={isRegenerating}
+          disabled={regenerateMutation.isPending}
           type="submit"
         >
-          {isRegenerating ? <Loader2 className="size-4 mx-auto animate-spin" /> : '재생성'}
+          {regenerateMutation.isPending ? <Loader2 className="size-4 mx-auto animate-spin" /> : '재생성'}
         </button>
         <button
           className={twMerge(
             'flex-1 rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 transition',
             'hover:bg-zinc-700',
           )}
+          disabled={regenerateMutation.isPending}
           onClick={onCancel}
+          type="button"
         >
           취소
         </button>

@@ -1,11 +1,15 @@
 'use client'
 
 import { Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import type { PasskeySignalData } from './common'
 
 import PasskeyDeleteDialog from './PasskeyDeleteDialog'
+
+const DELETE_ACTION_WIDTH = 80
+const DELETE_OPEN_THRESHOLD = 48
 
 type Props = {
   children: React.ReactNode
@@ -16,29 +20,40 @@ type Props = {
 
 export default function PasskeyMobileDeleteWrapper({ children, credentialId, id, passkeySignalData }: Props) {
   const [swipeX, setSwipeX] = useState(0)
-  const [touchStart, setTouchStart] = useState(0)
+  const [isSwiping, setIsSwiping] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const touchStartX = useRef(0)
 
   function handleTouchStart(e: React.TouchEvent) {
-    setTouchStart(e.touches[0].clientX)
+    touchStartX.current = e.touches[0].clientX
+    setIsSwiping(true)
   }
 
   function handleTouchMove(e: React.TouchEvent) {
-    const currentX = e.touches[0].clientX
-    const diff = touchStart - currentX
-
-    if (diff > 0) {
-      setSwipeX(Math.min(diff, 80))
+    if (!isSwiping) {
+      return
     }
+
+    const currentX = e.touches[0].clientX
+    const diff = touchStartX.current - currentX
+
+    setSwipeX(Math.min(Math.max(diff, 0), DELETE_ACTION_WIDTH))
   }
 
   function handleTouchEnd() {
-    if (swipeX > 60) {
-      setSwipeX(80)
+    setIsSwiping(false)
+
+    if (swipeX >= DELETE_OPEN_THRESHOLD) {
+      setSwipeX(DELETE_ACTION_WIDTH)
       setShowConfirmModal(true)
     } else {
       setSwipeX(0)
     }
+  }
+
+  function handleTouchCancel() {
+    setIsSwiping(false)
+    setSwipeX(0)
   }
 
   function handleOpenChange(open: boolean) {
@@ -57,13 +72,17 @@ export default function PasskeyMobileDeleteWrapper({ children, credentialId, id,
         </button>
       </div>
       <div
-        className="relative transition-transform sm:transition-none touch-pan-y"
+        className={twMerge(
+          'relative touch-pan-y sm:transition-none',
+          isSwiping ? '' : 'transition-transform duration-150 ease-out',
+        )}
+        onTouchCancel={handleTouchCancel}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
         onTouchStart={handleTouchStart}
         style={{
           transform: `translateX(-${swipeX}px)`,
-          willChange: swipeX > 0 ? 'transform' : 'auto',
+          willChange: isSwiping || swipeX > 0 ? 'transform' : 'auto',
         }}
       >
         {children}

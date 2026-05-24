@@ -230,6 +230,33 @@ describe('GET /api/v1/me', () => {
     expect(persistedTokens).toHaveLength(2)
   })
 
+  test('조건부 요청이 304를 반환해도 refresh로 발급한 인증 쿠키를 유지한다', async () => {
+    const user = await seedUser()
+    const access = await createAccessTokenCookies({ userId: user.id, adult: false })
+    const session = await createRefreshSessionCookies({ userId: user.id })
+
+    const cachedResponse = await requestBackend({
+      path: '/api/v1/me',
+      cookies: access.cookieHeader,
+    })
+
+    expect(cachedResponse.status).toBe(200)
+
+    const etag = cachedResponse.headers.get('ETag')
+
+    expect(etag).toBeTruthy()
+
+    const refreshResponse = await requestBackend({
+      path: '/api/v1/me',
+      cookies: session.cookieHeader,
+      headers: { 'If-None-Match': etag! },
+    })
+
+    expect(refreshResponse.status).toBe(304)
+    expect(refreshResponse.headers.get('Cache-Control')).toBe(privateCacheControl)
+    expect(getSetCookieNames(refreshResponse)).toEqual(expect.arrayContaining(['at', 'rt', 'ah']))
+  })
+
   test('재사용 유예 기간 안에서는 같은 refresh token 재시도를 허용하고 세션을 폐기하지 않는다', async () => {
     setSystemTime(new Date('2026-01-02T00:00:00.000Z'))
 

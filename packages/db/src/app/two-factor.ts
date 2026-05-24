@@ -17,7 +17,7 @@ export const twoFactorBackupCodeTable = pgTable(
   'two_factor_backup_code',
   {
     userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
+      .references(() => twoFactorTable.userId, { onDelete: 'cascade' })
       .notNull(),
     codeHash: text('code_hash').notNull(),
   },
@@ -29,7 +29,7 @@ export const trustedBrowserTable = pgTable(
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
+      .references(() => twoFactorTable.userId, { onDelete: 'cascade' })
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
