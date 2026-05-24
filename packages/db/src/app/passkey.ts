@@ -7,6 +7,7 @@ export const credentialTable = pgTable(
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     credentialId: varchar({ length: 256 }).notNull(),
+    name: varchar({ length: 32 }),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),

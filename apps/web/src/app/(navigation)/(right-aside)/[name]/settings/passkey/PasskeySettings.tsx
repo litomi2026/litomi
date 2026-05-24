@@ -17,6 +17,7 @@ export default async function PasskeySettings({ displayName, loginId, userId }: 
     .select({
       id: credentialTable.id,
       credentialId: credentialTable.credentialId,
+      name: credentialTable.name,
       createdAt: credentialTable.createdAt,
       lastUsedAt: credentialTable.lastUsedAt,
       deviceType: credentialTable.deviceType,

@@ -220,6 +220,7 @@ export async function seedPasskeyCredential({
       publicKey: publicKey ?? Buffer.from(`test-passkey-public-key-${unique}`).toString('base64'),
       counter: overrides.counter ?? 0,
       deviceType: overrides.deviceType ?? DeviceType.PLATFORM,
+      ...(overrides.name !== undefined && { name: overrides.name }),
       transports: overrides.transports ?? ['internal'],
       ...(overrides.createdAt && { createdAt: overrides.createdAt }),
       ...(overrides.lastUsedAt && { lastUsedAt: overrides.lastUsedAt }),

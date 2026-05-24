@@ -204,6 +204,24 @@ export const deleteV1MePasskeyParamSchema = z.object({
 
 export type DELETEV1MePasskeyParam = z.infer<typeof deleteV1MePasskeyParamSchema>
 
+export const patchV1MePasskeyParamSchema = deleteV1MePasskeyParamSchema
+
+export type PATCHV1MePasskeyParam = z.infer<typeof patchV1MePasskeyParamSchema>
+
+export const patchV1MePasskeyBodySchema = z.object({
+  name: z.string().trim().min(1, '패스키 이름을 입력해 주세요').max(32, '패스키 이름은 32자 이하여야 해요'),
+})
+
+export type PATCHV1MePasskeyBody = z.infer<typeof patchV1MePasskeyBodySchema>
+
+export const patchV1MePasskeyResponseSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  message: z.string(),
+})
+
+export type PATCHV1MePasskeyResponse = z.infer<typeof patchV1MePasskeyResponseSchema>
+
 export const deleteV1MePasskeyResponseSchema = z.object({
   id: z.number(),
   message: z.string(),
@@ -261,7 +279,9 @@ export const postV1MePasskeyVerifyBodySchema = z.object({
 export type POSTV1MePasskeyVerifyBody = z.infer<typeof postV1MePasskeyVerifyBodySchema>
 
 export const postV1MePasskeyVerifyResponseSchema = z.object({
+  id: z.number(),
   credentialId: z.string(),
+  name: z.string(),
   message: z.string(),
 })
 
