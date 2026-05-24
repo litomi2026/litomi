@@ -1,6 +1,6 @@
 import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 
-import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { z } from 'zod'
 
 const passwordSchema = z
@@ -20,7 +20,7 @@ const nicknameSchema = z
   .min(2, { error: '닉네임은 최소 2자 이상이어야 해요' })
   .max(32, { error: '닉네임은 최대 32자까지 입력할 수 있어요' })
 
-const imageURLSchema = z
+export const imageURLSchema = z
   .url('프로필 이미지 주소가 URL 형식이 아니에요')
   .max(256, '프로필 이미지 URL은 최대 256자까지 입력할 수 있어요')
   .refine((value) => {

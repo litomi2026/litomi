@@ -1,4 +1,4 @@
-import { MAX_LIBRARY_ICON_LENGTH } from '@litomi/domain/constants/policy'
+import { MAX_LIBRARY_ICON_LENGTH } from '@litomi/domain/library/policy'
 
 const emojiWithVariationSelectorRegex = /\p{Emoji}\uFE0F/u
 const emojiPresentationRegex = /\p{Emoji_Presentation}/u

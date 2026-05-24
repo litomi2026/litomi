@@ -1,8 +1,4 @@
-import {
-  MAX_LIBRARY_DESCRIPTION_LENGTH,
-  MAX_LIBRARY_ICON_LENGTH,
-  MAX_LIBRARY_NAME_LENGTH,
-} from '@litomi/domain/constants/policy'
+import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/library/policy'
 import { bigint, boolean, index, integer, pgTable, primaryKey, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 import { userTable } from './user'

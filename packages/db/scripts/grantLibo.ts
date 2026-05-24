@@ -3,7 +3,7 @@
 import { db } from '@litomi/db/app'
 import { pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
 import { userTable } from '@litomi/db/app/user'
-import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
+import { TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 

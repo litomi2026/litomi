@@ -1,4 +1,4 @@
-import { ROULETTE_CONFIG, ROULETTE_SEGMENT_IDS } from '@litomi/domain/constants/roulette'
+import { ROULETTE_CONFIG, ROULETTE_SEGMENT_IDS } from '@litomi/domain/points/roulette'
 import { z } from 'zod'
 
 export const getV1PointsResponseSchema = z.object({

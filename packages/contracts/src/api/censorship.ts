@@ -1,5 +1,5 @@
-import { CENSORSHIPS_PER_PAGE, MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+import { CENSORSHIPS_PER_PAGE, MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/censorship/policy'
 import { z } from 'zod'
 
 export const censorshipItemSchema = z.object({

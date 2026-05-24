@@ -1,4 +1,4 @@
-import { MangaSource } from '@litomi/domain/database/enum'
+import { MangaSource } from '@litomi/domain/manga/model'
 import { z } from 'zod'
 
 export const imageVariantSchema = z.object({

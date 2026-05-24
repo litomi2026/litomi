@@ -1,6 +1,6 @@
 import 'server-only'
 import { userRatingTable } from '@litomi/db/app/activity'
-import { encodeRatingCursor } from '@litomi/domain/common/cursor'
+import { encodeRatingCursor } from '@litomi/db/cursor'
 import { RatingSort } from '@litomi/domain/library/sort'
 import { and, asc, desc, eq, gt, lt, or, SQL } from 'drizzle-orm'
 

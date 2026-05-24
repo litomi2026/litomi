@@ -1,6 +1,6 @@
-import { tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import { Locale } from '@litomi/domain/locale'
-import { Manga, MangaError } from '@litomi/domain/types/manga'
+import { tagCategoryNameToInt } from '@litomi/domain/manga/model'
+import { Manga, MangaError } from '@litomi/domain/manga/model'
 import { sec } from '@litomi/std'
 
 import { AllSourcesFailedError, isAbortError, NotFoundError } from '../core/errors'

@@ -1,4 +1,4 @@
-import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { z } from 'zod'
 
 const passwordSchema = z

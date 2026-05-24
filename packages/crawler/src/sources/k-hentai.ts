@@ -1,4 +1,4 @@
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateCharacterList } from '@litomi/catalog/translation/character'
@@ -7,8 +7,8 @@ import { translateLanguageList } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
-import { MangaSource, tagCategoryNameToInt } from '@litomi/domain/database/enum'
 import { Locale } from '@litomi/domain/locale'
+import { MangaSource, tagCategoryNameToInt } from '@litomi/domain/manga/model'
 import { convertCamelCaseToKebabCase } from '@litomi/std'
 import ms from 'ms'
 
