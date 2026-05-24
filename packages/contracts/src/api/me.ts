@@ -186,9 +186,11 @@ export const postV1MeTwoFactorSetupResponseSchema = z.object({
 
 export type POSTV1MeTwoFactorSetupResponse = z.infer<typeof postV1MeTwoFactorSetupResponseSchema>
 
-export const postV1MeTwoFactorVerifyBodySchema = z.object({
+const twoFactorTokenBodySchema = z.object({
   token: z.string().length(6).regex(/^\d+$/),
 })
+
+export const postV1MeTwoFactorVerifyBodySchema = twoFactorTokenBodySchema
 
 export type POSTV1MeTwoFactorVerifyBody = z.infer<typeof postV1MeTwoFactorVerifyBodySchema>
 
@@ -197,6 +199,26 @@ export const postV1MeTwoFactorVerifyResponseSchema = z.object({
 })
 
 export type POSTV1MeTwoFactorVerifyResponse = z.infer<typeof postV1MeTwoFactorVerifyResponseSchema>
+
+export const deleteV1MeTwoFactorBodySchema = twoFactorTokenBodySchema
+
+export type DELETEV1MeTwoFactorBody = z.infer<typeof deleteV1MeTwoFactorBodySchema>
+
+export const deleteV1MeTwoFactorResponseSchema = z.object({
+  message: z.string(),
+})
+
+export type DELETEV1MeTwoFactorResponse = z.infer<typeof deleteV1MeTwoFactorResponseSchema>
+
+export const postV1MeTwoFactorBackupCodesBodySchema = twoFactorTokenBodySchema
+
+export type POSTV1MeTwoFactorBackupCodesBody = z.infer<typeof postV1MeTwoFactorBackupCodesBodySchema>
+
+export const postV1MeTwoFactorBackupCodesResponseSchema = z.object({
+  backupCodes: z.array(z.string()),
+})
+
+export type POSTV1MeTwoFactorBackupCodesResponse = z.infer<typeof postV1MeTwoFactorBackupCodesResponseSchema>
 
 export const deleteV1MePasskeyParamSchema = z.object({
   id: z.coerce.number().int().positive(),
