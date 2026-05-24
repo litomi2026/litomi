@@ -178,6 +178,14 @@ export const deleteV1MeTrustedBrowserAllResponseSchema = z.object({
 
 export type DELETEV1MeTrustedBrowserAllResponse = z.infer<typeof deleteV1MeTrustedBrowserAllResponseSchema>
 
+export const postV1MeTwoFactorSetupResponseSchema = z.object({
+  expiresAt: z.string().datetime(),
+  qrCode: z.string(),
+  secret: z.string(),
+})
+
+export type POSTV1MeTwoFactorSetupResponse = z.infer<typeof postV1MeTwoFactorSetupResponseSchema>
+
 export const deleteV1MePasskeyParamSchema = z.object({
   id: z.coerce.number().int().positive(),
 })

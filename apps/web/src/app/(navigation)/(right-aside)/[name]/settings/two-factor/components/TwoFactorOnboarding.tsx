@@ -1,20 +1,21 @@
+'use client'
+
+import { useMutation } from '@tanstack/react-query'
 import { KeyRound, RectangleEllipsis, ShieldCheck, Smartphone } from 'lucide-react'
 
-import useServerAction from '@/hook/useServerAction'
+import type { TwoFactorSetupData } from '../types'
 
 import Onboarding from '../../Onboarding'
-import { setupTwoFactor } from '../actions'
-import { TwoFactorSetupData } from '../types'
+import { requestTwoFactorSetup } from '../api'
 
 type Props = {
   onSuccess: (data: TwoFactorSetupData) => void
 }
 
 export default function TwoFactorOnboarding({ onSuccess }: Props) {
-  const [_, setupAction, isSettingUp] = useServerAction({
-    action: setupTwoFactor,
+  const setupMutation = useMutation({
+    mutationFn: requestTwoFactorSetup,
     onSuccess,
-    shouldSetResponse: false,
   })
 
   return (
@@ -42,10 +43,11 @@ export default function TwoFactorOnboarding({ onSuccess }: Props) {
     >
       <button
         className="px-6 py-3 rounded-2xl bg-brand font-semibold text-background hover:opacity-80 transition disabled:cursor-not-allowed disabled:opacity-50"
-        disabled={isSettingUp}
-        onClick={() => setupAction()}
+        disabled={setupMutation.isPending}
+        onClick={() => setupMutation.mutate()}
+        type="button"
       >
-        {isSettingUp ? 'QR 코드 생성하는 중' : '2단계 인증 시작하기'}
+        {setupMutation.isPending ? 'QR 코드 생성하는 중' : '2단계 인증 시작하기'}
       </button>
     </Onboarding>
   )
