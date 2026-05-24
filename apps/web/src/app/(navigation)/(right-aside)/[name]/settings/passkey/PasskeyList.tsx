@@ -58,14 +58,16 @@ export default function PasskeyList({ passkeySignalData, passkeys }: Props) {
           <PasskeyCard key={passkey.id} passkey={passkey} passkeySignalData={passkeySignalData} />
         ))}
       </div>
-      <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-4">
-        <p className="text-sm text-zinc-400 flex items-start">
-          <span className="inline-block w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-center leading-5 text-xs font-medium mr-2 shrink-0">
-            i
-          </span>
-          <span>여러 기기에서 패스키를 등록하면 어디서든 안전하게 로그인할 수 있어요</span>
-        </p>
-      </div>
+      {passkeys.length === 1 && (
+        <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-4">
+          <p className="text-sm text-zinc-400 flex items-start">
+            <span className="inline-block w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-center leading-5 text-xs font-medium mr-2 shrink-0">
+              i
+            </span>
+            <span>다른 기기에도 패스키를 추가해 두면 현재 기기를 잃어버려도 계속 로그인할 수 있어요</span>
+          </p>
+        </div>
+      )}
     </div>
   )
 }

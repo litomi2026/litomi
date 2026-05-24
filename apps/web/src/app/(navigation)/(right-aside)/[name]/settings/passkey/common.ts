@@ -7,6 +7,7 @@ export type Passkey = {
   createdAt: Date
   deviceType: string | null
   lastUsedAt: Date | null
+  name: string | null
   transports?: AuthenticatorTransportFuture[] | null
 }
 

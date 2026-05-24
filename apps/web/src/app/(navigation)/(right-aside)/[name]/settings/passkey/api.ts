@@ -1,5 +1,7 @@
 import type {
   DELETEV1MePasskeyResponse,
+  PATCHV1MePasskeyBody,
+  PATCHV1MePasskeyResponse,
   POSTV1MePasskeyOptionsResponse,
   POSTV1MePasskeyVerifyBody,
   POSTV1MePasskeyVerifyResponse,
@@ -28,6 +30,19 @@ export async function requestPasskeyRegistrationOptions() {
   const { data } = await fetchWithErrorHandling<POSTV1MePasskeyOptionsResponse>(url, {
     method: 'POST',
     credentials: 'include',
+  })
+
+  return data
+}
+
+export async function updatePasskeyName(id: number, request: PATCHV1MePasskeyBody) {
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/passkey/${id}`
+
+  const { data } = await fetchWithErrorHandling<PATCHV1MePasskeyResponse>(url, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
   })
 
   return data

@@ -1,5 +1,7 @@
-import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
-import { Bluetooth, Cable, Cpu, CreditCard, Fingerprint, Key, Nfc, Smartphone, SquareAsterisk, Usb } from 'lucide-react'
+import type { AuthenticatorTransportFuture } from '@simplewebauthn/server'
+
+import { getDefaultPasskeyName } from '@litomi/domain/auth/model'
+import { Fingerprint, Key, Smartphone, SquareAsterisk, Usb } from 'lucide-react'
 
 export function generateFakeCredentials(loginId: string): Array<{
   id: string
@@ -61,16 +63,21 @@ export function getDeviceInfo(deviceType: string) {
     case 'platform':
       return {
         icon: <Smartphone className="size-6 text-brand" />,
-        label: '내장 인증',
+        label: '내장 패스키',
         bgColor: 'bg-brand/10',
       }
     default:
       return {
         icon: <Key className="size-6 text-zinc-400" />,
-        label: '알 수 없는 인증',
+        label: '패스키',
         bgColor: 'bg-zinc-800',
       }
   }
+}
+
+export function getPasskeyDisplayName(name: string | null, deviceType: string | null) {
+  const trimmedName = name?.trim()
+  return trimmedName || getDefaultPasskeyName(deviceType ?? '')
 }
 
 export function getRelativeTime(date: Date): string {
@@ -105,69 +112,20 @@ export function getRelativeTime(date: Date): string {
   return `${diffInYears}년 전`
 }
 
-export function getTransportIcon(transport: AuthenticatorTransportFuture) {
-  switch (transport) {
-    case 'ble':
-      return <Bluetooth className="size-3" />
-    case 'cable':
-      return <Cable className="size-3" />
-    case 'hybrid':
-      return <Smartphone className="size-3" />
-    case 'internal':
-      return <Cpu className="size-3" />
-    case 'nfc':
-      return <Nfc className="size-3" />
-    case 'smart-card':
-      return <CreditCard className="size-3" />
-    case 'usb':
-      return <Usb className="size-3" />
-    default:
-      return null
-  }
-}
-
-const labelMap: Record<AuthenticatorTransportFuture, string | undefined> = {
-  usb: 'USB',
-  nfc: 'NFC',
-  ble: '블루투스',
-  internal: '내장',
-  hybrid: '혼합',
-  'smart-card': '스마트카드',
-  cable: 'Cable',
-}
-
-export function getTransportLabel(transport?: AuthenticatorTransportFuture | null) {
-  if (!transport) {
-    return ''
-  }
-
-  return labelMap[transport]
-}
-
-export function getTruncatedId(id: string): string {
-  if (id.length <= 12) {
-    return id
-  }
-  return `${id.slice(0, 6)}...${id.slice(-4)}`
-}
-
 export function getUserVerificationMethod(deviceType: string) {
   switch (deviceType) {
     case 'cross-platform':
       return {
         icon: <SquareAsterisk className="size-3" />,
-        label: 'PIN/터치',
+        label: 'PIN 또는 터치',
       }
     case 'platform':
       return {
         icon: <Fingerprint className="size-3" />,
-        label: '생체 인증',
+        label: '생체 인증 또는 기기 잠금',
       }
     default:
-      return {
-        icon: <Key className="size-3" />,
-        label: '알 수 없는 인증',
-      }
+      return null
   }
 }
 

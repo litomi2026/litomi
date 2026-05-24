@@ -178,11 +178,49 @@ export const deleteV1MeTrustedBrowserAllResponseSchema = z.object({
 
 export type DELETEV1MeTrustedBrowserAllResponse = z.infer<typeof deleteV1MeTrustedBrowserAllResponseSchema>
 
+export const postV1MeTwoFactorSetupResponseSchema = z.object({
+  expiresAt: z.string().datetime(),
+  qrCode: z.string(),
+  secret: z.string(),
+})
+
+export type POSTV1MeTwoFactorSetupResponse = z.infer<typeof postV1MeTwoFactorSetupResponseSchema>
+
+export const postV1MeTwoFactorVerifyBodySchema = z.object({
+  token: z.string().length(6).regex(/^\d+$/),
+})
+
+export type POSTV1MeTwoFactorVerifyBody = z.infer<typeof postV1MeTwoFactorVerifyBodySchema>
+
+export const postV1MeTwoFactorVerifyResponseSchema = z.object({
+  backupCodes: z.array(z.string()),
+})
+
+export type POSTV1MeTwoFactorVerifyResponse = z.infer<typeof postV1MeTwoFactorVerifyResponseSchema>
+
 export const deleteV1MePasskeyParamSchema = z.object({
   id: z.coerce.number().int().positive(),
 })
 
 export type DELETEV1MePasskeyParam = z.infer<typeof deleteV1MePasskeyParamSchema>
+
+export const patchV1MePasskeyParamSchema = deleteV1MePasskeyParamSchema
+
+export type PATCHV1MePasskeyParam = z.infer<typeof patchV1MePasskeyParamSchema>
+
+export const patchV1MePasskeyBodySchema = z.object({
+  name: z.string().trim().min(1, '패스키 이름을 입력해 주세요').max(32, '패스키 이름은 32자 이하여야 해요'),
+})
+
+export type PATCHV1MePasskeyBody = z.infer<typeof patchV1MePasskeyBodySchema>
+
+export const patchV1MePasskeyResponseSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  message: z.string(),
+})
+
+export type PATCHV1MePasskeyResponse = z.infer<typeof patchV1MePasskeyResponseSchema>
 
 export const deleteV1MePasskeyResponseSchema = z.object({
   id: z.number(),
@@ -241,7 +279,9 @@ export const postV1MePasskeyVerifyBodySchema = z.object({
 export type POSTV1MePasskeyVerifyBody = z.infer<typeof postV1MePasskeyVerifyBodySchema>
 
 export const postV1MePasskeyVerifyResponseSchema = z.object({
+  id: z.number(),
   credentialId: z.string(),
+  name: z.string(),
   message: z.string(),
 })
 

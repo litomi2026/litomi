@@ -8,7 +8,7 @@ export type TrustedBrowser = {
 }
 
 export interface TwoFactorSetupData {
-  expiresAt: Date
+  expiresAt: string
   qrCode: string
   secret: string
 }

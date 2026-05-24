@@ -15,6 +15,7 @@ import pushRoutes from './push'
 import sessionRoutes from './session'
 import settingsRoutes from './settings'
 import trustedBrowserRoutes from './trusted-browser'
+import twoFactorRoutes from './two-factor'
 
 const route = new Hono<Env>()
 
@@ -29,6 +30,7 @@ route.route('/push', pushRoutes)
 route.route('/following', followingRoutes)
 route.route('/session', sessionRoutes)
 route.route('/settings', settingsRoutes)
+route.route('/two-factor', twoFactorRoutes)
 route.route('/trusted-browser', trustedBrowserRoutes)
 
 export default route
