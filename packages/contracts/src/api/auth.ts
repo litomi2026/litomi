@@ -83,6 +83,10 @@ export const postV1AuthLogoutResponseSchema = z.object({
 
 export type POSTV1AuthLogoutResponse = z.infer<typeof postV1AuthLogoutResponseSchema>
 
+export const postV1AuthRefreshResponseSchema = z.void()
+
+export type POSTV1AuthRefreshResponse = z.infer<typeof postV1AuthRefreshResponseSchema>
+
 export const postV1AuthSignupRequestSchema = z
   .object({
     loginId: loginIdSchema,

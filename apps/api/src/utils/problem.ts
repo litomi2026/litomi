@@ -30,7 +30,12 @@ export function problemResponse(c: Context, options: ProblemResponseOptions): Re
     ...options.extensions,
   }
 
-  const headers = new Headers(options.headers)
+  const headers = new Headers(c.res.headers)
+
+  for (const [key, value] of new Headers(options.headers)) {
+    headers.set(key, value)
+  }
+
   headers.set('Content-Type', PROBLEM_CONTENT_TYPE)
 
   return new Response(JSON.stringify(problem), { status: options.status, headers })
