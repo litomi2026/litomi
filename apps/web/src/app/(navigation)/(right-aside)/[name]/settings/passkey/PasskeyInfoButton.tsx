@@ -37,8 +37,8 @@ export default function PasskeyInfoButton() {
                 <span className="text-xs font-bold text-brand">1</span>
               </div>
               <div>
-                <p className="font-medium mb-1">피싱 공격 차단</p>
-                <p className="text-xs text-zinc-500">가짜 사이트에서는 작동하지 않아요</p>
+                <p className="font-medium mb-1">litomi에서만 작동해 피싱에 강해요</p>
+                <p className="text-xs text-zinc-500">가짜 사이트에서는 같은 패스키를 사용할 수 없어요</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -46,8 +46,8 @@ export default function PasskeyInfoButton() {
                 <span className="text-xs font-bold text-brand">2</span>
               </div>
               <div>
-                <p className="font-medium mb-1">간편한 생체 인증</p>
-                <p className="text-xs text-zinc-500">지문이나 얼굴로 빠르게 로그인</p>
+                <p className="font-medium mb-1">litomi에는 공개키만 저장돼요</p>
+                <p className="text-xs text-zinc-500">로그인에 필요한 비밀키는 내 기기에 남아요</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -55,8 +55,8 @@ export default function PasskeyInfoButton() {
                 <span className="text-xs font-bold text-brand">3</span>
               </div>
               <div>
-                <p className="font-medium mb-1">비밀번호 불필요</p>
-                <p className="text-xs text-zinc-500">복잡한 비밀번호를 기억하지 않아도 돼요</p>
+                <p className="font-medium mb-1">생체 인증 정보는 기기에 남아요</p>
+                <p className="text-xs text-zinc-500">지문이나 얼굴 정보가 litomi로 전송되지 않아요</p>
               </div>
             </div>
           </div>

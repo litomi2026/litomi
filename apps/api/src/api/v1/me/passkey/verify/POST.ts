@@ -3,7 +3,7 @@ import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
 import { postV1MePasskeyVerifyBodySchema, type POSTV1MePasskeyVerifyResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
-import { ChallengeType, encodeDeviceType } from '@litomi/domain/auth/model'
+import { ChallengeType, encodeDeviceType, getDefaultPasskeyName } from '@litomi/domain/auth/model'
 import { verifyRegistrationResponse } from '@simplewebauthn/server'
 import { Hono } from 'hono'
 
@@ -38,18 +38,27 @@ route.post('/', zProblemValidator('json', postV1MePasskeyVerifyBodySchema), asyn
 
     const { id: credentialId, counter, transports, publicKey } = registrationInfo.credential
 
-    await db.insert(credentialTable).values({
-      credentialId,
-      counter,
-      publicKey: Buffer.from(publicKey).toString('base64'),
-      deviceType: encodeDeviceType(registration.authenticatorAttachment),
-      transports,
-      userId,
-      createdAt: new Date(),
-    })
+    const deviceType = encodeDeviceType(registration.authenticatorAttachment)
+    const name = getDefaultPasskeyName(deviceType)
+
+    const [credential] = await db
+      .insert(credentialTable)
+      .values({
+        credentialId,
+        counter,
+        publicKey: Buffer.from(publicKey).toString('base64'),
+        deviceType,
+        name,
+        transports,
+        userId,
+        createdAt: new Date(),
+      })
+      .returning({ id: credentialTable.id, name: credentialTable.name })
 
     return c.json<POSTV1MePasskeyVerifyResponse>({
+      id: credential.id,
       credentialId,
+      name,
       message: '패스키를 등록했어요',
     })
   } catch (error) {
