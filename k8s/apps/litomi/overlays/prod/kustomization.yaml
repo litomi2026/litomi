@@ -36,6 +36,34 @@ configMapGenerator:
       - OTEL_TRACES_SAMPLER_ARG=0.01
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=litomi,deployment.environment=prod,k8s.cluster.name=litomi-k3s
+      - VAPID_PUBLIC_KEY=BCQA2zloAhzL0J3hjB7RTBj9uoG3ZR6elL2kJlrbwZRKw5f4sap5g8AyUsnuDpU49fODsI8icA4o6mu42GmjD3A
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: litomi-common-env
+      fieldPath: data.APP_ORIGIN
+    targets:
+      - select:
+          kind: ConfigMap
+          name: litomi-public-env
+        fieldPaths:
+          - data.NEXT_PUBLIC_APP_ORIGIN
+        options:
+          create: true
+
+  - source:
+      kind: ConfigMap
+      name: litomi-common-env
+      fieldPath: data.VAPID_PUBLIC_KEY
+    targets:
+      - select:
+          kind: ConfigMap
+          name: litomi-public-env
+        fieldPaths:
+          - data.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+        options:
+          create: true
 
 images:
   - name: litomi-web
