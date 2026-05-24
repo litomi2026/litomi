@@ -4,16 +4,20 @@ import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { startRegistration } from '@simplewebauthn/browser'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
+import type { PasskeySignalData } from './common'
+
 import { requestPasskeyRegistrationOptions, verifyPasskeyRegistration } from './api'
-import { PasskeySignalData } from './common'
 
 type Props = {
   passkeySignalData: PasskeySignalData
 }
 
 export default function PasskeyRegisterButton({ passkeySignalData }: Props) {
+  const router = useRouter()
+
   const registerMutation = useMutation({
     mutationFn: registerPasskey,
 
@@ -30,6 +34,7 @@ export default function PasskeyRegisterButton({ passkeySignalData }: Props) {
       })
 
       toast.success(message)
+      router.refresh()
     },
   })
 
