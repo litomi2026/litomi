@@ -1,6 +1,6 @@
 'use client'
 
-import { Manga } from '@litomi/domain/types/manga'
+import { Manga } from '@litomi/domain/manga/model'
 import { env } from '@litomi/env/client'
 import { isDegradedResponse } from '@litomi/http/degraded-response'
 import { QueryKey, useQueries, useQueryClient } from '@tanstack/react-query'

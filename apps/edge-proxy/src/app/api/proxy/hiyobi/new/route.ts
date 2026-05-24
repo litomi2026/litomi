@@ -1,5 +1,5 @@
 import { hiyobiClient } from '@litomi/crawler/sources/hiyobi'
-import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
+import { TOTAL_HIYOBI_PAGES } from '@litomi/crawler/sources/policy'
 import { Locale } from '@litomi/domain/locale'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'

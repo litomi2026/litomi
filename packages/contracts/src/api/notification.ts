@@ -1,10 +1,6 @@
-import {
-  MAX_CRITERIA_NAME_LENGTH,
-  MAX_NOTIFICATION_COUNT,
-  MAX_NOTIFICATION_CRITERIA_CONDITIONS,
-} from '@litomi/domain/constants/policy'
-import { NotificationConditionType } from '@litomi/domain/database/enum'
 import { NotificationFilter } from '@litomi/domain/notification/filter'
+import { NotificationConditionType } from '@litomi/domain/notification/model'
+import { MAX_CRITERIA_NAME_LENGTH, MAX_NOTIFICATION_COUNT, MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/notification/policy'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { z } from 'zod'
 

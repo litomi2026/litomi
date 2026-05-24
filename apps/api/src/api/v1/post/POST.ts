@@ -2,7 +2,7 @@ import { postV1PostBodySchema, type POSTV1PostResponse } from '@litomi/contracts
 import { db } from '@litomi/db/app'
 import { postTable } from '@litomi/db/app/post'
 import { isPostgresError } from '@litomi/db/error'
-import { PostType } from '@litomi/domain/database/enum'
+import { PostType } from '@litomi/domain/post/model'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

@@ -1,4 +1,5 @@
-import { MAX_MANGA_ID, MAX_READING_HISTORY_LAST_PAGE } from '@litomi/domain/constants/policy'
+import { MAX_READING_HISTORY_LAST_PAGE } from '@litomi/domain/library/policy'
+import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { z } from 'zod'
 
 export const getV1MangaIdHistoryResponseSchema = z.number()

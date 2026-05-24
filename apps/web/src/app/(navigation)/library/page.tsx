@@ -1,9 +1,10 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { View } from '@litomi/std'
 import { Metadata } from 'next'
 import { z } from 'zod'
+
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import NotFound from './[id]/not-found'
 import AllLibraryMangaView from './AllLibraryMangaView'

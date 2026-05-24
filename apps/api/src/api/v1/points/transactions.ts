@@ -5,7 +5,7 @@ import {
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pointTransactionTable } from '@litomi/db/app/points'
-import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
+import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
 

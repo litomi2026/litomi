@@ -1,6 +1,6 @@
 'use client'
 
-import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
+import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'

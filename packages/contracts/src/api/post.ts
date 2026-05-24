@@ -1,6 +1,6 @@
-import { MAX_POST_CONTENT_LENGTH, POST_PER_PAGE } from '@litomi/domain/constants/policy'
-import { PostType } from '@litomi/domain/database/enum'
 import { PostFilter } from '@litomi/domain/post/filter'
+import { PostType } from '@litomi/domain/post/model'
+import { MAX_POST_CONTENT_LENGTH, POST_PER_PAGE } from '@litomi/domain/post/policy'
 import { z } from 'zod'
 
 import { referredPostSchema } from '../post/referred-post'

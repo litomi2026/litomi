@@ -1,6 +1,9 @@
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
+import { env } from '@litomi/env/client'
 import { Metadata } from 'next'
 import Link from 'next/link'
+
+import { defaultOpenGraph } from '@/lib/metadata'
 
 const EFFECTIVE_DATE = '2026-04-04'
 const CONTACT_EMAIL = 'litomi2026@gmail.com'
@@ -10,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `2257 컴플라이언스 안내 - ${SHORT_NAME}`,
-    url: `${APP_ORIGIN}/doc/2257`,
+    url: `${env.NEXT_PUBLIC_APP_ORIGIN}/doc/2257`,
   },
   alternates: {
     canonical: '/doc/2257',

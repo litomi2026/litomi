@@ -1,7 +1,7 @@
 import { getV1LibraryListQuerySchema, type GETV1LibraryListResponse, type LibraryListItem } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
-import { decodeLibraryListCursor, encodeLibraryListCursor } from '@litomi/domain/common/cursor'
+import { decodeLibraryListCursor, encodeLibraryListCursor } from '@litomi/db/cursor'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'

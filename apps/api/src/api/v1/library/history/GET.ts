@@ -1,7 +1,7 @@
 import { getV1ReadingHistoryQuerySchema, type GETV1ReadingHistoryResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
-import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@litomi/domain/common/cursor'
+import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@litomi/db/cursor'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, lt, or, SQL } from 'drizzle-orm'

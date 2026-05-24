@@ -1,8 +1,8 @@
 import { db } from '@litomi/db/app'
 import { postLikeTable, postTable } from '@litomi/db/app/post'
 import { userFollowTable, userTable } from '@litomi/db/app/user'
-import { PostType } from '@litomi/domain/database/enum'
 import { PostFilter } from '@litomi/domain/post/filter'
+import { PostType } from '@litomi/domain/post/model'
 import { and, count, desc, eq, inArray, isNotNull, lt, or, SQL } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 

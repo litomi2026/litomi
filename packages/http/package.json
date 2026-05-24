@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./cache-control": "./src/cache-control.ts",
+    "./cookie": "./src/cookie.ts",
     "./degraded-response": "./src/degraded-response.ts",
     "./image-proxy": "./src/image-proxy.ts",
     "./problem-details": "./src/problem-details.ts",

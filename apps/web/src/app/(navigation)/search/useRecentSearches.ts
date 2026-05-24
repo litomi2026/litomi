@@ -1,8 +1,9 @@
 'use client'
 
-import { MAX_RECENT_SEARCHES } from '@litomi/domain/constants/policy'
-import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { useEffect, useState } from 'react'
+
+import { LocalStorageKey } from '@/storage'
+import { MAX_RECENT_SEARCHES } from '@/ui-policy'
 
 export type RecentSearch = {
   query: string

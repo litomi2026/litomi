@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./cursor": "./src/cursor.ts",
     "./app/activity": "./src/app/activity.ts",
     "./app/auth": "./src/app/auth.ts",
     "./app/bbaton": "./src/app/bbaton.ts",

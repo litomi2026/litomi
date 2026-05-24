@@ -10,7 +10,7 @@ import { postTable } from '@litomi/db/app/post'
 import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { userFollowTable, userSettingsTable, userTable } from '@litomi/db/app/user'
 import { redisClient } from '@litomi/db/redis'
-import { DeviceType } from '@litomi/domain/database/enum'
+import { DeviceType } from '@litomi/domain/auth/model'
 import { eq, sql } from 'drizzle-orm'
 
 import { getTestPasswordHash, TEST_LOGIN_PASSWORD } from './auth'

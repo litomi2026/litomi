@@ -2,7 +2,7 @@
 
 import type { CensorshipItem } from '@litomi/contracts'
 
-import { CensorshipLevel } from '@litomi/domain/database/enum'
+import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { memo, useMemo } from 'react'
 
 type Props = {

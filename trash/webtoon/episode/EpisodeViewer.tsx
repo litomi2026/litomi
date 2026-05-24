@@ -1,6 +1,6 @@
 'use client'
 
-import { Manga } from '@litomi/domain/types/manga'
+import { Manga } from '@litomi/domain/manga/model'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'

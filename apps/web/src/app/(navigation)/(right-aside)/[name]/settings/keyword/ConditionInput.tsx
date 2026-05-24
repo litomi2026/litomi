@@ -2,7 +2,7 @@
 
 import type { POSTV1NotificationCriteriaBody } from '@litomi/contracts'
 
-import { NotificationConditionType, NotificationConditionTypeNames } from '@litomi/domain/database/enum'
+import { NotificationConditionType, NotificationConditionTypeNames } from '@litomi/domain/notification/model'
 import { Trash2 } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 

@@ -7,8 +7,8 @@ import type {
   POSTV1NotificationCriteriaResponse,
 } from '@litomi/contracts'
 
-import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/constants/policy'
-import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { NotificationConditionType } from '@litomi/domain/notification/model'
+import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/notification/policy'
 import { getInvalidParams } from '@litomi/http/problem-details'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'

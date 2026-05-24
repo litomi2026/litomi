@@ -1,6 +1,6 @@
 import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
-import { CookieKey } from '@litomi/domain/constants/storage'
-import { ChallengeType } from '@litomi/domain/database/enum'
+import { ChallengeType } from '@litomi/domain/auth/model'
+import { CookieKey } from '@litomi/http/cookie'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { expectCookieCleared } from '@test/backend/setup/auth'

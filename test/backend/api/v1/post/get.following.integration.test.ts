@@ -1,4 +1,4 @@
-import { PostType } from '@litomi/domain/database/enum'
+import { PostType } from '@litomi/domain/post/model'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { createAccessTokenCookies } from '@test/backend/setup/auth'

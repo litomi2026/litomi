@@ -1,6 +1,9 @@
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
+import { env } from '@litomi/env/client'
 import { Metadata } from 'next'
 import Link from 'next/link'
+
+import { defaultOpenGraph } from '@/lib/metadata'
 
 import Header1 from './Header1'
 
@@ -9,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `이용약관 - ${SHORT_NAME}`,
-    url: `${APP_ORIGIN}/doc/terms`,
+    url: `${env.NEXT_PUBLIC_APP_ORIGIN}/doc/terms`,
   },
 }
 

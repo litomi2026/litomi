@@ -1,7 +1,7 @@
 import type { VerifiedAuthenticationResponse } from '@simplewebauthn/server'
 
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey'
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey/server'
+import { CookieKey } from '@litomi/http/cookie'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { expectCookieCleared, expectPersistentCookie, expectSessionCookie } from '@test/backend/setup/auth'

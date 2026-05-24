@@ -1,16 +1,7 @@
-import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
-import {
-  LIBRARIES_PER_PAGE,
-  LIBRARY_ITEMS_PER_PAGE,
-  MAX_LIBRARY_DESCRIPTION_LENGTH,
-  MAX_LIBRARY_ICON_LENGTH,
-  MAX_LIBRARY_NAME_LENGTH,
-  MAX_MANGA_ID,
-  MAX_READING_HISTORY_LAST_PAGE,
-  RATING_PER_PAGE,
-  READING_HISTORY_PER_PAGE,
-} from '@litomi/domain/constants/policy'
+import { LIBRARIES_PER_PAGE, LIBRARY_ITEMS_PER_PAGE, MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH, MAX_READING_HISTORY_LAST_PAGE, RATING_PER_PAGE, READING_HISTORY_PER_PAGE } from '@litomi/domain/library/policy'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT, RatingSort } from '@litomi/domain/library/sort'
+import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
+import { POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { isSingleEmoji } from '@litomi/domain/utils/emoji'
 import { z } from 'zod'
 

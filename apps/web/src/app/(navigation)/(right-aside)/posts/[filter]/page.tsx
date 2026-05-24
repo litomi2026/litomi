@@ -1,8 +1,10 @@
-import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { type LucideIcon, Target, Users } from 'lucide-react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+
+import { defaultOpenGraph } from '@/lib/metadata'
 
 import PostList from './MasonryPostList'
 import { PostFilterParams, postFilterSchema } from './schema'

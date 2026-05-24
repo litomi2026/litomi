@@ -1,6 +1,6 @@
 'use client'
 
-import type { Manga, MangaTorrent } from '@litomi/domain/types/manga'
+import type { Manga, MangaTorrent } from '@litomi/domain/manga/model'
 
 import { formatBytes, formatDistanceToNow } from '@litomi/std'
 import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'

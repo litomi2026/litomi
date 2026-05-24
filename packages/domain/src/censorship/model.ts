@@ -1,0 +1,20 @@
+export enum CensorshipKey {
+  ARTIST = 1,
+  GROUP = 2,
+  SERIES = 3,
+  CHARACTER = 4,
+  TAG = 5,
+  TAG_CATEGORY_FEMALE = 6,
+  TAG_CATEGORY_MALE = 7,
+  TAG_CATEGORY_MIXED = 8,
+  TAG_CATEGORY_OTHER = 9,
+  LANGUAGE = 10,
+  UPLOADER = 11,
+  TYPE = 12,
+}
+
+export enum CensorshipLevel {
+  NONE = 0,
+  LIGHT = 1,
+  HEAVY = 2,
+}

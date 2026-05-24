@@ -1,8 +1,8 @@
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { db } from '@litomi/db/app'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'
-import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { NotificationConditionType } from '@litomi/domain/notification/model'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { and, count, eq, inArray, or, SQL, sql } from 'drizzle-orm'
 

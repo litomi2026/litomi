@@ -1,4 +1,4 @@
-import { SHORT_NAME } from '@litomi/domain/constants'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
 import { Download } from 'lucide-react'
 import Link from 'next/link'
 

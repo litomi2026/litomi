@@ -1,5 +1,5 @@
 import type { Locale } from '@litomi/domain/locale'
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 export enum Sort {
   RANDOM = 'random',

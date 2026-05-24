@@ -2,7 +2,7 @@
 
 import type { POSTV1LibraryItemCopyBody, POSTV1LibraryItemCopyResponse } from '@litomi/contracts'
 
-import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/constants/policy'
+import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 

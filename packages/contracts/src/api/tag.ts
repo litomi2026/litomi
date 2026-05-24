@@ -1,5 +1,5 @@
-import { TAGS_PER_PAGE } from '@litomi/domain/constants/policy'
 import { Locale } from '@litomi/domain/locale'
+import { TAGS_PER_PAGE } from '@litomi/domain/tag/policy'
 import { z } from 'zod'
 
 export const TagCategoryParam = ['female', 'male', 'mixed', 'other'] as const

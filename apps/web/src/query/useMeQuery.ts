@@ -1,7 +1,7 @@
 import type { GETV1MeResponse } from '@litomi/contracts'
 
-import { CookieKey } from '@litomi/domain/constants/storage'
 import { env } from '@litomi/env/client'
+import { CookieKey } from '@litomi/http/cookie'
 import { useQuery } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import ms from 'ms'

@@ -1,8 +1,8 @@
 import type { GETV1PostResponse } from '@litomi/contracts'
 
 import { getV1PostQuerySchema } from '@litomi/contracts'
+import { decodePostCursor, encodePostCursor } from '@litomi/db/cursor'
 import selectPost from '@litomi/db/query/post'
-import { decodePostCursor, encodePostCursor } from '@litomi/domain/common/cursor'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'

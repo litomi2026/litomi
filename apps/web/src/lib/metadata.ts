@@ -1,20 +1,13 @@
 import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 import type { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
 
-export const APPLICATION_NAME = '리토미 - 만화 웹 뷰어'
-export const APP_ORIGIN = getAppOrigin()
-export const SALT_ROUNDS = 12
-export const SHORT_NAME = '리토미'
-export const THEME_COLOR = '#0a0a0a'
-export const COOKIE_DOMAIN = process.env.NODE_ENV === 'production' ? '.litomi.in' : 'localhost'
-
-export const DESCRIPTION =
-  '만화 웹 뷰어 - 히토미 대체 서비스로 E-Hentai 계열 만화, 동인지, 일러스트를 광고 없이 한 곳에서 감상하세요.'
+import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME } from '@litomi/domain/app/metadata'
+import { env } from '@litomi/env/client'
 
 export const defaultOpenGraph: OpenGraph = {
   title: APPLICATION_NAME,
   description: DESCRIPTION,
-  url: APP_ORIGIN,
+  url: env.NEXT_PUBLIC_APP_ORIGIN,
   siteName: SHORT_NAME,
   images: [{ url: '/og-image.webp', alt: SHORT_NAME }],
   type: 'website',
@@ -48,17 +41,5 @@ export function generateOpenGraphMetadata({ title, description, images, url }: P
       ...metadataOverrides,
       images: defaultOpenGraph.images,
     },
-  }
-}
-
-function getAppOrigin(): string {
-  const raw = process.env.NEXT_PUBLIC_APP_ORIGIN || process.env.APP_ORIGIN || 'http://localhost:3000'
-  const value = raw.trim()
-
-  try {
-    new URL(value)
-    return value
-  } catch {
-    throw new Error('Invalid APP_ORIGIN or NEXT_PUBLIC_APP_ORIGIN')
   }
 }

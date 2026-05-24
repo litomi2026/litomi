@@ -1,58 +1,9 @@
-export const MAX_BOOKMARK_FILE_SIZE = 1024 * 1024 // 1 MiB
-export const MAX_BOOKMARK_BATCH_SIZE = 100
-export const MAX_BOOKMARKS_PER_USER = 500
-export const MAX_CENSORSHIPS_PER_USER = 40
-export const MAX_CREDENTIALS_PER_USER = 10
-export const MAX_CRITERIA_NAME_LENGTH = 32
-export const MAX_CRITERIA_PER_USER = 20
-export const MAX_NOTIFICATION_CRITERIA_CONDITIONS = 20
-export const MAX_HARPI_MANGA_BATCH_SIZE = 10
-export const MAX_KHENTAI_SEARCH_QUERY_LENGTH = 255
-export const MAX_ITEMS_PER_LIBRARY = 200
-export const MAX_LIBRARIES_PER_USER = 5
-export const MAX_PINNED_LIBRARIES_PER_USER = 5
-export const MAX_LIBRARY_NAME_LENGTH = 50
-export const MAX_LIBRARY_DESCRIPTION_LENGTH = 100
-export const MAX_LIBRARY_ICON_LENGTH = 64
 export const MAX_MANGA_DESCRIPTION_LENGTH = 150
 export const MAX_MANGA_TITLE_LENGTH = 50
-export const MAX_NOTIFICATION_COUNT = 100
-export const MAX_POST_CONTENT_LENGTH = 160
-export const MAX_READING_HISTORY_PER_USER = 100
-export const MAX_READING_HISTORY_LAST_PAGE = 32767
-export const MAX_RATINGS_PER_USER = 200
-export const MAX_RECENT_SEARCHES = 5
-export const MAX_SEARCH_QUERY_LENGTH = 500
-export const MAX_SEARCH_SUGGESTIONS = 10
-export const MAX_THUMBNAIL_IMAGES = 4
-export const MAX_TRUSTED_DEVICES_PER_USER = 5
-export const MANGA_INITIAL_LINES = 1
-export const TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT = 6
-export const DONATION_CARD_INTERVAL = 20
-export const MIN_SUGGESTION_QUERY_LENGTH = 2
-export const SUGGESTION_DEBOUNCE_MS = 500
-export const BOOKMARKS_PER_PAGE = 25
-export const CENSORSHIPS_PER_PAGE = 10
-export const LIBRARIES_PER_PAGE = 50
-export const TOP_MANGA_PER_PAGE = 25
-export const NOTIFICATION_PER_PAGE = 25
-export const READING_HISTORY_PER_PAGE = 25
-export const RATING_PER_PAGE = 25
-export const POST_PER_PAGE = 25
-export const LIBRARY_ITEMS_PER_PAGE = 25
-export const TAGS_PER_PAGE = 100
-export const LINK_PENDING_DELAY = 500
-export const SCROLL_THRESHOLD_PX = 10
-export const REALTIME_PAGE_VIEW_MIN_THRESHOLD = 10
 
 // NOTE: 꾸준히 올려줘야 함
 export const LAST_VERIFIED_MANGA_ID = 3_900_000
 export const MAX_MANGA_ID = LAST_VERIFIED_MANGA_ID * 2
-export const TOTAL_HIYOBI_PAGES = 10000
-
-export const LOGIN_ID_PATTERN = '^[a-zA-Z][a-zA-Z0-9_]*$'
-export const PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*[0-9]).+$'
-export const BACKUP_CODE_PATTERN = '^[A-Z0-9\\-]*$'
 
 export const BLACKLISTED_MANGA_IDS = [
   2533746, // eun

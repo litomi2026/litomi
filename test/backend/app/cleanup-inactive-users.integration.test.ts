@@ -2,7 +2,7 @@ import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { authSessionFamilyTable } from '@litomi/db/app/auth'
 import { notificationTable } from '@litomi/db/app/notification'
-import { NotificationType } from '@litomi/domain/database/enum'
+import { NotificationType } from '@litomi/domain/notification/model'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { createRefreshSessionCookies } from '@test/backend/setup/auth'
 import {

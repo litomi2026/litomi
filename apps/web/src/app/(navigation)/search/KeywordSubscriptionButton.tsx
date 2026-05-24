@@ -1,6 +1,6 @@
 'use client'
 
-import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/constants/policy'
+import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/notification/policy'
 import { useMutation } from '@tanstack/react-query'
 import { BellRing, Loader2 } from 'lucide-react'
 import { ReadonlyURLSearchParams, useRouter } from 'next/navigation'

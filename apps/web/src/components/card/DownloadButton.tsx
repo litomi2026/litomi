@@ -1,8 +1,8 @@
 'use client'
 
-import type { ImageWithVariants } from '@litomi/domain/types/manga'
+import type { ImageWithVariants } from '@litomi/domain/manga/model'
 
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { CookieKey } from '@litomi/http/cookie'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Cookies from 'js-cookie'
 import { Download, Loader2 } from 'lucide-react'

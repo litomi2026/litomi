@@ -1,6 +1,6 @@
 'use client'
 
-import { TOP_MANGA_PER_PAGE } from '@litomi/domain/constants/policy'
+import { TOP_MANGA_PER_PAGE } from '@litomi/domain/ranking/policy'
 import { TrendingUp } from 'lucide-react'
 import { useParams, usePathname } from 'next/navigation'
 

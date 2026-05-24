@@ -41,7 +41,6 @@
         "NEXT_PUBLIC_VAPID_PUBLIC_KEY"
       ],
       "passThroughEnv": [
-        "APP_ORIGIN",
         "APP_POSTGRES_CERTIFICATE",
         "APP_POSTGRES_URL",
         "CATALOG_POSTGRES_CERTIFICATE",

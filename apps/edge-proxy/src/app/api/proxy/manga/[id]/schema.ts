@@ -1,6 +1,6 @@
 import 'server-only'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
 import { Locale } from '@litomi/domain/locale'
+import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { z } from 'zod'
 
 export const GETProxyMangaIdSchema = z.object({

@@ -1,4 +1,4 @@
-import { LabeledValue } from '@litomi/domain/types/manga'
+import { LabeledValue } from '@litomi/domain/manga/model'
 import { ExternalLink } from 'lucide-react'
 
 import MangaMetadataLink from './MangaMetadataLink'

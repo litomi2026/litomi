@@ -2,7 +2,7 @@
 
 import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@litomi/contracts'
 
-import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'

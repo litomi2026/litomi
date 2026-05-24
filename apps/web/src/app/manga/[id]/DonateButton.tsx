@@ -1,7 +1,7 @@
 'use client'
 
 import type { POSTV1PointsDonationCreateRequest } from '@litomi/contracts'
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { formatNumber } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'

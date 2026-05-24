@@ -1,7 +1,8 @@
-import type { Manga } from '@litomi/domain/types/manga'
+import type { Manga } from '@litomi/domain/manga/model'
 
-import { MAX_THUMBNAIL_IMAGES } from '@litomi/domain/constants/policy'
 import { createThirdPartyMangaImageURLs } from '@litomi/http/image-proxy'
+
+import { MAX_THUMBNAIL_IMAGES } from '@/ui-policy'
 
 const LOADING_MANGA_TITLE = '불러오는 중'
 

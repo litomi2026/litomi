@@ -1,4 +1,6 @@
-import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import type { RegistrationResponseJSON } from '@simplewebauthn/server'
+
+import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { z } from 'zod'
 
 const passwordSchema = z
@@ -18,7 +20,7 @@ const nicknameSchema = z
   .min(2, { error: '닉네임은 최소 2자 이상이어야 해요' })
   .max(32, { error: '닉네임은 최대 32자까지 입력할 수 있어요' })
 
-const imageURLSchema = z
+export const imageURLSchema = z
   .url('프로필 이미지 주소가 URL 형식이 아니에요')
   .max(256, '프로필 이미지 URL은 최대 256자까지 입력할 수 있어요')
   .refine((value) => {
@@ -188,6 +190,62 @@ export const deleteV1MePasskeyResponseSchema = z.object({
 })
 
 export type DELETEV1MePasskeyResponse = z.infer<typeof deleteV1MePasskeyResponseSchema>
+
+const passkeyRegistrationOptionsShapeSchema = z.object({
+  rp: z.object({
+    id: z.string().optional(),
+    name: z.string(),
+  }),
+  user: z.object({
+    id: z.string(),
+    name: z.string(),
+    displayName: z.string(),
+  }),
+  challenge: z.string(),
+  pubKeyCredParams: z.array(
+    z.object({
+      alg: z.number(),
+      type: z.literal('public-key'),
+    }),
+  ),
+})
+
+export const postV1MePasskeyOptionsResponseSchema = z.object({
+  options: passkeyRegistrationOptionsShapeSchema,
+})
+
+export type POSTV1MePasskeyOptionsResponse = z.infer<typeof postV1MePasskeyOptionsResponseSchema>
+
+const passkeyRegistrationResponseSchema = z
+  .object({
+    id: z.string(),
+    rawId: z.string(),
+    response: z.object({
+      attestationObject: z.string(),
+      clientDataJSON: z.string(),
+      transports: z.array(z.string()).optional(),
+      publicKeyAlgorithm: z.number().optional(),
+      publicKey: z.string().optional(),
+      authenticatorData: z.string().optional(),
+    }),
+    type: z.literal('public-key'),
+    clientExtensionResults: z.record(z.string(), z.unknown()).default({}),
+    authenticatorAttachment: z.string().optional(),
+  })
+  .transform((value) => value as RegistrationResponseJSON)
+
+export const postV1MePasskeyVerifyBodySchema = z.object({
+  registration: passkeyRegistrationResponseSchema,
+})
+
+export type POSTV1MePasskeyVerifyBody = z.infer<typeof postV1MePasskeyVerifyBodySchema>
+
+export const postV1MePasskeyVerifyResponseSchema = z.object({
+  credentialId: z.string(),
+  message: z.string(),
+})
+
+export type POSTV1MePasskeyVerifyResponse = z.infer<typeof postV1MePasskeyVerifyResponseSchema>
 
 const pushSubscriptionSchema = z.object({
   endpoint: z.url(),

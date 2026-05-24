@@ -1,4 +1,4 @@
-import { BACKUP_CODE_PATTERN, LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import { BACKUP_CODE_PATTERN, LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { z } from 'zod'
 
 const loginIdSchema = z

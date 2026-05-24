@@ -2,7 +2,7 @@
 
 import type { DELETEV1NotificationCriteriaIdResponse, PATCHV1NotificationCriteriaIdResponse } from '@litomi/contracts'
 
-import { NotificationConditionType } from '@litomi/domain/database/enum'
+import { NotificationConditionType } from '@litomi/domain/notification/model'
 import { formatDistanceToNow } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'

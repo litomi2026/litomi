@@ -1,6 +1,6 @@
-import type { LabeledValue, Manga, MangaTag } from '@litomi/domain/types/manga'
+import type { LabeledValue, Manga, MangaTag } from '@litomi/domain/manga/model'
 
-import { tagCategoryNameToInt } from '@litomi/domain/database/enum'
+import { tagCategoryNameToInt } from '@litomi/domain/manga/model'
 import { checkDefined } from '@litomi/std'
 
 export function getViewerLink(id: number) {

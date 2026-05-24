@@ -12,7 +12,8 @@
     "./sources/hentkor": "./src/sources/hentkor.ts",
     "./sources/hitomi/hitomi": "./src/sources/hitomi/hitomi.ts",
     "./sources/hiyobi": "./src/sources/hiyobi.ts",
-    "./sources/k-hentai": "./src/sources/k-hentai.ts"
+    "./sources/k-hentai": "./src/sources/k-hentai.ts",
+    "./sources/policy": "./src/sources/policy.ts"
   },
   "scripts": {
     "exhentai:fullimg": "bun scripts/exhentaiFullimgLinks.ts",

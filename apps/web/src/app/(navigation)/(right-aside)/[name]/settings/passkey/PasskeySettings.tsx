@@ -1,6 +1,6 @@
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
-import { decodeDeviceType } from '@litomi/domain/database/enum'
+import { decodeDeviceType } from '@litomi/domain/auth/model'
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 import { desc, eq } from 'drizzle-orm'
 

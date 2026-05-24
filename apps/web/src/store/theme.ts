@@ -1,6 +1,7 @@
-import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+
+import { LocalStorageKey } from '@/storage'
 
 export enum Theme {
   LIGHT = 'light',

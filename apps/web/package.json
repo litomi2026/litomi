@@ -29,7 +29,6 @@
     "@litomi/env": "workspace:*",
     "@litomi/http": "workspace:*",
     "@litomi/image-reader": "workspace:*",
-    "@litomi/notifications": "workspace:*",
     "@litomi/observability": "workspace:*",
     "@litomi/std": "workspace:*",
     "@litomi/ui": "workspace:*",

@@ -17,19 +17,21 @@ process.env.BBATON_CLIENT_SECRET ??= 'test-bbaton-client-secret'
 process.env.NEXT_PUBLIC_APP_ENV ??= 'test'
 process.env.NEXT_PUBLIC_API_ORIGIN ??= 'http://localhost:3002'
 process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ??= 'test-turnstile-site-key'
-process.env.NEXT_PUBLIC_APP_ORIGIN ??= process.env.APP_ORIGIN
+process.env.NEXT_PUBLIC_APP_ORIGIN ??= 'http://localhost:3000'
 process.env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN ??= 'https://example.com'
 process.env.NEXT_PUBLIC_EDGE_PROXY_ORIGIN ??= 'https://example.com'
 process.env.NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN ??= process.env.NEXT_PUBLIC_EDGE_PROXY_ORIGIN
 process.env.JWT_SECRET_ACCESS_TOKEN ??= 'test-jwt-access'
 process.env.JWT_SECRET_REFRESH_TOKEN ??= 'test-jwt-refresh'
 process.env.JWT_SECRET_TRUSTED_DEVICE ??= 'test-jwt-trusted'
-process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ??= 'test-vapid-public'
+process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ??=
+  'BE2STQk_ZAdkzk0yacENGIQQbMhz54tgMDwryE0-d_I1irGlpbBMGs9ooYJMnONCZ9jzvWIOPIiGl7V8nXCh5w4'
+process.env.VAPID_PUBLIC_KEY ??= process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
 process.env.TOTP_ENCRYPTION_KEY ??= '0'.repeat(64)
 process.env.TURNSTILE_SECRET_KEY ??= 'test-turnstile-secret'
 process.env.UPSTASH_KV_REST_API_TOKEN ??= 'local_dev_token'
 process.env.UPSTASH_KV_REST_API_URL ??= 'http://localhost:8079'
-process.env.VAPID_PRIVATE_KEY ??= 'test-vapid-private'
+process.env.VAPID_PRIVATE_KEY ??= 'pL4WSwlV1gHQUYZOOq7N1oEq0Gbj-_dWnRwph1-Ju0k'
 
 mock.module('server-only', () => ({}))
 

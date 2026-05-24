@@ -35,27 +35,69 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          file="${OVERLAY_DIR}/public.env.kv"
+          public_env_file="${OVERLAY_DIR}/public.env.kv"
+          kustomization_file="${OVERLAY_DIR}/kustomization.yaml"
 
-          if [ ! -f "$file" ]; then
-            echo "public.env.kv not found: $file" >&2
+          if [ ! -f "$public_env_file" ]; then
+            echo "public.env.kv not found: $public_env_file" >&2
             exit 1
           fi
 
-          if grep -nEv '^(#|[[:space:]]*$|NEXT_PUBLIC_[A-Z0-9_]+=.*)$' "$file"; then
-            echo "public.env.kv must contain only NEXT_PUBLIC_* assignments, blank lines, or comments." >&2
+          if [ ! -f "$kustomization_file" ]; then
+            echo "kustomization.yaml not found: $kustomization_file" >&2
             exit 1
           fi
+
+          extract_common_env() {
+            local key="$1"
+            local value=""
+
+            while IFS= read -r line; do
+              if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*${key}= ]]; then
+                value="${line#*=}"
+                break
+              fi
+            done < "$kustomization_file"
+
+            if [ -z "$value" ]; then
+              echo "$key literal not found in $kustomization_file" >&2
+              exit 1
+            fi
+
+            printf '%s' "$value"
+          }
+
+          app_origin="$(extract_common_env APP_ORIGIN)"
+          vapid_public_key="$(extract_common_env VAPID_PUBLIC_KEY)"
 
           tmp="$(mktemp)"
-          grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=.*$' "$file" > "$tmp" || true
+          while IFS= read -r line; do
+            if [[ "$line" =~ ^(#|[[:space:]]*$) ]]; then
+              continue
+            fi
+
+            if [[ ! "$line" =~ ^NEXT_PUBLIC_[A-Z0-9_]+=.*$ ]]; then
+              echo "public.env.kv must contain only NEXT_PUBLIC_* assignments, blank lines, or comments." >&2
+              echo "$line" >&2
+              exit 1
+            fi
+
+            if [[ "$line" == NEXT_PUBLIC_APP_ORIGIN=* || "$line" == NEXT_PUBLIC_VAPID_PUBLIC_KEY=* ]]; then
+              echo "${line%%=*} is derived from kustomization.yaml and must not be set in public.env.kv." >&2
+              exit 1
+            fi
+
+            printf '%s\n' "$line" >> "$tmp"
+          done < "$public_env_file"
 
           if [ ! -s "$tmp" ]; then
-            echo "No NEXT_PUBLIC_* entries found in $file" >&2
+            echo "No NEXT_PUBLIC_* entries found in $public_env_file" >&2
             exit 1
           fi
 
           echo "build_args<<EOF" >> "$GITHUB_OUTPUT"
+          echo "APP_ORIGIN=$app_origin" >> "$GITHUB_OUTPUT"
+          echo "VAPID_PUBLIC_KEY=$vapid_public_key" >> "$GITHUB_OUTPUT"
           cat "$tmp" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 

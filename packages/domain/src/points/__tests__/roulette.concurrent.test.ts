@@ -1,4 +1,4 @@
-import { assertRouletteConfig, getRouletteRoiInfo, ROULETTE_CONFIG } from '@litomi/domain/constants/roulette'
+import { assertRouletteConfig, getRouletteRoiInfo, ROULETTE_CONFIG } from '@litomi/domain/points/roulette'
 import { describe, expect, it } from 'bun:test'
 
 describe('룰렛 설정', () => {

@@ -1,0 +1,3 @@
+export const MAX_CENSORSHIPS_PER_USER = 40
+
+export const CENSORSHIPS_PER_PAGE = 10

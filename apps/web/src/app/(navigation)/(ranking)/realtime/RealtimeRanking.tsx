@@ -2,7 +2,7 @@
 
 import type { GETV1AnalyticsRealtimeResponse } from '@litomi/contracts'
 
-import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/constants/policy'
+import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/ranking/policy'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { ExternalLink, Loader2, Users } from 'lucide-react'

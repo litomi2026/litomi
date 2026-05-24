@@ -1,4 +1,4 @@
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { CookieKey } from '@litomi/http/cookie'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { expectProblemResponse } from '@test/backend/setup/problem'

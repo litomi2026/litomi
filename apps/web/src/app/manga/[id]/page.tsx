@@ -1,15 +1,12 @@
 import type { Book, WithContext } from 'schema-dts'
 
-import { APP_ORIGIN, generateOpenGraphMetadata } from '@litomi/domain/constants'
-import {
-  BLACKLISTED_MANGA_IDS,
-  MAX_MANGA_DESCRIPTION_LENGTH,
-  MAX_MANGA_TITLE_LENGTH,
-} from '@litomi/domain/constants/policy'
+import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
+import { env } from '@litomi/env/client'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 import { toAbsoluteUrl } from '@/utils/url'
 
 import { getManga } from './common.server'
@@ -67,7 +64,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
   }
 
   const manga = await getManga(id)
-  const pageURL = new URL(`/manga/${id}`, APP_ORIGIN).toString()
+  const pageURL = new URL(`/manga/${id}`, env.NEXT_PUBLIC_APP_ORIGIN).toString()
 
   const jsonLd: WithContext<Book> = {
     '@context': 'https://schema.org',

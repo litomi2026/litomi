@@ -1,10 +1,10 @@
 import type { POSTV1AuthPasskeyOptionsResponse } from '@litomi/contracts'
 
 import { getPasskeyAuthenticationAttemptCookieConfig } from '@litomi/auth/cookie'
-import { WEBAUTHN_RP_ID } from '@litomi/auth/passkey'
 import { authenticationLimiter } from '@litomi/auth/passkey-authentication-attempt'
+import { WEBAUTHN_RP_ID } from '@litomi/auth/passkey/server'
 import { storeChallenge } from '@litomi/auth/redis-challenge'
-import { ChallengeType } from '@litomi/domain/database/enum'
+import { ChallengeType } from '@litomi/domain/auth/model'
 import { getRequestIP } from '@litomi/http/request'
 import { generateAuthenticationOptions } from '@simplewebauthn/server'
 import { Hono } from 'hono'

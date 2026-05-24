@@ -1,10 +1,10 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import { PASSWORD_HASH_COST } from '@litomi/auth/password'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { patchV1MePasswordBodySchema, type PATCHV1MePasswordResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
-import { SALT_ROUNDS } from '@litomi/domain/constants'
 import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { compare, hash } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
@@ -88,7 +88,7 @@ route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (
         }
       }
 
-      const newPasswordHash = await hash(newPassword, SALT_ROUNDS)
+      const newPasswordHash = await hash(newPassword, PASSWORD_HASH_COST)
 
       await tx
         .update(userTable)

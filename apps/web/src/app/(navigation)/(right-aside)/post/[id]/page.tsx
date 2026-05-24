@@ -1,6 +1,7 @@
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import CommentList from './CommentList'
 import { getPost, getPostComment, getPostConversation, postParamsSchema } from './common.server'

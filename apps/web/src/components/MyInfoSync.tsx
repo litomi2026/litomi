@@ -2,7 +2,6 @@
 
 import type { GETV1MeResponse } from '@litomi/contracts'
 
-import { LocalStorageKey } from '@litomi/domain/constants/storage'
 import { patchUserSettings, type UserSettingsSignal } from '@litomi/domain/utils/user-settings'
 import { safeParseJSON } from '@litomi/std'
 import { useQueryClient } from '@tanstack/react-query'
@@ -11,6 +10,7 @@ import { useEffect } from 'react'
 import { identify } from '@/lib/analytics/browser'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
+import { LocalStorageKey } from '@/storage'
 import { getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
 
 export default function MyInfoSync() {

@@ -1,5 +1,5 @@
 import { hashSessionToken } from '@litomi/auth/session'
-import { CookieKey } from '@litomi/domain/constants/storage'
+import { CookieKey } from '@litomi/http/cookie'
 import { cookies } from 'next/headers'
 
 import { readCurrentSessionFamilyIdByTokenHash, readPersistentSessionFamiliesByUserId } from './query'

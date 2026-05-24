@@ -1,4 +1,4 @@
-import { EXPANSION_TYPE } from '@litomi/domain/constants/points'
+import { EXPANSION_TYPE } from '@litomi/domain/points/model'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { seedBookmark, seedBookmarks, seedUser, seedUserExpansion } from '@test/backend/setup/db'

@@ -1,5 +1,6 @@
-import { BOOKMARKS_PER_PAGE, MAX_BOOKMARK_BATCH_SIZE, MAX_MANGA_ID } from '@litomi/domain/constants/policy'
+import { BOOKMARKS_PER_PAGE, MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/library/policy'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
+import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { z } from 'zod'
 
 import { catalogMangaSchema } from '../catalog/manga'

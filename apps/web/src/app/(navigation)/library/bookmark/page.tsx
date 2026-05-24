@@ -1,13 +1,13 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { selectBookmark } from '@litomi/db/query/bookmark'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
-import { BOOKMARKS_PER_PAGE } from '@litomi/domain/constants/policy'
+import { BOOKMARKS_PER_PAGE } from '@litomi/domain/library/policy'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { Metadata } from 'next'
 import { z } from 'zod'
 
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 import { getCatalogMangaMap } from '@/utils/catalog-manga.server'
 
 import BookmarkPageClient from './BookmarkPageClient'

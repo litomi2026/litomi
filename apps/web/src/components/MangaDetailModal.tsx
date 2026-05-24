@@ -1,7 +1,7 @@
 'use client'
 
-import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/constants/policy'
-import { Manga } from '@litomi/domain/types/manga'
+import { Manga } from '@litomi/domain/manga/model'
+import { MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/manga/policy'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
@@ -17,6 +17,7 @@ import MangaMetadataLink from '@/components/card/MangaMetadataLink'
 import MangaMetadataList from '@/components/card/MangaMetadataList'
 import MangaMetadataListWithLink from '@/components/card/MangaMetadataListWithLink'
 import MangaTagList from '@/components/card/MangaTagList'
+import { MANGA_INITIAL_LINES } from '@/ui-policy'
 
 type MangaDetailModalStore = {
   isOpen: boolean

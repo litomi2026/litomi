@@ -1,11 +1,11 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'

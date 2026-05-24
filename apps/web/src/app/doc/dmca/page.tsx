@@ -1,7 +1,10 @@
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
+import { env } from '@litomi/env/client'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { z } from 'zod'
+
+import { defaultOpenGraph } from '@/lib/metadata'
 
 import DmcaNoticeFormClient from './DmcaNoticeFormClient'
 
@@ -10,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `저작권/DMCA 신고 - ${SHORT_NAME}`,
-    url: `${APP_ORIGIN}/doc/dmca`,
+    url: `${env.NEXT_PUBLIC_APP_ORIGIN}/doc/dmca`,
   },
 }
 

@@ -1,6 +1,8 @@
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
+import { DEFAULT_VAPID_PUBLIC_KEY } from './shared'
+
 export const env = createEnv({
   server: {
     APP_ORIGIN: z.url().default('http://localhost:3000'),
@@ -29,6 +31,8 @@ export const env = createEnv({
     TURNSTILE_SECRET_KEY: z.string().default('1x0000000000000000000000000000000AA'),
     UPSTASH_KV_REST_API_URL: z.url().default('http://localhost:8079'),
     UPSTASH_KV_REST_API_TOKEN: z.string().default('local_dev_token'),
+    VAPID_PUBLIC_KEY: z.string().default(DEFAULT_VAPID_PUBLIC_KEY),
+    VAPID_PRIVATE_KEY: z.string().default('pL4WSwlV1gHQUYZOOq7N1oEq0Gbj-_dWnRwph1-Ju0k'),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

@@ -1,6 +1,6 @@
 'use client'
 
-import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { Eye, EyeOff, Info, Loader2, X } from 'lucide-react'
 import Link from 'next/link'

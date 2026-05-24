@@ -2,8 +2,8 @@
 
 import type { CensorshipItem } from '@litomi/contracts'
 
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/database/enum'
-import { MangaTag } from '@litomi/domain/types/manga'
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+import { MangaTag } from '@litomi/domain/manga/model'
 import { useState } from 'react'
 
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'

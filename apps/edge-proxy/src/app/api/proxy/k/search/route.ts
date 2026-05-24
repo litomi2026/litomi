@@ -1,6 +1,7 @@
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@litomi/crawler/sources/k-hentai'
-import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
+import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/crawler/sources/policy'
 import { Locale } from '@litomi/domain/locale'
+import { BLACKLISTED_MANGA_IDS } from '@litomi/domain/manga/policy'
 import { env } from '@litomi/env/client'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
