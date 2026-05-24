@@ -1,7 +1,7 @@
 import { postV1PointEarnRequestSchema, type POSTV1PointEarnResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
-import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/constants/points'
+import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
 import { and, eq, gt, sql } from 'drizzle-orm'

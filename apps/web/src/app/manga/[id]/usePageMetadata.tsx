@@ -1,5 +1,5 @@
-import { SHORT_NAME } from '@litomi/domain/constants/app'
-import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/constants/policy'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
+import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
 import { useEffect } from 'react'
 
 type Props = {

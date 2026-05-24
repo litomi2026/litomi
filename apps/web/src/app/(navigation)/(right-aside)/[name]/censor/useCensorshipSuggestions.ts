@@ -1,10 +1,10 @@
 'use client'
 
-import { DEFAULT_SUGGESTIONS } from '@litomi/domain/constants/json'
-import { SUGGESTION_DEBOUNCE_MS } from '@litomi/domain/constants/policy'
+import { DEFAULT_SUGGESTIONS } from '@litomi/domain/search/suggestion'
 import { useMemo, useState } from 'react'
 
 import useDebouncedValue from '@/hook/useDebouncedValue'
+import { SUGGESTION_DEBOUNCE_MS } from '@/ui-policy'
 
 import useCensorshipSuggestionsQuery from './useCensorshipSuggestionsQuery'
 

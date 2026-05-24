@@ -1,4 +1,4 @@
-import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/constants/policy'
+import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
 import { Book } from 'lucide-react'

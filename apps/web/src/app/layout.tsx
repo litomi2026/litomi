@@ -2,7 +2,7 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
-import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@litomi/domain/constants/app'
+import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@litomi/domain/app/metadata'
 import { env } from '@litomi/env/client'
 import { GoogleTagManager } from '@next/third-parties/google'
 import localFont from 'next/font/local'

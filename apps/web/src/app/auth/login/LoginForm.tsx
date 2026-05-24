@@ -4,7 +4,7 @@ import type { POSTV1AuthLoginAuthenticatedResponse, POSTV1AuthPasskeyVerifyRespo
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { generatePKCEChallenge, PKCEChallenge } from '@litomi/auth/pkce-browser'
-import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { Toggle } from '@litomi/ui'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

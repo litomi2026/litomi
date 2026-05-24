@@ -7,7 +7,7 @@ import {
   pointTransactionTable,
   userPointsTable,
 } from '@litomi/db/app/points'
-import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
+import { TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 

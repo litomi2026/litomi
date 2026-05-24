@@ -1,8 +1,8 @@
 import { postV1RouletteSpinRequestSchema, type POSTV1RouletteSpinResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
-import { TRANSACTION_TYPE } from '@litomi/domain/constants/points'
-import { assertRouletteConfig, ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/constants/roulette'
+import { TRANSACTION_TYPE } from '@litomi/domain/points/model'
+import { assertRouletteConfig, ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/points/roulette'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 

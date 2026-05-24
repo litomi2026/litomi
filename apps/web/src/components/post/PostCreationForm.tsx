@@ -2,7 +2,7 @@
 
 import type { POSTV1PostBody, POSTV1PostResponse } from '@litomi/contracts'
 
-import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/constants/policy'
+import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/post/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'

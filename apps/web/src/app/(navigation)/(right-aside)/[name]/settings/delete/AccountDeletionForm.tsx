@@ -2,7 +2,7 @@
 
 import type { DELETEV1MeBody, DELETEV1MeResponse } from '@litomi/contracts'
 
-import { PASSWORD_PATTERN } from '@litomi/domain/constants/policy'
+import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { getInvalidParams, type ProblemDetails } from '@litomi/http/problem-details'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle, Check, Eye, EyeOff, Loader2, Trash2 } from 'lucide-react'

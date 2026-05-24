@@ -1,4 +1,4 @@
-import { SHORT_NAME } from '@litomi/domain/constants/app'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { type LucideIcon, Target, Users } from 'lucide-react'
 import { Metadata } from 'next'

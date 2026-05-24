@@ -2,8 +2,8 @@ import { mangaIdParamSchema, putV1MangaIdRatingRequestSchema, type PUTV1MangaIdR
 import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { userExpansionTable } from '@litomi/db/app/points'
-import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
-import { MAX_RATINGS_PER_USER } from '@litomi/domain/constants/policy'
+import { MAX_RATINGS_PER_USER } from '@litomi/domain/library/policy'
+import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
 

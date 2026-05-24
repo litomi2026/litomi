@@ -2,7 +2,7 @@
 
 import type { POSTV1BookmarkResponse } from '@litomi/contracts'
 
-import { MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/constants/policy'
+import { MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/library/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'

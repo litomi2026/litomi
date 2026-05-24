@@ -1,6 +1,6 @@
 import 'server-only'
-import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
 import { Locale } from '@litomi/domain/locale'
+import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { z } from 'zod'
 
 import { Sort } from './types'

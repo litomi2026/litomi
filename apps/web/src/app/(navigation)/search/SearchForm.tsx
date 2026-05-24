@@ -1,6 +1,6 @@
 'use client'
 
-import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/constants/policy'
+import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { Toggle } from '@litomi/ui'
 import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'

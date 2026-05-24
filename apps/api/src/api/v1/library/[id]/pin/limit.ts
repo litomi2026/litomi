@@ -1,7 +1,7 @@
 import { db } from '@litomi/db/app'
 import { userExpansionTable } from '@litomi/db/app/points'
-import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/constants/points'
-import { MAX_PINNED_LIBRARIES_PER_USER } from '@litomi/domain/constants/policy'
+import { MAX_PINNED_LIBRARIES_PER_USER } from '@litomi/domain/library/policy'
+import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { and, eq, sum } from 'drizzle-orm'
 
 export type PinnedLibraryTx = Parameters<Parameters<typeof db.transaction>[0]>[0]

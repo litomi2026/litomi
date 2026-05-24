@@ -1,5 +1,5 @@
-import { MAX_CRITERIA_NAME_LENGTH } from '@litomi/domain/constants/policy'
 import { NotificationConditionType } from '@litomi/domain/notification/model'
+import { MAX_CRITERIA_NAME_LENGTH } from '@litomi/domain/notification/policy'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 export type ParsedCondition = {

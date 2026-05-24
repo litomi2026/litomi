@@ -1,7 +1,7 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { selectBookmark } from '@litomi/db/query/bookmark'
 import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
-import { BOOKMARKS_PER_PAGE } from '@litomi/domain/constants/policy'
+import { BOOKMARKS_PER_PAGE } from '@litomi/domain/library/policy'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { Metadata } from 'next'

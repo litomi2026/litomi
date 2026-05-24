@@ -2,8 +2,8 @@
 
 import type { POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
+import { BLIND_TAG_VALUES } from '@litomi/domain/censorship/blind-tag'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
-import { BLIND_TAG_VALUES } from '@litomi/domain/constants/json'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Info, Loader2, X } from 'lucide-react'

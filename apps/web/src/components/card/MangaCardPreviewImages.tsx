@@ -1,10 +1,11 @@
 'use client'
 
-import { MAX_THUMBNAIL_IMAGES } from '@litomi/domain/constants/policy'
 import { Manga } from '@litomi/domain/manga/model'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
+
+import { MAX_THUMBNAIL_IMAGES } from '@/ui-policy'
 
 import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'

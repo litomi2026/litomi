@@ -1,8 +1,8 @@
 import type { GETV1AnalyticsRealtimeResponse, PageRanking } from '@litomi/contracts'
 
 import { BetaAnalyticsDataClient } from '@google-analytics/data'
-import { SHORT_NAME } from '@litomi/domain/constants/app'
-import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/constants/policy'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
+import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/ranking/policy'
 import { env } from '@litomi/env/server.hono'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { GaxiosError } from 'gaxios'

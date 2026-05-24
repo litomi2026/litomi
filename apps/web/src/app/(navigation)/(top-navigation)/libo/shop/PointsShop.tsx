@@ -1,6 +1,6 @@
 'use client'
 
-import { POINT_CONSTANTS } from '@litomi/domain/constants/points'
+import { POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { formatNumber } from '@litomi/std'
 import { Bookmark, BookOpen, Check, LibraryBig, Pin, Star } from 'lucide-react'
 import { useState } from 'react'

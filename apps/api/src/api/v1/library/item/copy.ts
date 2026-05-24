@@ -1,7 +1,7 @@
 import { postV1LibraryItemCopyBodySchema, type POSTV1LibraryItemCopyResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
-import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/constants/policy'
+import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
 import { and, count, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 

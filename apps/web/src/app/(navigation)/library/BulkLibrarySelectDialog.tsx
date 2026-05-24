@@ -1,6 +1,6 @@
 'use client'
 
-import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
+import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 
 import type { BulkTargetLibrary } from './bulkActionTypes'

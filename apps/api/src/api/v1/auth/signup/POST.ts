@@ -1,5 +1,5 @@
+import { PASSWORD_HASH_COST } from '@litomi/auth/password'
 import { postV1AuthSignupRequestSchema, type POSTV1AuthSignupResponse } from '@litomi/contracts'
-import { SALT_ROUNDS } from '@litomi/domain/constants/security'
 import { generateRandomNickname, generateRandomProfileImage } from '@litomi/domain/utils/nickname'
 import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { getRequestIP } from '@litomi/http/request'
@@ -51,7 +51,7 @@ route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async 
     })
   }
 
-  const passwordHash = await hash(password, SALT_ROUNDS)
+  const passwordHash = await hash(password, PASSWORD_HASH_COST)
 
   try {
     const result = await createUser({

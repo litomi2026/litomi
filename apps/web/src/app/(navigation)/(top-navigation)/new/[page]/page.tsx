@@ -1,5 +1,5 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
+import { TOTAL_HIYOBI_PAGES } from '@litomi/crawler/sources/policy'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'

@@ -1,5 +1,5 @@
-import { DEFAULT_SUGGESTIONS } from '@litomi/domain/constants/json'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
+import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
+import { DEFAULT_SUGGESTIONS } from '@litomi/domain/search/suggestion'
 
 // value: 소문자여야 함
 export const SEARCH_SUGGESTIONS = [

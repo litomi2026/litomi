@@ -1,6 +1,6 @@
 import type { CensorshipItem, GETV1CensorshipResponse } from '@litomi/contracts'
 
-import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/constants/policy'
+import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/censorship/policy'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 

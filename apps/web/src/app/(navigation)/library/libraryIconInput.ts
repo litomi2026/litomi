@@ -1,4 +1,4 @@
-import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
+import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import { isSingleEmoji } from '@litomi/domain/utils/emoji'
 import { normalizeString } from '@litomi/std'
 import { toast } from 'sonner'

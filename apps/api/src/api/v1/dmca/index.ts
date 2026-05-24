@@ -5,7 +5,7 @@ import {
   dmcaNoticeTable,
   dmcaNoticeTargetTable,
 } from '@litomi/db/app/dmca'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
+import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { env } from '@litomi/env/server.common'
 import { normalizeString } from '@litomi/std'
 import { type Context, Hono } from 'hono'

@@ -2,8 +2,8 @@
 
 import type { GETSearchSuggestionsResponse } from '@litomi/contracts'
 
-import { DEFAULT_SUGGESTIONS } from '@litomi/domain/constants/json'
-import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/constants/policy'
+import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/search/policy'
+import { DEFAULT_SUGGESTIONS } from '@litomi/domain/search/suggestion'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 

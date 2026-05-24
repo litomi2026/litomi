@@ -1,6 +1,6 @@
 'use client'
 
-import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/constants/library'
+import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import { formatNumber } from '@litomi/std'
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 import { type RefObject, useRef } from 'react'

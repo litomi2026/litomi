@@ -1,5 +1,5 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { SHORT_NAME } from '@litomi/domain/constants/app'
+import { SHORT_NAME } from '@litomi/domain/app/metadata'
 import { Metadata } from 'next'
 
 import { defaultOpenGraph } from '@/lib/metadata'

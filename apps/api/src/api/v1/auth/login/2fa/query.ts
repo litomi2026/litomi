@@ -1,7 +1,7 @@
 import { db } from '@litomi/db/app'
 import { trustedBrowserTable } from '@litomi/db/app/two-factor'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
-import { MAX_TRUSTED_DEVICES_PER_USER } from '@litomi/domain/constants/policy'
+import { MAX_TRUSTED_DEVICES_PER_USER } from '@litomi/domain/auth/policy'
 import crypto from 'crypto'
 import { and, desc, eq, gte, isNull, lt, notInArray, or } from 'drizzle-orm'
 import { userAgent as getUserAgent } from 'next/server'

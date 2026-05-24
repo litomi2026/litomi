@@ -1,5 +1,5 @@
 import 'server-only'
-import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
+import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { z } from 'zod'
 
 export const mangaSchema = z.object({

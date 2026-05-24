@@ -1,7 +1,7 @@
 import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 import type { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
 
-import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME } from '@litomi/domain/constants/app'
+import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME } from '@litomi/domain/app/metadata'
 import { env } from '@litomi/env/client'
 
 export const defaultOpenGraph: OpenGraph = {

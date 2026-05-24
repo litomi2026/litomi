@@ -1,6 +1,6 @@
 import { fetchMangaFromMultiSources } from '@litomi/crawler/manga/multi-source'
-import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/constants/policy'
 import { Locale } from '@litomi/domain/locale'
+import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/manga/policy'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'

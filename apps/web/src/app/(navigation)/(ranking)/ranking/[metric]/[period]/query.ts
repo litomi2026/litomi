@@ -1,7 +1,7 @@
 import { db } from '@litomi/db/app'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/app/activity'
 import { libraryItemTable } from '@litomi/db/app/library'
-import { TOP_MANGA_PER_PAGE } from '@litomi/domain/constants/policy'
+import { TOP_MANGA_PER_PAGE } from '@litomi/domain/ranking/policy'
 import { avg, count, desc, gte, sql } from 'drizzle-orm'
 import ms from 'ms'
 
