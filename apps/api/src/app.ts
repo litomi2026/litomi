@@ -52,7 +52,7 @@ app.use(
 
 // NOTE: /api 미들웨어
 app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
-app.use('/api/*', etag({ retainedHeaders: [...RETAINED_304_HEADERS, 'set-cookie'] }))
+app.use('/api/*', etag({ retainedHeaders: [...RETAINED_304_HEADERS, 'set-cookie'] })) // FIXME: set-cookie 부작용 없애기
 
 // NOTE: /i 미들웨어
 app.use(

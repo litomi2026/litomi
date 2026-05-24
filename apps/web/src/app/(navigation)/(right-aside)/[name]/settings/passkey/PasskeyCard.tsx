@@ -23,12 +23,12 @@ export default function PasskeyCard({ passkey, passkeySignalData }: Props) {
 
   return (
     <PasskeyMobileDeleteWrapper credentialId={credentialId} id={id} passkeySignalData={passkeySignalData}>
-      <div className="flex items-start gap-3 group/card relative rounded-2xl border-2 border-zinc-800 bg-zinc-900 p-4 transition hover:border-zinc-700">
+      <div className="group/card relative flex min-w-0 items-start gap-3 rounded-2xl border-2 border-zinc-800 bg-zinc-900 p-4 transition hover:border-zinc-700">
         <div className="relative shrink-0">
           <div className={`h-12 w-12 rounded-xl ${bgColor} flex items-center justify-center transition`}>{icon}</div>
         </div>
-        <div className="grid gap-1 flex-1">
-          <div className="flex items-start justify-between gap-3">
+        <div className="grid min-w-0 flex-1 gap-1">
+          <div className="flex min-w-0 items-start justify-between gap-3">
             <h3 className="min-w-0 truncate text-base font-medium text-zinc-100" title={displayName}>
               {displayName}
             </h3>
