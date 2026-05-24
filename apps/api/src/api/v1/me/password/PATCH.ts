@@ -4,7 +4,7 @@ import { patchV1MePasswordBodySchema, type PATCHV1MePasswordResponse } from '@li
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
-import { SALT_ROUNDS } from '@litomi/domain/constants'
+import { SALT_ROUNDS } from '@litomi/domain/constants/security'
 import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { compare, hash } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'

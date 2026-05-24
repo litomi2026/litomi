@@ -1,4 +1,4 @@
-import { APP_ORIGIN } from '@litomi/domain/constants'
+import { env } from '@litomi/env/client'
 
 const privateIP = `
   ^(?:
@@ -33,13 +33,13 @@ export function sanitizeRedirect(url: string | null | undefined) {
   if (!url) return
 
   try {
-    const parsedUrl = new URL(url, APP_ORIGIN)
+    const parsedUrl = new URL(url, env.NEXT_PUBLIC_APP_ORIGIN)
 
     if (ALLOWED_HOSTNAME_REGEX.some((re) => re.test(parsedUrl.hostname))) {
       return url
     }
 
-    if (parsedUrl.origin === APP_ORIGIN) {
+    if (parsedUrl.origin === env.NEXT_PUBLIC_APP_ORIGIN) {
       return url
     }
 

@@ -1,6 +1,8 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { SHORT_NAME } from '@litomi/domain/constants/app'
 import { Metadata } from 'next'
+
+import { defaultOpenGraph } from '@/lib/metadata'
 
 import Censorships from './Censorships'
 import Unauthorized from './Unauthorized'

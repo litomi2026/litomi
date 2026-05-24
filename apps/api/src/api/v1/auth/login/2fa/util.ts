@@ -1,5 +1,5 @@
 import { JWTType, signJWT } from '@litomi/auth/jwt'
-import { COOKIE_DOMAIN } from '@litomi/domain/constants'
+import { COOKIE_DOMAIN } from '@litomi/domain/constants/security'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { sec } from '@litomi/std'
 

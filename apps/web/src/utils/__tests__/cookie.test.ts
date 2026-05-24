@@ -4,7 +4,7 @@ import {
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
 } from '@litomi/auth/cookie'
-import { COOKIE_DOMAIN } from '@litomi/domain/constants'
+import { COOKIE_DOMAIN } from '@litomi/domain/constants/security'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { describe, expect, test } from 'bun:test'
 

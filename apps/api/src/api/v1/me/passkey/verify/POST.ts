@@ -1,4 +1,4 @@
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey'
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey/server'
 import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
 import { postV1MePasskeyVerifyBodySchema, type POSTV1MePasskeyVerifyResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'

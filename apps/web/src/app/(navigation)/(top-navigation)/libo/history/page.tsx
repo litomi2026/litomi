@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import TransactionHistory from './TransactionHistory'
 

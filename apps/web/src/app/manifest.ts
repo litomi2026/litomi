@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@litomi/domain/constants'
+import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@litomi/domain/constants/app'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {

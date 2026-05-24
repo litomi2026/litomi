@@ -1,5 +1,4 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/domain/constants/policy'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { Metadata } from 'next'
@@ -8,6 +7,7 @@ import z from 'zod'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import PageNavigation from '@/components/PageNavigation'
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import NewMangaList from './NewMangaList'
 

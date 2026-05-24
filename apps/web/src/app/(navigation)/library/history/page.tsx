@@ -2,11 +2,12 @@ import { getAccessTokenClaimsFromCookie } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
 import { encodeReadingHistoryCursor } from '@litomi/domain/common/cursor'
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { READING_HISTORY_PER_PAGE } from '@litomi/domain/constants/policy'
 import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 import { headers } from 'next/headers'
+
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import HistoryPageClient from './HistoryPageClient'
 import NotFound from './NotFound'

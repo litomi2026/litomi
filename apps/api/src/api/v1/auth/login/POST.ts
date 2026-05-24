@@ -1,7 +1,7 @@
 import { initiatePKCEChallenge } from '@litomi/auth/pkce-server'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { postV1AuthLoginRequestSchema, type POSTV1AuthLoginResponse } from '@litomi/contracts'
-import { COOKIE_DOMAIN } from '@litomi/domain/constants'
+import { COOKIE_DOMAIN } from '@litomi/domain/constants/security'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'

@@ -1,7 +1,8 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { Metadata } from 'next'
+
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import RandomMangaList from './RandomMangaList'
 

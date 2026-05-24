@@ -1,7 +1,7 @@
 import type { POSTV1MePasskeyOptionsResponse } from '@litomi/contracts'
 import type { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 
-import { WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@litomi/auth/passkey'
+import { WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@litomi/auth/passkey/server'
 import { storeChallenge } from '@litomi/auth/redis-challenge'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'

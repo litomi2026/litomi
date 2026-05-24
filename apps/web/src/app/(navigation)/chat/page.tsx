@@ -1,5 +1,6 @@
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { Metadata } from 'next'
+
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import CharacterList from './CharacterList'
 

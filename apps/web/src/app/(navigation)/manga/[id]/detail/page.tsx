@@ -1,4 +1,3 @@
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/constants/policy'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
@@ -14,6 +13,7 @@ import BackButton from '@/components/BackButton'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import MangaReportButton from '@/components/report/MangaReportButton'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import AlsoViewedSection from './AlsoViewedSection'
 import PublicLibrarySection from './PublicLibrarySection'

@@ -1,4 +1,4 @@
-import { APP_ORIGIN } from '@litomi/domain/constants'
+import { env } from '@litomi/env/client'
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 
 export type Passkey = {
@@ -19,6 +19,6 @@ export type PasskeySignalData = {
 
 export type PasskeyUserDetailsSignalData = Pick<PasskeySignalData, 'displayName' | 'name' | 'userId'>
 
-export const WEBAUTHN_ORIGIN = APP_ORIGIN
-export const WEBAUTHN_RP_ID = new URL(APP_ORIGIN).hostname
+export const WEBAUTHN_ORIGIN = env.NEXT_PUBLIC_APP_ORIGIN
+export const WEBAUTHN_RP_ID = new URL(env.NEXT_PUBLIC_APP_ORIGIN).hostname
 export const WEBAUTHN_RP_NAME = 'litomi'

@@ -1,4 +1,4 @@
-import { SHORT_NAME } from '@litomi/domain/constants'
+import { SHORT_NAME } from '@litomi/domain/constants/app'
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/constants/policy'
 import { useEffect } from 'react'
 

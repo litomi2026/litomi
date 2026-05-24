@@ -1,4 +1,4 @@
-import { SALT_ROUNDS } from '@litomi/domain/constants'
+import { SALT_ROUNDS } from '@litomi/domain/constants/security'
 // NOTE: bcrypt 라이브러리를 gcr.io/distroless/base-nossl-debian12 이미지에서 사용할 수 없어서 분리함
 import { compare, hash } from 'bcryptjs'
 import crypto from 'crypto'

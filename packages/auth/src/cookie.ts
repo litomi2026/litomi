@@ -1,6 +1,6 @@
 import type { JWTPayload } from 'jose'
 
-import { COOKIE_DOMAIN } from '@litomi/domain/constants'
+import { COOKIE_DOMAIN } from '@litomi/domain/constants/security'
 import { CookieKey } from '@litomi/domain/constants/storage'
 import { sec } from '@litomi/std'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'

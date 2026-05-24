@@ -1,6 +1,9 @@
-import { APP_ORIGIN, defaultOpenGraph, SHORT_NAME } from '@litomi/domain/constants'
+import { SHORT_NAME } from '@litomi/domain/constants/app'
+import { env } from '@litomi/env/client'
 import { Metadata } from 'next'
 import Link from 'next/link'
+
+import { defaultOpenGraph } from '@/lib/metadata'
 
 const EFFECTIVE_DATE = '2026-04-04'
 const CONTACT_DEPARTMENT = '리토미 운영팀'
@@ -12,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `청소년보호정책 - ${SHORT_NAME}`,
-    url: `${APP_ORIGIN}/doc/youth-protection`,
+    url: `${env.NEXT_PUBLIC_APP_ORIGIN}/doc/youth-protection`,
   },
   alternates: {
     canonical: '/doc/youth-protection',

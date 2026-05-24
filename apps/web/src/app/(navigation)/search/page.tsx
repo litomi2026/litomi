@@ -1,11 +1,11 @@
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
-import { generateOpenGraphMetadata } from '@litomi/domain/constants'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { getViewFromSearchParams } from '@litomi/std'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import SearchResult, { SearchResultLoading } from './SearchResult'

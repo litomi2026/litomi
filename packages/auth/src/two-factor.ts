@@ -1,11 +1,10 @@
 import 'server-only'
-import { APP_ORIGIN } from '@litomi/domain/constants'
 import { env } from '@litomi/env/server.common'
 import crypto from 'crypto'
 import { verify } from 'otplib'
 import QRCode from 'qrcode'
 
-const { TOTP_ENCRYPTION_KEY } = env
+const { APP_ORIGIN, TOTP_ENCRYPTION_KEY } = env
 
 export const TOTP_CONFIG = {
   issuer: new URL(APP_ORIGIN).hostname,

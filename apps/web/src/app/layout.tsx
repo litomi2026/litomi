@@ -2,14 +2,7 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
-import {
-  APP_ORIGIN,
-  APPLICATION_NAME,
-  DESCRIPTION,
-  generateOpenGraphMetadata,
-  SHORT_NAME,
-  THEME_COLOR,
-} from '@litomi/domain/constants'
+import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@litomi/domain/constants/app'
 import { env } from '@litomi/env/client'
 import { GoogleTagManager } from '@next/third-parties/google'
 import localFont from 'next/font/local'
@@ -26,9 +19,10 @@ import SEOText from '@/components/SEOText'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import ThemeProvider from '@/components/ThemeProvider'
 import OverlayHost from '@/components/ui/OverlayHost'
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 import QueryProvider from '@/lib/react-query/QueryProvider'
 
-const { NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_GTM_SCRIPT_URL } = env
+const { NEXT_PUBLIC_APP_ORIGIN, NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_GTM_SCRIPT_URL } = env
 
 const PretendardVariable = localFont({
   src: '../fonts/PretendardVariable.400-700.3713.woff2',
@@ -52,7 +46,7 @@ const PretendardVariable = localFont({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(APP_ORIGIN),
+  metadataBase: new URL(NEXT_PUBLIC_APP_ORIGIN),
   title: {
     default: APPLICATION_NAME,
     template: `%s - ${SHORT_NAME}`,
@@ -67,10 +61,10 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: APP_ORIGIN,
+    canonical: NEXT_PUBLIC_APP_ORIGIN,
     languages: {
-      ko: APP_ORIGIN,
-      'x-default': APP_ORIGIN,
+      ko: NEXT_PUBLIC_APP_ORIGIN,
+      'x-default': NEXT_PUBLIC_APP_ORIGIN,
     },
   },
   ...generateOpenGraphMetadata(),

@@ -1,5 +1,5 @@
 import { postV1AuthSignupRequestSchema, type POSTV1AuthSignupResponse } from '@litomi/contracts'
-import { SALT_ROUNDS } from '@litomi/domain/constants'
+import { SALT_ROUNDS } from '@litomi/domain/constants/security'
 import { generateRandomNickname, generateRandomProfileImage } from '@litomi/domain/utils/nickname'
 import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { getRequestIP } from '@litomi/http/request'

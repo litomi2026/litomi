@@ -5,8 +5,8 @@ import {
   dmcaNoticeTable,
   dmcaNoticeTargetTable,
 } from '@litomi/db/app/dmca'
-import { APP_ORIGIN } from '@litomi/domain/constants'
 import { MAX_MANGA_ID } from '@litomi/domain/constants/policy'
+import { env } from '@litomi/env/server.common'
 import { normalizeString } from '@litomi/std'
 import { type Context, Hono } from 'hono'
 import { z } from 'zod'
@@ -14,6 +14,7 @@ import { z } from 'zod'
 import type { Env } from '@/app'
 
 const langSchema = z.enum(['ko', 'en']).default('ko')
+const { APP_ORIGIN } = env
 
 type Lang = z.infer<typeof langSchema>
 

@@ -1,5 +1,3 @@
-import { Manga } from '@litomi/domain/types/manga'
-
 export const BLIND_TAG_VALUE_TO_LABEL: Record<string, string> = {
   bestiality: '수간',
   guro: '고어',
@@ -12,14 +10,6 @@ export const BLIND_TAG_VALUE_TO_LABEL: Record<string, string> = {
 export const BLIND_TAG_VALUES = Object.keys(BLIND_TAG_VALUE_TO_LABEL)
 
 export const FALLBACK_IMAGE_URL = '/image/fallback.svg'
-
-export function createErrorManga({ error }: { error: unknown }): Manga {
-  return {
-    id: 0,
-    title: error instanceof Error ? `${error.name}: ${error.message}` : '오류가 발생했어요',
-    images: [{ original: { url: FALLBACK_IMAGE_URL } }],
-  }
-}
 
 export const DEFAULT_SUGGESTIONS = [
   { value: 'language:', label: '언어' },
