@@ -37,7 +37,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
           <p className="text-sm text-red-400 my-4 break-all">{error.message}</p>
           <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
           <CloudProviderStatus onStatusUpdate={setHasSystemIssues} />
-          <ErrorDiagnosticDetails digest={error.digest} errorMessage={error.message} pathname={pathname} />
+          <ErrorDiagnosticDetails digest={error.digest} pathname={pathname} />
           <p className="my-4 break-keep text-sm text-zinc-400">
             문제가 계속되면{' '}
             <a
