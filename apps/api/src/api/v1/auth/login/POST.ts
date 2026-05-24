@@ -60,6 +60,7 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
     if (!user || !isValidPassword) {
       return problemResponse(c, {
         status: 401,
+        code: 'invalid-credentials',
         detail: '아이디 또는 비밀번호가 일치하지 않아요',
       })
     }

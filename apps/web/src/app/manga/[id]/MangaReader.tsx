@@ -23,6 +23,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
 
 import FullscreenButton from './FullscreenButton'
@@ -84,7 +85,7 @@ export default function MangaReader({ manga }: Props) {
       lastPage: progress.readablePageNumber,
     }
 
-    await fetch(url, {
+    await fetchWithErrorHandling<void>(url, {
       method: 'POST',
       credentials: 'include',
       keepalive: options?.keepalive,

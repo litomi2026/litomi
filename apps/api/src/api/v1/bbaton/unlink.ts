@@ -28,14 +28,22 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
       .where(eq(userTable.id, userId))
 
     if (!user) {
-      return problemResponse(c, { status: 401, detail: '비밀번호가 일치하지 않아요' })
+      return problemResponse(c, {
+        status: 400,
+        code: 'credential-verification-failed',
+        detail: '인증 정보가 일치하지 않아요',
+      })
     }
 
     const { password, token } = c.req.valid('json')
     const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
 
     if (!isValidPassword) {
-      return problemResponse(c, { status: 401, detail: '비밀번호가 일치하지 않아요' })
+      return problemResponse(c, {
+        status: 400,
+        code: 'credential-verification-failed',
+        detail: '인증 정보가 일치하지 않아요',
+      })
     }
 
     const [twoFactor] = await db
@@ -45,14 +53,22 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
 
     if (twoFactor) {
       if (!token) {
-        return problemResponse(c, { status: 400, detail: '2단계 인증 코드가 필요해요' })
+        return problemResponse(c, {
+          status: 400,
+          code: 'credential-verification-failed',
+          detail: '인증 정보가 일치하지 않아요',
+        })
       }
 
       const secret = decryptTOTPSecret(twoFactor.secret)
       const isValidToken = await verifyTOTPToken(token, secret)
 
       if (!isValidToken) {
-        return problemResponse(c, { status: 400, detail: '잘못된 인증 코드예요' })
+        return problemResponse(c, {
+          status: 400,
+          code: 'credential-verification-failed',
+          detail: '인증 정보가 일치하지 않아요',
+        })
       }
     }
 
