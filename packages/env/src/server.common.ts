@@ -1,7 +1,7 @@
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
-import { DEFAULT_VAPID_PUBLIC_KEY } from './vapid'
+import { DEFAULT_VAPID_PUBLIC_KEY } from './shared'
 
 export const env = createEnv({
   server: {

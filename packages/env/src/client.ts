@@ -1,4 +1,4 @@
-import { DEFAULT_VAPID_PUBLIC_KEY } from './vapid'
+import { DEFAULT_VAPID_PUBLIC_KEY } from './shared'
 
 export const env = {
   NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV ?? 'local',
