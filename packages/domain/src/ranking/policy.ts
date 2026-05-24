@@ -1,0 +1,2 @@
+export const TOP_MANGA_PER_PAGE = 25
+export const REALTIME_PAGE_VIEW_MIN_THRESHOLD = 10

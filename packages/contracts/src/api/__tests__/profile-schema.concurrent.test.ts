@@ -1,7 +1,8 @@
-import { imageURLSchema } from '@litomi/domain/database/zod'
 import { describe, expect, test } from 'bun:test'
 
-describe('데이터베이스 zod 스키마', () => {
+import { imageURLSchema } from '../me'
+
+describe('프로필 스키마', () => {
   describe('imageURLSchema', () => {
     test('http와 https URL을 허용한다', () => {
       expect(imageURLSchema.safeParse('https://example.com/profile.jpg').success).toBe(true)

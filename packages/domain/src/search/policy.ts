@@ -1,0 +1,3 @@
+export const MAX_SEARCH_QUERY_LENGTH = 500
+export const MAX_SEARCH_SUGGESTIONS = 10
+export const MIN_SUGGESTION_QUERY_LENGTH = 2

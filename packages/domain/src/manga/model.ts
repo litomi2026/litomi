@@ -1,4 +1,51 @@
-import { MangaSource } from '@litomi/domain/database/enum'
+export enum TagCategory {
+  FEMALE = 0,
+  MALE = 1,
+  MIXED = 2,
+  OTHER = 3,
+}
+
+export const tagCategoryIntToName: Record<number, string> = {
+  [TagCategory.FEMALE]: 'female',
+  [TagCategory.MALE]: 'male',
+  [TagCategory.MIXED]: 'mixed',
+  [TagCategory.OTHER]: 'other',
+}
+
+export const tagCategoryNameToInt: Record<string, TagCategory> = {
+  female: TagCategory.FEMALE,
+  male: TagCategory.MALE,
+  mixed: TagCategory.MIXED,
+  other: TagCategory.OTHER,
+}
+
+export enum MangaSource {
+  HASHA = 0,
+  HARPI = 1,
+  HIYOBI = 2,
+  K_HENTAI = 3,
+  HITOMI = 4,
+  // E_HENTAI = 5,
+  // EX_HENTAI = 6,
+  KOMI = 7,
+  HENTAIPAW = 8,
+  LITOMI = 9,
+  HENTKOR = 10,
+}
+
+export enum MangaType {
+  DOUJINSHI = 1,
+  MANGA = 2,
+  ARTIST_CG = 3,
+  GAME_CG = 4,
+  WESTERN = 5,
+  IMAGE_SET = 6,
+  NON_H = 7,
+  COSPLAY = 8,
+  ASIAN_PORN = 9,
+  MISC = 10,
+  HIDDEN = 11,
+}
 
 export type ImageVariant = {
   url: string
