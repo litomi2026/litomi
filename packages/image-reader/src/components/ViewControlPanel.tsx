@@ -16,7 +16,7 @@ type Props = {
 export default function ViewControlPanel({ id }: Props) {
   const brightness = useReaderSessionStore((state) => state.brightness)
   const imageWidth = useReaderStore((state) => state.imageWidth)
-  const isWidthControlEnabled = useReaderStore((state) => state.screenFit === 'all' || state.screenFit === 'width')
+  const isWidthControlEnabled = useReaderStore((s) => s.imageFit === 'contain' || s.imageFit === 'fit-width')
   const setBrightness = useReaderSessionStore((state) => state.setBrightness)
   const setImageWidth = useReaderStore((state) => state.setImageWidth)
   const [localBrightness, setLocalBrightness] = useState(brightness)

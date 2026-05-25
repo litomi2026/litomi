@@ -8,6 +8,7 @@ import { useStore } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { createStore } from 'zustand/vanilla'
 
+export type ImageFit = 'contain' | 'fit-height' | 'fit-width'
 export type ImageWidth = 100 | 30 | 50 | 70
 export type LowDataMode = 'auto' | 'off' | 'on'
 
@@ -47,21 +48,19 @@ export type ReaderStore = {
   readingDirection: ReadingDirection
   resetPageIndex: () => void
   scrollAxis: ScrollAxis
-  screenFit: ScreenFit
+  imageFit: ImageFit
   scrollTargetPageIndex: number | null
   setImageWidth: (imageWidth: ImageWidth) => void
   setOrientation: (orientation: Orientation) => void
   setPageView: (pageView: PageView) => void
   setScrollAxis: (scrollAxis: ScrollAxis) => void
-  setScreenFit: (screenFit: ScreenFit) => void
+  setImageFit: (imageFit: ImageFit) => void
   setStorageHydrated: () => void
   setViewerMode: (mode: ViewerMode) => void
   toggleReadingDirection: () => void
   viewerMode: ViewerMode
 }
-
 export type ReadingDirection = 'ltr' | 'rtl'
-export type ScreenFit = 'all' | 'height' | 'width'
 export type ScrollAxis = 'horizontal' | 'vertical'
 export type ViewerMode = 'page' | 'scroll'
 
@@ -73,7 +72,7 @@ type PersistedStoreApi<T> = StoreApi<T> & {
 
 type ReaderPersistedState = Pick<
   ReaderStore,
-  'imageWidth' | 'orientation' | 'pageView' | 'readingDirection' | 'screenFit' | 'scrollAxis' | 'viewerMode'
+  'imageFit' | 'imageWidth' | 'orientation' | 'pageView' | 'readingDirection' | 'scrollAxis' | 'viewerMode'
 >
 
 type ReaderProviderProps = {
@@ -111,7 +110,7 @@ const DEFAULT_PAGE_VIEW: PageView = 'single'
 const DEFAULT_PERSISTENCE_KEY = 'reader'
 const DEFAULT_READING_DIRECTION: ReadingDirection = 'ltr'
 const DEFAULT_SCROLL_AXIS: ScrollAxis = 'vertical'
-const DEFAULT_SCREEN_FIT: ScreenFit = 'all'
+const DEFAULT_IMAGE_FIT: ImageFit = 'contain'
 const DEFAULT_VIEWER_MODE: ViewerMode = 'page'
 const LOW_DATA_MODES: readonly LowDataMode[] = ['off', 'auto', 'on']
 
@@ -228,6 +227,7 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
         doublePageAnchorIndex: 0,
         getOrientation: () => get().orientation,
         getPageIndex: () => get().pageIndex,
+        imageFit: DEFAULT_IMAGE_FIT,
         imageWidth: DEFAULT_IMAGE_WIDTH,
         isStorageHydrated: false,
         navigateToPageIndex: (pageIndex, options) => {
@@ -252,7 +252,6 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
           })
         },
         scrollAxis: DEFAULT_SCROLL_AXIS,
-        screenFit: DEFAULT_SCREEN_FIT,
         scrollTargetPageIndex: null,
         setImageWidth: (imageWidth) => {
           set({ imageWidth })
@@ -283,12 +282,12 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
       {
         name: localStorageKey,
         partialize: (state): ReaderPersistedState => ({
+          imageFit: state.imageFit,
           imageWidth: state.imageWidth,
           orientation: state.orientation,
           pageView: state.pageView,
           readingDirection: state.readingDirection,
           scrollAxis: state.scrollAxis,
-          screenFit: state.screenFit,
           viewerMode: state.viewerMode,
         }),
         skipHydration: true,

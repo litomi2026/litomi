@@ -1,9 +1,9 @@
 import type {
+  ImageFit,
   LowDataMode,
   Orientation,
   PageView,
   ReadingDirection,
-  ScreenFit,
   ScrollAxis,
   ViewerMode,
 } from '#reader/state/readerStore'
@@ -12,10 +12,10 @@ export type ReaderLocale = 'en' | 'ja' | 'ko' | 'zh-CN' | 'zh-TW'
 
 export type ReaderMessageOverrides = Partial<Omit<ReaderMessages, ReaderMessageMapKey>> & {
   lowDataLabels?: Partial<Record<LowDataMode, string>>
+  imageFitButtons?: Partial<Record<ImageFit, string>>
   pageViewButtons?: Partial<Record<PageView, string>>
   readingDirectionButtons?: Partial<Record<ReadingDirection, string>>
   scrollAxisButtons?: Partial<Record<ScrollAxis, string>>
-  screenFitButtons?: Partial<Record<ScreenFit, string>>
   viewerModeButtons?: Partial<Record<ViewerMode, string>>
   viewerOrientationButtons?: Partial<Record<Orientation, string>>
 }
@@ -54,22 +54,22 @@ export type ReaderMessages = {
   viewControlsButton: string
   viewControlsTitle: string
   goToPage: (pageNumber: number) => string
+  imageFitButtons: Record<ImageFit, string>
   lowDataLabels: Record<LowDataMode, string>
   pageSliderValue: (currentPageText: number | string, maxPage: number) => string
   pageViewButtons: Record<PageView, string>
   readingDirectionButtons: Record<ReadingDirection, string>
   resumeReadingNotice: (pageNumber: number) => string
   scrollAxisButtons: Record<ScrollAxis, string>
-  screenFitButtons: Record<ScreenFit, string>
   viewerModeButtons: Record<ViewerMode, string>
   viewerOrientationButtons: Record<Orientation, string>
 }
 
 type ReaderMessageMapKey =
+  | 'imageFitButtons'
   | 'lowDataLabels'
   | 'pageViewButtons'
   | 'readingDirectionButtons'
-  | 'screenFitButtons'
   | 'scrollAxisButtons'
   | 'viewerModeButtons'
   | 'viewerOrientationButtons'
@@ -128,10 +128,10 @@ export const readerMessageCatalog = {
       horizontal: '가로 스크롤',
       vertical: '세로 스크롤',
     },
-    screenFitButtons: {
-      all: '화면 맞춤',
-      height: '세로 맞춤',
-      width: '가로 맞춤',
+    imageFitButtons: {
+      contain: '화면 맞춤',
+      'fit-height': '세로 맞춤',
+      'fit-width': '가로 맞춤',
     },
     viewerModeButtons: {
       page: '페이지보기',
@@ -197,10 +197,10 @@ export const readerMessageCatalog = {
       horizontal: 'Horizontal scroll',
       vertical: 'Vertical scroll',
     },
-    screenFitButtons: {
-      all: 'Fit screen',
-      height: 'Fit height',
-      width: 'Fit width',
+    imageFitButtons: {
+      contain: 'Fit screen',
+      'fit-height': 'Fit height',
+      'fit-width': 'Fit width',
     },
     viewerModeButtons: {
       page: 'Page view',
@@ -266,10 +266,10 @@ export const readerMessageCatalog = {
       horizontal: '横スクロール',
       vertical: '縦スクロール',
     },
-    screenFitButtons: {
-      all: '画面に合わせる',
-      height: '高さに合わせる',
-      width: '幅に合わせる',
+    imageFitButtons: {
+      contain: '画面に合わせる',
+      'fit-height': '高さに合わせる',
+      'fit-width': '幅に合わせる',
     },
     viewerModeButtons: {
       page: 'ページ表示',
@@ -335,10 +335,10 @@ export const readerMessageCatalog = {
       horizontal: '横向滚动',
       vertical: '纵向滚动',
     },
-    screenFitButtons: {
-      all: '适应屏幕',
-      height: '适应高度',
-      width: '适应宽度',
+    imageFitButtons: {
+      contain: '适应屏幕',
+      'fit-height': '适应高度',
+      'fit-width': '适应宽度',
     },
     viewerModeButtons: {
       page: '分页视图',
@@ -404,10 +404,10 @@ export const readerMessageCatalog = {
       horizontal: '水平捲動',
       vertical: '垂直捲動',
     },
-    screenFitButtons: {
-      all: '符合螢幕',
-      height: '符合高度',
-      width: '符合寬度',
+    imageFitButtons: {
+      contain: '符合螢幕',
+      'fit-height': '符合高度',
+      'fit-width': '符合寬度',
     },
     viewerModeButtons: {
       page: '分頁檢視',
@@ -444,9 +444,9 @@ export function getReaderMessages(locale: ReaderLocale, overrides: ReaderMessage
       ...messages.scrollAxisButtons,
       ...overrides.scrollAxisButtons,
     },
-    screenFitButtons: {
-      ...messages.screenFitButtons,
-      ...overrides.screenFitButtons,
+    imageFitButtons: {
+      ...messages.imageFitButtons,
+      ...overrides.imageFitButtons,
     },
     viewerModeButtons: {
       ...messages.viewerModeButtons,

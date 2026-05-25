@@ -33,17 +33,17 @@ export default function ReaderControls<TPage extends ReaderPage>({
   const [isThumbnailStripOpen, setIsThumbnailStripOpen] = useState(false)
   const [isViewControlOpen, setIsViewControlOpen] = useState(false)
   const lowData = useReaderSessionStore((state) => state.lowData)
+  const imageFit = useReaderStore((state) => state.imageFit)
   const orientation = useReaderStore((state) => state.orientation)
   const pageView = useReaderStore((state) => state.pageView)
   const readingDirection = useReaderStore((state) => state.readingDirection)
   const scrollAxis = useReaderStore((state) => state.scrollAxis)
-  const screenFit = useReaderStore((state) => state.screenFit)
   const viewerMode = useReaderStore((state) => state.viewerMode)
   const cycleLowData = useReaderSessionStore((state) => state.cycleLowData)
+  const setImageFit = useReaderStore((state) => state.setImageFit)
   const setOrientation = useReaderStore((state) => state.setOrientation)
   const setPageView = useReaderStore((state) => state.setPageView)
   const setScrollAxis = useReaderStore((state) => state.setScrollAxis)
-  const setScreenFit = useReaderStore((state) => state.setScreenFit)
   const setViewerMode = useReaderStore((state) => state.setViewerMode)
   const toggleReadingDirection = useReaderStore((state) => state.toggleReadingDirection)
   const viewControlRef = useRef<HTMLDivElement>(null)
@@ -52,7 +52,6 @@ export default function ReaderControls<TPage extends ReaderPage>({
   const isDoublePage = pageView === 'double'
   const isHorizontalScrollMode = viewerMode === 'scroll' && scrollAxis === 'horizontal'
   const isPageMode = viewerMode === 'page'
-  const isWidthFit = screenFit === 'width'
   const maxPageIndex = Math.max(0, pages.length - 1)
 
   // NOTE: Escape는 열린 보조 패널부터 닫고, 마지막에 컨트롤 전체를 닫아요
@@ -155,10 +154,14 @@ export default function ReaderControls<TPage extends ReaderPage>({
           </button>
           <button
             className={BOTTOM_BUTTON_CLASS_NAME}
-            onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}
+            onClick={() =>
+              setImageFit(
+                imageFit === 'contain' ? 'fit-width' : imageFit === 'fit-width' ? 'fit-height' : 'contain',
+              )
+            }
             type="button"
           >
-            {messages.screenFitButtons[screenFit]}
+            {messages.imageFitButtons[imageFit]}
           </button>
           {isPageMode && (
             <button

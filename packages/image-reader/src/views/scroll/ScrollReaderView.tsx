@@ -1,7 +1,7 @@
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 
 import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
-import { type ScreenFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
+import { type ImageFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { type CSSProperties, Fragment, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
@@ -9,11 +9,12 @@ import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'r
 import { HorizontalScrollReaderView } from './HorizontalScrollReaderView'
 import { Props, ScrollReaderViewLoading } from './shared'
 
-const verticalScreenFitStyle: Record<ScreenFit, string> = {
-  width:
+const verticalImageFitStyle: Record<ImageFit, string> = {
+  'fit-width':
     '[&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-fit',
-  all: 'pt-safe px-safe [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
-  height:
+  contain:
+    'pt-safe px-safe [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
+  'fit-height':
     '[&_li]:flex [&_li]:items-center [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
 
@@ -43,8 +44,8 @@ function VerticalScrollReaderView<TPage extends ReaderPage>({
 }: Props<TPage>) {
   const listRef = useListRef(null)
   const brightness = useReaderSessionStore((state) => state.brightness)
+  const imageFit = useReaderStore((state) => state.imageFit)
   const imageWidth = useReaderStore((state) => state.imageWidth)
-  const screenFit = useReaderStore((state) => state.screenFit)
   const scrollTargetPageIndex = useReaderStore((state) => state.scrollTargetPageIndex)
   const clearScrollTargetPageIndex = useReaderStore((state) => state.clearScrollTargetPageIndex)
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: DEFAULT_SCROLL_ROW_HEIGHT })
@@ -85,7 +86,7 @@ function VerticalScrollReaderView<TPage extends ReaderPage>({
       style={dynamicStyle}
     >
       <List
-        className={`overscroll-none ${verticalScreenFitStyle[screenFit]}`}
+        className={`overscroll-none ${verticalImageFitStyle[imageFit]}`}
         listRef={listRef}
         overscanCount={overscanCount}
         rowComponent={VerticalScrollReaderViewRow}
