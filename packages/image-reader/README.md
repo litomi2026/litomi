@@ -2,7 +2,7 @@
 
 A client-side React image reader for comics, manga, galleries, and other ordered image experiences.
 
-It provides paged and scroll reading modes, single-page and double-page spreads, touch and wheel navigation, zoom, thumbnails, slideshow controls, low-data rendering hints, reading-progress callbacks, and localized reader controls.
+It provides paged and vertical or horizontal scroll reading modes, single-page and double-page spreads, touch and wheel navigation, zoom, thumbnails, slideshow controls, low-data rendering hints, reading-progress callbacks, and localized reader controls.
 
 ## Requirements
 

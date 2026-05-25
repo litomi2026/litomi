@@ -36,11 +36,13 @@ export default function ReaderControls<TPage extends ReaderPage>({
   const orientation = useReaderStore((state) => state.orientation)
   const pageView = useReaderStore((state) => state.pageView)
   const readingDirection = useReaderStore((state) => state.readingDirection)
+  const scrollAxis = useReaderStore((state) => state.scrollAxis)
   const screenFit = useReaderStore((state) => state.screenFit)
   const viewerMode = useReaderStore((state) => state.viewerMode)
   const cycleLowData = useReaderSessionStore((state) => state.cycleLowData)
   const setOrientation = useReaderStore((state) => state.setOrientation)
   const setPageView = useReaderStore((state) => state.setPageView)
+  const setScrollAxis = useReaderStore((state) => state.setScrollAxis)
   const setScreenFit = useReaderStore((state) => state.setScreenFit)
   const setViewerMode = useReaderStore((state) => state.setViewerMode)
   const toggleReadingDirection = useReaderStore((state) => state.toggleReadingDirection)
@@ -48,6 +50,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
   const messages = useReaderMessages()
 
   const isDoublePage = pageView === 'double'
+  const isHorizontalScrollMode = viewerMode === 'scroll' && scrollAxis === 'horizontal'
   const isPageMode = viewerMode === 'page'
   const isWidthFit = screenFit === 'width'
   const maxPageIndex = Math.max(0, pages.length - 1)
@@ -157,18 +160,6 @@ export default function ReaderControls<TPage extends ReaderPage>({
           >
             {messages.screenFitButtons[screenFit]}
           </button>
-          {isDoublePage && (
-            <button
-              aria-label={messages.readingDirectionButtons[readingDirection]}
-              className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
-              onClick={toggleReadingDirection}
-              type="button"
-            >
-              {messages.readingDirectionLeftShort}
-              {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
-              {messages.readingDirectionRightShort}
-            </button>
-          )}
           {isPageMode && (
             <button
               className={BOTTOM_BUTTON_CLASS_NAME}
@@ -183,17 +174,39 @@ export default function ReaderControls<TPage extends ReaderPage>({
             </button>
           )}
           {!isPageMode && (
-            <div className="relative" ref={viewControlRef}>
+            <>
               <button
-                aria-expanded={isViewControlOpen}
-                className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
-                onClick={() => setIsViewControlOpen((prev) => !prev)}
+                aria-pressed={isHorizontalScrollMode}
+                className={BOTTOM_BUTTON_CLASS_NAME}
+                onClick={() => setScrollAxis(isHorizontalScrollMode ? 'vertical' : 'horizontal')}
                 type="button"
               >
-                {messages.viewControlsButton}
+                {messages.scrollAxisButtons[scrollAxis]}
               </button>
-              {isViewControlOpen && <ViewControlPanel />}
-            </div>
+              <div className="relative" ref={viewControlRef}>
+                <button
+                  aria-expanded={isViewControlOpen}
+                  className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
+                  onClick={() => setIsViewControlOpen((prev) => !prev)}
+                  type="button"
+                >
+                  {messages.viewControlsButton}
+                </button>
+                {isViewControlOpen && <ViewControlPanel />}
+              </div>
+            </>
+          )}
+          {(isDoublePage || isHorizontalScrollMode) && (
+            <button
+              aria-label={messages.readingDirectionButtons[readingDirection]}
+              className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
+              onClick={toggleReadingDirection}
+              type="button"
+            >
+              {messages.readingDirectionLeftShort}
+              {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
+              {messages.readingDirectionRightShort}
+            </button>
           )}
           <SlideshowButton
             className={BOTTOM_BUTTON_CLASS_NAME}
