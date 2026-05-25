@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
-import { requiresAdultVerification } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -37,9 +36,9 @@ type ReasonButtonProps = {
 }
 
 export default function MangaReportButton({ mangaId, className = '' }: Props) {
-  const { adultState, guardAdultAccess, me } = useAdultAccessGuard()
+  const { guardAdultAccess, me } = useAdultAccessGuard()
   const [open, setOpen] = useState(false)
-  const isVerificationRequired = requiresAdultVerification(adultState)
+  const isAdultGateRequired = me?.adultVerification.required === true
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
@@ -106,7 +105,7 @@ export default function MangaReportButton({ mangaId, className = '' }: Props) {
             />
           </div>
           <div className="grid gap-1 p-3 py-2 text-xs text-zinc-500">
-            {isVerificationRequired && (
+            {isAdultGateRequired && (
               <p>
                 <Link className="underline underline-offset-2" href={`/@${me?.name}/settings#adult`} prefetch={false}>
                   비바톤 익명 인증
