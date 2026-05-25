@@ -1,16 +1,13 @@
-export type CreateProblemDetailsResponseOptions = {
-  code: string
-  detail?: string
+export type CreateProblemDetailsResponseOptions = ProblemDetailsOptions & {
   headers?: HeadersInit
-  instance?: string
-  status: number
-  title?: string
 }
 
 export type InvalidParam = {
   name: string
   reason: string
 }
+
+export type ProblemCode = (typeof problemCode)[keyof typeof problemCode]
 
 export type ProblemDetails = {
   /**
@@ -42,41 +39,80 @@ export type ProblemDetails = {
   [key: string]: unknown
 }
 
+export type ProblemDetailsOptions = {
+  code?: string
+  detail?: string
+  extensions?: Record<string, unknown>
+  instance?: string
+  status: number
+  title?: string
+}
+
 export type ValidationProblemDetails = ProblemDetails & {
   invalidParams?: InvalidParam[]
 }
 
+export const problemCode = {
+  ADULT_VERIFICATION_REQUIRED: 'adult-verification-required',
+  AUTHENTICATION_REQUIRED: 'authentication-required',
+  BAD_GATEWAY: 'bad-gateway',
+  BAD_REQUEST: 'bad-request',
+  CLIENT_ABORTED: 'client-aborted',
+  CONFLICT: 'conflict',
+  FORBIDDEN: 'forbidden',
+  GATEWAY_TIMEOUT: 'gateway-timeout',
+  INTERNAL_SERVER_ERROR: 'internal-server-error',
+  LIBO_EXPANSION_REQUIRED: 'libo-expansion-required',
+  NOT_FOUND: 'not-found',
+  REQUEST_TIMEOUT: 'request-timeout',
+  SERVICE_UNAVAILABLE: 'service-unavailable',
+  TOO_MANY_REQUESTS: 'too-many-requests',
+  TURNSTILE_REQUIRED: 'turnstile-required',
+  UNAUTHORIZED: 'unauthorized',
+} as const
+
 export const PROBLEM_CONTENT_TYPE = 'application/problem+json'
 
-export function createProblemDetailsResponse(request: Request, options: CreateProblemDetailsResponseOptions): Response {
-  const url = new URL(request.url)
-  const instance = options.instance ?? url.pathname + url.search
+const problemCodeByStatus: Partial<Record<number, ProblemCode>> = {
+  400: problemCode.BAD_REQUEST,
+  401: problemCode.UNAUTHORIZED,
+  403: problemCode.FORBIDDEN,
+  404: problemCode.NOT_FOUND,
+  408: problemCode.REQUEST_TIMEOUT,
+  409: problemCode.CONFLICT,
+  429: problemCode.TOO_MANY_REQUESTS,
+  499: problemCode.CLIENT_ABORTED,
+  502: problemCode.BAD_GATEWAY,
+  503: problemCode.SERVICE_UNAVAILABLE,
+  504: problemCode.GATEWAY_TIMEOUT,
+}
 
-  const problem: ProblemDetails = {
-    type: createProblemTypeUrl(url.origin, options.code),
-    title: options.title ?? getStatusTitle(options.status),
-    status: options.status,
-    detail: options.detail,
-    instance,
-  }
+const statusTitleByStatus: Partial<Record<number, string>> = {
+  400: '잘못된 요청이에요',
+  401: '로그인이 필요해요',
+  403: '권한이 없어요',
+  404: '찾을 수 없어요',
+  408: '요청 시간이 초과됐어요',
+  409: '요청이 충돌했어요',
+  429: '요청이 너무 많아요',
+  499: '요청이 취소됐어요',
+  500: '서버 오류가 발생했어요',
+  502: '외부 서비스 오류예요',
+  503: '서비스를 사용할 수 없어요',
+  504: '게이트웨이 시간이 초과됐어요',
+}
 
-  const headers = new Headers(options.headers)
+export function createProblemDetailsResponse(
+  request: string | Request | URL,
+  options: CreateProblemDetailsResponseOptions,
+): Response {
+  const { headers: headersInit, ...problemOptions } = options
+  const problem = getProblemDetails(request, problemOptions)
+
+  const headers = new Headers(headersInit)
   headers.set('Content-Type', PROBLEM_CONTENT_TYPE)
 
   return new Response(JSON.stringify(problem), { status: options.status, headers })
-}
-
-export function createProblemTypeUrl(origin: string, code: string): string {
-  const safeOrigin = trimTrailingSlashes(origin)
-  const safeCode = encodeURIComponent(code)
-
-  try {
-    const url = new URL(safeOrigin)
-    url.protocol = 'https:'
-    return `${url.origin}/problems/${safeCode}`
-  } catch {
-    return `${safeOrigin}/problems/${safeCode}`
-  }
 }
 
 export function getInvalidParams(problem: ProblemDetails): InvalidParam[] {
@@ -96,22 +132,6 @@ export function getInvalidParams(problem: ProblemDetails): InvalidParam[] {
   })
 }
 
-export function getStatusTitle(status: number): string {
-  if (status === 400) return '잘못된 요청이에요'
-  if (status === 401) return '로그인이 필요해요'
-  if (status === 403) return '권한이 없어요'
-  if (status === 404) return '찾을 수 없어요'
-  if (status === 409) return '요청이 충돌했어요'
-  if (status === 408) return '요청 시간이 초과됐어요'
-  if (status === 429) return '요청이 너무 많아요'
-  if (status === 499) return '요청이 취소됐어요'
-  if (status === 500) return '서버 오류가 발생했어요'
-  if (status === 502) return '외부 서비스 오류예요'
-  if (status === 503) return '서비스를 사용할 수 없어요'
-  if (status === 504) return '게이트웨이 시간이 초과됐어요'
-  return '오류가 발생했어요'
-}
-
 export function isProblemDetails(value: unknown): value is ProblemDetails {
   if (typeof value !== 'object' || value === null) {
     return false
@@ -125,6 +145,88 @@ export function isProblemDetails(value: unknown): value is ProblemDetails {
     (record.detail === undefined || typeof record.detail === 'string') &&
     (record.instance === undefined || typeof record.instance === 'string')
   )
+}
+
+export function isProblemDetailsContentType(contentType: string | null | undefined): boolean {
+  return contentType?.toLowerCase().split(';', 1)[0].trim() === PROBLEM_CONTENT_TYPE
+}
+
+export function isProblemType(typeUrl: string, code: string | ProblemCode): boolean {
+  const suffix = `/problems/${encodeURIComponent(code)}`
+
+  try {
+    return new URL(typeUrl).pathname === suffix
+  } catch {
+    return typeUrl.endsWith(suffix)
+  }
+}
+
+function getProblemCodeFromStatus(status: number): ProblemCode {
+  const code = problemCodeByStatus[status]
+
+  if (code) {
+    return code
+  }
+
+  if (status >= 400 && status < 500) {
+    return problemCode.BAD_REQUEST
+  }
+
+  return problemCode.INTERNAL_SERVER_ERROR
+}
+
+function getProblemDetails(request: string | Request | URL, options: ProblemDetailsOptions): ProblemDetails {
+  const url = getRequestURL(request)
+  const instance = options.instance ?? url.pathname + url.search
+  const code = options.code ?? getProblemCodeFromStatus(options.status)
+
+  return {
+    ...options.extensions,
+    type: getProblemTypeURL(url.origin, code),
+    title: options.title ?? getStatusTitle(options.status),
+    status: options.status,
+    detail: options.detail,
+    instance,
+  }
+}
+
+function getProblemTypeURL(origin: string, code: string): string {
+  const safeOrigin = trimTrailingSlashes(origin)
+  const safeCode = encodeURIComponent(code)
+
+  try {
+    const url = new URL(safeOrigin)
+    url.protocol = 'https:'
+    return `${url.origin}/problems/${safeCode}`
+  } catch {
+    return `${safeOrigin}/problems/${safeCode}`
+  }
+}
+
+function getRequestURL(request: string | Request | URL): URL {
+  if (request instanceof Request) {
+    return new URL(request.url)
+  }
+
+  return new URL(request)
+}
+
+function getStatusTitle(status: number): string {
+  const title = statusTitleByStatus[status]
+
+  if (title) {
+    return title
+  }
+
+  if (status >= 400 && status < 500) {
+    return '요청을 처리할 수 없어요'
+  }
+
+  if (status >= 500) {
+    return '서버 오류가 발생했어요'
+  }
+
+  return '오류가 발생했어요'
 }
 
 function trimTrailingSlashes(value: string): string {

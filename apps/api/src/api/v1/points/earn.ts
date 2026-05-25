@@ -4,6 +4,7 @@ import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
+import { problemCode } from '@litomi/http/problem-details'
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
@@ -30,7 +31,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
   if (!turnstileCookie) {
     return problemResponse(c, {
       status: 403,
-      code: 'turnstile-required',
+      code: problemCode.TURNSTILE_REQUIRED,
       detail: '보안 검증을 완료해 주세요',
     })
   }
@@ -41,7 +42,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
     deleteCookie(c, CookieKey.POINTS_TURNSTILE, { domain: COOKIE_DOMAIN, path: '/api/v1/points' })
     return problemResponse(c, {
       status: 403,
-      code: 'turnstile-required',
+      code: problemCode.TURNSTILE_REQUIRED,
       detail: '보안 검증을 완료해 주세요',
     })
   }
