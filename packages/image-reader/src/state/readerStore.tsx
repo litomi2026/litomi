@@ -46,11 +46,13 @@ export type ReaderStore = {
   pageView: PageView
   readingDirection: ReadingDirection
   resetPageIndex: () => void
+  scrollAxis: ScrollAxis
   screenFit: ScreenFit
   scrollTargetPageIndex: number | null
   setImageWidth: (imageWidth: ImageWidth) => void
   setOrientation: (orientation: Orientation) => void
   setPageView: (pageView: PageView) => void
+  setScrollAxis: (scrollAxis: ScrollAxis) => void
   setScreenFit: (screenFit: ScreenFit) => void
   setStorageHydrated: () => void
   setViewerMode: (mode: ViewerMode) => void
@@ -60,6 +62,7 @@ export type ReaderStore = {
 
 export type ReadingDirection = 'ltr' | 'rtl'
 export type ScreenFit = 'all' | 'height' | 'width'
+export type ScrollAxis = 'horizontal' | 'vertical'
 export type ViewerMode = 'page' | 'scroll'
 
 type PersistedStoreApi<T> = StoreApi<T> & {
@@ -70,7 +73,7 @@ type PersistedStoreApi<T> = StoreApi<T> & {
 
 type ReaderPersistedState = Pick<
   ReaderStore,
-  'imageWidth' | 'orientation' | 'pageView' | 'readingDirection' | 'screenFit' | 'viewerMode'
+  'imageWidth' | 'orientation' | 'pageView' | 'readingDirection' | 'screenFit' | 'scrollAxis' | 'viewerMode'
 >
 
 type ReaderProviderProps = {
@@ -107,6 +110,7 @@ const DEFAULT_ORIENTATION: Orientation = 'horizontal'
 const DEFAULT_PAGE_VIEW: PageView = 'single'
 const DEFAULT_PERSISTENCE_KEY = 'reader'
 const DEFAULT_READING_DIRECTION: ReadingDirection = 'ltr'
+const DEFAULT_SCROLL_AXIS: ScrollAxis = 'vertical'
 const DEFAULT_SCREEN_FIT: ScreenFit = 'all'
 const DEFAULT_VIEWER_MODE: ViewerMode = 'page'
 const LOW_DATA_MODES: readonly LowDataMode[] = ['off', 'auto', 'on']
@@ -247,6 +251,7 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
             scrollTargetPageIndex: null,
           })
         },
+        scrollAxis: DEFAULT_SCROLL_AXIS,
         screenFit: DEFAULT_SCREEN_FIT,
         scrollTargetPageIndex: null,
         setImageWidth: (imageWidth) => {
@@ -282,6 +287,7 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
           orientation: state.orientation,
           pageView: state.pageView,
           readingDirection: state.readingDirection,
+          scrollAxis: state.scrollAxis,
           screenFit: state.screenFit,
           viewerMode: state.viewerMode,
         }),
