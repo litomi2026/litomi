@@ -188,13 +188,17 @@ export default function ReaderControls<TPage extends ReaderPage>({
               {messages.readingDirectionRightShort}
             </button>
           )}
-          <button
-            className={BOTTOM_BUTTON_CLASS_NAME}
-            onClick={() => setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')}
-            type="button"
-          >
-            {messages.imageFitButtons[imageFit]}
-          </button>
+          {!isHorizontalScrollMode && (
+            <button
+              className={BOTTOM_BUTTON_CLASS_NAME}
+              onClick={() =>
+                setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')
+              }
+              type="button"
+            >
+              {messages.imageFitButtons[imageFit]}
+            </button>
+          )}
           {isScrollMode && (
             <div className="relative" ref={viewControlRef}>
               <button
