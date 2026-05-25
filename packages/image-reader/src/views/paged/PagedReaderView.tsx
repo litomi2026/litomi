@@ -17,9 +17,9 @@ const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 const PAGED_READER_VIEW_WINDOW_SIZE = 6
 
 const imageFitContentStyle: Record<ImageFit, string> = {
-  'fit-width':
+  width:
     'flex justify-center items-center [&_li]:w-fit [&_li]:max-w-full [&_li]:h-full [&_picture]:contents [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
-  'fit-height':
+  height:
     '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
   contain:
     'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-[calc(100dvh-var(--safe-area-top)-var(--safe-area-bottom))]',

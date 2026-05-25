@@ -130,8 +130,8 @@ export const readerMessageCatalog = {
     },
     imageFitButtons: {
       contain: '화면 맞춤',
-      'fit-height': '세로 맞춤',
-      'fit-width': '가로 맞춤',
+      height: '세로 맞춤',
+      width: '가로 맞춤',
     },
     viewerModeButtons: {
       page: '페이지보기',
@@ -199,8 +199,8 @@ export const readerMessageCatalog = {
     },
     imageFitButtons: {
       contain: 'Fit screen',
-      'fit-height': 'Fit height',
-      'fit-width': 'Fit width',
+      height: 'Fit height',
+      width: 'Fit width',
     },
     viewerModeButtons: {
       page: 'Page view',
@@ -268,8 +268,8 @@ export const readerMessageCatalog = {
     },
     imageFitButtons: {
       contain: '画面に合わせる',
-      'fit-height': '高さに合わせる',
-      'fit-width': '幅に合わせる',
+      height: '高さに合わせる',
+      width: '幅に合わせる',
     },
     viewerModeButtons: {
       page: 'ページ表示',
@@ -337,8 +337,8 @@ export const readerMessageCatalog = {
     },
     imageFitButtons: {
       contain: '适应屏幕',
-      'fit-height': '适应高度',
-      'fit-width': '适应宽度',
+      height: '适应高度',
+      width: '适应宽度',
     },
     viewerModeButtons: {
       page: '分页视图',
@@ -406,8 +406,8 @@ export const readerMessageCatalog = {
     },
     imageFitButtons: {
       contain: '符合螢幕',
-      'fit-height': '符合高度',
-      'fit-width': '符合寬度',
+      height: '符合高度',
+      width: '符合寬度',
     },
     viewerModeButtons: {
       page: '分頁檢視',

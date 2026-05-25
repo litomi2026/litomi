@@ -154,11 +154,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
           </button>
           <button
             className={BOTTOM_BUTTON_CLASS_NAME}
-            onClick={() =>
-              setImageFit(
-                imageFit === 'contain' ? 'fit-width' : imageFit === 'fit-width' ? 'fit-height' : 'contain',
-              )
-            }
+            onClick={() => setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')}
             type="button"
           >
             {messages.imageFitButtons[imageFit]}
