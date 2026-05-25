@@ -85,6 +85,8 @@ jobs:
       - name: Create or update iOS source PR
         id: create_altstore_source_pr
         uses: peter-evans/create-pull-request@v8
+        env:
+          HUSKY: '0'
         with:
           add-paths: apps/mobile/ios.source.json
           branch: codex/mobile-ios-source
