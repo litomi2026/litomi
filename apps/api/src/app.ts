@@ -5,7 +5,7 @@ import { compress } from 'hono/compress'
 import { contextStorage } from 'hono/context-storage'
 import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
-import { etag, RETAINED_304_HEADERS } from 'hono/etag'
+import { etag } from 'hono/etag'
 import { ipRestriction } from 'hono/ip-restriction'
 import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
@@ -28,6 +28,7 @@ export type Env = {
 }
 
 const app = new Hono<Env>()
+const etagMiddleware = etag()
 
 // NOTE: 공통 미들웨어
 app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-api' }))
@@ -52,7 +53,14 @@ app.use(
 
 // NOTE: /api 미들웨어
 app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
-app.use('/api/*', etag({ retainedHeaders: [...RETAINED_304_HEADERS, 'set-cookie'] })) // FIXME: set-cookie 부작용 없애기
+
+app.use('/api/*', async (c, next) => {
+  if (c.req.method === 'GET' || c.req.method === 'HEAD') {
+    return await etagMiddleware(c, next)
+  }
+
+  return await next()
+})
 
 // NOTE: /i 미들웨어
 app.use(
