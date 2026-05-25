@@ -67,7 +67,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
         />
         <h2 className="text-xl font-bold">작품 상세</h2>
         <div className="ml-auto">
-          <MangaReportButton mangaId={id} />
+          <MangaReportButton className="border-0" mangaId={id} />
         </div>
       </div>
       <div className="flex min-w-0 flex-col flex-1">

@@ -15,6 +15,7 @@ import { Hash, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import BackButton from '@/components/BackButton'
@@ -157,12 +158,13 @@ export default function MangaReader({ manga }: Props) {
               <Hash className="size-6" />
             </button>
             <Link
-              className={TOP_BUTTON_CLASS_NAME}
+              className={twMerge('flex items-center gap-2', TOP_BUTTON_CLASS_NAME)}
               href={`/manga/${manga.id}/detail`}
               prefetch={false}
-              title="리뷰 보기"
+              title="작품 상세"
             >
               <MessageCircle className="size-6" />
+              <span className="text-sm font-semibold hidden lg:inline">작품 상세</span>
             </Link>
             <ShareButton className={TOP_BUTTON_CLASS_NAME} manga={manga} />
           </div>

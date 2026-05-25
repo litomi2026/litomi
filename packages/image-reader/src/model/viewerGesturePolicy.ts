@@ -8,6 +8,10 @@ export type ScrollableAxes = {
   y: boolean
 }
 
+type ScrollableAxesInPathOptions = {
+  includeBoundary?: boolean
+}
+
 const NON_SCROLLABLE_AXES: ScrollableAxes = {
   x: false,
   y: false,
@@ -33,9 +37,13 @@ export function canScrollAxis(axes: ScrollableAxes, axis: GestureAxis) {
   return axis === 'x' ? axes.x : axes.y
 }
 
-export function getScrollableAxesInPath(target: EventTarget | null, boundary: HTMLElement): ScrollableAxes {
+export function getScrollableAxesInPath(
+  target: EventTarget | null,
+  boundary: HTMLElement,
+  { includeBoundary = true }: ScrollableAxesInPathOptions = {},
+): ScrollableAxes {
   if (!(target instanceof Node)) {
-    return getScrollableAxes(boundary)
+    return includeBoundary ? getScrollableAxes(boundary) : NON_SCROLLABLE_AXES
   }
 
   let current: Node | null = target
@@ -46,13 +54,19 @@ export function getScrollableAxesInPath(target: EventTarget | null, boundary: HT
 
   while (current) {
     if (current instanceof HTMLElement) {
+      if (current === boundary) {
+        if (includeBoundary) {
+          const elementAxes = getScrollableAxes(current)
+          axes.x ||= elementAxes.x
+          axes.y ||= elementAxes.y
+        }
+
+        break
+      }
+
       const elementAxes = getScrollableAxes(current)
       axes.x ||= elementAxes.x
       axes.y ||= elementAxes.y
-
-      if (current === boundary) {
-        break
-      }
     }
 
     current = current.parentNode

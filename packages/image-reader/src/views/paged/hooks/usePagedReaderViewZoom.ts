@@ -27,7 +27,7 @@ export default function usePagedReaderViewZoom() {
   const currentIndex = useReaderStore((state) => state.pageIndex)
   const isDoublePage = useReaderStore((state) => state.pageView === 'double')
   const isRTL = useReaderStore((state) => state.readingDirection === 'rtl')
-  const screenFit = useReaderStore((state) => state.screenFit)
+  const imageFit = useReaderStore((state) => state.imageFit)
   const zoomLevel = useReaderSessionStore((state) => state.zoomLevel)
   const getZoomLevel = useReaderSessionStore((state) => state.getZoomLevel)
   const setZoomLevel = useReaderSessionStore((state) => state.setZoomLevel)
@@ -154,7 +154,7 @@ export default function usePagedReaderViewZoom() {
   // NOTE: 페이지 구성이나 보기 옵션이 바뀌면 화면에 그리기 전에 줌 기준 크기를 다시 재요
   useLayoutEffect(() => {
     measureZoomLayout()
-  }, [currentIndex, isDoublePage, isRTL, measureZoomLayout, screenFit])
+  }, [currentIndex, imageFit, isDoublePage, isRTL, measureZoomLayout])
 
   // NOTE: 뷰포트나 콘텐츠 크기 변경을 즉시 반영해 확대된 스크롤 영역이 늦게 맞춰지지 않게 해요
   useLayoutEffect(() => {

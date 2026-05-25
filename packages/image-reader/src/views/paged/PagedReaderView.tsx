@@ -4,7 +4,7 @@ import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model
 
 import { useReaderMessages } from '#reader/context'
 import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
-import { type ScreenFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
+import { type ImageFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import useViewerPointerGestures from '#reader/views/paged/gestures/useViewerPointerGestures'
 import usePagedReaderViewScrollRestoration from '#reader/views/paged/hooks/usePagedReaderViewScrollRestoration'
 import usePagedReaderViewWheelNavigation from '#reader/views/paged/hooks/usePagedReaderViewWheelNavigation'
@@ -16,12 +16,13 @@ import { Fragment } from 'react'
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 const PAGED_READER_VIEW_WINDOW_SIZE = 6
 
-const screenFitContentStyle: Record<ScreenFit, string> = {
+const imageFitContentStyle: Record<ImageFit, string> = {
   width:
     'flex justify-center items-center [&_li]:w-fit [&_li]:max-w-full [&_li]:h-full [&_picture]:contents [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
   height:
     '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
-  all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-[calc(100dvh-var(--safe-area-top)-var(--safe-area-bottom))]',
+  contain:
+    'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-[calc(100dvh-var(--safe-area-top)-var(--safe-area-bottom))]',
 }
 
 type ItemProps<TPage extends ReaderPage> = {
@@ -48,7 +49,7 @@ export default function PagedReaderView<TPage extends ReaderPage>({
   renderPage,
   showTouchAreaOverlay,
 }: Props<TPage>) {
-  const screenFit = useReaderStore((state) => state.screenFit)
+  const imageFit = useReaderStore((state) => state.imageFit)
   const messages = useReaderMessages()
   const maxPageIndex = Math.max(0, pages.length - 1)
   const { prevPage, nextPage } = usePageNavigation({ maxPageIndex, readerLayout })
@@ -92,7 +93,7 @@ export default function PagedReaderView<TPage extends ReaderPage>({
       >
         <div className="relative min-h-full min-w-full" style={styles.zoomScrollArea}>
           <ul
-            className={`absolute left-0 top-0 h-dvh [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${screenFitContentStyle[screenFit]}`}
+            className={`absolute left-0 top-0 h-dvh [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${imageFitContentStyle[imageFit]}`}
             onLoadCapture={measureZoomLayout}
             ref={contentRef}
             style={styles.zoomContent}

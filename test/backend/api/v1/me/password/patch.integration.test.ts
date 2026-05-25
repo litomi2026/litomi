@@ -70,7 +70,7 @@ describe('PATCH /api/v1/me/password', () => {
 
     await expectProblemResponse(response, {
       status: 401,
-      code: 'unauthorized',
+      code: 'authentication-required',
       detail: '로그인 정보가 없거나 만료됐어요',
       instance: PASSWORD_PATH,
     })
@@ -253,7 +253,7 @@ describe('PATCH /api/v1/me/password', () => {
 
     await expectProblemResponse(response, {
       status: 401,
-      code: 'unauthorized',
+      code: 'authentication-required',
       detail: '로그인 정보가 없거나 만료됐어요',
       instance: PASSWORD_PATH,
     })

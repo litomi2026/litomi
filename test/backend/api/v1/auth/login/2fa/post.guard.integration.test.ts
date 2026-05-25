@@ -40,7 +40,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
     await expectProblemResponse(response, {
       status: 401,
-      code: 'unauthorized',
+      code: 'login-challenge-expired',
       instance: '/api/v1/auth/login/2fa',
     })
   })
@@ -71,7 +71,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
       await expectProblemResponse(response, {
         status: 401,
-        code: 'unauthorized',
+        code: 'login-challenge-expired',
         instance: '/api/v1/auth/login/2fa',
       })
 
@@ -133,7 +133,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
     await expectProblemResponse(reusedResponse, {
       status: 401,
-      code: 'unauthorized',
+      code: 'login-challenge-expired',
       instance: '/api/v1/auth/login/2fa',
     })
   })
@@ -165,7 +165,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
     await expectProblemResponse(response, {
       status: 401,
-      code: 'unauthorized',
+      code: 'login-challenge-expired',
       instance: '/api/v1/auth/login/2fa',
     })
 
@@ -207,7 +207,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
     await expectProblemResponse(response, {
       status: 401,
-      code: 'unauthorized',
+      code: 'login-challenge-expired',
       instance: '/api/v1/auth/login/2fa',
     })
 

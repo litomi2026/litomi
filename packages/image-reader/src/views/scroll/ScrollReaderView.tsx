@@ -1,37 +1,42 @@
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 
-import { useReaderMessages } from '#reader/context'
 import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
-import { type ScreenFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
-import { Loader2 } from 'lucide-react'
+import { type ImageFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { type CSSProperties, Fragment, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
-const screenFitStyle: Record<ScreenFit, string> = {
+import { HorizontalScrollReaderView } from './HorizontalScrollReaderView'
+import { Props, ScrollReaderViewLoading } from './shared'
+
+const verticalImageFitStyle: Record<ImageFit, string> = {
   width:
     '[&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-fit',
-  all: 'pt-safe px-safe [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
+  contain:
+    'pt-safe px-safe [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
   height:
     '[&_li]:flex [&_li]:items-center [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
 
 const DEFAULT_SCROLL_ROW_HEIGHT = 800
 
-export type Props<TPage extends ReaderPage> = {
-  isLowDataMode: boolean
-  onClick: () => void
-  readerLayout: ReaderLayout<TPage>
-  renderPage: ReaderPageRenderer<TPage>
-}
-
-type RowProps<TPage extends ReaderPage> = {
+type VerticalRowProps<TPage extends ReaderPage> = {
   isLowDataMode: boolean
   readerLayout: ReaderLayout<TPage>
   renderPage: ReaderPageRenderer<TPage>
 }
 
-export default function ScrollReaderView<TPage extends ReaderPage>({
+export default function ScrollReaderView<TPage extends ReaderPage>(props: Props<TPage>) {
+  const scrollAxis = useReaderStore((state) => state.scrollAxis)
+
+  if (scrollAxis === 'horizontal') {
+    return <HorizontalScrollReaderView {...props} />
+  }
+
+  return <VerticalScrollReaderView {...props} />
+}
+
+function VerticalScrollReaderView<TPage extends ReaderPage>({
   isLowDataMode,
   onClick,
   readerLayout,
@@ -39,12 +44,11 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
 }: Props<TPage>) {
   const listRef = useListRef(null)
   const brightness = useReaderSessionStore((state) => state.brightness)
+  const imageFit = useReaderStore((state) => state.imageFit)
   const imageWidth = useReaderStore((state) => state.imageWidth)
-  const screenFit = useReaderStore((state) => state.screenFit)
   const scrollTargetPageIndex = useReaderStore((state) => state.scrollTargetPageIndex)
   const clearScrollTargetPageIndex = useReaderStore((state) => state.clearScrollTargetPageIndex)
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: DEFAULT_SCROLL_ROW_HEIGHT })
-  const messages = useReaderMessages()
 
   const overscanCount = isLowDataMode ? 1 : 3
   const maxPage = readerLayout.spreadIndexByPageIndex.length
@@ -72,12 +76,7 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
   }, [clearScrollTargetPageIndex, listRef, readerLayout, scrollTargetPageIndex])
 
   if (maxPage === 0) {
-    return (
-      <output className="flex items-center justify-center h-dvh animate-fade-in" onClick={onClick}>
-        <Loader2 aria-hidden="true" className="size-8 animate-spin" />
-        <span className="sr-only">{messages.loadingImages}</span>
-      </output>
-    )
+    return <ScrollReaderViewLoading onClick={onClick} />
   }
 
   return (
@@ -87,10 +86,10 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
       style={dynamicStyle}
     >
       <List
-        className={`overscroll-none ${screenFitStyle[screenFit]}`}
+        className={`overscroll-none ${verticalImageFitStyle[imageFit]}`}
         listRef={listRef}
         overscanCount={overscanCount}
-        rowComponent={ScrollReaderViewRow}
+        rowComponent={VerticalScrollReaderViewRow}
         rowCount={readerLayout.spreads.length}
         rowHeight={rowHeight}
         rowProps={{ isLowDataMode, readerLayout, renderPage }}
@@ -99,13 +98,13 @@ export default function ScrollReaderView<TPage extends ReaderPage>({
   )
 }
 
-function ScrollReaderViewRow<TPage extends ReaderPage>({
+function VerticalScrollReaderViewRow<TPage extends ReaderPage>({
   index,
   isLowDataMode,
   readerLayout,
   renderPage,
   style,
-}: RowComponentProps<RowProps<TPage>>) {
+}: RowComponentProps<VerticalRowProps<TPage>>) {
   const currentPageIndex = useReaderStore((state) => state.pageIndex)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const isLTR = useReaderStore((state) => state.readingDirection === 'ltr')

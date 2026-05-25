@@ -3,8 +3,9 @@
 import { Maximize } from 'lucide-react'
 import { type ComponentProps, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
-export default function FullscreenButton(props: ComponentProps<'button'>) {
+export default function FullscreenButton({ className, ...props }: ComponentProps<'button'>) {
   const [isFullscreenSupported, setIsFullscreenSupported] = useState(false)
 
   function toggleFullScreen() {
@@ -24,8 +25,15 @@ export default function FullscreenButton(props: ComponentProps<'button'>) {
   }
 
   return (
-    <button aria-label="전체화면" onClick={toggleFullScreen} title="전체화면" type="button" {...props}>
+    <button
+      className={twMerge('flex gap-2 items-center', className)}
+      onClick={toggleFullScreen}
+      title="전체화면"
+      type="button"
+      {...props}
+    >
       <Maximize className="size-6" />
+      <span className="text-sm font-semibold hidden lg:inline">전체화면</span>
     </button>
   )
 }

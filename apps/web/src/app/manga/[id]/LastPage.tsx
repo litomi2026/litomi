@@ -83,7 +83,6 @@ export default function LastPage({ manga }: Props) {
           <MangaReportButton
             className="w-auto border-0 px-2 py-1 text-xs text-zinc-500 hover:bg-transparent hover:text-foreground [&>svg]:hidden"
             mangaId={mangaId}
-            variant="full"
           />
           <DonateButton
             className="w-auto border-0 px-2 py-1 text-xs text-zinc-500 hover:bg-transparent hover:text-foreground"

@@ -3,7 +3,7 @@
 import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
-import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Flag } from 'lucide-react'
 import Link from 'next/link'
@@ -26,7 +26,6 @@ type MangaReportReason = (typeof MangaReportReason)[keyof typeof MangaReportReas
 
 type Props = {
   mangaId: number
-  variant?: 'full' | 'icon'
   className?: string
 }
 
@@ -37,7 +36,7 @@ type ReasonButtonProps = {
   onClick: () => void
 }
 
-export default function MangaReportButton({ mangaId, variant = 'icon', className = '' }: Props) {
+export default function MangaReportButton({ mangaId, className = '' }: Props) {
   const { adultState, guardAdultAccess, me } = useAdultAccessGuard()
   const [open, setOpen] = useState(false)
   const isVerificationRequired = requiresAdultVerification(adultState)
@@ -80,17 +79,15 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
       <button
         aria-label="신고"
         className={twMerge(
-          'transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500',
-          variant === 'icon'
-            ? 'inline-flex items-center justify-center rounded-full p-2 hover:bg-zinc-500/20'
-            : 'flex w-full items-center justify-center gap-2 rounded-lg border border-foreground/20 px-4 py-2 text-foreground hover:bg-foreground/10',
+          'flex w-full items-center justify-center gap-2 rounded-lg border border-foreground/20 px-4 py-2 text-foreground transition',
+          'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 hover:bg-foreground/10',
           className,
         )}
         onClick={openDialog}
         type="button"
       >
         <Flag className="size-4" />
-        {variant === 'full' && <span>신고</span>}
+        <span className="text-sm font-semibold hidden lg:inline">신고하기</span>
       </button>
 
       <Dialog ariaLabel="작품 신고" onClose={() => setOpen(false)} open={open}>
@@ -126,6 +123,16 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
             </p>
           </div>
         </DialogBody>
+        <DialogFooter>
+          <button
+            className="w-full rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-300 transition hover:bg-zinc-700 disabled:bg-zinc-700 disabled:text-zinc-500"
+            disabled={reportMutation.isPending}
+            onClick={() => setOpen(false)}
+            type="button"
+          >
+            취소
+          </button>
+        </DialogFooter>
       </Dialog>
     </>
   )

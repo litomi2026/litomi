@@ -33,23 +33,26 @@ export default function ReaderControls<TPage extends ReaderPage>({
   const [isThumbnailStripOpen, setIsThumbnailStripOpen] = useState(false)
   const [isViewControlOpen, setIsViewControlOpen] = useState(false)
   const lowData = useReaderSessionStore((state) => state.lowData)
+  const imageFit = useReaderStore((state) => state.imageFit)
   const orientation = useReaderStore((state) => state.orientation)
   const pageView = useReaderStore((state) => state.pageView)
   const readingDirection = useReaderStore((state) => state.readingDirection)
-  const screenFit = useReaderStore((state) => state.screenFit)
+  const scrollAxis = useReaderStore((state) => state.scrollAxis)
   const viewerMode = useReaderStore((state) => state.viewerMode)
   const cycleLowData = useReaderSessionStore((state) => state.cycleLowData)
+  const setImageFit = useReaderStore((state) => state.setImageFit)
   const setOrientation = useReaderStore((state) => state.setOrientation)
   const setPageView = useReaderStore((state) => state.setPageView)
-  const setScreenFit = useReaderStore((state) => state.setScreenFit)
+  const setScrollAxis = useReaderStore((state) => state.setScrollAxis)
   const setViewerMode = useReaderStore((state) => state.setViewerMode)
   const toggleReadingDirection = useReaderStore((state) => state.toggleReadingDirection)
   const viewControlRef = useRef<HTMLDivElement>(null)
   const messages = useReaderMessages()
 
   const isDoublePage = pageView === 'double'
+  const isHorizontalScrollMode = viewerMode === 'scroll' && scrollAxis === 'horizontal'
   const isPageMode = viewerMode === 'page'
-  const isWidthFit = screenFit === 'width'
+  const isScrollMode = viewerMode === 'scroll'
   const maxPageIndex = Math.max(0, pages.length - 1)
 
   // NOTE: Escape는 열린 보조 패널부터 닫고, 마지막에 컨트롤 전체를 닫아요
@@ -142,33 +145,6 @@ export default function ReaderControls<TPage extends ReaderPage>({
           >
             {messages.viewerModeButtons[viewerMode]}
           </button>
-          <button
-            aria-pressed={isDoublePage}
-            className={BOTTOM_BUTTON_CLASS_NAME}
-            onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
-            type="button"
-          >
-            {messages.pageViewButtons[pageView]}
-          </button>
-          <button
-            className={BOTTOM_BUTTON_CLASS_NAME}
-            onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}
-            type="button"
-          >
-            {messages.screenFitButtons[screenFit]}
-          </button>
-          {isDoublePage && (
-            <button
-              aria-label={messages.readingDirectionButtons[readingDirection]}
-              className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
-              onClick={toggleReadingDirection}
-              type="button"
-            >
-              {messages.readingDirectionLeftShort}
-              {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
-              {messages.readingDirectionRightShort}
-            </button>
-          )}
           {isPageMode && (
             <button
               className={BOTTOM_BUTTON_CLASS_NAME}
@@ -182,7 +158,48 @@ export default function ReaderControls<TPage extends ReaderPage>({
               {messages.viewerOrientationButtons[orientation]}
             </button>
           )}
-          {!isPageMode && (
+          {isScrollMode && (
+            <button
+              aria-pressed={isHorizontalScrollMode}
+              className={BOTTOM_BUTTON_CLASS_NAME}
+              onClick={() => setScrollAxis(isHorizontalScrollMode ? 'vertical' : 'horizontal')}
+              type="button"
+            >
+              {messages.scrollAxisButtons[scrollAxis]}
+            </button>
+          )}
+          <button
+            aria-pressed={isDoublePage}
+            className={BOTTOM_BUTTON_CLASS_NAME}
+            onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
+            type="button"
+          >
+            {messages.pageViewButtons[pageView]}
+          </button>
+          {(isDoublePage || isHorizontalScrollMode) && (
+            <button
+              aria-label={messages.readingDirectionButtons[readingDirection]}
+              className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
+              onClick={toggleReadingDirection}
+              type="button"
+            >
+              {messages.readingDirectionLeftShort}
+              {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
+              {messages.readingDirectionRightShort}
+            </button>
+          )}
+          {!isHorizontalScrollMode && (
+            <button
+              className={BOTTOM_BUTTON_CLASS_NAME}
+              onClick={() =>
+                setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')
+              }
+              type="button"
+            >
+              {messages.imageFitButtons[imageFit]}
+            </button>
+          )}
+          {isScrollMode && (
             <div className="relative" ref={viewControlRef}>
               <button
                 aria-expanded={isViewControlOpen}
@@ -195,11 +212,6 @@ export default function ReaderControls<TPage extends ReaderPage>({
               {isViewControlOpen && <ViewControlPanel />}
             </div>
           )}
-          <SlideshowButton
-            className={BOTTOM_BUTTON_CLASS_NAME}
-            maxPageIndex={maxPageIndex}
-            readerLayout={readerLayout}
-          />
           <button
             aria-expanded={isThumbnailStripOpen}
             className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
@@ -209,6 +221,11 @@ export default function ReaderControls<TPage extends ReaderPage>({
           >
             {messages.previewButton}
           </button>
+          <SlideshowButton
+            className={BOTTOM_BUTTON_CLASS_NAME}
+            maxPageIndex={maxPageIndex}
+            readerLayout={readerLayout}
+          />
           <button className={BOTTOM_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
             {messages.lowDataLabels[lowData]}
           </button>
