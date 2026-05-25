@@ -13,7 +13,7 @@
     "start:local": "bun --env-file=.env.local next start --port 3000",
     "start:prod": "bun --env-file=.env.prod.runtime next start --port 3000",
     "analyze": "ANALYZE=true bun --env-file=.env.prod.build next build --webpack",
-    "type": "tsc --noEmit"
+    "type": "bun --env-file=.env.local.example next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.39.0",
