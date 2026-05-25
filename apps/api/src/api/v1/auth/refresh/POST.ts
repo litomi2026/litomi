@@ -10,7 +10,7 @@ import type { Env } from '@/app'
 
 import { noStoreCacheControl } from '@/utils/cache-control'
 import { applyAuthCookie } from '@/utils/cookie'
-import { problemResponse } from '@/utils/problem'
+import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 
 const refreshIpLimiter = new RateLimiter({
   ...RateLimitPresets.strict(),
@@ -46,11 +46,7 @@ route.post('/', async (c) => {
     if (!refreshResult.ok) {
       applyAuthCookie(c, refreshResult.cookies)
 
-      return problemResponse(c, {
-        status: 401,
-        detail: '로그인 정보가 없거나 만료됐어요',
-        headers: { 'Cache-Control': noStoreCacheControl },
-      })
+      return authRequiredProblemResponse(c, { headers: { 'Cache-Control': noStoreCacheControl } })
     }
 
     applyAuthCookie(c, refreshResult.cookies)

@@ -1,5 +1,6 @@
 'use client'
 
+import { isProblemType } from '@litomi/http/problem-details'
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
@@ -9,50 +10,21 @@ import { toast } from 'sonner'
 import MyInfoSync from '@/components/MyInfoSync'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import { ProblemDetailsError, UserVisibleError } from '@/utils/react-query-error'
+import {
+  HTTPResponseError,
+  isAuthenticationRequiredError,
+  ProblemDetailsError,
+  UserVisibleError,
+} from '@/utils/react-query-error'
 
 import { handleUnauthorizedError } from './auth-state'
 
 export function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
-  const suffix = '/problems/adult-verification-required'
-
-  if (typeUrl.endsWith(suffix)) {
-    return true
-  }
-
-  try {
-    return new URL(typeUrl).pathname === suffix
-  } catch {
-    return false
-  }
+  return isProblemType(typeUrl, 'adult-verification-required')
 }
 
 export function isLiboExpansionRequiredProblem(typeUrl: string): boolean {
-  const suffix = '/problems/libo-expansion-required'
-
-  if (typeUrl.endsWith(suffix)) {
-    return true
-  }
-
-  try {
-    return new URL(typeUrl).pathname === suffix
-  } catch {
-    return false
-  }
-}
-
-export function isUnauthorizedProblem(typeUrl: string): boolean {
-  const suffix = '/problems/unauthorized'
-
-  if (typeUrl.endsWith(suffix)) {
-    return true
-  }
-
-  try {
-    return new URL(typeUrl).pathname === suffix
-  } catch {
-    return false
-  }
+  return isProblemType(typeUrl, 'libo-expansion-required')
 }
 
 export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
@@ -60,7 +32,7 @@ export function shouldRetryError(error: unknown, failureCount: number, maxRetrie
     return false
   }
 
-  if (error instanceof ProblemDetailsError) {
+  if (error instanceof ProblemDetailsError || error instanceof HTTPResponseError) {
     return error.isRetryable
   }
 
@@ -88,7 +60,7 @@ const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
       if (error instanceof ProblemDetailsError) {
-        if (error.status === 401 && isUnauthorizedProblem(error.type)) {
+        if (isAuthenticationRequiredError(error)) {
           handleUnauthorizedError(queryClient)
         }
 
@@ -106,7 +78,7 @@ const queryClient = new QueryClient({
           showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
         } else if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
           showLiboExpansionRequiredToast(error.message)
-        } else if (error.status === 401 && isUnauthorizedProblem(error.type)) {
+        } else if (isAuthenticationRequiredError(error)) {
           showLoginRequiredToast()
         } else if (error.status >= 400) {
           toast.warning(error.message || '요청을 처리할 수 없어요')
@@ -119,7 +91,7 @@ const queryClient = new QueryClient({
       if (error instanceof ProblemDetailsError) {
         const isSuppressed = mutation.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status) === true
 
-        if (error.status === 401 && isUnauthorizedProblem(error.type)) {
+        if (isAuthenticationRequiredError(error)) {
           handleUnauthorizedError(queryClient)
 
           if (!isSuppressed) {
@@ -171,7 +143,7 @@ const queryClient = new QueryClient({
       gcTime: ms('20 minutes'),
       retry: (failureCount, error) => shouldRetryError(error, failureCount),
       retryDelay: (attemptIndex, error) => {
-        if (error instanceof ProblemDetailsError) {
+        if (error instanceof ProblemDetailsError || error instanceof HTTPResponseError) {
           const retryAfterSeconds = error.retryAfterSeconds
           if (retryAfterSeconds) {
             return retryAfterSeconds * ms('1s')

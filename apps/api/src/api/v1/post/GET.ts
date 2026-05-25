@@ -11,7 +11,7 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import { privateCacheControl } from '@/utils/cache-control'
-import { problemResponse } from '@/utils/problem'
+import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
@@ -26,7 +26,7 @@ route.get('/', zProblemValidator('query', getV1PostQuerySchema), async (c) => {
   }
 
   if (filter === PostFilter.FOLLOWING && !currentUserId) {
-    return problemResponse(c, { status: 401, detail: '로그인 정보가 없거나 만료됐어요' })
+    return authRequiredProblemResponse(c)
   }
 
   const postRows = await selectPost({
