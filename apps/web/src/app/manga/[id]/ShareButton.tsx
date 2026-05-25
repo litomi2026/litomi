@@ -4,6 +4,7 @@ import { Manga } from '@litomi/domain/manga/model'
 import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import { Check, Link, Share2, X } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import LogoFacebook from '@/components/icons/LogoFacebook'
 import LogoLine from '@/components/icons/LogoLine'
@@ -24,7 +25,7 @@ type SharePlatform = {
   action: (url: string, sharingText: string) => void
 }
 
-export default function ShareButton({ manga, ...props }: Props) {
+export default function ShareButton({ manga, className, ...props }: Props) {
   const [isOpened, setIsOpened] = useState(false)
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
   const [supportsNativeShare, setSupportsNativeShare] = useState(false)
@@ -68,8 +69,14 @@ export default function ShareButton({ manga, ...props }: Props) {
 
   return (
     <>
-      <button aria-label="공유하기" onClick={() => setIsOpened(true)} title="공유하기" {...props}>
+      <button
+        className={twMerge('flex gap-2 items-center', className)}
+        onClick={() => setIsOpened(true)}
+        title="공유하기"
+        {...props}
+      >
         <Share2 className="size-6" />
+        <span className="text-sm font-semibold hidden lg:inline">공유하기</span>
       </button>
       <Dialog ariaLabel="공유하기" onClose={() => setIsOpened(false)} open={isOpened}>
         <DialogHeader onClose={() => setIsOpened(false)} title="공유하기" />
