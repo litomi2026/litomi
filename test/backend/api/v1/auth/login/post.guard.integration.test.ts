@@ -32,7 +32,7 @@ describe('POST /api/v1/auth/login', () => {
 
       await expectProblemResponse(response, {
         status: 401,
-        code: 'unauthorized',
+        code: 'invalid-credentials',
         detail: '아이디 또는 비밀번호가 일치하지 않아요',
         instance: '/api/v1/auth/login',
       })
@@ -69,7 +69,7 @@ describe('POST /api/v1/auth/login', () => {
 
       await expectProblemResponse(response, {
         status: 401,
-        code: 'unauthorized',
+        code: 'invalid-credentials',
         detail: '아이디 또는 비밀번호가 일치하지 않아요',
         instance: '/api/v1/auth/login',
       })

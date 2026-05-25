@@ -83,6 +83,7 @@ describe('POST /api/v1/auth/login', () => {
     const fingerprint = 'fp-trusted-browser-other-user'
 
     await seedTwoFactor({ userId: user.id })
+    await seedTwoFactor({ userId: otherUser.id })
 
     await seedTrustedBrowser({
       userId: otherUser.id,
