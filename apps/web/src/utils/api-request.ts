@@ -1,4 +1,5 @@
 import { env } from '@litomi/env/client'
+import { CookieKey } from '@litomi/http/cookie'
 import {
   isProblemDetails,
   isProblemDetailsContentType,
@@ -6,6 +7,7 @@ import {
   problemCode,
   type ProblemDetails,
 } from '@litomi/http/problem-details'
+import Cookies from 'js-cookie'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -182,6 +184,10 @@ async function refreshAuthCookies(): Promise<boolean> {
 
 function shouldRefreshAuthCookies(request: Request): boolean {
   if (typeof window === 'undefined' || isAuthRefreshRequest(request)) {
+    return false
+  }
+
+  if (Cookies.get(CookieKey.AUTH_HINT) !== '1') {
     return false
   }
 
