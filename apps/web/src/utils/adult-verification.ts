@@ -1,57 +1,32 @@
 import type { GETV1MeResponse } from '@litomi/contracts'
-import type { UserSettings } from '@litomi/domain/utils/user-settings'
 
-export enum AdultState {
-  UNRESOLVED,
-  NOT_LOGIN,
-  NOT_REQUIRED,
-  ADULT,
-  UNVERIFIED,
-  NOT_ADULT,
-}
-
+type MeWithAdSettings = Pick<GETV1MeResponse, 'adultVerification' | 'settings'> | null | undefined
 type MeWithAdultVerification = Pick<GETV1MeResponse, 'adultVerification'> | null | undefined
 
-export function getAdultState(me: MeWithAdultVerification): AdultState {
+export function hasAdultAccess(me: MeWithAdultVerification): boolean {
+  return Boolean(me && (me.adultVerification.required !== true || isAdultVerified(me)))
+}
+
+export function isAdultAccessBlocked(me: MeWithAdultVerification): boolean {
+  return me === null || Boolean(me && me.adultVerification.required === true && !isAdultVerified(me))
+}
+
+export function isAdultVerified(me: MeWithAdultVerification): boolean {
+  return me?.adultVerification.status === 'adult'
+}
+
+export function shouldShowNonAdultAds(me: MeWithAdSettings): boolean {
   if (me === undefined) {
-    return AdultState.UNRESOLVED
+    return false
   }
 
   if (me === null) {
-    return AdultState.NOT_LOGIN
+    return true
   }
 
-  if (me.adultVerification.required !== true) {
-    return AdultState.NOT_REQUIRED
+  if (isAdultVerified(me)) {
+    return me.settings.adultVerifiedAdVisible
   }
 
-  switch (me.adultVerification.status) {
-    case 'adult':
-      return AdultState.ADULT
-    case 'not_adult':
-      return AdultState.NOT_ADULT
-    case 'unverified':
-      return AdultState.UNVERIFIED
-  }
-}
-
-export function hasAdultAccess(state: AdultState): boolean {
-  return state === AdultState.NOT_REQUIRED || state === AdultState.ADULT
-}
-
-export function isAdultAccessBlocked(state: AdultState): boolean {
-  return state === AdultState.NOT_ADULT || state === AdultState.UNVERIFIED || state === AdultState.NOT_LOGIN
-}
-
-export function requiresAds(state: AdultState, settings?: UserSettings | null) {
-  return (
-    (state === AdultState.ADULT && settings?.adultVerifiedAdVisible) ||
-    state === AdultState.NOT_ADULT ||
-    state === AdultState.UNVERIFIED ||
-    state === AdultState.NOT_LOGIN
-  )
-}
-
-export function requiresAdultVerification(state: AdultState): boolean {
-  return state === AdultState.ADULT || state === AdultState.UNVERIFIED || state === AdultState.NOT_ADULT
+  return true
 }

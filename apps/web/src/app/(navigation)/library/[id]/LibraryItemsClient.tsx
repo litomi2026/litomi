@@ -21,7 +21,7 @@ import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
@@ -64,8 +64,7 @@ export default function LibraryItemsClient({
   const { exit, isSelectionMode } = useLibrarySelection()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
 
-  const adultState = getAdultState(me)
-  const canAccess = hasAdultAccess(adultState)
+  const canAccess = hasAdultAccess(me)
   const { id: libraryId, name: libraryName, isPublic } = library
   const scope = isOwner ? 'me' : 'public'
   const enabled = scope === 'public' || isPublic || canAccess

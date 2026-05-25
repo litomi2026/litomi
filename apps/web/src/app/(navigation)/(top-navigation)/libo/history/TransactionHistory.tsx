@@ -5,7 +5,7 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { ProblemDetailsError } from '@/utils/api-request'
 
 import { useTransactionsQuery } from './useTransactionsQuery'
@@ -19,8 +19,7 @@ export default function TransactionHistory() {
   const { data: me, isPending: isMePending } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const isAuthReady = !isMePending
-  const adultState = getAdultState(me)
-  const canAccess = hasAdultAccess(adultState)
+  const canAccess = hasAdultAccess(me)
 
   const {
     data,

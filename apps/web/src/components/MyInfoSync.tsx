@@ -11,14 +11,13 @@ import { identify } from '@/lib/analytics/browser'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { LocalStorageKey } from '@/storage'
-import { getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
+import { isAdultAccessBlocked } from '@/utils/adult-verification'
 
 export default function MyInfoSync() {
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const userId = me?.id
-  const adultState = getAdultState(me)
-  const shouldPurgeAdultQueries = isAdultAccessBlocked(adultState)
+  const shouldPurgeAdultQueries = isAdultAccessBlocked(me)
 
   // NOTE: 로그인 사용자의 경우 GA, Amplitude 아이디를 설정해요
   useEffect(() => {
