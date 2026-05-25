@@ -52,6 +52,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
   const isDoublePage = pageView === 'double'
   const isHorizontalScrollMode = viewerMode === 'scroll' && scrollAxis === 'horizontal'
   const isPageMode = viewerMode === 'page'
+  const isScrollMode = viewerMode === 'scroll'
   const maxPageIndex = Math.max(0, pages.length - 1)
 
   // NOTE: Escape는 열린 보조 패널부터 닫고, 마지막에 컨트롤 전체를 닫아요
@@ -144,21 +145,6 @@ export default function ReaderControls<TPage extends ReaderPage>({
           >
             {messages.viewerModeButtons[viewerMode]}
           </button>
-          <button
-            aria-pressed={isDoublePage}
-            className={BOTTOM_BUTTON_CLASS_NAME}
-            onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
-            type="button"
-          >
-            {messages.pageViewButtons[pageView]}
-          </button>
-          <button
-            className={BOTTOM_BUTTON_CLASS_NAME}
-            onClick={() => setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')}
-            type="button"
-          >
-            {messages.imageFitButtons[imageFit]}
-          </button>
           {isPageMode && (
             <button
               className={BOTTOM_BUTTON_CLASS_NAME}
@@ -172,29 +158,24 @@ export default function ReaderControls<TPage extends ReaderPage>({
               {messages.viewerOrientationButtons[orientation]}
             </button>
           )}
-          {!isPageMode && (
-            <>
-              <button
-                aria-pressed={isHorizontalScrollMode}
-                className={BOTTOM_BUTTON_CLASS_NAME}
-                onClick={() => setScrollAxis(isHorizontalScrollMode ? 'vertical' : 'horizontal')}
-                type="button"
-              >
-                {messages.scrollAxisButtons[scrollAxis]}
-              </button>
-              <div className="relative" ref={viewControlRef}>
-                <button
-                  aria-expanded={isViewControlOpen}
-                  className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
-                  onClick={() => setIsViewControlOpen((prev) => !prev)}
-                  type="button"
-                >
-                  {messages.viewControlsButton}
-                </button>
-                {isViewControlOpen && <ViewControlPanel />}
-              </div>
-            </>
+          {isScrollMode && (
+            <button
+              aria-pressed={isHorizontalScrollMode}
+              className={BOTTOM_BUTTON_CLASS_NAME}
+              onClick={() => setScrollAxis(isHorizontalScrollMode ? 'vertical' : 'horizontal')}
+              type="button"
+            >
+              {messages.scrollAxisButtons[scrollAxis]}
+            </button>
           )}
+          <button
+            aria-pressed={isDoublePage}
+            className={BOTTOM_BUTTON_CLASS_NAME}
+            onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
+            type="button"
+          >
+            {messages.pageViewButtons[pageView]}
+          </button>
           {(isDoublePage || isHorizontalScrollMode) && (
             <button
               aria-label={messages.readingDirectionButtons[readingDirection]}
@@ -207,11 +188,26 @@ export default function ReaderControls<TPage extends ReaderPage>({
               {messages.readingDirectionRightShort}
             </button>
           )}
-          <SlideshowButton
+          <button
             className={BOTTOM_BUTTON_CLASS_NAME}
-            maxPageIndex={maxPageIndex}
-            readerLayout={readerLayout}
-          />
+            onClick={() => setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')}
+            type="button"
+          >
+            {messages.imageFitButtons[imageFit]}
+          </button>
+          {isScrollMode && (
+            <div className="relative" ref={viewControlRef}>
+              <button
+                aria-expanded={isViewControlOpen}
+                className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
+                onClick={() => setIsViewControlOpen((prev) => !prev)}
+                type="button"
+              >
+                {messages.viewControlsButton}
+              </button>
+              {isViewControlOpen && <ViewControlPanel />}
+            </div>
+          )}
           <button
             aria-expanded={isThumbnailStripOpen}
             className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
@@ -221,6 +217,11 @@ export default function ReaderControls<TPage extends ReaderPage>({
           >
             {messages.previewButton}
           </button>
+          <SlideshowButton
+            className={BOTTOM_BUTTON_CLASS_NAME}
+            maxPageIndex={maxPageIndex}
+            readerLayout={readerLayout}
+          />
           <button className={BOTTOM_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
             {messages.lowDataLabels[lowData]}
           </button>
