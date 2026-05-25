@@ -8,7 +8,7 @@ import { useStore } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { createStore } from 'zustand/vanilla'
 
-export type ImageFit = 'contain' | 'fit-height' | 'fit-width'
+export type ImageFit = 'contain' | 'height' | 'width'
 export type ImageWidth = 100 | 30 | 50 | 70
 export type LowDataMode = 'auto' | 'off' | 'on'
 
@@ -254,7 +254,10 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
         scrollAxis: DEFAULT_SCROLL_AXIS,
         scrollTargetPageIndex: null,
         setImageWidth: (imageWidth) => {
-          set({ imageWidth })
+          set((state) => ({
+            imageWidth,
+            ...(state.viewerMode === 'scroll' && { scrollTargetPageIndex: state.pageIndex }),
+          }))
         },
         setOrientation: (orientation) => {
           set({ orientation })
@@ -263,19 +266,36 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
           set((state) => ({
             doublePageAnchorIndex: pageView === 'double' ? state.pageIndex : state.doublePageAnchorIndex,
             pageView,
+            ...(state.viewerMode === 'scroll' && { scrollTargetPageIndex: state.pageIndex }),
           }))
         },
-        setScreenFit: (screenFit) => {
-          set({ screenFit })
+        setScrollAxis: (scrollAxis) => {
+          set((state) => ({
+            scrollAxis,
+            scrollTargetPageIndex: state.pageIndex,
+          }))
+        },
+        setImageFit: (imageFit) => {
+          set((state) => ({
+            imageFit,
+            ...(state.viewerMode === 'scroll' && { scrollTargetPageIndex: state.pageIndex }),
+          }))
         },
         setStorageHydrated: () => {
           set({ isStorageHydrated: true })
         },
         setViewerMode: (viewerMode) => {
-          set({ viewerMode })
+          set((state) => ({
+            viewerMode,
+            ...(viewerMode === 'scroll' && { scrollTargetPageIndex: state.pageIndex }),
+          }))
         },
         toggleReadingDirection: () => {
-          set({ readingDirection: get().readingDirection === 'ltr' ? 'rtl' : 'ltr' })
+          set((state) => ({
+            readingDirection: state.readingDirection === 'ltr' ? 'rtl' : 'ltr',
+            ...(state.viewerMode === 'scroll' &&
+              state.scrollAxis === 'horizontal' && { scrollTargetPageIndex: state.pageIndex }),
+          }))
         },
         viewerMode: DEFAULT_VIEWER_MODE,
       }),
