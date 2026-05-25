@@ -1,9 +1,33 @@
+import { env } from '@litomi/env/client'
 import {
-  createProblemTypeUrl,
-  getStatusTitle,
   isProblemDetails,
+  isProblemDetailsContentType,
+  isProblemType,
+  problemCode,
   type ProblemDetails,
 } from '@litomi/http/problem-details'
+
+const { NEXT_PUBLIC_API_ORIGIN } = env
+
+export class HTTPResponseError extends Error {
+  readonly name = 'HTTPResponseError'
+
+  get isRetryable(): boolean {
+    return this.status === 408 || this.status === 429 || this.status >= 500
+  }
+
+  get retryAfterSeconds(): number | undefined {
+    return getRetryAfterSeconds(this.response)
+  }
+
+  get status(): number {
+    return this.response.status
+  }
+
+  constructor(public readonly response: Response) {
+    super(response.statusText ? `HTTP ${response.status} ${response.statusText}` : `HTTP ${response.status}`)
+  }
+}
 
 export class ProblemDetailsError extends Error {
   readonly name = 'ProblemDetailsError'
@@ -13,25 +37,7 @@ export class ProblemDetailsError extends Error {
   }
 
   get retryAfterSeconds(): number | undefined {
-    const value = this.response?.headers?.get('Retry-After')
-    if (!value) {
-      return undefined
-    }
-
-    // 1) delta-seconds (e.g. "120")
-    const seconds = Number(value)
-    if (Number.isFinite(seconds) && seconds > 0) {
-      return seconds
-    }
-
-    // 2) HTTP-date (e.g. "Wed, 21 Oct 2015 07:28:00 GMT")
-    const timeMs = Date.parse(value)
-    if (!Number.isFinite(timeMs)) {
-      return undefined
-    }
-
-    const diffSeconds = Math.ceil((timeMs - Date.now()) / 1000)
-    return diffSeconds > 0 ? diffSeconds : undefined
+    return getRetryAfterSeconds(this.response)
   }
 
   get status(): number {
@@ -54,102 +60,138 @@ export class UserVisibleError extends Error {
   readonly name = 'UserVisibleError'
 }
 
+let authRefreshPromise: Promise<boolean> | null = null
+
 export async function fetchWithErrorHandling<T>(
   input: string | Request | URL,
   init?: RequestInit,
 ): Promise<{ data: T; response: Response }> {
-  try {
-    const response = await fetch(input, init)
+  const request = new Request(input, init)
+  const response = await fetch(request.clone())
 
-    if (!response.ok) {
-      const problem = await parseProblemDetailsFromResponse(response, input)
-      throw new ProblemDetailsError(problem, response)
+  if (!response.ok) {
+    const error = await createResponseError(response)
+
+    if (isAuthenticationRequiredError(error) && shouldRefreshAuthCookies(request) && (await refreshAuthCookies())) {
+      const retryResponse = await fetch(request.clone())
+
+      if (!retryResponse.ok) {
+        throw await createResponseError(retryResponse)
+      }
+
+      return {
+        data: await readResponseData<T>(retryResponse),
+        response: retryResponse,
+      }
     }
 
-    if (response.status === 204 || response.status === 205) {
-      return { data: undefined as T, response }
-    }
-
-    const data = (await response.json()) as T
-    return { data, response }
-  } catch (error) {
-    if (error instanceof ProblemDetailsError) {
-      throw error
-    }
-
-    const origin = getOriginFromInput(input)
-
-    const problem: ProblemDetails = {
-      type: origin ? createProblemTypeUrl(origin, 'client-network-error') : 'about:blank',
-      title: getStatusTitle(503),
-      status: 503,
-      detail: '네트워크 연결을 확인해 주세요',
-    }
-
-    if (error instanceof Error && error.name === 'AbortError') {
-      problem.type = origin ? createProblemTypeUrl(origin, 'client-aborted') : 'about:blank'
-      problem.title = getStatusTitle(499)
-      problem.status = 499
-      problem.detail = '요청이 취소됐어요'
-    }
-
-    throw new ProblemDetailsError(problem)
+    throw error
   }
-}
-
-function getBrowserOrigin(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-  return window.location?.origin ?? null
-}
-
-function getOriginFromInput(input: string | Request | URL): string | null {
-  if (input instanceof URL) {
-    return input.origin
-  }
-
-  if (input instanceof Request) {
-    try {
-      return new URL(input.url).origin
-    } catch {
-      return getBrowserOrigin()
-    }
-  }
-
-  if (typeof input === 'string') {
-    try {
-      return new URL(input).origin
-    } catch {
-      return getBrowserOrigin()
-    }
-  }
-
-  return getBrowserOrigin()
-}
-
-async function parseProblemDetailsFromResponse(
-  response: Response,
-  input: string | Request | URL,
-): Promise<ProblemDetails> {
-  const origin = getOriginFromInput(input)
-
-  const maybeJson = await response
-    .clone()
-    .json()
-    .catch(() => undefined)
-
-  if (isProblemDetails(maybeJson)) {
-    return maybeJson
-  }
-
-  const text = await response.text().catch(() => '')
-  const title = getStatusTitle(response.status)
 
   return {
-    type: origin ? createProblemTypeUrl(origin, `http-${response.status}`) : 'about:blank',
-    title,
-    status: response.status,
-    detail: text || title,
+    data: await readResponseData<T>(response),
+    response,
   }
+}
+
+export function isAuthenticationRequiredError(error: unknown): boolean {
+  return (
+    error instanceof ProblemDetailsError &&
+    error.status === 401 &&
+    isProblemType(error.type, problemCode.AUTHENTICATION_REQUIRED)
+  )
+}
+
+async function createResponseError(response: Response): Promise<HTTPResponseError | ProblemDetailsError> {
+  const problem = await readProblemDetails(response)
+
+  if (problem) {
+    return new ProblemDetailsError(problem, response)
+  }
+
+  return new HTTPResponseError(response)
+}
+
+function getRetryAfterSeconds(response?: Response): number | undefined {
+  const value = response?.headers?.get('Retry-After')
+  if (!value) {
+    return undefined
+  }
+
+  const seconds = Number(value)
+  if (Number.isFinite(seconds) && seconds > 0) {
+    return seconds
+  }
+
+  const timeMs = Date.parse(value)
+  if (!Number.isFinite(timeMs)) {
+    return undefined
+  }
+
+  const diffSeconds = Math.ceil((timeMs - Date.now()) / 1000)
+  return diffSeconds > 0 ? diffSeconds : undefined
+}
+
+function isAuthRefreshRequest(request: Request): boolean {
+  const requestURL = new URL(request.url)
+  const refreshURL = new URL('/api/v1/auth/refresh', NEXT_PUBLIC_API_ORIGIN)
+
+  return requestURL.origin === refreshURL.origin && requestURL.pathname === refreshURL.pathname
+}
+
+async function readProblemDetails(response: Response): Promise<ProblemDetails | null> {
+  if (!isProblemDetailsContentType(response.headers.get('Content-Type'))) {
+    return null
+  }
+
+  const body: unknown = await response.json().catch(() => null)
+  return isProblemDetails(body) ? body : null
+}
+
+async function readResponseData<T>(response: Response): Promise<T> {
+  if (response.status === 204 || response.headers.get('Content-Length') === '0') {
+    return undefined as T
+  }
+
+  const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? ''
+
+  if (contentType.includes('json')) {
+    return (await response.json()) as T
+  }
+
+  const text = await response.text()
+  return (text || undefined) as T
+}
+
+async function refreshAuthCookies(): Promise<boolean> {
+  if (!authRefreshPromise) {
+    authRefreshPromise = fetch(new URL('/api/v1/auth/refresh', NEXT_PUBLIC_API_ORIGIN), {
+      method: 'POST',
+      credentials: 'include',
+      cache: 'no-store',
+    })
+      .then((response) => response.ok)
+      .catch(() => false)
+      .finally(() => {
+        authRefreshPromise = null
+      })
+  }
+
+  return authRefreshPromise
+}
+
+function shouldRefreshAuthCookies(request: Request): boolean {
+  if (typeof window === 'undefined' || isAuthRefreshRequest(request)) {
+    return false
+  }
+
+  if (request.credentials === 'include') {
+    return true
+  }
+
+  if (request.credentials === 'same-origin') {
+    return new URL(request.url).origin === window.location.origin
+  }
+
+  return false
 }
