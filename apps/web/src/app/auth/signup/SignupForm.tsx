@@ -8,7 +8,7 @@ import { SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
 import IconLogo from '@/components/icons/LogoLitomi'
 import TurnstileWidget from '@/components/TurnstileWidget'

@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import MangaImportModal from '@/components/card/MangaImportModal'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import { addBookmarks } from '../api'
 import { useBookmarkImportModalStore } from './store'

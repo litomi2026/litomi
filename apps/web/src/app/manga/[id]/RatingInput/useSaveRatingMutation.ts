@@ -6,7 +6,7 @@ import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -23,11 +23,11 @@ export function useSaveRatingMutation() {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/rating`
 
       if (rating === 0) {
-        await fetchWithErrorHandling<void>(url, { method: 'DELETE', credentials: 'include' })
+        await fetchAPIData<void>(url, { method: 'DELETE', credentials: 'include' })
         return null
       }
 
-      const { data } = await fetchWithErrorHandling<PUTV1MangaIdRatingResponse>(url, {
+      const { data } = await fetchAPIData<PUTV1MangaIdRatingResponse>(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

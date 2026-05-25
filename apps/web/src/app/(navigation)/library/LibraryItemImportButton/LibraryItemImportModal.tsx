@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { bulkCopyToLibrary } from '@/app/(navigation)/library/api'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import MangaImportModal from '../../../../components/card/MangaImportModal'
 import { useImportMangaModalStore } from './store'

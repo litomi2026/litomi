@@ -6,7 +6,7 @@ import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -17,7 +17,7 @@ export default function useLogoutMutation() {
     mutationFn: async () => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/logout`
 
-      const { data } = await fetchWithErrorHandling<POSTV1AuthLogoutResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1AuthLogoutResponse>(url, {
         method: 'POST',
         credentials: 'include',
       })

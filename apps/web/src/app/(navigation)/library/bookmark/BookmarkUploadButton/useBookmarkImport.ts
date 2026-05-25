@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'
 
@@ -26,7 +26,7 @@ export function useBookmarkImport() {
     mutationFn: async ({ mode, bookmarks }) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/import`
 
-      const { data } = await fetchWithErrorHandling<POSTV1BookmarkImportResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1BookmarkImportResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

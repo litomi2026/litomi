@@ -16,7 +16,7 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import useDelayedPendingIndicator from '@/hook/useDelayedPendingIndicator'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useBookmarkQuery from '@/query/useBookmarkQuery'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 import { useLibraryModal } from './LibraryModal'
 
@@ -42,14 +42,14 @@ export default function BookmarkButton({ manga, className }: Props) {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/${mangaId}`
 
       if (!shouldBookmark) {
-        await fetchWithErrorHandling(url, {
+        await fetchAPIData(url, {
           method: 'DELETE',
           credentials: 'include',
         })
         return
       }
 
-      await fetchWithErrorHandling<PUTV1BookmarkIdResponse>(url, {
+      await fetchAPIData<PUTV1BookmarkIdResponse>(url, {
         method: 'PUT',
         credentials: 'include',
       })

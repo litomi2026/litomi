@@ -12,14 +12,14 @@ import type {
 
 import { env } from '@litomi/env/client'
 
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function importReadingHistory(request: POSTV1LibraryHistoryImportBody) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/history/import`
 
-  const { data } = await fetchWithErrorHandling<POSTV1LibraryHistoryImportResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1LibraryHistoryImportResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -32,7 +32,7 @@ export async function importReadingHistory(request: POSTV1LibraryHistoryImportBo
 export async function login(request: POSTV1AuthLoginRequest) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/login`
 
-  const { data } = await fetchWithErrorHandling<POSTV1AuthLoginResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1AuthLoginResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -45,7 +45,7 @@ export async function login(request: POSTV1AuthLoginRequest) {
 export async function requestPasskeyAuthenticationOptions() {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/passkey/options`
 
-  const { data } = await fetchWithErrorHandling<POSTV1AuthPasskeyOptionsResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1AuthPasskeyOptionsResponse>(url, {
     method: 'POST',
     credentials: 'include',
   })
@@ -56,7 +56,7 @@ export async function requestPasskeyAuthenticationOptions() {
 export async function verifyPasskeyAuthentication(request: POSTV1AuthPasskeyVerifyRequest) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/passkey/verify`
 
-  const { data } = await fetchWithErrorHandling<POSTV1AuthPasskeyVerifyResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1AuthPasskeyVerifyResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -69,7 +69,7 @@ export async function verifyPasskeyAuthentication(request: POSTV1AuthPasskeyVeri
 export async function verifyTwoFactorLogin(request: POSTV1AuthLogin2FARequest) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/login/2fa`
 
-  const { data } = await fetchWithErrorHandling<POSTV1AuthLogin2FAResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1AuthLogin2FAResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },

@@ -9,7 +9,7 @@ import { Bookmark, Check, Clock, Download, Library, Loader2, ShieldCheck, Star }
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
 import { downloadBlob } from '@/utils/download'
 

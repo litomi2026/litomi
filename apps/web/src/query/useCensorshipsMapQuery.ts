@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
 
@@ -15,7 +15,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 export async function fetchCensorshipsMap() {
   const params = new URLSearchParams({ limit: MAX_CENSORSHIPS_PER_USER.toString() })
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship?${params}`
-  const { data } = await fetchWithErrorHandling<GETV1CensorshipResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1CensorshipResponse>(url, { credentials: 'include' })
   const lookup = new Map<string, CensorshipItem>()
 
   for (const censorship of data.censorships) {

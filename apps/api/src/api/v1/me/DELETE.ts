@@ -13,7 +13,7 @@ import type { Env } from '@/app'
 
 import { applyAuthCookie } from '@/utils/cookie'
 import { lockUserRowForUpdate } from '@/utils/lock-user-row'
-import { problemResponse } from '@/utils/problem'
+import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const accountDeletionLimiter = new RateLimiter({
@@ -98,7 +98,7 @@ route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => 
 
       case 'unauthorized':
         applyAuthCookie(c, getAuthCookieClearConfigs())
-        return problemResponse(c, { status: 401, detail: '로그인 정보가 없거나 만료됐어요' })
+        return authRequiredProblemResponse(c)
 
       case 'verification-failed':
         return problemResponse(c, { status: 400 })

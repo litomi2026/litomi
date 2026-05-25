@@ -2,14 +2,14 @@ import type { DELETEV1ReadingHistoryBody, DELETEV1ReadingHistoryResponse } from 
 
 import { env } from '@litomi/env/client'
 
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function deleteReadingHistory(body: DELETEV1ReadingHistoryBody) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/history`
 
-  const { data } = await fetchWithErrorHandling<DELETEV1ReadingHistoryResponse>(url, {
+  const { data } = await fetchAPIData<DELETEV1ReadingHistoryResponse>(url, {
     method: 'DELETE',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },

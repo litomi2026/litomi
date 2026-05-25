@@ -7,14 +7,14 @@ import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchUserRating(mangaId: number) {
   try {
     const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/rating`
-    const { data } = await fetchWithErrorHandling<GETV1MangaIdRatingResponse>(url, { credentials: 'include' })
+    const { data } = await fetchAPIData<GETV1MangaIdRatingResponse>(url, { credentials: 'include' })
     return data
   } catch (error) {
     if (error instanceof ProblemDetailsError && error.status === 404) {

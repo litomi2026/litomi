@@ -13,7 +13,7 @@ import { twMerge } from 'tailwind-merge'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { requiresAdultVerification } from '@/utils/adult-verification'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -46,7 +46,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
     mutationFn: async (body) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/report`
 
-      const { data } = await fetchWithErrorHandling<POSTV1MangaIdReportResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1MangaIdReportResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

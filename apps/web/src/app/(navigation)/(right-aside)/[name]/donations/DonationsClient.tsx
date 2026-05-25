@@ -8,7 +8,7 @@ import { Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import useDeleteDonationMutation from './useDeleteDonationMutation'
 import useMyDonationsInfiniteQuery from './useMyDonationsInfiniteQuery'

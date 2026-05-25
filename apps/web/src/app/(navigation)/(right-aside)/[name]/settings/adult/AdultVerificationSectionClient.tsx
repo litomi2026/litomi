@@ -14,7 +14,7 @@ import { BBATON_POPUP_WINDOW_NAME } from '@/bbaton'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { LocalStorageKey } from '@/storage'
 import BBatonButton from '@/svg/BBatonButton'
-import { fetchWithErrorHandling, ProblemDetailsError, UserVisibleError } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError, UserVisibleError } from '@/utils/api-request'
 
 import AdultVerificationHelp from './AdultVerificationHelp'
 import BBatonUnlinkSection from './BBatonUnlinkSection'
@@ -57,7 +57,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
     mutationFn: async () => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bbaton/attempt`
 
-      const { data } = await fetchWithErrorHandling<POSTV1BBatonAttemptResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1BBatonAttemptResponse>(url, {
         method: 'POST',
         credentials: 'include',
       })

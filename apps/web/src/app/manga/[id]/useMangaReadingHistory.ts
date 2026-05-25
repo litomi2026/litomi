@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 import { getLocalReadingHistory } from '@/utils/reading-history-index'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -32,7 +32,7 @@ export default function useMangaReadingHistory(mangaId: number) {
 
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/history`
 
-      const { data } = await fetchWithErrorHandling<GETV1MangaIdHistoryResponse | undefined>(url, {
+      const { data } = await fetchAPIData<GETV1MangaIdHistoryResponse | undefined>(url, {
         credentials: 'include',
       })
 

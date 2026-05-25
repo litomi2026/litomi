@@ -2,14 +2,14 @@ import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@litomi/c
 
 import { env } from '@litomi/env/client'
 
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function changeMyPassword(body: PATCHV1MePasswordBody) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/password`
 
-  const { data } = await fetchWithErrorHandling<PATCHV1MePasswordResponse>(url, {
+  const { data } = await fetchAPIData<PATCHV1MePasswordResponse>(url, {
     method: 'PATCH',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },

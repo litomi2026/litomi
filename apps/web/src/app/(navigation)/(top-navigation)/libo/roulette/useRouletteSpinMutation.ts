@@ -6,7 +6,7 @@ import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -16,7 +16,7 @@ export function useRouletteSpinMutation() {
   return useMutation<POSTV1RouletteSpinResponse, ProblemDetailsError, POSTV1RouletteSpinRequest>({
     mutationFn: async ({ bet }) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/roulette/spin`
-      const { data } = await fetchWithErrorHandling<POSTV1RouletteSpinResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1RouletteSpinResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

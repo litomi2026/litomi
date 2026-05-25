@@ -5,7 +5,7 @@ import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -21,7 +21,7 @@ export async function fetchRatingsPaginated(cursor: string, sort: RatingSort) {
   }
 
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/rating?${searchParams}`
-  const { data } = await fetchWithErrorHandling<GETV1RatingsResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1RatingsResponse>(url, { credentials: 'include' })
   return data
 }
 

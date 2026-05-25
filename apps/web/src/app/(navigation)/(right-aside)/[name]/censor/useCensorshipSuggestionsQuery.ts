@@ -8,8 +8,8 @@ import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
+import { fetchAPIData } from '@/utils/api-request'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
@@ -39,7 +39,7 @@ export async function fetchCensorshipSuggestions({ query, locale }: Params) {
   }
 
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/search/suggestions?${params}`
-  const { data } = await fetchWithErrorHandling<GETSearchSuggestionsResponse>(url)
+  const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
   return data
 }
 

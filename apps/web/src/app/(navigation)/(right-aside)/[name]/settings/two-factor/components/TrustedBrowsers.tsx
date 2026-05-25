@@ -9,7 +9,7 @@ import { Loader2, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import type { TrustedBrowser } from '../types'
 

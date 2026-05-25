@@ -10,7 +10,7 @@ import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
-import { problemResponse } from '@/utils/problem'
+import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
@@ -31,10 +31,7 @@ route.post('/', zProblemValidator('json', postV1MeExportBodySchema), async (c) =
     const isValidPassword = await compare(password, user?.passwordHash ?? dummyHash)
 
     if (!user) {
-      return problemResponse(c, {
-        status: 401,
-        detail: '로그인 정보가 없거나 만료됐어요',
-      })
+      return authRequiredProblemResponse(c)
     }
 
     if (!isValidPassword) {

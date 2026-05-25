@@ -13,7 +13,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { usePointsQuery } from '@/app/(navigation)/(top-navigation)/libo/usePointsQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import usePointsDonateMutation from './usePointsDonateMutation'
 

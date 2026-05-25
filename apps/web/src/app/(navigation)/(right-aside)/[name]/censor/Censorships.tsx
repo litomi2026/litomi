@@ -17,7 +17,7 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
 import CensorshipCreationBar from './CensorshipCreationBar'
@@ -46,7 +46,7 @@ export default function Censorships() {
   const deleteMutation = useMutation({
     mutationFn: async (ids: number[]) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
-      const { data } = await fetchWithErrorHandling<DELETEV1CensorshipDeleteResponse>(url, {
+      const { data } = await fetchAPIData<DELETEV1CensorshipDeleteResponse>(url, {
         method: 'DELETE',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },

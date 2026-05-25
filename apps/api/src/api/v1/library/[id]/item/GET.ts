@@ -15,7 +15,7 @@ import type { Env } from '@/app'
 import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/utils/adult-gate'
 import { privateCacheControl } from '@/utils/cache-control'
 import { getCatalogMangaMap } from '@/utils/catalog-manga'
-import { problemResponse } from '@/utils/problem'
+import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const routes = new Hono<Env>()
@@ -39,7 +39,7 @@ routes.get(
     const isPublicScope = scope === 'public'
 
     if (scope === 'me' && !userId) {
-      return problemResponse(c, { status: 401, detail: '로그인 정보가 없거나 만료됐어요' })
+      return authRequiredProblemResponse(c)
     }
 
     if (cursor && !cursorData) {

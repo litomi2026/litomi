@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 type Props = {
   error: unknown

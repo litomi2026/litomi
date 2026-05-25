@@ -9,7 +9,7 @@ import type {
 import { env } from '@litomi/env/client'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
 import {
   type PostListSnapshot,
@@ -19,7 +19,7 @@ import {
 } from '@/components/post/cache'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showLoginRequiredToast } from '@/lib/toast'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
 
@@ -49,7 +49,7 @@ type Variables = {
 export async function toggleUserFollowing(targetUserId: number, following: boolean) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/user/${targetUserId}/follow`
 
-  const { data } = await fetchWithErrorHandling<SetUserFollowResponse>(url, {
+  const { data } = await fetchAPIData<SetUserFollowResponse>(url, {
     method: following ? 'PUT' : 'DELETE',
     credentials: 'include',
   })

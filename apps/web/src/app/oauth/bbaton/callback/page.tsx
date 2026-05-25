@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 
 import { LocalStorageKey } from '@/storage'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -19,7 +19,7 @@ export default function BBatonCallbackPage() {
     mutationFn: async ({ code, state }) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bbaton/complete`
 
-      await fetchWithErrorHandling<void>(url, {
+      await fetchAPIData<void>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

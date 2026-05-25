@@ -4,7 +4,7 @@ import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -14,7 +14,7 @@ type QueryOptions = {
 
 export async function fetchTransactions(searchParams: URLSearchParams) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/transactions?${searchParams}`
-  const { data } = await fetchWithErrorHandling<GETV1PointTransactionResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1PointTransactionResponse>(url, { credentials: 'include' })
   return data
 }
 

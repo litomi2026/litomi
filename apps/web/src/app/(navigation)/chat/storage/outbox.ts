@@ -3,9 +3,9 @@
 import ms from 'ms'
 import { useCallback, useEffect, useRef } from 'react'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
-import { fetchWithErrorHandling, ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/api-request'
 
 import {
   deleteOutboxItem,
@@ -194,7 +194,7 @@ async function processAppendMessages(
   try {
     const url = `${backendUrl}/api/v1/character-chat/sessions/${map.serverSessionId}/messages`
 
-    await fetchWithErrorHandling<{ ok: true }>(url, {
+    await fetchAPIData<{ ok: true }>(url, {
       method: 'POST',
       credentials: 'include',
       headers: { 'content-type': 'application/json' },
@@ -215,7 +215,7 @@ async function processCreateSession(
   try {
     const url = `${backendUrl}/api/v1/character-chat/sessions`
 
-    const { data } = await fetchWithErrorHandling<{ id: number }>(url, {
+    const { data } = await fetchAPIData<{ id: number }>(url, {
       method: 'POST',
       credentials: 'include',
       headers: { 'content-type': 'application/json' },

@@ -22,7 +22,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { isAdultVerificationRequiredProblem } from '@/lib/react-query/QueryProvider'
 import useMeQuery from '@/query/useMeQuery'
 import usePointsTurnstileQuery from '@/query/usePointsTurnstileQuery'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 import { runWhenDocumentVisible } from './util'
 
@@ -40,7 +40,7 @@ export default function RewardedAdSection() {
   const verifyTurnstile = useMutation<POSTV1PointTurnstileResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/turnstile`
-      const { data } = await fetchWithErrorHandling<POSTV1PointTurnstileResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1PointTurnstileResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

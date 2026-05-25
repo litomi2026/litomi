@@ -9,7 +9,7 @@ import { SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
 import OneTimeCodeInput from '@/app/(navigation)/(right-aside)/[name]/settings/two-factor/components/OneTimeCodeInput'
 

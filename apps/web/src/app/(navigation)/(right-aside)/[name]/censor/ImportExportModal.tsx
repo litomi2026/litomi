@@ -11,8 +11,8 @@ import { toast } from 'sonner'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
+import { fetchAPIData } from '@/utils/api-request'
 import { downloadBlob } from '@/utils/download'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
 
@@ -46,7 +46,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
-      const { data } = await fetchWithErrorHandling<POSTV1CensorshipCreateResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },

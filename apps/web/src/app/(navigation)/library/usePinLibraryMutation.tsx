@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -23,7 +23,7 @@ export default function usePinLibraryMutation() {
     mutationFn: async ({ libraryId, action }) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/${libraryId}/pin`
       const method = action === 'pin' ? 'POST' : 'DELETE'
-      const { data } = await fetchWithErrorHandling(url, { method, credentials: 'include' })
+      const { data } = await fetchAPIData(url, { method, credentials: 'include' })
       return data
     },
     onMutate: async ({ libraryId, action, library }) => {

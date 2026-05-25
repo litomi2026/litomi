@@ -9,8 +9,8 @@ import { Download } from 'lucide-react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
+import { fetchAPIData } from '@/utils/api-request'
 import { downloadBlob } from '@/utils/download'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -18,7 +18,7 @@ export default function BookmarkDownloadButton() {
   const exportMutation = useMutation({
     mutationFn: async () => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/export`
-      const { data } = await fetchWithErrorHandling<GETV1BookmarkExportResponse>(url, { credentials: 'include' })
+      const { data } = await fetchAPIData<GETV1BookmarkExportResponse>(url, { credentials: 'include' })
       return data.bookmarks
     },
 

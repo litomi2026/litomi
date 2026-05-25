@@ -4,6 +4,7 @@ import { userRatingTable } from '@litomi/db/app/activity'
 import { userExpansionTable } from '@litomi/db/app/points'
 import { MAX_RATINGS_PER_USER } from '@litomi/domain/library/policy'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/points/model'
+import { problemCode } from '@litomi/http/problem-details'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
 
@@ -103,7 +104,7 @@ route.put(
       if (error instanceof Error && error.message === ErrorCode.RATING_LIMIT_REACHED) {
         return problemResponse(c, {
           status: 403,
-          code: 'libo-expansion-required',
+          code: problemCode.LIBO_EXPANSION_REQUIRED,
           detail: '평가 저장 한도에 도달했어요',
         })
       }

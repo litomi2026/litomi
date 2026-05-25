@@ -6,7 +6,7 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import { useTransactionsQuery } from './useTransactionsQuery'
 

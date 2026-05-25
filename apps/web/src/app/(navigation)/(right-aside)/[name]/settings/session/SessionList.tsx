@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import { revokeAllPersistentSessions, revokeOtherPersistentSessions, revokePersistentSession } from './api'
 

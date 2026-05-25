@@ -5,7 +5,7 @@ import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 
@@ -25,6 +25,6 @@ async function fetchRandomManga() {
   url.searchParams.set('locale', Locale.KO)
   url.searchParams.set('sort', 'random')
 
-  const { data } = await fetchWithErrorHandling<ProxyRandomResponse>(url)
+  const { data } = await fetchAPIData<ProxyRandomResponse>(url)
   return data
 }

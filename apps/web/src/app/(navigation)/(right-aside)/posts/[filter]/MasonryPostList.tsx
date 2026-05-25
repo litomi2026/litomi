@@ -11,7 +11,7 @@ import { useInView } from 'react-intersection-observer'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import RetryGuidance from '@/components/RetryGuidance'
 import usePostInfiniteQuery from '@/query/usePostsQuery'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import FollowingUnauthorized from './FollowingUnauthorized'
 import PostCard, { PostSkeleton } from './PostCard'

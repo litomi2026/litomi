@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { LocalStorageKey } from '@/storage'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -23,7 +23,7 @@ export default function usePatchMySettingsMutation() {
     mutationFn: async (body) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/settings`
 
-      await fetchWithErrorHandling<void>(url, {
+      await fetchAPIData<void>(url, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

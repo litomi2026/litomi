@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { shouldRetryError } from '@/lib/react-query/QueryProvider'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -24,7 +24,7 @@ export function usePointsTokenQuery({ adSlotId, enabled }: Options) {
     queryFn: async () => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/token`
 
-      const { data } = await fetchWithErrorHandling<POSTV1PointTokenResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1PointTokenResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

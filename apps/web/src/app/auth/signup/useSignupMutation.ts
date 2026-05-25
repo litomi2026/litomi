@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
 import { identify, track } from '@/lib/analytics/browser'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'

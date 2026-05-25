@@ -1,6 +1,7 @@
 import { bookmarkMangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
+import { problemCode } from '@litomi/http/problem-details'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
@@ -75,7 +76,7 @@ route.put('/', requireAuth, requireAdult, zProblemValidator('param', bookmarkMan
     if (error instanceof Error && error.message === ErrorCode.BOOKMARK_LIMIT_REACHED) {
       return problemResponse(c, {
         status: 403,
-        code: 'libo-expansion-required',
+        code: problemCode.LIBO_EXPANSION_REQUIRED,
         detail: '북마크 저장 한도에 도달했어요',
       })
     }

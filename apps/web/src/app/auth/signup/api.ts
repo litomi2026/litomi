@@ -2,14 +2,14 @@ import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@litomi/
 
 import { env } from '@litomi/env/client'
 
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function signup(request: POSTV1AuthSignupRequest) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/signup`
 
-  const { data } = await fetchWithErrorHandling<POSTV1AuthSignupResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1AuthSignupResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
