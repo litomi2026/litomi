@@ -5,7 +5,7 @@ import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -28,7 +28,7 @@ export default function usePostInfiniteQuery(filter: PostFilter, mangaId?: numbe
 
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post?${searchParams}`
       const requestInit = filter === PostFilter.FOLLOWING ? { credentials: 'include' as const } : undefined
-      const { data } = await fetchWithErrorHandling<GETV1PostResponse>(url, requestInit)
+      const { data } = await fetchAPIData<GETV1PostResponse>(url, requestInit)
       return data
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,

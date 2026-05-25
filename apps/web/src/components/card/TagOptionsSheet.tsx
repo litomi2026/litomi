@@ -14,7 +14,7 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import useClipboard from '@/hook/useClipboard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 type Props = {
   isOpen: boolean
@@ -52,7 +52,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
 
       if (isCensored && existingCensorship) {
-        await fetchWithErrorHandling<DELETEV1CensorshipDeleteResponse>(url, {
+        await fetchAPIData<DELETEV1CensorshipDeleteResponse>(url, {
           method: 'DELETE',
           credentials: 'include',
           headers: { 'content-type': 'application/json' },
@@ -61,7 +61,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
         return false
       }
 
-      await fetchWithErrorHandling<POSTV1CensorshipCreateResponse>(url, {
+      await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },

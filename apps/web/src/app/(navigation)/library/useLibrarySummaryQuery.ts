@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -16,7 +16,7 @@ type Options = {
 
 export async function fetchLibrarySummary() {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/summary`
-  const { data } = await fetchWithErrorHandling<GETV1LibrarySummaryResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1LibrarySummaryResponse>(url, { credentials: 'include' })
   return data
 }
 

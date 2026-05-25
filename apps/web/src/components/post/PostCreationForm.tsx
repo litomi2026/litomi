@@ -14,7 +14,7 @@ import { twMerge } from 'tailwind-merge'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import Squircle from '../ui/Squircle'
 import { createPost } from './api'

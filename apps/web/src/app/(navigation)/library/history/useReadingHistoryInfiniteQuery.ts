@@ -4,7 +4,7 @@ import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 import { getLocalReadingHistoryArray } from '@/utils/reading-history-index'
 
 import type { ReadingHistorySource } from './common'
@@ -43,6 +43,6 @@ async function fetchReadingHistoryPaginated(cursor: string | null) {
   }
 
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/history?${params}`
-  const { data } = await fetchWithErrorHandling<GETV1ReadingHistoryResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1ReadingHistoryResponse>(url, { credentials: 'include' })
   return data
 }

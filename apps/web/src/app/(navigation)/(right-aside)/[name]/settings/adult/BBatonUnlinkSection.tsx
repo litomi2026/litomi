@@ -10,7 +10,7 @@ import { SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'
 
@@ -29,7 +29,7 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
     mutationFn: async ({ password, token }) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bbaton/unlink`
 
-      const { data } = await fetchWithErrorHandling<POSTV1BBatonUnlinkResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1BBatonUnlinkResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

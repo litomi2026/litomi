@@ -7,13 +7,13 @@ import { useSearchParams } from 'next/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchNotifications(searchParams: URLSearchParams) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/notification?${searchParams}`
-  const { data } = await fetchWithErrorHandling<GETNotificationResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETNotificationResponse>(url, { credentials: 'include' })
   return data
 }
 

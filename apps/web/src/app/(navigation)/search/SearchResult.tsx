@@ -20,7 +20,7 @@ import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/compo
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaCensorship from '@/hook/useMangaCensorship'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'

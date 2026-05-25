@@ -9,8 +9,8 @@ import pLimit from 'p-limit'
 import pThrottle from 'p-throttle'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
+import { fetchAPIData } from '@/utils/api-request'
 import { createLoadingManga } from '@/utils/manga-placeholder'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 
@@ -102,7 +102,7 @@ export default function useMangaListCachedQuery({
       }
 
       const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/manga/${id}`
-      const { data, response } = await fetchWithErrorHandling<Manga>(url)
+      const { data, response } = await fetchAPIData<Manga>(url)
 
       if (isDegradedResponse(response.headers)) {
         scheduleErrorCacheCleanup(queryKey)

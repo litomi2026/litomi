@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'
 import { changeMyPassword } from './api'

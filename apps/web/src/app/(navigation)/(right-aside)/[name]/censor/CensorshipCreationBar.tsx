@@ -14,7 +14,7 @@ import { twMerge } from 'tailwind-merge'
 import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 import { TYPE_PATTERNS } from './constants'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
@@ -35,7 +35,7 @@ export default function CensorshipCreationBar() {
   const addMutation = useMutation({
     mutationFn: async (items: { key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
-      const { data } = await fetchWithErrorHandling<POSTV1CensorshipCreateResponse>(url, {
+      const { data } = await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },

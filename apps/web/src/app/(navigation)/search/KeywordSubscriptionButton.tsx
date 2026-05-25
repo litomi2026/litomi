@@ -11,7 +11,7 @@ import { twMerge } from 'tailwind-merge'
 import IconBell from '@/components/icons/IconBell'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import useMeQuery from '@/query/useMeQuery'
-import { ProblemDetailsError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/api-request'
 
 import { createNotificationCriteria } from './api'
 import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'

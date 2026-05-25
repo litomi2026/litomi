@@ -6,7 +6,7 @@ import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -22,7 +22,7 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Collec
   }
 
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark?${params}`
-  const { data } = await fetchWithErrorHandling<GETV1BookmarkResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1BookmarkResponse>(url, { credentials: 'include' })
   return data
 }
 

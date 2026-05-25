@@ -6,8 +6,8 @@ import { env } from '@litomi/env/client'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
+import { fetchAPIData } from '@/utils/api-request'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -39,6 +39,6 @@ async function fetchTags(category: CategoryParam, page: number, locale: string) 
   }
 
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/tag?${searchParams}`
-  const { data } = await fetchWithErrorHandling<GETV1TagResponse>(url)
+  const { data } = await fetchAPIData<GETV1TagResponse>(url)
   return data
 }

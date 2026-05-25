@@ -6,8 +6,8 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
+import { fetchAPIData } from '@/utils/api-request'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
 
@@ -45,7 +45,7 @@ export function useSearchQuery() {
       }
 
       const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/k/search?${searchParamsWithCursor}`
-      const { data } = await fetchWithErrorHandling<GETProxyKSearchResponse>(url)
+      const { data } = await fetchAPIData<GETProxyKSearchResponse>(url)
       return data
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,

@@ -15,7 +15,7 @@ import {
   isAuthenticationRequiredError,
   ProblemDetailsError,
   UserVisibleError,
-} from '@/utils/react-query-error'
+} from '@/utils/api-request'
 
 import { handleUnauthorizedError } from './auth-state'
 

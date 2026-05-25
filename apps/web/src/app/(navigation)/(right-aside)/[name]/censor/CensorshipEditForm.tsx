@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 import { CENSORSHIP_LEVEL_LABELS } from './constants'
 
@@ -36,7 +36,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
   const updateMutation = useMutation({
     mutationFn: async (items: { id: number; key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
-      const { data } = await fetchWithErrorHandling<PATCHV1CensorshipUpdateResponse>(url, {
+      const { data } = await fetchAPIData<PATCHV1CensorshipUpdateResponse>(url, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },

@@ -4,14 +4,14 @@ import type { POSTV1NotificationCriteriaBody, POSTV1NotificationCriteriaResponse
 
 import { env } from '@litomi/env/client'
 
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function createNotificationCriteria(body: POSTV1NotificationCriteriaBody) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/notification/criteria`
 
-  const { data } = await fetchWithErrorHandling<POSTV1NotificationCriteriaResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1NotificationCriteriaResponse>(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',

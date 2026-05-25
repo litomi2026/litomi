@@ -10,7 +10,7 @@ import ms from 'ms'
 import Link from 'next/link'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 import { useRealtimeStore } from './store'
 
@@ -122,6 +122,6 @@ export default function RealtimeRanking() {
 
 async function fetchRealtimeAnalytics(): Promise<GETV1AnalyticsRealtimeResponse> {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/analytics/realtime`
-  const { data } = await fetchWithErrorHandling<GETV1AnalyticsRealtimeResponse>(url)
+  const { data } = await fetchAPIData<GETV1AnalyticsRealtimeResponse>(url)
   return data
 }

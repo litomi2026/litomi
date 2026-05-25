@@ -7,14 +7,14 @@ import type {
 
 import { env } from '@litomi/env/client'
 
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function addBookmarks(body: POSTV1BookmarkBody) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark`
 
-  const { data } = await fetchWithErrorHandling<POSTV1BookmarkResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1BookmarkResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -27,7 +27,7 @@ export async function addBookmarks(body: POSTV1BookmarkBody) {
 export async function deleteBookmarks(body: DELETEV1BookmarkBody) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark`
 
-  const { data } = await fetchWithErrorHandling<DELETEV1BookmarkResponse>(url, {
+  const { data } = await fetchAPIData<DELETEV1BookmarkResponse>(url, {
     method: 'DELETE',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },

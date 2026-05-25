@@ -62,7 +62,7 @@ export class UserVisibleError extends Error {
 
 let authRefreshPromise: Promise<boolean> | null = null
 
-export async function fetchWithErrorHandling<T>(
+export async function fetchAPIData<T>(
   input: string | Request | URL,
   init?: RequestInit,
 ): Promise<{ data: T; response: Response }> {

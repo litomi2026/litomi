@@ -5,7 +5,7 @@ import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN } = env
 
@@ -24,6 +24,6 @@ async function fetchNewManga(page: number) {
   const url = new URL('/api/proxy/hiyobi/new', NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN)
   url.searchParams.set('locale', Locale.KO)
   url.searchParams.set('page', String(page))
-  const { data } = await fetchWithErrorHandling<Manga[]>(url)
+  const { data } = await fetchAPIData<Manga[]>(url)
   return data
 }

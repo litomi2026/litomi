@@ -5,10 +5,10 @@ import type { GETV1MeResponse, PATCHV1MeBody, PATCHV1MeResponse } from '@litomi/
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -36,7 +36,7 @@ export default function usePatchMyProfileMutation({ onError, onSuccess }: Params
     mutationFn: async (body) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me`
 
-      const { data } = await fetchWithErrorHandling<PATCHV1MeResponse>(url, {
+      const { data } = await fetchAPIData<PATCHV1MeResponse>(url, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -5,7 +5,7 @@ import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -23,7 +23,7 @@ export default function useDeleteDonationMutation() {
   return useMutation<void, ProblemDetailsError, Variables, MutationContext>({
     mutationFn: async ({ donationId }) => {
       const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/donations/${donationId}`
-      await fetchWithErrorHandling<void>(url, { method: 'DELETE', credentials: 'include' })
+      await fetchAPIData<void>(url, { method: 'DELETE', credentials: 'include' })
     },
     onMutate: async ({ donationId }) => {
       await queryClient.cancelQueries({ queryKey: QueryKeys.myDonations })

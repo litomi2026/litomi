@@ -8,10 +8,10 @@ import { RefObject, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
 import { requestPasskeyAuthenticationOptions, verifyPasskeyAuthentication } from '@/app/auth/login/api'
-import { ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/react-query-error'
+import { ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/api-request'
 
 type Props = {
   disabled?: boolean

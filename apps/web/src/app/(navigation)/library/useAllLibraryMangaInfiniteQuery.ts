@@ -4,7 +4,7 @@ import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -15,7 +15,7 @@ export async function fetchAllLibraryMangas({ cursor }: { cursor: string | null 
     url.searchParams.set('cursor', cursor)
   }
 
-  const { data } = await fetchWithErrorHandling<GETV1LibraryMangaResponse>(url)
+  const { data } = await fetchAPIData<GETV1LibraryMangaResponse>(url)
   return data
 }
 

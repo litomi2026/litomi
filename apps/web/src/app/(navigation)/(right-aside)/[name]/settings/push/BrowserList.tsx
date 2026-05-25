@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ProblemDetailsError } from '@/utils/react-query-error'
+import type { ProblemDetailsError } from '@/utils/api-request'
 
 import { formatDeviceInfo } from '@/utils/push-device'
 

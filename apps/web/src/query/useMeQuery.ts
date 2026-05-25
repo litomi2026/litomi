@@ -8,13 +8,13 @@ import ms from 'ms'
 import { useEffect, useState } from 'react'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchMe() {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me`
-  const { data } = await fetchWithErrorHandling<GETV1MeResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1MeResponse>(url, { credentials: 'include' })
   return data
 }
 

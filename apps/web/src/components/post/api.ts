@@ -8,7 +8,7 @@ import type {
 
 import { env } from '@litomi/env/client'
 
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
+import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -17,7 +17,7 @@ export type SetPostLikeResponse = DELETEV1PostIdLikeResponse | PUTV1PostIdLikeRe
 export async function createPost(body: POSTV1PostBody) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post`
 
-  const { data } = await fetchWithErrorHandling<POSTV1PostResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1PostResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -30,7 +30,7 @@ export async function createPost(body: POSTV1PostBody) {
 export async function deletePost(postId: number) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post/${postId}`
 
-  const { data } = await fetchWithErrorHandling<DELETEV1PostIdResponse>(url, {
+  const { data } = await fetchAPIData<DELETEV1PostIdResponse>(url, {
     method: 'DELETE',
     credentials: 'include',
   })
@@ -41,7 +41,7 @@ export async function deletePost(postId: number) {
 export async function toggleLikingPost(postId: number, liked: boolean) {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post/${postId}/like`
 
-  const { data } = await fetchWithErrorHandling<SetPostLikeResponse>(url, {
+  const { data } = await fetchAPIData<SetPostLikeResponse>(url, {
     method: liked ? 'PUT' : 'DELETE',
     credentials: 'include',
   })

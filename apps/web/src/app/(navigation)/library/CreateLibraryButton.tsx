@@ -3,7 +3,11 @@
 import type { GETV1LibraryListResponse, LibraryListItem, POSTV1LibraryResponse } from '@litomi/contracts'
 
 import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/library/policy'
+import {
+  MAX_LIBRARY_DESCRIPTION_LENGTH,
+  MAX_LIBRARY_ICON_LENGTH,
+  MAX_LIBRARY_NAME_LENGTH,
+} from '@litomi/domain/library/policy'
 import { env } from '@litomi/env/client'
 import { normalizeString } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
@@ -15,7 +19,7 @@ import { twMerge } from 'tailwind-merge'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
 
 import { getRandomLibraryColor } from './libraryColorInput'
 import { getRandomLibraryIcon, getValidLibraryIcon, preloadLibraryEmojiList } from './libraryIconInput'
@@ -373,7 +377,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
 
 async function createLibraryApi(payload: CreateLibraryPayload): Promise<POSTV1LibraryResponse> {
   const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library`
-  const { data } = await fetchWithErrorHandling<POSTV1LibraryResponse>(url, {
+  const { data } = await fetchAPIData<POSTV1LibraryResponse>(url, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },

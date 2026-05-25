@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -26,7 +26,7 @@ export async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOpt
   url.searchParams.set('scope', scope)
 
   try {
-    const { data } = await fetchWithErrorHandling<GETV1LibraryResponse>(url.toString(), {
+    const { data } = await fetchAPIData<GETV1LibraryResponse>(url.toString(), {
       credentials: 'include',
     })
     return data
