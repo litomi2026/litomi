@@ -4,7 +4,7 @@ import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
@@ -29,12 +29,11 @@ export async function fetchPaginatedCensorships({ pageParam }: Params) {
 
 export default function useCensorshipsInfiniteQuery() {
   const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
 
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteCensorships,
     queryFn: ({ pageParam }: Params) => fetchPaginatedCensorships({ pageParam }),
-    enabled: hasAdultAccess(adultState),
+    enabled: hasAdultAccess(me),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
     meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },

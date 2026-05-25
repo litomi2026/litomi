@@ -2,9 +2,13 @@ import type { GETV1MeResponse } from '@litomi/contracts'
 
 import { describe, expect, it } from 'bun:test'
 
-import { AdultState, getAdultState, hasAdultAccess, requiresAdultVerification } from '../adult-verification'
+import { hasAdultAccess, isAdultAccessBlocked, isAdultVerified, shouldShowNonAdultAds } from '../adult-verification'
 
-function createMe(status: GETV1MeResponse['adultVerification']['status'], required = true): GETV1MeResponse {
+function createMe(
+  status: GETV1MeResponse['adultVerification']['status'],
+  required = true,
+  adultVerifiedAdVisible = false,
+): GETV1MeResponse {
   return {
     id: 1,
     loginId: 'tester',
@@ -17,52 +21,59 @@ function createMe(status: GETV1MeResponse['adultVerification']['status'], requir
     },
     settings: {
       historySyncEnabled: true,
-      adultVerifiedAdVisible: false,
+      adultVerifiedAdVisible,
+      defaultCensorshipEnabled: true,
       autoDeletionDay: 180,
     },
   }
 }
 
 describe('성인 인증 유틸', () => {
-  describe('getAdultAccessState', () => {
-    it('me가 undefined면 미해결 상태를 반환한다', () => {
-      expect(getAdultState(undefined)).toBe(AdultState.UNRESOLVED)
-    })
-
-    it('me가 null이면 게스트 상태를 반환한다', () => {
-      expect(getAdultState(null)).toBe(AdultState.NOT_LOGIN)
-    })
-
-    it('인증이 필요 없으면 not_required 상태를 반환한다', () => {
-      expect(getAdultState(createMe('unverified', false))).toBe(AdultState.NOT_REQUIRED)
-    })
-
-    it('인증이 필요한 상태값을 명시적인 접근 상태로 매핑한다', () => {
-      expect(getAdultState(createMe('adult'))).toBe(AdultState.ADULT)
-      expect(getAdultState(createMe('unverified'))).toBe(AdultState.UNVERIFIED)
-      expect(getAdultState(createMe('not_adult'))).toBe(AdultState.NOT_ADULT)
+  describe('isAdultVerified', () => {
+    it('성인 인증 완료 여부를 status만으로 판단한다', () => {
+      expect(isAdultVerified(undefined)).toBe(false)
+      expect(isAdultVerified(null)).toBe(false)
+      expect(isAdultVerified(createMe('adult'))).toBe(true)
+      expect(isAdultVerified(createMe('unverified'))).toBe(false)
+      expect(isAdultVerified(createMe('not_adult'))).toBe(false)
     })
   })
 
   describe('hasAdultAccess', () => {
-    it('접근이 허용된 상태에서만 true를 반환한다', () => {
-      expect(hasAdultAccess(AdultState.UNRESOLVED)).toBe(false)
-      expect(hasAdultAccess(AdultState.NOT_LOGIN)).toBe(false)
-      expect(hasAdultAccess(AdultState.NOT_REQUIRED)).toBe(true)
-      expect(hasAdultAccess(AdultState.ADULT)).toBe(true)
-      expect(hasAdultAccess(AdultState.UNVERIFIED)).toBe(false)
-      expect(hasAdultAccess(AdultState.NOT_ADULT)).toBe(false)
+    it('로그인했고 성인 게이트가 없거나 성인 인증이 완료된 경우 true를 반환한다', () => {
+      expect(hasAdultAccess(undefined)).toBe(false)
+      expect(hasAdultAccess(null)).toBe(false)
+      expect(hasAdultAccess(createMe('unverified', false))).toBe(true)
+      expect(hasAdultAccess(createMe('adult'))).toBe(true)
+      expect(hasAdultAccess(createMe('unverified'))).toBe(false)
+      expect(hasAdultAccess(createMe('not_adult'))).toBe(false)
     })
   })
 
-  describe('requiresAdultVerification', () => {
-    it('사용자에게 성인 인증이 강제될 때만 true를 반환한다', () => {
-      expect(requiresAdultVerification(AdultState.UNRESOLVED)).toBe(false)
-      expect(requiresAdultVerification(AdultState.NOT_LOGIN)).toBe(false)
-      expect(requiresAdultVerification(AdultState.NOT_REQUIRED)).toBe(false)
-      expect(requiresAdultVerification(AdultState.ADULT)).toBe(true)
-      expect(requiresAdultVerification(AdultState.UNVERIFIED)).toBe(true)
-      expect(requiresAdultVerification(AdultState.NOT_ADULT)).toBe(true)
+  describe('isAdultAccessBlocked', () => {
+    it('비로그인 또는 성인 게이트에서 통과하지 못한 경우 true를 반환한다', () => {
+      expect(isAdultAccessBlocked(undefined)).toBe(false)
+      expect(isAdultAccessBlocked(null)).toBe(true)
+      expect(isAdultAccessBlocked(createMe('unverified', false))).toBe(false)
+      expect(isAdultAccessBlocked(createMe('adult'))).toBe(false)
+      expect(isAdultAccessBlocked(createMe('unverified'))).toBe(true)
+      expect(isAdultAccessBlocked(createMe('not_adult'))).toBe(true)
+    })
+  })
+
+  describe('shouldShowNonAdultAds', () => {
+    it('성인 인증 완료 전에는 로그인 여부와 무관하게 광고가 필요하다', () => {
+      expect(shouldShowNonAdultAds(undefined)).toBe(false)
+      expect(shouldShowNonAdultAds(null)).toBe(true)
+      expect(shouldShowNonAdultAds(createMe('unverified'))).toBe(true)
+      expect(shouldShowNonAdultAds(createMe('not_adult'))).toBe(true)
+      expect(shouldShowNonAdultAds(createMe('unverified', false))).toBe(true)
+    })
+
+    it('성인 인증 완료 후에는 사용자 설정에 따라 광고를 표시한다', () => {
+      expect(shouldShowNonAdultAds(createMe('adult'))).toBe(false)
+      expect(shouldShowNonAdultAds(createMe('adult', true, true))).toBe(true)
+      expect(shouldShowNonAdultAds(createMe('adult', false))).toBe(false)
     })
   })
 })

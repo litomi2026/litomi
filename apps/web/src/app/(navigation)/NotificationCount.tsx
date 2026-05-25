@@ -8,7 +8,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -40,12 +40,11 @@ async function fetchUnreadCount() {
 
 function useNotificationUnreadCountQuery() {
   const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
 
   return useQuery<GETUnreadCountResponse>({
     queryKey: QueryKeys.notificationUnreadCount,
     queryFn: fetchUnreadCount,
-    enabled: hasAdultAccess(adultState),
+    enabled: hasAdultAccess(me),
     meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }

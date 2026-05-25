@@ -2,12 +2,11 @@
 
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 
 export default function useAdultAccessGuard() {
   const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
-  const canAccess = hasAdultAccess(adultState)
+  const canAccess = hasAdultAccess(me)
 
   function guardLogin() {
     if (me === undefined) {
@@ -41,7 +40,6 @@ export default function useAdultAccessGuard() {
   }
 
   return {
-    adultState,
     canAccess,
     guardAdultAccess,
     guardLogin,

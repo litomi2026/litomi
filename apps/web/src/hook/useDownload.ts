@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import { showAdultVerificationRecommendedToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { downloadMultipleImages } from '@/utils/download'
 
 // Supported image extensions
@@ -22,7 +22,6 @@ type Props = {
 
 export function useDownload({ manga }: Props) {
   const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadedCount, setDownloadedCount] = useState(0)
 
@@ -31,7 +30,7 @@ export function useDownload({ manga }: Props) {
       return
     }
 
-    if (!hasAdultAccess(adultState)) {
+    if (!hasAdultAccess(me)) {
       const toastOption = me
         ? { message: '성인인증하면 다운로드 시 광고가 제거돼요', username: me.name }
         : { message: '로그인하면 다운로드 시 광고가 제거돼요' }
@@ -78,13 +77,13 @@ export function useDownload({ manga }: Props) {
       setIsDownloading(false)
       setDownloadedCount(0)
     }
-  }, [adultState, isDownloading, manga, me])
+  }, [isDownloading, manga, me])
 
   return {
-    adultState,
     isDownloading,
     downloadedCount,
     downloadAllImages,
+    me,
   }
 }
 

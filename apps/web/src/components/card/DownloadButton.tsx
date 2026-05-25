@@ -18,7 +18,7 @@ import {
 } from '@/components/ads/juicy-ads/popunder'
 import { useDownload } from '@/hook/useDownload'
 import { useThrottleValue } from '@/hook/useThrottleValue'
-import { AdultState } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 
 const commonButtonStyle =
   'relative flex justify-center items-center gap-1 overflow-hidden transition disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700'
@@ -36,7 +36,7 @@ type Props = {
 
 export default function DownloadButton({ manga, className = '' }: Props) {
   const pathname = usePathname()
-  const { adultState, isDownloading, downloadedCount, downloadAllImages } = useDownload({ manga })
+  const { isDownloading, downloadedCount, downloadAllImages, me } = useDownload({ manga })
   const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
 
   const { images = [] } = manga
@@ -46,7 +46,7 @@ export default function DownloadButton({ manga, className = '' }: Props) {
   const label = getProgressText({ isDownloading, progress, throttledCount, totalCount })
   const progressWidth = isDownloading ? `${Math.max(progress, 6)}%` : '0%'
   const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
-  const shouldEnablePopunder = shouldEnableDownloadButtonPopunder({ adultState, hasAuthHint })
+  const shouldEnablePopunder = me === undefined ? !hasAuthHint : !isAdultVerified(me)
   const shouldAttachPopunder = shouldEnablePopunder && !isDisabled
 
   useEffect(() => {
@@ -156,22 +156,4 @@ function getProgressText({
   }
 
   return totalCount > 20 ? `${throttledCount}/${totalCount}` : `${progress}%`
-}
-
-function shouldEnableDownloadButtonPopunder({
-  adultState,
-  hasAuthHint,
-}: {
-  adultState: AdultState
-  hasAuthHint: boolean
-}) {
-  if (adultState === AdultState.ADULT) {
-    return false
-  }
-
-  if (adultState === AdultState.UNRESOLVED) {
-    return !hasAuthHint
-  }
-
-  return true
 }

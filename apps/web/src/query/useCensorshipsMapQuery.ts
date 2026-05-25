@@ -5,7 +5,7 @@ import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
@@ -28,12 +28,11 @@ export async function fetchCensorshipsMap() {
 
 export default function useCensorshipsMapQuery() {
   const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
 
   return useQuery({
     queryKey: QueryKeys.censorship,
     queryFn: fetchCensorshipsMap,
-    enabled: hasAdultAccess(adultState),
+    enabled: hasAdultAccess(me),
     meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }

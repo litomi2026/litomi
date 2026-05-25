@@ -15,7 +15,7 @@ import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 
 import { deleteNotifications, markNotificationsAsRead } from './api'
 import { SearchParams } from './common'
@@ -44,7 +44,6 @@ export default function NotificationList() {
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const { data: me, isLoading: isMeLoading } = useMeQuery()
-  const adultState = getAdultState(me)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useNotificationInfiniteQuery()
@@ -212,7 +211,7 @@ export default function NotificationList() {
         </div>
       ) : !me ? (
         <Unauthorized />
-      ) : !hasAdultAccess(adultState) ? (
+      ) : !hasAdultAccess(me) ? (
         <AdultVerificationGate
           description="알림을 확인하려면 익명 성인인증이 필요해요"
           title="성인인증이 필요해요"

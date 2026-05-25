@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -20,7 +20,6 @@ export async function fetchNotifications(searchParams: URLSearchParams) {
 export default function useNotificationInfiniteQuery() {
   const searchParams = useSearchParams()
   const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
 
   return useInfiniteQuery<GETNotificationResponse, Error>({
     queryKey: QueryKeys.notifications(searchParams),
@@ -40,7 +39,7 @@ export default function useNotificationInfiniteQuery() {
     getNextPageParam: ({ hasNextPage, notifications }) =>
       hasNextPage ? notifications[notifications.length - 1]?.id.toString() : null,
     initialPageParam: undefined,
-    enabled: hasAdultAccess(adultState),
+    enabled: hasAdultAccess(me),
     meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }

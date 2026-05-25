@@ -10,7 +10,6 @@ import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsB
 import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { AdultState, getAdultState } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import MangaReader from './MangaReader'
@@ -28,7 +27,6 @@ export default function MangaPage({ id, initialManga }: Props) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const unlockTimeoutRef = useRef<number>(null)
   const { data: me } = useMeQuery()
-  const status = getAdultState(me)
   const isWaitingForAdClick = !me && !hasClickedAd
   const mangaIds = isWaitingForAdClick ? [] : [id]
   const { mangaMap } = useMangaListCachedQuery({ mangaIds })
@@ -61,7 +59,7 @@ export default function MangaPage({ id, initialManga }: Props) {
   }, [])
 
   // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 깜빡임을 막아요.
-  if (status === AdultState.UNRESOLVED) {
+  if (me === undefined) {
     return null
   }
 
