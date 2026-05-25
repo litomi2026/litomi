@@ -5,6 +5,7 @@ import { userExpansionTable } from '@litomi/db/app/points'
 import { MAX_LIBRARIES_PER_USER } from '@litomi/domain/library/policy'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { hexColorToInt } from '@litomi/domain/utils/color'
+import { problemCode } from '@litomi/http/problem-details'
 import { normalizeString } from '@litomi/std'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -82,7 +83,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema),
     if (message === ErrorCode.LIBRARY_LIMIT_REACHED) {
       return problemResponse(c, {
         status: 403,
-        code: 'libo-expansion-required',
+        code: problemCode.LIBO_EXPANSION_REQUIRED,
         detail: '서재 개수 제한에 도달했어요',
       })
     }

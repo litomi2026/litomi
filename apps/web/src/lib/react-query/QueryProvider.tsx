@@ -1,6 +1,6 @@
 'use client'
 
-import { isProblemType } from '@litomi/http/problem-details'
+import { isProblemType, problemCode } from '@litomi/http/problem-details'
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
@@ -20,11 +20,11 @@ import {
 import { handleUnauthorizedError } from './auth-state'
 
 export function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
-  return isProblemType(typeUrl, 'adult-verification-required')
+  return isProblemType(typeUrl, problemCode.ADULT_VERIFICATION_REQUIRED)
 }
 
 export function isLiboExpansionRequiredProblem(typeUrl: string): boolean {
-  return isProblemType(typeUrl, 'libo-expansion-required')
+  return isProblemType(typeUrl, problemCode.LIBO_EXPANSION_REQUIRED)
 }
 
 export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {

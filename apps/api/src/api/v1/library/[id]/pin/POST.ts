@@ -1,6 +1,7 @@
 import { libraryIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
+import { problemCode } from '@litomi/http/problem-details'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
@@ -58,7 +59,7 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', libraryId
       if (pinnedList.length >= limit) {
         return problemResponse(c, {
           status: 403,
-          code: 'libo-expansion-required',
+          code: problemCode.LIBO_EXPANSION_REQUIRED,
           detail: `현재 ${limit}개까지만 추가할 수 있어요`,
         })
       }
