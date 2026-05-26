@@ -132,14 +132,13 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     const newCounter =
       authenticationInfo.credentialDeviceType === 'singleDevice' ? authenticationInfo.newCounter : credential.counter
 
-    const isCounterAdvanced = newCounter > credential.counter
     const now = new Date()
 
     const [credentialUse] = await db
       .update(credentialTable)
       .set({ counter: newCounter, lastUsedAt: now })
       .where(
-        isCounterAdvanced
+        newCounter > credential.counter
           ? and(eq(credentialTable.credentialId, authentication.id), lt(credentialTable.counter, newCounter))
           : eq(credentialTable.credentialId, authentication.id),
       )
