@@ -3,7 +3,7 @@
   "2.5-jigen_no_yuuwaku": { "en": "2.5-Jigen No Yuuwaku", "ko": "2.5차원의 유혹", "ja": "2.5次元の誘惑" },
   "7th_dragon": { "en": "7th Dragon", "ko": "세븐스 드래곤", "ja": "セブンスドラゴン" },
   "16bit_sensation": { "en": "16bit Sensation", "ko": "16비트 센세이션", "ja": "16bitセンセーション" },
-  "...": { "en": "..." },
+  "...": { "en": "...", "ko": "...", "ja": "..." },
   ".hacklegend_of_the_twilight": {
     "en": ".Hacklegend Of The Twilight",
     "ko": ".hack//황혼의 팔찌 전설",
@@ -821,7 +821,7 @@
   "goddess_of_victory_nikke": {
     "en": "Goddess of Victory: Nikke",
     "ko": "승리의 여신: 니케",
-    "jp": "勝利の女神：NIKKE"
+    "ja": "勝利の女神：NIKKE"
   },
   "godzilla": { "en": "Godzilla", "ko": "고질라", "ja": "ゴジラ" },
   "golden_boy": { "en": "Golden Boy", "ko": "골든 보이", "ja": "ゴールデンボーイ" },
@@ -924,7 +924,7 @@
   "hell_teacher_nube": { "en": "Hell Teacher Nūbē", "ko": "지옥선생 누베", "ja": "地獄先生ぬ〜べ〜" },
   "helldivers": { "en": "Helldivers", "ko": "헬다이버스", "ja": "ヘルダイバー" },
   "hellsing": { "en": "Hellsing", "ko": "헬싱", "ja": "HELLSING" },
-  "helltaker": { "en": "Helltaker", "ko": "헬테이커", "jp": "ヘルテイカー" },
+  "helltaker": { "en": "Helltaker", "ko": "헬테이커", "ja": "Helltaker" },
   "helluva_boss": { "en": "Helluva Boss", "ko": "헬루바 보스", "ja": "ヘルヴァボス" },
   "hentai_ouji_to_warawanai_neko": {
     "en": "Hentai Ouji To Warawanai Neko",
@@ -977,7 +977,7 @@
   "hololive": { "en": "hololive", "ko": "홀로라이브", "ja": "ホロライブ" },
   "honey_and_clover": { "en": "Honey And Clover", "ko": "허니 앤 클로버", "ja": "ハチミツとクローバー" },
   "honkai_gakuen": { "en": "Honkai Gakuen", "ko": "붕괴학원", "ja": "崩壊学園" },
-  "honkai_star_rail": { "en": "Honkai: Star Rail", "ko": "붕괴: 스타레일", "jp": "崩壊：スターレイル" },
+  "honkai_star_rail": { "en": "Honkai: Star Rail", "ko": "붕괴: 스타레일", "ja": "崩壊：スターレイル" },
   "honto_ni_atta_reibai_sensei": {
     "en": "Honto Ni Atta Reibai Sensei",
     "ko": "실제로 있었던 처녀 선생님",
@@ -2462,7 +2462,7 @@
   "tokidoki_bosotto_russia-go_de_dereru_tonari_no_alya-san": {
     "en": "Alya Sometimes Hides Her Feelings in Russian",
     "ko": "가끔씩 툭하고 러시아어로 부끄러워하는 옆자리의 아랴 양",
-    "jp": "時々ボソッとロシア語でデレる隣のアーリャさん"
+    "ja": "時々ボソッとロシア語でデレる隣のアーリャさん"
   },
   "tokimeki_memorial": { "en": "Tokimeki Memorial", "ko": "토키메키 메모리얼", "ja": "ときめきメモリアル" },
   "tokyo_7th_sisters": { "en": "Tokyo 7th Sisters", "ko": "도쿄 세븐스 시스터즈", "ja": "Tokyo 7th シスターズ" },
@@ -2510,7 +2510,7 @@
   "tsujou_kougeki_ga_zentai_kougeki_de_2-kai_kougeki_no_okaasan_wa_suki_desu_ka": {
     "en": "Do You Love Your Mom and Her Two-Hit Multi-Target Attacks?",
     "ko": "일반공격이 전체공격에 2회 공격인 엄마는 좋아하세요?",
-    "jp": "通常攻撃が全体攻撃で二回攻撃のお母さんは好きですか？"
+    "ja": "通常攻撃が全体攻撃で二回攻撃のお母さんは好きですか？"
   },
   "tsukiatte_yo_satsuki-chan": {
     "en": "Tsukiatte Yo Satsuki-Chan",
@@ -2646,7 +2646,7 @@
   },
   "world_trigger": { "en": "World Trigger", "ko": "월드 트리거", "ja": "ワールドトリガー" },
   "wreck_it_ralph": { "en": "Wreck It Ralph", "ko": "주먹왕 랄프", "ja": "シュガー・ラッシュ" },
-  "wuthering_waves": { "en": "Wuthering Waves", "ko": "명조: 워더링 웨이브", "jp": "鳴潮" },
+  "wuthering_waves": { "en": "Wuthering Waves", "ko": "명조: 워더링 웨이브", "ja": "鳴潮" },
   "x-blades": { "en": "X-Blades", "ko": "X-블레이드", "ja": "X-ブレード" },
   "x-men": { "en": "X-Men", "ko": "엑스맨", "ja": "X-メン" },
   "xenoblade": { "en": "Xenoblade", "ko": "제노블레이드", "ja": "ゼノブレイド" },
@@ -2721,7 +2721,7 @@
   },
   "yuyushiki": { "en": "Yuyushiki", "ko": "유유시키", "ja": "ゆゆ式" },
   "zaregoto": { "en": "Zaregoto", "ko": "자레고토", "ja": "戯言" },
-  "zenless_zone_zero": { "en": "Zenless Zone Zero", "ko": "젠레스 존 제로", "jp": "ゼンレスゾーンゼロ" },
+  "zenless_zone_zero": { "en": "Zenless Zone Zero", "ko": "젠레스 존 제로", "ja": "ゼンレスゾーンゼロ" },
   "zero_kara_hajimeru_mahou_no_sho": {
     "en": "Zero Kara Hajimeru Mahou No Sho",
     "ko": "제로부터 시작하는 마법 서적",
