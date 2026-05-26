@@ -36,13 +36,19 @@ export async function touchUserLoginAt(userId: number, now: Date, tx?: AuthTrans
 export async function touchUserLoginAtAndReturnProfile(userId: number, now: Date, tx?: AuthTransaction) {
   const executor = (tx ?? db) as UpdateExecutor
 
-  const [user] = await executor.update(userTable).set({ loginAt: now }).where(eq(userTable.id, userId)).returning({
-    id: userTable.id,
-    loginId: userTable.loginId,
-    name: userTable.name,
-    lastLoginAt: userTable.loginAt,
-    lastLogoutAt: userTable.logoutAt,
-  })
+  const [user] = await executor
+    .update(userTable)
+    .set({
+      loginAt: now,
+    })
+    .where(eq(userTable.id, userId))
+    .returning({
+      id: userTable.id,
+      loginId: userTable.loginId,
+      name: userTable.name,
+      lastLoginAt: userTable.loginAt,
+      lastLogoutAt: userTable.logoutAt,
+    })
 
   return user ?? null
 }
