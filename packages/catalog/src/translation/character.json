@@ -141,12 +141,12 @@
   },
   "admiral_graf_spee": {
     "en": "Admiral Graf Spee",
-    "ko": "독일 장갑함 그라프쉬페",
+    "ko": "아드미랄 그라프 슈피",
     "ja": "アドミラル・グラーフ・シュペー"
   },
   "admiral_hipper": {
     "en": "Admiral Hipper",
-    "ko": "독일 순양함 아드미랄 히퍼",
+    "ko": "아드미랄 히퍼",
     "ja": "アドミラル・ヒッパー"
   },
   "admire_vega": {
@@ -431,7 +431,7 @@
   },
   "ajax": {
     "en": "Ajax",
-    "ko": "에이젝스",
+    "ko": "에이잭스",
     "ja": "エイジャックス"
   },
   "ak-12": {
@@ -15428,7 +15428,7 @@
   },
   "long_island": {
     "en": "Long Island",
-    "ko": "롱아일랜드",
+    "ko": "롱 아일랜드",
     "ja": "ロング・アイランド"
   },
   "loona": {

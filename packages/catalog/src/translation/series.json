@@ -1,54 +1,182 @@
 {
-  "86": { "en": "86", "ko": "86 -에이티식스-", "ja": "86―エイティシックス―" },
-  "2.5-jigen_no_yuuwaku": { "en": "2.5-Jigen No Yuuwaku", "ko": "2.5차원의 유혹", "ja": "2.5次元の誘惑" },
+  "86": {
+    "en": "86",
+    "ko": "86 -에이티식스-",
+    "ja": "86―エイティシックス―",
+    "zh-CN": "86－不存在的战区－",
+    "zh-TW": "86－不存在的戰區－"
+  },
+  "2.5-jigen_no_yuuwaku": {
+    "en": "2.5-Jigen No Yuuwaku",
+    "ko": "2.5차원의 유혹",
+    "ja": "2.5次元の誘惑",
+    "zh-CN": "2.5次元的诱惑",
+    "zh-TW": "2.5次元的誘惑"
+  },
   "7th_dragon": { "en": "7th Dragon", "ko": "세븐스 드래곤", "ja": "セブンスドラゴン" },
-  "16bit_sensation": { "en": "16bit Sensation", "ko": "16비트 센세이션", "ja": "16bitセンセーション" },
-  "...": { "en": "...", "ko": "...", "ja": "..." },
+  "16bit_sensation": {
+    "en": "16bit Sensation",
+    "ko": "16비트 센세이션",
+    "ja": "16bitセンセーション",
+    "zh-CN": "16bit的感动",
+    "zh-TW": "16bit的感動"
+  },
+  "...": { "en": "...", "ko": "...", "ja": "...", "zh-CN": "...", "zh-TW": "..." },
   ".hacklegend_of_the_twilight": {
     "en": ".Hacklegend Of The Twilight",
     "ko": ".hack//황혼의 팔찌 전설",
-    "ja": ".hack//黄昏の腕輪伝説"
+    "ja": ".hack//黄昏の腕輪伝説",
+    "zh-CN": ".hack//黄昏的腕轮传说",
+    "zh-TW": ".hack//黃昏的腕輪傳說"
   },
-  "a_channel": { "en": "A Channel", "ko": "A 채널", "ja": "Aチャンネル" },
+  "a_channel": { "en": "A Channel", "ko": "A 채널", "ja": "Aチャンネル", "zh-CN": "A频道", "zh-TW": "A頻道" },
   "a_little_snow_fairy_sugar": {
     "en": "A Little Snow Fairy Sugar",
     "ko": "꼬마 눈의 요정 슈가",
-    "ja": "ちっちゃな雪使いシュガー"
+    "ja": "ちっちゃな雪使いシュガー",
+    "zh-CN": "小小雪精灵",
+    "zh-TW": "小小雪精靈"
   },
-  "absolute_duo": { "en": "Absolute Duo", "ko": "앱솔루트 듀오", "ja": "アブソリュート・デュオ" },
-  "accel_world": { "en": "Accel World", "ko": "액셀 월드", "ja": "アクセル・ワールド" },
-  "acchi_kocchi": { "en": "Acchi Kocchi", "ko": "여기저기", "ja": "あっちこっち" },
-  "ace_attorney": { "en": "Ace Attorney", "ko": "역전재판", "ja": "逆転裁判" },
-  "act-age": { "en": "Act-Age", "ko": "액터쥬 act-age", "ja": "アクタージュ" },
-  "active_raid": { "en": "Active Raid", "ko": "액티브 레이드 -기동강습실 제8계-", "ja": "アクティヴレイド" },
-  "adventure_time": { "en": "Adventure Time", "ko": "핀과 제이크의 어드벤처 타임", "ja": "アドベンチャー・タイム" },
-  "aggretsuko": { "en": "Aggretsuko", "ko": "어그레시브 레츠코", "ja": "アグレッシブ烈子" },
-  "ah_my_goddess": { "en": "Ah! My Goddess", "ko": "오! 나의 여신님", "ja": "ああっ女神さまっ" },
-  "ai_yori_aoshi": { "en": "Ai Yori Aoshi", "ko": "쪽빛보다 푸르게", "ja": "藍より青し" },
-  "aikatsu": { "en": "Aikatsu!", "ko": "아이카츠!", "ja": "アイカツ！" },
-  "aikatsu_friends": { "en": "Aikatsu Friends", "ko": "아이카츠 프렌즈!", "ja": "アイカツフレンズ！" },
+  "absolute_duo": {
+    "en": "Absolute Duo",
+    "ko": "앱솔루트 듀오",
+    "ja": "アブソリュート・デュオ",
+    "zh-CN": "绝对双刃",
+    "zh-TW": "絕對雙刃"
+  },
+  "accel_world": {
+    "en": "Accel World",
+    "ko": "액셀 월드",
+    "ja": "アクセル・ワールド",
+    "zh-CN": "加速世界",
+    "zh-TW": "加速世界"
+  },
+  "acchi_kocchi": {
+    "en": "Acchi Kocchi",
+    "ko": "여기저기",
+    "ja": "あっちこっち",
+    "zh-CN": "一起一起这里那里",
+    "zh-TW": "一起一起這裡那裡"
+  },
+  "ace_attorney": {
+    "en": "Ace Attorney",
+    "ko": "역전재판",
+    "ja": "逆転裁判",
+    "zh-CN": "逆转裁判",
+    "zh-TW": "逆轉裁判"
+  },
+  "act-age": {
+    "en": "Act-Age",
+    "ko": "액터쥬 act-age",
+    "ja": "アクタージュ",
+    "zh-CN": "演员夜凪景 act-age",
+    "zh-TW": "演員夜凪景 act-age"
+  },
+  "active_raid": {
+    "en": "Active Raid",
+    "ko": "액티브 레이드 -기동강습실 제8계-",
+    "ja": "アクティヴレイド",
+    "zh-CN": "Active Raid－机动强袭室第八系－",
+    "zh-TW": "Active Raid－機動強襲室第八係－"
+  },
+  "adventure_time": {
+    "en": "Adventure Time",
+    "ko": "핀과 제이크의 어드벤처 타임",
+    "ja": "アドベンチャー・タイム",
+    "zh-CN": "探险活宝",
+    "zh-TW": "探險活寶"
+  },
+  "aggretsuko": {
+    "en": "Aggretsuko",
+    "ko": "어그레시브 레츠코",
+    "ja": "アグレッシブ烈子",
+    "zh-CN": "冲吧烈子",
+    "zh-TW": "衝吧烈子"
+  },
+  "ah_my_goddess": {
+    "en": "Ah! My Goddess",
+    "ko": "오! 나의 여신님",
+    "ja": "ああっ女神さまっ",
+    "zh-CN": "我的女神",
+    "zh-TW": "幸運女神"
+  },
+  "ai_yori_aoshi": {
+    "en": "Ai Yori Aoshi",
+    "ko": "쪽빛보다 푸르게",
+    "ja": "藍より青し",
+    "zh-CN": "青出于蓝",
+    "zh-TW": "青出於藍"
+  },
+  "aikatsu": { "en": "Aikatsu!", "ko": "아이카츠!", "ja": "アイカツ！", "zh-CN": "偶像活动！", "zh-TW": "偶像活動！" },
+  "aikatsu_friends": {
+    "en": "Aikatsu Friends",
+    "ko": "아이카츠 프렌즈!",
+    "ja": "アイカツフレンズ！",
+    "zh-CN": "偶像活动Friends！",
+    "zh-TW": "偶像活動Friends！"
+  },
   "aisai_nikki": { "en": "Aisai Nikki", "ko": "애처일기", "ja": "愛妻日記" },
   "aiura": { "en": "Aiura", "ko": "아이우라", "ja": "あいうら" },
-  "akame_ga_kill": { "en": "Akame Ga Kill", "ko": "아카메가 벤다!", "ja": "アカメが斬る！" },
+  "akame_ga_kill": {
+    "en": "Akame Ga Kill",
+    "ko": "아카메가 벤다!",
+    "ja": "アカメが斬る！",
+    "zh-CN": "斩！赤红之瞳",
+    "zh-TW": "斬！赤紅之瞳"
+  },
   "akatsuki_blitzkampf": { "en": "Akatsuki Blitzkampf", "ko": "아카츠키 전광전기", "ja": "アカツキ電光戦記" },
-  "akazukin_chacha": { "en": "Akazukin Chacha", "ko": "빨간망토 차차", "ja": "赤ずきんチャチャ" },
+  "akazukin_chacha": {
+    "en": "Akazukin Chacha",
+    "ko": "빨간망토 차차",
+    "ja": "赤ずきんチャチャ",
+    "zh-CN": "小红帽恰恰",
+    "zh-TW": "小紅帽恰恰"
+  },
   "akebi-chan_no_sailor_fuku": {
     "en": "Akebi-Chan No Sailor Fuku",
     "ko": "아케비의 세일러복",
-    "ja": "明日ちゃんのセーラー服"
+    "ja": "明日ちゃんのセーラー服",
+    "zh-CN": "明日同学的水手服",
+    "zh-TW": "明日同學的水手服"
   },
   "akebi_no_mi": { "en": "Akebi No Mi", "ko": "아케비의 열매", "ja": "アケビの実" },
   "albatross_koukairoku": { "en": "Albatross Koukairoku", "ko": "신천옹 항해록", "ja": "信天翁航海録" },
-  "aldnoah.zero": { "en": "Aldnoah.Zero", "ko": "알드노아. 제로", "ja": "アルドノア・ゼロ" },
-  "alice_gear_aegis": { "en": "Alice Gear Aegis", "ko": "앨리스 기어 아이기스", "ja": "アリス・ギア・アイギス" },
-  "alice_in_wonderland": { "en": "Alice in Wonderland", "ko": "이상한 나라의 앨리스", "ja": "ふしぎの国のアリス" },
-  "aliens": { "en": "Aliens", "ko": "에이리언", "ja": "エイリアン" },
-  "amaama_to_inazuma": { "en": "Amaama To Inazuma", "ko": "달콤달콤 & 짜릿짜릿", "ja": "甘々と稲妻" },
-  "amagami": { "en": "Amagami", "ko": "아마가미", "ja": "アマガミ" },
+  "aldnoah.zero": {
+    "en": "Aldnoah.Zero",
+    "ko": "알드노아. 제로",
+    "ja": "アルドノア・ゼロ",
+    "zh-CN": "ALDNOAH.ZERO",
+    "zh-TW": "ALDNOAH.ZERO"
+  },
+  "alice_gear_aegis": {
+    "en": "Alice Gear Aegis",
+    "ko": "앨리스 기어 아이기스",
+    "ja": "アリス・ギア・アイギス",
+    "zh-CN": "机甲爱丽丝",
+    "zh-TW": "機戰少女Alice"
+  },
+  "alice_in_wonderland": {
+    "en": "Alice in Wonderland",
+    "ko": "이상한 나라의 앨리스",
+    "ja": "ふしぎの国のアリス",
+    "zh-CN": "爱丽丝梦游仙境",
+    "zh-TW": "愛麗絲夢遊仙境"
+  },
+  "aliens": { "en": "Aliens", "ko": "에이리언", "ja": "エイリアン", "zh-CN": "异形", "zh-TW": "異形" },
+  "amaama_to_inazuma": {
+    "en": "Amaama To Inazuma",
+    "ko": "달콤달콤 & 짜릿짜릿",
+    "ja": "甘々と稲妻",
+    "zh-CN": "天真与闪电",
+    "zh-TW": "天真與閃電"
+  },
+  "amagami": { "en": "Amagami", "ko": "아마가미", "ja": "アマガミ", "zh-CN": "圣诞之吻", "zh-TW": "聖誕之吻" },
   "amagi_brilliant_park": {
     "en": "Amagi Brilliant Park",
     "ko": "아마기 브릴리언트 파크",
-    "ja": "甘城ブリリアントパーク"
+    "ja": "甘城ブリリアントパーク",
+    "zh-CN": "甘城辉煌乐园救世主",
+    "zh-TW": "甘城輝煌樂園救世主"
   },
   "amairo_islenauts": { "en": "Amairo Islenauts", "ko": "하늘색 * 아일 노츠", "ja": "天色＊アイルノーツ" },
   "amakano": { "en": "Amakano", "ko": "아마카노", "ja": "アマカノ" },
@@ -57,7 +185,7 @@
     "ko": "아마노 메구미는 빈틈투성이!",
     "ja": "天野めぐみはスキだらけ!"
   },
-  "among_us": { "en": "Among Us", "ko": "어몽 어스", "ja": "アマング・アス" },
+  "among_us": { "en": "Among Us", "ko": "어몽 어스", "ja": "アマング・アス", "zh-CN": "Among Us", "zh-TW": "Among Us" },
   "anarchy_reigns": { "en": "Anarchy Reigns", "ko": "맥스 아나키", "ja": "マックス アナーキー" },
   "ane_doki": { "en": "Ane Doki", "ko": "아네도킷", "ja": "あねどきっ" },
   "ane_naru_mono": { "en": "Ane Naru Mono", "ko": "누이 되는자", "ja": "姉なるもの" },
