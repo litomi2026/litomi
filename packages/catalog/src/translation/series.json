@@ -4712,12 +4712,16 @@
   "last_origin": {
     "en": "Last Origin",
     "ko": "라스트 오리진",
-    "ja": "ラストオリジン"
+    "ja": "ラストオリジン",
+    "zh-CN": "Last Origin",
+    "zh-TW": "Last Origin"
   },
   "last_period": {
     "en": "Last Period",
     "ko": "라스트 피리어드",
-    "ja": "ラストピリオド"
+    "ja": "ラストピリオド",
+    "zh-CN": "最终休止符",
+    "zh-TW": "最終休止符"
   },
   "league_of_legends": {
     "en": "League of Legends",
@@ -4763,7 +4767,9 @@
   "limbus_company": {
     "en": "Limbus Company",
     "ko": "림버스 컴퍼니",
-    "ja": "リムバスカンパニー"
+    "ja": "リムバスカンパニー",
+    "zh-CN": "边狱公司",
+    "zh-TW": "邊獄公司"
   },
   "little_red_riding_hood": {
     "en": "Little Red Riding Hood",
@@ -4820,7 +4826,9 @@
   "lollipop_chainsaw": {
     "en": "Lollipop Chainsaw",
     "ko": "롤리팝 체인소",
-    "ja": "ロリポップチェーンソー"
+    "ja": "ロリポップチェーンソー",
+    "zh-CN": "电锯甜心",
+    "zh-TW": "電鋸甜心"
   },
   "lord_el-melloi_ii_sei_no_jikenbo": {
     "en": "Lord El-Melloi Ii Sei No Jikenbo",
@@ -4837,7 +4845,9 @@
   "lost_saga": {
     "en": "Lost Saga",
     "ko": "로스트사가",
-    "ja": "ロストサーガ"
+    "ja": "ロストサーガ",
+    "zh-CN": "Lost Saga",
+    "zh-TW": "Lost Saga"
   },
   "lotte_no_omocha": {
     "en": "Astarotte's Toy!",
@@ -4887,7 +4897,9 @@
   "love_plus": {
     "en": "LovePlus",
     "ko": "러브플러스",
-    "ja": "ラブプラス"
+    "ja": "ラブプラス",
+    "zh-CN": "LovePlus",
+    "zh-TW": "LovePlus"
   },
   "lover": {
     "en": "Lover",
@@ -4928,7 +4940,9 @@
   "m.u.g.e.n": {
     "en": "M.U.G.E.N",
     "ko": "M.U.G.E.N",
-    "ja": "M.U.G.E.N"
+    "ja": "M.U.G.E.N",
+    "zh-CN": "M.U.G.E.N",
+    "zh-TW": "M.U.G.E.N"
   },
   "ma_ga_ochiru_yoru": {
     "en": "Ma Ga Ochiru Yoru",
@@ -4971,7 +4985,9 @@
   "madan_no_ou_to_vanadis": {
     "en": "Madan No Ou To Vanadis",
     "ko": "마탄의 왕과 바나디스",
-    "ja": "魔弾の王と戦姫"
+    "ja": "魔弾の王と戦姫",
+    "zh-CN": "魔弹之王与战姬",
+    "zh-TW": "魔彈之王與戰姬"
   },
   "made_in_abyss": {
     "en": "Made in Abyss",
@@ -4997,7 +5013,9 @@
   "magical_emi": {
     "en": "Magical Emi",
     "ko": "마법의 스타 매지컬 에미",
-    "ja": "魔法のスター マジカルエミ"
+    "ja": "魔法のスター マジカルエミ",
+    "zh-CN": "魔法之星爱美",
+    "zh-TW": "魔法之星愛美"
   },
   "magical_taruruuto-kun": {
     "en": "Magical Taruruuto-Kun",
@@ -5064,7 +5082,9 @@
   "mahou_shoujo_ni_akogarete": {
     "en": "Mahou Shoujo Ni Akogarete",
     "ko": "마법소녀에 동경을",
-    "ja": "魔法少女にあこがれて"
+    "ja": "魔法少女にあこがれて",
+    "zh-CN": "梦想成为魔法少女",
+    "zh-TW": "夢想成為魔法少女"
   },
   "mahou_tsukai_no_yoru": {
     "en": "Mahou Tsukai No Yoru",
@@ -5090,12 +5110,16 @@
   "mai-hime": {
     "en": "My-HiME",
     "ko": "마이히메",
-    "ja": "舞-HiME"
+    "ja": "舞-HiME",
+    "zh-CN": "舞-HiME",
+    "zh-TW": "舞-HiME"
   },
   "mai-otome": {
     "en": "My-Otome",
     "ko": "마이오토메",
-    "ja": "舞-乙HiME"
+    "ja": "舞-乙HiME",
+    "zh-CN": "舞-乙HiME",
+    "zh-TW": "舞-乙HiME"
   },
   "mairimashita_iruma-kun": {
     "en": "Mairimashita Iruma-Kun",
@@ -5114,12 +5138,16 @@
   "majestic_prince": {
     "en": "Majestic Prince",
     "ko": "마제스틱 프린스",
-    "ja": "銀河機攻隊 マジェスティックプリンス"
+    "ja": "銀河機攻隊 マジェスティックプリンス",
+    "zh-CN": "银河机攻队 Majestic Prince",
+    "zh-TW": "銀河機攻隊 莊嚴皇子"
   },
   "maji_de_watashi_ni_koi_shinasai": {
     "en": "Maji De Watashi Ni Koi Shinasai",
     "ko": "진심으로 나에게 사랑을 하라",
-    "ja": "真剣で私に恋しなさい！"
+    "ja": "真剣で私に恋しなさい！",
+    "zh-CN": "认真和我恋爱！",
+    "zh-TW": "認真和我戀愛！"
   },
   "majo_no_tabitabi": {
     "en": "Majo No Tabitabi",
@@ -5172,7 +5200,9 @@
   "manaria_friends": {
     "en": "Manaria Friends",
     "ko": "마나리아 프렌즈",
-    "ja": "マナリアフレンズ"
+    "ja": "マナリアフレンズ",
+    "zh-CN": "玛娜利亚魔法学院",
+    "zh-TW": "瑪娜利亞魔法學院"
   },
   "manatsu_no_yo_no_inmu": {
     "en": "Manatsu No Yo No Inmu",
@@ -5243,12 +5273,16 @@
   "mashiro_iro_symphony": {
     "en": "Mashiro Iro Symphony",
     "ko": "마시로이로 심포니",
-    "ja": "ましろ色シンフォニー"
+    "ja": "ましろ色シンフォニー",
+    "zh-CN": "纯白交响曲",
+    "zh-TW": "純白交響曲"
   },
   "masou_gakuen_hxh": {
     "en": "Masou Gakuen Hxh",
     "ko": "마장학원 H×H",
-    "ja": "魔装学園H×H"
+    "ja": "魔装学園H×H",
+    "zh-CN": "魔装学园H×H",
+    "zh-TW": "魔裝學園H×H"
   },
   "mato_seihei_no_slave": {
     "en": "Mato Seihei No Slave",
@@ -5267,12 +5301,16 @@
   "mayo_chiki": {
     "en": "Mayo Chiki",
     "ko": "마요치키!",
-    "ja": "まよチキ!"
+    "ja": "まよチキ!",
+    "zh-CN": "迷茫管家与懦弱的我",
+    "zh-TW": "迷茫管家與膽怯的我"
   },
   "mayoi_neko_overrun": {
     "en": "Mayoi Neko Overrun",
     "ko": "길 잃은 고양이 오버런!",
-    "ja": "迷い猫オーバーラン!"
+    "ja": "迷い猫オーバーラン!",
+    "zh-CN": "迷途猫Overrun!",
+    "zh-TW": "嬌蠻貓娘大橫行！"
   },
   "mazinger_z": {
     "en": "Mazinger Z",
@@ -5291,7 +5329,9 @@
   "medaka_box": {
     "en": "Medaka Box",
     "ko": "메다카 박스",
-    "ja": "めだかボックス"
+    "ja": "めだかボックス",
+    "zh-CN": "最强会长黑神",
+    "zh-TW": "最強學生會長"
   },
   "medalist": {
     "en": "Medalist",
@@ -5336,7 +5376,9 @@
   "metal_max": {
     "en": "Metal Max",
     "ko": "메탈 맥스",
-    "ja": "メタルマックス"
+    "ja": "メタルマックス",
+    "zh-CN": "重装机兵",
+    "zh-TW": "重裝機兵"
   },
   "metal_slug": {
     "en": "Metal Slug",
@@ -5362,7 +5404,9 @@
   "midori_no_hibi": {
     "en": "Midori No Hibi",
     "ko": "미도리의 나날",
-    "ja": "美鳥の日々"
+    "ja": "美鳥の日々",
+    "zh-CN": "美鸟日记",
+    "zh-TW": "美鳥日記"
   },
   "mieruko-chan": {
     "en": "Mieruko-Chan",
@@ -5374,7 +5418,9 @@
   "mikakunin_de_shinkoukei": {
     "en": "Mikakunin De Shinkoukei",
     "ko": "미확인으로 진행형",
-    "ja": "未確認で進行形"
+    "ja": "未確認で進行形",
+    "zh-CN": "未确认进行式",
+    "zh-TW": "未確認進行式"
   },
   "minami-ke": {
     "en": "Minami-ke",
@@ -5400,7 +5446,9 @@
   "miside": {
     "en": "Miside",
     "ko": "미사이드",
-    "ja": "ミサイド"
+    "ja": "ミサイド",
+    "zh-CN": "MiSide",
+    "zh-TW": "MiSide"
   },
   "miss_machiko": {
     "en": "Miss Machiko",
@@ -5422,7 +5470,9 @@
   "mitsudomoe": {
     "en": "Mitsudomoe",
     "ko": "미츠도모에",
-    "ja": "みつどもえ"
+    "ja": "みつどもえ",
+    "zh-CN": "超元气三姐妹",
+    "zh-TW": "超元氣3姊妹"
   },
   "mob_psycho_100": {
     "en": "Mob Psycho 100",
@@ -5563,12 +5613,16 @@
   "muv-luv": {
     "en": "Muv-Luv",
     "ko": "마브러브",
-    "ja": "マブラヴ"
+    "ja": "マブラヴ",
+    "zh-CN": "Muv-Luv",
+    "zh-TW": "Muv-Luv"
   },
   "muv-luv_alternative_total_eclipse": {
     "en": "Muv-Luv Alternative Total Eclipse",
     "ko": "마브러브 얼터너티브 토탈 이클립스",
-    "ja": "マブラヴ オルタネイティヴ トータル・イクリプス"
+    "ja": "マブラヴ オルタネイティヴ トータル・イクリプス",
+    "zh-CN": "Muv-Luv Alternative Total Eclipse",
+    "zh-TW": "Muv-Luv Alternative Total Eclipse"
   },
   "my_hero_academia": {
     "en": "My Hero Academia",
@@ -5616,7 +5670,9 @@
   "nanabun_no_nijyuuni": {
     "en": "Nanabun No Nijyuuni",
     "ko": "22/7",
-    "ja": "22/7"
+    "ja": "22/7",
+    "zh-CN": "22/7",
+    "zh-TW": "22/7"
   },
   "nanatsu_no_taizai": {
     "en": "The Seven Deadly Sins",
@@ -5628,7 +5684,9 @@
   "nande_koko_ni_sensei_ga": {
     "en": "Nande Koko Ni Sensei Ga",
     "ko": "왜 여기에 선생님이?",
-    "ja": "なんでここに先生が！"
+    "ja": "なんでここに先生が！",
+    "zh-CN": "为什么老师会在这里！？",
+    "zh-TW": "為什麼老師會在這裡！？"
   },
   "narutaru": {
     "en": "Narutaru",
@@ -5645,7 +5703,9 @@
   "nazo_no_kanojo_x": {
     "en": "Nazo No Kanojo X",
     "ko": "수수께끼의 그녀 X",
-    "ja": "謎の彼女X"
+    "ja": "謎の彼女X",
+    "zh-CN": "谜样女友X",
+    "zh-TW": "謎樣女友X"
   },
   "nee_summer": {
     "en": "Nee Summer",
@@ -5684,7 +5744,9 @@
   "netoge_no_yome_wa_onnanoko_ja_nai_to_omotta": {
     "en": "Netoge No Yome Wa Onnanoko Ja Nai To Omotta",
     "ko": "넷게임의 아내가 여자아이일 리가 없다고 생각했어",
-    "ja": "ネトゲの嫁は女の子じゃないと思った?"
+    "ja": "ネトゲの嫁は女の子じゃないと思った?",
+    "zh-CN": "线上游戏的老婆不可能是女生？",
+    "zh-TW": "線上遊戲的老婆不可能是女生？"
   },
   "new_game": {
     "en": "New Game!",
@@ -5736,7 +5798,9 @@
   "ninja_slayer": {
     "en": "Ninja Slayer",
     "ko": "닌자 슬레이어",
-    "ja": "ニンジャスレイヤー"
+    "ja": "ニンジャスレイヤー",
+    "zh-CN": "忍者杀手",
+    "zh-TW": "忍者殺手"
   },
   "nisekoi": {
     "en": "Nisekoi",
@@ -5748,7 +5812,9 @@
   "no-rin": {
     "en": "No-Rin",
     "ko": "농림",
-    "ja": "のうりん"
+    "ja": "のうりん",
+    "zh-CN": "农林",
+    "zh-TW": "農林"
   },
   "no_game_no_life": {
     "en": "No Game No Life",
@@ -5781,22 +5847,30 @@
   "oboro_muramasa": {
     "en": "Oboro Muramasa",
     "ko": "오보로 무라마사",
-    "ja": "朧村正"
+    "ja": "朧村正",
+    "zh-CN": "胧村正",
+    "zh-TW": "朧村正"
   },
   "occultic_nine": {
     "en": "Occultic Nine",
     "ko": "오컬틱 나인",
-    "ja": "オカルティック・ナイン"
+    "ja": "オカルティック・ナイン",
+    "zh-CN": "Occultic;Nine -超自然9人组-",
+    "zh-TW": "Occultic;Nine -超自然9人組-"
   },
   "ochikobore_fruit_tart": {
     "en": "Ochikobore Fruit Tart",
     "ko": "낙제 프루트 타르트",
-    "ja": "おちこぼれフルーツタルト"
+    "ja": "おちこぼれフルーツタルト",
+    "zh-CN": "满溢的水果挞",
+    "zh-TW": "滿溢的水果塔"
   },
   "oda_nobuna_no_yabou": {
     "en": "Oda Nobuna No Yabou",
     "ko": "오다 노부나의 야망",
-    "ja": "織田信奈の野望"
+    "ja": "織田信奈の野望",
+    "zh-CN": "织田信奈的野望",
+    "zh-TW": "織田信奈的野望"
   },
   "odd_taxi": {
     "en": "Odd Taxi",
@@ -5813,12 +5887,16 @@
   "odin_sphere": {
     "en": "Odin Sphere",
     "ko": "오딘 스피어",
-    "ja": "オーディンスフィア"
+    "ja": "オーディンスフィア",
+    "zh-CN": "奥丁领域",
+    "zh-TW": "奧丁領域"
   },
   "oemojisangjui": {
     "en": "Oemojisangjui",
     "ko": "외모지상주의",
-    "ja": "外見至上主義"
+    "ja": "外見至上主義",
+    "zh-CN": "外貌至上主义",
+    "zh-TW": "外貌至上主義"
   },
   "oide_yo_mizuryuu_kei_land": {
     "en": "Oide Yo Mizuryuu Kei Land",
@@ -5835,7 +5913,9 @@
   "ojisan_to_marshmallow": {
     "en": "Ojisan To Marshmallow",
     "ko": "아저씨와 마시멜로",
-    "ja": "おじさんとマシュマロ"
+    "ja": "おじさんとマシュマロ",
+    "zh-CN": "大叔与棉花糖",
+    "zh-TW": "大叔與棉花糖"
   },
   "okusan": {
     "en": "Okusan",
@@ -5845,7 +5925,9 @@
   "omae_umasou_da_na": {
     "en": "Omae Umasou Da Na",
     "ko": "너 정말 맛있어 보여",
-    "ja": "おまえうまそうだな"
+    "ja": "おまえうまそうだな",
+    "zh-CN": "你看起来很好吃",
+    "zh-TW": "你看起來很好吃"
   },
   "omakase_peace_denkiten": {
     "en": "Omakase Peace Denkiten",
@@ -5869,7 +5951,9 @@
   "one_room_hiatari_futsuu_tenshi-tsuki": {
     "en": "One Room Hiatari Futsuu Tenshi-Tsuki",
     "ko": "원룸, 햇살, 보통 천사.",
-    "ja": "ワンルーム、日当たり普通、天使つき。"
+    "ja": "ワンルーム、日当たり普通、天使つき。",
+    "zh-CN": "单间、光照尚好、附带天使。",
+    "zh-TW": "單間、光照尚好、附帶天使。"
   },
   "one_week_friends": {
     "en": "One Week Friends",
@@ -5906,7 +5990,9 @@
   "onii-chan_wa_oshimai": {
     "en": "Onii-Chan Wa Oshimai",
     "ko": "오빠는 끝!",
-    "ja": "お兄ちゃんはおしまい"
+    "ja": "お兄ちゃんはおしまい",
+    "zh-CN": "别当欧尼酱了！",
+    "zh-TW": "別當歐尼醬了！"
   },
   "onmyoji": {
     "en": "Onmyoji",
@@ -5923,7 +6009,9 @@
   "ookami-san_to_shichinin_no_nakama-tachi": {
     "en": "Ookami-San To Shichinin No Nakama-Tachi",
     "ko": "오오카미 양과 일곱 명의 동료들",
-    "ja": "オオカミさんと七人の仲間たち"
+    "ja": "オオカミさんと七人の仲間たち",
+    "zh-CN": "大神与七位伙伴",
+    "zh-TW": "大神與七位夥伴"
   },
   "ookami_kodomo_no_ame_to_yuki": {
     "en": "Ookami Kodomo No Ame To Yuki",
@@ -5942,7 +6030,9 @@
   "ooyasan_wa_shishunki": {
     "en": "Ooyasan Wa Shishunki",
     "ko": "집주인은 사춘기!",
-    "ja": "大家さんは思春期"
+    "ja": "大家さんは思春期",
+    "zh-CN": "房东妹子青春期！",
+    "zh-TW": "房東妹子青春期！"
   },
   "ore_no_imouto_ga_konna_ni_kawaii_wake_ga_nai": {
     "en": "My Little Sister Can't Be This Cute",
@@ -5954,7 +6044,9 @@
   "ore_no_kanojo_to_osananajimi_ga_shuraba_sugiru": {
     "en": "Ore No Kanojo To Osananajimi Ga Shuraba Sugiru",
     "ko": "내 여자친구와 소꿉친구가 완전 수라장",
-    "ja": "俺の彼女と幼なじみが修羅場すぎる"
+    "ja": "俺の彼女と幼なじみが修羅場すぎる",
+    "zh-CN": "我女友与青梅竹马的惨烈修罗场",
+    "zh-TW": "我女友與青梅竹馬的慘烈修羅場"
   },
   "ore_no_shikabane_wo_koeteyuke": {
     "en": "Ore No Shikabane Wo Koeteyuke",
@@ -5971,7 +6063,9 @@
   "original": {
     "en": "Original",
     "ko": "오리지널",
-    "ja": "オリジナル"
+    "ja": "オリジナル",
+    "zh-CN": "原创",
+    "zh-TW": "原創"
   },
   "os-tan": {
     "en": "OS-tans",
@@ -6008,7 +6102,9 @@
   "oshiro_project": {
     "en": "Oshiro Project",
     "ko": "오시로 프로젝트",
-    "ja": "御城プロジェクト"
+    "ja": "御城プロジェクト",
+    "zh-CN": "御城Project",
+    "zh-TW": "御城Project"
   },
   "osomatsu-san": {
     "en": "Mr. Osomatsu",
@@ -6032,7 +6128,9 @@
   "otome_game_sekai_wa_mob_ni_kibishii_sekai_desu": {
     "en": "Otome Game Sekai Wa Mob Ni Kibishii Sekai Desu",
     "ko": "여성향 게임 세계는 엑스트라에게 엄격한 세계입니다",
-    "ja": "乙女ゲー世界はモブに厳しい世界です"
+    "ja": "乙女ゲー世界はモブに厳しい世界です",
+    "zh-CN": "女性向游戏世界对路人角色很不友好",
+    "zh-TW": "女性向遊戲世界對路人角色很不友好"
   },
   "otonari_no_tenshi-sama_ni_itsunomanika_dame_ningen_ni_sareteita_ken": {
     "en": "Otonari No Tenshi-Sama Ni Itsunomanika Dame Ningen Ni Sareteita Ken",
@@ -6044,7 +6142,9 @@
   "otoyomegatari": {
     "en": "Otoyomegatari",
     "ko": "오토요메가타리",
-    "ja": "乙嫁語り"
+    "ja": "乙嫁語り",
+    "zh-CN": "姊嫁物语",
+    "zh-TW": "姊嫁物語"
   },
   "oumagadoki_zoo": {
     "en": "Oumagadoki Zoo",
@@ -6068,7 +6168,9 @@
   "overman_king_gainer": {
     "en": "Overman King Gainer",
     "ko": "오버맨 킹게이너",
-    "ja": "オーバーマン キングゲイナー"
+    "ja": "オーバーマン キングゲイナー",
+    "zh-CN": "帝皇战纪",
+    "zh-TW": "帝皇戰紀"
   },
   "overwatch": {
     "en": "Overwatch",
