@@ -4,6 +4,7 @@ import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { postV1AuthPasskeyVerifyRequestSchema, type POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
+import { credentialTable } from '@litomi/db/app/passkey'
 import { ChallengeType } from '@litomi/domain/auth/model'
 import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
@@ -11,6 +12,7 @@ import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
+import { and, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 
@@ -22,10 +24,7 @@ import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { readCredentialByCredentialId, touchCredentialUse } from './query'
-
 const verifyAuthenticationLimiter = new RateLimiter(RateLimitPresets.strict())
-
 const route = new Hono<Env>()
 
 route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema), async (c) => {
@@ -46,11 +45,13 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
 
   try {
     const authenticationAttemptId = getCookie(c, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
-
     deleteCookie(c, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT, { domain: COOKIE_DOMAIN })
 
     if (!authenticationAttemptId) {
-      return problemResponse(c, { status: 400, detail: '패스키를 검증할 수 없어요' })
+      return problemResponse(c, {
+        status: 400,
+        detail: '패스키를 검증할 수 없어요',
+      })
     }
 
     const authenticationAttempt = await getAndDeleteChallenge<PasskeyAuthenticationAttempt>(
@@ -59,12 +60,18 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     )
 
     if (!authenticationAttempt) {
-      return problemResponse(c, { status: 400, detail: '패스키를 검증할 수 없어요' })
+      return problemResponse(c, {
+        status: 400,
+        detail: '패스키를 검증할 수 없어요',
+      })
     }
 
     if (authenticationAttempt.turnstileRequired) {
       if (!turnstileToken) {
-        return problemResponse(c, { status: 400, detail: 'Cloudflare 보안 검증을 완료해 주세요' })
+        return problemResponse(c, {
+          status: 400,
+          detail: 'Cloudflare 보안 검증을 완료해 주세요',
+        })
       }
 
       const validator = new TurnstileValidator()
@@ -84,66 +91,82 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
       }
     }
 
-    const result = await db.transaction(async (tx) => {
-      const credential = await readCredentialByCredentialId(tx, authentication.id)
-
-      if (!credential) {
-        return {
-          ok: false,
-          status: 404,
-          detail: '패스키를 검증할 수 없어요',
-        } as const
-      }
-
-      const { verified, authenticationInfo } = await verifyAuthenticationResponse({
-        response: authentication,
-        expectedChallenge: authenticationAttempt.challenge,
-        expectedOrigin: WEBAUTHN_ORIGIN,
-        expectedRPID: WEBAUTHN_RP_ID,
-        credential: {
-          publicKey: new Uint8Array(Buffer.from(credential.publicKey, 'base64')),
-          id: credential.credentialId,
-          counter: Number(credential.counter),
-        },
+    const [credential] = await db
+      .select({
+        userId: credentialTable.userId,
+        publicKey: credentialTable.publicKey,
+        counter: credentialTable.counter,
+        credentialId: credentialTable.credentialId,
       })
+      .from(credentialTable)
+      .where(eq(credentialTable.credentialId, authentication.id))
 
-      if (!verified || !authenticationInfo) {
-        return {
-          ok: false,
-          status: 400,
-          detail: '패스키를 검증할 수 없어요',
-        } as const
-      }
+    if (!credential) {
+      return problemResponse(c, {
+        status: 400,
+        detail: '패스키를 검증할 수 없어요',
+      })
+    }
 
-      const newCounter =
-        authenticationInfo.credentialDeviceType === 'singleDevice' ? authenticationInfo.newCounter : credential.counter
+    const verification = await verifyAuthenticationResponse({
+      response: authentication,
+      expectedChallenge: authenticationAttempt.challenge,
+      expectedOrigin: WEBAUTHN_ORIGIN,
+      expectedRPID: WEBAUTHN_RP_ID,
+      credential: {
+        publicKey: new Uint8Array(Buffer.from(credential.publicKey, 'base64')),
+        id: credential.credentialId,
+        counter: Number(credential.counter),
+      },
+    }).catch(() => null)
 
-      const now = new Date()
+    if (!verification?.verified || !verification.authenticationInfo) {
+      return problemResponse(c, {
+        status: 400,
+        detail: '패스키를 검증할 수 없어요',
+      })
+    }
 
-      const [adult, user] = await Promise.all([
-        readAdultFlag(credential.userId, tx),
-        touchUserLoginAtAndReturnProfile(credential.userId, now, tx),
-        touchCredentialUse(tx, authentication.id, newCounter, now),
-      ])
+    const { authenticationInfo } = verification
 
-      if (!user) {
-        throw new Error(`User not found: ${credential.userId}`)
-      }
+    const newCounter =
+      authenticationInfo.credentialDeviceType === 'singleDevice' ? authenticationInfo.newCounter : credential.counter
 
-      return {
-        ok: true,
-        user,
-        adult,
-      } as const
-    })
+    const isCounterAdvanced = newCounter > credential.counter
+    const now = new Date()
 
-    if (!result.ok) {
-      return problemResponse(c, result)
+    const [credentialUse] = await db
+      .update(credentialTable)
+      .set({ counter: newCounter, lastUsedAt: now })
+      .where(
+        isCounterAdvanced
+          ? and(eq(credentialTable.credentialId, authentication.id), lt(credentialTable.counter, newCounter))
+          : eq(credentialTable.credentialId, authentication.id),
+      )
+      .returning({ userId: credentialTable.userId })
+
+    if (!credentialUse) {
+      return problemResponse(c, {
+        status: 400,
+        detail: '패스키를 검증할 수 없어요',
+      })
+    }
+
+    const [adult, user] = await Promise.all([
+      readAdultFlag(credentialUse.userId),
+      touchUserLoginAtAndReturnProfile(credentialUse.userId, now),
+    ])
+
+    if (!user) {
+      return problemResponse(c, {
+        status: 400,
+        detail: '패스키를 검증할 수 없어요',
+      })
     }
 
     const cookieConfigs = await issueAuthCookies({
-      userId: result.user.id,
-      adult: result.adult,
+      userId: user.id,
+      adult,
       remember,
       deviceLabel: remember ? buildSessionDeviceLabel(getRequestUserAgent(c.req.raw.headers)) : null,
     })
@@ -155,7 +178,7 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
       verifyAuthenticationLimiter.reward(authentication.id),
     ])
 
-    return c.json<POSTV1AuthPasskeyVerifyResponse>(result.user)
+    return c.json<POSTV1AuthPasskeyVerifyResponse>(user)
   } catch (error) {
     console.error('verifyAuthentication:', error)
     return problemResponse(c, { status: 500, detail: '패스키 인증 중 오류가 발생했어요' })
