@@ -1047,7 +1047,9 @@
   "chainsaw_man": {
     "en": "Chainsaw Man",
     "ko": "체인소 맨",
-    "ja": "チェンソーマン"
+    "ja": "チェンソーマン",
+    "zh-CN": "链锯人",
+    "zh-TW": "鏈鋸人"
   },
   "changed": {
     "en": "Changed",
@@ -1072,12 +1074,16 @@
   "chihayafuru": {
     "en": "Chihayafuru",
     "ko": "치하야후루",
-    "ja": "ちはやふる"
+    "ja": "ちはやふる",
+    "zh-CN": "花牌情缘",
+    "zh-TW": "花牌情緣"
   },
   "chiikawa": {
     "en": "Chiikawa",
     "ko": "치이카와",
-    "ja": "ちいかわ"
+    "ja": "ちいかわ",
+    "zh-CN": "吉伊卡哇",
+    "zh-TW": "吉伊卡哇"
   },
   "chizuru-chan_kaihatsu_nikki": {
     "en": "Chizuru-Chan Kaihatsu Nikki",
@@ -1107,27 +1113,37 @@
   "chuunibyou_demo_koi_ga_shitai": {
     "en": "Love, Chunibyo & Other Delusions!",
     "ko": "중2병이라도 사랑이 하고 싶어!",
-    "ja": "中二病でも恋がしたい！"
+    "ja": "中二病でも恋がしたい！",
+    "zh-CN": "中二病也要谈恋爱！",
+    "zh-TW": "中二病也想談戀愛！"
   },
   "city_hunter": {
     "en": "City Hunter",
     "ko": "시티 헌터",
-    "ja": "シティーハンター"
+    "ja": "シティーハンター",
+    "zh-CN": "城市猎人",
+    "zh-TW": "城市獵人"
   },
   "clannad": {
     "en": "Clannad",
     "ko": "클라나드",
-    "ja": "CLANNAD"
+    "ja": "CLANNAD",
+    "zh-CN": "CLANNAD",
+    "zh-TW": "CLANNAD"
   },
   "claymore": {
     "en": "Claymore",
     "ko": "클레이모어",
-    "ja": "CLAYMORE"
+    "ja": "CLAYMORE",
+    "zh-CN": "大剑",
+    "zh-TW": "獵魔戰記"
   },
   "closers": {
     "en": "Closers",
     "ko": "클로저스",
-    "ja": "クローザーズ"
+    "ja": "クローザーズ",
+    "zh-CN": "封印者",
+    "zh-TW": "封印者"
   },
   "clover_point": {
     "en": "Clover Point",
@@ -1137,7 +1153,9 @@
   "code_geass": {
     "en": "Code Geass: Lelouch of the Rebellion",
     "ko": "코드 기아스: 반역의 를르슈",
-    "ja": "コードギアス 反逆のルルーシュ"
+    "ja": "コードギアス 反逆のルルーシュ",
+    "zh-CN": "Code Geass 反叛的鲁路修",
+    "zh-TW": "Code Geass 反叛的魯路修"
   },
   "combattler_v": {
     "en": "Combattler V",
@@ -1172,17 +1190,23 @@
   "coraline": {
     "en": "Coraline",
     "ko": "코렐라인",
-    "ja": "コララインとボタンの魔女"
+    "ja": "コララインとボタンの魔女",
+    "zh-CN": "鬼妈妈",
+    "zh-TW": "第十四道門"
   },
   "counter_side": {
     "en": "Counter Side",
     "ko": "카운터사이드",
-    "ja": "カウンターサイド"
+    "ja": "カウンターサイド",
+    "zh-CN": "异界事务所",
+    "zh-TW": "未來戰"
   },
   "cowboy_bebop": {
     "en": "Cowboy Bebop",
     "ko": "카우보이 비밥",
-    "ja": "カウボーイビバップ"
+    "ja": "カウボーイビバップ",
+    "zh-CN": "星际牛仔",
+    "zh-TW": "星際牛仔"
   },
   "coyote_ragtime_show": {
     "en": "Coyote Ragtime Show",
@@ -1192,7 +1216,9 @@
   "crayon_shin-chan": {
     "en": "Crayon Shin-Chan",
     "ko": "짱구는 못말려",
-    "ja": "クレヨンしんちゃん"
+    "ja": "クレヨンしんちゃん",
+    "zh-CN": "蜡笔小新",
+    "zh-TW": "蠟筆小新"
   },
   "creamy_mami": {
     "en": "Creamy Mami",
@@ -1202,7 +1228,9 @@
   "cross_ange": {
     "en": "Cross Ange",
     "ko": "크로스 앙쥬 천사와 용의 윤무",
-    "ja": "クロスアンジュ 天使と竜の輪舞"
+    "ja": "クロスアンジュ 天使と竜の輪舞",
+    "zh-CN": "CROSS ANGE 天使与龙的轮舞",
+    "zh-TW": "CROSS ANGE 天使與龍的輪舞"
   },
   "crusaders_quest": {
     "en": "Crusaders Quest",
@@ -1212,7 +1240,9 @@
   "cult_of_the_lamb": {
     "en": "Cult Of The Lamb",
     "ko": "컬트 오브 더 램",
-    "ja": "カルト・オブ・ザ・ラム"
+    "ja": "カルト・オブ・ザ・ラム",
+    "zh-CN": "咩咩启示录",
+    "zh-TW": "咩咩啟示錄"
   },
   "cuphead": {
     "en": "Cuphead",
@@ -1222,17 +1252,23 @@
   "cutey_honey": {
     "en": "Cutie Honey",
     "ko": "큐티 하니",
-    "ja": "キューティーハニー"
+    "ja": "キューティーハニー",
+    "zh-CN": "甜心战士",
+    "zh-TW": "甜心戰士"
   },
   "cyberpunk": {
     "en": "Cyberpunk: Edgerunners",
     "ko": "사이버펑크: 엣지러너",
-    "ja": "サイバーパンク エッジランナーズ"
+    "ja": "サイバーパンク エッジランナーズ",
+    "zh-CN": "赛博朋克：边缘行者",
+    "zh-TW": "電馭叛客：邊緣行者"
   },
   "cyborg_009": {
     "en": "Cyborg 009",
     "ko": "사이보그 009",
-    "ja": "サイボーグ009"
+    "ja": "サイボーグ009",
+    "zh-CN": "人造人009",
+    "zh-TW": "人造人009"
   },
   "cyphers_online": {
     "en": "Cyphers Online",
@@ -1242,7 +1278,9 @@
   "d-frag": {
     "en": "D-Frag",
     "ko": "디-프래그!",
-    "ja": "ディーふらぐ!"
+    "ja": "ディーふらぐ!",
+    "zh-CN": "属性同好会",
+    "zh-TW": "屬性同好會"
   },
   "da_capo": {
     "en": "Da Capo",
@@ -1267,7 +1305,9 @@
   "dagashi_kashi": {
     "en": "Dagashi Kashi",
     "ko": "다가시카시",
-    "ja": "だがしかし"
+    "ja": "だがしかし",
+    "zh-CN": "粗点心战争",
+    "zh-TW": "粗點心戰爭"
   },
   "daikaijuu_monogatari": {
     "en": "Daikaijuu Monogatari",
@@ -1282,7 +1322,9 @@
   "daiya_no_ace": {
     "en": "Ace of Diamond",
     "ko": "다이아몬드 A",
-    "ja": "ダイヤのA"
+    "ja": "ダイヤのA",
+    "zh-CN": "钻石王牌",
+    "zh-TW": "鑽石王牌"
   },
   "dakara_boku_wa_h_ga_dekinai": {
     "en": "Dakara Boku Wa H Ga Dekinai",
@@ -1292,17 +1334,23 @@
   "danball_senki": {
     "en": "Danball Senki",
     "ko": "골판지 전사",
-    "ja": "ダンボール戦機"
+    "ja": "ダンボール戦機",
+    "zh-CN": "纸箱战机",
+    "zh-TW": "紙箱戰機"
   },
   "dandadan": {
     "en": "Dandadan",
     "ko": "단다단",
-    "ja": "ダンダダン"
+    "ja": "ダンダダン",
+    "zh-CN": "胆大党",
+    "zh-TW": "膽大黨"
   },
   "danganronpa": {
     "en": "Danganronpa",
     "ko": "단간론파",
-    "ja": "ダンガンロンパ"
+    "ja": "ダンガンロンパ",
+    "zh-CN": "弹丸论破",
+    "zh-TW": "槍彈辯駁"
   },
   "dankira": {
     "en": "Dankira",
@@ -1312,17 +1360,23 @@
   "danshi_koukousei_no_nichijou": {
     "en": "Danshi Koukousei No Nichijou",
     "ko": "남고생의 일상",
-    "ja": "男子高校生の日常"
+    "ja": "男子高校生の日常",
+    "zh-CN": "男子高中生的日常",
+    "zh-TW": "男子高中生的日常"
   },
   "dark_gathering": {
     "en": "Dark Gathering",
     "ko": "다크 개더링",
-    "ja": "ダークギャザリング"
+    "ja": "ダークギャザリング",
+    "zh-CN": "黑暗集会",
+    "zh-TW": "黑暗集會"
   },
   "darker_than_black": {
     "en": "Darker than Black",
     "ko": "DARKER THAN BLACK -흑의 계약자-",
-    "ja": "DARKER THAN BLACK -黒の契約者-"
+    "ja": "DARKER THAN BLACK -黒の契約者-",
+    "zh-CN": "DARKER THAN BLACK -黑之契约者-",
+    "zh-TW": "DARKER THAN BLACK -黑之契約者-"
   },
   "darkest_dungeon": {
     "en": "Darkest Dungeon",
@@ -1347,7 +1401,9 @@
   "date_a_live": {
     "en": "Date A Live",
     "ko": "데이트 어 라이브",
-    "ja": "デート・ア・ライブ"
+    "ja": "デート・ア・ライブ",
+    "zh-CN": "约会大作战",
+    "zh-TW": "約會大作戰"
   },
   "days": {
     "en": "Days",
@@ -1357,12 +1413,16 @@
   "dead_by_daylight": {
     "en": "Dead By Daylight",
     "ko": "데드 바이 데이라이트",
-    "ja": "Dead by Daylight"
+    "ja": "Dead by Daylight",
+    "zh-CN": "黎明杀机",
+    "zh-TW": "黎明死線"
   },
   "dead_or_alive": {
     "en": "Dead or Alive",
     "ko": "데드 오어 얼라이브",
-    "ja": "デッド オア アライブ"
+    "ja": "デッド オア アライブ",
+    "zh-CN": "生死格斗",
+    "zh-TW": "生死格鬥"
   },
   "deadman_wonderland": {
     "en": "Deadman Wonderland",
