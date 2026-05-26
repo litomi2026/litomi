@@ -282,7 +282,9 @@
   "animal_crossing": {
     "en": "Animal Crossing",
     "ko": "동물의 숲",
-    "ja": "どうぶつの森"
+    "ja": "どうぶつの森",
+    "zh-CN": "动物森友会",
+    "zh-TW": "動物森友會"
   },
   "anna_millers": {
     "en": "Anna Millers",
@@ -292,12 +294,16 @@
   "ano_hi_mita_hana_no_namae_wo_bokutachi_wa_mada_shiranai": {
     "en": "Anohana: The Flower We Saw That Day",
     "ko": "그날 본 꽃의 이름을 우리는 아직 모른다",
-    "ja": "あの日見た花の名前を僕達はまだ知らない。"
+    "ja": "あの日見た花の名前を僕達はまだ知らない。",
+    "zh-CN": "我们仍未知道那天所看见的花的名字。",
+    "zh-TW": "我們仍未知道那天所看見的花的名字。"
   },
   "ano_natsu_de_matteru": {
     "en": "Waiting in the Summer",
     "ko": "그 여름에서 기다릴게",
-    "ja": "あの夏で待ってる"
+    "ja": "あの夏で待ってる",
+    "zh-CN": "在盛夏等待",
+    "zh-TW": "在盛夏等待"
   },
   "another": {
     "en": "Another",
@@ -312,7 +318,9 @@
   "ansatsu_kyoushitsu": {
     "en": "Ansatsu Kyoushitsu",
     "ko": "암살교실",
-    "ja": "暗殺教室"
+    "ja": "暗殺教室",
+    "zh-CN": "暗杀教室",
+    "zh-TW": "暗殺教室"
   },
   "anyamaru_tantei_kiruminzoo": {
     "en": "Anyamaru Tantei Kiruminzoo",
@@ -322,7 +330,9 @@
   "ao_no_exorcist": {
     "en": "Blue Exorcist",
     "ko": "청의 엑소시스트",
-    "ja": "青の祓魔師"
+    "ja": "青の祓魔師",
+    "zh-CN": "青之驱魔师",
+    "zh-TW": "青之驅魔師"
   },
   "ape_escape": {
     "en": "Ape Escape",
@@ -332,7 +342,9 @@
   "apex_legends": {
     "en": "Apex Legends",
     "ko": "에이펙스 레전드",
-    "ja": "エーペックスレジェンズ"
+    "ja": "エーペックスレジェンズ",
+    "zh-CN": "Apex 英雄",
+    "zh-TW": "Apex 英雄"
   },
   "aquarion_evol": {
     "en": "Aquarion Evol",
@@ -372,17 +384,23 @@
   "aria": {
     "en": "Aria",
     "ko": "아리아",
-    "ja": "ARIA"
+    "ja": "ARIA",
+    "zh-CN": "水星领航员",
+    "zh-TW": "水星領航員"
   },
   "arifureta_shokugyou_de_sekai_saikyou": {
     "en": "Arifureta Shokugyou De Sekai Saikyou",
     "ko": "흔해빠진 직업으로 세계최강",
-    "ja": "ありふれた職業で世界最強"
+    "ja": "ありふれた職業で世界最強",
+    "zh-CN": "平凡职业造就世界最强",
+    "zh-TW": "平凡職業造就世界最強"
   },
   "arknights": {
     "en": "Arknights",
     "ko": "명일방주",
-    "ja": "アークナイツ"
+    "ja": "アークナイツ",
+    "zh-CN": "明日方舟",
+    "zh-TW": "明日方舟"
   },
   "armored_core": {
     "en": "Armored Core",
@@ -402,7 +420,9 @@
   "arslan_senki": {
     "en": "Arslan Senki",
     "ko": "아르슬란 전기",
-    "ja": "アルスラーン戦記"
+    "ja": "アルスラーン戦記",
+    "zh-CN": "亚尔斯兰战记",
+    "zh-TW": "亞爾斯蘭戰記"
   },
   "ase_to_sekken": {
     "en": "Ase To Sekken",
@@ -432,17 +452,23 @@
   "assault_lily": {
     "en": "Assault Lily",
     "ko": "어설트 릴리",
-    "ja": "アサルトリリィ"
+    "ja": "アサルトリリィ",
+    "zh-CN": "突击莉莉",
+    "zh-TW": "突擊莉莉"
   },
   "asteroid_in_love": {
     "en": "Asteroid In Love",
     "ko": "사랑하는 소행성",
-    "ja": "恋する小惑星"
+    "ja": "恋する小惑星",
+    "zh-CN": "恋爱小行星",
+    "zh-TW": "戀愛中的小行星"
   },
   "astro_boy": {
     "en": "Astro Boy",
     "ko": "우주소년 아톰",
-    "ja": "鉄腕アトム"
+    "ja": "鉄腕アトム",
+    "zh-CN": "铁臂阿童木",
+    "zh-TW": "原子小金剛"
   },
   "astro_fighter_sunred": {
     "en": "Astro Fighter Sunred",
@@ -452,7 +478,9 @@
   "atashinchi": {
     "en": "Atashinchi",
     "ko": "아따맘마",
-    "ja": "あたしンち"
+    "ja": "あたしンち",
+    "zh-CN": "我们这一家",
+    "zh-TW": "我們這一家"
   },
   "atelier_meruru": {
     "en": "Atelier Meruru",
@@ -467,12 +495,16 @@
   "atelier_ryza": {
     "en": "Atelier Ryza",
     "ko": "라이자의 아틀리에",
-    "ja": "ライザのアトリエ"
+    "ja": "ライザのアトリエ",
+    "zh-CN": "莱莎的炼金工房",
+    "zh-TW": "萊莎的鍊金工房"
   },
   "atelier_series": {
     "en": "Atelier Series",
     "ko": "아틀리에 시리즈",
-    "ja": "アトリエシリーズ"
+    "ja": "アトリエシリーズ",
+    "zh-CN": "炼金工房系列",
+    "zh-TW": "鍊金工房系列"
   },
   "atelier_shallie": {
     "en": "Atelier Shallie",
@@ -507,17 +539,23 @@
   "avatar": {
     "en": "Avatar",
     "ko": "아바타",
-    "ja": "アバター"
+    "ja": "アバター",
+    "zh-CN": "阿凡达",
+    "zh-TW": "阿凡達"
   },
   "avatar_the_last_airbender": {
     "en": "Avatar The Last Airbender",
     "ko": "아바타: 아앙의 전설",
-    "ja": "アバター 伝説の少年アバター"
+    "ja": "アバター 伝説の少年アバター",
+    "zh-CN": "降世神通：最后的气宗",
+    "zh-TW": "降世神通：最後的氣宗"
   },
   "avengers": {
     "en": "Avengers",
     "ko": "어벤져스",
-    "ja": "アベンジャーズ"
+    "ja": "アベンジャーズ",
+    "zh-CN": "复仇者联盟",
+    "zh-TW": "復仇者聯盟"
   },
   "axis_powers_hetalia": {
     "en": "Hetalia: Axis Powers",
@@ -527,7 +565,9 @@
   "ayakashi_triangle": {
     "en": "Ayakashi Triangle",
     "ko": "아야카시 트라이앵글",
-    "ja": "あやかしトライアングル"
+    "ja": "あやかしトライアングル",
+    "zh-CN": "妖幻三重奏",
+    "zh-TW": "妖幻三重奏"
   },
   "azumanga_daioh": {
     "en": "Azumanga Daioh",
@@ -537,7 +577,9 @@
   "azur_lane": {
     "en": "Azur Lane",
     "ko": "벽람항로",
-    "ja": "アズールレーン"
+    "ja": "アズールレーン",
+    "zh-CN": "碧蓝航线",
+    "zh-TW": "碧藍航線"
   },
   "azure_striker_gunvolt": {
     "en": "Azure Striker Gunvolt",
@@ -552,17 +594,23 @@
   "baka_to_test_to_shoukanjuu": {
     "en": "Baka and Test: Summon the Beasts",
     "ko": "바보와 시험과 소환수",
-    "ja": "バカとテストと召喚獣"
+    "ja": "バカとテストと召喚獣",
+    "zh-CN": "笨蛋，测验，召唤兽",
+    "zh-TW": "笨蛋，測驗，召喚獸"
   },
   "bakemonogatari": {
     "en": "Bakemonogatari",
     "ko": "바케모노가타리",
-    "ja": "化物語"
+    "ja": "化物語",
+    "zh-CN": "化物语",
+    "zh-TW": "化物語"
   },
   "bakuman": {
     "en": "Bakuman",
     "ko": "바쿠만",
-    "ja": "バクマン。"
+    "ja": "バクマン。",
+    "zh-CN": "爆漫王。",
+    "zh-TW": "爆漫王。"
   },
   "bakuon": {
     "en": "Bakuon",
@@ -577,37 +625,51 @@
   "ballroom_e_youkoso": {
     "en": "Ballroom E Youkoso",
     "ko": "볼룸에 오신 것을 환영합니다",
-    "ja": "ボールルームへようこそ"
+    "ja": "ボールルームへようこそ",
+    "zh-CN": "舞动青春",
+    "zh-TW": "舞動青春"
   },
   "bamboo_blade": {
     "en": "Bamboo Blade",
     "ko": "뱀부 블레이드",
-    "ja": "バンブーブレード"
+    "ja": "バンブーブレード",
+    "zh-CN": "竹剑少女",
+    "zh-TW": "竹劍少女"
   },
   "bang_dream": {
     "en": "BanG Dream!",
     "ko": "뱅드림!",
-    "ja": "BanG Dream!"
+    "ja": "BanG Dream!",
+    "zh-CN": "BanG Dream!",
+    "zh-TW": "BanG Dream!"
   },
   "basilisk": {
     "en": "Basilisk",
     "ko": "바실리스크",
-    "ja": "バジリスク"
+    "ja": "バジリスク",
+    "zh-CN": "甲贺忍法帖",
+    "zh-TW": "甲賀忍法帖"
   },
   "bastard": {
     "en": "Bastard",
     "ko": "바스타드!!",
-    "ja": "BASTARD!! -暗黒の破壊神-"
+    "ja": "BASTARD!! -暗黒の破壊神-",
+    "zh-CN": "BASTARD!! 暗黑破坏神",
+    "zh-TW": "BASTARD!! 暗黑破壞神"
   },
   "batman": {
     "en": "Batman",
     "ko": "배트맨",
-    "ja": "バットマン"
+    "ja": "バットマン",
+    "zh-CN": "蝙蝠侠",
+    "zh-TW": "蝙蝠俠"
   },
   "battle_angel_alita": {
     "en": "Battle Angel Alita",
     "ko": "총몽",
-    "ja": "銃夢"
+    "ja": "銃夢",
+    "zh-CN": "铳梦",
+    "zh-TW": "銃夢"
   },
   "battle_athletes": {
     "en": "Battle Athletes",
@@ -622,7 +684,9 @@
   "bayonetta": {
     "en": "Bayonetta",
     "ko": "베요네타",
-    "ja": "ベヨネッタ"
+    "ja": "ベヨネッタ",
+    "zh-CN": "猎天使魔女",
+    "zh-TW": "蓓優妮塔"
   },
   "beat_blades_haruka": {
     "en": "Beat Blades Haruka",
@@ -667,7 +731,9 @@
   "berserk": {
     "en": "Berserk",
     "ko": "베르세르크",
-    "ja": "ベルセルク"
+    "ja": "ベルセルク",
+    "zh-CN": "剑风传奇",
+    "zh-TW": "烙印勇士"
   },
   "beyblade": {
     "en": "Beyblade",
@@ -682,7 +748,9 @@
   "big_hero_6": {
     "en": "Big Hero 6",
     "ko": "빅 히어로 6",
-    "ja": "ベイマックス"
+    "ja": "ベイマックス",
+    "zh-CN": "超能陆战队",
+    "zh-TW": "大英雄天團"
   },
   "bijin_onna_joushi_takizawa-san": {
     "en": "Bijin Onna Joushi Takizawa-San",
@@ -702,22 +770,30 @@
   "black_bullet": {
     "en": "Black Bullet",
     "ko": "블랙 불릿",
-    "ja": "ブラック・ブレット"
+    "ja": "ブラック・ブレット",
+    "zh-CN": "漆黑的子弹",
+    "zh-TW": "黑色子彈"
   },
   "black_desert_online": {
     "en": "Black Desert Online",
     "ko": "검은사막",
-    "ja": "黒い砂漠"
+    "ja": "黒い砂漠",
+    "zh-CN": "黑色沙漠",
+    "zh-TW": "黑色沙漠"
   },
   "black_lagoon": {
     "en": "Black Lagoon",
     "ko": "블랙 라군",
-    "ja": "ブラック・ラグーン"
+    "ja": "ブラック・ラグーン",
+    "zh-CN": "黑礁",
+    "zh-TW": "企業傭兵"
   },
   "black_rock_shooter": {
     "en": "Black Rock Shooter",
     "ko": "블랙 록 슈터",
-    "ja": "ブラック★ロックシューター"
+    "ja": "ブラック★ロックシューター",
+    "zh-CN": "黑岩射手",
+    "zh-TW": "黑岩射手"
   },
   "black_survival": {
     "en": "Black Survival",
@@ -727,62 +803,86 @@
   "blade_and_soul": {
     "en": "Blade And Soul",
     "ko": "블레이드 앤 소울",
-    "ja": "ブレイドアンドソウル"
+    "ja": "ブレイドアンドソウル",
+    "zh-CN": "剑灵",
+    "zh-TW": "劍靈"
   },
   "bladedance_of_elementalers": {
     "en": "Bladedance Of Elementalers",
     "ko": "정령사의 검무",
-    "ja": "精霊使いの剣舞"
+    "ja": "精霊使いの剣舞",
+    "zh-CN": "精灵使的剑舞",
+    "zh-TW": "精靈使的劍舞"
   },
   "blazblue": {
     "en": "BlazBlue",
     "ko": "블레이블루",
-    "ja": "ブレイブルー"
+    "ja": "ブレイブルー",
+    "zh-CN": "苍翼默示录",
+    "zh-TW": "蒼翼默示錄"
   },
   "bleach": {
     "en": "Bleach",
     "ko": "블리치",
-    "ja": "BLEACH"
+    "ja": "BLEACH",
+    "zh-CN": "BLEACH 境·界",
+    "zh-TW": "BLEACH 死神"
   },
   "blend_s": {
     "en": "Blend S",
     "ko": "블렌드 S",
-    "ja": "ブレンド・S"
+    "ja": "ブレンド・S",
+    "zh-CN": "调教咖啡厅",
+    "zh-TW": "調教咖啡廳"
   },
   "bloodborne": {
     "en": "Bloodborne",
     "ko": "블러드본",
-    "ja": "Bloodborne"
+    "ja": "Bloodborne",
+    "zh-CN": "血源诅咒",
+    "zh-TW": "血源詛咒"
   },
   "blue_archive": {
     "en": "Blue Archive",
     "ko": "블루 아카이브",
-    "ja": "ブルーアーカイブ"
+    "ja": "ブルーアーカイブ",
+    "zh-CN": "蔚蓝档案",
+    "zh-TW": "蔚藍檔案"
   },
   "blue_dragon": {
     "en": "Blue Dragon",
     "ko": "블루 드래곤",
-    "ja": "ブルードラゴン"
+    "ja": "ブルードラゴン",
+    "zh-CN": "蓝龙",
+    "zh-TW": "藍龍"
   },
   "blue_lock": {
     "en": "Blue Lock",
     "ko": "블루 록",
-    "ja": "ブルーロック"
+    "ja": "ブルーロック",
+    "zh-CN": "蓝色监狱",
+    "zh-TW": "BLUE LOCK 藍色監獄"
   },
   "bna_brand_new_animal": {
     "en": "Bna Brand New Animal",
     "ko": "BNA: 브랜 뉴 애니멀",
-    "ja": "BNA ビー・エヌ・エー"
+    "ja": "BNA ビー・エヌ・エー",
+    "zh-CN": "BNA 全新动物",
+    "zh-TW": "BNA 全新動物"
   },
   "bocchi_the_rock": {
     "en": "Bocchi the Rock!",
     "ko": "보치 더 록!",
-    "ja": "ぼっち・ざ・ろっく！"
+    "ja": "ぼっち・ざ・ろっく！",
+    "zh-CN": "孤独摇滚！",
+    "zh-TW": "孤獨搖滾！"
   },
   "boku_dake_ga_inai_machi": {
     "en": "Boku Dake Ga Inai Machi",
     "ko": "나만이 없는 거리",
-    "ja": "僕だけがいない街"
+    "ja": "僕だけがいない街",
+    "zh-CN": "只有我不存在的城市",
+    "zh-TW": "只有我不存在的城市"
   },
   "boku_girl": {
     "en": "Boku Girl",
@@ -792,17 +892,23 @@
   "boku_no_kokoro_no_yabai_yatsu": {
     "en": "Boku No Kokoro No Yabai Yatsu",
     "ko": "내 마음의 위험한 녀석",
-    "ja": "僕の心のヤバイやつ"
+    "ja": "僕の心のヤバイやつ",
+    "zh-CN": "我心里危险的东西",
+    "zh-TW": "我內心的糟糕念頭"
   },
   "boku_to_roboko": {
     "en": "Boku To Roboko",
     "ko": "나와 로보코",
-    "ja": "僕とロボコ"
+    "ja": "僕とロボコ",
+    "zh-CN": "我与机器子",
+    "zh-TW": "我與機器子"
   },
   "boku_wa_tomodachi_ga_sukunai": {
     "en": "Haganai: I Don't Have Many Friends",
     "ko": "나는 친구가 적다",
-    "ja": "僕は友達が少ない"
+    "ja": "僕は友達が少ない",
+    "zh-CN": "我的朋友很少",
+    "zh-TW": "我的朋友很少"
   },
   "bokura_wa_mahou_shounen": {
     "en": "Bokura Wa Mahou Shounen",
@@ -812,7 +918,9 @@
   "bokutachi_wa_benkyou_ga_dekinai": {
     "en": "We Never Learn",
     "ko": "우리는 공부를 못해",
-    "ja": "ぼくたちは勉強ができない"
+    "ja": "ぼくたちは勉強ができない",
+    "zh-CN": "我们无法一起学习！",
+    "zh-TW": "我們真的學不來！"
   },
   "bomber_girl": {
     "en": "Bombergirl",
@@ -822,7 +930,9 @@
   "boruto": {
     "en": "Boruto: Naruto Next Generations",
     "ko": "보루토",
-    "ja": "BORUTO-ボルト-"
+    "ja": "BORUTO-ボルト-",
+    "zh-CN": "博人传 火影忍者新时代",
+    "zh-TW": "慕留人-火影新世代-"
   },
   "brave_beats": {
     "en": "Brave Beats",
@@ -847,7 +957,9 @@
   "burn_the_witch": {
     "en": "Burn The Witch",
     "ko": "번 더 위치",
-    "ja": "BURN THE WITCH"
+    "ja": "BURN THE WITCH",
+    "zh-CN": "BURN THE WITCH",
+    "zh-TW": "BURN THE WITCH"
   },
   "busou_renkin": {
     "en": "Busou Renkin",
@@ -877,7 +989,9 @@
   "call_of_duty": {
     "en": "Call Of Duty",
     "ko": "콜 오브 듀티",
-    "ja": "コール オブ デューティ"
+    "ja": "コール オブ デューティ",
+    "zh-CN": "使命召唤",
+    "zh-TW": "決勝時刻"
   },
   "capeta": {
     "en": "Capeta",
@@ -897,17 +1011,23 @@
   "cardcaptor_sakura": {
     "en": "Cardcaptor Sakura",
     "ko": "카드캡터 사쿠라",
-    "ja": "カードキャプターさくら"
+    "ja": "カードキャプターさくら",
+    "zh-CN": "魔卡少女樱",
+    "zh-TW": "庫洛魔法使"
   },
   "cardfight_vanguard": {
     "en": "Cardfight!! Vanguard",
     "ko": "카드파이트!! 뱅가드",
-    "ja": "カードファイト!! ヴァンガード"
+    "ja": "カードファイト!! ヴァンガード",
+    "zh-CN": "卡片战斗先导者",
+    "zh-TW": "卡片戰鬥先導者"
   },
   "castlevania": {
     "en": "Castlevania",
     "ko": "캐슬바니아",
-    "ja": "悪魔城ドラキュラ"
+    "ja": "悪魔城ドラキュラ",
+    "zh-CN": "恶魔城",
+    "zh-TW": "惡魔城"
   },
   "cat_busters": {
     "en": "Cat Busters",
