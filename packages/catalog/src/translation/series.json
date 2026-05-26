@@ -5810,7 +5810,9 @@
   "palworld": {
     "en": "Palworld",
     "ko": "팔월드",
-    "ja": "パルワールド"
+    "ja": "パルワールド",
+    "zh-CN": "幻兽帕鲁",
+    "zh-TW": "幻獸帕魯"
   },
   "pandemonium_majutsushi_no_mura": {
     "en": "Pandemonium Majutsushi No Mura",
@@ -5820,7 +5822,9 @@
   "pandora_hearts": {
     "en": "Pandora Hearts",
     "ko": "판도라 하츠",
-    "ja": "パンドラハーツ"
+    "ja": "パンドラハーツ",
+    "zh-CN": "潘多拉之心",
+    "zh-TW": "潘朵拉之心"
   },
   "pangya": {
     "en": "Pangya",
@@ -5845,12 +5849,16 @@
   "parasyte": {
     "en": "Parasyte",
     "ko": "기생수",
-    "ja": "寄生獣"
+    "ja": "寄生獣",
+    "zh-CN": "寄生兽",
+    "zh-TW": "寄生獸"
   },
   "paripi_koumei": {
     "en": "Paripi Koumei",
     "ko": "파리피 공명",
-    "ja": "パリピ孔明"
+    "ja": "パリピ孔明",
+    "zh-CN": "派对浪客诸葛孔明",
+    "zh-TW": "派對咖孔明"
   },
   "pastel_yumi": {
     "en": "Pastel Yumi",
@@ -5865,22 +5873,30 @@
   "persona_3": {
     "en": "Persona 3",
     "ko": "페르소나 3",
-    "ja": "ペルソナ3"
+    "ja": "ペルソナ3",
+    "zh-CN": "女神异闻录3",
+    "zh-TW": "女神異聞錄3"
   },
   "persona_4": {
     "en": "Persona 4",
     "ko": "페르소나 4",
-    "ja": "ペルソナ4"
+    "ja": "ペルソナ4",
+    "zh-CN": "女神异闻录4",
+    "zh-TW": "女神異聞錄4"
   },
   "persona_5": {
     "en": "Persona 5",
     "ko": "페르소나 5",
-    "ja": "ペルソナ5"
+    "ja": "ペルソナ5",
+    "zh-CN": "女神异闻录5",
+    "zh-TW": "女神異聞錄5"
   },
   "peter_pan": {
     "en": "Peter Pan",
     "ko": "피터 팬",
-    "ja": "ピーターパン"
+    "ja": "ピーターパン",
+    "zh-CN": "小飞侠",
+    "zh-TW": "小飛俠"
   },
   "petite_princess_yucie": {
     "en": "Petite Princess Yucie",
@@ -5890,17 +5906,23 @@
   "phantasy_star": {
     "en": "Phantasy Star",
     "ko": "판타지 스타",
-    "ja": "ファンタシースター"
+    "ja": "ファンタシースター",
+    "zh-CN": "梦幻之星",
+    "zh-TW": "夢幻之星"
   },
   "phantasy_star_online_2": {
     "en": "Phantasy Star Online 2",
     "ko": "판타지 스타 온라인 2",
-    "ja": "ファンタシースターオンライン2"
+    "ja": "ファンタシースターオンライン2",
+    "zh-CN": "梦幻之星Online2",
+    "zh-TW": "夢幻之星Online2"
   },
   "phineas_and_ferb": {
     "en": "Phineas And Ferb",
     "ko": "피니와 퍼브",
-    "ja": "フィニアスとファーブ"
+    "ja": "フィニアスとファーブ",
+    "zh-CN": "飞哥与小佛",
+    "zh-TW": "飛哥與小佛"
   },
   "photo_kano": {
     "en": "Photo Kano",
@@ -5920,12 +5942,16 @@
   "playerunknowns_battlegrounds": {
     "en": "Playerunknowns Battlegrounds",
     "ko": "배틀그라운드",
-    "ja": "PUBG"
+    "ja": "PUBG",
+    "zh-CN": "绝地求生",
+    "zh-TW": "絕地求生"
   },
   "pokemon": {
     "en": "Pokémon",
     "ko": "포켓몬스터",
-    "ja": "ポケットモンスター"
+    "ja": "ポケットモンスター",
+    "zh-CN": "宝可梦",
+    "zh-TW": "寶可夢"
   },
   "pon_no_michi": {
     "en": "Pon No Michi",
@@ -5950,22 +5976,30 @@
   "poppy_playtime": {
     "en": "Poppy Playtime",
     "ko": "포피 플레이타임",
-    "ja": "ポピープレイタイム"
+    "ja": "ポピープレイタイム",
+    "zh-CN": "波比的游戏时间",
+    "zh-TW": "波比的遊戲時間"
   },
   "powerpuff_girls_z": {
     "en": "Powerpuff Girls Z",
     "ko": "파워퍼프 걸즈 Z",
-    "ja": "出ましたっ！パワパフガールズZ"
+    "ja": "出ましたっ！パワパフガールズZ",
+    "zh-CN": "飞天小女警Z",
+    "zh-TW": "飛天小女警Z"
   },
   "predator": {
     "en": "Predator",
     "ko": "프레데터",
-    "ja": "プレデター"
+    "ja": "プレデター",
+    "zh-CN": "铁血战士",
+    "zh-TW": "終極戰士"
   },
   "pretty_cure": {
     "en": "Pretty Cure",
     "ko": "프리큐어",
-    "ja": "プリキュア"
+    "ja": "プリキュア",
+    "zh-CN": "光之美少女",
+    "zh-TW": "光之美少女"
   },
   "pretty_face": {
     "en": "Pretty Face",
@@ -5985,12 +6019,16 @@
   "prince_of_tennis": {
     "en": "Prince Of Tennis",
     "ko": "테니스의 왕자",
-    "ja": "テニスの王子様"
+    "ja": "テニスの王子様",
+    "zh-CN": "网球王子",
+    "zh-TW": "網球王子"
   },
   "princess_connect": {
     "en": "Princess Connect! Re:Dive",
     "ko": "프린세스 커넥트! Re:Dive",
-    "ja": "プリンセスコネクト! Re:Dive"
+    "ja": "プリンセスコネクト! Re:Dive",
+    "zh-CN": "公主连结Re:Dive",
+    "zh-TW": "超異域公主連結☆Re:Dive"
   },
   "princess_crown": {
     "en": "Princess Crown",
@@ -6005,22 +6043,30 @@
   "princess_maker": {
     "en": "Princess Maker",
     "ko": "프린세스 메이커",
-    "ja": "プリンセスメーカー"
+    "ja": "プリンセスメーカー",
+    "zh-CN": "美少女梦工厂",
+    "zh-TW": "美少女夢工場"
   },
   "princess_resurrection": {
     "en": "Princess Resurrection",
     "ko": "괴물왕녀",
-    "ja": "怪物王女"
+    "ja": "怪物王女",
+    "zh-CN": "怪物王女",
+    "zh-TW": "怪物王女"
   },
   "pripara": {
     "en": "PriPara",
     "ko": "프리파라",
-    "ja": "プリパラ"
+    "ja": "プリパラ",
+    "zh-CN": "美妙天堂",
+    "zh-TW": "星光樂園"
   },
   "prison_school": {
     "en": "Prison School",
     "ko": "감옥학원",
-    "ja": "監獄学園"
+    "ja": "監獄学園",
+    "zh-CN": "监狱学园",
+    "zh-TW": "監獄學園"
   },
   "project_kv": {
     "en": "Project Kv",
@@ -6030,12 +6076,16 @@
   "project_sekai": {
     "en": "Project Sekai",
     "ko": "프로젝트 세카이",
-    "ja": "プロジェクトセカイ"
+    "ja": "プロジェクトセカイ",
+    "zh-CN": "初音未来：缤纷舞台",
+    "zh-TW": "世界計畫 繽紛舞台！feat. 初音未來"
   },
   "promare": {
     "en": "Promare",
     "ko": "프로메어",
-    "ja": "プロメア"
+    "ja": "プロメア",
+    "zh-CN": "普罗米亚",
+    "zh-TW": "普羅米亞"
   },
   "prunus_girl": {
     "en": "Prunus Girl",
@@ -6045,7 +6095,9 @@
   "psycho-pass": {
     "en": "Psycho-Pass",
     "ko": "사이코 패스",
-    "ja": "PSYCHO-PASS"
+    "ja": "PSYCHO-PASS",
+    "zh-CN": "心理测量者",
+    "zh-TW": "PSYCHO-PASS心靈判官"
   },
   "psycho_soldier": {
     "en": "Psycho Soldier",
@@ -6055,12 +6107,16 @@
   "puella_magi_madoka_magica": {
     "en": "Puella Magi Madoka Magica",
     "ko": "마법소녀 마도카☆마기카",
-    "ja": "魔法少女まどか☆マギカ"
+    "ja": "魔法少女まどか☆マギカ",
+    "zh-CN": "魔法少女小圆",
+    "zh-TW": "魔法少女小圓"
   },
   "puella_magi_madoka_magica_side_story_magia_record": {
     "en": "Magia Record: Puella Magi Madoka Magica Side Story",
     "ko": "매지아 레코드: 마법소녀 마도카☆마기카 외전",
-    "ja": "マギアレコード 魔法少女まどか☆マギカ外伝"
+    "ja": "マギアレコード 魔法少女まどか☆マギカ外伝",
+    "zh-CN": "魔法纪录 魔法少女小圆外传",
+    "zh-TW": "魔法紀錄 魔法少女小圓外傳"
   },
   "pumpkin_scissors": {
     "en": "Pumpkin Scissors",
@@ -6080,7 +6136,9 @@
   "punishing_gray_raven": {
     "en": "Punishing Gray Raven",
     "ko": "퍼니싱: 그레이 레이븐",
-    "ja": "パニシング：グレイレイヴン"
+    "ja": "パニシング：グレイレイヴン",
+    "zh-CN": "战双帕弥什",
+    "zh-TW": "戰雙帕彌什"
   },
   "puppet_princess_of_marl_kingdom": {
     "en": "Puppet Princess Of Marl Kingdom",
@@ -6090,17 +6148,23 @@
   "puss_in_boots_the_last_wish": {
     "en": "Puss In Boots The Last Wish",
     "ko": "장화신은 고양이: 마지막 소원",
-    "ja": "長靴をはいた猫 ザ・ラストウィッシュ"
+    "ja": "長靴をはいた猫 ザ・ラストウィッシュ",
+    "zh-CN": "穿靴子的猫2：最后的愿望",
+    "zh-TW": "鞋貓劍客2"
   },
   "puyo_puyo": {
     "en": "Puyo Puyo",
     "ko": "뿌요뿌요",
-    "ja": "ぷよぷよ"
+    "ja": "ぷよぷよ",
+    "zh-CN": "噗哟噗哟",
+    "zh-TW": "魔法氣泡"
   },
   "puzzle_and_dragons": {
     "en": "Puzzle & Dragons",
     "ko": "퍼즐앤드래곤",
-    "ja": "パズル&ドラゴンズ"
+    "ja": "パズル&ドラゴンズ",
+    "zh-CN": "智龙迷城",
+    "zh-TW": "龍族拼圖"
   },
   "qualidea_code": {
     "en": "Qualidea Code",
@@ -6110,7 +6174,9 @@
   "queens_blade": {
     "en": "Queen's Blade",
     "ko": "퀸즈 블레이드",
-    "ja": "クイーンズブレイド"
+    "ja": "クイーンズブレイド",
+    "zh-CN": "女皇之刃",
+    "zh-TW": "女王之刃"
   },
   "quiz_magic_academy": {
     "en": "Quiz Magic Academy",
@@ -6120,12 +6186,16 @@
   "rage_of_bahamut": {
     "en": "Rage Of Bahamut",
     "ko": "레이지 오브 바하무트",
-    "ja": "神撃のバハムート"
+    "ja": "神撃のバハムート",
+    "zh-CN": "巴哈姆特之怒",
+    "zh-TW": "巴哈姆特之怒"
   },
   "ragnarok_online": {
     "en": "Ragnarok Online",
     "ko": "라그나로크 온라인",
-    "ja": "ラグナロクオンライン"
+    "ja": "ラグナロクオンライン",
+    "zh-CN": "仙境传说Online",
+    "zh-TW": "仙境傳說Online"
   },
   "rail_wars": {
     "en": "Rail Wars",
@@ -6135,7 +6205,9 @@
   "rakudai_kishi_no_cavalry": {
     "en": "Rakudai Kishi No Cavalry",
     "ko": "낙제기사의 영웅담",
-    "ja": "落第騎士の英雄譚"
+    "ja": "落第騎士の英雄譚",
+    "zh-CN": "落第骑士英雄谭",
+    "zh-TW": "落第騎士英雄譚"
   },
   "rampo_kitan_game_of_laplace": {
     "en": "Rampo Kitan Game Of Laplace",
@@ -6150,7 +6222,9 @@
   "ranma_12": {
     "en": "Ranma ½",
     "ko": "란마 ½",
-    "ja": "らんま½"
+    "ja": "らんま½",
+    "zh-CN": "乱马½",
+    "zh-TW": "亂馬½"
   },
   "re_creators": {
     "en": "Re Creators",
@@ -6160,7 +6234,9 @@
   "re_zero_kara_hajimeru_isekai_seikatsu": {
     "en": "Re:ZERO -Starting Life in Another World-",
     "ko": "Re:제로부터 시작하는 이세계 생활",
-    "ja": "Re:ゼロから始める異世界生活"
+    "ja": "Re:ゼロから始める異世界生活",
+    "zh-CN": "Re:从零开始的异世界生活",
+    "zh-TW": "Re:從零開始的異世界生活"
   },
   "read_or_die": {
     "en": "Read Or Die",
@@ -6190,7 +6266,9 @@
   "resident_evil": {
     "en": "Resident Evil",
     "ko": "바이오하자드",
-    "ja": "バイオハザード"
+    "ja": "バイオハザード",
+    "zh-CN": "生化危机",
+    "zh-TW": "惡靈古堡"
   },
   "resonance_of_fate": {
     "en": "Resonance Of Fate",
@@ -6200,7 +6278,9 @@
   "reverse_1999": {
     "en": "Reverse 1999",
     "ko": "리버스 1999",
-    "ja": "リバース1999"
+    "ja": "リバース1999",
+    "zh-CN": "重返未来：1999",
+    "zh-TW": "重返未來：1999"
   },
   "riddle_joker": {
     "en": "Riddle Joker",
@@ -6220,7 +6300,9 @@
   "ring_fit_adventure": {
     "en": "Ring Fit Adventure",
     "ko": "링 피트 어드벤처",
-    "ja": "リングフィット アドベンチャー"
+    "ja": "リングフィット アドベンチャー",
+    "zh-CN": "健身环大冒险",
+    "zh-TW": "健身環大冒險"
   },
   "rinkan_biyaku_chuudoku": {
     "en": "Rinkan Biyaku Chuudoku",
@@ -6240,7 +6322,9 @@
   "river_city_girls": {
     "en": "River City Girls",
     "ko": "리버 시티 걸즈",
-    "ja": "熱血硬派くにおくん外伝 リバーシティガールズ"
+    "ja": "熱血硬派くにおくん外伝 リバーシティガールズ",
+    "zh-CN": "热血硬派国夫君外传 River City Girls",
+    "zh-TW": "熱血硬派國夫君外傳 River City Girls"
   },
   "ro-kyu-bu": {
     "en": "Ro-Kyu-Bu!",
@@ -6250,7 +6334,9 @@
   "romance_of_the_three_kingdoms": {
     "en": "Romance Of The Three Kingdoms",
     "ko": "삼국지",
-    "ja": "三国志"
+    "ja": "三国志",
+    "zh-CN": "三国志",
+    "zh-TW": "三國志"
   },
   "romeos_blue_skies": {
     "en": "Romeos Blue Skies",
@@ -6260,7 +6346,9 @@
   "rozen_maiden": {
     "en": "Rozen Maiden",
     "ko": "로젠 메이든",
-    "ja": "ローゼンメイデン"
+    "ja": "ローゼンメイデン",
+    "zh-CN": "蔷薇少女",
+    "zh-TW": "薔薇少女"
   },
   "ruby_gillman_teenage_kraken": {
     "en": "Ruby Gillman Teenage Kraken",
@@ -6275,7 +6363,9 @@
   "rune_factory": {
     "en": "Rune Factory",
     "ko": "룬 팩토리",
-    "ja": "ルーンファクトリー"
+    "ja": "ルーンファクトリー",
+    "zh-CN": "符文工房",
+    "zh-TW": "符文工廠"
   },
   "ruri_dragon": {
     "en": "Ruri Dragon",
@@ -6290,17 +6380,23 @@
   "rurouni_kenshin": {
     "en": "Rurouni Kenshin",
     "ko": "바람의 검심",
-    "ja": "るろうに剣心"
+    "ja": "るろうに剣心",
+    "zh-CN": "浪客剑心",
+    "zh-TW": "神劍闖江湖"
   },
   "rwby": {
     "en": "Rwby",
     "ko": "루비",
-    "ja": "RWBY"
+    "ja": "RWBY",
+    "zh-CN": "RWBY",
+    "zh-TW": "RWBY"
   },
   "ryuuou_no_oshigoto": {
     "en": "The Ryuo's Work Is Never Done!",
     "ko": "용왕이 하는 일!",
-    "ja": "りゅうおうのおしごと！"
+    "ja": "りゅうおうのおしごと！",
+    "zh-CN": "龙王的工作！",
+    "zh-TW": "龍王的工作！"
   },
   "saber_marionette": {
     "en": "Saber Marionette",
@@ -6310,7 +6406,9 @@
   "saenai_heroine_no_sodatekata": {
     "en": "Saekano: How to Raise a Boring Girlfriend",
     "ko": "시원찮은 그녀를 위한 육성방법",
-    "ja": "冴えない彼女の育てかた"
+    "ja": "冴えない彼女の育てかた",
+    "zh-CN": "路人女主的养成方法",
+    "zh-TW": "不起眼女主角培育法"
   },
   "saijaku_muhai_no_bahamut": {
     "en": "Saijaku Muhai No Bahamut",
@@ -6320,12 +6418,16 @@
   "saiki_kusuo_no_psi_nan": {
     "en": "Saiki Kusuo No Psi Nan",
     "ko": "사이키 쿠스오의 재난",
-    "ja": "斉木楠雄のΨ難"
+    "ja": "斉木楠雄のΨ難",
+    "zh-CN": "齐木楠雄的灾难",
+    "zh-TW": "齊木楠雄的災難"
   },
   "sailor_moon": {
     "en": "Sailor Moon",
     "ko": "세일러문",
-    "ja": "美少女戦士セーラームーン"
+    "ja": "美少女戦士セーラームーン",
+    "zh-CN": "美少女战士",
+    "zh-TW": "美少女戰士"
   },
   "saimin_seishidou": {
     "en": "Saimin Seishidou",
@@ -6335,32 +6437,44 @@
   "saint_seiya": {
     "en": "Saint Seiya",
     "ko": "세인트 세이야",
-    "ja": "聖闘士星矢"
+    "ja": "聖闘士星矢",
+    "zh-CN": "圣斗士星矢",
+    "zh-TW": "聖鬥士星矢"
   },
   "saki": {
     "en": "Saki",
     "ko": "사키 -Saki-",
-    "ja": "咲-Saki-"
+    "ja": "咲-Saki-",
+    "zh-CN": "天才麻将少女",
+    "zh-TW": "天才麻將少女"
   },
   "sakura_quest": {
     "en": "Sakura Quest",
     "ko": "사쿠라 퀘스트",
-    "ja": "サクラクエスト"
+    "ja": "サクラクエスト",
+    "zh-CN": "樱花任务",
+    "zh-TW": "櫻花任務"
   },
   "sakura_taisen": {
     "en": "Sakura Wars",
     "ko": "사쿠라 대전",
-    "ja": "サクラ大戦"
+    "ja": "サクラ大戦",
+    "zh-CN": "樱花大战",
+    "zh-TW": "櫻花大戰"
   },
   "samurai_spirits": {
     "en": "Samurai Shodown",
     "ko": "사무라이 쇼다운",
-    "ja": "サムライスピリッツ"
+    "ja": "サムライスピリッツ",
+    "zh-CN": "侍魂",
+    "zh-TW": "侍魂"
   },
   "samurai_warriors": {
     "en": "Samurai Warriors",
     "ko": "전국무쌍",
-    "ja": "戦国無双"
+    "ja": "戦国無双",
+    "zh-CN": "战国无双",
+    "zh-TW": "戰國無雙"
   },
   "sangokushi_puzzle_taisen": {
     "en": "Sangokushi Puzzle Taisen",
@@ -6380,27 +6494,37 @@
   "satsuriku_no_tenshi": {
     "en": "Satsuriku No Tenshi",
     "ko": "살육의 천사",
-    "ja": "殺戮の天使"
+    "ja": "殺戮の天使",
+    "zh-CN": "杀戮天使",
+    "zh-TW": "殺戮的天使"
   },
   "saya_no_uta": {
     "en": "Saya No Uta",
     "ko": "사야의 노래",
-    "ja": "沙耶の唄"
+    "ja": "沙耶の唄",
+    "zh-CN": "沙耶之歌",
+    "zh-TW": "沙耶之歌"
   },
   "sayonara_zetsubou_sensei": {
     "en": "Sayonara Zetsubou Sensei",
     "ko": "안녕 절망선생",
-    "ja": "さよなら絶望先生"
+    "ja": "さよなら絶望先生",
+    "zh-CN": "再见！绝望先生",
+    "zh-TW": "絕望先生"
   },
   "school_days": {
     "en": "School Days",
     "ko": "스쿨 데이즈",
-    "ja": "スクールデイズ"
+    "ja": "スクールデイズ",
+    "zh-CN": "School Days",
+    "zh-TW": "School Days"
   },
   "school_rumble": {
     "en": "School Rumble",
     "ko": "스쿨 럼블",
-    "ja": "スクールランブル"
+    "ja": "スクールランブル",
+    "zh-CN": "校园迷糊大王",
+    "zh-TW": "校園迷糊大王"
   },
   "schoolgirl_strikers": {
     "en": "Schoolgirl Strikers",
@@ -6420,7 +6544,9 @@
   "sd_gundam_sangokuden": {
     "en": "Sd Gundam Sangokuden",
     "ko": "SD 건담 삼국전",
-    "ja": "SDガンダム三国伝"
+    "ja": "SDガンダム三国伝",
+    "zh-CN": "SD高达三国传",
+    "zh-TW": "SD鋼彈三國傳"
   },
   "sdorica": {
     "en": "Sdorica",
@@ -6430,7 +6556,9 @@
   "seiken_densetsu_3": {
     "en": "Trials of Mana",
     "ko": "성검전설 3",
-    "ja": "聖剣伝説3"
+    "ja": "聖剣伝説3",
+    "zh-CN": "圣剑传说3",
+    "zh-TW": "聖劍傳說3"
   },
   "seiren": {
     "en": "Seiren",
@@ -6440,7 +6568,9 @@
   "seishun_buta_yarou_wa_bunny_girl_senpai_no_yume_o_minai": {
     "en": "Seishun Buta Yarou Wa Bunny Girl Senpai No Yume O Minai",
     "ko": "청춘 돼지는 버니걸 선배의 꿈을 꾸지 않는다",
-    "ja": "青春ブタ野郎はバニーガール先輩の夢を見ない"
+    "ja": "青春ブタ野郎はバニーガール先輩の夢を見ない",
+    "zh-CN": "青春猪头少年不会梦到兔女郎学姐",
+    "zh-TW": "青春豬頭少年不會夢到兔女郎學姊"
   },
   "seitokai_ni_mo_ana_wa_aru": {
     "en": "Seitokai Ni Mo Ana Wa Aru",
@@ -6465,7 +6595,9 @@
   "sekiro_shadows_die_twice": {
     "en": "Sekiro Shadows Die Twice",
     "ko": "세키로: 섀도우 다이 트와이스",
-    "ja": "SEKIRO: SHADOWS DIE TWICE"
+    "ja": "SEKIRO: SHADOWS DIE TWICE",
+    "zh-CN": "只狼：影逝二度",
+    "zh-TW": "隻狼：暗影雙死"
   },
   "selector_infected_wixoss": {
     "en": "Selector Infected Wixoss",
@@ -6515,7 +6647,9 @@
   "senran_kagura": {
     "en": "Senran Kagura",
     "ko": "섬란 카구라",
-    "ja": "閃乱カグラ"
+    "ja": "閃乱カグラ",
+    "zh-CN": "闪乱神乐",
+    "zh-TW": "閃亂神樂"
   },
   "senren_banka": {
     "en": "Senren Banka",
@@ -6570,12 +6704,16 @@
   "shakugan_no_shana": {
     "en": "Shakugan no Shana",
     "ko": "작안의 샤나",
-    "ja": "灼眼のシャナ"
+    "ja": "灼眼のシャナ",
+    "zh-CN": "灼眼的夏娜",
+    "zh-TW": "灼眼的夏娜"
   },
   "shaman_king": {
     "en": "Shaman King",
     "ko": "샤먼킹",
-    "ja": "シャーマンキング"
+    "ja": "シャーマンキング",
+    "zh-CN": "通灵王",
+    "zh-TW": "通靈王"
   },
   "shezow": {
     "en": "Shezow",
@@ -6605,7 +6743,9 @@
   "shin_megami_tensei": {
     "en": "Shin Megami Tensei",
     "ko": "진 여신전생",
-    "ja": "真・女神転生"
+    "ja": "真・女神転生",
+    "zh-CN": "真·女神转生",
+    "zh-TW": "真・女神轉生"
   },
   "shinazu_no_himegimi": {
     "en": "Shinazu No Himegimi",
@@ -6615,12 +6755,16 @@
   "shingeki_no_kyojin": {
     "en": "Attack on Titan",
     "ko": "진격의 거인",
-    "ja": "進撃の巨人"
+    "ja": "進撃の巨人",
+    "zh-CN": "进击的巨人",
+    "zh-TW": "進擊的巨人"
   },
   "shinigami_bocchan_to_kuro_maid": {
     "en": "Shinigami Bocchan To Kuro Maid",
     "ko": "죽음의 공자와 검은 메이드",
-    "ja": "死神坊ちゃんと黒メイド"
+    "ja": "死神坊ちゃんと黒メイド",
+    "zh-CN": "死神少爷与黑女仆",
+    "zh-TW": "死神少爺與黑女僕"
   },
   "shining_star": {
     "en": "Shining Star",
@@ -6645,17 +6789,23 @@
   "shinryaku_ika_musume": {
     "en": "Squid Girl",
     "ko": "침략! 오징어 소녀",
-    "ja": "侵略！イカ娘"
+    "ja": "侵略！イカ娘",
+    "zh-CN": "侵略！乌贼娘",
+    "zh-TW": "侵略！花枝娘"
   },
   "shinsekai_yori": {
     "en": "Shinsekai Yori",
     "ko": "신세계에서",
-    "ja": "新世界より"
+    "ja": "新世界より",
+    "zh-CN": "来自新世界",
+    "zh-TW": "來自新世界"
   },
   "shirobako": {
     "en": "Shirobako",
     "ko": "시로바코",
-    "ja": "SHIROBAKO"
+    "ja": "SHIROBAKO",
+    "zh-CN": "白箱",
+    "zh-TW": "SHIROBAKO"
   },
   "shironeko_project": {
     "en": "Shironeko Project",
@@ -6665,7 +6815,9 @@
   "shokugeki_no_soma": {
     "en": "Food Wars!: Shokugeki no Soma",
     "ko": "식극의 소마",
-    "ja": "食戟のソーマ"
+    "ja": "食戟のソーマ",
+    "zh-CN": "食戟之灵",
+    "zh-TW": "食戟之靈"
   },
   "shomin_sample": {
     "en": "Shomin Sample",
@@ -6675,7 +6827,9 @@
   "shoujo_shuumatsu_ryokou": {
     "en": "Shoujo Shuumatsu Ryokou",
     "ko": "소녀종말여행",
-    "ja": "少女終末旅行"
+    "ja": "少女終末旅行",
+    "zh-CN": "少女终末旅行",
+    "zh-TW": "少女終末旅行"
   },
   "shoujo_x_shoujo_x_shoujo": {
     "en": "Shoujo X Shoujo X Shoujo",
@@ -6700,7 +6854,9 @@
   "shugo_chara": {
     "en": "Shugo Chara",
     "ko": "수호캐릭터",
-    "ja": "しゅごキャラ!"
+    "ja": "しゅごキャラ!",
+    "zh-CN": "守护甜心",
+    "zh-TW": "守護甜心"
   },
   "shuriken_sentai_ninninger": {
     "en": "Shuriken Sentai Ninninger",
@@ -6715,17 +6871,23 @@
   "shuumatsu_no_valkyrie": {
     "en": "Shuumatsu No Valkyrie",
     "ko": "종말의 발키리",
-    "ja": "終末のワルキューレ"
+    "ja": "終末のワルキューレ",
+    "zh-CN": "终末的女武神",
+    "zh-TW": "終末的女武神"
   },
   "silent_hill": {
     "en": "Silent Hill",
     "ko": "사일런트 힐",
-    "ja": "サイレントヒル"
+    "ja": "サイレントヒル",
+    "zh-CN": "寂静岭",
+    "zh-TW": "沉默之丘"
   },
   "sing": {
     "en": "Sing",
     "ko": "씽",
-    "ja": "シング"
+    "ja": "シング",
+    "zh-CN": "欢乐好声音",
+    "zh-TW": "歡樂好聲音"
   },
   "sinoalice": {
     "en": "Sinoalice",
@@ -6760,17 +6922,23 @@
   "skip_to_loafer": {
     "en": "Skip To Loafer",
     "ko": "스킵과 로퍼",
-    "ja": "スキップとローファー"
+    "ja": "スキップとローファー",
+    "zh-CN": "跃动青春",
+    "zh-TW": "躍動青春"
   },
   "skullgirls": {
     "en": "Skullgirls",
     "ko": "스컬걸즈",
-    "ja": "スカルガールズ"
+    "ja": "スカルガールズ",
+    "zh-CN": "骷髅女孩",
+    "zh-TW": "骷髏女孩"
   },
   "slayers": {
     "en": "Slayers",
     "ko": "슬레이어즈",
-    "ja": "スレイヤーズ"
+    "ja": "スレイヤーズ",
+    "zh-CN": "秀逗魔导士",
+    "zh-TW": "秀逗魔導士"
   },
   "slow_loop": {
     "en": "Slow Loop",
@@ -6785,12 +6953,16 @@
   "smile_precure": {
     "en": "Smile Precure!",
     "ko": "스마일 프리큐어!",
-    "ja": "スマイルプリキュア！"
+    "ja": "スマイルプリキュア！",
+    "zh-CN": "Smile 光之美少女！",
+    "zh-TW": "Smile 光之美少女！"
   },
   "snow_white_and_the_seven_dwarfs": {
     "en": "Snow White And The Seven Dwarfs",
     "ko": "백설공주와 일곱 난쟁이",
-    "ja": "白雪姫"
+    "ja": "白雪姫",
+    "zh-CN": "白雪公主和七个小矮人",
+    "zh-TW": "白雪公主"
   },
   "sokkou_seitokai": {
     "en": "Sokkou Seitokai",
@@ -6805,12 +6977,16 @@
   "sonic_the_hedgehog": {
     "en": "Sonic the Hedgehog",
     "ko": "소닉 더 헤지혹",
-    "ja": "ソニック・ザ・ヘッジホッグ"
+    "ja": "ソニック・ザ・ヘッジホッグ",
+    "zh-CN": "索尼克",
+    "zh-TW": "音速小子"
   },
   "sono_bisque_doll_wa_koi_o_suru": {
     "en": "My Dress-Up Darling",
     "ko": "그 비스크 돌은 사랑을 한다",
-    "ja": "その着せ替え人形は恋をする"
+    "ja": "その着せ替え人形は恋をする",
+    "zh-CN": "更衣人偶坠入爱河",
+    "zh-TW": "戀上換裝娃娃"
   },
   "sono_hanabira_ni_kuchizuke_o": {
     "en": "Sono Hanabira Ni Kuchizuke O",
@@ -6825,7 +7001,9 @@
   "sora_no_otoshimono": {
     "en": "Heaven's Lost Property",
     "ko": "하늘의 유실물",
-    "ja": "そらのおとしもの"
+    "ja": "そらのおとしもの",
+    "zh-CN": "天降之物",
+    "zh-TW": "天降之物"
   },
   "sora_wo_kakeru_shoujo": {
     "en": "Sora Wo Kakeru Shoujo",
@@ -6845,17 +7023,23 @@
   "soul_eater": {
     "en": "Soul Eater",
     "ko": "소울 이터",
-    "ja": "ソウルイーター"
+    "ja": "ソウルイーター",
+    "zh-CN": "噬魂师",
+    "zh-TW": "SOUL EATER 噬魂者"
   },
   "soulcalibur": {
     "en": "Soulcalibur",
     "ko": "소울칼리버",
-    "ja": "ソウルキャリバー"
+    "ja": "ソウルキャリバー",
+    "zh-CN": "灵魂能力",
+    "zh-TW": "劍魂"
   },
   "soulworker": {
     "en": "Soulworker",
     "ko": "소울워커",
-    "ja": "ソウルワーカー"
+    "ja": "ソウルワーカー",
+    "zh-CN": "灵魂行者",
+    "zh-TW": "靈魂行者"
   },
   "sound_voltex": {
     "en": "Sound Voltex",
@@ -6865,22 +7049,30 @@
   "sousou_no_frieren": {
     "en": "Sousou No Frieren",
     "ko": "장송의 프리렌",
-    "ja": "葬送のフリーレン"
+    "ja": "葬送のフリーレン",
+    "zh-CN": "葬送的芙莉莲",
+    "zh-TW": "葬送的芙莉蓮"
   },
   "south_park": {
     "en": "South Park",
     "ko": "사우스 파크",
-    "ja": "サウスパーク"
+    "ja": "サウスパーク",
+    "zh-CN": "南方公园",
+    "zh-TW": "南方四賤客"
   },
   "space_battleship_yamato": {
     "en": "Space Battleship Yamato",
     "ko": "우주전함 야마토",
-    "ja": "宇宙戦艦ヤマト"
+    "ja": "宇宙戦艦ヤマト",
+    "zh-CN": "宇宙战舰大和号",
+    "zh-TW": "宇宙戰艦大和號"
   },
   "space_battleship_yamato_2199": {
     "en": "Space Battleship Yamato 2199",
     "ko": "우주전함 야마토 2199",
-    "ja": "宇宙戦艦ヤマト2199"
+    "ja": "宇宙戦艦ヤマト2199",
+    "zh-CN": "宇宙战舰大和号2199",
+    "zh-TW": "宇宙戰艦大和號2199"
   },
   "space_patrol_luluco": {
     "en": "Space Patrol Luluco",
@@ -6900,17 +7092,23 @@
   "spice_and_wolf": {
     "en": "Spice and Wolf",
     "ko": "늑대와 향신료",
-    "ja": "狼と香辛料"
+    "ja": "狼と香辛料",
+    "zh-CN": "狼与香辛料",
+    "zh-TW": "狼與辛香料"
   },
   "spider-man": {
     "en": "Spider-Man",
     "ko": "스파이더맨",
-    "ja": "スパイダーマン"
+    "ja": "スパイダーマン",
+    "zh-CN": "蜘蛛侠",
+    "zh-TW": "蜘蛛人"
   },
   "splatoon": {
     "en": "Splatoon",
     "ko": "스플래툰",
-    "ja": "スプラトゥーン"
+    "ja": "スプラトゥーン",
+    "zh-CN": "斯普拉遁",
+    "zh-TW": "漆彈大作戰"
   },
   "splatterhouse": {
     "en": "Splatterhouse",
@@ -6920,17 +7118,23 @@
   "spongebob_squarepants": {
     "en": "Spongebob Squarepants",
     "ko": "스폰지밥",
-    "ja": "スポンジ・ボブ"
+    "ja": "スポンジ・ボブ",
+    "zh-CN": "海绵宝宝",
+    "zh-TW": "海綿寶寶"
   },
   "spy_x_family": {
     "en": "SPY×FAMILY",
     "ko": "스파이 패밀리",
-    "ja": "SPY×FAMILY"
+    "ja": "SPY×FAMILY",
+    "zh-CN": "间谍过家家",
+    "zh-TW": "SPY×FAMILY 間諜家家酒"
   },
   "squid_game": {
     "en": "Squid Game",
     "ko": "오징어 게임",
-    "ja": "イカゲーム"
+    "ja": "イカゲーム",
+    "zh-CN": "鱿鱼游戏",
+    "zh-TW": "魷魚遊戲"
   },
   "ssss.dynazenon": {
     "en": "Ssss.Dynazenon",
@@ -6950,22 +7154,30 @@
   "star_fox": {
     "en": "Star Fox",
     "ko": "스타 폭스",
-    "ja": "スターフォックス"
+    "ja": "スターフォックス",
+    "zh-CN": "星际火狐",
+    "zh-TW": "星際火狐"
   },
   "star_ocean": {
     "en": "Star Ocean",
     "ko": "스타 오션",
-    "ja": "スターオーシャン"
+    "ja": "スターオーシャン",
+    "zh-CN": "星之海洋",
+    "zh-TW": "星海遊俠"
   },
   "star_ocean_3": {
     "en": "Star Ocean 3",
     "ko": "스타 오션 3",
-    "ja": "スターオーシャン3"
+    "ja": "スターオーシャン3",
+    "zh-CN": "星之海洋3",
+    "zh-TW": "星海遊俠3"
   },
   "star_ocean_4": {
     "en": "Star Ocean 4",
     "ko": "스타 오션 4",
-    "ja": "スターオーシャン4"
+    "ja": "スターオーシャン4",
+    "zh-CN": "星之海洋4",
+    "zh-TW": "星海遊俠4"
   },
   "star_twinkle_precure": {
     "en": "Star☆Twinkle Precure",
@@ -6980,17 +7192,23 @@
   "star_wars": {
     "en": "Star Wars",
     "ko": "스타 워즈",
-    "ja": "スター・ウォーズ"
+    "ja": "スター・ウォーズ",
+    "zh-CN": "星球大战",
+    "zh-TW": "星際大戰"
   },
   "starcraft": {
     "en": "Starcraft",
     "ko": "스타크래프트",
-    "ja": "スタークラフト"
+    "ja": "スタークラフト",
+    "zh-CN": "星际争霸",
+    "zh-TW": "星海爭霸"
   },
   "stardew_valley": {
     "en": "Stardew Valley",
     "ko": "스타듀 밸리",
-    "ja": "スターデューバレー"
+    "ja": "スターデューバレー",
+    "zh-CN": "星露谷物语",
+    "zh-TW": "星露谷物語"
   },
   "station_memories": {
     "en": "Station Memories",
@@ -7000,12 +7218,16 @@
   "steinsgate": {
     "en": "Steins;Gate",
     "ko": "슈타인즈;게이트",
-    "ja": "Steins;Gate"
+    "ja": "Steins;Gate",
+    "zh-CN": "命运石之门",
+    "zh-TW": "命運石之門"
   },
   "stellar_blade": {
     "en": "Stellar Blade",
     "ko": "스텔라 블레이드",
-    "ja": "ステラーブレイド"
+    "ja": "ステラーブレイド",
+    "zh-CN": "剑星",
+    "zh-TW": "劍星"
   },
   "strange_journey": {
     "en": "Strange Journey",
@@ -7020,12 +7242,16 @@
   "street_fighter": {
     "en": "Street Fighter",
     "ko": "스트리트 파이터",
-    "ja": "ストリートファイター"
+    "ja": "ストリートファイター",
+    "zh-CN": "街头霸王",
+    "zh-TW": "快打旋風"
   },
   "strike_the_blood": {
     "en": "Strike The Blood",
     "ko": "스트라이크 더 블러드",
-    "ja": "ストライク・ザ・ブラッド"
+    "ja": "ストライク・ザ・ブラッド",
+    "zh-CN": "噬血狂袭",
+    "zh-TW": "噬血狂襲"
   },
   "strike_witches": {
     "en": "Strike Witches",
@@ -7060,7 +7286,9 @@
   "summer_wars": {
     "en": "Summer Wars",
     "ko": "썸머 워즈",
-    "ja": "サマーウォーズ"
+    "ja": "サマーウォーズ",
+    "zh-CN": "夏日大作战",
+    "zh-TW": "夏日大作戰"
   },
   "summon_night": {
     "en": "Summon Night",
@@ -7080,7 +7308,9 @@
   "super_mario_brothers": {
     "en": "Super Mario Bros.",
     "ko": "슈퍼 마리오 브라더스",
-    "ja": "スーパーマリオブラザーズ"
+    "ja": "スーパーマリオブラザーズ",
+    "zh-CN": "超级马力欧兄弟",
+    "zh-TW": "超級瑪利歐兄弟"
   },
   "super_radical_gag_family": {
     "en": "Super Radical Gag Family",
@@ -7095,12 +7325,16 @@
   "super_robot_wars": {
     "en": "Super Robot Wars",
     "ko": "슈퍼로봇대전",
-    "ja": "スーパーロボット大戦"
+    "ja": "スーパーロボット大戦",
+    "zh-CN": "超级机器人大战",
+    "zh-TW": "超級機器人大戰"
   },
   "super_sentai": {
     "en": "Super Sentai",
     "ko": "슈퍼 전대",
-    "ja": "スーパー戦隊"
+    "ja": "スーパー戦隊",
+    "zh-CN": "超级战队",
+    "zh-TW": "超級戰隊"
   },
   "super_sonico": {
     "en": "Super Sonico",
@@ -7110,22 +7344,30 @@
   "superman": {
     "en": "Superman",
     "ko": "슈퍼맨",
-    "ja": "スーパーマン"
+    "ja": "スーパーマン",
+    "zh-CN": "超人",
+    "zh-TW": "超人"
   },
   "suzume_no_tojimari": {
     "en": "Suzume No Tojimari",
     "ko": "스즈메의 문단속",
-    "ja": "すずめの戸締まり"
+    "ja": "すずめの戸締まり",
+    "zh-CN": "铃芽之旅",
+    "zh-TW": "鈴芽之旅"
   },
   "sword_art_online": {
     "en": "Sword Art Online",
     "ko": "소드 아트 온라인",
-    "ja": "ソードアート・オンライン"
+    "ja": "ソードアート・オンライン",
+    "zh-CN": "刀剑神域",
+    "zh-TW": "刀劍神域"
   },
   "sword_art_online_alternative_gun_gale_online": {
     "en": "Sword Art Online Alternative Gun Gale Online",
     "ko": "소드 아트 온라인 얼터너티브: 건 게일 온라인",
-    "ja": "ソードアート・オンライン オルタナティブ ガンゲイル・オンライン"
+    "ja": "ソードアート・オンライン オルタナティブ ガンゲイル・オンライン",
+    "zh-CN": "刀剑神域外传 Gun Gale Online",
+    "zh-TW": "刀劍神域外傳 Gun Gale Online"
   },
   "sword_girls": {
     "en": "Sword Girls",
