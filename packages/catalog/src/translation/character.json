@@ -868,6 +868,11 @@
     "ko": "아쿠마 가오루",
     "ja": "悪魔ガオル"
   },
+  "akuma_nihmune": {
+    "en": "Akuma Nihmune",
+    "ko": "아쿠마 니무네",
+    "ja": "アクマ・ニヒムネ"
+  },
   "akutabe": {
     "en": "Akutabe",
     "ko": "아쿠타베",
@@ -1191,6 +1196,11 @@
     "en": "Amana Osaki",
     "ko": "오사키 아마나",
     "ja": "大崎甘奈"
+  },
+  "amanda_oneill": {
+    "en": "Amanda O'Neill",
+    "ko": "아만다 오닐",
+    "ja": "アマンダ・オニール"
   },
   "amane": {
     "en": "Amane",
@@ -1816,6 +1826,11 @@
     "en": "Aqua Hoshino",
     "ko": "호시노 아쿠아",
     "ja": "星野アクア"
+  },
+  "aquarius": {
+    "en": "Aquarius",
+    "ko": "아쿠에리어스",
+    "ja": "アクエリアス"
   },
   "aquila_yuna": {
     "en": "Aquila Yuna",
@@ -3637,6 +3652,11 @@
     "ko": "캐그니 카르네이션",
     "ja": "カグニー・カーネーション"
   },
+  "cait": {
+    "en": "Cait",
+    "ko": "케이트",
+    "ja": "ケイト"
+  },
   "caitlyn": {
     "en": "Caitlyn",
     "ko": "케이틀린",
@@ -3897,6 +3917,11 @@
     "ko": "세실리아 헬몰드",
     "ja": "セシリア・ヘルモルト"
   },
+  "cecilia_immergreen": {
+    "en": "Cecilia Immergreen",
+    "ko": "세실리아 이머그린",
+    "ja": "セシリア・イマーグリーン"
+  },
   "celes_chere": {
     "en": "Celes Chere",
     "ko": "세레스 셰어",
@@ -4041,6 +4066,11 @@
     "en": "Charmander",
     "ko": "파이리",
     "ja": "ヒトカゲ"
+  },
+  "charmcaster": {
+    "en": "Charmcaster",
+    "ko": "참캐스터",
+    "ja": "チャームキャスター"
   },
   "charmeleon": {
     "en": "Charmeleon",
@@ -5002,6 +5032,11 @@
     "ko": "크로코다인",
     "ja": "クロコダイン"
   },
+  "crona": {
+    "en": "Crona",
+    "ko": "크로나",
+    "ja": "クロナ"
+  },
   "crow": {
     "en": "Crow",
     "ko": "크로우",
@@ -5056,6 +5091,11 @@
     "en": "Cure Aqua",
     "ko": "큐어 아쿠아",
     "ja": "キュアアクア"
+  },
+  "cure_arcana_shadow": {
+    "en": "Cure Arcana Shadow",
+    "ko": "큐어 아르카나 섀도",
+    "ja": "キュアアルカナシャドウ"
   },
   "cure_beat": {
     "en": "Cure Beat",
@@ -7322,6 +7362,11 @@
     "ko": "필리아",
     "ja": "フィリア"
   },
+  "filian": {
+    "en": "Filian",
+    "ko": "필리안",
+    "ja": "フィリアン"
+  },
   "filo": {
     "en": "Filo",
     "ko": "필로",
@@ -7636,6 +7681,11 @@
     "en": "Frenda Seivelun",
     "ko": "프렌다 세이벨룬",
     "ja": "フレンダ＝セイヴェルン"
+  },
+  "freya": {
+    "en": "Freya",
+    "ko": "프레이야",
+    "ja": "フレイヤ"
   },
   "freyja_wion": {
     "en": "Freyja Wion",
@@ -8712,6 +8762,11 @@
     "ko": "하카돌 3호",
     "ja": "ハッカドール3号"
   },
+  "hae-in_cha": {
+    "en": "Hae-In Cha",
+    "ko": "차해인",
+    "ja": "チャ・ヘイン"
+  },
   "hagikaze": {
     "en": "Hagikaze",
     "ko": "하기카제",
@@ -9756,6 +9811,11 @@
     "en": "Hilichurl",
     "ko": "츄츄족",
     "ja": "ヒルチャール"
+  },
+  "hiling": {
+    "en": "Hiling",
+    "ko": "힐링",
+    "ja": "ヒリング"
   },
   "himari_akeboshi": {
     "en": "Himari Akeboshi",
@@ -10967,6 +11027,11 @@
     "ko": "미나세 이오리",
     "ja": "水瀬伊織"
   },
+  "iori_miyamoto": {
+    "en": "Iori Miyamoto",
+    "ko": "미야모토 이오리",
+    "ja": "宮本伊織"
+  },
   "iori_nagase": {
     "en": "Iori Nagase",
     "ko": "나가세 이오리",
@@ -11421,6 +11486,11 @@
     "en": "Japanese Wolf",
     "ko": "일본늑대",
     "ja": "ニホンオオカミ"
+  },
+  "jasminka_antonenko": {
+    "en": "Jasminka Antonenko",
+    "ko": "야스민카 안토넨코",
+    "ja": "ヤスミンカ・アントネンコ"
   },
   "javelin": {
     "en": "Javelin",
@@ -12072,6 +12142,11 @@
     "ko": "난부 카구야",
     "ja": "南部かぐや"
   },
+  "kaguya_ootsutsuki": {
+    "en": "Kaguya Otsutsuki",
+    "ko": "오오츠츠키 카구야",
+    "ja": "大筒木カグヤ"
+  },
   "kaguya_shinomiya": {
     "en": "Kaguya Shinomiya",
     "ko": "시노미야 카구야",
@@ -12206,6 +12281,11 @@
     "en": "Kale",
     "ko": "케일",
     "ja": "ケール"
+  },
+  "kali_belladonna": {
+    "en": "Kali Belladonna",
+    "ko": "칼리 벨라도나",
+    "ja": "カーリー・ベラドンナ"
   },
   "kalifa": {
     "en": "Kalifa",
@@ -13052,6 +13132,11 @@
     "ko": "시로가네 케이",
     "ja": "白銀圭"
   },
+  "kei_tendou": {
+    "en": "Kei Tendou",
+    "ko": "텐도 케이",
+    "ja": "天童ケイ"
+  },
   "kei_tsukishima": {
     "en": "Kei Tsukishima",
     "ko": "츠키시마 케이",
@@ -13146,6 +13231,11 @@
     "en": "Ken Ryuguji",
     "ko": "류구지 켄",
     "ja": "龍宮寺堅"
+  },
+  "ken_takakura": {
+    "en": "Ken Takakura",
+    "ko": "타카쿠라 켄",
+    "ja": "高倉健"
   },
   "kengo": {
     "en": "Kengo",
@@ -15722,6 +15812,11 @@
     "ko": "로키",
     "ja": "ロキ"
   },
+  "lola_bunny": {
+    "en": "Lola Bunny",
+    "ko": "롤라 버니",
+    "ja": "ローラ・バニー"
+  },
   "london": {
     "en": "London",
     "ko": "런던",
@@ -15846,6 +15941,11 @@
     "en": "Lucifer",
     "ko": "루시퍼",
     "ja": "ルシファー"
+  },
+  "lucina": {
+    "en": "Lucina",
+    "ko": "루키나",
+    "ja": "ルキナ"
   },
   "lucky_chloe": {
     "en": "Lucky Chloe",
@@ -17072,6 +17172,11 @@
     "ko": "마리 로즈",
     "ja": "マリー・ローズ"
   },
+  "marie_wentz": {
+    "en": "Marie Wentz",
+    "ko": "마리 웬츠",
+    "ja": "マリー・ウェンツ"
+  },
   "mariel": {
     "en": "Mariel",
     "ko": "마리엘",
@@ -17706,6 +17811,11 @@
     "en": "Melda Deitz",
     "ko": "멜다 데이츠",
     "ja": "メルダ・ディーツ"
+  },
+  "melia_antiqua": {
+    "en": "Melia Antiqua",
+    "ko": "멜리아 안티콰",
+    "ja": "メリア・エンシェント"
   },
   "melissa": {
     "en": "Melissa",
@@ -21147,6 +21257,11 @@
     "ko": "노엘 홀리데이",
     "ja": "ノエル・ホリデー"
   },
+  "noelle_silva": {
+    "en": "Noelle Silva",
+    "ko": "노엘 실버",
+    "ja": "ノエル・シルヴァ"
+  },
   "noeru_otoshiro": {
     "en": "Noeru Otoshiro",
     "ko": "오토시로 노에루",
@@ -21897,6 +22012,11 @@
     "ko": "판도라",
     "ja": "パンドラ"
   },
+  "panne": {
+    "en": "Panne",
+    "ko": "벨벳",
+    "ja": "ベルベット"
+  },
   "panty_anarchy": {
     "en": "Panty Anarchy",
     "ko": "팬티 아나키",
@@ -22066,6 +22186,11 @@
     "en": "Penny",
     "ko": "페니",
     "ja": "ペニー"
+  },
+  "penny_polendina": {
+    "en": "Penny Polendina",
+    "ko": "페니 폴렌디나",
+    "ja": "ペニー・ポレンディーナ"
   },
   "penthesilea": {
     "en": "Penthesilea",
@@ -22246,6 +22371,11 @@
     "en": "Piper Wheel",
     "ko": "파이퍼 휠",
     "ja": "パイパー・ウィール"
+  },
+  "piper_wright": {
+    "en": "Piper Wright",
+    "ko": "파이퍼 라이트",
+    "ja": "パイパー・ライト"
   },
   "pipimi": {
     "en": "Pipimi",
@@ -22577,6 +22707,11 @@
     "ko": "사다 박사",
     "ja": "サダ博士"
   },
+  "projekt_melody": {
+    "en": "Projekt Melody",
+    "ko": "프로젝트 멜로디",
+    "ja": "プロジェクト・メロディ"
+  },
   "projekt_red": {
     "en": "Projekt Red",
     "ko": "레드",
@@ -22811,6 +22946,11 @@
     "en": "Ragna The Bloodedge",
     "ko": "라그나 더 블러드에지",
     "ja": "ラグナ＝ザ＝ブラッドエッジ"
+  },
+  "ragnarok": {
+    "en": "Ragnarok",
+    "ko": "라그나로크",
+    "ja": "ラグナロク"
   },
   "raichi_hoshimiya": {
     "en": "Raichi Hoshimiya",
@@ -24362,6 +24502,11 @@
     "ko": "로스",
     "ja": "ロス"
   },
+  "rossi": {
+    "en": "Rossi",
+    "ko": "로시",
+    "ja": "ロッシ"
+  },
   "rossweisse": {
     "en": "Rossweisse",
     "ko": "로스바이세",
@@ -24421,6 +24566,11 @@
     "en": "Ruan Mei",
     "ko": "완•매",
     "ja": "ルアン・メェイ"
+  },
+  "ruby": {
+    "en": "Ruby",
+    "ko": "루비",
+    "ja": "ルビー"
   },
   "ruby_gillman": {
     "en": "Ruby Gillman",
@@ -25786,6 +25936,11 @@
     "en": "Saya Yakushi",
     "ko": "야쿠시 사야",
     "ja": "薬師 サヤ"
+  },
+  "sayaka_kanamori": {
+    "en": "Sayaka Kanamori",
+    "ko": "카나모리 사야카",
+    "ja": "金森さやか"
   },
   "sayaka_maizono": {
     "en": "Sayaka Maizono",
@@ -27467,6 +27622,11 @@
     "ko": "시즈",
     "ja": "シージ"
   },
+  "sienna_khan": {
+    "en": "Sienna Khan",
+    "ko": "시에나 칸",
+    "ja": "シエナ・カーン"
+  },
   "sierokarte": {
     "en": "Sierokarte",
     "ko": "시에로카르테",
@@ -27792,6 +27952,11 @@
     "ko": "유일한 생존자",
     "ja": "唯一起き残った者"
   },
+  "soleil": {
+    "en": "Soleil",
+    "ko": "솔레이",
+    "ja": "ソレイユ"
+  },
   "solo": {
     "en": "Solo",
     "ko": "솔로",
@@ -27801,6 +27966,11 @@
     "en": "Solor",
     "ko": "솔로르",
     "ja": "ソロル"
+  },
+  "solution_epsilon": {
+    "en": "Solution Epsilon",
+    "ko": "솔루션 입실론",
+    "ja": "ソリュシャン・イプシロン"
   },
   "sombra": {
     "en": "Sombra",
@@ -28156,6 +28326,11 @@
     "en": "Star Sapphire",
     "ko": "스타 사파이어",
     "ja": "スターサファイア"
+  },
+  "starfire": {
+    "en": "Starfire",
+    "ko": "스타파이어",
+    "ja": "スターファイヤー"
   },
   "stark": {
     "en": "Stark",
@@ -30717,6 +30892,11 @@
     "ko": "우카노미타마노카미",
     "ja": "宇迦之御魂神"
   },
+  "ulquiorra_cifer": {
+    "en": "Ulquiorra Cifer",
+    "ko": "우르키오라 시퍼",
+    "ja": "ウルキオラ・シファー"
+  },
   "ulti": {
     "en": "Ulti",
     "ko": "우르티",
@@ -31591,6 +31771,11 @@
     "en": "William Adler",
     "ko": "윌리엄 애들러",
     "ja": "ウィリアム・アドラー"
+  },
+  "willow_schnee": {
+    "en": "Willow Schnee",
+    "ko": "윌로우 슈니",
+    "ja": "ウィロー・シュニー"
   },
   "willump": {
     "en": "Willump",
@@ -32756,6 +32941,11 @@
     "en": "Yuko Hori",
     "ko": "호리 유코",
     "ja": "堀裕子"
+  },
+  "yuko_nishiwaki": {
+    "en": "Yuko Nishiwaki",
+    "ko": "니시와키 유코",
+    "ja": "西脇優子"
   },
   "yuko_yoshida": {
     "en": "Yuko Yoshida",
