@@ -49,12 +49,12 @@ export async function GET(request: Request) {
     const headers = createProxyHeaders(
       createCacheControlHeaders({
         vercel: {
-          maxAge: sec('4 hours'),
+          maxAge: sec('3 hours'),
         },
         browser: {
           public: true,
-          maxAge: sec('30 minutes'),
-          sMaxAge: sec('4 hours'),
+          maxAge: sec('10 minutes'),
+          sMaxAge: sec('1 hour'),
           swr: sec('30 minutes'),
         },
       }),
