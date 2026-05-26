@@ -57,23 +57,13 @@ export async function readSessionFamilyByIdForUpdate(tx: SessionTransaction, fam
   return family ?? null
 }
 
-export async function readSessionTokenByHashForUpdate(tx: SessionTransaction, tokenHash: string) {
-  const [token] = await tx
-    .select()
-    .from(authSessionTokenTable)
-    .where(eq(authSessionTokenTable.tokenHash, tokenHash))
-    .for('update')
-
+export async function readSessionTokenByHash(tx: SessionTransaction, tokenHash: string) {
+  const [token] = await tx.select().from(authSessionTokenTable).where(eq(authSessionTokenTable.tokenHash, tokenHash))
   return token ?? null
 }
 
-export async function readSessionTokenByIdForUpdate(tx: SessionTransaction, tokenId: string) {
-  const [token] = await tx
-    .select()
-    .from(authSessionTokenTable)
-    .where(eq(authSessionTokenTable.id, tokenId))
-    .for('update')
-
+export async function readSessionTokenById(tx: SessionTransaction, tokenId: string) {
+  const [token] = await tx.select().from(authSessionTokenTable).where(eq(authSessionTokenTable.id, tokenId))
   return token ?? null
 }
 

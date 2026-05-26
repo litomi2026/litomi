@@ -12,7 +12,7 @@
     "./password": "./src/password.ts",
     "./pkce-browser": "./src/pkce-browser.ts",
     "./pkce-server": "./src/pkce-server.ts",
-    "./query/session.query": "./src/query/session.query.ts",
+    "./query/session": "./src/query/session.ts",
     "./redis-challenge": "./src/redis-challenge.ts",
     "./session": "./src/session.ts",
     "./session/persistent-session": "./src/session/persistent-session.ts",
