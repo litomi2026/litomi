@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 
+import type { Multilingual } from '../common'
+
 import { translateSeriesList } from '../series'
 
 describe('translateSeriesList', () => {
@@ -43,7 +45,7 @@ describe('translateSeriesListAsLabeledValues', () => {
 
   test('지원하지 않는 로케일이면 영어로 대체한다', () => {
     const series = ['one_piece']
-    const translated = translateSeriesList(series, 'zh-TW')
+    const translated = translateSeriesList(series, 'fr' as keyof Multilingual)
     expect(translated).toEqual([{ value: 'one_piece', label: 'One Piece' }])
   })
 
@@ -66,10 +68,13 @@ describe('translateSeriesListAsLabeledValues', () => {
     ])
   })
 
-  test('지원하지 않는 로케일이면 영어 번역을 반환한다', () => {
-    const series = ['touhou_project']
+  test('알려진 시리즈를 중국어 간체로 번역한다', () => {
+    const series = ['touhou_project', 'pokemon']
     const translated = translateSeriesList(series, 'zh-CN')
-    expect(translated).toEqual([{ label: 'Touhou Project', value: 'touhou_project' }])
+    expect(translated).toEqual([
+      { label: '东方Project', value: 'touhou_project' },
+      { label: '宝可梦', value: 'pokemon' },
+    ])
   })
 
   test('번역이 없으면 원래 이름을 정규화해 반환한다', () => {
