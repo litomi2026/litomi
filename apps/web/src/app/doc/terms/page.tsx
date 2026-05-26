@@ -186,10 +186,12 @@ export default async function Page() {
             <ul className="list-disc list-inside space-y-1 text-sm text-zinc-300 marker:text-zinc-600">
               <li>Chrome 109</li>
               <li>Edge 135</li>
-              <li>Firefox 137</li>
-              <li>Safari 16.1</li>
+              <li>Firefox 140</li>
+              <li>Safari 16.6</li>
+              <li>Chrome Android 131</li>
+              <li>Firefox Android 138</li>
               <li>Samsung Internet 25</li>
-              <li>iOS Safari 16</li>
+              <li>iOS Safari 16.4</li>
             </ul>
           </section>
 
