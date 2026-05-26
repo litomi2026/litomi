@@ -20,119 +20,100 @@ const PRIORITY_LEVELS = {
 } as const
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date()
-
   return [
     {
       url: NEXT_PUBLIC_APP_ORIGIN,
-      lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.HOME,
     },
-    ...generateNewMangaPages(lastModified),
-    ...generatePopularMangaPages(lastModified),
-    ...generateRankingPages(lastModified),
+    ...generateNewMangaPages(),
+    ...generatePopularMangaPages(),
+    ...generateRankingPages(),
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/realtime`,
-      lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.RANKING,
     },
-    ...generateSearchPages(lastModified),
+    ...generateSearchPages(),
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/random`,
-      lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.SEARCH,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/library`,
-      lastModified,
       changeFrequency: 'weekly',
       priority: PRIORITY_LEVELS.LIBRARY,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/library/bookmark`,
-      lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.LIBRARY,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/library/history`,
-      lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.LIBRARY,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/@`,
-      lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.USER_PAGES,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/posts/recommend`,
-      lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.POSTS,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/privacy`,
-      lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/terms`,
-      lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/youth-protection`,
-      lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/2257`,
-      lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/dmca`,
-      lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/deterrence`,
-      lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/auth/login`,
-      lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.AUTH,
     },
     {
       url: `${NEXT_PUBLIC_APP_ORIGIN}/auth/signup`,
-      lastModified,
       changeFrequency: 'yearly',
       priority: PRIORITY_LEVELS.AUTH,
     },
   ]
 }
 
-function generateNewMangaPages(lastModified: Date): MetadataRoute.Sitemap {
+function generateNewMangaPages(): MetadataRoute.Sitemap {
   const pages = []
 
-  for (let i = 1; i <= 9; i++) {
+  for (let i = 1; i <= 10; i++) {
     pages.push({
       url: `${NEXT_PUBLIC_APP_ORIGIN}/new/${i}`,
-      lastModified,
       changeFrequency: 'daily' as const,
       priority: PRIORITY_LEVELS.MAIN_SECTIONS,
     })
@@ -141,14 +122,13 @@ function generateNewMangaPages(lastModified: Date): MetadataRoute.Sitemap {
   return pages
 }
 
-function generatePopularMangaPages(lastModified: Date): MetadataRoute.Sitemap {
+function generatePopularMangaPages(): MetadataRoute.Sitemap {
   const mangaIds = [3542485, 3514353, 3300537, 3510088, 3537321, 3354827, 3300529, 3530486, 3505285, 3382542]
   const pages = []
 
   for (const mangaId of mangaIds) {
     pages.push({
       url: `${NEXT_PUBLIC_APP_ORIGIN}/manga/${mangaId}`,
-      lastModified,
       changeFrequency: 'yearly' as const,
       priority: PRIORITY_LEVELS.MANGA_DETAIL,
     })
@@ -157,14 +137,13 @@ function generatePopularMangaPages(lastModified: Date): MetadataRoute.Sitemap {
   return pages
 }
 
-function generateRankingPages(lastModified: Date): MetadataRoute.Sitemap {
+function generateRankingPages(): MetadataRoute.Sitemap {
   const pages = []
 
   for (const metric of Object.values(MetricParam)) {
     for (const period of Object.values(PeriodParam)) {
       pages.push({
         url: `${NEXT_PUBLIC_APP_ORIGIN}/ranking/${metric}/${period}`,
-        lastModified,
         changeFrequency: 'daily' as const,
         priority: PRIORITY_LEVELS.RANKING,
       })
@@ -174,7 +153,7 @@ function generateRankingPages(lastModified: Date): MetadataRoute.Sitemap {
   return pages
 }
 
-function generateSearchPages(lastModified: Date): MetadataRoute.Sitemap {
+function generateSearchPages(): MetadataRoute.Sitemap {
   const pages = []
   const popularTags = ['', 'language:korean', 'type:doujinshi', 'type:manga', 'series:original']
 
@@ -182,7 +161,6 @@ function generateSearchPages(lastModified: Date): MetadataRoute.Sitemap {
     const query = tag ? `query=${encodeURIComponent(tag)}` : ''
     pages.push({
       url: `${NEXT_PUBLIC_APP_ORIGIN}/search?${query}`,
-      lastModified,
       changeFrequency: 'weekly' as const,
       priority: PRIORITY_LEVELS.SEARCH,
     })

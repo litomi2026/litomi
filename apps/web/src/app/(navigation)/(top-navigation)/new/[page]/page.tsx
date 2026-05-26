@@ -11,25 +11,37 @@ import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import NewMangaList from './NewMangaList'
 
-export const metadata: Metadata = {
-  title: '신작',
-  ...generateOpenGraphMetadata({
-    title: '신작',
-    url: '/new/1',
-  }),
-  alternates: {
-    canonical: '/new/1',
-    languages: { ko: '/new/1' },
-  },
+const mangasNewSchema = z.object({
+  page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
+})
+
+export async function generateMetadata({ params }: PageProps<'/new/[page]'>): Promise<Metadata> {
+  const validation = mangasNewSchema.safeParse(await params)
+
+  if (!validation.success) {
+    notFound()
+  }
+
+  const { page } = validation.data
+  const title = page === 1 ? '신작' : `신작 ${page}페이지`
+  const canonical = `/new/${page}`
+
+  return {
+    title,
+    ...generateOpenGraphMetadata({
+      title,
+      url: canonical,
+    }),
+    alternates: {
+      canonical,
+      languages: { ko: canonical },
+    },
+  }
 }
 
 export async function generateStaticParams() {
   return Array.from({ length: 10 }, (_, index) => ({ page: String(index + 1) }))
 }
-
-const mangasNewSchema = z.object({
-  page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
-})
 
 export default async function Page({ params }: PageProps<'/new/[page]'>) {
   const validation = mangasNewSchema.safeParse(await params)
