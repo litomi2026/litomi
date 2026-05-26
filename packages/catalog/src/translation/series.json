@@ -272,7 +272,9 @@
   "angel_beats": {
     "en": "Angel Beats!",
     "ko": "엔젤 비트!",
-    "ja": "Angel Beats!"
+    "ja": "Angel Beats!",
+    "zh-CN": "Angel Beats!",
+    "zh-TW": "Angel Beats!"
   },
   "angel_blade": {
     "en": "Angel Blade",
@@ -337,7 +339,9 @@
   "ape_escape": {
     "en": "Ape Escape",
     "ko": "삐뽀사루 겟츄!",
-    "ja": "サルゲッチュ"
+    "ja": "サルゲッチュ",
+    "zh-CN": "捉猴啦",
+    "zh-TW": "捉猴啦"
   },
   "apex_legends": {
     "en": "Apex Legends",
@@ -405,7 +409,9 @@
   "armored_core": {
     "en": "Armored Core",
     "ko": "아머드 코어",
-    "ja": "アーマード・コア"
+    "ja": "アーマード・コア",
+    "zh-CN": "装甲核心",
+    "zh-TW": "機戰傭兵"
   },
   "arms": {
     "en": "Arms",
@@ -415,7 +421,9 @@
   "arpeggio_of_blue_steel": {
     "en": "Arpeggio Of Blue Steel",
     "ko": "푸른 강철의 아르페지오",
-    "ja": "蒼き鋼のアルペジオ"
+    "ja": "蒼き鋼のアルペジオ",
+    "zh-CN": "苍蓝钢铁的琶音",
+    "zh-TW": "蒼藍鋼鐵戰艦"
   },
   "arslan_senki": {
     "en": "Arslan Senki",
@@ -437,7 +445,9 @@
   "asobi_asobase": {
     "en": "Asobi Asobase",
     "ko": "즐겁게 놀아보세",
-    "ja": "あそびあそばせ"
+    "ja": "あそびあそばせ",
+    "zh-CN": "来玩游戏吧",
+    "zh-TW": "遊戲3人娘"
   },
   "asobi_ni_iku_yo": {
     "en": "Asobi Ni Iku Yo",
@@ -485,12 +495,16 @@
   "atelier_meruru": {
     "en": "Atelier Meruru",
     "ko": "메루루의 아틀리에",
-    "ja": "メルルのアトリエ"
+    "ja": "メルルのアトリエ",
+    "zh-CN": "梅露露的炼金工房",
+    "zh-TW": "梅露露的鍊金工房"
   },
   "atelier_rorona": {
     "en": "Atelier Rorona",
     "ko": "로로나의 아틀리에",
-    "ja": "ロロナのアトリエ"
+    "ja": "ロロナのアトリエ",
+    "zh-CN": "罗罗娜的炼金工房",
+    "zh-TW": "蘿樂娜的鍊金工房"
   },
   "atelier_ryza": {
     "en": "Atelier Ryza",
@@ -509,12 +523,16 @@
   "atelier_shallie": {
     "en": "Atelier Shallie",
     "ko": "샤리의 아틀리에 ~황혼 바다의 연금술사~",
-    "ja": "シャリーのアトリエ"
+    "ja": "シャリーのアトリエ",
+    "zh-CN": "夏莉的炼金工房",
+    "zh-TW": "夏莉的鍊金工房"
   },
   "atelier_sophie": {
     "en": "Atelier Sophie",
     "ko": "소피의 아틀리에",
-    "ja": "ソフィーのアトリエ"
+    "ja": "ソフィーのアトリエ",
+    "zh-CN": "苏菲的炼金工房",
+    "zh-TW": "蘇菲的鍊金工房"
   },
   "atelier_tanaka": {
     "en": "Atelier Tanaka",
@@ -524,7 +542,9 @@
   "atelier_totori": {
     "en": "Atelier Totori",
     "ko": "토토리의 아틀리에",
-    "ja": "トトリのアトリエ"
+    "ja": "トトリのアトリエ",
+    "zh-CN": "托托莉的炼金工房",
+    "zh-TW": "托托莉的鍊金工房"
   },
   "athena": {
     "en": "Athena",
@@ -560,7 +580,9 @@
   "axis_powers_hetalia": {
     "en": "Hetalia: Axis Powers",
     "ko": "헤타리아 Axis Powers",
-    "ja": "ヘタリア Axis Powers"
+    "ja": "ヘタリア Axis Powers",
+    "zh-CN": "黑塔利亚 Axis Powers",
+    "zh-TW": "義呆利 Axis Powers"
   },
   "ayakashi_triangle": {
     "en": "Ayakashi Triangle",
@@ -572,7 +594,9 @@
   "azumanga_daioh": {
     "en": "Azumanga Daioh",
     "ko": "아즈망가 대왕",
-    "ja": "あずまんが大王"
+    "ja": "あずまんが大王",
+    "zh-CN": "阿滋漫画大王",
+    "zh-TW": "笑園漫畫大王"
   },
   "azur_lane": {
     "en": "Azur Lane",
@@ -615,12 +639,16 @@
   "bakuon": {
     "en": "Bakuon",
     "ko": "바쿠온!!",
-    "ja": "ばくおん!!"
+    "ja": "ばくおん!!",
+    "zh-CN": "爆音少女!!",
+    "zh-TW": "爆音少女!!"
   },
   "bakusou_kyoudai_lets_and_go": {
     "en": "Bakusou Kyoudai Let's & Go!!",
     "ko": "폭주형제 렛츠&고!!",
-    "ja": "爆走兄弟レッツ&ゴー!!"
+    "ja": "爆走兄弟レッツ&ゴー!!",
+    "zh-CN": "四驱兄弟",
+    "zh-TW": "爆走兄弟Let's & Go!!"
   },
   "ballroom_e_youkoso": {
     "en": "Ballroom E Youkoso",
@@ -738,7 +766,9 @@
   "beyblade": {
     "en": "Beyblade",
     "ko": "베이블레이드",
-    "ja": "ベイブレード"
+    "ja": "ベイブレード",
+    "zh-CN": "爆旋陀螺",
+    "zh-TW": "戰鬥陀螺"
   },
   "bible_black": {
     "en": "Bible Black",
@@ -964,7 +994,9 @@
   "busou_renkin": {
     "en": "Busou Renkin",
     "ko": "무장연금",
-    "ja": "武装錬金"
+    "ja": "武装錬金",
+    "zh-CN": "武装炼金",
+    "zh-TW": "武裝鍊金"
   },
   "busou_shinki": {
     "en": "Busou Shinki",
@@ -1006,7 +1038,9 @@
   "captain_earth": {
     "en": "Captain Earth",
     "ko": "캡틴 어스",
-    "ja": "キャプテン・アース"
+    "ja": "キャプテン・アース",
+    "zh-CN": "地球队长",
+    "zh-TW": "地球隊長"
   },
   "cardcaptor_sakura": {
     "en": "Cardcaptor Sakura",
@@ -1037,7 +1071,9 @@
   "cats_eye": {
     "en": "Cats Eye",
     "ko": "캣츠 아이",
-    "ja": "キャッツ・アイ"
+    "ja": "キャッツ・アイ",
+    "zh-CN": "猫眼三姐妹",
+    "zh-TW": "貓眼"
   },
   "cevio": {
     "en": "Cevio",
@@ -1093,12 +1129,16 @@
   "chobits": {
     "en": "Chobits",
     "ko": "쵸비츠",
-    "ja": "ちょびっツ"
+    "ja": "ちょびっツ",
+    "zh-CN": "人形电脑天使心",
+    "zh-TW": "Chobits"
   },
   "choujin_koukousei-tachi_wa_isekai_demo_yoyuu_de_ikinuku_you_desu": {
     "en": "Choujin Koukousei-Tachi Wa Isekai Demo Yoyuu De Ikinuku You Desu",
     "ko": "초인 고교생들은 이세계에서도 여유롭게 살아가나 봅니다!",
-    "ja": "超人高校生たちは異世界でも余裕で生き抜くようです！"
+    "ja": "超人高校生たちは異世界でも余裕で生き抜くようです！",
+    "zh-CN": "超人高中生们即便在异世界也能从容生存！",
+    "zh-TW": "超人高中生們即便在異世界也能從容生存！"
   },
   "choukou_tenshi_escalayer": {
     "en": "Choukou Tenshi Escalayer",
@@ -1165,7 +1205,9 @@
   "comic_party": {
     "en": "Comic Party",
     "ko": "코믹 파티",
-    "ja": "こみっくパーティー"
+    "ja": "こみっくパーティー",
+    "zh-CN": "漫画派对",
+    "zh-TW": "漫畫派對"
   },
   "compass": {
     "en": "Compass",
@@ -1180,7 +1222,9 @@
   "cookie_run": {
     "en": "Cookie Run",
     "ko": "쿠키런",
-    "ja": "クッキーラン"
+    "ja": "クッキーラン",
+    "zh-CN": "跑跑姜饼人",
+    "zh-TW": "跑跑薑餅人"
   },
   "cooking_idol_ai_mai_main": {
     "en": "Cooking Idol Ai Mai Main",
@@ -1247,7 +1291,9 @@
   "cuphead": {
     "en": "Cuphead",
     "ko": "컵헤드",
-    "ja": "カップヘッド"
+    "ja": "カップヘッド",
+    "zh-CN": "茶杯头",
+    "zh-TW": "茶杯頭"
   },
   "cutey_honey": {
     "en": "Cutie Honey",
@@ -1285,17 +1331,23 @@
   "da_capo": {
     "en": "Da Capo",
     "ja": "D.C. 〜ダ・カーポ〜",
-    "ko": "다카포"
+    "ko": "다카포",
+    "zh-CN": "初音岛",
+    "zh-TW": "初音島"
   },
   "da_capo_ii": {
     "en": "Da Capo II",
     "ja": "D.C.II 〜ダ・カーポII〜",
-    "ko": "다카포 II"
+    "ko": "다카포 II",
+    "zh-CN": "初音岛II",
+    "zh-TW": "初音島II"
   },
   "da_capo_iii": {
     "en": "Da Capo III",
     "ja": "D.C.III 〜ダ・カーポIII〜",
-    "ko": "다카포 III"
+    "ko": "다카포 III",
+    "zh-CN": "初音岛III",
+    "zh-TW": "初音島III"
   },
   "daa_daa_daa": {
     "en": "Daa Daa Daa",
@@ -1381,12 +1433,16 @@
   "darkest_dungeon": {
     "en": "Darkest Dungeon",
     "ko": "다키스트 던전",
-    "ja": "ダーケストダンジョン"
+    "ja": "ダーケストダンジョン",
+    "zh-CN": "暗黑地牢",
+    "zh-TW": "暗黑地牢"
   },
   "darkstalkers": {
     "en": "Darkstalkers",
     "ko": "다크스토커즈(뱀파이어)",
-    "ja": "ヴァンパイア"
+    "ja": "ヴァンパイア",
+    "zh-CN": "恶魔战士",
+    "zh-TW": "魔域幽靈"
   },
   "darling_in_the_franxx": {
     "en": "Darling in the Franxx",
@@ -1427,22 +1483,30 @@
   "deadman_wonderland": {
     "en": "Deadman Wonderland",
     "ko": "데드맨 원더랜드",
-    "ja": "デッドマン・ワンダーランド"
+    "ja": "デッドマン・ワンダーランド",
+    "zh-CN": "死囚乐园",
+    "zh-TW": "死囚樂園"
   },
   "deadpool": {
     "en": "Deadpool",
     "ko": "데드풀",
-    "ja": "デッドプール"
+    "ja": "デッドプール",
+    "zh-CN": "死侍",
+    "zh-TW": "死侍"
   },
   "death_march_kara_hajimaru_isekai_kyousoukyoku": {
     "en": "Death March Kara Hajimaru Isekai Kyousoukyoku",
     "ko": "데스마치에서 시작되는 이세계 광상곡",
-    "ja": "デスマーチからはじまる異世界狂想曲"
+    "ja": "デスマーチからはじまる異世界狂想曲",
+    "zh-CN": "爆肝工程师的异世界狂想曲",
+    "zh-TW": "爆肝工程師的異世界狂想曲"
   },
   "death_note": {
     "en": "Death Note",
     "ko": "데스노트",
-    "ja": "DEATH NOTE"
+    "ja": "DEATH NOTE",
+    "zh-CN": "死亡笔记",
+    "zh-TW": "死亡筆記本"
   },
   "deathsmiles": {
     "en": "Deathsmiles",
@@ -1462,12 +1526,16 @@
   "deltarune": {
     "en": "Deltarune",
     "ko": "델타룬",
-    "ja": "デルタルーン"
+    "ja": "デルタルーン",
+    "zh-CN": "三角符文",
+    "zh-TW": "三角符文"
   },
   "demi-chan_wa_kataritai": {
     "en": "Demi-Chan Wa Kataritai",
     "ko": "데미쨩은 이야기하고 싶어",
-    "ja": "亜人ちゃんは語りたい"
+    "ja": "亜人ちゃんは語りたい",
+    "zh-CN": "亚人酱有话要说",
+    "zh-TW": "亞人醬有話要說"
   },
   "demonophobia": {
     "en": "Demonophobia",
@@ -1477,7 +1545,9 @@
   "demons_souls": {
     "en": "Demons Souls",
     "ko": "데몬즈 소울",
-    "ja": "デモンズソウル"
+    "ja": "デモンズソウル",
+    "zh-CN": "恶魔之魂",
+    "zh-TW": "惡魔靈魂"
   },
   "denkigai_no_honya-san": {
     "en": "Denkigai No Honya-San",
@@ -1507,12 +1577,16 @@
   "detective_conan": {
     "en": "Detective Conan",
     "ko": "명탐정 코난",
-    "ja": "名探偵コナン"
+    "ja": "名探偵コナン",
+    "zh-CN": "名侦探柯南",
+    "zh-TW": "名偵探柯南"
   },
   "devil_may_cry": {
     "en": "Devil May Cry",
     "ko": "데빌 메이 크라이",
-    "ja": "デビル メイ クライ"
+    "ja": "デビル メイ クライ",
+    "zh-CN": "鬼泣",
+    "zh-TW": "惡魔獵人"
   },
   "devil_survivor": {
     "en": "Devil Survivor",
@@ -1532,42 +1606,58 @@
   "digimon": {
     "en": "Digimon",
     "ko": "디지몬",
-    "ja": "デジモン"
+    "ja": "デジモン",
+    "zh-CN": "数码宝贝",
+    "zh-TW": "數碼寶貝"
   },
   "digimon_adventure": {
     "en": "Digimon Adventure",
     "ko": "디지몬 어드벤처",
-    "ja": "デジモンアドベンチャー"
+    "ja": "デジモンアドベンチャー",
+    "zh-CN": "数码宝贝大冒险",
+    "zh-TW": "數碼寶貝大冒險"
   },
   "digimon_adventure_tri.": {
     "en": "Digimon Adventure Tri.",
     "ko": "디지몬 어드벤처 트라이",
-    "ja": "デジモンアドベンチャー tri."
+    "ja": "デジモンアドベンチャー tri.",
+    "zh-CN": "数码宝贝大冒险 tri.",
+    "zh-TW": "數碼寶貝大冒險 tri."
   },
   "digimon_frontier": {
     "en": "Digimon Frontier",
     "ko": "디지몬 프론티어",
-    "ja": "デジモンフロンティア"
+    "ja": "デジモンフロンティア",
+    "zh-CN": "数码宝贝无限地带",
+    "zh-TW": "數碼寶貝04無限地帶"
   },
   "digimon_ghost_game": {
     "en": "Digimon Ghost Game",
     "ko": "디지몬 고스트 게임",
-    "ja": "デジモンゴーストゲーム"
+    "ja": "デジモンゴーストゲーム",
+    "zh-CN": "数码宝贝幽灵游戏",
+    "zh-TW": "數碼寶貝幽靈遊戲"
   },
   "digimon_story_cyber_sleuth": {
     "en": "Digimon Story Cyber Sleuth",
     "ko": "디지몬 스토리 사이버 슬루스",
-    "ja": "デジモンストーリー サイバースルゥース"
+    "ja": "デジモンストーリー サイバースルゥース",
+    "zh-CN": "数码宝贝物语 网络侦探",
+    "zh-TW": "數碼寶貝物語 網路偵探"
   },
   "digimon_tamers": {
     "en": "Digimon Tamers",
     "ko": "디지몬 테이머즈",
-    "ja": "デジモンテイマーズ"
+    "ja": "デジモンテイマーズ",
+    "zh-CN": "数码宝贝驯兽师之王",
+    "zh-TW": "數碼寶貝03馴獸師之王"
   },
   "digimon_xros_wars": {
     "en": "Digimon Xros Wars",
     "ko": "디지몬 크로스 워즈",
-    "ja": "デジモンクロスウォーズ"
+    "ja": "デジモンクロスウォーズ",
+    "zh-CN": "数码宝贝合体战争",
+    "zh-TW": "數碼寶貝合體戰爭"
   },
   "dirty_pair": {
     "en": "Dirty Pair",
@@ -1577,7 +1667,9 @@
   "disgaea": {
     "en": "Disgaea",
     "ko": "마계전기 디스가이아",
-    "ja": "魔界戦記ディスガイア"
+    "ja": "魔界戦記ディスガイア",
+    "zh-CN": "魔界战记迪斯凯亚",
+    "zh-TW": "魔界戰記迪斯凱亞"
   },
   "dislyte": {
     "en": "Dislyte",
@@ -1617,7 +1709,9 @@
   "dokidoki_precure": {
     "en": "DokiDoki! Precure",
     "ko": "두근두근! 프리큐어",
-    "ja": "ドキドキ！プリキュア"
+    "ja": "ドキドキ！プリキュア",
+    "zh-CN": "心跳！光之美少女",
+    "zh-TW": "DokiDoki！光之美少女"
   },
   "dolphin_wave": {
     "en": "Dolphin Wave",
@@ -1632,7 +1726,9 @@
   "doraemon": {
     "en": "Doraemon",
     "ko": "도라에몽",
-    "ja": "ドラえもん"
+    "ja": "ドラえもん",
+    "zh-CN": "哆啦A梦",
+    "zh-TW": "哆啦A夢"
   },
   "dorei_to_no_seikatsu": {
     "en": "Dorei To No Seikatsu",
@@ -1642,117 +1738,163 @@
   "dorohedoro": {
     "en": "Dorohedoro",
     "ko": "도로헤도로",
-    "ja": "ドロヘドロ"
+    "ja": "ドロヘドロ",
+    "zh-CN": "异兽魔都",
+    "zh-TW": "異獸魔都"
   },
   "dororo": {
     "en": "Dororo",
     "ko": "도로로",
-    "ja": "どろろ"
+    "ja": "どろろ",
+    "zh-CN": "多罗罗",
+    "zh-TW": "多羅羅"
   },
   "dr._stone": {
     "en": "Dr. Stone",
     "ko": "닥터 스톤",
-    "ja": "Dr.STONE"
+    "ja": "Dr.STONE",
+    "zh-CN": "Dr.STONE 新石纪",
+    "zh-TW": "Dr.STONE 新石紀"
   },
   "dragalia_lost": {
     "en": "Dragalia Lost",
     "ko": "드래그리아 로스트",
-    "ja": "ドラガリアロスト"
+    "ja": "ドラガリアロスト",
+    "zh-CN": "失落的龙约",
+    "zh-TW": "Dragalia Lost ～失落的龍絆～"
   },
   "dragon_ball": {
     "en": "Dragon Ball",
     "ko": "드래곤볼",
-    "ja": "ドラゴンボール"
+    "ja": "ドラゴンボール",
+    "zh-CN": "龙珠",
+    "zh-TW": "七龍珠"
   },
   "dragon_ball_gt": {
     "en": "Dragon Ball Gt",
     "ko": "드래곤볼 GT",
-    "ja": "ドラゴンボールGT"
+    "ja": "ドラゴンボールGT",
+    "zh-CN": "龙珠GT",
+    "zh-TW": "七龍珠GT"
   },
   "dragon_ball_super": {
     "en": "Dragon Ball Super",
     "ko": "드래곤볼 슈퍼",
-    "ja": "ドラゴンボール超"
+    "ja": "ドラゴンボール超",
+    "zh-CN": "龙珠超",
+    "zh-TW": "七龍珠超"
   },
   "dragon_ball_z": {
     "en": "Dragon Ball Z",
     "ko": "드래곤볼 Z",
-    "ja": "ドラゴンボールZ"
+    "ja": "ドラゴンボールZ",
+    "zh-CN": "龙珠Z",
+    "zh-TW": "七龍珠Z"
   },
   "dragon_quest": {
     "en": "Dragon Quest",
     "ko": "드래곤 퀘스트",
-    "ja": "ドラゴンクエスト"
+    "ja": "ドラゴンクエスト",
+    "zh-CN": "勇者斗恶龙",
+    "zh-TW": "勇者鬥惡龍"
   },
   "dragon_quest_dai_no_daibouken": {
     "en": "Dragon Quest: The Adventure of Dai",
     "ko": "드래곤 퀘스트: 다이의 대모험",
-    "ja": "ドラゴンクエスト ダイの大冒険"
+    "ja": "ドラゴンクエスト ダイの大冒険",
+    "zh-CN": "勇者斗恶龙 达伊的大冒险",
+    "zh-TW": "勇者鬥惡龍 達伊的大冒險"
   },
   "dragon_quest_heroes": {
     "en": "Dragon Quest Heroes",
     "ko": "드래곤 퀘스트 히어로즈",
-    "ja": "ドラゴンクエストヒーローズ"
+    "ja": "ドラゴンクエストヒーローズ",
+    "zh-CN": "勇者斗恶龙 英雄集结 闇龙与世界树之城",
+    "zh-TW": "勇者鬥惡龍 英雄集結 闇龍與世界樹之城"
   },
   "dragon_quest_ii": {
     "en": "Dragon Quest Ii",
     "ko": "드래곤 퀘스트 II",
-    "ja": "ドラゴンクエストII"
+    "ja": "ドラゴンクエストII",
+    "zh-CN": "勇者斗恶龙II",
+    "zh-TW": "勇者鬥惡龍II"
   },
   "dragon_quest_iii": {
     "en": "Dragon Quest III: The Seeds of Salvation",
     "ko": "드래곤 퀘스트 III",
-    "ja": "ドラゴンクエストIII"
+    "ja": "ドラゴンクエストIII",
+    "zh-CN": "勇者斗恶龙III",
+    "zh-TW": "勇者鬥惡龍III"
   },
   "dragon_quest_iv": {
     "en": "Dragon Quest IV: Chapters of the Chosen",
     "ko": "드래곤 퀘스트 IV",
-    "ja": "ドラゴンクエストIV 導かれし者たち"
+    "ja": "ドラゴンクエストIV 導かれし者たち",
+    "zh-CN": "勇者斗恶龙IV 被引导的人们",
+    "zh-TW": "勇者鬥惡龍IV 被引導的人們"
   },
   "dragon_quest_ix": {
     "en": "Dragon Quest Ix",
     "ko": "드래곤 퀘스트 IX",
-    "ja": "ドラゴンクエストIX"
+    "ja": "ドラゴンクエストIX",
+    "zh-CN": "勇者斗恶龙IX",
+    "zh-TW": "勇者鬥惡龍IX"
   },
   "dragon_quest_monsters": {
     "en": "Dragon Quest Monsters",
     "ko": "드래곤 퀘스트 몬스터즈",
-    "ja": "ドラゴンクエストモンスターズ"
+    "ja": "ドラゴンクエストモンスターズ",
+    "zh-CN": "勇者斗恶龙怪兽篇",
+    "zh-TW": "勇者鬥惡龍 怪獸篇"
   },
   "dragon_quest_retsuden_roto_no_monshou": {
     "en": "Dragon Quest Retsuden Roto No Monshou",
     "ko": "드래곤 퀘스트 열전: 로토의 문장",
-    "ja": "ドラゴンクエスト列伝 ロトの紋章"
+    "ja": "ドラゴンクエスト列伝 ロトの紋章",
+    "zh-CN": "勇者斗恶龙列传 罗德的纹章",
+    "zh-TW": "勇者鬥惡龍列傳 羅德的紋章"
   },
   "dragon_quest_v": {
     "en": "Dragon Quest V: Hand of the Heavenly Bride",
     "ko": "드래곤 퀘스트 V",
-    "ja": "ドラゴンクエストV 天空の花嫁"
+    "ja": "ドラゴンクエストV 天空の花嫁",
+    "zh-CN": "勇者斗恶龙V 天空的新娘",
+    "zh-TW": "勇者鬥惡龍V 天空的新娘"
   },
   "dragon_quest_vi": {
     "en": "Dragon Quest Vi",
     "ko": "드래곤 퀘스트 VI",
-    "ja": "ドラゴンクエストVI"
+    "ja": "ドラゴンクエストVI",
+    "zh-CN": "勇者斗恶龙VI",
+    "zh-TW": "勇者鬥惡龍VI"
   },
   "dragon_quest_vii": {
     "en": "Dragon Quest Vii",
     "ko": "드래곤 퀘스트 VII",
-    "ja": "ドラゴンクエストVII"
+    "ja": "ドラゴンクエストVII",
+    "zh-CN": "勇者斗恶龙VII",
+    "zh-TW": "勇者鬥惡龍VII"
   },
   "dragon_quest_viii": {
     "en": "Dragon Quest VIII: Journey of the Cursed King",
     "ko": "드래곤 퀘스트 VIII",
-    "ja": "ドラゴンクエストVIII 空と海と大地と呪われし姫君"
+    "ja": "ドラゴンクエストVIII 空と海と大地と呪われし姫君",
+    "zh-CN": "勇者斗恶龙VIII 天空、碧海、大地与被诅咒的公主",
+    "zh-TW": "勇者鬥惡龍VIII 天空、碧海、大地與被詛咒的公主"
   },
   "dragon_quest_x": {
     "en": "Dragon Quest X",
     "ko": "드래곤 퀘스트 X",
-    "ja": "ドラゴンクエストX"
+    "ja": "ドラゴンクエストX",
+    "zh-CN": "勇者斗恶龙X",
+    "zh-TW": "勇者鬥惡龍X"
   },
   "dragon_quest_xi": {
     "en": "Dragon Quest XI: Echoes of an Elusive Age",
     "ko": "드래곤 퀘스트 XI",
-    "ja": "ドラゴンクエストXI 過ぎ去りし時を求めて"
+    "ja": "ドラゴンクエストXI 過ぎ去りし時を求めて",
+    "zh-CN": "勇者斗恶龙XI 寻觅逝去的时光",
+    "zh-TW": "勇者鬥惡龍XI 尋覓逝去的時光"
   },
   "dragonaut": {
     "en": "Dragonaut",
@@ -1762,12 +1904,16 @@
   "dragons_crown": {
     "en": "Dragon's Crown",
     "ko": "드래곤즈 크라운",
-    "ja": "ドラゴンズクラウン"
+    "ja": "ドラゴンズクラウン",
+    "zh-CN": "龙之皇冠",
+    "zh-TW": "魔龍寶冠"
   },
   "dragons_dogma": {
     "en": "Dragons Dogma",
     "ko": "드래곤즈 도그마",
-    "ja": "ドラゴンズドグマ"
+    "ja": "ドラゴンズドグマ",
+    "zh-CN": "龙之信条",
+    "zh-TW": "龍族教義"
   },
   "dream_c_club": {
     "en": "Dream C Club",
@@ -1777,7 +1923,9 @@
   "drifters": {
     "en": "Drifters",
     "ko": "드리프터즈",
-    "ja": "ドリフターズ"
+    "ja": "ドリフターズ",
+    "zh-CN": "漂流武士",
+    "zh-TW": "漂流武士"
   },
   "duck_dodgers": {
     "en": "Duck Dodgers",
@@ -1787,12 +1935,16 @@
   "duel_masters": {
     "en": "Duel Masters",
     "ko": "듀얼 마스터즈",
-    "ja": "デュエル・マスターズ"
+    "ja": "デュエル・マスターズ",
+    "zh-CN": "决斗大师",
+    "zh-TW": "決鬥大師"
   },
   "dumbbell_nan_kilo_moteru": {
     "en": "Dumbbell Nan Kilo Moteru",
     "ko": "덤벨 몇 킬로까지 들 수 있어?",
-    "ja": "ダンベル何キロ持てる?"
+    "ja": "ダンベル何キロ持てる?",
+    "zh-CN": "流汗吧！健身少女",
+    "zh-TW": "流汗吧！健身少女"
   },
   "dungeon_fighter_online": {
     "en": "Dungeon Fighter Online",
@@ -1802,27 +1954,37 @@
   "dungeon_meshi": {
     "en": "Dungeon Meshi",
     "ko": "던전밥",
-    "ja": "ダンジョン飯"
+    "ja": "ダンジョン飯",
+    "zh-CN": "迷宫饭",
+    "zh-TW": "迷宮飯"
   },
   "dungeon_ni_deai_o_motomeru_no_wa_machigatteiru_darou_ka": {
     "en": "Is It Wrong to Try to Pick Up Girls in a Dungeon?",
     "ko": "던전에서 만남을 추구하면 안 되는 걸까",
-    "ja": "ダンジョンに出会いを求めるのは間違っているだろうか"
+    "ja": "ダンジョンに出会いを求めるのは間違っているだろうか",
+    "zh-CN": "在地下城寻求邂逅是否搞错了什么",
+    "zh-TW": "在地下城尋求邂逅是否搞錯了什麼"
   },
   "dungeons_and_dragons": {
     "en": "Dungeons And Dragons",
     "ko": "던전 앤 드래곤",
-    "ja": "ダンジョンズ&ドラゴンズ"
+    "ja": "ダンジョンズ&ドラゴンズ",
+    "zh-CN": "龙与地下城",
+    "zh-TW": "龍與地下城"
   },
   "durarara": {
     "en": "Durarara!!",
     "ko": "듀라라라!!",
-    "ja": "デュラララ!!"
+    "ja": "デュラララ!!",
+    "zh-CN": "无头骑士异闻录 DuRaRaRa!!",
+    "zh-TW": "無頭騎士異聞錄 DuRaRaRa!!"
   },
   "dynasty_warriors": {
     "en": "Dynasty Warriors",
     "ko": "진·삼국무쌍",
-    "ja": "真・三國無双"
+    "ja": "真・三國無双",
+    "zh-CN": "真·三国无双",
+    "zh-TW": "真・三國無雙"
   },
   "e.t._the_extra-terrestrial": {
     "en": "E.T. The Extra-Terrestrial",
@@ -1852,7 +2014,9 @@
   "elden_ring": {
     "en": "Elden Ring",
     "ko": "엘든 링",
-    "ja": "エルデンリング"
+    "ja": "エルデンリング",
+    "zh-CN": "艾尔登法环",
+    "zh-TW": "艾爾登法環"
   },
   "elf-san_wa_yaserarenai.": {
     "en": "Elf-San Wa Yaserarenai.",
@@ -1862,7 +2026,9 @@
   "elsword": {
     "en": "Elsword",
     "ko": "엘소드",
-    "ja": "エルソード"
+    "ja": "エルソード",
+    "zh-CN": "艾尔之光",
+    "zh-TW": "艾爾之光"
   },
   "emil_chronicle_online": {
     "en": "Emil Chronicle Online",
@@ -1872,7 +2038,9 @@
   "emma_a_victorian_romance": {
     "en": "Emma A Victorian Romance",
     "ko": "에마: 빅토리아 로맨스",
-    "ja": "英國戀物語エマ"
+    "ja": "英國戀物語エマ",
+    "zh-CN": "英国恋物语艾玛",
+    "zh-TW": "英國戀物語艾瑪"
   },
   "ender_lilies": {
     "en": "Ender Lilies",
@@ -1892,12 +2060,16 @@
   "enen_no_shouboutai": {
     "en": "Enen No Shouboutai",
     "ko": "불꽃 소방대",
-    "ja": "炎炎ノ消防隊"
+    "ja": "炎炎ノ消防隊",
+    "zh-CN": "炎炎消防队",
+    "zh-TW": "炎炎消防隊"
   },
   "ensemble_stars": {
     "en": "Ensemble Stars!",
     "ko": "앙상블 스타즈!",
-    "ja": "あんさんぶるスターズ！"
+    "ja": "あんさんぶるスターズ！",
+    "zh-CN": "偶像梦幻祭",
+    "zh-TW": "偶像夢幻祭"
   },
   "eonbound": {
     "en": "Eonbound",
@@ -1907,7 +2079,9 @@
   "epic_seven": {
     "en": "Epic Seven",
     "ko": "에픽세븐",
-    "ja": "エピックセブン"
+    "ja": "エピックセブン",
+    "zh-CN": "第七史诗",
+    "zh-TW": "第七史詩"
   },
   "equestria_girls": {
     "en": "Equestria Girls",
@@ -1937,12 +2111,16 @@
   "etotama": {
     "en": "Etotama",
     "ko": "에토타마",
-    "ja": "えとたま"
+    "ja": "えとたま",
+    "zh-CN": "干支魂",
+    "zh-TW": "干支魂"
   },
   "etrian_odyssey": {
     "en": "Etrian Odyssey",
     "ko": "세계수의 미궁",
-    "ja": "世界樹の迷宮"
+    "ja": "世界樹の迷宮",
+    "zh-CN": "世界树的迷宫",
+    "zh-TW": "世界樹的迷宮"
   },
   "euphoria": {
     "en": "Euphoria",
@@ -1952,17 +2130,23 @@
   "eureka_7": {
     "en": "Eureka Seven",
     "ko": "교향시편 유레카 세븐",
-    "ja": "交響詩篇エウレカセブン"
+    "ja": "交響詩篇エウレカセブン",
+    "zh-CN": "交响诗篇",
+    "zh-TW": "交響詩篇艾蕾卡7"
   },
   "expelled_from_paradise": {
     "en": "Expelled From Paradise",
     "ko": "낙원추방",
-    "ja": "楽園追放"
+    "ja": "楽園追放",
+    "zh-CN": "乐园追放 -Expelled from Paradise-",
+    "zh-TW": "樂園追放 -Expelled from Paradise-"
   },
   "eyeshield_21": {
     "en": "Eyeshield 21",
     "ko": "아이스실드 21",
-    "ja": "アイシールド21"
+    "ja": "アイシールド21",
+    "zh-CN": "光速蒙面侠21",
+    "zh-TW": "光速蒙面俠21"
   },
   "fairy_fencer_f": {
     "en": "Fairy Fencer F",
@@ -1972,12 +2156,16 @@
   "fairy_tail": {
     "en": "Fairy Tail",
     "ko": "페어리 테일",
-    "ja": "FAIRY TAIL"
+    "ja": "FAIRY TAIL",
+    "zh-CN": "妖精的尾巴",
+    "zh-TW": "FAIRY TAIL 魔導少年"
   },
   "fallout": {
     "en": "Fallout",
     "ko": "폴아웃",
-    "ja": "フォールアウト"
+    "ja": "フォールアウト",
+    "zh-CN": "辐射",
+    "zh-TW": "異塵餘生"
   },
   "fancy_lala": {
     "en": "Fancy Lala",
@@ -1992,17 +2180,23 @@
   "far_cry": {
     "en": "Far Cry",
     "ko": "파 크라이",
-    "ja": "ファークライ"
+    "ja": "ファークライ",
+    "zh-CN": "孤岛惊魂",
+    "zh-TW": "極地戰嚎"
   },
   "fatal_frame": {
     "en": "Fatal Frame",
     "ko": "零 ~제로~",
-    "ja": "零"
+    "ja": "零",
+    "zh-CN": "零",
+    "zh-TW": "零"
   },
   "fatal_fury": {
     "en": "Fatal Fury",
     "ko": "아랑전설",
-    "ja": "餓狼伝説"
+    "ja": "餓狼伝説",
+    "zh-CN": "饿狼传说",
+    "zh-TW": "餓狼傳說"
   },
   "fate_apocrypha": {
     "en": "Fate Apocrypha",
@@ -2017,7 +2211,9 @@
   "fate_grand_order": {
     "en": "Fate/Grand Order",
     "ko": "페이트/그랜드 오더",
-    "ja": "Fate/Grand Order"
+    "ja": "Fate/Grand Order",
+    "zh-CN": "命运-冠位指定",
+    "zh-TW": "Fate/Grand Order"
   },
   "fate_hollow_ataraxia": {
     "en": "Fate/hollow ataraxia",
@@ -2032,7 +2228,9 @@
   "fate_samurai_remnant": {
     "en": "Fate Samurai Remnant",
     "ko": "페이트 사무라이 레미넌트",
-    "ja": "Fate/Samurai Remnant"
+    "ja": "Fate/Samurai Remnant",
+    "zh-CN": "Fate/Samurai Remnant",
+    "zh-TW": "Fate/Samurai Remnant"
   },
   "fate_stay_night": {
     "en": "Fate/stay night",
@@ -2062,67 +2260,93 @@
   "final_fantasy": {
     "en": "Final Fantasy",
     "ko": "파이널 판타지",
-    "ja": "ファイナルファンタジー"
+    "ja": "ファイナルファンタジー",
+    "zh-CN": "最终幻想",
+    "zh-TW": "FINAL FANTASY"
   },
   "final_fantasy_ix": {
     "en": "Final Fantasy Ix",
     "ko": "파이널 판타지 IX",
-    "ja": "ファイナルファンタジーIX"
+    "ja": "ファイナルファンタジーIX",
+    "zh-CN": "最终幻想IX",
+    "zh-TW": "FINAL FANTASY IX"
   },
   "final_fantasy_tactics": {
     "en": "Final Fantasy Tactics",
     "ko": "파이널 판타지 택틱스",
-    "ja": "ファイナルファンタジータクティクス"
+    "ja": "ファイナルファンタジータクティクス",
+    "zh-CN": "最终幻想战略版",
+    "zh-TW": "FINAL FANTASY TACTICS"
   },
   "final_fantasy_vi": {
     "en": "Final Fantasy Vi",
     "ko": "파이널 판타지 VI",
-    "ja": "ファイナルファンタジーVI"
+    "ja": "ファイナルファンタジーVI",
+    "zh-CN": "最终幻想VI",
+    "zh-TW": "FINAL FANTASY VI"
   },
   "final_fantasy_vii": {
     "en": "Final Fantasy VII",
     "ko": "파이널 판타지 VII",
-    "ja": "ファイナルファンタジーVII"
+    "ja": "ファイナルファンタジーVII",
+    "zh-CN": "最终幻想VII",
+    "zh-TW": "FINAL FANTASY VII"
   },
   "final_fantasy_x": {
     "en": "Final Fantasy X",
     "ko": "파이널 판타지 X",
-    "ja": "ファイナルファンタジーX"
+    "ja": "ファイナルファンタジーX",
+    "zh-CN": "最终幻想X",
+    "zh-TW": "FINAL FANTASY X"
   },
   "final_fantasy_x-2": {
     "en": "Final Fantasy X-2",
     "ko": "파이널 판타지 X-2",
-    "ja": "ファイナルファンタジーX-2"
+    "ja": "ファイナルファンタジーX-2",
+    "zh-CN": "最终幻想X-2",
+    "zh-TW": "FINAL FANTASY X-2"
   },
   "final_fantasy_xi": {
     "en": "Final Fantasy XI",
     "ko": "파이널 판타지 XI",
-    "ja": "ファイナルファンタジーXI"
+    "ja": "ファイナルファンタジーXI",
+    "zh-CN": "最终幻想XI",
+    "zh-TW": "FINAL FANTASY XI"
   },
   "final_fantasy_xii": {
     "en": "Final Fantasy XII",
     "ko": "파이널 판타지 XII",
-    "ja": "ファイナルファンタジーXII"
+    "ja": "ファイナルファンタジーXII",
+    "zh-CN": "最终幻想XII",
+    "zh-TW": "FINAL FANTASY XII"
   },
   "final_fantasy_xiii": {
     "en": "Final Fantasy Xiii",
     "ko": "파이널 판타지 XIII",
-    "ja": "ファイナルファンタジーXIII"
+    "ja": "ファイナルファンタジーXIII",
+    "zh-CN": "最终幻想XIII",
+    "zh-TW": "FINAL FANTASY XIII"
   },
   "final_fantasy_xiv": {
     "en": "Final Fantasy XIV",
     "ko": "파이널 판타지 XIV",
-    "ja": "ファイナルファンタジーXIV"
+    "ja": "ファイナルファンタジーXIV",
+    "zh-CN": "最终幻想XIV",
+    "zh-TW": "FINAL FANTASY XIV"
   },
   "final_fantasy_xv": {
     "en": "Final Fantasy Xv",
     "ko": "파이널 판타지 XV",
-    "ja": "ファイナルファンタジーXV"
+    "ja": "ファイナルファンタジーXV",
+    "zh-CN": "最终幻想XV",
+    "zh-TW": "FINAL FANTASY XV"
   },
   "final_fight": {
     "en": "Final Fight",
     "ko": "파이널 파이트",
-    "ja": "ファイナルファイト"
+    "ja": "ファイナルファイト",
+    "zh-CN": "快打旋风",
+    "zh-TW": "街頭快打"
   },
   "fire_emblem": {
     "en": "Fire Emblem",
@@ -2202,7 +2426,9 @@
   "flying_witch": {
     "en": "Flying Witch",
     "ko": "플라잉 위치",
-    "ja": "ふらいんぐうぃっち"
+    "ja": "ふらいんぐうぃっち",
+    "zh-CN": "飞翔的魔女",
+    "zh-TW": "飛翔的魔女"
   },
   "fortnite": {
     "en": "Fortnite",
@@ -2232,12 +2458,16 @@
   "frozen": {
     "en": "Frozen",
     "ko": "겨울왕국",
-    "ja": "アナと雪の女王"
+    "ja": "アナと雪の女王",
+    "zh-CN": "冰雪奇缘",
+    "zh-TW": "冰雪奇緣"
   },
   "fruits_basket": {
     "en": "Fruits Basket",
     "ko": "후르츠 바스켓",
-    "ja": "フルーツバスケット"
+    "ja": "フルーツバスケット",
+    "zh-CN": "水果篮子",
+    "zh-TW": "魔法水果籃"
   },
   "fujiyama-san_wa_shishunki": {
     "en": "Fujiyama-San Wa Shishunki",
@@ -2262,17 +2492,23 @@
   "full_metal_panic": {
     "en": "Full Metal Panic!",
     "ko": "풀 메탈 패닉!",
-    "ja": "フルメタル・パニック！"
+    "ja": "フルメタル・パニック！",
+    "zh-CN": "全金属狂潮",
+    "zh-TW": "驚爆危機"
   },
   "full_moon_o_sagashite": {
     "en": "Full Moon O Sagashite",
     "ko": "풀 문 오 사가시테",
-    "ja": "満月をさがして"
+    "ja": "満月をさがして",
+    "zh-CN": "寻找满月",
+    "zh-TW": "尋找滿月"
   },
   "fullmetal_alchemist": {
     "en": "Fullmetal Alchemist",
     "ko": "강철의 연금술사",
-    "ja": "鋼の錬金術師"
+    "ja": "鋼の錬金術師",
+    "zh-CN": "钢之炼金术师",
+    "zh-TW": "鋼之鍊金術師"
   },
   "fun_fun_pharmacy": {
     "en": "Fun Fun Pharmacy",
@@ -2282,7 +2518,9 @@
   "fushigi_no_umi_no_nadia": {
     "en": "Nadia: The Secret of Blue Water",
     "ko": "신비한 바다의 나디아",
-    "ja": "ふしぎの海のナディア"
+    "ja": "ふしぎの海のナディア",
+    "zh-CN": "蓝宝石之谜",
+    "zh-TW": "海底兩萬哩"
   },
   "fushigiboshi_no_futagohime": {
     "en": "Fushigiboshi no Futagohime",
@@ -2297,12 +2535,16 @@
   "futari_wa_precure_splash_star": {
     "en": "Futari Wa Precure Splash Star",
     "ko": "후타리와 프리큐어 스플래시☆스타",
-    "ja": "ふたりはプリキュア Splash☆Star"
+    "ja": "ふたりはプリキュア Splash☆Star",
+    "zh-CN": "光之美少女 Splash Star",
+    "zh-TW": "光之美少女 Splash Star"
   },
   "futari_wa_pretty_cure": {
     "en": "Futari wa Pretty Cure",
     "ko": "두 사람은 프리큐어",
-    "ja": "ふたりはプリキュア"
+    "ja": "ふたりはプリキュア",
+    "zh-CN": "光之美少女",
+    "zh-TW": "光之美少女"
   },
   "future_card_buddyfight": {
     "en": "Future Card Buddyfight",
@@ -2312,42 +2554,58 @@
   "g_gundam": {
     "en": "Mobile Fighter G Gundam",
     "ko": "기동무투전 G 건담",
-    "ja": "機動武闘伝Gガンダム"
+    "ja": "機動武闘伝Gガンダム",
+    "zh-CN": "机动武斗传G高达",
+    "zh-TW": "機動武鬥傳G鋼彈"
   },
   "ga-rei": {
     "en": "Ga-Rei",
     "ko": "가-레이",
-    "ja": "喰霊"
+    "ja": "喰霊",
+    "zh-CN": "食灵",
+    "zh-TW": "食靈"
   },
   "gabriel_dropout": {
     "en": "Gabriel Dropout",
     "ko": "가브리엘 드롭아웃",
-    "ja": "ガヴリールドロップアウト"
+    "ja": "ガヴリールドロップアウト",
+    "zh-CN": "珈百璃的堕落",
+    "zh-TW": "廢天使加百列"
   },
   "gakkou_gurashi": {
     "en": "Gakkou Gurashi",
     "ko": "학교생활!",
-    "ja": "がっこうぐらし!"
+    "ja": "がっこうぐらし!",
+    "zh-CN": "学园孤岛",
+    "zh-TW": "學園孤島"
   },
   "gakkou_no_kaidan": {
     "en": "Gakkou No Kaidan",
     "ko": "학교괴담",
-    "ja": "学校の怪談"
+    "ja": "学校の怪談",
+    "zh-CN": "学校怪谈",
+    "zh-TW": "學校怪談"
   },
   "gakusen_toshi_asterisk": {
     "en": "Gakusen Toshi Asterisk",
     "ko": "학전도시 애스터리스크",
-    "ja": "学戦都市アスタリスク"
+    "ja": "学戦都市アスタリスク",
+    "zh-CN": "学战都市Asterisk",
+    "zh-TW": "學戰都市Asterisk"
   },
   "galaxy_angel": {
     "en": "Galaxy Angel",
     "ko": "갤럭시 엔젤",
-    "ja": "ギャラクシーエンジェル"
+    "ja": "ギャラクシーエンジェル",
+    "zh-CN": "银河天使",
+    "zh-TW": "銀河天使"
   },
   "galaxy_express_999": {
     "en": "Galaxy Express 999",
     "ko": "은하철도 999",
-    "ja": "銀河鉄道999"
+    "ja": "銀河鉄道999",
+    "zh-CN": "银河铁道999",
+    "zh-TW": "銀河鐵道999"
   },
   "gals_panic": {
     "en": "Gals Panic",
@@ -2357,12 +2615,16 @@
   "gantz": {
     "en": "Gantz",
     "ko": "간츠",
-    "ja": "GANTZ"
+    "ja": "GANTZ",
+    "zh-CN": "杀戮都市",
+    "zh-TW": "GANTZ 殺戮都市"
   },
   "gaogaigar": {
     "en": "The King of Braves GaoGaiGar",
     "ko": "용자왕 가오가이가",
-    "ja": "勇者王ガオガイガー"
+    "ja": "勇者王ガオガイガー",
+    "zh-CN": "勇者王GaoGaiGar",
+    "zh-TW": "勇者王"
   },
   "garo_vanishing_line": {
     "en": "Garo Vanishing Line",
@@ -2377,7 +2639,9 @@
   "gate_-_jieitai_kano_chi_nite_kaku_tatakaeri": {
     "en": "Gate - Jieitai Kano Chi Nite Kaku Tatakaeri",
     "ko": "게이트 - 자위대 그 땅에서, 이처럼 싸우다",
-    "ja": "ゲート 自衛隊 彼の地にて、斯く戦えり"
+    "ja": "ゲート 自衛隊 彼の地にて、斯く戦えり",
+    "zh-CN": "GATE 奇幻自卫队",
+    "zh-TW": "GATE 奇幻自衛隊"
   },
   "gear_fighter_dendoh": {
     "en": "Gear Fighter Dendoh",
@@ -2387,12 +2651,16 @@
   "gegege_no_kitarou": {
     "en": "GeGeGe no Kitarō",
     "ko": "게게게의 키타로",
-    "ja": "ゲゲゲの鬼太郎"
+    "ja": "ゲゲゲの鬼太郎",
+    "zh-CN": "鬼太郎",
+    "zh-TW": "鬼太郎"
   },
   "gekkan_shoujo_nozaki-kun": {
     "en": "Gekkan Shoujo Nozaki-Kun",
     "ko": "월간소녀 노자키군",
-    "ja": "月刊少女野崎くん"
+    "ja": "月刊少女野崎くん",
+    "zh-CN": "月刊少女野崎君",
+    "zh-TW": "月刊少女野崎同學"
   },
   "genji_tsuushin_agedama": {
     "en": "Genji Tsuushin Agedama",
@@ -2402,12 +2670,16 @@
   "genshiken": {
     "en": "Genshiken",
     "ko": "겐시켄",
-    "ja": "げんしけん"
+    "ja": "げんしけん",
+    "zh-CN": "现视研",
+    "zh-TW": "現視研"
   },
   "genshin_impact": {
     "en": "Genshin Impact",
     "ko": "원신",
-    "ja": "原神"
+    "ja": "原神",
+    "zh-CN": "原神",
+    "zh-TW": "原神"
   },
   "getsuyoubi_no_tawawa": {
     "en": "Tawawa on Monday",
@@ -2422,7 +2694,9 @@
   "ghost_in_the_shell": {
     "en": "Ghost in the Shell",
     "ko": "공각기동대",
-    "ja": "攻殻機動隊"
+    "ja": "攻殻機動隊",
+    "zh-CN": "攻壳机动队",
+    "zh-TW": "攻殼機動隊"
   },
   "ghost_sweeper_mikami": {
     "en": "Ghost Sweeper Mikami",
@@ -2447,7 +2721,9 @@
   "gintama": {
     "en": "Gintama",
     "ko": "은혼",
-    "ja": "銀魂"
+    "ja": "銀魂",
+    "zh-CN": "银魂",
+    "zh-TW": "銀魂"
   },
   "girl_friend_beta": {
     "en": "Girl Friend Beta",
@@ -2462,12 +2738,16 @@
   "girls_frontline": {
     "en": "Girls' Frontline",
     "ko": "소녀전선",
-    "ja": "ドールズフロントライン"
+    "ja": "ドールズフロントライン",
+    "zh-CN": "少女前线",
+    "zh-TW": "少女前線"
   },
   "girls_und_panzer": {
     "en": "Girls und Panzer",
     "ko": "걸즈 앤 판처",
-    "ja": "ガールズ&パンツァー"
+    "ja": "ガールズ&パンツァー",
+    "zh-CN": "少女与战车",
+    "zh-TW": "少女與戰車"
   },
   "gj-bu": {
     "en": "Gj-Bu",
@@ -2477,32 +2757,44 @@
   "go_princess_precure": {
     "en": "Go! Princess Precure",
     "ko": "Go! 프린세스 프리큐어",
-    "ja": "Go!プリンセスプリキュア"
+    "ja": "Go!プリンセスプリキュア",
+    "zh-CN": "Go! Princess 光之美少女",
+    "zh-TW": "Go！Princess 光之美少女"
   },
   "goblin_slayer": {
     "en": "Goblin Slayer",
     "ko": "고블린 슬레이어",
-    "ja": "ゴブリンスレイヤー"
+    "ja": "ゴブリンスレイヤー",
+    "zh-CN": "哥布林杀手",
+    "zh-TW": "哥布林殺手"
   },
   "gochuumon_wa_usagi_desu_ka": {
     "en": "Is the Order a Rabbit?",
     "ko": "주문은 토끼입니까?",
-    "ja": "ご注文はうさぎですか？"
+    "ja": "ご注文はうさぎですか？",
+    "zh-CN": "请问您今天要来点兔子吗？",
+    "zh-TW": "請問您今天要來點兔子嗎？"
   },
   "god_eater": {
     "en": "God Eater",
     "ko": "갓 이터",
-    "ja": "ゴッドイーター"
+    "ja": "ゴッドイーター",
+    "zh-CN": "噬神者",
+    "zh-TW": "噬神者"
   },
   "goddess_of_victory_nikke": {
     "en": "Goddess of Victory: Nikke",
     "ko": "승리의 여신: 니케",
-    "ja": "勝利の女神：NIKKE"
+    "ja": "勝利の女神：NIKKE",
+    "zh-CN": "胜利女神：妮姬",
+    "zh-TW": "勝利女神：妮姬"
   },
   "godzilla": {
     "en": "Godzilla",
     "ko": "고질라",
-    "ja": "ゴジラ"
+    "ja": "ゴジラ",
+    "zh-CN": "哥斯拉",
+    "zh-TW": "哥吉拉"
   },
   "golden_boy": {
     "en": "Golden Boy",
@@ -2512,7 +2804,9 @@
   "golden_kamuy": {
     "en": "Golden Kamuy",
     "ko": "골든 카무이",
-    "ja": "ゴールデンカムイ"
+    "ja": "ゴールデンカムイ",
+    "zh-CN": "黄金神威",
+    "zh-TW": "黃金神威"
   },
   "gosick": {
     "en": "Gosick",
@@ -2522,27 +2816,37 @@
   "gotoubun_no_hanayome": {
     "en": "The Quintessential Quintuplets",
     "ko": "5등분의 신부",
-    "ja": "五等分の花嫁"
+    "ja": "五等分の花嫁",
+    "zh-CN": "五等分的新娘",
+    "zh-TW": "五等分的新娘"
   },
   "granblue_fantasy": {
     "en": "Granblue Fantasy",
     "ko": "그랑블루 판타지",
-    "ja": "グランブルーファンタジー"
+    "ja": "グランブルーファンタジー",
+    "zh-CN": "碧蓝幻想",
+    "zh-TW": "碧藍幻想"
   },
   "grand_blue": {
     "en": "Grand Blue",
     "ko": "그랜드 블루",
-    "ja": "ぐらんぶる"
+    "ja": "ぐらんぶる",
+    "zh-CN": "碧蓝之海",
+    "zh-TW": "Grand Blue 碧藍之海"
   },
   "grand_chase": {
     "en": "Grand Chase",
     "ko": "그랜드 체이스",
-    "ja": "グランドチェイス"
+    "ja": "グランドチェイス",
+    "zh-CN": "永恒冒险",
+    "zh-TW": "永恆冒險"
   },
   "grappler_baki": {
     "en": "Grappler Baki",
     "ko": "그래플러 바키",
-    "ja": "グラップラー刃牙"
+    "ja": "グラップラー刃牙",
+    "zh-CN": "刃牙",
+    "zh-TW": "刃牙"
   },
   "gravity_falls": {
     "en": "Gravity Falls",
