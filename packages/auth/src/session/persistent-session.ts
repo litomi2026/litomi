@@ -7,20 +7,6 @@ import {
 } from '@litomi/auth/cookie'
 import 'server-only'
 import {
-  insertSessionFamily,
-  insertSessionToken,
-  markSessionTokenRotated,
-  readAdultFlag,
-  readSessionFamilyByIdForUpdate,
-  readSessionTokenByHashForUpdate,
-  readSessionTokenByIdForUpdate,
-  revokeSessionFamilyById,
-  type SessionFamilyRow,
-  type SessionTokenRow,
-  type SessionWriteExecutor,
-  touchSessionFamily,
-} from '@litomi/auth/query/session.query'
-import {
   addSeconds,
   generateSessionToken,
   getRemainingSeconds,
@@ -35,10 +21,25 @@ import {
 import { db } from '@litomi/db/app'
 import crypto from 'crypto'
 
+import {
+  insertSessionFamily,
+  insertSessionToken,
+  markSessionTokenRotated,
+  readAdultFlag,
+  readSessionFamilyByIdForUpdate,
+  readSessionTokenByHash,
+  readSessionTokenById,
+  revokeSessionFamilyById,
+  type SessionFamilyRow,
+  type SessionTokenRow,
+  type SessionWriteExecutor,
+  touchSessionFamily,
+} from '../query/session'
+
 export type RefreshSessionFailure = {
   cookies: AuthCookieConfig[]
   ok: false
-  reason: 'expired' | 'invalid' | 'missing' | 'reused' | 'revoked'
+  reason: RefreshSessionFailureReason
 }
 
 export type RefreshSessionSuccess = {
@@ -55,9 +56,19 @@ type IssuedRefreshToken = {
   tokenHash: string
 }
 
+type RefreshFailureInput = {
+  ok: false
+  reason: RefreshSessionFailureReason
+}
+
+type RefreshSessionFailureReason = 'expired' | 'invalid' | 'missing' | 'reused' | 'revoked'
+
+type RefreshSessionResult = RefreshFailureInput | RefreshSuccessInput
+
 type RefreshSuccessInput = {
   adult: boolean
   maxAgeSeconds: number
+  ok: true
   refreshToken: string
   rotated: boolean
   userId: number
@@ -110,26 +121,24 @@ export async function refreshSession(
   }
 
   const tokenHash = hashSessionToken(refreshToken)
-  const now = new Date()
 
-  return await db.transaction(async (tx) => {
-    const token = await readSessionTokenByHashForUpdate(tx, tokenHash)
+  const result = await db.transaction(async (tx): Promise<RefreshSessionResult> => {
+    const candidateToken = await readSessionTokenByHash(tx, tokenHash)
 
-    if (!token) {
+    if (!candidateToken) {
       return {
         ok: false,
         reason: 'invalid',
-        cookies: getAuthCookieClearConfigs(),
       }
     }
 
-    const family = await readSessionFamilyByIdForUpdate(tx, token.familyId)
+    // Take the first row lock on the session family so stale and current refreshes serialize by family.
+    const family = await readSessionFamilyByIdForUpdate(tx, candidateToken.familyId)
 
     if (!family) {
       return {
         ok: false,
         reason: 'invalid',
-        cookies: getAuthCookieClearConfigs(),
       }
     }
 
@@ -137,9 +146,19 @@ export async function refreshSession(
       return {
         ok: false,
         reason: 'revoked',
-        cookies: getAuthCookieClearConfigs(),
       }
     }
+
+    const token = await readSessionTokenById(tx, candidateToken.id)
+
+    if (!token) {
+      return {
+        ok: false,
+        reason: 'invalid',
+      }
+    }
+
+    const now = new Date()
 
     if (token.rotatedAt) {
       // NOTE: 재사용 유예 기간 동안만 부모 토큰을 써도 자식 토큰으로 복구될 수 있도록 허용해요
@@ -149,11 +168,10 @@ export async function refreshSession(
         return {
           ok: false,
           reason: 'reused',
-          cookies: getAuthCookieClearConfigs(),
         }
       }
 
-      const replacement = await readSessionTokenByIdForUpdate(tx, token.replacedByTokenId)
+      const replacement = await readSessionTokenById(tx, token.replacedByTokenId)
 
       if (!replacement || replacement.rotatedAt) {
         await revokeSessionFamilyById(tx, family.id, now)
@@ -161,7 +179,6 @@ export async function refreshSession(
         return {
           ok: false,
           reason: 'reused',
-          cookies: getAuthCookieClearConfigs(),
         }
       }
 
@@ -173,19 +190,19 @@ export async function refreshSession(
         return {
           ok: false,
           reason: 'reused',
-          cookies: getAuthCookieClearConfigs(),
         }
       }
 
       const adult = await readAdultFlag(tx, family.userId)
 
-      return await buildRefreshSuccess({
+      return {
         adult,
         maxAgeSeconds: getRemainingSeconds(family.idleExpiresAt, now),
+        ok: true,
         refreshToken: replacementToken,
         rotated: false,
         userId: family.userId,
-      })
+      }
     }
 
     if (isSessionFamilyExpired(family, now)) {
@@ -194,7 +211,6 @@ export async function refreshSession(
       return {
         ok: false,
         reason: 'expired',
-        cookies: getAuthCookieClearConfigs(),
       }
     }
 
@@ -220,14 +236,24 @@ export async function refreshSession(
 
     const adult = await readAdultFlag(tx, family.userId)
 
-    return await buildRefreshSuccess({
+    return {
       adult,
       maxAgeSeconds: getRemainingSeconds(nextIdleExpiresAt, now),
+      ok: true,
       refreshToken: nextToken.token,
       rotated: true,
       userId: family.userId,
-    })
+    }
   })
+
+  if (!result.ok) {
+    return {
+      ...result,
+      cookies: getAuthCookieClearConfigs(),
+    }
+  }
+
+  return await buildRefreshSuccess(result)
 }
 
 async function buildRefreshSuccess({
