@@ -2797,6 +2797,11 @@
     "ko": "백로",
     "ja": "白露"
   },
+  "baizhu": {
+    "en": "Baizhu",
+    "ko": "백출",
+    "ja": "白朮"
+  },
   "balalaika": {
     "en": "Balalaika",
     "ko": "발랄라이카",
@@ -4792,6 +4797,11 @@
     "ko": "콜롬비나",
     "ja": "コロンビーナ"
   },
+  "columbina_hyposelenia": {
+    "en": "Columbina Hyposelenia",
+    "ko": "콜롬비나·하이포셀레니아",
+    "ja": "コロンビーナ・ハイポセレニア"
+  },
   "common_raccoon": {
     "en": "Common Raccoon",
     "ko": "일반너구리",
@@ -5776,6 +5786,11 @@
     "en": "Diego Castillo",
     "ko": "디에고 카스티요",
     "ja": "ディエゴ・カスティーヨ"
+  },
+  "diluc": {
+    "en": "Diluc",
+    "ko": "다이루크",
+    "ja": "ディルック"
   },
   "diluc_ragnvindr": {
     "en": "Diluc Ragnvindr",
@@ -7297,6 +7312,11 @@
     "ko": "플레처",
     "ja": "フレッチャー"
   },
+  "flins": {
+    "en": "Flins",
+    "ko": "플린스",
+    "ja": "フリンズ"
+  },
   "flint": {
     "en": "Flint",
     "ko": "부싯돌",
@@ -7591,6 +7611,11 @@
     "en": "Furen E Lustario",
     "ko": "후렌 E 루스타리오",
     "ja": "フレン・E・ルスタリオ"
+  },
+  "furina": {
+    "en": "Furina",
+    "ko": "푸리나",
+    "ja": "フリーナ"
   },
   "furisode_girl": {
     "en": "Furisode Girl",
@@ -10317,6 +10342,11 @@
     "ko": "이아",
     "ja": "イア"
   },
+  "iansan": {
+    "en": "Iansan",
+    "ko": "얀사",
+    "ja": "イアンサ"
+  },
   "ibara-hime": {
     "en": "Ibara-Hime",
     "ko": "이바라히메",
@@ -10527,6 +10557,11 @@
     "ko": "기타 이쿠요",
     "ja": "喜多郁代"
   },
+  "illuga": {
+    "en": "Illuga",
+    "ko": "일루가",
+    "ja": "イルーガ"
+  },
   "illustrious": {
     "en": "Illustrious",
     "ko": "일러스트리어스",
@@ -10616,6 +10651,11 @@
     "en": "Ine",
     "ko": "이네",
     "ja": "イネ"
+  },
+  "ineffa": {
+    "en": "Ineffa",
+    "ko": "이네파",
+    "ja": "イネファ"
   },
   "ingrid": {
     "en": "Ingrid",
@@ -11116,6 +11156,11 @@
     "en": "Jaguar",
     "ko": "재규어",
     "ja": "ジャガー"
+  },
+  "jahoda": {
+    "en": "Jahoda",
+    "ko": "야호다",
+    "ja": "ヤフォダ"
   },
   "jahy": {
     "en": "Jahy",
@@ -11682,6 +11727,11 @@
     "ko": "카브루",
     "ja": "カブルー"
   },
+  "kachina": {
+    "en": "Kachina",
+    "ko": "카치나",
+    "ja": "カチーナ"
+  },
   "kacho_hui_guo_rou": {
     "en": "Kacho Hui Guo Rou",
     "ko": "카초 후이 구오 로우",
@@ -11726,6 +11776,11 @@
     "en": "Kaede Takagaki",
     "ko": "타카가키 카에데",
     "ja": "高垣楓"
+  },
+  "kaeya": {
+    "en": "Kaeya",
+    "ko": "케이아",
+    "ja": "ガイア"
   },
   "kaeya_alberich": {
     "en": "Kaeya Alberich",
@@ -12577,6 +12632,11 @@
     "ko": "카츄샤",
     "ja": "カチューシャ"
   },
+  "kaveh": {
+    "en": "Kaveh",
+    "ko": "카베",
+    "ja": "カーヴェ"
+  },
   "kawakaze": {
     "en": "Kawakaze",
     "ko": "카와카제",
@@ -13056,6 +13116,11 @@
     "en": "Kindred",
     "ko": "킨드레드",
     "ja": "キンドレッド"
+  },
+  "kinich": {
+    "en": "Kinich",
+    "ko": "키니치",
+    "ja": "キィニチ"
   },
   "king": {
     "en": "King",
@@ -14697,6 +14762,11 @@
     "ko": "히카리 란",
     "ja": "光 正"
   },
+  "lan_yan": {
+    "en": "Lan Yan",
+    "ko": "남연",
+    "ja": "藍硯"
+  },
   "lana": {
     "en": "Lana",
     "ko": "수련",
@@ -14816,6 +14886,11 @@
     "en": "Lauda Neill",
     "ko": "라우다 닐",
     "ja": "ラウダ・ニール"
+  },
+  "lauma": {
+    "en": "Lauma",
+    "ko": "라우마",
+    "ja": "ラウマ"
   },
   "laura": {
     "en": "Laura",
@@ -15746,6 +15821,11 @@
     "en": "Lynette Bishop",
     "ko": "리넷 비숍",
     "ja": "リネット・ビショップ"
+  },
+  "lyney": {
+    "en": "Lyney",
+    "ko": "리니",
+    "ja": "リネ"
   },
   "lynn": {
     "en": "Lynn",
@@ -20217,6 +20297,11 @@
     "ko": "네페르피트",
     "ja": "ネフェルピトー"
   },
+  "nefer": {
+    "en": "Nefer",
+    "ko": "네페르",
+    "ja": "ネフェル"
+  },
   "negev": {
     "en": "Negev",
     "ko": "네게브",
@@ -21326,6 +21411,11 @@
     "en": "Orochimaru",
     "ko": "오로치마루",
     "ja": "大蛇丸"
+  },
+  "ororon": {
+    "en": "Ororon",
+    "ko": "올로룬",
+    "ja": "オロルン"
   },
   "orsola_aquinas": {
     "en": "Orsola Aquinas",
@@ -25872,6 +25962,11 @@
     "ko": "세스 로웰",
     "ja": "セス・ローウェル"
   },
+  "sethos": {
+    "en": "Sethos",
+    "ko": "세토스",
+    "ja": "セトス"
+  },
   "seto_kaiba": {
     "en": "Seto Kaiba",
     "ko": "카이바 세토",
@@ -27011,6 +27106,11 @@
     "en": "Siesta",
     "ko": "시에스타",
     "ja": "シエスタ"
+  },
+  "sigewinne": {
+    "en": "Sigewinne",
+    "ko": "시그윈",
+    "ja": "シグウィン"
   },
   "signora": {
     "en": "Signora",
@@ -30512,6 +30612,11 @@
     "ko": "바레사",
     "ja": "ヴァレサ"
   },
+  "varka": {
+    "en": "Varka",
+    "ko": "바르카",
+    "ja": "ファルカ"
+  },
   "veemon": {
     "en": "Veemon",
     "ko": "브이몬",
@@ -31127,6 +31232,11 @@
     "ko": "리글 나이트버그",
     "ja": "リグル・ナイトバグ"
   },
+  "wriothesley": {
+    "en": "Wriothesley",
+    "ko": "라이오슬리",
+    "ja": "リオセスリ"
+  },
   "wu_zetian": {
     "en": "Wu Zetian",
     "ko": "무측천",
@@ -31536,6 +31646,11 @@
     "en": "Yoichi Nasu No Suketaka",
     "ko": "나스노 스케타카 요이치",
     "ja": "那須与一 資隆"
+  },
+  "yoimiya": {
+    "en": "Yoimiya",
+    "ko": "요이미야",
+    "ja": "宵宮"
   },
   "yoimiya_naganohara": {
     "en": "Yoimiya Naganohara",
@@ -32277,6 +32392,11 @@
     "ko": "이이지마 윤",
     "ja": "飯島ゆん"
   },
+  "yun_jin": {
+    "en": "Yun Jin",
+    "ko": "운근",
+    "ja": "雲菫"
+  },
   "yun_lee": {
     "en": "Yun Lee",
     "ko": "윤 리",
@@ -32976,6 +33096,11 @@
     "en": "Zhu Yuan",
     "ko": "주연",
     "ja": "朱鳶"
+  },
+  "zibai": {
+    "en": "Zibai",
+    "ko": "자백",
+    "ja": "兹白"
   },
   "zima": {
     "en": "Zima",
