@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next'
 
 import { env } from '@litomi/env/client'
 
+import { getSearchCanonicalPath, SEARCH_LANDING_QUERIES } from '@/lib/searchSEO'
+
 import { MetricParam, PeriodParam } from './(navigation)/(ranking)/common'
 
 const { NEXT_PUBLIC_APP_ORIGIN } = env
@@ -155,12 +157,10 @@ function generateRankingPages(): MetadataRoute.Sitemap {
 
 function generateSearchPages(): MetadataRoute.Sitemap {
   const pages = []
-  const popularTags = ['', 'language:korean', 'type:doujinshi', 'type:manga', 'series:original']
 
-  for (const tag of popularTags) {
-    const query = tag ? `query=${encodeURIComponent(tag)}` : ''
+  for (const query of SEARCH_LANDING_QUERIES) {
     pages.push({
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/search?${query}`,
+      url: `${NEXT_PUBLIC_APP_ORIGIN}${getSearchCanonicalPath(query)}`,
       changeFrequency: 'weekly' as const,
       priority: PRIORITY_LEVELS.SEARCH,
     })

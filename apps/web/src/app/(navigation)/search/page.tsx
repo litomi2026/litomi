@@ -6,21 +6,29 @@ import { Suspense } from 'react'
 
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/lib/metadata'
+import { getSearchSEO } from '@/lib/searchSEO'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import SearchResult, { SearchResultLoading } from './SearchResult'
 import TrendingKeywords from './TrendingKeywords'
 
-export const metadata: Metadata = {
-  title: '검색',
-  ...generateOpenGraphMetadata({
-    title: '검색',
-    url: '/search',
-  }),
-  alternates: {
-    canonical: '/search',
-    languages: { ko: '/search' },
-  },
+export async function generateMetadata({ searchParams }: PageProps<'/search'>): Promise<Metadata> {
+  const seo = getSearchSEO(await searchParams)
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    robots: seo.robots,
+    ...generateOpenGraphMetadata({
+      title: seo.title,
+      description: seo.description,
+      url: seo.canonical,
+    }),
+    alternates: {
+      canonical: seo.canonical,
+      languages: { ko: seo.canonical },
+    },
+  }
 }
 
 export default async function Page({ searchParams }: PageProps<'/search'>) {

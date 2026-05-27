@@ -1,7 +1,5 @@
-import type { Manga } from '@litomi/domain/manga/model'
-
 import { Locale } from '@litomi/domain/locale'
-import { tagCategoryIntToName } from '@litomi/domain/manga/model'
+import { type Manga, MANGA_TYPE_VALUE_BY_ID, tagCategoryIntToName } from '@litomi/domain/manga/model'
 
 import { translateArtistList } from './translation/artist'
 import { translateCharacterList } from './translation/character'
@@ -29,20 +27,6 @@ export type CatalogMangaRecord = {
   tagCategories: number[]
 }
 
-const typeMap: Record<number, string> = {
-  1: 'doujinshi',
-  2: 'manga',
-  3: 'artist_cg',
-  4: 'game_cg',
-  5: 'western',
-  6: 'image_set',
-  7: 'non-h',
-  8: 'cosplay',
-  9: 'asian',
-  10: 'misc',
-  11: 'private',
-}
-
 export function catalogMangaRecordsToMangaMap(records: readonly CatalogMangaRecord[]): Map<number, Manga> {
   return new Map(records.map((record) => [record.id, catalogMangaRecordToManga(record)]))
 }
@@ -58,7 +42,7 @@ export function catalogMangaRecordToManga(record: CatalogMangaRecord): Manga {
     lines: record.lines,
     count: record.count ?? undefined,
     date: record.createdAt?.toISOString(),
-    type: translateType(typeMap[record.type], locale),
+    type: translateType(MANGA_TYPE_VALUE_BY_ID[record.type], locale),
     artists: translateArtistList(record.artists, locale),
     characters: translateCharacterList(record.characters, locale),
     series: translateSeriesList(record.series, locale),

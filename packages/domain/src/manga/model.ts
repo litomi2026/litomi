@@ -47,6 +47,20 @@ export enum MangaType {
   HIDDEN = 11,
 }
 
+export const MANGA_TYPE_VALUE_BY_ID: Record<number, string> = {
+  [MangaType.DOUJINSHI]: 'doujinshi',
+  [MangaType.MANGA]: 'manga',
+  [MangaType.ARTIST_CG]: 'artist_cg',
+  [MangaType.GAME_CG]: 'game_cg',
+  [MangaType.WESTERN]: 'western',
+  [MangaType.IMAGE_SET]: 'image_set',
+  [MangaType.NON_H]: 'non-h',
+  [MangaType.COSPLAY]: 'cosplay',
+  [MangaType.ASIAN_PORN]: 'asian',
+  [MangaType.MISC]: 'misc',
+  [MangaType.HIDDEN]: 'private',
+}
+
 export type ImageVariant = {
   url: string
   width?: number

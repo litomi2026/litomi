@@ -11,7 +11,10 @@ export const bookmarkTable = pgTable(
     mangaId: integer('manga_id').notNull(),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [primaryKey({ columns: [table.userId, table.mangaId] }), index('idx_bookmark_user_id').on(table.userId)],
+  (table) => [
+    primaryKey({ columns: [table.userId, table.mangaId] }),
+    index('idx_bookmark_created_at').on(table.createdAt.desc()),
+  ],
 ).enableRLS()
 
 export const readingHistoryTable = pgTable(
@@ -27,6 +30,7 @@ export const readingHistoryTable = pgTable(
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
     index('idx_reading_history_updated_at').on(table.userId, table.updatedAt.desc()),
+    index('idx_reading_history_updated_at_only').on(table.updatedAt.desc()),
     index('idx_reading_history_manga_user').on(table.mangaId, table.userId),
   ],
 ).enableRLS()
@@ -44,6 +48,7 @@ export const userRatingTable = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
+    index('idx_user_rating_updated_at').on(table.updatedAt.desc()),
     index('idx_user_rating_manga_rating_user').on(table.mangaId, table.rating, table.userId),
   ],
 ).enableRLS()
