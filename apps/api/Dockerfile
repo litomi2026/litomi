@@ -10,6 +10,7 @@ COPY apps/cataloger/package.json ./apps/cataloger/package.json
 COPY apps/edge-proxy/package.json ./apps/edge-proxy/package.json
 COPY apps/mobile/package.json ./apps/mobile/package.json
 COPY apps/notifier/package.json ./apps/notifier/package.json
+COPY apps/recommender/package.json ./apps/recommender/package.json
 COPY apps/web/package.json ./apps/web/package.json
 COPY packages ./packages
 

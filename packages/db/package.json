@@ -11,6 +11,7 @@
     "./app/censorship": "./src/app/censorship.ts",
     "./app/dmca": "./src/app/dmca.ts",
     "./app/library": "./src/app/library.ts",
+    "./app/manga-recommendation": "./src/app/manga-recommendation.ts",
     "./app/notification": "./src/app/notification.ts",
     "./app/passkey": "./src/app/passkey.ts",
     "./app/points": "./src/app/points.ts",

@@ -18,4 +18,3 @@ resources:
   - servicemonitor-cloudflared.yaml
   - servicemonitor-argocd.yaml
   - prometheusrule-observability-pipeline.yaml
-  - prometheusrule-litomi-cataloger.yaml
