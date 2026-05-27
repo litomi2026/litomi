@@ -7,13 +7,13 @@
     "dev:local": "bun --env-file=.env.local next dev --port 3000",
     "dev:prod": "bun --env-file=.env.prod.dev next dev --port 3000",
     "build": "bun --env-file=.env.prod.build next build",
-    "lint": "eslint . --fix",
-    "format": "prettier --write . --ignore-path ../../.gitignore",
+    "build:analyze": "ANALYZE=true bun --env-file=.env.prod.build next build --webpack",
     "start": "bun run start:prod",
     "start:local": "bun --env-file=.env.local next start --port 3000",
     "start:prod": "bun --env-file=.env.prod.runtime next start --port 3000",
-    "analyze": "ANALYZE=true bun --env-file=.env.prod.build next build --webpack",
-    "type": "bun --env-file=.env.local.example next typegen && tsc --noEmit"
+    "type": "bun --env-file=.env.local.example next typegen && tsc --noEmit",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.39.0",

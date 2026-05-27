@@ -6,6 +6,7 @@ namespace: litomi-prod
 resources:
   - ../../base
   - cataloger-cronjob.yaml
+  - recommender-cronjob.yaml
   - hpa-api.yaml
   - hpa-web.yaml
   - namespace.yaml
@@ -75,3 +76,6 @@ images:
   - name: litomi-cataloger
     newName: ghcr.io/litomi2026/litomi-cataloger
     digest: sha256:06167b931f34e3e8e96e9252df621d563379c4300d0501c0e76d421589b31306
+  - name: litomi-recommender
+    newName: ghcr.io/litomi2026/litomi-recommender
+    newTag: main

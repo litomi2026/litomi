@@ -16,10 +16,10 @@
     "./sources/policy": "./src/sources/policy.ts"
   },
   "scripts": {
-    "exhentai:fullimg": "bun scripts/exhentaiFullimgLinks.ts",
+    "type": "tsc --noEmit",
     "lint": "eslint . --fix",
     "format": "prettier --write . --ignore-path ../../.gitignore",
-    "type": "tsc --noEmit"
+    "exhentai:fullimg": "bun scripts/exhentaiFullimgLinks.ts"
   },
   "dependencies": {
     "@litomi/catalog": "workspace:*",

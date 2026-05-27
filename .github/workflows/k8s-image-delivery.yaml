@@ -275,6 +275,48 @@ jobs:
           tags: ${{ steps.metadata_cataloger.outputs.tags }}
           labels: ${{ steps.metadata_cataloger.outputs.labels }}
 
+  build-and-publish-recommender-image:
+    name: Build and publish recommender image
+    if: ${{ github.ref_name == 'main' }}
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      digest: ${{ steps.build_recommender_image.outputs.digest }}
+    env:
+      IMAGE_RECOMMENDER: ghcr.io/${{ github.repository_owner }}/litomi-recommender
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Generate recommender image metadata
+        id: metadata_recommender
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE_RECOMMENDER }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=ref,event=branch
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Authenticate to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish recommender image
+        id: build_recommender_image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/recommender/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.metadata_recommender.outputs.tags }}
+          labels: ${{ steps.metadata_recommender.outputs.labels }}
+
   update-staging-image-digests:
     name: Update staging image digests
     if: ${{ github.ref_name == 'stage' && github.event_name != 'pull_request' }}
@@ -367,6 +409,7 @@ jobs:
       - build-and-publish-web-image
       - build-and-publish-api-image
       - build-and-publish-cataloger-image
+      - build-and-publish-recommender-image
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -376,9 +419,11 @@ jobs:
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
       IMAGE_API: ghcr.io/${{ github.repository_owner }}/litomi-api
       IMAGE_CATALOGER: ghcr.io/${{ github.repository_owner }}/litomi-cataloger
+      IMAGE_RECOMMENDER: ghcr.io/${{ github.repository_owner }}/litomi-recommender
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
       IMAGE_API_DIGEST: ${{ needs.build-and-publish-api-image.outputs.digest }}
       IMAGE_CATALOGER_DIGEST: ${{ needs.build-and-publish-cataloger-image.outputs.digest }}
+      IMAGE_RECOMMENDER_DIGEST: ${{ needs.build-and-publish-recommender-image.outputs.digest }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v6
@@ -402,6 +447,7 @@ jobs:
               "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
               "litomi-api": os.environ["IMAGE_API_DIGEST"],
               "litomi-cataloger": os.environ["IMAGE_CATALOGER_DIGEST"],
+              "litomi-recommender": os.environ["IMAGE_RECOMMENDER_DIGEST"],
           }
 
           def update_image_digest(image_name: str, digest: str) -> None:
@@ -451,6 +497,7 @@ jobs:
             - Web: `${{ env.IMAGE_WEB }}@${{ env.IMAGE_WEB_DIGEST }}`
             - API: `${{ env.IMAGE_API }}@${{ env.IMAGE_API_DIGEST }}`
             - Cataloger: `${{ env.IMAGE_CATALOGER }}@${{ env.IMAGE_CATALOGER_DIGEST }}`
+            - Recommender: `${{ env.IMAGE_RECOMMENDER }}@${{ env.IMAGE_RECOMMENDER_DIGEST }}`
             - Source commit: `${{ github.sha }}`
             - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           base: main

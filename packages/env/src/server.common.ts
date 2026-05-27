@@ -18,6 +18,15 @@ export const env = createEnv({
     CATALOG_POSTGRES_IDLE_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(20),
     CATALOG_POSTGRES_CONNECT_TIMEOUT_SECONDS: z.coerce.number().int().positive().default(10),
     CATALOG_POSTGRES_APPLICATION_NAME: z.string().default('litomi-catalog-local'),
+    OPENSEARCH_URL: z.url().default('http://localhost:9200'),
+    OPENSEARCH_USERNAME: z.string().optional(),
+    OPENSEARCH_PASSWORD: z.string().optional(),
+    OPENSEARCH_MANGA_INDEX_ALIAS: z
+      .string()
+      .regex(/^[a-z0-9][a-z0-9._-]*$/)
+      .default('litomi-manga'),
+    OPENSEARCH_MANGA_INDEX_SHARDS: z.coerce.number().int().positive().default(1),
+    OPENSEARCH_MANGA_INDEX_REPLICAS: z.coerce.number().int().min(0).default(0),
     JWT_SECRET_ACCESS_TOKEN: z.string().default('123'),
     JWT_SECRET_REFRESH_TOKEN: z.string().default('456'),
     JWT_SECRET_TRUSTED_DEVICE: z.string().default('789'),

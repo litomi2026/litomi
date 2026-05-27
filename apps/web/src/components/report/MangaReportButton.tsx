@@ -26,6 +26,7 @@ type MangaReportReason = (typeof MangaReportReason)[keyof typeof MangaReportReas
 type Props = {
   mangaId: number
   className?: string
+  labelClassName?: string
 }
 
 type ReasonButtonProps = {
@@ -35,7 +36,7 @@ type ReasonButtonProps = {
   onClick: () => void
 }
 
-export default function MangaReportButton({ mangaId, className = '' }: Props) {
+export default function MangaReportButton({ mangaId, className = '', labelClassName = '' }: Props) {
   const { guardAdultAccess, me } = useAdultAccessGuard()
   const [open, setOpen] = useState(false)
   const isAdultGateRequired = me?.adultVerification.required === true
@@ -86,7 +87,7 @@ export default function MangaReportButton({ mangaId, className = '' }: Props) {
         type="button"
       >
         <Flag className="size-4" />
-        <span className="text-sm font-semibold hidden lg:inline">신고하기</span>
+        <span className={twMerge('text-sm font-semibold hidden lg:inline', labelClassName)}>신고하기</span>
       </button>
 
       <Dialog ariaLabel="작품 신고" onClose={() => setOpen(false)} open={open}>

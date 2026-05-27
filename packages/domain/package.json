@@ -40,10 +40,10 @@
     "./utils/user-settings": "./src/utils/user-settings.ts"
   },
   "scripts": {
-    "generate:emoji": "bun scripts/generateEmojiList.ts",
+    "type": "tsc --noEmit",
     "lint": "eslint . --fix",
     "format": "prettier --write . --ignore-path ../../.gitignore",
-    "type": "tsc --noEmit"
+    "generate:emoji": "bun scripts/generateEmojiList.ts"
   },
   "dependencies": {
     "@litomi/std": "workspace:*",

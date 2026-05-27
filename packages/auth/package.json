@@ -20,9 +20,9 @@
     "./two-factor-backup-code": "./src/two-factor-backup-code.ts"
   },
   "scripts": {
+    "type": "tsc --noEmit",
     "lint": "eslint . --fix",
-    "format": "prettier --write . --ignore-path ../../.gitignore",
-    "type": "tsc --noEmit"
+    "format": "prettier --write . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "@litomi/db": "workspace:*",

@@ -154,6 +154,7 @@
         "@litomi/catalog": "workspace:*",
         "@litomi/db": "workspace:*",
         "@litomi/domain": "workspace:*",
+        "@litomi/env": "workspace:*",
         "drizzle-orm": "^0.45.2",
       },
       "devDependencies": {
