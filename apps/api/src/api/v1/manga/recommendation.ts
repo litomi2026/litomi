@@ -1,7 +1,7 @@
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
 import { getV1MangaRecommendationQuerySchema, type GETV1MangaRecommendationResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
-import { mangaRecommendationSetTable, mangaRecommendationTable } from '@litomi/db/app/manga-recommendation'
+import { mangaRecommendationSetTable, mangaRecommendationTable } from '@litomi/db/app/recommendation'
 import { selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
 import { asc, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -35,10 +35,7 @@ route.get(
           generatedAt: mangaRecommendationSetTable.generatedAt,
         })
         .from(mangaRecommendationTable)
-        .innerJoin(
-          mangaRecommendationSetTable,
-          eq(mangaRecommendationSetTable.userId, mangaRecommendationTable.userId),
-        )
+        .innerJoin(mangaRecommendationSetTable, eq(mangaRecommendationSetTable.userId, mangaRecommendationTable.userId))
         .where(eq(mangaRecommendationTable.userId, userId))
         .orderBy(asc(mangaRecommendationTable.rank))
         .limit(limit)

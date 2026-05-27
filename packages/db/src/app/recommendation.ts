@@ -1,5 +1,6 @@
 import {
   bigint,
+  foreignKey,
   index,
   integer,
   pgTable,
@@ -26,9 +27,7 @@ export const mangaRecommendationSetTable = pgTable(
 export const mangaRecommendationTable = pgTable(
   'manga_recommendation',
   {
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => mangaRecommendationSetTable.userId, { onDelete: 'cascade' })
-      .notNull(),
+    userId: bigint('user_id', { mode: 'number' }).notNull(),
     mangaId: integer('manga_id').notNull(),
     rank: smallint('rank').notNull(),
     score: integer('score').notNull(),
@@ -37,5 +36,10 @@ export const mangaRecommendationTable = pgTable(
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
     uniqueIndex('idx_manga_recommendation_user_rank').on(table.userId, table.rank),
+    foreignKey({
+      name: 'fk_manga_recommendation_set',
+      columns: [table.userId],
+      foreignColumns: [mangaRecommendationSetTable.userId],
+    }).onDelete('cascade'),
   ],
 ).enableRLS()
