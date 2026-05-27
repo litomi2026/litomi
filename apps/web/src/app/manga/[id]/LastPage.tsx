@@ -81,11 +81,12 @@ export default function LastPage({ manga }: Props) {
         </div>
         <div className="grid grid-cols-2 justify-center gap-2">
           <MangaReportButton
-            className="w-auto border-0 px-2 py-1 text-xs text-zinc-500 hover:bg-transparent hover:text-foreground [&>svg]:hidden"
+            className="w-full border-0 px-2 py-1 text-xs text-zinc-500 hover:bg-transparent hover:text-foreground [&>svg]:hidden"
+            labelClassName="inline text-xs font-medium"
             mangaId={mangaId}
           />
           <DonateButton
-            className="w-auto border-0 px-2 py-1 text-xs text-zinc-500 hover:bg-transparent hover:text-foreground"
+            className="w-full border-0 px-2 py-1 text-xs text-zinc-500 hover:bg-transparent hover:text-foreground"
             manga={manga}
           />
         </div>
