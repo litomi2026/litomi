@@ -1,0 +1,88 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: litomi-recommender
+  labels:
+    app: litomi-recommender
+spec:
+  schedule: '30 21 * * *'
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      parallelism: 1
+      completions: 1
+      backoffLimit: 1
+      activeDeadlineSeconds: 3600
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app: litomi-recommender
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: Never
+          containers:
+            - name: recommender
+              image: litomi-recommender:prod
+              imagePullPolicy: IfNotPresent
+              args:
+                - --active-days=30
+                - --item-limit=100
+                - --concurrency=1
+                - --max-users=5000
+              envFrom:
+                - configMapRef:
+                    name: litomi-common-env
+              env:
+                # TODO: production Vault Secret이 APP_/CATALOG_ PostgreSQL 키로 마이그레이션되면 제거한다.
+                - name: APP_POSTGRES_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: litomi-api-secret
+                      key: POSTGRES_URL
+                # TODO: production Vault Secret이 APP_/CATALOG_ PostgreSQL 키로 마이그레이션되면 제거한다.
+                - name: APP_POSTGRES_CERTIFICATE
+                  valueFrom:
+                    secretKeyRef:
+                      name: litomi-api-secret
+                      key: SUPABASE_CERTIFICATE
+                - name: APP_POSTGRES_APPLICATION_NAME
+                  value: litomi-recommender
+                - name: APP_POSTGRES_POOL_MAX
+                  value: '1'
+                # TODO: production Vault Secret이 APP_/CATALOG_ PostgreSQL 키로 마이그레이션되면 제거한다.
+                - name: CATALOG_POSTGRES_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: litomi-api-secret
+                      key: AIVEN_POSTGRES_URL
+                # TODO: production Vault Secret이 APP_/CATALOG_ PostgreSQL 키로 마이그레이션되면 제거한다.
+                - name: CATALOG_POSTGRES_CERTIFICATE
+                  valueFrom:
+                    secretKeyRef:
+                      name: litomi-api-secret
+                      key: AIVEN_CERTIFICATE
+                - name: CATALOG_POSTGRES_APPLICATION_NAME
+                  value: litomi-recommender-catalog
+                - name: CATALOG_POSTGRES_POOL_MAX
+                  value: '1'
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 1000m
+                  memory: 512Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop:
+                    - ALL
+                seccompProfile:
+                  type: RuntimeDefault
