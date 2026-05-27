@@ -1,0 +1,28 @@
+{
+  "name": "@litomi/recommender",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/recommender",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
+    "docker:build": "docker build -f Dockerfile -t litomi-recommender-local ../..",
+    "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-recommender-local",
+    "start": "bun run start:prod",
+    "start:local": "bun --conditions=react-server --env-file=.env.local src/index.ts",
+    "start:prod": "bun --conditions=react-server --env-file=.env.prod.runtime src/index.ts",
+    "type": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@litomi/catalog": "workspace:*",
+    "@litomi/db": "workspace:*",
+    "@litomi/domain": "workspace:*",
+    "drizzle-orm": "^0.45.2"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.12",
+    "@types/node": "^25.6.0",
+    "typescript": "^5.9.3"
+  }
+}
