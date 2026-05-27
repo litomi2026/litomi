@@ -35,15 +35,16 @@
     "./sql/rating-sort": "./src/sql/rating-sort.ts"
   },
   "scripts": {
-    "push:local": "bun run push:local:app && bun run push:local:catalog",
+    "type": "tsc --noEmit",
     "lint": "eslint . --fix",
     "format": "prettier --write . --ignore-path ../../.gitignore",
+    "push": "bun run push:local",
+    "push:local": "bun run push:local:app && bun run push:local:catalog",
     "push:local:app": "bun --env-file=.env.local drizzle-kit push --config=drizzle.app.config.ts --force && bun --env-file=.env.local scripts/app/syncAppSql.ts",
     "push:local:catalog": "bun --env-file=.env.local drizzle-kit push --config=drizzle.catalog.config.ts --force",
     "push:prod": "bun run push:prod:app && bun run push:prod:catalog",
     "push:prod:app": "test -f .env.prod && bun --env-file=.env.prod drizzle-kit push --config=drizzle.app.config.ts && bun --env-file=.env.prod scripts/app/syncAppSql.ts",
-    "push:prod:catalog": "test -f .env.prod && bun --env-file=.env.prod drizzle-kit push --config=drizzle.catalog.config.ts",
-    "type": "tsc --noEmit"
+    "push:prod:catalog": "test -f .env.prod && bun --env-file=.env.prod drizzle-kit push --config=drizzle.catalog.config.ts"
   },
   "dependencies": {
     "@litomi/domain": "workspace:*",

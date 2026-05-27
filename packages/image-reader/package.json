@@ -32,9 +32,9 @@
   },
   "scripts": {
     "build": "bun ../../tools/buildReactPackage.ts .",
+    "type": "tsc -p tsconfig.dev.json --noEmit",
     "lint": "eslint . --fix",
-    "format": "prettier --write . --ignore-path ../../.gitignore",
-    "type": "tsc -p tsconfig.dev.json --noEmit"
+    "format": "prettier --write . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "@litomi/ui": "^1.1.0",

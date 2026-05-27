@@ -7,9 +7,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "type": "tsc --noEmit",
     "lint": "eslint . --fix",
-    "format": "prettier --write . --ignore-path ../../.gitignore",
-    "type": "tsc --noEmit"
+    "format": "prettier --write . --ignore-path ../../.gitignore"
   },
   "devDependencies": {
     "@sentry/core": "10.47.0"

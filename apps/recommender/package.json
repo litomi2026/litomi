@@ -5,16 +5,16 @@
   "type": "module",
   "scripts": {
     "build": "bun build --compile --conditions=react-server --minify --sourcemap src/index.ts --target=bun --outfile dist/recommender",
+    "start": "bun run start:local",
+    "start:local": "bun --conditions=react-server --env-file=.env.local src/index.ts",
+    "start:prod": "bun --conditions=react-server --env-file=.env.prod.runtime src/index.ts",
+    "type": "tsc --noEmit",
     "lint": "eslint . --fix",
     "format": "prettier --write . --ignore-path ../../.gitignore",
     "docker:build": "docker build -f Dockerfile -t litomi-recommender-local ../..",
     "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-recommender-local",
     "opensearch:local": "bun --conditions=react-server --env-file=.env.local src/opensearch-sync.ts",
-    "opensearch:prod": "bun --conditions=react-server --env-file=.env.prod.runtime src/opensearch-sync.ts",
-    "start": "bun run start:local",
-    "start:local": "bun --conditions=react-server --env-file=.env.local src/index.ts",
-    "start:prod": "bun --conditions=react-server --env-file=.env.prod.runtime src/index.ts",
-    "type": "tsc --noEmit"
+    "opensearch:prod": "bun --conditions=react-server --env-file=.env.prod.runtime src/opensearch-sync.ts"
   },
   "dependencies": {
     "@litomi/catalog": "workspace:*",

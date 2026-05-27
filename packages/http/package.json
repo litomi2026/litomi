@@ -14,9 +14,9 @@
     "./turnstile": "./src/turnstile.ts"
   },
   "scripts": {
+    "type": "tsc --noEmit",
     "lint": "eslint . --fix",
-    "format": "prettier --write . --ignore-path ../../.gitignore",
-    "type": "tsc --noEmit"
+    "format": "prettier --write . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "@litomi/env": "workspace:*",
