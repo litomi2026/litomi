@@ -365,7 +365,7 @@ describe('POST /api/v1/auth/passkey/verify', () => {
     })
   })
 
-  test('검증기가 예외를 던지면 500을 반환하고 부작용이 없다', async () => {
+  test('검증기가 예외를 던지면 400을 반환하고 부작용이 없다', async () => {
     const user = await seedUser({ loginAt: null, logoutAt: null })
 
     const credential = await seedPasskeyCredential({
@@ -377,7 +377,6 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     const { pkai } = await issuePasskeyAttempt({ ip: '203.0.113.180' })
 
-    spyOn(console, 'error').mockImplementation(() => {})
     spyOn(SimpleWebAuthnServer, 'verifyAuthenticationResponse').mockRejectedValue(new Error('passkey verifier failed'))
 
     const response = await requestBackend({
@@ -391,14 +390,14 @@ describe('POST /api/v1/auth/passkey/verify', () => {
       },
     })
 
-    expect(response.status).toBe(500)
+    expect(response.status).toBe(400)
     expectCookieCleared(response, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
     expectNoAuthCookies(getSetCookieNames(response))
 
     await expectProblemResponse(response, {
-      status: 500,
-      code: 'internal-server-error',
-      detail: '패스키 인증 중 오류가 발생했어요',
+      status: 400,
+      code: 'bad-request',
+      detail: '패스키를 검증할 수 없어요',
       instance: '/api/v1/auth/passkey/verify',
     })
 

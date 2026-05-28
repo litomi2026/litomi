@@ -25,7 +25,7 @@ export default function NordVPNPromotionLink() {
 
   return (
     <a
-      className={twMerge(topNavigationActionClassName, 'relative')}
+      className={twMerge(topNavigationActionClassName, 'relative max-sm:hidden')}
       href={NORDVPN_URL}
       onClick={() => track('select_promotion', promotionParams)}
       ref={ref}
@@ -34,7 +34,7 @@ export default function NordVPNPromotionLink() {
       title="NordVPN"
     >
       <ShieldCheck className="size-5" />
-      <span className="hidden sm:inline">NordVPN</span>
+      <span>NordVPN</span>
     </a>
   )
 }
