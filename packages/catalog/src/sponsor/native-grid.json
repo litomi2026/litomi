@@ -70,7 +70,7 @@
     "placements": ["public_grid_random"],
     "position": 4,
     "priority": 1,
-    "startsAt": "2026-05-28T00:00:00+09:00",
+    "startsAt": "2026-05-29T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
     "title": "취향을 직접 고르듯, 후보도 직접 골라요."
   },
@@ -87,7 +87,7 @@
     "placements": ["public_grid_new"],
     "position": 4,
     "priority": 1,
-    "startsAt": "2026-05-28T00:00:00+09:00",
+    "startsAt": "2026-05-29T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
     "title": "북마크하듯, 내 투표도 미리 챙겨요."
   },
@@ -104,7 +104,7 @@
     "placements": ["public_grid_library_home"],
     "position": 4,
     "priority": 1,
-    "startsAt": "2026-05-28T00:00:00+09:00",
+    "startsAt": "2026-05-29T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
     "title": "입시비리도, 횡령도 사면되는 세상. 내 표까지 비워둘 건가요?"
   },
@@ -121,7 +121,7 @@
     "placements": ["public_grid_search"],
     "position": 4,
     "priority": 1,
-    "startsAt": "2026-05-28T00:00:00+09:00",
+    "startsAt": "2026-05-29T00:00:00+09:00",
     "targetUrl": "http://map.naver.com/p/search/%EC%82%AC%EC%A0%84%ED%88%AC%ED%91%9C%EC%86%8C",
     "title": "원화는 약해지고, 나랏빚은 불어났어요"
   },
