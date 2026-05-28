@@ -10,6 +10,11 @@ import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
+type Options = {
+  enabled?: boolean
+  sort?: CollectionItemSort
+}
+
 export async function fetchPaginatedBookmark(cursor: string | null, sort: CollectionItemSort) {
   const params = new URLSearchParams({ limit: BOOKMARKS_PER_PAGE.toString() })
 
@@ -26,15 +31,15 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Collec
   return data
 }
 
-export default function useBookmarkInfiniteQuery(
-  initialData?: GETV1BookmarkResponse,
-  sort: CollectionItemSort = DEFAULT_COLLECTION_ITEM_SORT,
-) {
+export default function useBookmarkInfiniteQuery({
+  enabled = true,
+  sort = DEFAULT_COLLECTION_ITEM_SORT,
+}: Options = {}) {
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteBookmarks(sort),
     queryFn: ({ pageParam }) => fetchPaginatedBookmark(pageParam, sort),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    ...(initialData && { initialData: { pages: [initialData], pageParams: [''] } }),
     initialPageParam: '',
+    enabled,
   })
 }
