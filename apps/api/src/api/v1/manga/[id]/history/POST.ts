@@ -2,7 +2,7 @@ import { mangaIdParamSchema, postV1MangaIdHistoryBodySchema } from '@litomi/cont
 import { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
 import { readUserSettings } from '@litomi/db/query/user-settings'
-import { and, eq } from 'drizzle-orm'
+import { ne, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
@@ -40,18 +40,7 @@ route.post(
 
         const now = new Date()
 
-        // NOTE: 업데이트가 가능하면(=이미 기록이 있으면) 여기서 끝
-        const [updated] = await tx
-          .update(readingHistoryTable)
-          .set({ lastPage, updatedAt: now })
-          .where(and(eq(readingHistoryTable.userId, userId), eq(readingHistoryTable.mangaId, mangaId)))
-          .returning({ mangaId: readingHistoryTable.mangaId })
-
-        if (updated) {
-          return
-        }
-
-        const [inserted] = await tx
+        const [saved] = await tx
           .insert(readingHistoryTable)
           .values({
             userId,
@@ -59,9 +48,18 @@ route.post(
             lastPage,
             updatedAt: now,
           })
-          .returning({ mangaId: readingHistoryTable.mangaId })
+          .onConflictDoUpdate({
+            target: [readingHistoryTable.userId, readingHistoryTable.mangaId],
+            set: { lastPage, updatedAt: now },
+            setWhere: ne(readingHistoryTable.lastPage, lastPage),
+          })
+          .returning({
+            mangaId: readingHistoryTable.mangaId,
+            // NOTE: PostgreSQL system column으로 upsert 결과가 insert인지 구분해요.
+            inserted: sql<boolean>`xmax = 0`,
+          })
 
-        if (!inserted) {
+        if (!saved || !saved.inserted) {
           return
         }
 

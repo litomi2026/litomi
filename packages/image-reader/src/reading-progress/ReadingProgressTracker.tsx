@@ -27,6 +27,7 @@ type Props = {
 export default function ReadingProgressTracker({ onChange, onSave, readerLayout }: Props) {
   const pageIndex = useReaderStore((state) => state.pageIndex)
   const isSavePendingRef = useRef(false)
+  const lastSavedReadablePageNumberRef = useRef<number | null>(null)
 
   const canSave = Boolean(onSave)
   const readablePageCount = readerLayout.readablePageCount
@@ -45,10 +46,19 @@ export default function ReadingProgressTracker({ onChange, onSave, readerLayout 
       readablePageNumber: Math.min(readablePageNumber, readablePageCount),
     }
 
+    if (lastSavedReadablePageNumberRef.current === progress.readablePageNumber) {
+      return
+    }
+
     isSavePendingRef.current = true
 
     Promise.resolve(onSave(progress, options))
-      .catch(() => {})
+      .then(() => {
+        lastSavedReadablePageNumberRef.current = progress.readablePageNumber
+      })
+      .catch((error) => {
+        console.warn(error)
+      })
       .finally(() => {
         isSavePendingRef.current = false
       })
