@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
 
 import useMeQuery from '@/query/useMeQuery'
-import { hasAdultAccess } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 
 import useLocalReadingHistorySummaryQuery from './history/useLocalReadingHistorySummaryQuery'
 import LibraryHeader from './LibraryHeader'
@@ -37,7 +37,7 @@ export default function LibraryLayout({ children }: Props) {
   const pathname = usePathname()
   const { data: me, isPending: isMePending } = useMeQuery()
   const userId = me?.id
-  const canUseServerHistory = userId && hasAdultAccess(me)
+  const canUseServerHistory = isAdultVerified(me)
   const { data: serverSummary } = useLibrarySummaryQuery({ userId })
   const { data: localHistorySummary } = useLocalReadingHistorySummaryQuery({ enabled: !canUseServerHistory })
 

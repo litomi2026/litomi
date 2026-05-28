@@ -25,7 +25,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { SearchParamKey } from '@/storage'
 import { sanitizeRedirect } from '@/utils'
-import { hasAdultAccess } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 import { getLocalReadingHistoryArray, removeLocalReadingHistory } from '@/utils/reading-history-index'
 
 import { importReadingHistory, login } from './api'
@@ -149,7 +149,7 @@ export default function LoginForm() {
     const me = await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
     const localHistory = getLocalReadingHistoryArray()
 
-    if (localHistory.length > 0 && me && hasAdultAccess(me)) {
+    if (localHistory.length > 0 && isAdultVerified(me)) {
       await migrateReadingHistory({ localHistories: localHistory }).catch(() => undefined)
     }
 

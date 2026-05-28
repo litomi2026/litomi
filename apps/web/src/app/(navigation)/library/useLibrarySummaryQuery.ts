@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { hasAdultAccess } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -26,7 +26,7 @@ export default function useLibrarySummaryQuery({ userId }: Options) {
   return useQuery({
     queryKey: QueryKeys.librarySummary(userId),
     queryFn: fetchLibrarySummary,
-    enabled: hasAdultAccess(me),
+    enabled: isAdultVerified(me),
     meta: { requiresAdult: true },
   })
 }

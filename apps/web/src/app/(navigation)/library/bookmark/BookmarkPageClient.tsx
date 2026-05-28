@@ -60,7 +60,7 @@ export default function BookmarkPageClient({ initialSort, initialView }: Props) 
   const bookmarks = data?.pages.flatMap((page) => page.bookmarks) ?? []
   const bookmarkIds = bookmarks.map((bookmark) => bookmark.mangaId)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
-  const showLoadingSkeleton = ((me === undefined || isLoading) && bookmarkIds.length === 0) || isFetchingNextPage
+  const showLoadingSkeleton = (!data && (me === undefined || isLoading)) || isFetchingNextPage
 
   const { mangaMap } = useMangaListCachedQuery({
     mangaIds: bookmarkIds,
@@ -155,7 +155,7 @@ export default function BookmarkPageClient({ initialSort, initialView }: Props) 
     return <Unauthorized />
   }
 
-  if (data && bookmarkIds.length === 0 && !hasNextPage && !isFetchingNextPage && !isLoading) {
+  if (data && bookmarkIds.length === 0) {
     return <NotFound />
   }
 
