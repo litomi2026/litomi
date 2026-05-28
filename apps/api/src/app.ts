@@ -1,4 +1,5 @@
 import { httpInstrumentationMiddleware } from '@hono/otel'
+import { sec } from '@litomi/std'
 import { Hono } from 'hono'
 import { getConnInfo } from 'hono/bun'
 import { compress } from 'hono/compress'
@@ -48,6 +49,7 @@ app.use(
     origin: (origin) => resolveCORSOrigin(origin),
     credentials: true,
     exposeHeaders: ['Retry-After'],
+    maxAge: sec('5 minutes'),
   }),
 )
 
