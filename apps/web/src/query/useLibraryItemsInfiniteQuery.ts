@@ -18,34 +18,29 @@ interface FetchLibraryItemsOptions {
 
 interface Options {
   enabled?: boolean
-  initialItems?: GETLibraryItemsResponse
   libraryId: number
   scope: 'me' | 'public'
   sort?: CollectionItemSort
 }
 
 export async function fetchLibraryItems({ libraryId, cursor, scope, sort }: FetchLibraryItemsOptions) {
-  const params = new URLSearchParams()
-  params.set('scope', scope)
+  const url = new URL(`/api/v1/library/${libraryId}/item`, NEXT_PUBLIC_API_ORIGIN)
+  url.searchParams.set('scope', scope)
+  url.searchParams.set('sort', sort)
 
   if (cursor) {
-    params.set('cursor', cursor)
+    url.searchParams.set('cursor', cursor)
   }
 
-  if (sort) {
-    params.set('sort', sort)
-  }
-
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/${libraryId}/item?${params}`
-  const { data } = await fetchAPIData<GETLibraryItemsResponse>(url, { credentials: 'include' })
+  const credentials = scope === 'me' ? 'include' : 'omit'
+  const { data } = await fetchAPIData<GETLibraryItemsResponse>(url, { credentials })
   return data
 }
 
 export default function useLibraryItemsInfiniteQuery({
+  enabled = true,
   libraryId,
-  initialItems,
   scope,
-  enabled,
   sort = DEFAULT_COLLECTION_ITEM_SORT,
 }: Options) {
   return useInfiniteQuery({
@@ -53,13 +48,7 @@ export default function useLibraryItemsInfiniteQuery({
     queryFn: async ({ pageParam }) => fetchLibraryItems({ libraryId, cursor: pageParam, scope, sort }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: '',
-    ...(initialItems && {
-      initialData: {
-        pages: [initialItems],
-        pageParams: [''],
-      },
-    }),
     enabled: Boolean(libraryId) && enabled,
-    meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
+    meta: scope === 'me' ? { requiresAdult: true } : undefined,
   })
 }
