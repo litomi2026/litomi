@@ -1,7 +1,5 @@
 'use client'
 
-import type { GETV1RatingsResponse } from '@litomi/contracts'
-
 import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
 import { Manga } from '@litomi/domain/manga/model'
 import { getViewFromSearchParams, View } from '@litomi/std'
@@ -16,6 +14,7 @@ import ViewToggle from '@/components/ViewToggle'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import useMeQuery from '@/query/useMeQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -23,10 +22,10 @@ import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import NotFound from './NotFound'
+import Unauthorized from './Unauthorized'
 import useRatingInfiniteQuery from './useRatingInfiniteQuery'
 
 type Props = {
-  initialData: GETV1RatingsResponse
   initialSort: RatingSort
   initialView: View
 }
@@ -49,21 +48,22 @@ type MangaListProps = {
   view: View
 }
 
-export default function RatingPageClient({ initialData, initialSort, initialView }: Props) {
+export default function RatingPageClient({ initialSort, initialView }: Props) {
   const [sort, setSort] = useState<RatingSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
   const { exit, isSelectionMode } = useLibrarySelection()
   const { isVisible } = useMangaCensorship()
+  const { data: me } = useMeQuery()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
-    useRatingInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
+    useRatingInfiniteQuery({ enabled: Boolean(me), sort })
 
   const ratingItems = data?.pages?.flatMap((page) => page.items) ?? []
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
 
   const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
-  const showLoadingSkeleton = isLoading && ratingItems.length === 0
+  const showLoadingSkeleton = (me === undefined || isLoading) && ratingItems.length === 0
   const visibleRatingItems = ratingItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
   const ratingIndexMap = new Map(visibleRatingItems.map((item, index) => [item.mangaId, index]))
   const groupedRatings = new Map<number, typeof ratingItems>()
@@ -102,6 +102,10 @@ export default function RatingPageClient({ initialData, initialSort, initialView
       url.searchParams.set('sort', String(newSort))
       window.history.replaceState(window.history.state, '', url)
     }
+  }
+
+  if (me === null) {
+    return <Unauthorized />
   }
 
   if (data && ratingItems.length === 0 && !hasNextPage && !isFetchingNextPage && !isLoading) {
