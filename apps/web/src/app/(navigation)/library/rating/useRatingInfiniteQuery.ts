@@ -9,6 +9,11 @@ import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
+type Options = {
+  enabled?: boolean
+  sort?: RatingSort
+}
+
 export async function fetchRatingsPaginated(cursor: string, sort: RatingSort) {
   const searchParams = new URLSearchParams()
 
@@ -25,15 +30,12 @@ export async function fetchRatingsPaginated(cursor: string, sort: RatingSort) {
   return data
 }
 
-export default function useRatingInfiniteQuery(
-  initialData?: GETV1RatingsResponse,
-  sort: RatingSort = RatingSort.UPDATED_DESC,
-) {
+export default function useRatingInfiniteQuery({ enabled = true, sort = RatingSort.UPDATED_DESC }: Options = {}) {
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteRatings(sort),
     queryFn: ({ pageParam }) => fetchRatingsPaginated(pageParam, sort),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    ...(initialData && { initialData: { pages: [initialData], pageParams: [''] } }),
     initialPageParam: '',
+    enabled,
   })
 }

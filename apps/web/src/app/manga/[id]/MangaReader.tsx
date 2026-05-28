@@ -22,7 +22,7 @@ import BackButton from '@/components/BackButton'
 import MangaImage from '@/components/MangaImage'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { hasAdultAccess } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { setLocalReadingHistoryEntry } from '@/utils/reading-history-index'
@@ -53,7 +53,7 @@ export default function MangaReader({ manga }: Props) {
 
   const pages = createMangaReaderPages(manga)
   const locale = getLocaleFromCookie() || 'ko'
-  const canSyncReadingProgress = hasAdultAccess(me) && me?.settings.historySyncEnabled === true
+  const canSyncReadingProgress = isAdultVerified(me) && me.settings.historySyncEnabled
 
   function handleReaderNotice(notice: ReaderNotice) {
     const toastOptions = {

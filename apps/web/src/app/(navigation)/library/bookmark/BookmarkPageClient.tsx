@@ -1,7 +1,5 @@
 'use client'
 
-import type { GETV1BookmarkResponse } from '@litomi/contracts'
-
 import { CollectionItemSort } from '@litomi/domain/library/sort'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { ReadonlyURLSearchParams } from 'next/navigation'
@@ -20,6 +18,7 @@ import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import useMeQuery from '@/query/useMeQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
@@ -29,6 +28,7 @@ import { COLLECTION_ITEM_SORT_OPTIONS } from '../sort-options'
 import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkUploadButton from './BookmarkUploadButton'
 import NotFound from './NotFound'
+import Unauthorized from './Unauthorized'
 import useBookmarkInfiniteQuery from './useBookmarkInfiniteQuery'
 
 type BookmarkGridItem =
@@ -41,26 +41,26 @@ type BookmarkGridItem =
     })
 
 type Props = {
-  initialData: GETV1BookmarkResponse
   initialSort: CollectionItemSort
   initialView: View
 }
 
-export default function BookmarkPageClient({ initialData, initialSort, initialView }: Props) {
+export default function BookmarkPageClient({ initialSort, initialView }: Props) {
   const [sort, setSort] = useState<CollectionItemSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { exit, isSelectionMode } = useLibrarySelection()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { heavySignature, isVisible } = useMangaCensorship()
+  const { data: me } = useMeQuery()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
-    useBookmarkInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
+    useBookmarkInfiniteQuery({ enabled: Boolean(me), sort })
 
   const bookmarks = data?.pages.flatMap((page) => page.bookmarks) ?? []
   const bookmarkIds = bookmarks.map((bookmark) => bookmark.mangaId)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
-  const showLoadingSkeleton = (isLoading && bookmarkIds.length === 0) || isFetchingNextPage
+  const showLoadingSkeleton = (!data && (me === undefined || isLoading)) || isFetchingNextPage
 
   const { mangaMap } = useMangaListCachedQuery({
     mangaIds: bookmarkIds,
@@ -93,10 +93,10 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
     </>
   )
 
-  function handleSortChange(newSort: CollectionItemSort) {
+  function handleSortChange(newSort: string) {
     if (newSort !== sort) {
       exit()
-      setSort(newSort)
+      setSort(newSort as CollectionItemSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
       window.history.replaceState(window.history.state, '', url)
@@ -112,7 +112,7 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
         <div className="flex flex-wrap items-center gap-2">
           <select
             className="bg-zinc-900 text-sm px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
-            onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
+            onChange={(e) => handleSortChange(e.target.value)}
             value={sort}
           >
             {COLLECTION_ITEM_SORT_OPTIONS.map((option) => (
@@ -123,10 +123,12 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
           </select>
           <ViewToggle initialView={initialView} />
         </div>
-        <div className="ml-auto flex items-center gap-x-2">
-          <BookmarkDownloadButton />
-          <BookmarkUploadButton />
-        </div>
+        {me && (
+          <div className="ml-auto flex items-center gap-x-2">
+            <BookmarkDownloadButton />
+            <BookmarkUploadButton />
+          </div>
+        )}
       </div>
     </>
   )
@@ -149,7 +151,11 @@ export default function BookmarkPageClient({ initialData, initialSort, initialVi
     return <SelectableMangaCard index={index} manga={manga} variant={view} />
   }
 
-  if (data && bookmarkIds.length === 0 && !hasNextPage && !isFetchingNextPage && !isLoading) {
+  if (me === null) {
+    return <Unauthorized />
+  }
+
+  if (data && bookmarkIds.length === 0) {
     return <NotFound />
   }
 

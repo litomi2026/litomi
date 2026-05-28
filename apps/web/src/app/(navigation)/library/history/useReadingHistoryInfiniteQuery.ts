@@ -12,18 +12,18 @@ import type { ReadingHistorySource } from './common'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Options = {
-  initialData?: GETV1ReadingHistoryResponse
+  enabled?: boolean
   source: ReadingHistorySource
 }
 
-export default function useReadingHistoryInfiniteQuery({ initialData, source }: Options) {
+export default function useReadingHistoryInfiniteQuery({ enabled = true, source }: Options) {
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteReadingHistory(source),
     queryFn: ({ pageParam }) =>
       source === 'local' ? fetchLocalReadingHistoryPaginated() : fetchReadingHistoryPaginated(pageParam),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    ...(source === 'server' && initialData && { initialData: { pages: [initialData], pageParams: [''] } }),
     initialPageParam: '',
+    enabled,
     meta: source === 'server' ? { requiresAdult: true } : undefined,
   })
 }

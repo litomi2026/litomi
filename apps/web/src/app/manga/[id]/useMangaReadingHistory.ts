@@ -7,14 +7,14 @@ import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { hasAdultAccess } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 import { getLocalReadingHistory } from '@/utils/reading-history-index'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function useMangaReadingHistory(mangaId: number) {
-  const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const { data: me } = useMeQuery()
 
   const { data: lastPage } = useQuery({
     queryKey: QueryKeys.readingHistory(mangaId),
@@ -25,7 +25,7 @@ export default function useMangaReadingHistory(mangaId: number) {
         return readingHistory.lastPage
       }
 
-      if (!me || !hasAdultAccess(me) || !me.settings.historySyncEnabled) {
+      if (!isAdultVerified(me) || !me.settings.historySyncEnabled) {
         return null
       }
 
@@ -37,7 +37,7 @@ export default function useMangaReadingHistory(mangaId: number) {
 
       return data ?? null
     },
-    enabled: Boolean(mangaId) && !isMeLoading,
+    enabled: Boolean(mangaId) && me !== undefined,
     meta: { requiresAdult: true },
   })
 

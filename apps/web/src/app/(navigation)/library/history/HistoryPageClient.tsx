@@ -1,7 +1,5 @@
 'use client'
 
-import type { GETV1ReadingHistoryResponse } from '@litomi/contracts'
-
 import { View } from '@litomi/std'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
@@ -9,10 +7,10 @@ import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import useMeQuery from '@/query/useMeQuery'
+import { isAdultVerified } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
-
-import type { ReadingHistorySource } from './common'
 
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
@@ -21,17 +19,16 @@ import NotFound from './NotFound'
 import useReadingHistoryInfiniteQuery from './useReadingHistoryInfiniteQuery'
 import { DATE_GROUP_LABELS, groupHistoryByDate } from './utils'
 
-type Props = {
-  initialData?: GETV1ReadingHistoryResponse
-  source: ReadingHistorySource
-}
+export default function HistoryPageClient() {
+  const { data: me } = useMeQuery()
+  const source = isAdultVerified(me) ? 'server' : 'local'
 
-export default function HistoryPageClient(props: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } =
-    useReadingHistoryInfiniteQuery(props)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
+    useReadingHistoryInfiniteQuery({ enabled: me !== undefined, source })
 
   const historyItems = data?.pages.flatMap((page) => page.items) ?? []
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
+  const showLoadingSkeleton = (!data && (me === undefined || isLoading)) || isFetchingNextPage
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: canAutoLoadMore,
@@ -39,15 +36,15 @@ export default function HistoryPageClient(props: Props) {
     fetchNextPage,
   })
 
+  const { isVisible } = useMangaCensorship()
   const { isSelectionMode } = useLibrarySelection()
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: historyItems.map((item) => item.mangaId) })
-  const { isVisible } = useMangaCensorship()
 
   const visibleHistoryItems = historyItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
   const historyIndexMap = new Map(visibleHistoryItems.map((item, index) => [item.mangaId, index]))
   const groupedHistory = groupHistoryByDate(visibleHistoryItems)
 
-  if (data && historyItems.length === 0 && !hasNextPage && !isFetchingNextPage) {
+  if (data && historyItems.length === 0) {
     return <NotFound />
   }
 
@@ -89,7 +86,7 @@ export default function HistoryPageClient(props: Props) {
             </div>
           </div>
         ))}
-        {isFetchingNextPage && (
+        {showLoadingSkeleton && (
           <div className={`grid ${MANGA_GRID_COLUMN[View.CARD]} gap-2 p-2`}>
             <MangaCardSkeleton />
           </div>

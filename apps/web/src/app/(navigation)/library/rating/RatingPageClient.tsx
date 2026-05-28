@@ -1,7 +1,5 @@
 'use client'
 
-import type { GETV1RatingsResponse } from '@litomi/contracts'
-
 import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
 import { Manga } from '@litomi/domain/manga/model'
 import { getViewFromSearchParams, View } from '@litomi/std'
@@ -16,6 +14,7 @@ import ViewToggle from '@/components/ViewToggle'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import useMeQuery from '@/query/useMeQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -23,10 +22,10 @@ import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import NotFound from './NotFound'
+import Unauthorized from './Unauthorized'
 import useRatingInfiniteQuery from './useRatingInfiniteQuery'
 
 type Props = {
-  initialData: GETV1RatingsResponse
   initialSort: RatingSort
   initialView: View
 }
@@ -41,29 +40,30 @@ const SORT_OPTIONS: { value: RatingSort; label: string }[] = [
 ]
 
 type MangaListProps = {
-  isFetchingNextPage?: boolean
   isSelectionMode: boolean
   items: { mangaId: number; rating: number }[]
   mangaMap: Map<number, Manga>
   ratingIndexMap: Map<number, number>
+  showLoadingSkeleton?: boolean
   view: View
 }
 
-export default function RatingPageClient({ initialData, initialSort, initialView }: Props) {
+export default function RatingPageClient({ initialSort, initialView }: Props) {
   const [sort, setSort] = useState<RatingSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
   const { exit, isSelectionMode } = useLibrarySelection()
   const { isVisible } = useMangaCensorship()
+  const { data: me } = useMeQuery()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
-    useRatingInfiniteQuery(sort === initialSort ? initialData : undefined, sort)
+    useRatingInfiniteQuery({ enabled: Boolean(me), sort })
 
   const ratingItems = data?.pages?.flatMap((page) => page.items) ?? []
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
 
   const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
-  const showLoadingSkeleton = isLoading && ratingItems.length === 0
+  const showLoadingSkeleton = (!data && (me === undefined || isLoading)) || isFetchingNextPage
   const visibleRatingItems = ratingItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
   const ratingIndexMap = new Map(visibleRatingItems.map((item, index) => [item.mangaId, index]))
   const groupedRatings = new Map<number, typeof ratingItems>()
@@ -104,7 +104,11 @@ export default function RatingPageClient({ initialData, initialSort, initialView
     }
   }
 
-  if (data && ratingItems.length === 0 && !hasNextPage && !isFetchingNextPage && !isLoading) {
+  if (me === null) {
+    return <Unauthorized />
+  }
+
+  if (data && ratingItems.length === 0) {
     return <NotFound />
   }
 
@@ -138,11 +142,11 @@ export default function RatingPageClient({ initialData, initialSort, initialView
                 <span className="ml-auto text-sm text-zinc-500">{items.length}개 작품</span>
               </h4>
               <MangaList
-                isFetchingNextPage={i === sortedGroups.length - 1 && isFetchingNextPage}
                 isSelectionMode={isSelectionMode}
                 items={items}
                 mangaMap={mangaMap}
                 ratingIndexMap={ratingIndexMap}
+                showLoadingSkeleton={i === sortedGroups.length - 1 && isFetchingNextPage}
                 view={view}
               />
             </div>
@@ -150,11 +154,11 @@ export default function RatingPageClient({ initialData, initialSort, initialView
         </div>
       ) : (
         <MangaList
-          isFetchingNextPage={isFetchingNextPage || showLoadingSkeleton}
           isSelectionMode={isSelectionMode}
           items={visibleRatingItems}
           mangaMap={mangaMap}
           ratingIndexMap={ratingIndexMap}
+          showLoadingSkeleton={showLoadingSkeleton}
           view={view}
         />
       )}
@@ -164,7 +168,7 @@ export default function RatingPageClient({ initialData, initialSort, initialView
   )
 }
 
-function MangaList({ isFetchingNextPage, isSelectionMode, items, mangaMap, ratingIndexMap, view }: MangaListProps) {
+function MangaList({ showLoadingSkeleton, isSelectionMode, items, mangaMap, ratingIndexMap, view }: MangaListProps) {
   return (
     <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
       {items.map(({ mangaId, rating }) => {
@@ -184,7 +188,7 @@ function MangaList({ isFetchingNextPage, isSelectionMode, items, mangaMap, ratin
 
         return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
       })}
-      {isFetchingNextPage && <MangaCardSkeleton variant={view} />}
+      {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
     </div>
   )
 }
