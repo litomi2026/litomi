@@ -103,7 +103,7 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
 
     if (!credential) {
       return problemResponse(c, {
-        status: 400,
+        status: 404,
         detail: '패스키를 검증할 수 없어요',
       })
     }
