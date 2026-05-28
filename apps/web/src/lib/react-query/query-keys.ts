@@ -45,6 +45,7 @@ export const QueryKeys = {
   adsterraStats: (startDate: string, finishDate: string) => ['adsterra', 'stats', startDate, finishDate],
 
   manga: (id: number) => ['manga', id],
+  mangaRecommendations: (userId: number, limit: number) => ['me', 'manga-recommendations', userId, limit],
   search: (searchParams: URLSearchParams, locale: string) => ['search', locale, Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   censorshipSuggestions: (query: string, locale: string) => ['censorship', 'suggestions', locale, query],
