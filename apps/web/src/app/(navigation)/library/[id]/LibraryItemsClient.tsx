@@ -1,8 +1,7 @@
 'use client'
 
-import type { GETLibraryItemsResponse } from '@litomi/contracts'
-
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
+import { isProblemType, problemCode } from '@litomi/http/problem-details'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -22,12 +21,15 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
+import { ProblemDetailsError } from '@/utils/api-request'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import { COLLECTION_ITEM_SORT_OPTIONS } from '../sort-options'
+import { useLibraryMetaQuery } from '../useCurrentLibraryMeta'
+import NotFound from './not-found'
 
 type LibraryGridItem =
   | (VirtualMangaGridItem & {
@@ -39,41 +41,40 @@ type LibraryGridItem =
     })
 
 type Props = {
-  library: {
-    id: number
-    name: string
-    isPublic: boolean
-  }
-  initialItems: GETLibraryItemsResponse
-  initialSort?: CollectionItemSort
+  initialSort: CollectionItemSort
   initialView: View
-  isOwner: boolean
+  libraryId: number
 }
 
-export default function LibraryItemsClient({
-  library,
-  initialItems,
-  initialSort = DEFAULT_COLLECTION_ITEM_SORT,
-  initialView,
-  isOwner,
-}: Props) {
+export default function LibraryItemsClient({ initialSort, initialView, libraryId }: Props) {
   const [sort, setSort] = useState<CollectionItemSort>(initialSort)
   const [view, setView] = useState<View>(initialView)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { data: me } = useMeQuery()
   const { exit, isSelectionMode } = useLibrarySelection()
+  const { heavySignature, isVisible } = useMangaCensorship()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
+  const userId = me?.id
 
-  const canAccess = hasAdultAccess(me)
-  const { id: libraryId, name: libraryName, isPublic } = library
+  const {
+    data: library,
+    error: libraryError,
+    isLoading: isLibraryLoading,
+  } = useLibraryMetaQuery({
+    enabled: me !== undefined,
+    libraryId,
+    userId,
+  })
+
+  const isOwner = Boolean(library && library.userId === userId)
   const scope = isOwner ? 'me' : 'public'
-  const enabled = scope === 'public' || isPublic || canAccess
-  const shouldBlockPrivate = scope === 'me' && !isPublic && !canAccess
   const effectiveSort = isOwner ? sort : DEFAULT_COLLECTION_ITEM_SORT
-  const queryInitialItems = effectiveSort === initialSort ? initialItems : undefined
+  const isPrivateOwnerLibraryBlocked = isOwner && library?.isPublic === false && !hasAdultAccess(me)
+  const isLibraryAdultBlocked = isAdultVerificationRequiredError(libraryError) || isPrivateOwnerLibraryBlocked
 
   const {
     data: itemsData,
+    error: itemsError,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -81,16 +82,16 @@ export default function LibraryItemsClient({
     isLoading,
   } = useLibraryItemsInfiniteQuery({
     libraryId,
-    initialItems: queryInitialItems,
     scope,
-    enabled,
+    enabled: Boolean(library) && !isLibraryAdultBlocked,
     sort: effectiveSort,
   })
 
+  const isAdultGateRequired = isLibraryAdultBlocked || isAdultVerificationRequiredError(itemsError)
+  const loadError = libraryError ?? itemsError
   const libraryItems = itemsData?.pages.flatMap((page) => page.items) ?? []
-  const canAutoLoadMore = !shouldBlockPrivate && Boolean(hasNextPage) && !isFetchNextPageError
-  const showLoadingSkeleton = (isLoading && libraryItems.length === 0) || isFetchingNextPage
-  const { heavySignature, isVisible } = useMangaCensorship()
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
+  const showLoadingSkeleton = (!itemsData && (me === undefined || isLibraryLoading || isLoading)) || isFetchingNextPage
 
   const { mangaMap } = useMangaListCachedQuery({
     mangaIds: libraryItems.map((item) => item.mangaId),
@@ -112,9 +113,16 @@ export default function LibraryItemsClient({
     })
   }
 
-  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
-    setView(getViewFromSearchParams(searchParams))
-  }
+  const footer = (
+    <>
+      {isFetchNextPageError && (
+        <div className="flex justify-center py-4">
+          <LoadMoreRetryButton onRetry={fetchNextPage} />
+        </div>
+      )}
+      <MobileNavigationSpacer />
+    </>
+  )
 
   function handleSortChange(newSort: CollectionItemSort) {
     if (newSort !== sort) {
@@ -149,17 +157,6 @@ export default function LibraryItemsClient({
     </>
   )
 
-  const footer = (
-    <>
-      {isFetchNextPageError && (
-        <div className="flex justify-center py-4">
-          <LoadMoreRetryButton onRetry={fetchNextPage} />
-        </div>
-      )}
-      <MobileNavigationSpacer />
-    </>
-  )
-
   function renderItem(item: LibraryGridItem, index: number) {
     if (item.type === 'loading') {
       return <MangaCardSkeleton variant={view} />
@@ -174,7 +171,11 @@ export default function LibraryItemsClient({
     return <SelectableMangaCard index={index} manga={manga} variant={view} />
   }
 
-  if (shouldBlockPrivate) {
+  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
+    setView(getViewFromSearchParams(searchParams))
+  }
+
+  if (isAdultGateRequired) {
     return (
       <>
         <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
@@ -187,12 +188,27 @@ export default function LibraryItemsClient({
     )
   }
 
-  if (libraryItems.length === 0 && !isFetchingNextPage && !isLoading) {
+  if (loadError) {
     return (
       <>
         <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
         <div className="flex-1 flex flex-col justify-center items-center">
-          <p className="text-zinc-500">{`${libraryName} 서재가 비어 있어요`}</p>
+          <p className="text-zinc-500">서재를 불러오지 못했어요</p>
+        </div>
+      </>
+    )
+  }
+
+  if (!library && !isLibraryLoading && me !== undefined) {
+    return <NotFound />
+  }
+
+  if (itemsData && libraryItems.length === 0) {
+    return (
+      <>
+        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <div className="flex-1 flex flex-col justify-center items-center">
+          <p className="text-zinc-500">{`${library?.name ?? '서재'}가 비어 있어요`}</p>
         </div>
       </>
     )
@@ -217,5 +233,13 @@ export default function LibraryItemsClient({
         view={view}
       />
     </>
+  )
+}
+
+function isAdultVerificationRequiredError(error: unknown): boolean {
+  return (
+    error instanceof ProblemDetailsError &&
+    error.status === 403 &&
+    isProblemType(error.type, problemCode.ADULT_VERIFICATION_REQUIRED)
   )
 }

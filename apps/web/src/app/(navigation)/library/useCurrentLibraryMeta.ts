@@ -11,59 +11,72 @@ import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
+type FetchAccessibleLibraryMetaOptions = {
+  libraryId: number
+  userId?: number
+}
+
 type FetchLibraryMetaOptions = {
   libraryId: number
   scope: 'me' | 'public'
 }
 
-type Options = {
-  libraries: GETV1LibraryResponse[]
+type LibraryMetaQueryOptions = {
+  enabled?: boolean
+  libraryId: number
   userId?: number
 }
 
-export async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
-  const url = new URL(`${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/${libraryId}`)
+type UseCurrentLibraryMetaOptions = {
+  enabled?: boolean
+  userId?: number
+}
+
+export default function useCurrentLibraryMeta({ enabled = true, userId }: UseCurrentLibraryMetaOptions) {
+  const { id: libraryId } = useParams<{ id?: string }>()
+  const id = Number(libraryId)
+  const parsedLibraryId = Number.isFinite(id) && id > 0 ? id : 0
+
+  const { data } = useLibraryMetaQuery({
+    libraryId: parsedLibraryId,
+    userId,
+    enabled,
+  })
+
+  return data ?? null
+}
+
+export function useLibraryMetaQuery({ enabled = true, libraryId, userId }: LibraryMetaQueryOptions) {
+  return useQuery({
+    queryKey: QueryKeys.libraryMeta(libraryId, userId),
+    queryFn: () => fetchAccessibleLibraryMeta({ libraryId, userId }),
+    enabled: Boolean(libraryId) && enabled,
+    meta: userId ? { requiresAdult: true } : undefined,
+  })
+}
+
+async function fetchAccessibleLibraryMeta({ libraryId, userId }: FetchAccessibleLibraryMetaOptions) {
+  const publicLibrary = await fetchLibraryMeta({ libraryId, scope: 'public' })
+
+  if (publicLibrary || !userId) {
+    return publicLibrary
+  }
+
+  return await fetchLibraryMeta({ libraryId, scope: 'me' })
+}
+
+async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
+  const url = new URL(`/api/v1/library/${libraryId}`, NEXT_PUBLIC_API_ORIGIN)
   url.searchParams.set('scope', scope)
+  const credentials = scope === 'me' ? 'include' : 'omit'
 
   try {
-    const { data } = await fetchAPIData<GETV1LibraryResponse>(url.toString(), {
-      credentials: 'include',
-    })
+    const { data } = await fetchAPIData<GETV1LibraryResponse>(url, { credentials })
     return data
   } catch (error) {
     if (error instanceof ProblemDetailsError && error.status === 404) {
       return null
     }
     throw error
-  }
-}
-
-export default function useCurrentLibraryMeta({ libraries, userId }: Options) {
-  const { id: libraryId } = useParams<{ id?: string }>()
-  const id = Number(libraryId)
-  const parsedLibraryId = Number.isFinite(id) && id > 0 ? id : 0
-  const currentLibraryFromList = parsedLibraryId ? libraries.find((lib) => lib.id === parsedLibraryId) : null
-
-  const { data } = useQuery({
-    queryKey: QueryKeys.libraryMeta(parsedLibraryId, userId),
-    queryFn: async () => {
-      const publicLibrary = await fetchLibraryMeta({ libraryId: parsedLibraryId, scope: 'public' })
-
-      if (publicLibrary) {
-        return publicLibrary
-      }
-
-      if (!userId) {
-        return null
-      }
-
-      return await fetchLibraryMeta({ libraryId: parsedLibraryId, scope: 'me' })
-    },
-    enabled: Boolean(parsedLibraryId) && !currentLibraryFromList,
-  })
-
-  return {
-    libraryId,
-    currentLibrary: currentLibraryFromList ?? data ?? null,
   }
 }

@@ -87,7 +87,7 @@ export default function LibraryHeader({
   const { bookmarkCount, historyCount, ratingCount } = summary ?? {}
   const pageKind = getLibraryPageKind(pathname)
   const { isSelectionMode, enter, exit } = useLibrarySelection()
-  const { currentLibrary } = useCurrentLibraryMeta({ libraries, userId })
+  const currentLibrary = useCurrentLibraryMeta({ enabled: pageKind === 'detail', userId })
   const deleteBookmarksAction = useBulkDeleteBookmarkAction()
   const deleteReadingHistoryAction = useBulkDeleteReadingHistoryAction({ source: historySource, userId })
   const deleteRatingsAction = useBulkDeleteRatingAction()
