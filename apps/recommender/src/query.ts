@@ -1,8 +1,11 @@
 import { db } from '@litomi/db/app'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/app/activity'
+import { authSessionFamilyTable } from '@litomi/db/app/auth'
+import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { mangaRecommendationSetTable, mangaRecommendationTable } from '@litomi/db/app/recommendation'
+import { userTable } from '@litomi/db/app/user'
 import { type CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { and, eq, sql, type SQL } from 'drizzle-orm'
 
@@ -109,45 +112,46 @@ export async function selectActiveUserIds(options: SelectActiveUserOptions = {})
   const rows = await db.execute<ActiveUserRow>(sql`
     with active_users as (
       select
-        ${readingHistoryTable.userId} as user_id,
-        max(${readingHistoryTable.updatedAt}) as last_activity_at
-      from ${readingHistoryTable}
-      where ${readingHistoryTable.updatedAt} >= now() - (${activeDays}::int * interval '1 day')
-      group by ${readingHistoryTable.userId}
-
-      union all
-
-      select
-        ${bookmarkTable.userId} as user_id,
-        max(${bookmarkTable.createdAt}) as last_activity_at
-      from ${bookmarkTable}
-      where ${bookmarkTable.createdAt} >= now() - (${activeDays}::int * interval '1 day')
-      group by ${bookmarkTable.userId}
-
-      union all
-
-      select
-        ${userRatingTable.userId} as user_id,
-        max(${userRatingTable.updatedAt}) as last_activity_at
-      from ${userRatingTable}
-      where ${userRatingTable.updatedAt} >= now() - (${activeDays}::int * interval '1 day')
-      group by ${userRatingTable.userId}
-
-      union all
-
-      select
-        ${libraryTable.userId} as user_id,
-        max(${libraryItemTable.createdAt}) as last_activity_at
-      from ${libraryItemTable}
-      inner join ${libraryTable} on ${libraryTable.id} = ${libraryItemTable.libraryId}
-      where ${libraryItemTable.createdAt} >= now() - (${activeDays}::int * interval '1 day')
-      group by ${libraryTable.userId}
+        ${userTable.id} as user_id,
+        greatest(
+          coalesce(${userTable.loginAt}, ${userTable.createdAt}),
+          coalesce(max(${authSessionFamilyTable.lastUsedAt}), ${userTable.createdAt})
+        ) as last_activity_at
+      from ${userTable}
+      inner join ${bbatonVerificationTable} on ${bbatonVerificationTable.userId} = ${userTable.id}
+      left join ${authSessionFamilyTable} on ${authSessionFamilyTable.userId} = ${userTable.id}
+      where ${bbatonVerificationTable.adultFlag} is true
+        and (
+          exists (
+            select 1
+            from ${readingHistoryTable}
+            where ${readingHistoryTable.userId} = ${userTable.id}
+          )
+          or exists (
+            select 1
+            from ${bookmarkTable}
+            where ${bookmarkTable.userId} = ${userTable.id}
+          )
+          or exists (
+            select 1
+            from ${userRatingTable}
+            where ${userRatingTable.userId} = ${userTable.id}
+              and ${userRatingTable.rating} >= 4
+          )
+          or exists (
+            select 1
+            from ${libraryItemTable}
+            inner join ${libraryTable} on ${libraryTable.id} = ${libraryItemTable.libraryId}
+            where ${libraryTable.userId} = ${userTable.id}
+          )
+        )
+      group by ${userTable.id}, ${userTable.loginAt}, ${userTable.createdAt}
     )
     select
       user_id as "userId"
     from active_users
-    group by user_id
-    order by max(last_activity_at) desc
+    where last_activity_at >= now() - (${activeDays}::int * interval '1 day')
+    order by last_activity_at desc
     limit ${limit}
   `)
 
