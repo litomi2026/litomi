@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import { showAdultVerificationRecommendedToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { hasAdultAccess } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 import { downloadMultipleImages } from '@/utils/download'
 
 // Supported image extensions
@@ -30,7 +30,7 @@ export function useDownload({ manga }: Props) {
       return
     }
 
-    if (!hasAdultAccess(me)) {
+    if (!isAdultVerified(me)) {
       const toastOption = me
         ? { message: '성인인증하면 다운로드 시 광고가 제거돼요', username: me.name }
         : { message: '로그인하면 다운로드 시 광고가 제거돼요' }
