@@ -25,7 +25,7 @@ export default function useMangaReadingHistory(mangaId: number) {
         return readingHistory.lastPage
       }
 
-      if (!isAdultVerified(me) || !me.settings.historySyncEnabled) {
+      if (!isAdultVerified(me) || !me?.settings.historySyncEnabled) {
         return null
       }
 
