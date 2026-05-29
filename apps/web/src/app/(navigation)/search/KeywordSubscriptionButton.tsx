@@ -10,7 +10,7 @@ import { twMerge } from 'tailwind-merge'
 
 import IconBell from '@/components/icons/IconBell'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
-import useMeQuery from '@/query/useMeQuery'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { ProblemDetailsError } from '@/utils/api-request'
 
 import { createNotificationCriteria } from './api'
@@ -19,7 +19,7 @@ import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 export default function KeywordSubscriptionButton() {
   const [isSubscribed, setIsSubscribed] = useState(false)
   const router = useRouter()
-  const { data: me } = useMeQuery()
+  const { guardAdultAccess, me } = useAdultAccessGuard()
   const [query, setQuery] = useState<ParsedSearchQuery>(() => parseSearchQuery(''))
   const buttonTitle = isSubscribed ? '키워드 알림 설정을 확인해요' : '키워드 알림을 설정해요'
   const buttonLabel = isSubscribed ? '설정 보기' : '키워드 알림'
@@ -44,12 +44,7 @@ export default function KeywordSubscriptionButton() {
   }
 
   function handleToggleSubscription() {
-    if (me === undefined) {
-      return
-    }
-
-    if (me === null) {
-      toast.warning('로그인 후 이용해 주세요')
+    if (!guardAdultAccess()) {
       return
     }
 
@@ -68,7 +63,7 @@ export default function KeywordSubscriptionButton() {
       return
     }
 
-    if (isSubscribed) {
+    if (isSubscribed && me) {
       router.push(`/@${me.name}/settings/#keyword`)
       return
     }
