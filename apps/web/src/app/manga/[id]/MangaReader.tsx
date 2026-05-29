@@ -53,7 +53,7 @@ export default function MangaReader({ manga }: Props) {
 
   const pages = createMangaReaderPages(manga)
   const locale = getLocaleFromCookie() || 'ko'
-  const canSyncReadingProgress = isAdultVerified(me) && me.settings.historySyncEnabled
+  const canSyncReadingProgress = isAdultVerified(me) && me?.settings.historySyncEnabled
 
   function handleReaderNotice(notice: ReaderNotice) {
     const toastOptions = {

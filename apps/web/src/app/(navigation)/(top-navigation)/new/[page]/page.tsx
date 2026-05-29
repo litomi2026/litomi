@@ -5,7 +5,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
 
-import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import PageNavigation from '@/components/PageNavigation'
 import { generateOpenGraphMetadata } from '@/lib/metadata'
 
@@ -55,7 +55,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
 
   return (
     <>
-      <NonAdultJuicyAdsBanner />
+      <JuicyAdsBanner />
       <NewMangaList nativeGridSponsor={nativeGridSponsor} page={page} />
       <PageNavigation className="py-4" currentPage={page} totalPages={TOTAL_HIYOBI_PAGES} />
     </>

@@ -1,7 +1,6 @@
 'use client'
 
-import type { GETV1MeResponse, POSTV1BBatonUnlinkResponse } from '@litomi/contracts'
-
+import { AdultVerificationStatus, type GETV1MeResponse, type POSTV1BBatonUnlinkResponse } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronDown } from 'lucide-react'
@@ -48,7 +47,7 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
           ...previous,
           adultVerification: {
             ...previous.adultVerification,
-            status: 'unverified',
+            status: AdultVerificationStatus.UNVERIFIED,
           },
         }
       })

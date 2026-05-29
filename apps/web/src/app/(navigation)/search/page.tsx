@@ -4,7 +4,7 @@ import { getViewFromSearchParams } from '@litomi/std'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 
-import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/lib/metadata'
 import { getSearchSEO } from '@/lib/searchSEO'
 
@@ -74,7 +74,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
       ) : (
         <TrendingKeywords view={view} />
       )}
-      <NonAdultJuicyAdsBanner />
+      <JuicyAdsBanner />
     </div>
   )
 

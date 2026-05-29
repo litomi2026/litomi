@@ -14,6 +14,7 @@ import { twMerge } from 'tailwind-merge'
 import type { ProblemDetailsError } from '@/utils/api-request'
 
 import IconBell from '@/components/icons/IconBell'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 
 import type { NotificationCriteria } from './types'
 
@@ -38,6 +39,7 @@ const LOCAL_MUTATION_ERROR_STATUSES = [400, 404, 409] as const
 
 export default function NotificationCriteriaCard({ criterion, onEdit }: NotificationCriteriaCardProps) {
   const router = useRouter()
+  const { guardAdultAccess } = useAdultAccessGuard()
 
   const toggleMutation = useMutation<
     PATCHV1NotificationCriteriaIdResponse,
@@ -87,6 +89,10 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
   const isDeleting = deleteMutation.isPending
 
   function handleToggle(isActive: boolean) {
+    if (!guardAdultAccess()) {
+      return
+    }
+
     toggleMutation.mutate({ id: criterion.id, isActive })
   }
 

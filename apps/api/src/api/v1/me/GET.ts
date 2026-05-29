@@ -1,6 +1,5 @@
-import type { AdultVerificationStatus, GETV1MeResponse } from '@litomi/contracts'
-
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import { AdultVerificationStatus, type GETV1MeResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { userSettingsTable, userTable } from '@litomi/db/app/user'
@@ -10,6 +9,7 @@ import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
+import { isAdultVerificationRequiredForRequest } from '@/utils/adult-gate'
 import { privateCacheControl } from '@/utils/cache-control'
 import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
@@ -43,10 +43,8 @@ route.get('/', async (c) => {
       return problemResponse(c, { status: 404, detail: '사용자 정보를 찾을 수 없어요' })
     }
 
-    const country = c.req.header('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
-    const required = country === 'KR'
-    const isAdult = c.get('isAdult') === true
-    const status: AdultVerificationStatus = isAdult ? 'adult' : user.adultFlag === false ? 'not_adult' : 'unverified'
+    const required = isAdultVerificationRequiredForRequest(c)
+    const status = getAdultStatus(user.adultFlag)
 
     const settings = resolveUserSettings({
       historySyncEnabled: user.historySyncEnabled ?? undefined,
@@ -73,3 +71,14 @@ route.get('/', async (c) => {
 })
 
 export default route
+
+function getAdultStatus(adultFlag: boolean | null) {
+  switch (adultFlag) {
+    case false:
+      return AdultVerificationStatus.NOT_ADULT
+    case true:
+      return AdultVerificationStatus.ADULT
+    default:
+      return AdultVerificationStatus.UNVERIFIED
+  }
+}

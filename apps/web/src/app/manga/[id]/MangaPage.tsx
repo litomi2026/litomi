@@ -5,8 +5,8 @@ import type { Manga } from '@litomi/domain/manga/model'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
-import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
@@ -65,7 +65,7 @@ export default function MangaPage({ id, initialManga }: Props) {
 
   if (isWaitingForAdClick) {
     return (
-      <NonAdultJuicyAdsBanner
+      <JuicyAdsBanner
         className="h-full flex flex-col gap-3 items-center justify-center"
         layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
         onAdClick={handleAdClick}

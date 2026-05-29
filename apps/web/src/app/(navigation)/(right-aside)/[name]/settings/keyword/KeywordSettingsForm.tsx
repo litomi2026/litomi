@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 
 import type { NotificationCriteria } from './types'
 
@@ -18,18 +19,27 @@ interface Props {
 export default function KeywordSettingsForm({ initialCriteria: criteria }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingCriteria, setEditingCriteria] = useState<NotificationCriteria | null>(null)
+  const { guardAdultAccess } = useAdultAccessGuard()
 
-  const handleCreateClick = () => {
+  function handleCreateClick() {
+    if (!guardAdultAccess()) {
+      return
+    }
+
     setIsModalOpen(true)
     setEditingCriteria(null)
   }
 
-  const handleEditClick = (criterion: NotificationCriteria) => {
+  function handleEditClick(criterion: NotificationCriteria) {
+    if (!guardAdultAccess()) {
+      return
+    }
+
     setIsModalOpen(true)
     setEditingCriteria(criterion)
   }
 
-  const handleModalClose = () => {
+  function handleModalClose() {
     setIsModalOpen(false)
     setEditingCriteria(null)
   }

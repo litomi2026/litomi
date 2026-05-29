@@ -4,6 +4,7 @@ import { problemCode } from '@litomi/http/problem-details'
 
 import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
+import { getCloudflareCountryCode } from '@/utils/request-country'
 
 type AdultGateContextSource = Pick<Context, 'req'> & {
   get(key: string): unknown
@@ -18,17 +19,15 @@ export function adultVerificationRequiredResponse(c: Context): Response {
   })
 }
 
-export function getRequestCountry(c: Pick<Context, 'req'>): string {
-  // https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-ipcountry
-  return c.req.header('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
+export function isAdultVerificationRequiredForRequest(c: Pick<Context, 'req'>): boolean {
+  const countryCode = getCloudflareCountryCode(c)
+  return countryCode === undefined || ['KR', 'XX'].includes(countryCode)
 }
 
 export function shouldBlockAdultGate(c: AdultGateContextSource): boolean {
-  const country = getRequestCountry(c)
   const userIdRaw = c.get('userId')
   const userId = typeof userIdRaw === 'number' ? userIdRaw : undefined
   const isAdult = c.get('isAdult') === true
 
-  // 성인인증은 로그인 유저 활동 제한 목적이므로, 비로그인 요청은 여기서 막지 않아요.
-  return country === 'KR' && Boolean(userId) && isAdult === false
+  return isAdultVerificationRequiredForRequest(c) && Boolean(userId) && isAdult === false
 }

@@ -5,9 +5,9 @@ import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/utils
 import type { Env } from '../app'
 
 export const requireAdult = createMiddleware<Env>(async (c, next) => {
-  if (!shouldBlockAdultGate(c)) {
-    return await next()
+  if (shouldBlockAdultGate(c)) {
+    return adultVerificationRequiredResponse(c)
   }
 
-  return adultVerificationRequiredResponse(c)
+  return await next()
 })

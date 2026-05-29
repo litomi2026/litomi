@@ -16,7 +16,7 @@ export function resolveCORSOrigin(origin?: string) {
     const { hostname, protocol } = new URL(origin)
     const host = hostname.toLowerCase()
 
-    if (host === 'localhost') {
+    if (process.env.NODE_ENV !== 'production' && host === 'localhost') {
       return origin
     }
 

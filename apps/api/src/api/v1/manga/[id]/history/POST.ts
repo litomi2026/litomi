@@ -8,7 +8,7 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import { enforceHistoryLimit, getUserHistoryLimitInTx } from '@/api/v1/library/history/shared'
-import { requireAdult } from '@/middleware/adult'
+import { requireAdult } from '@/middleware/require-adult'
 import { requireAuth } from '@/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/utils/lock-user-row'
 import { problemResponse } from '@/utils/problem'

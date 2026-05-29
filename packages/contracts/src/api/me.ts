@@ -32,19 +32,11 @@ export const imageURLSchema = z
     }
   }, '프로필 이미지 URL은 http 또는 https만 사용할 수 있어요')
 
-export const AdultVerificationStatus = {
-  ADULT: 'adult',
-  NOT_ADULT: 'not_adult',
-  UNVERIFIED: 'unverified',
-} as const
-
-export const adultVerificationStatusSchema = z.enum([
-  AdultVerificationStatus.ADULT,
-  AdultVerificationStatus.NOT_ADULT,
-  AdultVerificationStatus.UNVERIFIED,
-])
-
-export type AdultVerificationStatus = z.infer<typeof adultVerificationStatusSchema>
+export enum AdultVerificationStatus {
+  ADULT = 'adult',
+  NOT_ADULT = 'not-adult',
+  UNVERIFIED = 'unverified',
+}
 
 export const userSettingsSchema = z.object({
   historySyncEnabled: z.boolean(),
@@ -63,7 +55,7 @@ export const getV1MeResponseSchema = z.object({
   imageURL: z.string().nullable(),
   adultVerification: z.object({
     required: z.boolean(),
-    status: adultVerificationStatusSchema,
+    status: z.enum(AdultVerificationStatus),
   }),
   settings: userSettingsSchema,
 })

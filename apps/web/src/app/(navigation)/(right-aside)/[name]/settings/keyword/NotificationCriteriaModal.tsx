@@ -20,6 +20,8 @@ import { twMerge } from 'tailwind-merge'
 
 import type { ProblemDetailsError } from '@/utils/api-request'
 
+import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
+
 import type { NotificationCriteria } from './types'
 
 import { createNotificationCriteria, updateNotificationCriteria } from './api'
@@ -54,6 +56,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const router = useRouter()
   const nameId = useId()
+  const { guardAdultAccess } = useAdultAccessGuard()
 
   const formKey = `${isOpen ? 'open' : 'closed'}:${editingCriteria?.id ?? 'new'}:${editingCriteria?.updatedAt.getTime() ?? 0}`
   const labelClassName = 'block text-sm font-medium text-zinc-300 mb-1'
@@ -96,7 +99,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
   function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (isPending) {
+    if (isPending || !guardAdultAccess()) {
       return
     }
 
