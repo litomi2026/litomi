@@ -1,13 +1,6 @@
-import { AdultVerificationStatus, type GETV1MeResponse } from '@litomi/contracts'
+import { type GETV1MeResponse } from '@litomi/contracts'
 
-type AdultVerified<T> = Exclude<T, null | undefined> & {
-  adultVerification: { status: typeof AdultVerificationStatus.ADULT }
-}
-
-type MeWithAdSettings = Pick<GETV1MeResponse, 'adultVerification' | 'settings'> | null | undefined
-type MeWithAdultVerification = Pick<GETV1MeResponse, 'adultVerification'> | null | undefined
-
-export function hasAdultAccess(me: MeWithAdultVerification): boolean {
+export function hasAdultAccess(me: GETV1MeResponse | null | undefined): boolean {
   if (!me) {
     return false
   }
@@ -15,22 +8,6 @@ export function hasAdultAccess(me: MeWithAdultVerification): boolean {
   return me.adultVerification.required === false || isAdultVerified(me)
 }
 
-export function isAdultVerified<T extends MeWithAdultVerification>(me: T): me is AdultVerified<T> {
-  return me?.adultVerification.status === AdultVerificationStatus.ADULT
-}
-
-export function shouldShowNonAdultAds(me: MeWithAdSettings): boolean {
-  if (me === undefined) {
-    return false
-  }
-
-  if (me === null) {
-    return true
-  }
-
-  if (isAdultVerified(me)) {
-    return me.settings.adultVerifiedAdVisible
-  }
-
-  return true
+export function isAdultVerified(me: GETV1MeResponse | null | undefined) {
+  return me?.adultVerification.status === 'adult'
 }

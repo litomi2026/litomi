@@ -10,7 +10,7 @@ import { twMerge } from 'tailwind-merge'
 import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'
 import useMeQuery from '@/query/useMeQuery'
-import { shouldShowNonAdultAds } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 
 import type { JuicyAdsLayoutNode } from './types'
 
@@ -29,7 +29,7 @@ type Props = {
 export default function NonAdultJuicyAdsBanner({ className, title, layout, onAdClick }: Props) {
   const isMounted = useMounted()
   const { data: me } = useMeQuery()
-  const shouldShowAds = isMounted && shouldShowNonAdultAds(me)
+  const shouldShowAds = isMounted && checkShowingAds(me)
 
   if (!shouldShowAds) {
     return null
@@ -44,6 +44,22 @@ export default function NonAdultJuicyAdsBanner({ className, title, layout, onAdC
       </div>
     </section>
   )
+}
+
+function checkShowingAds(me?: GETV1MeResponse | null) {
+  if (me === undefined) {
+    return false
+  }
+
+  if (me === null) {
+    return true
+  }
+
+  if (isAdultVerified(me)) {
+    return me.settings.adultVerifiedAdVisible
+  }
+
+  return true
 }
 
 function DefaultTitle({ me }: { me?: GETV1MeResponse | null }) {

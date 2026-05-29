@@ -1,6 +1,5 @@
-import type { GETV1MeResponse } from '@litomi/contracts'
-
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import { AdultVerificationStatus, type GETV1MeResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { userSettingsTable, userTable } from '@litomi/db/app/user'
@@ -45,7 +44,7 @@ route.get('/', async (c) => {
     }
 
     const required = isAdultVerificationRequiredForRequest(c)
-    const status = user.adultFlag === true ? 'adult' : user.adultFlag === false ? 'not-adult' : 'unverified'
+    const status = getAdultStatus(user.adultFlag)
 
     const settings = resolveUserSettings({
       historySyncEnabled: user.historySyncEnabled ?? undefined,
@@ -72,3 +71,14 @@ route.get('/', async (c) => {
 })
 
 export default route
+
+function getAdultStatus(adultFlag: boolean | null) {
+  switch (adultFlag) {
+    case false:
+      return AdultVerificationStatus.NOT_ADULT
+    case true:
+      return AdultVerificationStatus.ADULT
+    default:
+      return AdultVerificationStatus.UNVERIFIED
+  }
+}
