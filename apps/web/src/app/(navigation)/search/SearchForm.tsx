@@ -291,7 +291,7 @@ export default function SearchForm({ className = '' }: Props) {
           aria-label="검색하기"
           className={twMerge(
             'flex items-center justify-center rounded-[0.95rem] bg-foreground px-3.5 py-2 shrink-0 text-sm font-bold text-background',
-            'shadow-sm transition aria-disabled:opacity-60 active:scale-[0.98] hover:opacity-90',
+            'shadow-sm transition disabled:opacity-60 active:scale-[0.98] hover:opacity-90',
             'focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:ring-inset',
           )}
           disabled={isSearching}

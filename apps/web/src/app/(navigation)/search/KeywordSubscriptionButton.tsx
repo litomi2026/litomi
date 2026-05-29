@@ -20,7 +20,7 @@ export default function KeywordSubscriptionButton() {
   const [isSubscribed, setIsSubscribed] = useState(false)
   const router = useRouter()
   const { data: me } = useMeQuery()
-  const [query, setQuery] = useState<ParsedSearchQuery | null>(null)
+  const [query, setQuery] = useState<ParsedSearchQuery>(() => parseSearchQuery(''))
   const buttonTitle = isSubscribed ? '키워드 알림 설정을 확인해요' : '키워드 알림을 설정해요'
   const buttonLabel = isSubscribed ? '설정 보기' : '키워드 알림'
 
@@ -44,11 +44,11 @@ export default function KeywordSubscriptionButton() {
   }
 
   function handleToggleSubscription() {
-    if (isPending || !query) {
+    if (me === undefined) {
       return
     }
 
-    if (!me) {
+    if (me === null) {
       toast.warning('로그인 후 이용해 주세요')
       return
     }
@@ -100,7 +100,7 @@ export default function KeywordSubscriptionButton() {
         'focus:outline-none focus:ring-2 focus:ring-zinc-500/30 focus:ring-offset-2 focus:ring-offset-background',
         'disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-foreground aria-pressed:hover:border-brand',
       )}
-      disabled={isPending}
+      disabled={me === undefined || isPending}
       onClick={handleToggleSubscription}
       title={buttonTitle}
       type="button"

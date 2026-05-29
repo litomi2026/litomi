@@ -44,6 +44,8 @@ export default function PostCreationForm({
   const { data: me } = useMeQuery()
   const queryClient = useQueryClient()
   const router = useRouter()
+  const isAuthPending = me === undefined
+  const isGuest = me === null
 
   const { mutate, isPending } = useMutation<POSTV1PostResponse, ProblemDetailsError, POSTV1PostBody>({
     mutationFn: createPost,
@@ -61,7 +63,7 @@ export default function PostCreationForm({
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if (!me) {
+    if (isGuest) {
       showLoginRequiredToast()
       return
     }
@@ -75,7 +77,7 @@ export default function PostCreationForm({
   }
 
   function handleClick() {
-    if (!me) {
+    if (isGuest) {
       showLoginRequiredToast()
       return
     }
@@ -100,7 +102,7 @@ export default function PostCreationForm({
         {hasFocusedBefore && children}
         <TextareaAutosize
           className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none disabled:pointer-events-none"
-          disabled={!me || isPending}
+          disabled={isAuthPending || isGuest || isPending}
           maxLength={MAX_POST_CONTENT_LENGTH}
           maxRows={25}
           minLength={2}
@@ -115,7 +117,7 @@ export default function PostCreationForm({
         {hasFocusedBefore && (
           <div className="flex justify-between gap-2">
             <div className="flex -translate-x-2 items-center text-foreground">
-              <PostGeolocationButton disabled={!me} onLocationChange={() => {}} />
+              <PostGeolocationButton disabled={isAuthPending || isGuest} onLocationChange={() => {}} />
             </div>
             <div className="flex items-center gap-3">
               <div>{content.length}</div>
@@ -125,7 +127,7 @@ export default function PostCreationForm({
                   'whitespace-nowrap relative bg-brand text-background rounded-full px-4 py-2 font-semibold',
                   'disabled:text-zinc-500 disabled:bg-zinc-800 aria-busy:text-background/0',
                 )}
-                disabled={!me || isPending}
+                disabled={isAuthPending || isGuest || isPending}
                 type="submit"
               >
                 {buttonText}

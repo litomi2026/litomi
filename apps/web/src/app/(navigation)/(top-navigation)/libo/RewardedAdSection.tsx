@@ -31,11 +31,12 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 export default function RewardedAdSection() {
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
-  const pointsTurnstile = usePointsTurnstileQuery(Boolean(me))
+  const isLoggedIn = Boolean(me)
+  const pointsTurnstile = usePointsTurnstileQuery(isLoggedIn)
   const verificationSectionRef = useRef<HTMLDivElement>(null)
   const turnstileRef = useRef<TurnstileInstance>(null)
   const isVerified = pointsTurnstile.data?.verified === true
-  const rewardEnabled = Boolean(me) && isVerified
+  const rewardEnabled = isLoggedIn && isVerified
 
   const verifyTurnstile = useMutation<POSTV1PointTurnstileResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
@@ -67,7 +68,11 @@ export default function RewardedAdSection() {
   })
 
   function handleAdClick(result: AdClickResult) {
-    if (!me) {
+    if (me === undefined) {
+      return
+    }
+
+    if (me === null) {
       runWhenDocumentVisible(() => {
         toast.warning('로그인하면 리보가 적립돼요')
       })
@@ -222,7 +227,7 @@ export default function RewardedAdSection() {
 }
 
 function getRewardedAdStatus(me: GETV1MeResponse | null | undefined, isVerified: boolean) {
-  if (!me) {
+  if (me === null) {
     return '로그인 후 광고를 클릭하면 리보가 적립돼요'
   }
   if (!isVerified) {

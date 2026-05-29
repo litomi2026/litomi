@@ -110,8 +110,7 @@ export function ChatThread({
 
       <form className="mt-auto flex flex-col gap-2" onSubmit={handleSubmit}>
         <textarea
-          aria-disabled={chatInputDisabled}
-          className="min-h-24 text-base rounded-2xl border border-white/7 bg-white/2 px-3 py-2 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
+          className="min-h-24 text-base rounded-2xl border border-white/7 bg-white/2 px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
           disabled={chatInputDisabled}
           id="message"
           name="message"
@@ -124,8 +123,7 @@ export function ChatThread({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <button
-              aria-disabled={!isGenerating}
-              className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-white/7 hover:border-white/15 transition aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+              className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-white/7 hover:border-white/15 transition disabled:opacity-50 disabled:pointer-events-none"
               disabled={!isGenerating}
               onClick={onStop}
               type="button"
@@ -143,8 +141,7 @@ export function ChatThread({
             ) : null}
           </div>
           <button
-            aria-disabled={isGenerating || chatInputDisabled}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white transition aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white transition disabled:opacity-50 disabled:pointer-events-none"
             disabled={isGenerating || chatInputDisabled}
             type="submit"
           >

@@ -18,23 +18,19 @@ type Props = {
 }
 
 export default function PostDetailLikeButton({ likeCount, postId }: Props) {
-  const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const { data: me } = useMeQuery()
   const { data: likedPostIds } = useLikedPostIdsQuery()
   const { isPending: isLikePending, setLiked } = usePostLikeMutation(postId)
 
   const [optimisticLikeState, setOptimisticLikeState] = useState<OptimisticLikeState>()
 
   const likedFromQuery = likedPostIds?.has(postId)
-  const isLikeStateLoading = isMeLoading || (Boolean(me) && likedPostIds === undefined)
+  const isLikeStateLoading = me === undefined || (Boolean(me) && likedPostIds === undefined)
   const resolvedIsLiked = optimisticLikeState?.liked ?? likedFromQuery ?? false
   const resolvedLikeCount = optimisticLikeState?.likeCount ?? likeCount
 
   async function handleClick() {
-    if (isLikeStateLoading) {
-      return
-    }
-
-    if (!me) {
+    if (me === null) {
       await setLiked(!resolvedIsLiked)
       return
     }
@@ -60,7 +56,7 @@ export default function PostDetailLikeButton({ likeCount, postId }: Props) {
       aria-pressed={resolvedIsLiked}
       className="group flex items-center w-fit transition hover:text-red-600 disabled:opacity-50"
       disabled={isLikePending || isLikeStateLoading}
-      onClick={() => void handleClick()}
+      onClick={handleClick}
       type="button"
     >
       <div className="shrink-0 rounded-full transition group-hover:bg-red-600/20 group-hover:text-red-600 aria-pressed:text-red-600">

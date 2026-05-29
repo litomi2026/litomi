@@ -28,7 +28,7 @@ export default function LastPage({ manga }: Props) {
   function handleOpenLibraryModal(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
 
-    if (!me) {
+    if (me === null) {
       e.preventDefault()
       showLoginRequiredToast()
       return
@@ -57,8 +57,10 @@ export default function LastPage({ manga }: Props) {
             className={twMerge(
               'flex w-full items-center justify-center gap-2 rounded-xl border border-foreground/15 px-4 py-2.5 transition',
               'hover:bg-foreground/10 active:bg-foreground/15',
+              'disabled:pointer-events-none disabled:opacity-50',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-0',
             )}
+            disabled={me === undefined}
             onClick={handleOpenLibraryModal}
             type="button"
           >
