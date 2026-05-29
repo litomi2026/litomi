@@ -1,5 +1,4 @@
 import { getUsernameFromParam } from '@litomi/std'
-import { Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
@@ -7,25 +6,15 @@ import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
 import MyPageNavigationLink from './MyPageNavigationLink'
 import MyPagePrivateNavigation from './MyPagePrivateNavigation'
 import UserProfile from './UserProfile'
-import UserProfileView, { UserType } from './UserProfileView'
 
 export default async function Layout({ params, children }: LayoutProps<'/[name]'>) {
   const { name } = await params
   const username = getUsernameFromParam(name)
   const publicLinks = [{ href: `/@${username}`, label: '이야기' }]
 
-  const loadingUser = {
-    id: 0,
-    name: username,
-    nickname: '...',
-    type: UserType.LOADING,
-  }
-
   return (
     <main className="flex flex-col grow">
-      <Suspense fallback={<UserProfileView user={loadingUser} />}>
-        <UserProfile username={username} />
-      </Suspense>
+      <UserProfile username={username} />
       <TopStickySafeAreaSurface />
       <nav
         className={twMerge(
