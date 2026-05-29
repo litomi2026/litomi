@@ -12,19 +12,7 @@ export function hasAdultAccess(me: MeWithAdultVerification): boolean {
     return false
   }
 
-  return me.adultVerification.required !== true || isAdultVerified(me)
-}
-
-export function isAdultAccessBlocked(me: MeWithAdultVerification): boolean {
-  if (me === undefined) {
-    return false
-  }
-
-  if (me === null) {
-    return true
-  }
-
-  return me.adultVerification.required === true && !isAdultVerified(me)
+  return me.adultVerification.required === false || isAdultVerified(me)
 }
 
 export function isAdultVerified<T extends MeWithAdultVerification>(me: T): me is AdultVerified<T> {

@@ -10,6 +10,7 @@ import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
+import { isAdultVerificationRequiredForCountry } from '@/utils/adult-gate'
 import { privateCacheControl } from '@/utils/cache-control'
 import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
@@ -43,8 +44,7 @@ route.get('/', async (c) => {
       return problemResponse(c, { status: 404, detail: '사용자 정보를 찾을 수 없어요' })
     }
 
-    const country = c.req.header('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
-    const required = country === 'KR'
+    const required = isAdultVerificationRequiredForCountry(c)
     const status = user.adultFlag === true ? 'adult' : user.adultFlag === false ? 'not-adult' : 'unverified'
 
     const settings = resolveUserSettings({
