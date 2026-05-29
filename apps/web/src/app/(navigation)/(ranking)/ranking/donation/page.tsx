@@ -3,7 +3,7 @@ import { Heart } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
-import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/lib/metadata'
 
 import { getDonationRanking } from './query'
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <div className="p-2">
-      <NonAdultJuicyAdsBanner className="mb-2" />
+      <JuicyAdsBanner className="mb-2" />
       <details className="max-w-3xl mx-auto m-4 rounded-xl bg-white/4 border border-white/7">
         <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
           <Heart className="size-4 text-zinc-400" />

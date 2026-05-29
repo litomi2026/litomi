@@ -26,7 +26,7 @@ type Props = {
   onAdClick?: () => void
 }
 
-export default function NonAdultJuicyAdsBanner({ className, title, layout, onAdClick }: Props) {
+export default function JuicyAdsBanner({ className, title, layout, onAdClick }: Props) {
   const isMounted = useMounted()
   const { data: me } = useMeQuery()
   const shouldShowAds = isMounted && checkShowingAds(me)

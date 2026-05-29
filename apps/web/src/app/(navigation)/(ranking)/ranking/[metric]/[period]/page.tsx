@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
 
-import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/lib/metadata'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -73,7 +73,7 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
 
   return (
     <>
-      <NonAdultJuicyAdsBanner className="mt-2 mx-2" />
+      <JuicyAdsBanner className="mt-2 mx-2" />
       <RankingList className={MANGA_GRID_COLUMN.card} nativeGridSponsor={nativeGridSponsor} rankings={rankings} />
     </>
   )
