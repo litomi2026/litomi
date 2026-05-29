@@ -44,7 +44,7 @@ export default function NotificationList() {
   const filter = searchParams.get(SearchParams.FILTER) as NotificationFilter | null
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
-  const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const { data: me } = useMeQuery()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useNotificationInfiniteQuery()
@@ -206,11 +206,11 @@ export default function NotificationList() {
           </div>
         </div>
       </div>
-      {isLoading || isMeLoading ? (
+      {me === undefined ? (
         <div className="flex-1 flex items-center justify-center animate-fade-in [animation-delay:0.3s] [animation-fill-mode:both]">
           <Loader2 className="size-10 shrink-0 text-zinc-600 animate-spin sm:size-12" />
         </div>
-      ) : !me ? (
+      ) : me === null ? (
         <Unauthorized />
       ) : !hasAdultAccess(me) ? (
         <AdultVerificationGate
@@ -218,6 +218,10 @@ export default function NotificationList() {
           title="성인인증이 필요해요"
           username={me.name}
         />
+      ) : isLoading ? (
+        <div className="flex-1 flex items-center justify-center animate-fade-in [animation-delay:0.3s] [animation-fill-mode:both]">
+          <Loader2 className="size-10 shrink-0 text-zinc-600 animate-spin sm:size-12" />
+        </div>
       ) : notifications.length === 0 ? (
         <EmptyState filter={filter} />
       ) : (
