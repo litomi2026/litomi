@@ -19,8 +19,7 @@ type WheelSlice = {
 }
 
 export default function RoulettePageClient() {
-  const { data: me, isLoading: isMeLoading } = useMeQuery()
-  const isLoggedIn = Boolean(me && !isMeLoading)
+  const { data: me } = useMeQuery()
   const [displayBet, setDisplayBet] = useState<number>(ROULETTE_CONFIG.minBet)
   const spin = useRouletteSpinMutation()
   const [rotationDeg, setRotationDeg] = useState(0)
@@ -159,7 +158,9 @@ export default function RoulettePageClient() {
       </div>
 
       <div className="rounded-2xl bg-white/4 border border-white/7 p-4 space-y-3">
-        {!isLoggedIn ? (
+        {me === undefined ? (
+          <div aria-hidden className="py-6" />
+        ) : me === null ? (
           <div className="text-center py-6">
             <p className="text-zinc-300 font-medium">로그인하면 룰렛에 참여할 수 있어요</p>
             <p className="text-sm text-zinc-500 mt-1">먼저 리보를 적립한 뒤에 배팅해 보세요</p>

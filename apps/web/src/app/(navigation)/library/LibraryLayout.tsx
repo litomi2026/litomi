@@ -35,7 +35,7 @@ type Props = {
 
 export default function LibraryLayout({ children }: Props) {
   const pathname = usePathname()
-  const { data: me, isPending: isMePending } = useMeQuery()
+  const { data: me } = useMeQuery()
   const userId = me?.id
   const canUseServerHistory = isAdultVerified(me)
   const { data: serverSummary } = useLibrarySummaryQuery({ userId })
@@ -54,7 +54,7 @@ export default function LibraryLayout({ children }: Props) {
     isFetchNextPageError,
     isPending: isLibrariesPending,
   } = useLibraryListInfiniteQuery({
-    enabled: !isMePending,
+    enabled: me !== undefined,
     userId,
   })
 
@@ -65,7 +65,7 @@ export default function LibraryLayout({ children }: Props) {
     isFetchingNextPage: isFetchingNextPinnedPage,
     isPending: isPinnedLibrariesPending,
   } = usePinnedLibraryListInfiniteQuery({
-    enabled: !isMePending && Boolean(userId),
+    enabled: me !== undefined && Boolean(userId),
     userId,
   })
 
@@ -76,10 +76,14 @@ export default function LibraryLayout({ children }: Props) {
     hasNextPage: hasNextPage || hasNextPinnedPage,
     isFetchingNextPage: isFetchingNextPage || isFetchingNextPinnedPage,
     isFetchNextPageError,
-    isPending: isMePending || isLibrariesPending || isPinnedLibrariesPending,
+    isPending: me === undefined || isLibrariesPending || isPinnedLibrariesPending,
     onRetryNextPage: () => {
-      if (hasNextPage) fetchNextPage()
-      if (hasNextPinnedPage) fetchNextPinnedPage()
+      if (hasNextPage) {
+        fetchNextPage()
+      }
+      if (hasNextPinnedPage) {
+        fetchNextPinnedPage()
+      }
     },
   }
 
