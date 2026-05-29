@@ -34,7 +34,7 @@ export const imageURLSchema = z
 
 export const AdultVerificationStatus = {
   ADULT: 'adult',
-  NOT_ADULT: 'not_adult',
+  NOT_ADULT: 'not-adult',
   UNVERIFIED: 'unverified',
 } as const
 

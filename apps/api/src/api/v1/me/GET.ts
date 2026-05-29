@@ -1,4 +1,4 @@
-import type { AdultVerificationStatus, GETV1MeResponse } from '@litomi/contracts'
+import type { GETV1MeResponse } from '@litomi/contracts'
 
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/app'
@@ -45,8 +45,7 @@ route.get('/', async (c) => {
 
     const country = c.req.header('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
     const required = country === 'KR'
-    const isAdult = c.get('isAdult') === true
-    const status: AdultVerificationStatus = isAdult ? 'adult' : user.adultFlag === false ? 'not_adult' : 'unverified'
+    const status = user.adultFlag === true ? 'adult' : user.adultFlag === false ? 'not-adult' : 'unverified'
 
     const settings = resolveUserSettings({
       historySyncEnabled: user.historySyncEnabled ?? undefined,

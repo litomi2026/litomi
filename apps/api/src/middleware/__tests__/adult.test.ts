@@ -2,7 +2,7 @@ import { PROBLEM_CONTENT_TYPE, problemCode } from '@litomi/http/problem-details'
 import { describe, expect, test } from 'bun:test'
 import { Hono } from 'hono'
 
-import { requireAdult } from '../adult'
+import { requireAdult } from '../require-adult'
 
 type TestEnv = {
   Variables: {

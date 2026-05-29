@@ -35,7 +35,7 @@ describe('성인 인증 유틸', () => {
       expect(isAdultVerified(null)).toBe(false)
       expect(isAdultVerified(createMe('adult'))).toBe(true)
       expect(isAdultVerified(createMe('unverified'))).toBe(false)
-      expect(isAdultVerified(createMe('not_adult'))).toBe(false)
+      expect(isAdultVerified(createMe('not-adult'))).toBe(false)
     })
   })
 
@@ -46,7 +46,7 @@ describe('성인 인증 유틸', () => {
       expect(hasAdultAccess(createMe('unverified', false))).toBe(true)
       expect(hasAdultAccess(createMe('adult'))).toBe(true)
       expect(hasAdultAccess(createMe('unverified'))).toBe(false)
-      expect(hasAdultAccess(createMe('not_adult'))).toBe(false)
+      expect(hasAdultAccess(createMe('not-adult'))).toBe(false)
     })
   })
 
@@ -57,7 +57,7 @@ describe('성인 인증 유틸', () => {
       expect(isAdultAccessBlocked(createMe('unverified', false))).toBe(false)
       expect(isAdultAccessBlocked(createMe('adult'))).toBe(false)
       expect(isAdultAccessBlocked(createMe('unverified'))).toBe(true)
-      expect(isAdultAccessBlocked(createMe('not_adult'))).toBe(true)
+      expect(isAdultAccessBlocked(createMe('not-adult'))).toBe(true)
     })
   })
 
@@ -66,7 +66,7 @@ describe('성인 인증 유틸', () => {
       expect(shouldShowNonAdultAds(undefined)).toBe(false)
       expect(shouldShowNonAdultAds(null)).toBe(true)
       expect(shouldShowNonAdultAds(createMe('unverified'))).toBe(true)
-      expect(shouldShowNonAdultAds(createMe('not_adult'))).toBe(true)
+      expect(shouldShowNonAdultAds(createMe('not-adult'))).toBe(true)
       expect(shouldShowNonAdultAds(createMe('unverified', false))).toBe(true)
     })
 

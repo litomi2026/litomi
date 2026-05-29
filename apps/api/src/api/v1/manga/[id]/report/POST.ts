@@ -8,7 +8,7 @@ import ms from 'ms'
 
 import type { Env } from '@/app'
 
-import { requireAdult } from '@/middleware/adult'
+import { requireAdult } from '@/middleware/require-adult'
 import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
