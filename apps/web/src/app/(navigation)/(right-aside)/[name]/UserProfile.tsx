@@ -4,7 +4,6 @@ import Image from 'next/image'
 
 import MyPageButtons from './MyPageButtons'
 import { getPublicUserProfile, type PublicUserProfile } from './profile'
-import UserProfileIdentity from './UserProfileIdentity'
 
 type Props = {
   username: string
@@ -29,30 +28,16 @@ export default async function UserProfile({ username }: Props) {
         <div className="relative -mt-16 flex justify-between items-end">
           {profile ? (
             <>
-              <UserProfileIdentity user={profile} />
+              <UserProfileIdentity imageURL={profile.imageURL} name={profile.name} nickname={profile.nickname} />
               <MyPageButtons user={profile} />
             </>
           ) : (
-            <StaticUserProfileIdentity name={username} nickname={username ? '존재하지 않는 사용자' : '비회원'} />
+            <UserProfileIdentity name={username} nickname={username ? '존재하지 않는 사용자' : '비회원'} />
           )}
         </div>
         <UserProfileDescription profile={profile} username={username} />
       </div>
     </>
-  )
-}
-
-function StaticUserProfileIdentity({ name, nickname }: { name: string; nickname: string }) {
-  return (
-    <div className="flex items-end">
-      <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden bg-zinc-900 flex items-center justify-center">
-        <User className="size-2/3 shrink-0 text-zinc-700" />
-      </div>
-      <div className="ml-4">
-        <h1 className="text-2xl font-bold line-clamp-1 break-all">{nickname}</h1>
-        <p className="text-zinc-500 font-mono break-all">@{name}</p>
-      </div>
-    </div>
   )
 }
 
@@ -81,5 +66,31 @@ function UserProfileDescription({ profile, username }: { profile: PublicUserProf
         </div>
       </div>
     </>
+  )
+}
+
+function UserProfileIdentity({
+  imageURL,
+  name,
+  nickname,
+}: {
+  imageURL?: string | null
+  name: string
+  nickname: string
+}) {
+  return (
+    <div className="flex items-end">
+      <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden bg-zinc-900 flex items-center justify-center">
+        {imageURL ? (
+          <img alt="Profile Image" className="object-cover bg-zinc-900 aspect-square w-32" src={imageURL} />
+        ) : (
+          <User className="size-2/3 shrink-0 text-zinc-700" />
+        )}
+      </div>
+      <div className="ml-4">
+        <h1 className="text-2xl font-bold line-clamp-1 break-all">{nickname}</h1>
+        <p className="text-zinc-500 font-mono break-all">@{name}</p>
+      </div>
+    </div>
   )
 }
