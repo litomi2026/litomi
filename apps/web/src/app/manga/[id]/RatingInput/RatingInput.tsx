@@ -31,11 +31,12 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const initialPointerPos = useRef<{ x: number; y: number } | null>(null)
   const gestureDirection = useRef<'horizontal' | 'vertical' | null>(null)
+  const isInteractionDisabled = me === undefined || isPending
   const displayRating = hoveredRating || rating
 
   const handleRating = useCallback(
     (value: number, force = false) => {
-      if (!me) {
+      if (me === null) {
         showLoginRequiredToast()
         return
       }
@@ -156,10 +157,6 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   )
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (isPending) {
-      return
-    }
-
     let newRating = rating
 
     if (e.key === 'ArrowLeft') {
