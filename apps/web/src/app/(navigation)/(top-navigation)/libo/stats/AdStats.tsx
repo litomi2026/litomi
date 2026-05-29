@@ -38,8 +38,8 @@ type AppliedRange = {
 }
 
 export default function AdStats() {
-  const isLoggedIn = Boolean(me)
   const { data: me } = useMeQuery()
+  const isLoggedIn = Boolean(me)
 
   const startDateInputRef = useRef<HTMLInputElement>(null)
   const finishDateInputRef = useRef<HTMLInputElement>(null)
