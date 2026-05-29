@@ -17,7 +17,7 @@ export default function DonationsAuthGate({ username }: Props) {
     return <DonationsLoading />
   }
 
-  if (!me) {
+  if (me === null) {
     return <Unauthorized />
   }
 

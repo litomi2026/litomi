@@ -25,7 +25,7 @@ export default function MyPagePrivateNavigation({ username }: Props) {
     ))
   }
 
-  if (!me || me.name !== username) {
+  if (me === null || me.name !== username) {
     return null
   }
 

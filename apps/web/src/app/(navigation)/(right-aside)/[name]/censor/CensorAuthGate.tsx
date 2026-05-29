@@ -18,7 +18,7 @@ export default function CensorAuthGate({ username }: Props) {
     return <Loading />
   }
 
-  if (!me) {
+  if (me === null) {
     return <Unauthorized />
   }
 

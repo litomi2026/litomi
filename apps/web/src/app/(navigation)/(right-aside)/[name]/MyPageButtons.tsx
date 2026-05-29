@@ -23,7 +23,7 @@ export default function MyPageButtons({ user }: Props) {
     return <ProfileEditButtonSkeleton />
   }
 
-  if (!me) {
+  if (me === null) {
     return null
   }
 

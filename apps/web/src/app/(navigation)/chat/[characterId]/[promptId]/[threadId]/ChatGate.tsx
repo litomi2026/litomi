@@ -18,16 +18,16 @@ type Props = {
 }
 
 export function ChatGate({ children }: Props) {
-  const { data: me, isLoading } = useMeQuery()
+  const { data: me } = useMeQuery()
   const userId = me?.id
   const tabLock = useSingleTabLock({ channel: 'litomi:character-chat' })
   const isWebGpuReady = useWebGPUReady({ enabled: Boolean(userId) && tabLock.kind === 'acquired' })
 
-  if (isLoading) {
-    return <div className="p-6 text-sm text-zinc-400">사용자 정보를 불러오고 있어요…</div>
+  if (me === undefined) {
+    return null
   }
 
-  if (!userId) {
+  if (me === null) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <Onboarding
