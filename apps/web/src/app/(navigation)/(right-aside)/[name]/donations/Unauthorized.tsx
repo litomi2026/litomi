@@ -8,7 +8,6 @@ export default function Unauthorized() {
   return (
     <StatusState
       description="로그인하면 후원한 작품과 수신 대상을 모아서 볼 수 있어요"
-      headingLevel={1}
       icon={<LockKeyhole className="size-8" />}
       intent="auth"
       title="내 후원은 로그인이 필요해요"

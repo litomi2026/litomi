@@ -13,6 +13,6 @@ const STATUS_ACTION_VARIANT_CLASS_NAME = {
   tertiary: 'text-zinc-400 hover:text-zinc-100 active:text-zinc-300',
 } satisfies Record<StatusActionVariant, string>
 
-export function getStatusActionClassName(variant: StatusActionVariant, className = '') {
+export function getStatusActionClassName(variant: StatusActionVariant, className?: string) {
   return twMerge(STATUS_ACTION_BASE_CLASS_NAME, STATUS_ACTION_VARIANT_CLASS_NAME[variant], className)
 }

@@ -6,7 +6,6 @@ export default function NotFound() {
   return (
     <StatusState
       description="아직 공개된 답글이 없거나 볼 수 없는 사용자예요"
-      headingLevel={1}
       icon={<MessageSquareOff className="size-8" />}
       title="답글을 찾을 수 없어요"
     >

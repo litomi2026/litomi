@@ -7,7 +7,6 @@ export default function NotFound() {
     <StatusState
       className="min-h-dvh"
       description="주소가 바뀌었거나 더 이상 제공되지 않는 작품일 수 있어요"
-      headingLevel={1}
       icon={<SearchX className="size-8" />}
       title="작품을 찾을 수 없어요"
     >

@@ -14,7 +14,6 @@ export default function Forbidden() {
           현재 열람이 제한되어 있습니다
         </>
       }
-      headingLevel={1}
       icon={<ShieldAlert className="size-8" />}
       intent="blocked"
       title="접근 제한된 콘텐츠"

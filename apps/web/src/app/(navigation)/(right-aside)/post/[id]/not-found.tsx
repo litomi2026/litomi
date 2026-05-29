@@ -6,7 +6,6 @@ export default function NotFound() {
   return (
     <StatusState
       description="삭제되었거나 더 이상 공개되지 않는 이야기일 수 있어요"
-      headingLevel={1}
       icon={<FileQuestion className="size-8" />}
       title="이야기를 찾을 수 없어요"
     >

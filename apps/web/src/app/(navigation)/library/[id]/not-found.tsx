@@ -10,7 +10,6 @@ export default function NotFound() {
       <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <StatusState
         description="삭제되었거나 접근할 수 없는 서재일 수 있어요"
-        headingLevel={1}
         icon={<LibraryBig className="size-8" />}
         title="서재를 찾을 수 없어요"
       >

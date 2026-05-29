@@ -7,7 +7,6 @@ export default function NotFound() {
     <StatusState
       className="min-h-dvh"
       description="주소가 잘못되었거나 더 이상 제공하지 않는 페이지예요"
-      headingLevel={1}
       icon={<SearchX className="size-8" />}
       title="페이지를 찾을 수 없어요"
     >

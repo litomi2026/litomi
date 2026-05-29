@@ -10,7 +10,6 @@ export default function Forbidden({ loginUsername }: Props) {
   return (
     <StatusState
       description="본인의 내 후원 페이지만 접근할 수 있어요"
-      headingLevel={1}
       icon={<LockKeyhole className="size-8" />}
       title="접근 권한이 없어요"
     >
