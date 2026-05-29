@@ -190,12 +190,11 @@ export default function PointsShop() {
 
           return (
             <button
-              aria-disabled={isDisabled}
               aria-selected={isSelected}
               className={twMerge(
                 'w-full text-left flex items-center gap-4 p-4 rounded-xl border bg-white/4 border-white/7 transition',
                 'hover:bg-white/5.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-0',
-                'aria-selected:bg-brand/8 aria-selected:hover:bg-brand/10 aria-disabled:opacity-60 aria-disabled:hover:bg-white/4 aria-disabled:cursor-not-allowed',
+                'aria-selected:bg-brand/8 aria-selected:hover:bg-brand/10 disabled:opacity-60 disabled:hover:bg-white/4 disabled:cursor-not-allowed',
               )}
               disabled={isDisabled}
               key={item.id}

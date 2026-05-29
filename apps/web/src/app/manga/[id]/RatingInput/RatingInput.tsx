@@ -224,11 +224,12 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       </div>
       <div
         aria-current={hoveredRating > 0}
+        aria-disabled={isInteractionDisabled}
         aria-label="별점 선택"
         aria-valuemax={MAX_RATING}
         aria-valuemin={MIN_RATING}
         aria-valuenow={rating}
-        className="grid w-full max-w-xs grid-cols-5 gap-1 sm:gap-2 select-none cursor-pointer outline-none touch-pan-y aria-current:cursor-grabbing py-2"
+        className="grid w-full max-w-xs grid-cols-5 gap-1 sm:gap-2 select-none cursor-pointer outline-none touch-pan-y aria-current:cursor-grabbing aria-disabled:cursor-default aria-disabled:pointer-events-none aria-disabled:opacity-60 py-2"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
         onPointerDown={handlePointerDown}
@@ -236,7 +237,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         onPointerUp={handlePointerUp}
         ref={containerRef}
         role="slider"
-        tabIndex={0}
+        tabIndex={isInteractionDisabled ? -1 : 0}
       >
         {[1, 2, 3, 4, 5].map((value, i) => (
           <button
@@ -244,7 +245,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
             aria-current={value <= displayRating}
             aria-label={`${value}점`}
             className="aspect-square min-w-0 transition pointer-events-none aria-current:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out] p-1"
-            disabled={isPending}
+            disabled={isInteractionDisabled}
             key={value}
             style={{ animationDelay: `${i * 50}ms` }}
             tabIndex={-1}
@@ -275,6 +276,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       >
         <button
           className="flex items-center gap-2 text-zinc-500 hover:text-red-400 rounded-full text-sm transition p-3 py-2 -m-2 hover:bg-red-400/10"
+          disabled={isInteractionDisabled}
           onClick={handleCancelClick}
         >
           <X className="size-4" />

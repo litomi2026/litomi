@@ -168,8 +168,7 @@ function TransactionHistoryErrorBanner({
 
         <div className="flex items-center justify-center gap-2">
           <button
-            aria-disabled={isRetrying}
-            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl bg-white/4 border border-white/7 text-zinc-300 hover:bg-white/5 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed transition"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl bg-white/4 border border-white/7 text-zinc-300 hover:bg-white/5 disabled:opacity-60 disabled:cursor-not-allowed transition"
             disabled={isRetrying}
             onClick={onRetry}
             type="button"
@@ -188,8 +187,7 @@ function TransactionHistoryNextPageError({ isRetrying, onRetry }: { isRetrying: 
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs text-zinc-500">추가 거래 내역을 불러오지 못했어요</p>
         <button
-          aria-disabled={isRetrying}
-          className="text-xs font-medium text-zinc-300 hover:text-zinc-100 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed transition"
+          className="text-xs font-medium text-zinc-300 hover:text-zinc-100 disabled:opacity-60 disabled:cursor-not-allowed transition"
           disabled={isRetrying}
           onClick={onRetry}
           type="button"

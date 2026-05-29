@@ -11,6 +11,7 @@ import { twMerge } from 'tailwind-merge'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import IconBell from '@/components/icons/IconBell'
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
+import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -274,32 +275,18 @@ function EmptyState({ filter }: { filter: NotificationFilter | null }) {
   const showKeywordSetting = content.showKeywordSetting
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8">
-      <div className="relative">
-        {content.icon}
-        <div className="absolute inset-0 bg-linear-to-t from-brand/10 to-transparent rounded-full blur-3xl" />
-      </div>
-      <h3 className="text-lg font-medium text-zinc-300 mb-2">{content.title}</h3>
-      <p className="text-sm text-zinc-500 text-center max-w-xs">{content.description}</p>
+    <StatusState description={content.description} icon={content.icon} title={content.title}>
       {showKeywordSetting && (
-        <div className="mt-4 flex items-center gap-2">
-          <a
-            aria-label="푸시 알림 설정으로 이동"
-            className="px-3 py-1.5 rounded-md text-xs font-semibold bg-brand text-background hover:opacity-90 transition"
-            href={`/@${username}/settings#push`}
-          >
+        <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+          <StatusActionLink className="max-w-none" href={`/@${username}/settings#push`}>
             푸시 알림 켜기
-          </a>
-          <a
-            aria-label="키워드 알림 설정으로 이동"
-            className="px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-800 text-zinc-200 hover:bg-zinc-700 transition"
-            href={`/@${username}/settings#keyword`}
-          >
+          </StatusActionLink>
+          <StatusActionLink className="max-w-none" href={`/@${username}/settings#keyword`} variant="secondary">
             키워드 알림 설정
-          </a>
+          </StatusActionLink>
         </div>
       )}
-    </div>
+    </StatusState>
   )
 }
 
@@ -338,19 +325,19 @@ function getEmptyContent(filter: NotificationFilter | null) {
   switch (filter) {
     case NotificationFilter.NEW_MANGA:
       return {
-        icon: <Book className="mb-4 size-12 text-zinc-600/50" />,
+        icon: <Book className="size-8" />,
         title: '신규 작품 알림이 없어요',
         description: '새로운 작품이 추가되면 알려드릴게요',
       }
     case NotificationFilter.UNREAD:
       return {
-        icon: <Check className="mb-4 size-12 text-zinc-600/50" />,
+        icon: <Check className="size-8" />,
         title: '모든 알림을 확인했어요',
         description: '새로운 알림이 도착하면 여기에 표시돼요',
       }
     default:
       return {
-        icon: <IconBell className="mb-4 size-12 text-zinc-600/50" />,
+        icon: <IconBell className="size-8" />,
         title: '아직 알림이 없어요',
         description: (
           <>

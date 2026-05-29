@@ -241,8 +241,7 @@ export default function RoulettePageClient() {
             </div>
 
             <button
-              aria-disabled={spin.isPending || phase !== 'idle'}
-              className="w-full py-2.5 rounded-xl bg-white/8 border border-white/10 text-zinc-100 hover:bg-white/10 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed transition font-medium"
+              className="w-full py-2.5 rounded-xl bg-white/8 border border-white/10 text-zinc-100 hover:bg-white/10 disabled:opacity-60 disabled:cursor-not-allowed transition font-medium"
               disabled={spin.isPending || phase !== 'idle'}
               type="submit"
             >
