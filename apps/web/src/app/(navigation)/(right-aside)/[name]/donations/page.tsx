@@ -1,24 +1,10 @@
-import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { getUsernameFromParam } from '@litomi/std'
 
-import { getMe } from '../common'
-import DonationsClient from './DonationsClient'
-import Forbidden from './Forbidden'
-import Unauthorized from './Unauthorized'
+import DonationsAuthGate from './DonationsAuthGate'
 
 export default async function Page({ params }: PageProps<'/[name]/donations'>) {
-  const userId = await getUserIdFromCookie()
-  if (!userId) {
-    return <Unauthorized />
-  }
-
   const { name } = await params
   const usernameFromParam = getUsernameFromParam(name)
-  const me = await getMe(userId)
 
-  if (me.name !== usernameFromParam) {
-    return <Forbidden loginUsername={me.name} />
-  }
-
-  return <DonationsClient />
+  return <DonationsAuthGate username={usernameFromParam} />
 }
