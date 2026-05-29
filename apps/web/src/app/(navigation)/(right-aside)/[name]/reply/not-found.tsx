@@ -1,19 +1,16 @@
-import Link from 'next/link'
+import { MessageSquareOff } from 'lucide-react'
+
+import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col justify-center items-center grow p-8">
-      <h1 className="mb-4 text-5xl md:text-6xl font-bold">404</h1>
-      <h2 className="mb-8 text-xl md:text-2xl">답글이 없어요</h2>
-      <div className="grid gap-2">
-        <Link
-          className="bg-zinc-700 rounded-full font-semibold hover:bg-zinc-600 active:bg-zinc-700 px-4 py-2 transition"
-          href="../posts/recommend"
-          prefetch={false}
-        >
-          목록으로 가기
-        </Link>
-      </div>
-    </div>
+    <StatusState
+      description="아직 공개된 답글이 없거나 볼 수 없는 사용자예요"
+      headingLevel={1}
+      icon={<MessageSquareOff className="size-8" />}
+      title="답글을 찾을 수 없어요"
+    >
+      <StatusActionLink href="/posts/recommend">이야기 목록으로 가기</StatusActionLink>
+    </StatusState>
   )
 }

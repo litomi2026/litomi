@@ -4,10 +4,11 @@ import type { GETV1PointsDonationsMeRecipient } from '@litomi/contracts'
 
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { formatDistanceToNow, formatLocalDate, formatNumber } from '@litomi/std'
-import { Trash2 } from 'lucide-react'
+import { HeartHandshake, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 
+import StatusState from '@/components/status/StatusState'
 import { ProblemDetailsError } from '@/utils/api-request'
 
 import useDeleteDonationMutation from './useDeleteDonationMutation'
@@ -34,9 +35,12 @@ export default function DonationsClient() {
       {errorMessage && <p className="text-sm text-red-400">{errorMessage}</p>}
 
       {!isLoading && !errorMessage && items.length === 0 && (
-        <div className="rounded-2xl border border-zinc-800/60 bg-zinc-950/40 p-6 shadow-sm">
-          <p className="text-sm text-zinc-400">아직 후원 내역이 없어요</p>
-        </div>
+        <StatusState
+          className="min-h-64 py-8"
+          description="작품 페이지에서 작가나 단체를 후원하면 여기에 기록돼요"
+          icon={<HeartHandshake className="size-8" />}
+          title="아직 후원 내역이 없어요"
+        />
       )}
 
       {items.length > 0 && (

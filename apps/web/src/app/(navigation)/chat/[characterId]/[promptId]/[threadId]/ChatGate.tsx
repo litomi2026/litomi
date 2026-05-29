@@ -2,12 +2,13 @@
 
 import type { ReactNode } from 'react'
 
-import { Bot, Cpu, Download, LockKeyhole, MessageCircle, Smartphone } from 'lucide-react'
+import { Bot, Cpu, LockKeyhole } from 'lucide-react'
 
 import LoginButton from '@/components/LoginButton'
+import StatusState from '@/components/status/StatusState'
+import { getStatusActionClassName } from '@/components/status/styles'
 import useMeQuery from '@/query/useMeQuery'
 
-import Onboarding from '../../../../(right-aside)/[name]/settings/Onboarding'
 import { useSingleTabLock } from './hook/useSingleTabLock'
 import { useWebGPUReady } from './hook/useWebGPUReady'
 
@@ -30,30 +31,14 @@ export function ChatGate({ children }: Props) {
   if (me === null) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <Onboarding
-          benefits={[
-            {
-              icon: <Cpu className="size-5" />,
-              title: '내 기기에서 실행',
-              description: '서버 비용 없이 내 GPU로 추론해요',
-            },
-            {
-              icon: <Download className="size-5" />,
-              title: '모델 설치',
-              description: '처음 한 번만 내려받으면 돼요',
-            },
-            {
-              icon: <MessageCircle className="size-5" />,
-              title: '로그 저장',
-              description: '대화 기록이 계정에 저장돼요',
-            },
-          ]}
+        <StatusState
           description="로그인하고 내 기기에서 캐릭터 AI 채팅을 시작해요"
-          icon={<LockKeyhole className="size-12 text-brand" />}
+          icon={<LockKeyhole className="size-8" />}
+          intent="loginRequired"
           title="AI 채팅은 로그인이 필요해요"
         >
           <LoginButton>로그인하기</LoginButton>
-        </Onboarding>
+        </StatusState>
       </div>
     )
   }
@@ -61,31 +46,15 @@ export function ChatGate({ children }: Props) {
   if (tabLock.kind === 'blocked') {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <Onboarding
-          benefits={[
-            {
-              icon: <Smartphone className="size-5" />,
-              title: '메모리 절약',
-              description: '여러 탭 동시 실행을 막아서 안정적으로 동작해요',
-            },
-            {
-              icon: <Cpu className="size-5" />,
-              title: 'GPU 공유',
-              description: '모델이 탭마다 중복 로드되는 걸 피할 수 있어요',
-            },
-          ]}
+        <StatusState
           description="다른 탭에서 AI 채팅을 사용 중이에요. 그 탭을 닫고 다시 시도해 주세요"
-          icon={<Bot className="size-12 text-brand" />}
+          icon={<Bot className="size-8" />}
           title="AI 채팅은 한 탭에서만 실행돼요"
         >
-          <button
-            className="inline-flex items-center justify-center gap-2 w-full max-w-3xs p-3 rounded-xl border border-zinc-700/60 hover:border-zinc-500 transition"
-            onClick={tabLock.retry}
-            type="button"
-          >
+          <button className={getStatusActionClassName('secondary')} onClick={tabLock.retry} type="button">
             다시 시도
           </button>
-        </Onboarding>
+        </StatusState>
       </div>
     )
   }
@@ -97,31 +66,19 @@ export function ChatGate({ children }: Props) {
   if (isWebGpuReady === false) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <Onboarding
-          benefits={[
-            {
-              icon: <Cpu className="size-5" />,
-              title: 'WebGPU 필요',
-              description: '현재는 GPU가 있어야 실행할 수 있어요',
-            },
-            {
-              icon: <Smartphone className="size-5" />,
-              title: 'iOS Safari',
-              description: '설정에서 WebGPU를 켜야 할 수 있어요',
-            },
-          ]}
+        <StatusState
           description={`이 기기에서는 WebGPU를 사용할 수 없어요. (지원: ${MIN_IOS_SAFARI_TEXT}) Chrome/Edge라면 설정 > 시스템에서 “가능한 경우 하드웨어 가속 사용”을 켜고 다시 시도해 주세요. iOS Safari라면 설정 > Safari > 고급 > 실험적 기능에서 WebGPU를 켜고 다시 시도해 주세요`}
-          icon={<Cpu className="size-12 text-brand" />}
+          icon={<Cpu className="size-8" />}
           title="이 기기에서는 AI 채팅을 지원하지 않아요"
         >
           <button
-            className="inline-flex items-center justify-center gap-2 w-full max-w-3xs p-3 rounded-xl border border-zinc-700/60 hover:border-zinc-500 transition"
+            className={getStatusActionClassName('secondary')}
             onClick={() => window.location.reload()}
             type="button"
           >
             다시 확인
           </button>
-        </Onboarding>
+        </StatusState>
       </div>
     )
   }

@@ -6,11 +6,12 @@ import dayjs from 'dayjs'
 import { Compass, RefreshCw, Target } from 'lucide-react'
 import Link from 'next/link'
 
-import Onboarding from '@/app/(navigation)/(right-aside)/[name]/settings/Onboarding'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoginButton from '@/components/LoginButton'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
+import StatusState from '@/components/status/StatusState'
+import { getStatusActionClassName } from '@/components/status/styles'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
@@ -123,30 +124,26 @@ export default function RecommendMangaPageClient() {
 
 function EmptyState() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center">
-      <Compass className="mb-4 size-12 text-zinc-700" />
-      <h2 className="mb-2 text-lg font-semibold text-zinc-200">추천 작품이 아직 없어요</h2>
-      <p className="max-w-sm text-sm text-zinc-500">작품을 감상하거나 평가하면 다음 추천에 반영돼요</p>
-    </div>
+    <StatusState
+      description="작품을 감상하거나 평가하면 다음 추천에 반영돼요"
+      icon={<Compass className="size-8" />}
+      title="추천 작품이 아직 없어요"
+    />
   )
 }
 
 function ErrorState({ isFetching, onRetry }: { isFetching: boolean; onRetry: () => void }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center">
-      <Target className="mb-4 size-12 text-zinc-700" />
-      <h2 className="mb-2 text-lg font-semibold text-zinc-200">추천 작품을 불러오지 못했어요</h2>
-      <p className="mb-6 max-w-sm text-sm text-zinc-500">잠시 후 다시 시도해 주세요</p>
-      <button
-        className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-semibold text-zinc-100 transition hover:bg-zinc-800 active:bg-zinc-950 disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={isFetching}
-        onClick={onRetry}
-        type="button"
-      >
+    <StatusState
+      description="잠시 후 다시 시도해 주세요"
+      icon={<Target className="size-8" />}
+      title="추천 작품을 불러오지 못했어요"
+    >
+      <button className={getStatusActionClassName('secondary')} disabled={isFetching} onClick={onRetry} type="button">
         <RefreshCw className={`size-4 ${isFetching ? 'animate-spin' : ''}`} />
         다시 불러오기
       </button>
-    </div>
+    </StatusState>
   )
 }
 
@@ -166,9 +163,10 @@ function LoadingState() {
 function LoginRequired() {
   return (
     <div className="flex flex-1 items-center justify-center">
-      <Onboarding
+      <StatusState
         description="로그인하면 내 취향에 맞춘 추천 작품을 볼 수 있어요"
-        icon={<Compass className="size-12 text-brand" />}
+        icon={<Compass className="size-8" />}
+        intent="loginRequired"
         title="추천 작품은 로그인이 필요해요"
       >
         <div className="flex w-full flex-col items-center gap-3">
@@ -184,7 +182,7 @@ function LoginRequired() {
             </Link>
           </p>
         </div>
-      </Onboarding>
+      </StatusState>
     </div>
   )
 }

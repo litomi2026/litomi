@@ -2,6 +2,8 @@
 
 import { Upload } from 'lucide-react'
 
+import { getStatusActionClassName } from '@/components/status/styles'
+
 import { useBookmarkUploadModalStore } from './store'
 
 type Props = {
@@ -11,8 +13,7 @@ type Props = {
 const TOOLBAR_BUTTON_CLASS_NAME =
   'flex items-center gap-2 text-sm font-semibold border-2 border-zinc-700 rounded-xl w-fit px-2.5 py-1.5 transition bg-zinc-800/50 hover:bg-zinc-700/50 hover:border-zinc-600 active:bg-zinc-800 disabled:text-zinc-500 disabled:bg-zinc-800/30 disabled:border-zinc-800'
 
-const CTA_BUTTON_CLASS_NAME =
-  'w-full rounded-2xl border-2 border-zinc-800 bg-zinc-900 px-6 py-3 font-semibold text-zinc-100 transition hover:border-zinc-700 hover:bg-zinc-800'
+const CTA_BUTTON_CLASS_NAME = getStatusActionClassName('secondary', 'max-w-none')
 
 export default function BookmarkUploadButton({ variant = 'toolbar' }: Props) {
   const setIsOpen = useBookmarkUploadModalStore((store) => store.setIsOpen)

@@ -1,19 +1,16 @@
-import Link from 'next/link'
+import { UserRoundX } from 'lucide-react'
+
+import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col justify-center items-center grow">
-      <h1 className="mb-4 text-5xl md:text-6xl font-bold">404</h1>
-      <h2 className="mb-8 text-xl md:text-2xl">이야기가 없어요</h2>
-      <div className="grid gap-2">
-        <Link
-          className="bg-zinc-700 rounded-full hover:bg-zinc-600 active:bg-zinc-700 px-4 py-2 transition ease-in-out"
-          href="/posts/recommend"
-          prefetch={false}
-        >
-          목록으로 가기
-        </Link>
-      </div>
-    </div>
+    <StatusState
+      description="주소가 바뀌었거나 공개된 프로필을 찾을 수 없어요"
+      headingLevel={1}
+      icon={<UserRoundX className="size-8" />}
+      title="사용자를 찾을 수 없어요"
+    >
+      <StatusActionLink href="/posts/recommend">이야기 목록으로 가기</StatusActionLink>
+    </StatusState>
   )
 }

@@ -19,6 +19,7 @@ import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
+import StatusState from '@/components/status/StatusState'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -171,11 +172,11 @@ export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: 
     return (
       <>
         <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
-        <div className="h-full flex-1 flex flex-col items-center justify-center text-center px-4">
-          <Library className="size-24 sm:size-32 mx-auto mb-4 sm:mb-6 text-zinc-700" />
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">공개된 서재가 없어요</h2>
-          <p className="text-sm sm:text-base text-zinc-500 mb-6 sm:mb-8">다른 사용자들이 공개한 서재가 아직 없어요</p>
-        </div>
+        <StatusState
+          description="다른 사용자들이 공개한 서재가 아직 없어요"
+          icon={<Library className="size-8" />}
+          title="공개된 서재가 없어요"
+        />
       </>
     )
   }
