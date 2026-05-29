@@ -1,19 +1,50 @@
-import { SHORT_NAME } from '@litomi/domain/app/metadata'
 import { getUsernameFromParam } from '@litomi/std'
 import { Metadata } from 'next'
 
-import { defaultOpenGraph } from '@/lib/metadata'
+import { generateOpenGraphMetadata } from '@/lib/metadata'
 
-import { getUserByName } from './common'
+import { getPublicUserProfile } from './profile'
 import UserPostList from './UserPostList'
 
-export const metadata: Metadata = {
-  title: '내 이야기',
-  openGraph: {
-    ...defaultOpenGraph,
-    title: `내 이야기 - ${SHORT_NAME}`,
-    url: '/@/settings',
-  },
+export async function generateMetadata({ params }: PageProps<'/[name]'>): Promise<Metadata> {
+  const { name } = await params
+  const username = getUsernameFromParam(name)
+
+  if (!username) {
+    const title = '이야기'
+    const url = '/@'
+
+    return {
+      title,
+      ...generateOpenGraphMetadata({ title, url }),
+      alternates: {
+        canonical: url,
+        languages: { ko: url },
+      },
+    }
+  }
+
+  const profile = await getPublicUserProfile(username)
+  const title = profile ? `${profile.nickname} (@${profile.name}) 이야기` : '존재하지 않는 사용자'
+
+  const description = profile
+    ? `팔로우 중 ${profile.followingCount}명 · 팔로워 ${profile.followerCount}명`
+    : `@${username} 사용자를 찾을 수 없어요`
+
+  const url = `/@${profile?.name ?? username}`
+
+  return {
+    title,
+    ...generateOpenGraphMetadata({
+      title,
+      description,
+      url,
+    }),
+    alternates: {
+      canonical: url,
+      languages: { ko: url },
+    },
+  }
 }
 
 export default async function Page({ params }: PageProps<'/[name]'>) {
@@ -21,12 +52,6 @@ export default async function Page({ params }: PageProps<'/[name]'>) {
   const username = getUsernameFromParam(name)
 
   if (!username) {
-    return
-  }
-
-  const user = await getUserByName(username)
-
-  if (!user) {
     return
   }
 

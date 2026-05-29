@@ -3,11 +3,9 @@
 import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { getSafeProfileImageURL } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
-import { captureException } from '@sentry/nextjs'
-import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { SubmitEvent, SyntheticEvent, use, useEffect, useRef, useState } from 'react'
+import { SubmitEvent, SyntheticEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -30,11 +28,10 @@ const formId = {
 }
 
 type Props = {
-  mePromise: Promise<EditableProfile>
+  me: EditableProfile
 }
 
-export default function ProfileEditButton({ mePromise }: Props) {
-  const me = use(mePromise)
+export default function ProfileEditButton({ me }: Props) {
   const [currentMe, setCurrentMe] = useState(me)
   const [showModal, setShowModal] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<ProfileFieldErrors>({})
@@ -62,8 +59,9 @@ export default function ProfileEditButton({ mePromise }: Props) {
       }
     },
 
-    onSuccess: async (data) => {
-      const previousDisplayName = currentMe.nickname || currentMe.name
+    onSuccess: async (data, _variables, context) => {
+      const previousProfile = context?.previousMe || currentMe
+      const previousDisplayName = previousProfile.nickname || previousProfile.name
       const nextDisplayName = data.nickname || data.name
 
       setCurrentMe((previous) => ({
@@ -79,19 +77,16 @@ export default function ProfileEditButton({ mePromise }: Props) {
       if (previousDisplayName !== nextDisplayName) {
         await signalCurrentPasskeyUserDetails({
           displayName: nextDisplayName,
-          name: currentMe.loginId,
-          userId: encodePasskeyUserId(currentMe.id),
+          name: previousProfile.loginId,
+          userId: encodePasskeyUserId(previousProfile.id),
         })
       }
 
       toast.success(data.message)
 
-      if (data.name !== currentMe.name) {
+      if (data.name !== previousProfile.name) {
         router.replace(`/@${data.name}`)
-        return
       }
-
-      router.refresh()
     },
   })
 
@@ -305,25 +300,4 @@ export default function ProfileEditButton({ mePromise }: Props) {
       </Dialog>
     </>
   )
-}
-
-export function ProfileEditButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
-  useEffect(() => {
-    captureException(error, { extra: { name: 'LogoutButtonError' } })
-  }, [error])
-
-  return (
-    <button
-      className="flex items-center gap-3 rounded-full p-3 text-red-500 transition hover:bg-red-500/20 active:scale-95"
-      onClick={reset}
-      type="reset"
-    >
-      <SquarePen className="size-5 transition group-disabled:scale-100" />
-      <span className="min-w-0 hidden md:block">오류 (재시도)</span>
-    </button>
-  )
-}
-
-export function ProfileEditButtonSkeleton() {
-  return <div className="w-9 h-9 animate-fade-in bg-zinc-800 rounded-full md:w-29" />
 }

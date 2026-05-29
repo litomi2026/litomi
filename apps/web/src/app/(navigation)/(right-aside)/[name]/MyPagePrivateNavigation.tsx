@@ -1,34 +1,35 @@
-import { getUserIdFromCookie } from '@litomi/auth/cookie'
+'use client'
 
-import { getMe } from './common'
+import useMeQuery from '@/query/useMeQuery'
+
 import MyPageNavigationLink from './MyPageNavigationLink'
 
 type Props = {
   username: string
 }
 
-export default async function MyPagePrivateNavigation({ username }: Props) {
-  const userId = await getUserIdFromCookie()
+const privateLinks = [
+  { path: 'censor', label: '검열' },
+  { path: 'donations', label: '후원' },
+  { path: 'settings', label: '설정' },
+]
 
-  if (userId && username) {
-    const me = await getMe(userId)
+export default function MyPagePrivateNavigation({ username }: Props) {
+  const { data: me } = useMeQuery()
 
-    if (me.name !== username) {
-      return
-    }
+  if (me === undefined) {
+    return privateLinks.map(({ path }) => (
+      <span aria-hidden className="flex min-w-16 items-center justify-center p-3" key={path}>
+        <span className="h-5 w-8 animate-fade-in rounded bg-zinc-800" />
+      </span>
+    ))
   }
 
-  const privateLinks = [
-    { href: `/@${username}/censor`, label: '검열' },
-    { href: `/@${username}/donations`, label: '후원' },
-    { href: `/@${username}/settings`, label: '설정' },
-  ]
+  if (!me || me.name !== username) {
+    return null
+  }
 
-  return (
-    <>
-      {privateLinks.map(({ href, label }) => (
-        <MyPageNavigationLink href={href} key={href} label={label} />
-      ))}
-    </>
-  )
+  return privateLinks.map(({ path, label }) => (
+    <MyPageNavigationLink href={`/@${username}/${path}`} key={path} label={label} />
+  ))
 }
