@@ -49,7 +49,7 @@ export default function TooltipPopover({
   return (
     <div className={`relative ${className}`} ref={containerRef}>
       <button
-        className={`peer disabled:pointer-events-none ${buttonClassName}`}
+        className={`peer ${buttonClassName}`}
         disabled={disabled}
         onClick={() => setIsActive((prev) => !prev)}
         type="button"

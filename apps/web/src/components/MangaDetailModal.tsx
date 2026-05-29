@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import { create } from 'zustand'
 
 import BookmarkButton, { BookmarkButtonError } from '@/components/card/BookmarkButton'
@@ -88,16 +89,22 @@ export function MangaDetailModal() {
       ? description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH) + '...'
       : description
 
-  const actionButtonBaseClassName =
-    'inline-flex w-full items-center justify-center gap-2 rounded-xl p-3 py-2 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-0'
+  const actionButtonBaseClassName = twMerge(
+    'inline-flex w-full items-center justify-center gap-2 rounded-xl p-3 py-2 font-semibold',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-0',
+  )
 
-  const primaryButtonClassName = `${actionButtonBaseClassName}
-    bg-foreground text-background hover:bg-foreground/90 active:bg-foreground/80
-    disabled:bg-foreground disabled:text-background disabled:opacity-50 disabled:pointer-events-none`
+  const primaryButtonClassName = twMerge(
+    actionButtonBaseClassName,
+    'bg-foreground text-background hover:bg-foreground/90 active:bg-foreground/80',
+    'disabled:bg-foreground disabled:text-background disabled:opacity-50',
+  )
 
-  const secondaryButtonClassName = `${actionButtonBaseClassName}
-    border border-foreground/15 bg-transparent text-foreground hover:bg-foreground/10 active:bg-foreground/15
-    disabled:border-foreground/10 disabled:bg-zinc-900 disabled:text-zinc-500`
+  const secondaryButtonClassName = twMerge(
+    actionButtonBaseClassName,
+    'border border-foreground/15 bg-transparent text-foreground hover:bg-foreground/10 active:bg-foreground/15',
+    'disabled:border-foreground/10 disabled:bg-zinc-900 disabled:text-zinc-500',
+  )
 
   // NOTE: 페이지 이동 시 모달 닫기
   useEffect(() => {

@@ -187,7 +187,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
       className={twMerge(
         'inline-flex items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/4 px-4 py-3 text-sm font-medium text-white/80 transition',
         'hover:bg-white/6 hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15',
-        'disabled:opacity-50 disabled:pointer-events-none',
+        'disabled:opacity-50',
       )}
       disabled={disabled || isPending}
       onClick={() => runPasskeyLogin('button')}

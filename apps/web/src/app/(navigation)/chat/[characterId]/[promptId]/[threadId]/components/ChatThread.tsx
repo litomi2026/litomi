@@ -123,7 +123,7 @@ export function ChatThread({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <button
-              className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-white/7 hover:border-white/15 transition disabled:opacity-50 disabled:pointer-events-none"
+              className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-white/7 hover:border-white/15 transition disabled:opacity-50"
               disabled={!isGenerating}
               onClick={onStop}
               type="button"
@@ -141,7 +141,7 @@ export function ChatThread({
             ) : null}
           </div>
           <button
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white transition disabled:opacity-50 disabled:pointer-events-none"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white transition disabled:opacity-50"
             disabled={isGenerating || chatInputDisabled}
             type="submit"
           >

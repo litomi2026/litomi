@@ -290,8 +290,8 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Props) {
 
       <button
         className={twMerge(
-          'group border-2 border-brand-gradient font-medium rounded-xl focus:outline-none focus:ring-3 focus:ring-zinc-500',
-          'disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500 mt-2',
+          'group border-2 border-brand-gradient font-medium rounded-xl mt-2',
+          'focus:outline-none focus:ring-3 focus:ring-zinc-500 disabled:border-zinc-500 disabled:text-zinc-500',
         )}
         disabled={!canSubmit || isPending}
         type="submit"

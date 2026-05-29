@@ -101,7 +101,7 @@ export default function PostCreationForm({
       <div className="grid items-center gap-3 grow py-1.5">
         {hasFocusedBefore && children}
         <TextareaAutosize
-          className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none disabled:pointer-events-none"
+          className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none"
           disabled={isAuthPending || isGuest || isPending}
           maxLength={MAX_POST_CONTENT_LENGTH}
           maxRows={25}

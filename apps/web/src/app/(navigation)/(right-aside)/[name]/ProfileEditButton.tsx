@@ -164,7 +164,7 @@ export default function ProfileEditButton({ me }: Props) {
       <button
         className={twMerge(
           'flex items-center gap-3 text-sm font-semibold rounded-full p-2 transition whitespace-nowrap md:px-3 md:py-2',
-          'hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden',
+          'hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 aria-hidden:hidden',
         )}
         onClick={() => setShowModal(true)}
         type="button"

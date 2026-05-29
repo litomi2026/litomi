@@ -294,7 +294,7 @@ function ScrollingButton({ children, ...props }: PropsWithChildren<ComponentProp
     <button
       {...props}
       className={twMerge(
-        'absolute top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full bg-zinc-900 shadow-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition disabled:opacity-0 disabled:pointer-events-none disabled:scale-90 active:scale-95',
+        'absolute top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full bg-zinc-900 shadow-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition disabled:opacity-0 disabled:scale-90 active:scale-95',
         props.className,
       )}
     >
