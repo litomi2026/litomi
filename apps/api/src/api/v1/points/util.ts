@@ -1,4 +1,10 @@
-import { MAX_BOOKMARKS_PER_USER, MAX_LIBRARIES_PER_USER, MAX_PINNED_LIBRARIES_PER_USER, MAX_RATINGS_PER_USER, MAX_READING_HISTORY_PER_USER } from '@litomi/domain/library/policy'
+import {
+  MAX_BOOKMARKS_PER_USER,
+  MAX_LIBRARIES_PER_USER,
+  MAX_PINNED_LIBRARIES_PER_USER,
+  MAX_RATINGS_PER_USER,
+  MAX_READING_HISTORY_PER_USER,
+} from '@litomi/domain/library/policy'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/points/model'
 
 type BookmarkItemId = 'large' | 'small'

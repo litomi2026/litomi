@@ -21,12 +21,7 @@ type Props = {
   onToggleSelect: () => void
 }
 
-export default function CensorshipCard({
-  censorship,
-  isSelected,
-  isDeleting = false,
-  onToggleSelect,
-}: Props) {
+export default function CensorshipCard({ censorship, isSelected, isDeleting = false, onToggleSelect }: Props) {
   const { key, value, level, createdAt } = censorship
   const [isEditing, setIsEditing] = useState(false)
 

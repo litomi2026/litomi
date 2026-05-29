@@ -1,6 +1,10 @@
 import type { Book, WithContext } from 'schema-dts'
 
-import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
+import {
+  BLACKLISTED_MANGA_IDS,
+  MAX_MANGA_DESCRIPTION_LENGTH,
+  MAX_MANGA_TITLE_LENGTH,
+} from '@litomi/domain/manga/policy'
 import { env } from '@litomi/env/client'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
 import { Metadata } from 'next'

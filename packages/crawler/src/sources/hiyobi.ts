@@ -159,7 +159,15 @@ class HiyobiClient {
     return response.list.filter((manga) => manga.id).map((manga) => this.convertHiyobiToManga(manga, locale))
   }
 
-  async fetchRandomMangas({ locale, revalidate, signal }: { locale: Locale; revalidate?: number; signal?: AbortSignal }) {
+  async fetchRandomMangas({
+    locale,
+    revalidate,
+    signal,
+  }: {
+    locale: Locale
+    revalidate?: number
+    signal?: AbortSignal
+  }) {
     const mangas = await this.client.fetch<HiyobiManga[]>('/random', {
       method: 'POST',
       next: { revalidate },
