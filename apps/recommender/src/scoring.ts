@@ -1,5 +1,6 @@
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
 import { type CatalogMangaRecord, selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
+import { addMangaRecommendationReason } from '@litomi/domain/manga-recommendation/reason'
 import { type Manga } from '@litomi/domain/manga/model'
 
 import type { Candidate, MangaRecommendation } from './types'
@@ -164,26 +165,22 @@ function scoreCandidate(
   const freshnessScore = scoreFreshness(record.createdAt, now)
   const sourceScore = scoreSource(candidate.score)
   const rankScore = posteriorMatch.score * FEATURE_POSTERIOR_SCORE_WEIGHT + sourceScore + freshnessScore
-  const reasons = new Set(candidate.reasons)
-
-  for (const reason of posteriorMatch.reasons) {
-    reasons.add(reason)
-  }
+  let reasonMask = candidate.reasonMask | posteriorMatch.reasonMask
 
   if (posteriorMatch.score >= 20) {
-    reasons.add('matching_profile')
+    reasonMask = addMangaRecommendationReason(reasonMask, 'matching_profile')
   }
 
   if (candidate.score > 0) {
-    reasons.add('personalized')
+    reasonMask = addMangaRecommendationReason(reasonMask, 'personalized')
   }
 
   if (freshnessScore >= FRESHNESS_MAX_SCORE * 0.65) {
-    reasons.add('fresh')
+    reasonMask = addMangaRecommendationReason(reasonMask, 'fresh')
   }
 
-  if (reasons.size === 0) {
-    reasons.add('discovery')
+  if (reasonMask === 0) {
+    reasonMask = addMangaRecommendationReason(reasonMask, 'discovery')
   }
 
   return {
@@ -194,7 +191,7 @@ function scoreCandidate(
     manga,
     rank: 0,
     rankScore,
-    reasons: Array.from(reasons).sort(),
+    reasonMask,
     score: Math.max(1, Math.round(rankScore)),
   }
 }
@@ -249,7 +246,7 @@ function toMangaRecommendation(item: ScoredRecommendation, rank: number): MangaR
     manga: item.manga,
     mangaId: item.mangaId,
     rank,
-    reasons: item.reasons,
+    reasonMask: item.reasonMask,
     score: item.score,
   }
 }

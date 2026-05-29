@@ -97,7 +97,7 @@ async function selectFeaturePosteriorCandidates(
     return [
       {
         mangaId: record.id,
-        reasons: match.reasons,
+        reasonMask: match.reasonMask,
         score: 0,
       },
     ]

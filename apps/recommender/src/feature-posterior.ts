@@ -1,5 +1,10 @@
 import type { CatalogMangaRecord } from '@litomi/db/query/catalog-manga'
 
+import {
+  addMangaRecommendationReason,
+  type MangaRecommendationReason,
+} from '@litomi/domain/manga-recommendation/reason'
+
 import type { PreferenceSignal } from './types'
 
 export type FeatureKind = 'artist' | 'character' | 'series' | 'tag'
@@ -17,7 +22,7 @@ export type FeaturePosteriorCatalogHints = {
 }
 
 export type FeaturePosteriorMatch = {
-  reasons: string[]
+  reasonMask: number
   score: number
 }
 
@@ -158,7 +163,7 @@ export function scoreCatalogMangaRecordByFeaturePosterior(
   addMatchedFeatureScores(scoreByKind, posterior, 'series', record.series)
   addMatchedFeatureScores(scoreByKind, posterior, 'tag', record.tagValues)
 
-  const reasons: string[] = []
+  let reasonMask = 0
   let score = 0
 
   for (const kind of FEATURE_KINDS) {
@@ -169,23 +174,30 @@ export function scoreCatalogMangaRecordByFeaturePosterior(
     )
 
     if (kindScore > 0) {
-      reasons.push(`posterior_${kind}`)
+      reasonMask = addMangaRecommendationReason(reasonMask, POSTERIOR_REASON_BY_FEATURE_KIND[kind])
     }
 
     score += kindScore
   }
 
   if (score > 0) {
-    reasons.push('feature_posterior')
+    reasonMask = addMangaRecommendationReason(reasonMask, 'feature_posterior')
   }
 
   return {
-    reasons,
+    reasonMask,
     score: clamp(score, -100, 100),
   }
 }
 
 const FEATURE_KINDS = ['artist', 'character', 'series', 'tag'] as const satisfies readonly FeatureKind[]
+
+const POSTERIOR_REASON_BY_FEATURE_KIND: Record<FeatureKind, MangaRecommendationReason> = {
+  artist: 'posterior_artist',
+  character: 'posterior_character',
+  series: 'posterior_series',
+  tag: 'posterior_tag',
+}
 
 type FeatureEvidence = {
   negative: number

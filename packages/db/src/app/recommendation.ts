@@ -6,7 +6,6 @@ import {
   pgTable,
   primaryKey,
   smallint,
-  text,
   timestamp,
   uniqueIndex,
 } from 'drizzle-orm/pg-core'
@@ -31,7 +30,7 @@ export const mangaRecommendationTable = pgTable(
     mangaId: integer('manga_id').notNull(),
     rank: smallint('rank').notNull(),
     score: integer('score').notNull(),
-    reasons: text('reasons').array().notNull().default([]),
+    reasonMask: integer('reason_mask').notNull().default(0),
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
