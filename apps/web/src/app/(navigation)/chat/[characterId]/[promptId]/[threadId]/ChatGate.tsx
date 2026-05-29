@@ -34,7 +34,7 @@ export function ChatGate({ children }: Props) {
         <StatusState
           description="로그인하고 내 기기에서 캐릭터 AI 채팅을 시작해요"
           icon={<LockKeyhole className="size-8" />}
-          intent="loginRequired"
+          intent="auth"
           title="AI 채팅은 로그인이 필요해요"
         >
           <LoginButton>로그인하기</LoginButton>

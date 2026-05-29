@@ -16,7 +16,7 @@ export default function Forbidden() {
       }
       headingLevel={1}
       icon={<ShieldAlert className="size-8" />}
-      intent="restricted"
+      intent="blocked"
       title="접근 제한된 콘텐츠"
     >
       <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">

@@ -10,7 +10,7 @@ export default function FollowingUnauthorized() {
       <StatusState
         description="계정을 만들고 팔로우한 사용자의 글만 모아보세요"
         icon={<Users className="size-8" />}
-        intent="loginRequired"
+        intent="auth"
         title="팔로잉 탭은 로그인이 필요해요"
       >
         <div className="flex flex-col w-full items-center gap-3">

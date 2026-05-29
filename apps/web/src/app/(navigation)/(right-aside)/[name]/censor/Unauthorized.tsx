@@ -10,7 +10,7 @@ export default function Unauthorized() {
     <StatusState
       description="로그인하면 보고 싶지 않은 작품을 줄이고 탐색 환경을 정리할 수 있어요"
       icon={<LockKeyhole className="size-8" />}
-      intent="loginRequired"
+      intent="auth"
       title="검열 설정은 로그인이 필요해요"
     >
       <div className="flex w-full flex-col items-center gap-3">

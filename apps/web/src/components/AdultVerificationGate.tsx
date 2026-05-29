@@ -16,7 +16,7 @@ export default function AdultVerificationGate({
   const settingsHref = username ? `/@${username}/settings#adult` : null
 
   return (
-    <StatusState description={description} icon={<ShieldAlert className="size-8" />} intent="setup" title={title}>
+    <StatusState description={description} icon={<ShieldAlert className="size-8" />} intent="verify" title={title}>
       {settingsHref ? (
         <StatusActionLink href={settingsHref}>익명으로 성인인증하기</StatusActionLink>
       ) : (

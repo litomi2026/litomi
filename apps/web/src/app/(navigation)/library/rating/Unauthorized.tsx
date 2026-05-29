@@ -14,7 +14,7 @@ export default function Unauthorized() {
         <StatusState
           description="계정을 만들고 작품을 평가해보세요"
           icon={<LockKeyhole className="size-8" />}
-          intent="loginRequired"
+          intent="auth"
           title="평가 기능은 로그인이 필요해요"
         >
           <div className="flex flex-col w-full items-center gap-3">

@@ -166,7 +166,7 @@ function LoginRequired() {
       <StatusState
         description="로그인하면 내 취향에 맞춘 추천 작품을 볼 수 있어요"
         icon={<Compass className="size-8" />}
-        intent="loginRequired"
+        intent="auth"
         title="추천 작품은 로그인이 필요해요"
       >
         <div className="flex w-full flex-col items-center gap-3">
