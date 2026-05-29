@@ -18,6 +18,7 @@
     "./manga/model": "./src/manga/model.ts",
     "./manga/policy": "./src/manga/policy.ts",
     "./manga-recommendation/policy": "./src/manga-recommendation/policy.ts",
+    "./manga-recommendation/reason": "./src/manga-recommendation/reason.ts",
     "./notification/filter": "./src/notification/filter.ts",
     "./notification/model": "./src/notification/model.ts",
     "./notification/policy": "./src/notification/policy.ts",

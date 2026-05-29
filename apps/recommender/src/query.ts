@@ -7,6 +7,7 @@ import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { mangaRecommendationSetTable, mangaRecommendationTable } from '@litomi/db/app/recommendation'
 import { userTable } from '@litomi/db/app/user'
 import { type CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+import { MANGA_RECOMMENDATION_REASON_BITS } from '@litomi/domain/manga-recommendation/reason'
 import { and, eq, sql, type SQL } from 'drizzle-orm'
 
 import type { CensorshipRule } from './censorship'
@@ -38,8 +39,8 @@ type MangaIdRow = {
 
 type RawCandidateRow = {
   mangaId: number | string
+  reasonMask: number | string
   score: number | string
-  reasons: string[] | null
 }
 
 type SignalRow = {
@@ -54,17 +55,14 @@ export function mergeCandidateRows(candidates: Map<number, Candidate>, rows: Can
 
     if (existing) {
       existing.score += row.score
-
-      for (const reason of row.reasons ?? []) {
-        existing.reasons.add(reason)
-      }
+      existing.reasonMask |= row.reasonMask
 
       continue
     }
 
     candidates.set(row.mangaId, {
       mangaId: row.mangaId,
-      reasons: new Set(row.reasons ?? []),
+      reasonMask: row.reasonMask,
       score: row.score,
     })
   }
@@ -98,8 +96,8 @@ export async function replaceMangaRecommendationSet(userId: number, items: Manga
         userId,
         mangaId: item.mangaId,
         rank: item.rank,
+        reasonMask: item.reasonMask,
         score: item.score,
-        reasons: item.reasons,
       })),
     )
   })
@@ -208,7 +206,7 @@ export async function selectCollaborativeCandidates(
       select
         ${readingHistoryTable.mangaId} as manga_id,
         sum(neighbor_users.affinity)::double precision as score,
-        'similar_readers'::text as reason
+        ${MANGA_RECOMMENDATION_REASON_BITS.similar_readers}::integer as reason_mask
       from ${readingHistoryTable}
       inner join neighbor_users on neighbor_users.user_id = ${readingHistoryTable.userId}
       left join excluded on excluded.manga_id = ${readingHistoryTable.mangaId}
@@ -220,7 +218,7 @@ export async function selectCollaborativeCandidates(
       select
         ${bookmarkTable.mangaId} as manga_id,
         sum(neighbor_users.affinity * 1.8)::double precision as score,
-        'similar_bookmarks'::text as reason
+        ${MANGA_RECOMMENDATION_REASON_BITS.similar_bookmarks}::integer as reason_mask
       from ${bookmarkTable}
       inner join neighbor_users on neighbor_users.user_id = ${bookmarkTable.userId}
       left join excluded on excluded.manga_id = ${bookmarkTable.mangaId}
@@ -232,7 +230,7 @@ export async function selectCollaborativeCandidates(
       select
         ${userRatingTable.mangaId} as manga_id,
         sum(neighbor_users.affinity * ${userRatingTable.rating}::double precision * 0.45)::double precision as score,
-        'similar_ratings'::text as reason
+        ${MANGA_RECOMMENDATION_REASON_BITS.similar_ratings}::integer as reason_mask
       from ${userRatingTable}
       inner join neighbor_users on neighbor_users.user_id = ${userRatingTable.userId}
       left join excluded on excluded.manga_id = ${userRatingTable.mangaId}
@@ -245,7 +243,7 @@ export async function selectCollaborativeCandidates(
       select
         ${libraryItemTable.mangaId} as manga_id,
         sum(neighbor_users.affinity * 1.4)::double precision as score,
-        'similar_libraries'::text as reason
+        ${MANGA_RECOMMENDATION_REASON_BITS.similar_libraries}::integer as reason_mask
       from ${libraryItemTable}
       inner join ${libraryTable} on ${libraryTable.id} = ${libraryItemTable.libraryId}
       inner join neighbor_users on neighbor_users.user_id = ${libraryTable.userId}
@@ -256,7 +254,7 @@ export async function selectCollaborativeCandidates(
     select
       manga_id as "mangaId",
       sum(score)::double precision as "score",
-      array_agg(distinct reason)::text[] as "reasons"
+      bit_or(reason_mask)::integer as "reasonMask"
     from candidate_events
     group by manga_id
     order by sum(score) desc
@@ -425,8 +423,8 @@ export async function selectUserPreferenceSignals(userId: number): Promise<Prefe
 function normalizeCandidateRows(rows: RawCandidateRow[]): CandidateRow[] {
   return rows.map((row) => ({
     mangaId: toSafeInteger(row.mangaId, 'mangaId'),
+    reasonMask: toSafeInteger(row.reasonMask, 'reasonMask'),
     score: toFiniteNumber(row.score, 'score'),
-    reasons: row.reasons ?? [],
   }))
 }
 

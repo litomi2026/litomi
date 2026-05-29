@@ -2,14 +2,14 @@ import type { Manga } from '@litomi/domain/manga/model'
 
 export type Candidate = {
   mangaId: number
-  reasons: Set<string>
+  reasonMask: number
   score: number
 }
 
 export type CandidateRow = {
   mangaId: number
+  reasonMask: number
   score: number
-  reasons: string[] | null
 }
 
 export type GenerateOptions = {
@@ -19,8 +19,8 @@ export type GenerateOptions = {
 export type MangaRecommendation = {
   mangaId: number
   rank: number
+  reasonMask: number
   score: number
-  reasons: string[]
   generatedAt: Date
   manga?: Manga
 }

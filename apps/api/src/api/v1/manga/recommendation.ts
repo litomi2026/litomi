@@ -3,6 +3,7 @@ import { getV1MangaRecommendationQuerySchema, type GETV1MangaRecommendationRespo
 import { db } from '@litomi/db/app'
 import { mangaRecommendationSetTable, mangaRecommendationTable } from '@litomi/db/app/recommendation'
 import { selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
+import { decodeMangaRecommendationReasonMask } from '@litomi/domain/manga-recommendation/reason'
 import { asc, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
@@ -30,8 +31,8 @@ route.get(
         .select({
           mangaId: mangaRecommendationTable.mangaId,
           rank: mangaRecommendationTable.rank,
+          reasonMask: mangaRecommendationTable.reasonMask,
           score: mangaRecommendationTable.score,
-          reasons: mangaRecommendationTable.reasons,
           generatedAt: mangaRecommendationSetTable.generatedAt,
         })
         .from(mangaRecommendationTable)
@@ -48,7 +49,7 @@ route.get(
           mangaId: row.mangaId,
           rank: row.rank,
           score: row.score,
-          reasons: row.reasons,
+          reasons: decodeMangaRecommendationReasonMask(row.reasonMask),
           generatedAt: row.generatedAt.getTime(),
           manga: mangaMap.get(row.mangaId),
         })),
