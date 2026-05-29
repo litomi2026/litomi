@@ -114,7 +114,11 @@ export default function useUserFollowMutation(
   })
 
   async function setFollowing(following: boolean) {
-    if (!me) {
+    if (me === undefined) {
+      return false
+    }
+
+    if (me === null) {
       showLoginRequiredToast()
       return false
     }

@@ -1,11 +1,10 @@
-import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { SHORT_NAME } from '@litomi/domain/app/metadata'
+import { getUsernameFromParam } from '@litomi/std'
 import { Metadata } from 'next'
 
 import { defaultOpenGraph } from '@/lib/metadata'
 
-import Censorships from './Censorships'
-import Unauthorized from './Unauthorized'
+import CensorAuthGate from './CensorAuthGate'
 
 export const metadata: Metadata = {
   title: '검열',
@@ -20,12 +19,9 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function Page() {
-  const userId = await getUserIdFromCookie()
+export default async function Page({ params }: PageProps<'/[name]/censor'>) {
+  const { name } = await params
+  const usernameFromParam = getUsernameFromParam(name)
 
-  if (!userId) {
-    return <Unauthorized />
-  }
-
-  return <Censorships />
+  return <CensorAuthGate username={usernameFromParam} />
 }

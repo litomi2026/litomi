@@ -1,6 +1,7 @@
-import { Fingerprint, Lock, ScanFace, Shield } from 'lucide-react'
+import { Fingerprint } from 'lucide-react'
 
-import Onboarding from '../Onboarding'
+import StatusState from '@/components/status/StatusState'
+
 import { Passkey, PasskeySignalData } from './common'
 import PasskeyCard from './PasskeyCard'
 import PasskeyInfoButton from './PasskeyInfoButton'
@@ -14,30 +15,14 @@ type Props = {
 export default function PasskeyList({ passkeySignalData, passkeys }: Props) {
   if (passkeys.length === 0) {
     return (
-      <Onboarding
-        benefits={[
-          {
-            icon: <Shield className="size-5" />,
-            title: '피싱 공격 차단',
-            description: '가짜 사이트에서 절대 작동하지 않아요',
-          },
-          {
-            icon: <ScanFace className="size-5" />,
-            title: '한 번의 생체인증',
-            description: '지문이나 얼굴로 즉시 로그인',
-          },
-          {
-            icon: <Lock className="size-5" />,
-            title: '비밀번호 불필요',
-            description: '복잡한 비밀번호를 기억하지 않아도 돼요',
-          },
-        ]}
+      <StatusState
         description="패스키로 비밀번호 없이 안전하게 로그인하세요"
-        icon={<Fingerprint className="size-12 text-brand" />}
+        icon={<Fingerprint className="size-8" />}
+        intent="setup"
         title="아직 패스키가 없어요"
       >
         <PasskeyRegisterButton passkeySignalData={passkeySignalData} />
-      </Onboarding>
+      </StatusState>
     )
   }
 

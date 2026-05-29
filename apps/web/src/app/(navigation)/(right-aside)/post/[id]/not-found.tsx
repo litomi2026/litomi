@@ -1,19 +1,15 @@
-import Link from 'next/link'
+import { FileQuestion } from 'lucide-react'
+
+import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col justify-center items-center grow">
-      <h1 className="mb-4 text-5xl md:text-6xl font-bold">404</h1>
-      <h2 className="mb-8 text-xl md:text-2xl">이야기가 존재하지 않아요</h2>
-      <div className="grid gap-2">
-        <Link
-          className="bg-zinc-700 rounded-full hover:bg-zinc-600 active:bg-zinc-700 px-4 py-2 transition ease-in-out"
-          href="/posts/recommend"
-          prefetch={false}
-        >
-          목록으로 가기
-        </Link>
-      </div>
-    </div>
+    <StatusState
+      description="삭제되었거나 더 이상 공개되지 않는 이야기일 수 있어요"
+      icon={<FileQuestion className="size-8" />}
+      title="이야기를 찾을 수 없어요"
+    >
+      <StatusActionLink href="/posts/recommend">이야기 목록으로 가기</StatusActionLink>
+    </StatusState>
   )
 }

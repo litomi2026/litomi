@@ -1,11 +1,13 @@
 'use client'
 
-import { CaseSensitive, Filter, Heart, Plus, Rabbit } from 'lucide-react'
+import { CaseSensitive, Plus } from 'lucide-react'
 import { useState } from 'react'
+
+import StatusState from '@/components/status/StatusState'
+import { getStatusActionClassName } from '@/components/status/styles'
 
 import type { NotificationCriteria } from './types'
 
-import Onboarding from '../Onboarding'
 import NotificationCriteriaCard from './NotificationCriteriaCard'
 import NotificationCriteriaModal from './NotificationCriteriaModal'
 
@@ -35,36 +37,16 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
       {criteria.length === 0 ? (
-        <Onboarding
-          benefits={[
-            {
-              icon: <Rabbit className="size-5" />,
-              title: '실시간 알림',
-              description: '새 작품이 올라오면 즉시 알려드려요',
-            },
-            {
-              icon: <Filter className="size-5" />,
-              title: '정밀한 필터링',
-              description: '원하는 키워드만 정확하게 추적해요',
-            },
-            {
-              icon: <Heart className="size-5" />,
-              title: '개인화된 경험',
-              description: '취향에 맞는 작품을 편하게 관리해요',
-            },
-          ]}
+        <StatusState
           description="관심있는 시리즈와 태그를 놓치지 않도록 알려드릴게요"
-          icon={<CaseSensitive className="size-12 text-brand" />}
+          icon={<CaseSensitive className="size-8" />}
+          intent="setup"
           title="키워드 알림 시작하기"
         >
-          <button
-            className="px-6 py-3 rounded-2xl bg-brand text-background font-semibold hover:opacity-90 transition"
-            onClick={handleCreateClick}
-            type="button"
-          >
+          <button className={getStatusActionClassName('primary')} onClick={handleCreateClick} type="button">
             키워드 알림 설정하기
           </button>
-        </Onboarding>
+        </StatusState>
       ) : (
         <>
           <div className="flex items-center justify-between gap-3">

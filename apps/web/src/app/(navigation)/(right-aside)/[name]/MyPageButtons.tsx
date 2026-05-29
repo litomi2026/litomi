@@ -1,44 +1,44 @@
-import { getUserIdFromCookie } from '@litomi/auth/cookie'
-import { ErrorBoundary } from '@suspensive/react'
-import { Suspense } from 'react'
+'use client'
 
-import LogoutButton from '@/app/(navigation)/LogoutButton'
+import dynamic from 'next/dynamic'
 
-import FollowButton from '../post/[id]/FollowButton'
-import { getMe } from './common'
-import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
-import { UserType } from './UserProfileView'
+import useMeQuery from '@/query/useMeQuery'
+
+import LogoutButton from '../../LogoutButton'
 
 type Props = {
   user: {
     id: number
     name: string
-    isFollowedByCurrentUser?: boolean
-    type?: UserType
   }
 }
 
-export default async function MyPageButtons({ user }: Props) {
-  const userId = await getUserIdFromCookie()
+const FollowButton = dynamic(() => import('../post/[id]/FollowButton'))
+const ProfileEditButton = dynamic(() => import('./ProfileEditButton'), { loading: ProfileEditButtonSkeleton })
 
-  if (!userId || user.type === UserType.GUEST || user.type === UserType.NOT_FOUND) {
+export default function MyPageButtons({ user }: Props) {
+  const { data: me } = useMeQuery()
+
+  if (me === undefined) {
+    return <ProfileEditButtonSkeleton />
+  }
+
+  if (me === null) {
     return null
   }
 
-  if (user.id !== userId) {
-    return <FollowButton initialFollowing={user.isFollowedByCurrentUser} leader={user} />
+  if (user.id !== me.id) {
+    return <FollowButton leader={user} />
   }
-
-  const currentUser = getMe(userId)
 
   return (
     <div className="flex items-center gap-2">
-      <ErrorBoundary fallback={ProfileEditButtonError}>
-        <Suspense fallback={<ProfileEditButtonSkeleton />}>
-          <ProfileEditButton mePromise={currentUser} />
-        </Suspense>
-      </ErrorBoundary>
+      <ProfileEditButton me={me} />
       <LogoutButton />
     </div>
   )
+}
+
+function ProfileEditButtonSkeleton() {
+  return <div className="w-9 h-9 animate-fade-in bg-zinc-800 rounded-full md:w-29" />
 }

@@ -1,19 +1,15 @@
-import Link from 'next/link'
+import { LibraryBig } from 'lucide-react'
+
+import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col grow items-center justify-center p-10">
-      <h1 className="mb-4 text-6xl font-bold">404</h1>
-      <p className="mb-8 text-2xl">작품이 없어요</p>
-      <div className="grid gap-2">
-        <Link
-          className="bg-zinc-700 text-sm hover:bg-zinc-600 font-semibold active:bg-zinc-700 rounded-full px-4 py-2 transition ease-in-out"
-          href="/new/1"
-          prefetch={false}
-        >
-          홈으로
-        </Link>
-      </div>
-    </div>
+    <StatusState
+      description="요청한 페이지에 표시할 작품이 없어요"
+      icon={<LibraryBig className="size-8" />}
+      title="작품을 찾을 수 없어요"
+    >
+      <StatusActionLink href="/new/1">첫 페이지로 가기</StatusActionLink>
+    </StatusState>
   )
 }

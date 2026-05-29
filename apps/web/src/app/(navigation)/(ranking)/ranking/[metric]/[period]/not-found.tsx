@@ -1,21 +1,17 @@
-import Link from 'next/link'
+import { Trophy } from 'lucide-react'
+
+import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../../../common'
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col grow items-center justify-center p-10">
-      <h1 className="mb-4 text-6xl font-bold">404</h1>
-      <p className="mb-8 text-2xl">작품이 없어요</p>
-      <div className="grid gap-2">
-        <Link
-          className="bg-zinc-700 text-sm hover:bg-zinc-600 font-semibold active:bg-zinc-700 rounded-full px-4 py-2 transition ease-in-out"
-          href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
-          prefetch={false}
-        >
-          홈으로
-        </Link>
-      </div>
-    </div>
+    <StatusState
+      description="요청한 기간 또는 기준에 표시할 작품이 없어요"
+      icon={<Trophy className="size-8" />}
+      title="랭킹을 찾을 수 없어요"
+    >
+      <StatusActionLink href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}>기본 랭킹으로 가기</StatusActionLink>
+    </StatusState>
   )
 }

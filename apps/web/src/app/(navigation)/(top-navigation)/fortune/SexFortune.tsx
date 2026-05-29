@@ -26,7 +26,7 @@ type Props = {
 const STORAGE_KEY = 'litomi.sexFortune.userId'
 
 export default function SexFortune({ todayKey }: Props) {
-  const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const { data: me } = useMeQuery()
   const { copy, copied } = useClipboard()
   const [userKey, setUserKey] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<SexFortuneTab>('fortune')
@@ -43,11 +43,11 @@ export default function SexFortune({ todayKey }: Props) {
     setUserKey(newKey)
   }, [])
 
-  if (isMeLoading) {
-    return <SexFortuneLoadingState />
+  if (me === undefined) {
+    return null
   }
 
-  if (!me) {
+  if (me === null) {
     return <SexFortuneLoginGate />
   }
 

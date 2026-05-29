@@ -1,8 +1,8 @@
-import { Cloud, LockKeyhole, Star, TrendingUp } from 'lucide-react'
+import { LockKeyhole } from 'lucide-react'
 import Link from 'next/link'
 
-import Onboarding from '@/app/(navigation)/(right-aside)/[name]/settings/Onboarding'
 import LoginButton from '@/components/LoginButton'
+import StatusState from '@/components/status/StatusState'
 
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 
@@ -11,26 +11,10 @@ export default function Unauthorized() {
     <>
       <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <div className="flex-1 flex items-center justify-center">
-        <Onboarding
-          benefits={[
-            {
-              icon: <Star className="size-5" />,
-              title: '평가 기록 저장',
-              description: '별점과 리뷰가 안전하게 저장돼요',
-            },
-            {
-              icon: <TrendingUp className="size-5" />,
-              title: '취향 분석 제공',
-              description: '평가 기록으로 취향을 분석해드려요',
-            },
-            {
-              icon: <Cloud className="size-5" />,
-              title: '모든 기기에서 동기화',
-              description: '언제 어디서나 평가를 확인하고 수정해요',
-            },
-          ]}
+        <StatusState
           description="계정을 만들고 작품을 평가해보세요"
-          icon={<LockKeyhole className="size-12 text-brand" />}
+          icon={<LockKeyhole className="size-8" />}
+          intent="auth"
           title="평가 기능은 로그인이 필요해요"
         >
           <div className="flex flex-col w-full items-center gap-3">
@@ -46,7 +30,7 @@ export default function Unauthorized() {
               </Link>
             </p>
           </div>
-        </Onboarding>
+        </StatusState>
       </div>
     </>
   )

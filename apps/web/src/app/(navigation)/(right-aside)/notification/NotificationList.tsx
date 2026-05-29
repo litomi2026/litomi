@@ -1,28 +1,24 @@
 'use client'
 
 import { NotificationFilter } from '@litomi/domain/notification/filter'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { ReactNode, useMemo, useState } from 'react'
-import { toast } from 'sonner'
-import { twMerge } from 'tailwind-merge'
+import { Book, Check, Loader2 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import IconBell from '@/components/icons/IconBell'
-import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
+import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 
-import { deleteNotifications, markNotificationsAsRead } from './api'
 import { SearchParams } from './common'
 import NotificationCard from './NotificationCard'
+import { useNotificationSelection } from './NotificationProvider'
 import SwipeableWrapper from './SwipeableNotificationCard'
 import Unauthorized from './Unauthorized'
 import useBatcher from './useBatcher'
+import useNotificationActions from './useNotificationActions'
 import useNotificationInfiniteQuery from './useNotificationsInfiniteQuery'
 
 interface Notification {
@@ -38,299 +34,122 @@ interface Notification {
 }
 
 export default function NotificationList() {
-  const router = useRouter()
+  const { data: me } = useMeQuery()
   const searchParams = useSearchParams()
-  const filter = searchParams.get(SearchParams.FILTER) as NotificationFilter | null
-  const [selectionMode, setSelectionMode] = useState(false)
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
-  const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const { selectedIds, selectionMode, toggleSelection } = useNotificationSelection()
+  const { deleteNotification, isActionPending, markNowAsRead } = useNotificationActions()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useNotificationInfiniteQuery()
 
-  const notifications = useMemo(() => data?.pages.flatMap((page) => page.notifications) ?? [], [data])
-  const groupedNotifications = groupNotificationsByDate(notifications)
-  const queryClient = useQueryClient()
-  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
+  const { addToQueue: markAsRead } = useBatcher<number>({
+    batchDelay: 3000,
+    onBatchStart: markNowAsRead,
+  })
 
   const loadMoreRef = useInfiniteScrollObserver({
-    hasNextPage: canAutoLoadMore,
+    hasNextPage: Boolean(hasNextPage) && !isFetchNextPageError,
     isFetchingNextPage,
     fetchNextPage,
   })
 
-  const { mutate: requestMarkAsRead, isPending: isMarkAsReadPending } = useMutation({
-    mutationFn: markNotificationsAsRead,
-    onSuccess: () => {
-      handleMutationSuccess()
-    },
-  })
+  const notifications = data?.pages.flatMap((page) => page.notifications) ?? []
+  const filter = searchParams.get(SearchParams.FILTER) as NotificationFilter | null
+  const groupedNotifications = groupNotificationsByDate(notifications)
 
-  const { mutate: requestDeleteNotifications, isPending: isDeleteNotificationsPending } = useMutation({
-    mutationFn: deleteNotifications,
-    onSuccess: () => {
-      toast.success('알림을 삭제했어요')
-      handleMutationSuccess()
-    },
-  })
-
-  function handleMutationSuccess() {
-    setSelectedIds(new Set())
-    setSelectionMode(false)
-    queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
-    queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
+  if (me === undefined) {
+    return <NotificationLoading />
   }
 
-  const { addToQueue: handleMarkAsRead } = useBatcher<number>({
-    batchDelay: 3000,
-    onBatchStart: (ids) => {
-      if (ids.length > 0) {
-        requestMarkAsRead({ ids })
-      }
-    },
-  })
-
-  function handleDelete(id: number) {
-    requestDeleteNotifications({ ids: [id] })
+  if (me === null) {
+    return <Unauthorized />
   }
 
-  function handleBatchAction(action: 'delete' | 'read') {
-    const ids = Array.from(selectedIds)
-
-    if (ids.length === 0) {
-      return
-    }
-
-    if (action === 'read') {
-      requestMarkAsRead({ ids })
-    } else {
-      requestDeleteNotifications({ ids })
-    }
+  if (!hasAdultAccess(me)) {
+    return (
+      <AdultVerificationGate
+        description="알림을 확인하려면 익명 성인인증이 필요해요"
+        title="성인인증이 필요해요"
+        username={me.name}
+      />
+    )
   }
 
-  function toggleSelection(id: number) {
-    setSelectedIds((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(id)) {
-        newSet.delete(id)
-      } else {
-        newSet.add(id)
-      }
-      return newSet
-    })
+  if (isLoading) {
+    return <NotificationLoading />
+  }
+
+  if (notifications.length === 0) {
+    return <EmptyState />
   }
 
   return (
-    <>
-      <TopStickySafeAreaSurface />
-      <div className="sticky top-(--safe-area-top) min-h-(--safe-area-top) z-20 bg-background/95 backdrop-blur-sm border-b border-zinc-800 px-3 py-2 sm:px-4 sm:py-3">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hidden">
-            <FilterButton
-              active={!filter}
-              disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-              onClick={() => router.replace(`?`)}
-            >
-              <span>전체</span>
-            </FilterButton>
-            <FilterButton
-              active={filter === NotificationFilter.UNREAD}
-              disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-              onClick={() => router.replace(`?filter=${NotificationFilter.UNREAD}`)}
-            >
-              <span>읽지 않음</span>
-            </FilterButton>
-            <FilterButton
-              active={filter === NotificationFilter.NEW_MANGA}
-              disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-              icon={<Book className="size-5 shrink-0" />}
-              onClick={() => router.replace(`?filter=${NotificationFilter.NEW_MANGA}`)}
-            >
-              <span className="hidden sm:inline">신규</span>
-            </FilterButton>
-          </div>
-          <div className="flex items-center gap-1.5">
-            {filter === NotificationFilter.UNREAD && (
-              <button
-                className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50"
-                disabled={notifications.length === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
-                onClick={() => requestMarkAsRead({ ids: notifications.filter((n) => !n.read).map((n) => n.id) })}
+    <div
+      aria-current={selectionMode}
+      aria-disabled={isActionPending}
+      className="grid gap-6 p-3 transition aria-disabled:opacity-70 aria-disabled:pointer-events-none sm:p-4"
+    >
+      {Object.entries(groupedNotifications).map(([dateGroup, groupNotifications]) => (
+        <div key={dateGroup}>
+          <h2 className="mb-3 text-sm font-medium text-zinc-400 bg-background py-1">
+            {dateGroup}
+            <span className="ml-2 text-xs text-zinc-600">({groupNotifications.length})</span>
+          </h2>
+          <div className="grid gap-2 sm:gap-3">
+            {groupNotifications.map((notification) => (
+              <SwipeableWrapper
+                enabled={selectionMode}
+                key={notification.id}
+                notification={notification}
+                onDelete={deleteNotification}
+                onMarkAsRead={markAsRead}
               >
-                모두 읽음
-              </button>
-            )}
-            {selectionMode ? (
-              <>
-                <button
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-zinc-300 bg-zinc-800 rounded-md hover:bg-zinc-700 transition disabled:opacity-50"
-                  disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
-                  onClick={() => handleBatchAction('read')}
-                >
-                  {isMarkAsReadPending ? <Loader2 className="size-5 animate-spin" /> : <Check className="size-5" />}
-                  <span className="hidden sm:inline">읽음</span>
-                </button>
-                <button
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-red-400 bg-red-900/20 rounded-md hover:bg-red-900/30 transition disabled:opacity-50"
-                  disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
-                  onClick={() => handleBatchAction('delete')}
-                >
-                  {isDeleteNotificationsPending ? (
-                    <Loader2 className="size-5 animate-spin" />
-                  ) : (
-                    <Trash2 className="size-5" />
-                  )}
-                  <span className="hidden sm:inline">삭제</span>
-                </button>
-                <button
-                  className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50"
-                  disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-                  onClick={() => {
-                    setSelectionMode(false)
-                    setSelectedIds(new Set())
-                  }}
-                >
-                  취소
-                </button>
-              </>
-            ) : (
-              <button
-                className="px-2.5 py-1.5 text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50"
-                disabled={notifications.length === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
-                onClick={() => setSelectionMode(true)}
-                title="선택 모드"
-              >
-                <Filter className="size-5 shrink-0" />
-              </button>
-            )}
+                <NotificationCard
+                  autoMarkAsRead={!selectionMode && filter !== NotificationFilter.UNREAD}
+                  notification={notification}
+                  onDelete={deleteNotification}
+                  onMarkAsRead={markAsRead}
+                  onSelect={toggleSelection}
+                  selected={selectedIds.has(notification.id)}
+                  selectionMode={selectionMode}
+                />
+              </SwipeableWrapper>
+            ))}
           </div>
         </div>
+      ))}
+      <div className="w-full py-4 flex justify-center" ref={loadMoreRef}>
+        {isFetchingNextPage ? (
+          <Loader2 className="size-5 shrink-0 animate-spin text-zinc-600" />
+        ) : isFetchNextPageError ? (
+          <LoadMoreRetryButton containerClassName="" onRetry={fetchNextPage} />
+        ) : null}
       </div>
-      {isLoading || isMeLoading ? (
-        <div className="flex-1 flex items-center justify-center animate-fade-in [animation-delay:0.3s] [animation-fill-mode:both]">
-          <Loader2 className="size-10 shrink-0 text-zinc-600 animate-spin sm:size-12" />
-        </div>
-      ) : !me ? (
-        <Unauthorized />
-      ) : !hasAdultAccess(me) ? (
-        <AdultVerificationGate
-          description="알림을 확인하려면 익명 성인인증이 필요해요"
-          title="성인인증이 필요해요"
-          username={me.name}
-        />
-      ) : notifications.length === 0 ? (
-        <EmptyState filter={filter} />
-      ) : (
-        <div
-          aria-current={selectionMode}
-          aria-disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-          className="grid gap-6 p-3 transition aria-disabled:opacity-70 aria-disabled:pointer-events-none sm:p-4"
-        >
-          {Object.entries(groupedNotifications).map(([dateGroup, groupNotifications]) => (
-            <div key={dateGroup}>
-              <h2 className="mb-3 text-sm font-medium text-zinc-400 bg-background py-1">
-                {dateGroup}
-                <span className="ml-2 text-xs text-zinc-600">({groupNotifications.length})</span>
-              </h2>
-              <div className="grid gap-2 sm:gap-3">
-                {groupNotifications.map((notification) => (
-                  <SwipeableWrapper
-                    enabled={selectionMode}
-                    key={notification.id}
-                    notification={notification}
-                    onDelete={handleDelete}
-                    onMarkAsRead={handleMarkAsRead}
-                  >
-                    <NotificationCard
-                      autoMarkAsRead={!selectionMode && filter !== NotificationFilter.UNREAD}
-                      notification={notification}
-                      onDelete={handleDelete}
-                      onMarkAsRead={handleMarkAsRead}
-                      onSelect={toggleSelection}
-                      selected={selectedIds.has(notification.id)}
-                      selectionMode={selectionMode}
-                    />
-                  </SwipeableWrapper>
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="w-full py-4 flex justify-center" ref={loadMoreRef}>
-            {isFetchingNextPage ? (
-              <Loader2 className="size-5 shrink-0 animate-spin text-zinc-600" />
-            ) : isFetchNextPageError ? (
-              <LoadMoreRetryButton containerClassName="" onRetry={fetchNextPage} />
-            ) : null}
-          </div>
-        </div>
-      )}
-    </>
-  )
-}
-
-function EmptyState({ filter }: { filter: NotificationFilter | null }) {
-  const content = getEmptyContent(filter)
-  const { data: me } = useMeQuery()
-  const username = me?.name ?? ''
-  const showKeywordSetting = content.showKeywordSetting
-
-  return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8">
-      <div className="relative">
-        {content.icon}
-        <div className="absolute inset-0 bg-linear-to-t from-brand/10 to-transparent rounded-full blur-3xl" />
-      </div>
-      <h3 className="text-lg font-medium text-zinc-300 mb-2">{content.title}</h3>
-      <p className="text-sm text-zinc-500 text-center max-w-xs">{content.description}</p>
-      {showKeywordSetting && (
-        <div className="mt-4 flex items-center gap-2">
-          <a
-            aria-label="푸시 알림 설정으로 이동"
-            className="px-3 py-1.5 rounded-md text-xs font-semibold bg-brand text-background hover:opacity-90 transition"
-            href={`/@${username}/settings#push`}
-          >
-            푸시 알림 켜기
-          </a>
-          <a
-            aria-label="키워드 알림 설정으로 이동"
-            className="px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-800 text-zinc-200 hover:bg-zinc-700 transition"
-            href={`/@${username}/settings#keyword`}
-          >
-            키워드 알림 설정
-          </a>
-        </div>
-      )}
     </div>
   )
 }
 
-function FilterButton({
-  active,
-  onClick,
-  children,
-  icon,
-  disabled = false,
-}: {
-  active: boolean
-  onClick: () => void
-  children: ReactNode
-  icon?: ReactNode
-  disabled?: boolean
-}) {
+function EmptyState() {
+  const { data: me } = useMeQuery()
+  const searchParams = useSearchParams()
+  const filter = searchParams.get(SearchParams.FILTER) as NotificationFilter | null
+  const content = getEmptyContent(filter)
+  const username = me?.name ?? ''
+  const showKeywordSetting = content.showKeywordSetting
+
   return (
-    <button
-      aria-pressed={active}
-      className={twMerge(
-        'relative px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap',
-        'aria-pressed:bg-brand aria-pressed:text-background aria-pressed:font-bold',
-        'bg-zinc-800/50 hover:bg-zinc-700/50 hover:text-zinc-200',
-        'disabled:opacity-50',
+    <StatusState description={content.description} icon={content.icon} title={content.title}>
+      {showKeywordSetting && (
+        <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+          <StatusActionLink className="max-w-none" href={`/@${username}/settings#push`}>
+            푸시 알림 켜기
+          </StatusActionLink>
+          <StatusActionLink className="max-w-none" href={`/@${username}/settings#keyword`} variant="secondary">
+            키워드 알림 설정
+          </StatusActionLink>
+        </div>
       )}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {icon}
-      {children}
-    </button>
+    </StatusState>
   )
 }
 
@@ -338,19 +157,19 @@ function getEmptyContent(filter: NotificationFilter | null) {
   switch (filter) {
     case NotificationFilter.NEW_MANGA:
       return {
-        icon: <Book className="mb-4 size-12 text-zinc-600/50" />,
+        icon: <Book className="size-8" />,
         title: '신규 작품 알림이 없어요',
         description: '새로운 작품이 추가되면 알려드릴게요',
       }
     case NotificationFilter.UNREAD:
       return {
-        icon: <Check className="mb-4 size-12 text-zinc-600/50" />,
+        icon: <Check className="size-8" />,
         title: '모든 알림을 확인했어요',
         description: '새로운 알림이 도착하면 여기에 표시돼요',
       }
     default:
       return {
-        icon: <IconBell className="mb-4 size-12 text-zinc-600/50" />,
+        icon: <IconBell className="size-8" />,
         title: '아직 알림이 없어요',
         description: (
           <>
@@ -394,4 +213,12 @@ function groupNotificationsByDate(notifications: Notification[]) {
   }
 
   return groups
+}
+
+function NotificationLoading() {
+  return (
+    <div className="flex-1 flex items-center justify-center animate-fade-in [animation-delay:0.3s] [animation-fill-mode:both]">
+      <Loader2 className="size-10 shrink-0 text-zinc-600 animate-spin sm:size-12" />
+    </div>
+  )
 }

@@ -1,4 +1,6 @@
-import Link from 'next/link'
+import { LockKeyhole } from 'lucide-react'
+
+import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 type Props = {
   loginUsername: string
@@ -6,18 +8,12 @@ type Props = {
 
 export default function Forbidden({ loginUsername }: Props) {
   return (
-    <div className="grid gap-6 p-8">
-      <div className="max-w-2xl mx-auto w-full text-center">
-        <h1 className="text-2xl font-semibold mb-4">접근 권한이 없어요</h1>
-        <p className="text-zinc-400 mb-6">본인의 내 후원 페이지만 접근할 수 있어요</p>
-        <Link
-          className="inline-block px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition"
-          href={`/@${loginUsername}/donations`}
-          prefetch={false}
-        >
-          내 후원으로 가기
-        </Link>
-      </div>
-    </div>
+    <StatusState
+      description="본인의 내 후원 페이지만 접근할 수 있어요"
+      icon={<LockKeyhole className="size-8" />}
+      title="접근 권한이 없어요"
+    >
+      <StatusActionLink href={`/@${loginUsername}/donations`}>내 후원으로 가기</StatusActionLink>
+    </StatusState>
   )
 }

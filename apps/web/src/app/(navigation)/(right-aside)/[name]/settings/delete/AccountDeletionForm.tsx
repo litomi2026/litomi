@@ -36,7 +36,7 @@ const deletionFieldActionClassName = `absolute top-1/2 right-2 -translate-y-1/2 
   opacity-0 pointer-events-none
   group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto
   aria-pressed:[&_.eye-icon]:hidden aria-pressed:[&_.eye-off-icon]:block
-  disabled:opacity-50 disabled:pointer-events-none`
+  disabled:opacity-50`
 
 enum DeletionStep {
   INITIAL,

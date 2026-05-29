@@ -11,6 +11,7 @@ import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
+import StatusState from '@/components/status/StatusState'
 import CustomSelect from '@/components/ui/CustomSelect'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
@@ -216,15 +217,16 @@ export default function Censorships() {
             <CensorshipCardSkeleton />
           </div>
         ) : filteredCensorships.length === 0 ? (
-          <div className="text-center py-12">
-            <Filter className="size-12 shrink-0 mx-auto mb-4 text-zinc-600" />
-            <p className="text-zinc-400">
-              {searchQuery || filterKey !== null ? '검색 결과가 없어요' : '아직 검열 규칙이 없어요'}
-            </p>
-            {!searchQuery && filterKey === null && (
-              <p className="text-zinc-500 text-sm mt-2">위의 입력창에 검열할 키워드를 입력하세요</p>
-            )}
-          </div>
+          <StatusState
+            className="min-h-72 py-10"
+            description={
+              searchQuery || filterKey !== null
+                ? '검색 조건을 바꾸면 다시 확인할 수 있어요'
+                : '위 입력창에서 새 규칙을 추가할 수 있어요'
+            }
+            icon={<Filter className="size-8" />}
+            title={searchQuery || filterKey !== null ? '검색 결과가 없어요' : '아직 검열 규칙이 없어요'}
+          />
         ) : (
           <div className="grid gap-3">
             {filteredCensorships.map((censorship) => (

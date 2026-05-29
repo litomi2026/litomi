@@ -37,7 +37,7 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
   const isPending = followMutation.isPending
 
   function handleButtonClick() {
-    if (!me) {
+    if (me === null) {
       showLoginRequiredToast()
       return
     }
@@ -68,7 +68,6 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
     <>
       <button
         aria-busy={isPending}
-        aria-disabled={isPending}
         aria-pressed={isFollowing}
         className={twMerge(
           'inline-flex min-w-24 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-4 py-2 text-sm font-semibold tracking transition',
@@ -78,7 +77,7 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
           'aria-pressed:hover:border-red-400/60 aria-pressed:hover:bg-red-500/10 aria-pressed:hover:text-red-300',
           'border-transparent bg-foreground text-background shadow-[0_10px_28px_-22px_rgba(255,255,255,0.9)] hover:opacity-90 active:translate-y-px active:opacity-85',
         )}
-        disabled={isPending}
+        disabled={me === undefined || isPending}
         onClick={handleButtonClick}
         type="button"
       >

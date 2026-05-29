@@ -269,7 +269,7 @@ export default function LoginForm() {
                       'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
                       'opacity-0 pointer-events-none',
                       'group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto',
-                      'disabled:opacity-50 disabled:pointer-events-none',
+                      'disabled:opacity-50',
                     )}
                     disabled={isPending}
                     onClick={() => clearLoginId(formRef.current)}
@@ -317,7 +317,7 @@ export default function LoginForm() {
                       'opacity-0 pointer-events-none',
                       'group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto',
                       'aria-pressed:[&_.eye-icon]:hidden aria-pressed:[&_.eye-off-icon]:block',
-                      'disabled:opacity-50 disabled:pointer-events-none',
+                      'disabled:opacity-50',
                     )}
                     disabled={isPending}
                     onClick={togglePasswordVisibility}
@@ -353,12 +353,11 @@ export default function LoginForm() {
             </div>
 
             <button
-              aria-disabled={isPending || !hasTurnstileToken}
               className={twMerge(
                 'inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90',
                 'shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition',
                 'hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15',
-                'aria-disabled:opacity-50 aria-disabled:pointer-events-none',
+                'disabled:opacity-50',
               )}
               disabled={isPending || !hasTurnstileToken}
               type="submit"

@@ -2,7 +2,13 @@ import type { GETV1PointExpansionResponse } from '@litomi/contracts'
 
 import { db } from '@litomi/db/app'
 import { userExpansionTable } from '@litomi/db/app/points'
-import { MAX_BOOKMARKS_PER_USER, MAX_LIBRARIES_PER_USER, MAX_PINNED_LIBRARIES_PER_USER, MAX_RATINGS_PER_USER, MAX_READING_HISTORY_PER_USER } from '@litomi/domain/library/policy'
+import {
+  MAX_BOOKMARKS_PER_USER,
+  MAX_LIBRARIES_PER_USER,
+  MAX_PINNED_LIBRARIES_PER_USER,
+  MAX_RATINGS_PER_USER,
+  MAX_READING_HISTORY_PER_USER,
+} from '@litomi/domain/library/policy'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'

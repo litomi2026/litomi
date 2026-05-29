@@ -1,18 +1,26 @@
+import { LockKeyhole } from 'lucide-react'
 import Link from 'next/link'
+
+import LoginButton from '@/components/LoginButton'
+import StatusState from '@/components/status/StatusState'
 
 export default function Unauthorized() {
   return (
-    <div className="grid gap-6 p-8">
-      <div className="max-w-2xl mx-auto w-full text-center">
-        <h1 className="text-2xl font-semibold mb-4">로그인이 필요해요</h1>
-        <p className="text-zinc-400 mb-6">내 후원 목록은 로그인한 사용자만 볼 수 있어요</p>
-        <Link
-          className="inline-block px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition"
-          href="/auth/login"
-        >
-          로그인하기
-        </Link>
+    <StatusState
+      description="로그인하면 후원한 작품과 수신 대상을 모아서 볼 수 있어요"
+      icon={<LockKeyhole className="size-8" />}
+      intent="auth"
+      title="내 후원은 로그인이 필요해요"
+    >
+      <div className="flex w-full flex-col items-center gap-3">
+        <LoginButton>로그인하기</LoginButton>
+        <p className="text-sm text-zinc-500">
+          처음이신가요?{' '}
+          <Link className="text-zinc-300 underline transition hover:text-zinc-100" href="/auth/signup" prefetch={false}>
+            회원가입
+          </Link>
+        </p>
       </div>
-    </div>
+    </StatusState>
   )
 }

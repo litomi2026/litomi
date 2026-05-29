@@ -1,42 +1,31 @@
-import { Check, X } from 'lucide-react'
+import { LockKeyhole } from 'lucide-react'
 import Link from 'next/link'
 
 import LoginButton from '@/components/LoginButton'
+import StatusState from '@/components/status/StatusState'
 import { SearchParamKey } from '@/storage'
 
 export default function Unauthorized() {
   return (
-    <div className="flex flex-col flex-1 items-center px-4 py-8 text-center max-w-2xl mx-auto">
-      <X className="mb-6 size-16 shrink-0 mx-auto text-zinc-600" />
-      <h2 className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed">
-        보고 싶지 않은 작품을 필터링해서, <br className="sm:hidden" />
-        편안한 탐색 환경을 만들어보세요
-      </h2>
-      <ul className="mb-8 space-y-3" role="list">
-        <li className="flex justify-center items-center gap-3">
-          <Check aria-hidden className="size-4 shrink-0 text-brand" />
-          <span className="text-zinc-300">태그, 작가, 캐릭터별 필터링</span>
-        </li>
-        <li className="flex justify-center items-center gap-3">
-          <Check aria-hidden className="size-4 shrink-0 text-brand" />
-          <span className="text-zinc-300">썸네일 블러 처리 또는 완전히 숨기기</span>
-        </li>
-        <li className="flex justify-center items-center gap-3">
-          <Check aria-hidden className="size-4 shrink-0 text-brand" />
-          <span className="text-zinc-300">모든 기기에서 설정 동기화</span>
-        </li>
-      </ul>
-      <LoginButton>로그인하고 시작하기</LoginButton>
-      <p className="mt-4 text-sm text-zinc-500">
-        계정이 없으신가요?{' '}
-        <Link
-          className="text-zinc-300 underline hover:text-foreground transition"
-          href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/censor')}`}
-          prefetch={false}
-        >
-          회원가입
-        </Link>
-      </p>
-    </div>
+    <StatusState
+      description="로그인하면 보고 싶지 않은 작품을 줄이고 탐색 환경을 정리할 수 있어요"
+      icon={<LockKeyhole className="size-8" />}
+      intent="auth"
+      title="검열 설정은 로그인이 필요해요"
+    >
+      <div className="flex w-full flex-col items-center gap-3">
+        <LoginButton>로그인하고 시작하기</LoginButton>
+        <p className="text-sm text-zinc-500">
+          처음이신가요?{' '}
+          <Link
+            className="text-zinc-300 underline transition hover:text-zinc-100"
+            href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/censor')}`}
+            prefetch={false}
+          >
+            회원가입
+          </Link>
+        </p>
+      </div>
+    </StatusState>
   )
 }

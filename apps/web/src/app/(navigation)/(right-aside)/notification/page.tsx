@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 
 import { defaultOpenGraph } from '@/lib/metadata'
 
-import NotificationList from './NotificationList'
+import NotificationPage from './NotificationPage'
 
 export const dynamic = 'force-static'
 
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <Suspense>
-      <NotificationList />
+      <NotificationPage />
     </Suspense>
   )
 }

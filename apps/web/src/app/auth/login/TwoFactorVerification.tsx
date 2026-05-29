@@ -168,12 +168,11 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
         </div>
 
         <button
-          aria-disabled={isPending}
           className={twMerge(
             'inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90',
             'shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition',
             'hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15',
-            'aria-disabled:opacity-50 aria-disabled:pointer-events-none',
+            'disabled:opacity-50',
           )}
           disabled={isPending}
           type="submit"

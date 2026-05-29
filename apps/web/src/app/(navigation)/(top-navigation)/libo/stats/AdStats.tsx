@@ -38,7 +38,7 @@ type AppliedRange = {
 }
 
 export default function AdStats() {
-  const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const { data: me } = useMeQuery()
   const isLoggedIn = Boolean(me)
 
   const startDateInputRef = useRef<HTMLInputElement>(null)
@@ -114,15 +114,11 @@ export default function AdStats() {
     applyRange({ startDate, finishDate })
   }
 
-  if (isMeLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <p className="text-sm text-zinc-400">불러오는 중이에요</p>
-      </div>
-    )
+  if (me === undefined) {
+    return <div aria-hidden className="py-8" />
   }
 
-  if (!me) {
+  if (me === null) {
     return (
       <div className="space-y-3">
         <div className="rounded-xl bg-white/4 border border-white/7 p-4">

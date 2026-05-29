@@ -3,7 +3,11 @@
 import type { GETV1LibraryListResponse, LibraryListItem, PATCHV1LibraryIdBody } from '@litomi/contracts'
 
 import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@litomi/domain/library/policy'
+import {
+  MAX_LIBRARY_DESCRIPTION_LENGTH,
+  MAX_LIBRARY_ICON_LENGTH,
+  MAX_LIBRARY_NAME_LENGTH,
+} from '@litomi/domain/library/policy'
 import { normalizeString } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'

@@ -110,11 +110,10 @@ export default function BottomSheet({ isOpen, onClose, children, title }: Props)
 export function BottomSheetItem({ children, onClick, disabled, className = '' }: BottomSheetItemProps) {
   return (
     <button
-      aria-disabled={disabled}
       className={twMerge(
         'flex w-full items-center gap-3 px-4 py-3 text-left rounded-xl transition',
         'hover:bg-zinc-800 active:bg-zinc-800/50',
-        'aria-disabled:opacity-50 aria-disabled:pointer-events-none',
+        'disabled:opacity-50',
         className,
       )}
       disabled={disabled}

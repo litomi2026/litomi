@@ -57,7 +57,11 @@ export default function usePostLikeMutation(postId: number) {
   })
 
   async function setLiked(liked: boolean) {
-    if (!me) {
+    if (me === undefined) {
+      return false
+    }
+
+    if (me === null) {
       showLoginRequiredToast()
       return false
     }

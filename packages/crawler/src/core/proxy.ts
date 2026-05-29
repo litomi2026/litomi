@@ -56,7 +56,9 @@ export class ProxyClient {
       const timeoutSignal = this.config.requestTimeout ? AbortSignal.timeout(this.config.requestTimeout) : undefined
 
       const signal =
-        options.signal && timeoutSignal ? abortSignalAny([options.signal, timeoutSignal]) : (options.signal ?? timeoutSignal)
+        options.signal && timeoutSignal
+          ? abortSignalAny([options.signal, timeoutSignal])
+          : (options.signal ?? timeoutSignal)
 
       let response: Response
 

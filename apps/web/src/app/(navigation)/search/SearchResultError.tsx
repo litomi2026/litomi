@@ -25,8 +25,7 @@ export default function SearchResultError({ error, isRetrying, onRetry }: Props)
       <div className="flex gap-3">
         {info.canRetry && (
           <button
-            aria-disabled={isRetrying}
-            className="rounded-full bg-zinc-800 px-6 py-2 text-sm font-medium transition hover:bg-zinc-700 aria-disabled:opacity-60"
+            className="rounded-full bg-zinc-800 px-6 py-2 text-sm font-medium transition hover:bg-zinc-700 disabled:opacity-60"
             disabled={isRetrying}
             onClick={onRetry}
             type="button"

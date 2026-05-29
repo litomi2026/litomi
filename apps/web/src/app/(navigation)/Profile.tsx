@@ -11,17 +11,17 @@ import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
 
 export default function Profile() {
-  const { data: user, isPending } = useMeQuery()
+  const { data: me } = useMeQuery()
 
-  if (isPending) {
+  if (me === undefined) {
     return <ProfileSkeleton />
   }
 
-  if (!user) {
+  if (me === null) {
     return <LoginIconLink />
   }
 
-  const { name, imageURL, nickname } = user
+  const { name, imageURL, nickname } = me
 
   return (
     <TooltipPopover
