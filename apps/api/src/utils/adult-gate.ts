@@ -19,7 +19,7 @@ export function adultVerificationRequiredResponse(c: Context): Response {
   })
 }
 
-export function isAdultVerificationRequiredForCountry(c: Pick<Context, 'req'>): boolean {
+export function isAdultVerificationRequiredForRequest(c: Pick<Context, 'req'>): boolean {
   const countryCode = getCloudflareCountryCode(c)
   return countryCode === undefined || ['KR', 'XX'].includes(countryCode)
 }
@@ -29,5 +29,5 @@ export function shouldBlockAdultGate(c: AdultGateContextSource): boolean {
   const userId = typeof userIdRaw === 'number' ? userIdRaw : undefined
   const isAdult = c.get('isAdult') === true
 
-  return isAdultVerificationRequiredForCountry(c) && Boolean(userId) && isAdult === false
+  return isAdultVerificationRequiredForRequest(c) && Boolean(userId) && isAdult === false
 }
