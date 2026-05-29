@@ -28,13 +28,13 @@ type Props = {
 export default function LiboNavigation({ children }: Props) {
   const pathname = usePathname()
   const activeTab = getActiveTab(pathname)
-  const { data: me, isLoading: isMeLoading } = useMeQuery()
-  const isLoggedIn = Boolean(me && !isMeLoading)
-  const { data: points, isLoading: isPointsLoading } = usePointsQuery({ enabled: isLoggedIn })
-  const isLoading = isMeLoading || (isLoggedIn && isPointsLoading)
-  const balance = points?.balance ?? 0
-  const totalEarned = points?.totalEarned ?? 0
-  const totalSpent = points?.totalSpent ?? 0
+  const { data: me } = useMeQuery()
+  const isLoggedIn = Boolean(me)
+  const { data: points } = usePointsQuery({ enabled: isLoggedIn })
+
+  const isAuthPending = me === undefined
+  const isPointsPending = isLoggedIn && !points
+  const isBalancePending = isAuthPending || isPointsPending
 
   return (
     <div className={LIBO_PAGE_LAYOUT.container}>
@@ -44,7 +44,7 @@ export default function LiboNavigation({ children }: Props) {
           <div>
             <p className="text-sm text-zinc-300 mb-1">내 리보</p>
             <p className="text-3xl font-semibold tracking-tight text-zinc-50 tabular-nums">
-              {isLoggedIn ? (isLoading ? '...' : balance.toLocaleString()) : '—'}
+              {isBalancePending ? '...' : isLoggedIn ? (points?.balance.toLocaleString() ?? '—') : '—'}
               <span className="text-base font-medium text-zinc-300 ml-1">리보</span>
             </p>
           </div>
@@ -53,12 +53,12 @@ export default function LiboNavigation({ children }: Props) {
           </div>
         </div>
         <div className="mt-4 pt-3 border-t border-white/7 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-zinc-400">
-          {!isLoggedIn && !isLoading ? (
+          {me === null ? (
             <p className="text-zinc-400/90">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>
           ) : (
             <div className="flex gap-3">
-              <span>총 적립 {isLoading ? '...' : isLoggedIn ? totalEarned.toLocaleString() : '—'} 리보</span>
-              <span>총 사용 {isLoading ? '...' : isLoggedIn ? totalSpent.toLocaleString() : '—'} 리보</span>
+              <span>총 적립 {isBalancePending ? '...' : (points?.totalEarned.toLocaleString() ?? '—')} 리보</span>
+              <span>총 사용 {isBalancePending ? '...' : (points?.totalSpent.toLocaleString() ?? '—')} 리보</span>
             </div>
           )}
           <Link
