@@ -82,11 +82,6 @@ export const messages = {
         exportErrorToast: '검열 규칙을 내보내지 못했어요',
         importSuccessToast: '{count}개의 검열 규칙을 가져왔어요',
         invalidJsonToast: 'JSON 형식을 확인해 주세요',
-        csv: {
-          keyHeader: '유형',
-          valueHeader: '값',
-          levelHeader: '검열 수준',
-        },
       },
       list: {
         title: '검열 설정',
@@ -218,11 +213,6 @@ export const messages = {
         exportErrorToast: 'Could not export censorship rules',
         importSuccessToast: '{count, plural, one {Imported # censorship rule} other {Imported # censorship rules}}',
         invalidJsonToast: 'Check the JSON format',
-        csv: {
-          keyHeader: 'Type',
-          valueHeader: 'Value',
-          levelHeader: 'Censorship level',
-        },
       },
       list: {
         title: 'Censorship settings',

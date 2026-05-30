@@ -1,9 +1,12 @@
+import { DEFAULT_LOCALE } from '@litomi/domain/locale'
+
 import '../globals.css'
 
-import { DEFAULT_LOCALE } from '@litomi/domain/locale'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
+
+import QueryProvider from '@/lib/react-query/QueryProvider'
 
 const PretendardVariable = localFont({
   src: '../../fonts/PretendardVariable.400-700.3713.woff2',
@@ -33,7 +36,9 @@ type Props = {
 export default function SystemRootLayout({ children }: Props) {
   return (
     <html className="h-full" lang={DEFAULT_LOCALE}>
-      <body className={twMerge(PretendardVariable.className, 'h-full antialiased')}>{children}</body>
+      <body className={twMerge(PretendardVariable.className, 'h-full antialiased')}>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   )
 }
