@@ -1,10 +1,12 @@
 import type { MetadataRoute } from 'next'
 
+import { PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 
+import { getPathname } from '@/i18n/navigation'
 import { getSearchCanonicalPath, SEARCH_LANDING_QUERIES } from '@/lib/searchSEO'
 
-import { MetricParam, PeriodParam } from './(navigation)/(ranking)/common'
+import { MetricParam, PeriodParam } from './[locale]/(navigation)/(ranking)/common'
 
 const { NEXT_PUBLIC_APP_ORIGIN } = env
 
@@ -23,90 +25,26 @@ const PRIORITY_LEVELS = {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    {
-      url: NEXT_PUBLIC_APP_ORIGIN,
-      changeFrequency: 'monthly',
-      priority: PRIORITY_LEVELS.HOME,
-    },
     ...generateNewMangaPages(),
-    ...generatePopularMangaPages(),
-    ...generateRankingPages(),
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/realtime`,
-      changeFrequency: 'monthly',
-      priority: PRIORITY_LEVELS.RANKING,
-    },
     ...generateSearchPages(),
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/random`,
-      changeFrequency: 'monthly',
-      priority: PRIORITY_LEVELS.SEARCH,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/library`,
-      changeFrequency: 'weekly',
-      priority: PRIORITY_LEVELS.LIBRARY,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/library/bookmark`,
-      changeFrequency: 'monthly',
-      priority: PRIORITY_LEVELS.LIBRARY,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/library/history`,
-      changeFrequency: 'monthly',
-      priority: PRIORITY_LEVELS.LIBRARY,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/@`,
-      changeFrequency: 'monthly',
-      priority: PRIORITY_LEVELS.USER_PAGES,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/posts/recommend`,
-      changeFrequency: 'monthly',
-      priority: PRIORITY_LEVELS.POSTS,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/privacy`,
-      changeFrequency: 'yearly',
-      priority: PRIORITY_LEVELS.LEGAL,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/terms`,
-      changeFrequency: 'yearly',
-      priority: PRIORITY_LEVELS.LEGAL,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/youth-protection`,
-      changeFrequency: 'yearly',
-      priority: PRIORITY_LEVELS.LEGAL,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/2257`,
-      changeFrequency: 'yearly',
-      priority: PRIORITY_LEVELS.LEGAL,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/doc/dmca`,
-      changeFrequency: 'yearly',
-      priority: PRIORITY_LEVELS.LEGAL,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/deterrence`,
-      changeFrequency: 'yearly',
-      priority: PRIORITY_LEVELS.LEGAL,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/auth/login`,
-      changeFrequency: 'yearly',
-      priority: PRIORITY_LEVELS.AUTH,
-    },
-    {
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/auth/signup`,
-      changeFrequency: 'yearly',
-      priority: PRIORITY_LEVELS.AUTH,
-    },
+    ...generateRankingPages(),
+    ...generatePopularMangaPages(),
+    ...localizedSitemapEntries('/', 'monthly', PRIORITY_LEVELS.HOME),
+    ...localizedSitemapEntries('/realtime', 'monthly', PRIORITY_LEVELS.RANKING),
+    ...localizedSitemapEntries('/random', 'monthly', PRIORITY_LEVELS.SEARCH),
+    ...localizedSitemapEntries('/library', 'monthly', PRIORITY_LEVELS.LIBRARY),
+    ...localizedSitemapEntries('/library/bookmark', 'monthly', PRIORITY_LEVELS.LIBRARY),
+    ...localizedSitemapEntries('/library/history', 'monthly', PRIORITY_LEVELS.LIBRARY),
+    ...localizedSitemapEntries('/@', 'monthly', PRIORITY_LEVELS.USER_PAGES),
+    ...localizedSitemapEntries('/posts/recommend', 'monthly', PRIORITY_LEVELS.POSTS),
+    ...localizedSitemapEntries('/doc/privacy', 'yearly', PRIORITY_LEVELS.LEGAL),
+    ...localizedSitemapEntries('/doc/terms', 'yearly', PRIORITY_LEVELS.LEGAL),
+    ...localizedSitemapEntries('/doc/youth-protection', 'yearly', PRIORITY_LEVELS.LEGAL),
+    ...localizedSitemapEntries('/doc/2257', 'yearly', PRIORITY_LEVELS.LEGAL),
+    ...localizedSitemapEntries('/doc/dmca', 'yearly', PRIORITY_LEVELS.LEGAL),
+    ...localizedSitemapEntries('/deterrence', 'yearly', PRIORITY_LEVELS.LEGAL),
+    ...localizedSitemapEntries('/auth/login', 'yearly', PRIORITY_LEVELS.AUTH),
+    ...localizedSitemapEntries('/auth/signup', 'yearly', PRIORITY_LEVELS.AUTH),
   ]
 }
 
@@ -114,11 +52,7 @@ function generateNewMangaPages(): MetadataRoute.Sitemap {
   const pages = []
 
   for (let i = 1; i <= 10; i++) {
-    pages.push({
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/new/${i}`,
-      changeFrequency: 'daily' as const,
-      priority: PRIORITY_LEVELS.MAIN_SECTIONS,
-    })
+    pages.push(...localizedSitemapEntries(`/new/${i}`, 'daily', PRIORITY_LEVELS.MAIN_SECTIONS))
   }
 
   return pages
@@ -129,11 +63,7 @@ function generatePopularMangaPages(): MetadataRoute.Sitemap {
   const pages = []
 
   for (const mangaId of mangaIds) {
-    pages.push({
-      url: `${NEXT_PUBLIC_APP_ORIGIN}/manga/${mangaId}`,
-      changeFrequency: 'yearly' as const,
-      priority: PRIORITY_LEVELS.MANGA_DETAIL,
-    })
+    pages.push(...localizedSitemapEntries(`/manga/${mangaId}`, 'yearly', PRIORITY_LEVELS.MANGA_DETAIL))
   }
 
   return pages
@@ -144,11 +74,7 @@ function generateRankingPages(): MetadataRoute.Sitemap {
 
   for (const metric of Object.values(MetricParam)) {
     for (const period of Object.values(PeriodParam)) {
-      pages.push({
-        url: `${NEXT_PUBLIC_APP_ORIGIN}/ranking/${metric}/${period}`,
-        changeFrequency: 'daily' as const,
-        priority: PRIORITY_LEVELS.RANKING,
-      })
+      pages.push(...localizedSitemapEntries(`/ranking/${metric}/${period}`, 'monthly', PRIORITY_LEVELS.RANKING))
     }
   }
 
@@ -159,12 +85,20 @@ function generateSearchPages(): MetadataRoute.Sitemap {
   const pages = []
 
   for (const query of SEARCH_LANDING_QUERIES) {
-    pages.push({
-      url: `${NEXT_PUBLIC_APP_ORIGIN}${getSearchCanonicalPath(query)}`,
-      changeFrequency: 'weekly' as const,
-      priority: PRIORITY_LEVELS.SEARCH,
-    })
+    pages.push(...localizedSitemapEntries(getSearchCanonicalPath(query), 'weekly', PRIORITY_LEVELS.SEARCH))
   }
 
   return pages
+}
+
+function localizedSitemapEntries(
+  path: string,
+  changeFrequency: NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>,
+  priority: number,
+): MetadataRoute.Sitemap {
+  return PUBLIC_LOCALES.map((locale) => ({
+    url: new URL(getPathname({ href: path, locale }), NEXT_PUBLIC_APP_ORIGIN).toString(),
+    changeFrequency,
+    priority,
+  }))
 }
