@@ -1,11 +1,10 @@
 'use client'
 
 import { LogIn } from 'lucide-react'
-import { usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
 
 import { getStatusActionClassName } from '@/components/status/styles'
-import { Link } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import { SearchParamKey } from '@/storage'
 
 type Props = {

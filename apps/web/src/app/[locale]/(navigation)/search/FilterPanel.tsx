@@ -3,7 +3,6 @@
 import { formatLocalDate } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'
-import { usePathname } from 'next/navigation'
 import {
   Dispatch,
   RefObject,
@@ -17,7 +16,7 @@ import {
 import { twMerge } from 'tailwind-merge'
 
 import CustomSelect from '@/components/ui/CustomSelect'
-import { useRouter } from '@/i18n/navigation'
+import { usePathname, useRouter } from '@/i18n/navigation'
 
 import type { FilterKey, FilterState } from './constants'
 

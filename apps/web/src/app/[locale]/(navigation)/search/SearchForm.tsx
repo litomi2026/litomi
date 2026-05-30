@@ -3,12 +3,12 @@
 import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { Toggle } from '@litomi/ui'
 import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
-import { ReadonlyURLSearchParams, usePathname } from 'next/navigation'
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { SubmitEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
-import { useRouter } from '@/i18n/navigation'
+import { usePathname, useRouter } from '@/i18n/navigation'
 
 import { type SearchSuggestion } from './constants'
 import SuggestionDropdown from './SuggestionDropdown'
