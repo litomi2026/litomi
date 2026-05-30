@@ -27,23 +27,25 @@ export default function DefaultCensorshipInfo() {
   }
 
   return (
-    <div className="mx-4 rounded-lg border-2 border-zinc-700 bg-zinc-800/50 overflow-hidden">
-      <div className="px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-2 text-sm">
-          {defaultCensorshipEnabled ? (
-            <Info className="size-4 text-yellow-500 mt-0.5 shrink-0" />
-          ) : (
-            <ShieldOff className="size-4 text-green-500 mt-0.5 shrink-0" />
-          )}
+    <section className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/75">
+      <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="flex items-start gap-3 text-sm">
+          <div
+            className={`mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg ${
+              defaultCensorshipEnabled ? 'bg-yellow-500/10 text-yellow-400' : 'bg-green-500/10 text-green-400'
+            }`}
+          >
+            {defaultCensorshipEnabled ? <Info className="size-4" /> : <ShieldOff className="size-4" />}
+          </div>
           <div>
-            <p className="text-zinc-300">
+            <p className="font-medium text-zinc-100">
               {defaultCensorshipEnabled ? t('defaultInfo.enabledStatus') : t('defaultInfo.disabledStatus')}
             </p>
-            <p className="text-xs text-zinc-500 mt-1">{t('defaultInfo.description')}</p>
+            <p className="mt-1 text-xs leading-5 text-zinc-500">{t('defaultInfo.description')}</p>
           </div>
         </div>
         <button
-          className="px-3 py-2 min-w-36 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+          className="flex h-9 items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-3 text-sm font-medium text-zinc-100 transition hover:border-zinc-600 hover:bg-zinc-700 disabled:opacity-50 sm:min-w-40"
           disabled={me === undefined || patchMySettingsMutation.isPending}
           onClick={handleToggleDefaultCensorship}
           type="button"
@@ -59,25 +61,23 @@ export default function DefaultCensorshipInfo() {
         </button>
       </div>
 
-      <details className="group border-t-2 border-zinc-700">
-        <summary className="px-4 py-3 flex items-center gap-2 hover:bg-zinc-800/70 transition cursor-pointer list-none text-sm text-zinc-400">
+      <details className="group border-t border-zinc-800">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 px-4 text-sm text-zinc-400 transition hover:bg-zinc-800/35 sm:px-5">
           <Info className="size-4 text-zinc-500 shrink-0" />
           <span>{t('defaultInfo.tagSummary')}</span>
         </summary>
-        <div className="px-4 pb-4 text-sm text-zinc-400">
-          <ul className="space-y-1">
+        <div className="px-4 pb-4 text-sm text-zinc-400 sm:px-5">
+          <ul className="grid gap-2 sm:grid-cols-2">
             {defaultCensorshipValueGroups.map(({ messagePath, values }) => (
-              <li className="flex items-center gap-2" key={messagePath}>
-                <span className="text-zinc-500">•</span>
-                <span>
-                  {t(messagePath)} ({values.join(', ')})
-                </span>
+              <li className="rounded-lg border border-zinc-800 bg-zinc-950/35 px-3 py-2" key={messagePath}>
+                <span className="font-medium text-zinc-300">{t(messagePath)}</span>
+                <span className="mt-0.5 block break-all text-xs leading-5 text-zinc-500">{values.join(', ')}</span>
               </li>
             ))}
           </ul>
         </div>
       </details>
-    </div>
+    </section>
   )
 }
 

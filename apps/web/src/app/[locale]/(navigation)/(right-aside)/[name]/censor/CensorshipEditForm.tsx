@@ -73,16 +73,16 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
   }
 
   return (
-    <form className="p-4 bg-zinc-800 rounded-lg border-2 border-brand" onSubmit={handleSubmit}>
+    <form className="border-y border-brand/60 bg-brand/5 p-4 sm:px-5" onSubmit={handleSubmit}>
       <div className="space-y-3">
         <div>
-          <label className="block text-sm font-medium mb-1" htmlFor={inputId}>
+          <label className="mb-1 block text-sm font-medium text-zinc-300" htmlFor={inputId}>
             {t('editForm.valueLabel')}
           </label>
           <input
             autoCapitalize="off"
             autoFocus
-            className="w-full px-3 py-2 bg-zinc-700 rounded border-2 focus:border-zinc-500 outline-none transition"
+            className="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950/45 px-3 text-sm outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-brand/15"
             id={inputId}
             onChange={(e) => setEditValue(e.target.value)}
             required
@@ -91,13 +91,13 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">{t('editForm.levelLabel')}</label>
+          <label className="mb-1 block text-sm font-medium text-zinc-300">{t('editForm.levelLabel')}</label>
           <div className="flex gap-2">
             {CENSORSHIP_LEVELS.map(({ level: levelNum, messagePath }) => {
               return (
                 <button
                   aria-pressed={editLevel === levelNum}
-                  className="flex-1 px-3 py-2 rounded border-2 transition bg-zinc-700 hover:bg-zinc-600 aria-pressed:bg-zinc-600 aria-pressed:border-brand"
+                  className="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm transition hover:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:bg-brand/10"
                   key={levelNum}
                   onClick={() => setEditLevel(levelNum)}
                   type="button"
@@ -110,7 +110,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
         </div>
         <div className="flex gap-2">
           <button
-            className="flex-1 px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded transition"
+            className="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm font-medium transition hover:bg-zinc-800"
             disabled={updateMutation.isPending}
             onClick={handleCancelEdit}
             type="button"
@@ -118,7 +118,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
             {t('editForm.cancel')}
           </button>
           <button
-            className="flex-1 px-3 py-2 font-semibold bg-brand/80 text-background hover:bg-brand/90 rounded transition flex items-center justify-center gap-1 disabled:opacity-50"
+            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-brand/85 px-3 py-2 text-sm font-semibold text-background transition hover:bg-brand disabled:opacity-50"
             disabled={updateMutation.isPending || !editValue.trim() || (editValue === value && editLevel === level)}
             type="submit"
           >

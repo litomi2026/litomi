@@ -23,28 +23,34 @@ export default function CensorshipStats({ censorships }: Props) {
   )
 
   return (
-    <div className="px-3 pb-4">
-      <div className="flex gap-4 text-sm text-zinc-400 overflow-x-auto">
-        <div className="flex items-center gap-1">
-          <span className="font-medium text-foreground">{censorships.length}</span>
-          <span>{t('stats.ruleCount', { count: censorships.length })}</span>
-        </div>
-        <div className="border-l-2 border-zinc-700" />
-        {CENSORSHIP_LEVELS.map(({ level, messagePath, colorClass }) => {
-          const count = levelCount[level]
-
-          if (count === 0) {
-            return null
-          }
-
-          return (
-            <div className="flex items-center gap-1" key={level}>
-              <span className={`font-medium font-mono text-sm ${colorClass}`}>{count}</span>
-              <span>{t(messagePath)}</span>
-            </div>
-          )
-        })}
+    <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 px-3 py-2">
+        <dt className="text-xs font-medium text-zinc-500">{t('stats.ruleCount', { count: censorships.length })}</dt>
+        <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">{censorships.length}</dd>
       </div>
-    </div>
+      {CENSORSHIP_LEVELS.map(({ level, messagePath }) => {
+        const count = levelCount[level]
+
+        return (
+          <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 px-3 py-2" key={level}>
+            <dt className="text-xs font-medium text-zinc-500">{t(messagePath)}</dt>
+            <dd className={`mt-1 text-lg font-semibold tabular-nums ${getLevelTextClassName(level)}`}>{count}</dd>
+          </div>
+        )
+      })}
+    </dl>
   )
+}
+
+function getLevelTextClassName(level: CensorshipLevel) {
+  switch (level) {
+    case CensorshipLevel.HEAVY:
+      return 'text-red-400'
+    case CensorshipLevel.LIGHT:
+      return 'text-yellow-400'
+    case CensorshipLevel.NONE:
+      return 'text-green-400'
+  }
+
+  return 'text-zinc-100'
 }

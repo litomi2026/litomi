@@ -135,33 +135,59 @@ export default function Censorships() {
   }
 
   return (
-    <div className="flex-1 flex flex-col gap-4">
-      {/* Header - Always visible to prevent layout shift */}
-      <div className="border-b-2">
-        <div className="p-3 pb-0">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">{t('list.title')}</h2>
-            <div className="flex gap-2">
-              <button
-                className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border-2 disabled:opacity-50"
-                disabled={isLoading || isDeleting}
-                onClick={handleOpenImportExportModal}
-                title={t('list.importExportAriaLabel')}
-              >
-                <MoreHorizontal className="size-4 shrink-0" />
-              </button>
-            </div>
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4">
+      <section className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/75">
+        <div className="flex items-start justify-between gap-4 px-4 py-4 sm:px-5">
+          <div className="min-w-0">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{t('list.title')}</h2>
+            <p className="mt-1 text-sm leading-6 text-zinc-500">{t('list.description')}</p>
+          </div>
+          <button
+            className="flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-800/45 px-2.5 text-sm font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 sm:px-3"
+            disabled={isLoading || isDeleting}
+            onClick={handleOpenImportExportModal}
+            title={t('list.importExportAriaLabel')}
+            type="button"
+          >
+            <MoreHorizontal className="size-4 shrink-0" />
+            <span className="hidden sm:inline">{t('list.importExportAction')}</span>
+          </button>
+        </div>
+        <div className="border-t border-zinc-800 px-4 py-3 sm:px-5">
+          <CensorshipStats censorships={allCensorships} />
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-zinc-800 bg-zinc-900/75 p-4 sm:p-5">
+        <div className="mb-3">
+          <h3 className="text-sm font-semibold text-zinc-100">{t('creationBar.title')}</h3>
+          <p className="mt-0.5 text-xs leading-5 text-zinc-500">{t('creationBar.description')}</p>
+        </div>
+        <CensorshipCreationBar />
+      </section>
+
+      <DefaultCensorshipInfo />
+
+      <section className="min-h-72 flex-1 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/75">
+        <div className="border-b border-zinc-800 px-4 py-3 sm:px-5">
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-100">{t('list.ruleListTitle')}</h3>
+            <p className="mt-0.5 text-xs leading-5 text-zinc-500">
+              {searchQuery || filterKey !== null
+                ? t('list.filteredRuleListDescription', {
+                    count: filteredCensorships.length,
+                    total: allCensorships.length,
+                  })
+                : t('list.ruleListDescription', { count: allCensorships.length })}
+            </p>
           </div>
 
-          {/* Quick Add Bar - Primary way to add censorships */}
-          <CensorshipCreationBar />
-
-          {/* Search and Filter - Always visible */}
-          <div className="flex gap-2 my-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 shrink-0 text-zinc-400" />
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 size-4 shrink-0 -translate-y-1/2 text-zinc-500" />
               <input
-                className="w-full pl-10 pr-4 py-2 bg-zinc-800 rounded-lg border-2 focus:border-zinc-600 outline-none transition disabled:opacity-50"
+                aria-label={t('list.searchPlaceholder')}
+                className="h-10 w-full rounded-lg border border-zinc-800 bg-zinc-950/45 pl-9 pr-3 text-sm outline-none transition placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-2 focus:ring-brand/15 disabled:opacity-50"
                 disabled={isLoading || isDeleting}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('list.searchPlaceholder')}
@@ -170,7 +196,8 @@ export default function Censorships() {
               />
             </div>
             <CustomSelect
-              className="w-40"
+              buttonClassName="h-10 border-zinc-800 bg-zinc-950/45 text-sm focus:ring-brand/15"
+              className="sm:w-44"
               disabled={isLoading || isDeleting}
               onChange={(value) => setFilterKey(value === '' ? null : Number(value))}
               options={[
@@ -183,79 +210,77 @@ export default function Censorships() {
               value={filterKey?.toString() ?? ''}
             />
           </div>
+        </div>
 
-          {/* Selection Actions */}
-          {selectedIds.size > 0 && (
-            <div className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg mb-4">
-              <span className="text-sm">{t('list.selectedCount', { count: selectedIds.size })}</span>
-              <div className="flex gap-2">
-                <button
-                  className="px-3 py-1 text-sm bg-zinc-700 hover:bg-zinc-600 rounded transition disabled:opacity-50"
-                  disabled={isDeleting}
-                  onClick={() => setSelectedIds(new Set())}
-                >
-                  {t('list.clearSelection')}
-                </button>
-                <button
-                  className="px-3 min-w-12 py-1 text-sm bg-red-600 hover:bg-red-700 rounded transition disabled:opacity-50 flex items-center justify-center gap-2"
-                  disabled={isDeleting}
-                  onClick={handleBulkDelete}
-                >
-                  {isDeleting ? <Loader2 className="size-3 shrink-0 animate-spin" /> : t('list.delete')}
-                </button>
-              </div>
+        {selectedIds.size > 0 && (
+          <div className="flex flex-col gap-2 border-b border-zinc-800 bg-brand/5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <span className="text-sm font-medium text-zinc-200">
+              {t('list.selectedCount', { count: selectedIds.size })}
+            </span>
+            <div className="flex gap-2">
+              <button
+                className="h-8 rounded-lg border border-zinc-700 px-3 text-sm text-zinc-300 transition hover:bg-zinc-800 disabled:opacity-50"
+                disabled={isDeleting}
+                onClick={() => setSelectedIds(new Set())}
+                type="button"
+              >
+                {t('list.clearSelection')}
+              </button>
+              <button
+                className="flex h-8 min-w-14 items-center justify-center gap-2 rounded-lg bg-red-600 px-3 text-sm font-medium text-foreground transition hover:bg-red-700 disabled:opacity-50"
+                disabled={isDeleting}
+                onClick={handleBulkDelete}
+                type="button"
+              >
+                {isDeleting ? <Loader2 className="size-3 shrink-0 animate-spin" /> : t('list.delete')}
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="min-h-72">
+          {isLoading ? (
+            <div className="divide-y divide-zinc-800">
+              <CensorshipCardSkeleton />
+              <CensorshipCardSkeleton />
+              <CensorshipCardSkeleton />
+            </div>
+          ) : filteredCensorships.length === 0 ? (
+            <StatusState
+              className="min-h-72 py-10"
+              description={
+                searchQuery || filterKey !== null ? t('list.emptySearchDescription') : t('list.emptyDescription')
+              }
+              icon={<Filter className="size-8" />}
+              title={searchQuery || filterKey !== null ? t('list.emptySearchTitle') : t('list.emptyTitle')}
+            />
+          ) : (
+            <div className="divide-y divide-zinc-800">
+              {filteredCensorships.map((censorship) => (
+                <CensorshipCard
+                  censorship={censorship}
+                  isDeleting={deletingIds.has(censorship.id)}
+                  isSelected={selectedIds.has(censorship.id)}
+                  key={censorship.id}
+                  onToggleSelect={() => {
+                    if (!isDeleting) {
+                      handleToggleSelect(censorship.id)
+                    }
+                  }}
+                />
+              ))}
+              {canAutoLoadMore && (
+                <div className="py-2" ref={loadMoreRef}>
+                  {isFetchingNextPage ? <CensorshipCardSkeleton /> : <div className="h-1" />}
+                </div>
+              )}
+              {isFetchNextPageError && (
+                <LoadMoreRetryButton containerClassName="py-4 flex justify-center" onRetry={fetchNextPage} />
+              )}
             </div>
           )}
         </div>
-
-        {/* Stats */}
-        <CensorshipStats censorships={allCensorships} />
-      </div>
-
-      <DefaultCensorshipInfo />
-
-      <div className="flex-1 px-4 pb-4 min-h-72">
-        {isLoading ? (
-          <div className="grid gap-3">
-            <CensorshipCardSkeleton />
-            <CensorshipCardSkeleton />
-            <CensorshipCardSkeleton />
-          </div>
-        ) : filteredCensorships.length === 0 ? (
-          <StatusState
-            className="min-h-72 py-10"
-            description={
-              searchQuery || filterKey !== null ? t('list.emptySearchDescription') : t('list.emptyDescription')
-            }
-            icon={<Filter className="size-8" />}
-            title={searchQuery || filterKey !== null ? t('list.emptySearchTitle') : t('list.emptyTitle')}
-          />
-        ) : (
-          <div className="grid gap-3">
-            {filteredCensorships.map((censorship) => (
-              <CensorshipCard
-                censorship={censorship}
-                isDeleting={deletingIds.has(censorship.id)}
-                isSelected={selectedIds.has(censorship.id)}
-                key={censorship.id}
-                onToggleSelect={() => {
-                  if (!isDeleting) {
-                    handleToggleSelect(censorship.id)
-                  }
-                }}
-              />
-            ))}
-            {canAutoLoadMore && (
-              <div className="py-4" ref={loadMoreRef}>
-                {isFetchingNextPage ? <CensorshipCardSkeleton /> : <div className="h-1" />}
-              </div>
-            )}
-            {isFetchNextPageError && (
-              <LoadMoreRetryButton containerClassName="py-4 flex justify-center" onRetry={fetchNextPage} />
-            )}
-          </div>
-        )}
-      </div>
+      </section>
 
       <ImportExportModal
         censorships={allCensorships}

@@ -35,9 +35,12 @@ export const messages = {
       card: {
         addedAt: '{date}에 추가됨',
         editAriaLabel: '검열 규칙 수정',
+        selectAriaLabel: '{value} 검열 규칙 선택',
       },
       creationBar: {
         addSuccessToast: '{count}개의 검열 규칙을 추가했어요',
+        title: '새 규칙 추가',
+        description: '태그, 작가, 그룹, 언어 등을 한 줄로 빠르게 등록할 수 있어요',
         emptyInputToast: '검열할 키워드를 입력해 주세요',
         inputPlaceholder: '검열할 키워드를 입력해 주세요',
         helpButtonTitle: '도움말',
@@ -85,7 +88,12 @@ export const messages = {
       },
       list: {
         title: '검열 설정',
+        description: '보고 싶지 않은 작품이 덜 보이도록 개인 검열 규칙을 관리해요',
         importExportAriaLabel: '가져오기/내보내기',
+        importExportAction: '가져오기/내보내기',
+        ruleListTitle: '규칙',
+        ruleListDescription: '{count}개의 규칙이 저장되어 있어요',
+        filteredRuleListDescription: '전체 {total}개 중 {count}개를 보고 있어요',
         searchPlaceholder: '검색...',
         allTypes: '모든 유형',
         selectedCount: '{count}개 선택됨',
@@ -110,7 +118,7 @@ export const messages = {
         tagSummary: '기본 흐림 처리 태그 보기',
       },
       stats: {
-        ruleCount: '개 규칙',
+        ruleCount: '규칙 개수',
       },
       forbidden: {
         title: '접근 권한이 없어요',
@@ -165,9 +173,12 @@ export const messages = {
       card: {
         addedAt: 'Added on {date}',
         editAriaLabel: 'Edit censorship rule',
+        selectAriaLabel: 'Select censorship rule {value}',
       },
       creationBar: {
         addSuccessToast: '{count, plural, one {Added # censorship rule} other {Added # censorship rules}}',
+        title: 'Add a rule',
+        description: 'Quickly add tags, artists, groups, languages, and more in one line.',
         emptyInputToast: 'Enter keywords to censor',
         inputPlaceholder: 'Enter keywords to censor',
         helpButtonTitle: 'Help',
@@ -216,7 +227,13 @@ export const messages = {
       },
       list: {
         title: 'Censorship settings',
+        description: 'Manage personal censorship rules to see less content you do not want.',
         importExportAriaLabel: 'Import/export',
+        importExportAction: 'Import/export',
+        ruleListTitle: 'Rules',
+        ruleListDescription: '{count, plural, one {# rule saved} other {# rules saved}}',
+        filteredRuleListDescription:
+          '{count, plural, one {Viewing # of {total} rules} other {Viewing # of {total} rules}}',
         searchPlaceholder: 'Search...',
         allTypes: 'All types',
         selectedCount: '{count} selected',
@@ -241,7 +258,7 @@ export const messages = {
         tagSummary: 'View default blurred tags',
       },
       stats: {
-        ruleCount: '{count, plural, one {rule} other {rules}}',
+        ruleCount: '{count, plural, one {Rule} other {Rules}}',
       },
       forbidden: {
         title: 'No access',

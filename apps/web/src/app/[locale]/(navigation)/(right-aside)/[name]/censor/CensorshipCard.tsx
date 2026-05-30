@@ -29,11 +29,19 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
   const t = useTranslations('Censorship')
   const locale = useLocale()
 
-  function handleEdit(e: React.MouseEvent) {
+  function handleEdit(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
 
     if (!isDeleting) {
       setIsEditing(true)
+    }
+  }
+
+  function handleSelect(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation()
+
+    if (!isDeleting) {
+      onToggleSelect()
     }
   }
 
@@ -53,47 +61,53 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
     <div
       aria-selected={isSelected}
       className={twMerge(
-        'p-4 bg-zinc-800 rounded-lg border-2 transition relative aria-selected:border-brand aria-selected:bg-zinc-700',
-        isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-zinc-700',
+        'relative transition aria-selected:bg-brand/10',
+        isDeleting ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-zinc-800/45',
       )}
       onClick={isDeleting ? undefined : onToggleSelect}
     >
       {/* Deleting overlay with spinner */}
       {isDeleting && (
-        <div className="absolute inset-0 bg-zinc-900/50 rounded-lg flex items-center justify-center">
-          <div className="w-5 h-5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-zinc-950/50">
+          <div className="size-5 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
         </div>
       )}
 
-      <div className="flex items-start gap-3">
-        <div
+      <div className="flex min-h-16 items-center gap-3 px-4 py-3 sm:px-5">
+        <button
           aria-checked={isSelected}
-          className="w-5 h-5 rounded border-2 mt-0.5 flex items-center justify-center transition border-zinc-600 aria-checked:bg-brand aria-checked:border-brand"
+          aria-label={t('card.selectAriaLabel', { value })}
+          className="flex size-5 shrink-0 items-center justify-center rounded-md border border-zinc-600 transition aria-checked:border-brand aria-checked:bg-brand"
+          disabled={isDeleting}
+          onClick={handleSelect}
           role="checkbox"
+          type="button"
         >
           {isSelected && <Check className="size-3 text-background" />}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold">{value}</span>
-                <span className="text-xs px-2 py-0.5 bg-zinc-700 rounded">{t(CENSORSHIP_KEY_MESSAGE_PATHS[key])}</span>
-                <span className={`text-xs font-medium ${levelMeta.colorClass}`}>{t(levelMeta.messagePath)}</span>
-              </div>
-              <div className="text-xs text-zinc-400 mt-1">{t('card.addedAt', { date: dateString })}</div>
-            </div>
-            <button
-              aria-label={t('card.editAriaLabel')}
-              className={`p-1 rounded transition ${isDeleting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-zinc-600'}`}
-              disabled={isDeleting}
-              onClick={handleEdit}
-              type="button"
-            >
-              <SquarePen className="size-4" />
-            </button>
+        </button>
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="min-w-0 truncate text-sm font-semibold text-zinc-100 sm:text-base">{value}</span>
+            <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-400">
+              {t(CENSORSHIP_KEY_MESSAGE_PATHS[key])}
+            </span>
           </div>
+          <div className="mt-1 text-xs text-zinc-500">{t('card.addedAt', { date: dateString })}</div>
         </div>
+        <span className={`shrink-0 rounded-md px-2 py-1 text-xs font-semibold ${getLevelBadgeClassName(level)}`}>
+          {t(levelMeta.messagePath)}
+        </span>
+        <button
+          aria-label={t('card.editAriaLabel')}
+          className={`ml-1 flex size-9 shrink-0 items-center justify-center rounded-lg text-zinc-400 transition ${
+            isDeleting ? 'cursor-not-allowed opacity-50' : 'hover:bg-zinc-700 hover:text-zinc-100'
+          }`}
+          disabled={isDeleting}
+          onClick={handleEdit}
+          type="button"
+        >
+          <SquarePen className="size-4" />
+        </button>
       </div>
     </div>
   )
@@ -101,23 +115,32 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
 
 export function CensorshipCardSkeleton() {
   return (
-    <div className="p-4 bg-zinc-800 rounded-lg border-2 animate-fade-in">
-      <div className="flex items-start gap-3">
-        <div className="w-5 h-5 rounded border-2 mt-0.5 bg-zinc-700" />
-        <div className="flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="h-5 w-32 bg-zinc-700 rounded my-0.5" />
-                <div className="h-4 w-16 bg-zinc-700 rounded" />
-                <div className="h-4 w-12 bg-zinc-700 rounded" />
-              </div>
-              <div className="h-3 w-24 bg-zinc-700 rounded mt-2" />
-            </div>
-            <div className="w-6 h-6 bg-zinc-700 rounded" />
+    <div className="animate-fade-in px-4 py-3 sm:px-5">
+      <div className="flex min-h-16 items-center gap-3">
+        <div className="size-5 rounded-md border border-zinc-700 bg-zinc-800" />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-32 rounded bg-zinc-800" />
+            <div className="h-5 w-14 rounded-md bg-zinc-800" />
           </div>
+          <div className="mt-2 h-3 w-28 rounded bg-zinc-800" />
         </div>
+        <div className="h-6 w-14 rounded-md bg-zinc-800" />
+        <div className="size-9 rounded-lg bg-zinc-800" />
       </div>
     </div>
   )
+}
+
+function getLevelBadgeClassName(level: CensorshipLevel) {
+  switch (level) {
+    case CensorshipLevel.HEAVY:
+      return 'border border-red-500/15 bg-red-500/10 text-red-300'
+    case CensorshipLevel.LIGHT:
+      return 'border border-yellow-500/15 bg-yellow-500/10 text-yellow-300'
+    case CensorshipLevel.NONE:
+      return 'border border-green-500/15 bg-green-500/10 text-green-300'
+  }
+
+  return 'border border-zinc-700 bg-zinc-800 text-zinc-300'
 }

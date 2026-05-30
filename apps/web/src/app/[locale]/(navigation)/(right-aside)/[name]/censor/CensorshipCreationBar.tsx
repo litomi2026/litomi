@@ -197,8 +197,8 @@ export default function CensorshipCreationBar() {
           autoCapitalize="off"
           autoComplete="off"
           className={twMerge(
-            'w-full pl-4 pr-20 sm:pr-12 py-3 bg-zinc-800/70 rounded-lg border-2 border-zinc-700 outline-none transition',
-            'focus:border-brand focus:bg-zinc-800 placeholder:text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed',
+            'h-11 w-full rounded-lg border border-zinc-800 bg-zinc-950/45 pl-3 pr-24 text-sm outline-none transition',
+            'placeholder:text-zinc-500 focus:border-zinc-600 focus:bg-zinc-950/65 focus:ring-2 focus:ring-brand/15 disabled:cursor-not-allowed disabled:opacity-50',
           )}
           disabled={addMutation.isPending}
           name="censorships"
@@ -214,7 +214,7 @@ export default function CensorshipCreationBar() {
         />
         <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
           <button
-            className="p-2 rounded text-zinc-400 hover:text-zinc-300 hover:bg-zinc-700/50 transition"
+            className="rounded-md p-2 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300"
             onClick={() => setShowHelp((value) => !value)}
             title={t('creationBar.helpButtonTitle')}
             type="button"
@@ -222,7 +222,7 @@ export default function CensorshipCreationBar() {
             <Info className="size-4 shrink-0" />
           </button>
           <button
-            className="p-2 rounded hover:bg-zinc-800 disabled:bg-transparent transition"
+            className="rounded-md px-2.5 py-1.5 text-sm font-medium text-zinc-200 transition hover:bg-zinc-800 disabled:bg-transparent disabled:text-zinc-600"
             disabled={addMutation.isPending}
             title={t('creationBar.submitButtonTitle')}
             type="submit"
@@ -252,7 +252,7 @@ export default function CensorshipCreationBar() {
       />
       {showHelp ? (
         <div className={`overflow-hidden`}>
-          <div className="bg-zinc-800/50 rounded-lg border border-zinc-700 p-3 text-sm space-y-2">
+          <div className="rounded-lg border border-zinc-800 bg-zinc-950/45 p-3 text-sm space-y-2">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-medium text-zinc-300">{t('creationBar.helpTitle')}</h3>
               <button
@@ -314,7 +314,7 @@ export default function CensorshipCreationBar() {
           </div>
         </div>
       ) : (
-        <p className="text-xs text-zinc-500 px-1 line-clamp-1 break-all">{t('creationBar.hint')}</p>
+        <p className="px-1 text-xs leading-5 text-zinc-500 sm:line-clamp-1 sm:break-all">{t('creationBar.hint')}</p>
       )}
     </div>
   )
