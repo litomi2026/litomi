@@ -29,7 +29,7 @@ export function useSpendPointsMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.points })
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsExpansion })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactions })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactionsBase })
     },
   })
 }
