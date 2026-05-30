@@ -1,4 +1,5 @@
 import { LockKeyhole } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import LoginButton from '@/components/LoginButton'
 import StatusState from '@/components/status/StatusState'
@@ -6,23 +7,25 @@ import { Link } from '@/i18n/navigation'
 import { SearchParamKey } from '@/storage'
 
 export default function Unauthorized() {
+  const t = useTranslations('Censorship')
+
   return (
     <StatusState
-      description="로그인하면 보고 싶지 않은 작품을 줄이고 탐색 환경을 정리할 수 있어요"
+      description={t('unauthorized.description')}
       icon={<LockKeyhole className="size-8" />}
       intent="auth"
-      title="검열 설정은 로그인이 필요해요"
+      title={t('unauthorized.title')}
     >
       <div className="flex w-full flex-col items-center gap-3">
-        <LoginButton>로그인하고 시작하기</LoginButton>
+        <LoginButton>{t('unauthorized.loginAction')}</LoginButton>
         <p className="text-sm text-zinc-500">
-          처음이신가요?{' '}
+          {t('unauthorized.signupPrompt')}{' '}
           <Link
             className="text-zinc-300 underline transition hover:text-zinc-100"
             href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/censor')}`}
             prefetch={false}
           >
-            회원가입
+            {t('unauthorized.signupAction')}
           </Link>
         </p>
       </div>

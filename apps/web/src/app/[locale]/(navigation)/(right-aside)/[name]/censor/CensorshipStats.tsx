@@ -3,24 +3,24 @@
 import type { CensorshipItem } from '@litomi/contracts'
 
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
-import { memo, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
+
+import { getCensorshipLevelMessagePath } from './constants'
 
 type Props = {
   censorships: CensorshipItem[]
 }
 
-export default memo(CensorshipStats)
+export default function CensorshipStats({ censorships }: Props) {
+  const t = useTranslations('Censorship')
 
-function CensorshipStats({ censorships }: Props) {
-  const levelCount = useMemo(() => {
-    return censorships.reduce(
-      (acc, censorship) => {
-        acc[censorship.level]++
-        return acc
-      },
-      { [CensorshipLevel.LIGHT]: 0, [CensorshipLevel.HEAVY]: 0, [CensorshipLevel.NONE]: 0 },
-    )
-  }, [censorships])
+  const levelCount = censorships.reduce(
+    (acc, censorship) => {
+      acc[censorship.level]++
+      return acc
+    },
+    { [CensorshipLevel.LIGHT]: 0, [CensorshipLevel.HEAVY]: 0, [CensorshipLevel.NONE]: 0 },
+  )
 
   const lightCount = levelCount[CensorshipLevel.LIGHT]
   const heavyCount = levelCount[CensorshipLevel.HEAVY]
@@ -31,25 +31,25 @@ function CensorshipStats({ censorships }: Props) {
       <div className="flex gap-4 text-sm text-zinc-400 overflow-x-auto">
         <div className="flex items-center gap-1">
           <span className="font-medium text-foreground">{censorships.length}</span>
-          <span>개 규칙</span>
+          <span>{t('stats.ruleCount', { count: censorships.length })}</span>
         </div>
         <div className="border-l-2 border-zinc-700" />
         {lightCount > 0 && (
           <div className="flex items-center gap-1">
             <span className="font-medium font-mono text-sm text-yellow-500">{lightCount}</span>
-            <span>흐리게</span>
+            <span>{t(getCensorshipLevelMessagePath(CensorshipLevel.LIGHT))}</span>
           </div>
         )}
         {heavyCount > 0 && (
           <div className="flex items-center gap-1">
             <span className="font-medium font-mono text-sm text-red-500">{heavyCount}</span>
-            <span>숨기기</span>
+            <span>{t(getCensorshipLevelMessagePath(CensorshipLevel.HEAVY))}</span>
           </div>
         )}
         {noneCount > 0 && (
           <div className="flex items-center gap-1">
             <span className="font-medium font-mono text-sm text-green-500">{noneCount}</span>
-            <span>해제</span>
+            <span>{t(getCensorshipLevelMessagePath(CensorshipLevel.NONE))}</span>
           </div>
         )}
       </div>

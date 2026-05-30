@@ -6,6 +6,7 @@ import { CensorshipKey } from '@litomi/domain/censorship/model'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Filter, Loader2, MoreHorizontal, Search } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -23,7 +24,7 @@ import { fetchAPIData } from '@/utils/api-request'
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
 import CensorshipCreationBar from './CensorshipCreationBar'
 import CensorshipStats from './CensorshipStats'
-import { CENSORSHIP_KEY_LABELS } from './constants'
+import { CENSORSHIP_KEY_ORDER, getCensorshipKeyMessagePath } from './constants'
 import DefaultCensorshipInfo from './DefaultCensorshipInfo'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -31,12 +32,13 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 const ImportExportModal = dynamic(() => import('./ImportExportModal'))
 
 export default function Censorships() {
-  const queryClient = useQueryClient()
-  const [showImportExportModal, setShowImportExportModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
   const [selectedIds, setSelectedIds] = useState(new Set<number>())
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
+  const [showImportExportModal, setShowImportExportModal] = useState(false)
+  const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
+  const queryClient = useQueryClient()
+  const t = useTranslations('Censorship')
   const { canAccess, guardAdultAccess, me } = useAdultAccessGuard()
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
@@ -58,7 +60,7 @@ export default function Censorships() {
 
     onSuccess: (ids) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
-      toast.success(`${ids.length}개의 검열 규칙을 삭제했어요`)
+      toast.success(t('list.deleteSuccessToast', { count: ids.length }))
       setSelectedIds(new Set())
       setDeletingIds(new Set())
     },
@@ -125,8 +127,8 @@ export default function Censorships() {
   if (me && !canAccess) {
     return (
       <AdultVerificationGate
-        description="검열 설정을 사용하려면 익명 성인인증이 필요해요"
-        title="성인인증이 필요해요"
+        description={t('list.adultGateDescription')}
+        title={t('list.adultGateTitle')}
         username={me.name}
       />
     )
@@ -138,13 +140,13 @@ export default function Censorships() {
       <div className="border-b-2">
         <div className="p-3 pb-0">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">검열 설정</h2>
+            <h2 className="text-2xl font-bold">{t('list.title')}</h2>
             <div className="flex gap-2">
               <button
                 className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border-2 disabled:opacity-50"
                 disabled={isLoading || isDeleting}
                 onClick={handleOpenImportExportModal}
-                title="가져오기/내보내기"
+                title={t('list.importExportAriaLabel')}
               >
                 <MoreHorizontal className="size-4 shrink-0" />
               </button>
@@ -162,7 +164,7 @@ export default function Censorships() {
                 className="w-full pl-10 pr-4 py-2 bg-zinc-800 rounded-lg border-2 focus:border-zinc-600 outline-none transition disabled:opacity-50"
                 disabled={isLoading || isDeleting}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="검색..."
+                placeholder={t('list.searchPlaceholder')}
                 type="text"
                 value={searchQuery}
               />
@@ -172,10 +174,10 @@ export default function Censorships() {
               disabled={isLoading || isDeleting}
               onChange={(value) => setFilterKey(value === '' ? null : Number(value))}
               options={[
-                { value: '', label: '모든 유형' },
-                ...Object.entries(CENSORSHIP_KEY_LABELS).map(([key, label]) => ({
-                  value: key,
-                  label,
+                { value: '', label: t('list.allTypes') },
+                ...CENSORSHIP_KEY_ORDER.map((key) => ({
+                  value: String(key),
+                  label: t(getCensorshipKeyMessagePath(key)),
                 })),
               ]}
               value={filterKey?.toString() ?? ''}
@@ -185,21 +187,21 @@ export default function Censorships() {
           {/* Selection Actions */}
           {selectedIds.size > 0 && (
             <div className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg mb-4">
-              <span className="text-sm">{selectedIds.size}개 선택됨</span>
+              <span className="text-sm">{t('list.selectedCount', { count: selectedIds.size })}</span>
               <div className="flex gap-2">
                 <button
                   className="px-3 py-1 text-sm bg-zinc-700 hover:bg-zinc-600 rounded transition disabled:opacity-50"
                   disabled={isDeleting}
                   onClick={() => setSelectedIds(new Set())}
                 >
-                  선택 해제
+                  {t('list.clearSelection')}
                 </button>
                 <button
                   className="px-3 min-w-12 py-1 text-sm bg-red-600 hover:bg-red-700 rounded transition disabled:opacity-50 flex items-center justify-center gap-2"
                   disabled={isDeleting}
                   onClick={handleBulkDelete}
                 >
-                  {isDeleting ? <Loader2 className="size-3 shrink-0 animate-spin" /> : '삭제'}
+                  {isDeleting ? <Loader2 className="size-3 shrink-0 animate-spin" /> : t('list.delete')}
                 </button>
               </div>
             </div>
@@ -223,12 +225,10 @@ export default function Censorships() {
           <StatusState
             className="min-h-72 py-10"
             description={
-              searchQuery || filterKey !== null
-                ? '검색 조건을 바꾸면 다시 확인할 수 있어요'
-                : '위 입력창에서 새 규칙을 추가할 수 있어요'
+              searchQuery || filterKey !== null ? t('list.emptySearchDescription') : t('list.emptyDescription')
             }
             icon={<Filter className="size-8" />}
-            title={searchQuery || filterKey !== null ? '검색 결과가 없어요' : '아직 검열 규칙이 없어요'}
+            title={searchQuery || filterKey !== null ? t('list.emptySearchTitle') : t('list.emptyTitle')}
           />
         ) : (
           <div className="grid gap-3">
