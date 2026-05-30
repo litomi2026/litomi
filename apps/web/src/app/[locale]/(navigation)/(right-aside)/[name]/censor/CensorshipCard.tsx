@@ -1,12 +1,14 @@
 'use client'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { Check, SquarePen } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
+import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import CensorshipEditForm from './CensorshipEditForm'
-import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
+import { CENSORSHIP_LEVEL_META, getCensorshipKeyMessagePath, getCensorshipLevelMessagePath } from './constants'
 
 type Props = {
   censorship: {
@@ -24,38 +26,33 @@ type Props = {
 export default function CensorshipCard({ censorship, isSelected, isDeleting = false, onToggleSelect }: Props) {
   const { key, value, level, createdAt } = censorship
   const [isEditing, setIsEditing] = useState(false)
+  const t = useTranslations('Censorship')
+  const locale = useLocale()
 
-  const handleEdit = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation()
-      if (!isDeleting) {
-        setIsEditing(true)
-      }
-    },
-    [isDeleting],
-  )
+  function handleEdit(e: React.MouseEvent) {
+    e.stopPropagation()
 
-  const handleEditCompleted = useCallback(() => {
-    setIsEditing(false)
-  }, [])
+    if (!isDeleting) {
+      setIsEditing(true)
+    }
+  }
 
-  const dateString = new Date(createdAt).toLocaleDateString('ko-KR', {
+  const dateString = new Date(createdAt).toLocaleDateString(LOCALE_LANGUAGE_TAGS[locale], {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   })
 
   if (isEditing) {
-    return <CensorshipEditForm censorship={censorship} onEditCompleted={handleEditCompleted} />
+    return <CensorshipEditForm censorship={censorship} onEditCompleted={() => setIsEditing(false)} />
   }
 
   return (
     <div
       aria-selected={isSelected}
       className={twMerge(
-        `p-4 bg-zinc-800 rounded-lg border-2 transition relative ${
-          isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-zinc-700'
-        } aria-selected:border-brand aria-selected:bg-zinc-700`,
+        'p-4 bg-zinc-800 rounded-lg border-2 transition relative aria-selected:border-brand aria-selected:bg-zinc-700',
+        isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-zinc-700',
       )}
       onClick={isDeleting ? undefined : onToggleSelect}
     >
@@ -79,15 +76,15 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-semibold">{value}</span>
-                <span className="text-xs px-2 py-0.5 bg-zinc-700 rounded">{CENSORSHIP_KEY_LABELS[key]}</span>
-                <span className={`text-xs font-medium ${CENSORSHIP_LEVEL_LABELS[level].color}`}>
-                  {CENSORSHIP_LEVEL_LABELS[level].label}
+                <span className="text-xs px-2 py-0.5 bg-zinc-700 rounded">{t(getCensorshipKeyMessagePath(key))}</span>
+                <span className={`text-xs font-medium ${CENSORSHIP_LEVEL_META[level].color}`}>
+                  {t(getCensorshipLevelMessagePath(level))}
                 </span>
               </div>
-              <div className="text-xs text-zinc-400 mt-1">{dateString}에 추가됨</div>
+              <div className="text-xs text-zinc-400 mt-1">{t('card.addedAt', { date: dateString })}</div>
             </div>
             <button
-              aria-label="검열 규칙 수정"
+              aria-label={t('card.editAriaLabel')}
               className={`p-1 rounded transition ${isDeleting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-zinc-600'}`}
               disabled={isDeleting}
               onClick={handleEdit}

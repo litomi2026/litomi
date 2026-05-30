@@ -4,6 +4,7 @@ import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -11,7 +12,7 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-import { CENSORSHIP_LEVEL_LABELS } from './constants'
+import { CENSORSHIP_LEVEL_ORDER, getCensorshipLevelMessagePath } from './constants'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -27,10 +28,11 @@ type Props = {
 
 export default function CensorshipEditForm({ censorship, onEditCompleted }: Props) {
   const { id, key, value, level } = censorship
-  const queryClient = useQueryClient()
-  const inputId = useId()
   const [editValue, setEditValue] = useState(value)
   const [editLevel, setEditLevel] = useState(level)
+  const inputId = useId()
+  const queryClient = useQueryClient()
+  const t = useTranslations('Censorship')
   const { guardAdultAccess } = useAdultAccessGuard()
 
   const updateMutation = useMutation({
@@ -49,7 +51,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
-      toast.success('검열 규칙을 수정했어요')
+      toast.success(t('editForm.successToast'))
       onEditCompleted()
     },
   })
@@ -75,7 +77,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
       <div className="space-y-3">
         <div>
           <label className="block text-sm font-medium mb-1" htmlFor={inputId}>
-            값
+            {t('editForm.valueLabel')}
           </label>
           <input
             autoCapitalize="off"
@@ -89,19 +91,18 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">수준</label>
+          <label className="block text-sm font-medium mb-1">{t('editForm.levelLabel')}</label>
           <div className="flex gap-2">
-            {Object.entries(CENSORSHIP_LEVEL_LABELS).map(([level, { label }]) => {
-              const levelNum = Number(level) as CensorshipLevel
+            {CENSORSHIP_LEVEL_ORDER.map((levelNum) => {
               return (
                 <button
                   aria-pressed={editLevel === levelNum}
                   className="flex-1 px-3 py-2 rounded border-2 transition bg-zinc-700 hover:bg-zinc-600 aria-pressed:bg-zinc-600 aria-pressed:border-brand"
-                  key={level}
+                  key={levelNum}
                   onClick={() => setEditLevel(levelNum)}
                   type="button"
                 >
-                  {label}
+                  {t(getCensorshipLevelMessagePath(levelNum))}
                 </button>
               )
             })}
@@ -114,7 +115,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
             onClick={handleCancelEdit}
             type="button"
           >
-            취소
+            {t('editForm.cancel')}
           </button>
           <button
             className="flex-1 px-3 py-2 font-semibold bg-brand/80 text-background hover:bg-brand/90 rounded transition flex items-center justify-center gap-1 disabled:opacity-50"
@@ -122,11 +123,11 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
             type="submit"
           >
             {updateMutation.isPending ? (
-              <span>저장 중...</span>
+              <span>{t('editForm.saving')}</span>
             ) : (
               <>
                 <Check className="size-4" />
-                <span>저장</span>
+                <span>{t('editForm.save')}</span>
               </>
             )}
           </button>

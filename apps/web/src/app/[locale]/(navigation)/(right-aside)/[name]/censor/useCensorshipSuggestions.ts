@@ -1,7 +1,7 @@
 'use client'
 
 import { DEFAULT_SUGGESTIONS } from '@litomi/domain/search/suggestion'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import useDebouncedValue from '@/hook/useDebouncedValue'
 import { SUGGESTION_DEBOUNCE_MS } from '@/ui-policy'
@@ -22,25 +22,7 @@ type Props = {
 
 export default function useCensorshipSuggestions({ inputValue, cursorPosition }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
-
-  const currentWord = useMemo(() => {
-    if (!inputValue) {
-      return { word: '', start: 0, end: 0 }
-    }
-
-    const lastComma = inputValue.lastIndexOf(',', cursorPosition - 1)
-    const nextComma = inputValue.indexOf(',', cursorPosition)
-    const start = lastComma + 1
-    const end = nextComma === -1 ? inputValue.length : nextComma
-    const segment = inputValue.slice(start, end)
-    const trimStart = segment.length - segment.trimStart().length
-
-    return {
-      word: segment.trim().toLowerCase(),
-      start: start + trimStart,
-      end,
-    }
-  }, [inputValue, cursorPosition])
+  const currentWord = getCurrentWord(inputValue, cursorPosition)
 
   const debouncedWord = useDebouncedValue({
     value: currentWord.word,
@@ -85,5 +67,24 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
     debouncedWord,
     isLoading,
     isFetching,
+  }
+}
+
+function getCurrentWord(inputValue: string, cursorPosition: number) {
+  if (!inputValue) {
+    return { word: '', start: 0, end: 0 }
+  }
+
+  const lastComma = inputValue.lastIndexOf(',', cursorPosition - 1)
+  const nextComma = inputValue.indexOf(',', cursorPosition)
+  const start = lastComma + 1
+  const end = nextComma === -1 ? inputValue.length : nextComma
+  const segment = inputValue.slice(start, end)
+  const trimStart = segment.length - segment.trimStart().length
+
+  return {
+    word: segment.trim().toLowerCase(),
+    start: start + trimStart,
+    end,
   }
 }

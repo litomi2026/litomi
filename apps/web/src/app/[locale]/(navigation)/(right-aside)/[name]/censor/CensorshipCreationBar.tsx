@@ -7,7 +7,8 @@ import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Info, Loader2, X } from 'lucide-react'
-import { useCallback, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -16,12 +17,13 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-import { TYPE_PATTERNS } from './constants'
+import { CENSORSHIP_TYPE_PATTERNS } from './constants'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function CensorshipCreationBar() {
+  const t = useTranslations('Censorship')
   const [showHelp, setShowHelp] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -47,7 +49,7 @@ export default function CensorshipCreationBar() {
     },
 
     onSuccess: (ids) => {
-      toast.success(`${ids.length}개의 검열 규칙을 추가했어요`)
+      toast.success(t('creationBar.addSuccessToast', { count: ids.length }))
       setInputValue('')
       setCursorPosition(0)
       setShowSuggestions(false)
@@ -79,8 +81,8 @@ export default function CensorshipCreationBar() {
       return
     }
 
-    if (!inputValue?.trim()) {
-      toast.warning('검열할 키워드를 입력해 주세요')
+    if (!inputValue.trim()) {
+      toast.warning(t('creationBar.emptyInputToast'))
       return
     }
 
@@ -90,7 +92,7 @@ export default function CensorshipCreationBar() {
       .filter(Boolean)
 
     if (items.length === 0) {
-      toast.warning('검열할 키워드를 입력해 주세요')
+      toast.warning(t('creationBar.emptyInputToast'))
       return
     }
 
@@ -102,65 +104,53 @@ export default function CensorshipCreationBar() {
     addMutation.mutate(payload)
   }
 
-  const updateCursorPosition = useCallback(() => {
+  function updateCursorPosition() {
     if (inputRef.current) {
       setCursorPosition(inputRef.current.selectionStart || 0)
     }
-  }, [])
+  }
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value
-      const position = e.target.selectionStart || 0
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value
+    const position = e.target.selectionStart || 0
 
-      setInputValue(value)
-      setCursorPosition(position)
-      setShowSuggestions(true)
-      resetSelection()
-    },
-    [resetSelection],
-  )
+    setInputValue(value)
+    setCursorPosition(position)
+    setShowSuggestions(true)
+    resetSelection()
+  }
 
-  const handleFocus = useCallback(() => {
+  function handleFocus() {
     setShowSuggestions(true)
     resetSelection()
     updateCursorPosition()
-  }, [resetSelection, updateCursorPosition])
+  }
 
-  const handleBlur = useCallback(
-    (e: React.FocusEvent<HTMLInputElement>) => {
-      if (!suggestionsRef.current?.contains(e.relatedTarget)) {
-        setTimeout(() => {
-          setShowSuggestions(false)
-          resetSelection()
-        }, 200)
-      }
-    },
-    [resetSelection],
-  )
-
-  const handleSelectSuggestion = useCallback(
-    (suggestion: CensorshipSuggestion) => {
-      const newValue = selectSuggestion(suggestion)
-      setInputValue(newValue)
-
-      // Set cursor position after the selected suggestion
-      const newCursorPos = currentWord.start + suggestion.value.length
-      setCursorPosition(newCursorPos)
-
-      setShowSuggestions(false)
-      resetSelection()
-      inputRef.current?.focus()
-
-      // Set cursor position in the input
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+    if (!suggestionsRef.current?.contains(e.relatedTarget)) {
       setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPos
-        }
-      }, 0)
-    },
-    [selectSuggestion, currentWord, resetSelection],
-  )
+        setShowSuggestions(false)
+        resetSelection()
+      }, 200)
+    }
+  }
+
+  function handleSelectSuggestion(suggestion: CensorshipSuggestion) {
+    const newValue = selectSuggestion(suggestion)
+    const newCursorPos = currentWord.start + suggestion.value.length
+
+    setInputValue(newValue)
+    setCursorPosition(newCursorPos)
+    setShowSuggestions(false)
+    resetSelection()
+    inputRef.current?.focus()
+
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPos
+      }
+    }, 0)
+  }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!showSuggestions || suggestions.length === 0) {
@@ -218,7 +208,7 @@ export default function CensorshipCreationBar() {
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           onSelect={updateCursorPosition}
-          placeholder="검열할 키워드를 입력해 주세요"
+          placeholder={t('creationBar.inputPlaceholder')}
           ref={inputRef}
           type="text"
           value={inputValue}
@@ -226,8 +216,8 @@ export default function CensorshipCreationBar() {
         <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
           <button
             className="p-2 rounded text-zinc-400 hover:text-zinc-300 hover:bg-zinc-700/50 transition"
-            onClick={() => setShowHelp(!showHelp)}
-            title="도움말"
+            onClick={() => setShowHelp((value) => !value)}
+            title={t('creationBar.helpButtonTitle')}
             type="button"
           >
             <Info className="size-4 shrink-0" />
@@ -235,10 +225,10 @@ export default function CensorshipCreationBar() {
           <button
             className="p-2 rounded hover:bg-zinc-800 disabled:bg-transparent transition"
             disabled={addMutation.isPending}
-            title="검열 추가 (Enter)"
+            title={t('creationBar.submitButtonTitle')}
             type="submit"
           >
-            {addMutation.isPending ? <Loader2 className="size-4 shrink-0 animate-spin" /> : '등록'}
+            {addMutation.isPending ? <Loader2 className="size-4 shrink-0 animate-spin" /> : t('creationBar.submit')}
           </button>
         </div>
       </form>
@@ -249,9 +239,11 @@ export default function CensorshipCreationBar() {
         onSelect={handleSelectSuggestion}
         renderRightContent={({ value }) =>
           value.endsWith(':') ? (
-            <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">접두사</span>
+            <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">
+              {t('creationBar.prefixBadge')}
+            </span>
           ) : BLIND_TAG_VALUES.includes(value) ? (
-            <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
+            <span className="text-xs text-orange-500 mt-0.5">{t('creationBar.defaultTagBadge')}</span>
           ) : null
         }
         searchTerm={debouncedWord}
@@ -263,7 +255,7 @@ export default function CensorshipCreationBar() {
         <div className={`overflow-hidden`}>
           <div className="bg-zinc-800/50 rounded-lg border border-zinc-700 p-3 text-sm space-y-2">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium text-zinc-300">입력 형식 가이드</h3>
+              <h3 className="font-medium text-zinc-300">{t('creationBar.helpTitle')}</h3>
               <button
                 className="p-1 rounded hover:bg-zinc-700/50 transition"
                 onClick={() => setShowHelp(false)}
@@ -274,58 +266,56 @@ export default function CensorshipCreationBar() {
             </div>
             <div className="space-y-2 text-zinc-400">
               <div>
-                <p className="font-medium text-zinc-300 mb-1">기본 형식</p>
+                <p className="font-medium text-zinc-300 mb-1">{t('creationBar.basicFormatTitle')}</p>
                 <p>
-                  • 태그: <code className="text-zinc-300">scat</code>
+                  • {t('creationBar.tagExampleLabel')}: <code className="text-zinc-300">scat</code>
                 </p>
                 <p>
-                  • 여러 개: <code className="text-zinc-300">scat, gore, guro</code>
+                  • {t('creationBar.multipleExampleLabel')}: <code className="text-zinc-300">scat, gore, guro</code>
                 </p>
               </div>
               <div>
-                <p className="font-medium text-zinc-300 mb-1">특정 타입 지정</p>
+                <p className="font-medium text-zinc-300 mb-1">{t('creationBar.specificTypeTitle')}</p>
                 <p>
-                  • 작가: <code className="text-zinc-300">artist:작가명</code>
+                  • {t('common.keys.artist')}: <code className="text-zinc-300">artist:name</code>
                 </p>
                 <p>
-                  • 그룹: <code className="text-zinc-300">group:zenmai_kourogi</code>
+                  • {t('common.keys.group')}: <code className="text-zinc-300">group:zenmai_kourogi</code>
                 </p>
                 <p>
-                  • 시리즈: <code className="text-zinc-300">series:작품명</code>
+                  • {t('common.keys.series')}: <code className="text-zinc-300">series:title</code>
                 </p>
                 <p>
-                  • 캐릭터: <code className="text-zinc-300">character:캐릭터명</code>
+                  • {t('common.keys.character')}: <code className="text-zinc-300">character:name</code>
                 </p>
                 <p>
-                  • 언어: <code className="text-zinc-300">language:chinese</code>
+                  • {t('common.keys.language')}: <code className="text-zinc-300">language:chinese</code>
                 </p>
                 <p>
-                  • 종류: <code className="text-zinc-300">type:western</code>,{' '}
+                  • {t('common.keys.type')}: <code className="text-zinc-300">type:western</code>,{' '}
                   <code className="text-zinc-300">type:misc</code>
                 </p>
               </div>
               <div>
-                <p className="font-medium text-zinc-300 mb-1">태그 카테고리</p>
+                <p className="font-medium text-zinc-300 mb-1">{t('creationBar.tagCategoryTitle')}</p>
                 <p>
-                  • 여성: <code className="text-zinc-300">female:furry</code>
+                  • {t('creationBar.femaleTagLabel')}: <code className="text-zinc-300">female:furry</code>
                 </p>
                 <p>
-                  • 남성: <code className="text-zinc-300">male:males_only</code>
+                  • {t('creationBar.maleTagLabel')}: <code className="text-zinc-300">male:males_only</code>
                 </p>
                 <p>
-                  • 혼합: <code className="text-zinc-300">mixed:incest</code>
+                  • {t('creationBar.mixedTagLabel')}: <code className="text-zinc-300">mixed:incest</code>
                 </p>
                 <p>
-                  • 기타: <code className="text-zinc-300">other:ai_generated</code>
+                  • {t('creationBar.otherTagLabel')}: <code className="text-zinc-300">other:ai_generated</code>
                 </p>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <p className="text-xs text-zinc-500 px-1 line-clamp-1 break-all">
-          쉼표로 여러 개 입력 가능 (예: scat, male:males_only, group:zenmai_kourogi, language:chinese, ...)
-        </p>
+        <p className="text-xs text-zinc-500 px-1 line-clamp-1 break-all">{t('creationBar.hint')}</p>
       )}
     </div>
   )
@@ -334,7 +324,7 @@ export default function CensorshipCreationBar() {
 function detectTypeAndValue(text: string): { key: CensorshipKey; value: string } {
   const trimmed = text.trim()
 
-  for (const [pattern, key] of Object.entries(TYPE_PATTERNS)) {
+  for (const [pattern, key] of Object.entries(CENSORSHIP_TYPE_PATTERNS)) {
     if (trimmed.toLowerCase().startsWith(pattern)) {
       return {
         key,
