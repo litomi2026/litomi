@@ -42,7 +42,9 @@ async function fetchReadingHistoryPaginated(cursor: string | null) {
     params.set('cursor', cursor)
   }
 
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/history?${params}`
+  const url = new URL('/api/v1/library/history', NEXT_PUBLIC_API_ORIGIN)
+  url.search = params.toString()
+
   const { data } = await fetchAPIData<GETV1ReadingHistoryResponse>(url, { credentials: 'include' })
   return data
 }

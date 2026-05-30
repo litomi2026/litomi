@@ -12,7 +12,7 @@ import { fetchAPIData } from '@/utils/api-request'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function addBookmarks(body: POSTV1BookmarkBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark`
+  const url = new URL('/api/v1/bookmark', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1BookmarkResponse>(url, {
     method: 'POST',
@@ -25,7 +25,7 @@ export async function addBookmarks(body: POSTV1BookmarkBody) {
 }
 
 export async function deleteBookmarks(body: DELETEV1BookmarkBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark`
+  const url = new URL('/api/v1/bookmark', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<DELETEV1BookmarkResponse>(url, {
     method: 'DELETE',

@@ -15,7 +15,7 @@ export function useSpendPointsMutation() {
 
   return useMutation<POSTV1PointSpendResponse, ProblemDetailsError, POSTV1PointSpendRequest>({
     mutationFn: async ({ type, itemId }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/spend`
+      const url = new URL('/api/v1/points/spend', NEXT_PUBLIC_API_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1PointSpendResponse>(url, {
         method: 'POST',

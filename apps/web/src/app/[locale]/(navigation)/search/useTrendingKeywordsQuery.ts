@@ -16,13 +16,10 @@ type Params = {
 }
 
 export async function fetchTrendingKeywords({ locale }: Params) {
-  const params = new URLSearchParams()
+  const params = new URLSearchParams({ locale })
 
-  if (locale) {
-    params.set('locale', locale)
-  }
-
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/search/trending?${params}`
+  const url = new URL('/api/v1/search/trending', NEXT_PUBLIC_API_ORIGIN)
+  url.search = params.toString()
   const { data } = await fetchAPIData<GETTrendingKeywordsResponse>(url)
   return data
 }

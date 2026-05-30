@@ -1,7 +1,9 @@
+import { Locale } from '@litomi/domain/locale'
+
 import type { LocalizedMessages } from '@/i18n/messages'
 
 export const messages = {
-  ko: {
+  [Locale.KO]: {
     Metadata: {
       community: {
         posts: {
@@ -32,8 +34,31 @@ export const messages = {
         },
       },
     },
+    CensorshipCard: {
+      addedAt: '{date}에 추가됨',
+      editAriaLabel: '검열 규칙 수정',
+      keys: {
+        artist: '작가',
+        group: '그룹',
+        series: '시리즈',
+        character: '캐릭터',
+        tag: '태그',
+        tagCategoryFemale: '여성 태그',
+        tagCategoryMale: '남성 태그',
+        tagCategoryMixed: '혼합 태그',
+        tagCategoryOther: '기타 태그',
+        language: '언어',
+        uploader: '업로더',
+        type: '종류',
+      },
+      levels: {
+        light: '흐리게',
+        heavy: '숨기기',
+        none: '해제',
+      },
+    },
   },
-  en: {
+  [Locale.EN]: {
     Metadata: {
       community: {
         posts: {
@@ -62,6 +87,29 @@ export const messages = {
           title: 'Censor',
           description: 'Manage content visibility and blocking settings.',
         },
+      },
+    },
+    CensorshipCard: {
+      addedAt: 'Added on {date}',
+      editAriaLabel: 'Edit censorship rule',
+      keys: {
+        artist: 'Artist',
+        group: 'Group',
+        series: 'Series',
+        character: 'Character',
+        tag: 'Tag',
+        tagCategoryFemale: 'Female tag',
+        tagCategoryMale: 'Male tag',
+        tagCategoryMixed: 'Mixed tag',
+        tagCategoryOther: 'Other tag',
+        language: 'Language',
+        uploader: 'Uploader',
+        type: 'Type',
+      },
+      levels: {
+        light: 'Blur',
+        heavy: 'Hide',
+        none: 'Allow',
       },
     },
   },

@@ -42,30 +42,33 @@ export default function Censorships() {
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
     useCensorshipsInfiniteQuery()
 
-  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
-
   const deleteMutation = useMutation({
     mutationFn: async (ids: number[]) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
+      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+
       const { data } = await fetchAPIData<DELETEV1CensorshipDeleteResponse>(url, {
         method: 'DELETE',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ ids }),
       })
+
       return data.ids
     },
+
     onSuccess: (ids) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
       toast.success(`${ids.length}개의 검열 규칙을 삭제했어요`)
       setSelectedIds(new Set())
       setDeletingIds(new Set())
     },
+
     onError: () => {
       setDeletingIds(new Set())
     },
   })
 
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const allCensorships = useMemo(() => data?.pages.flatMap((page) => page.censorships) ?? [], [data])
   const isDeleting = deleteMutation.isPending || deletingIds.size > 0
 

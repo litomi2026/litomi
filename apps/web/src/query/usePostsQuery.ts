@@ -26,7 +26,8 @@ export default function usePostInfiniteQuery(filter: PostFilter, mangaId?: numbe
         searchParams.set('username', username)
       }
 
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post?${searchParams}`
+      const url = new URL('/api/v1/post', NEXT_PUBLIC_API_ORIGIN)
+      url.search = searchParams.toString()
       const requestInit = filter === PostFilter.FOLLOWING ? { credentials: 'include' as const } : undefined
       const { data } = await fetchAPIData<GETV1PostResponse>(url, requestInit)
       return data

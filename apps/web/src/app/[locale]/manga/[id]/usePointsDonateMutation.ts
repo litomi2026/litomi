@@ -13,7 +13,7 @@ export default function usePointsDonateMutation() {
 
   return useMutation<POSTV1PointsDonationCreateResponse, ProblemDetailsError, POSTV1PointsDonationCreateRequest>({
     mutationFn: async ({ totalAmount, recipients }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/donations`
+      const url = new URL('/api/v1/points/donations', NEXT_PUBLIC_API_ORIGIN)
       const { data } = await fetchAPIData<POSTV1PointsDonationCreateResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -25,7 +25,7 @@ export default function usePointsDonateMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.points, exact: true })
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactions })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.myDonations })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.myDonationsBase })
     },
   })
 }

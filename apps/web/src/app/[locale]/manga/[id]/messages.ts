@@ -1,7 +1,9 @@
+import { Locale } from '@litomi/domain/locale'
+
 import type { LocalizedMessages } from '@/i18n/messages'
 
 export const messages = {
-  ko: {
+  [Locale.KO]: {
     Metadata: {
       manga: {
         fallbackTitle: '작품 #{id}',
@@ -11,7 +13,7 @@ export const messages = {
       },
     },
   },
-  en: {
+  [Locale.EN]: {
     Metadata: {
       manga: {
         fallbackTitle: 'Manga #{id}',

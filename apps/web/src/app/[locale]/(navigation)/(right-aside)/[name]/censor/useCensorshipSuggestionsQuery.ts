@@ -32,13 +32,9 @@ type Props = {
 }
 
 export async function fetchCensorshipSuggestions({ query, locale }: Params) {
-  const params = new URLSearchParams({ query })
-
-  if (locale) {
-    params.set('locale', locale)
-  }
-
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/search/suggestions?${params}`
+  const params = new URLSearchParams({ locale, query })
+  const url = new URL('/api/v1/search/suggestions', NEXT_PUBLIC_API_ORIGIN)
+  url.search = params.toString()
   const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
   return data
 }

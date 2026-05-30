@@ -39,7 +39,7 @@ export default function BookmarkButton({ manga, className }: Props) {
 
   const saveMutation = useMutation<void, unknown, { mangaId: number; shouldBookmark: boolean }>({
     mutationFn: async ({ mangaId, shouldBookmark }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/${mangaId}`
+      const url = new URL(`/api/v1/bookmark/${mangaId}`, NEXT_PUBLIC_API_ORIGIN)
 
       if (!shouldBookmark) {
         await fetchAPIData(url, {

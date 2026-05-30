@@ -11,7 +11,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchPointsTurnstile() {
   try {
-    const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/turnstile`
+    const url = new URL('/api/v1/points/turnstile', NEXT_PUBLIC_API_ORIGIN)
     const { data } = await fetchAPIData<GETV1PointTurnstileResponse>(url, { credentials: 'include' })
     return data
   } catch (error) {

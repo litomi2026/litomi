@@ -55,7 +55,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
   const verifyMutation = useMutation<POSTV1BBatonAttemptResponse, unknown, void>({
     mutationFn: async () => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bbaton/attempt`
+      const url = new URL('/api/v1/bbaton/attempt', NEXT_PUBLIC_API_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1BBatonAttemptResponse>(url, {
         method: 'POST',

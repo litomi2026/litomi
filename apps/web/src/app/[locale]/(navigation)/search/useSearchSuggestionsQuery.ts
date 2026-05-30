@@ -21,13 +21,10 @@ type Props = {
 }
 
 export async function fetchSearchSuggestions({ query, locale }: Params) {
-  const searchParams = new URLSearchParams({ query })
+  const searchParams = new URLSearchParams({ locale, query })
 
-  if (locale) {
-    searchParams.set('locale', locale)
-  }
-
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/search/suggestions?${searchParams}`
+  const url = new URL('/api/v1/search/suggestions', NEXT_PUBLIC_API_ORIGIN)
+  url.search = searchParams.toString()
   const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
   return data
 }

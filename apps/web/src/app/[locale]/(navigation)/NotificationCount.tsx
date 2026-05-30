@@ -33,7 +33,7 @@ export default function NotificationCount() {
 }
 
 async function fetchUnreadCount() {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/notification/unread-count`
+  const url = new URL('/api/v1/notification/unread-count', NEXT_PUBLIC_API_ORIGIN)
   const { data } = await fetchAPIData<GETUnreadCountResponse>(url, { credentials: 'include' })
   return data
 }

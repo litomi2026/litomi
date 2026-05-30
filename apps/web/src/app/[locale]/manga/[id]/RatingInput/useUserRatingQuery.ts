@@ -13,7 +13,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchUserRating(mangaId: number) {
   try {
-    const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/rating`
+    const url = new URL(`/api/v1/manga/${mangaId}/rating`, NEXT_PUBLIC_API_ORIGIN)
     const { data } = await fetchAPIData<GETV1MangaIdRatingResponse>(url, { credentials: 'include' })
     return data
   } catch (error) {

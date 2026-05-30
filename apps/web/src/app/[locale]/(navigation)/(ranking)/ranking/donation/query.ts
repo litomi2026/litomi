@@ -1,3 +1,5 @@
+import type { PublicLocale } from '@litomi/domain/locale'
+
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateGroupList } from '@litomi/catalog/translation/group'
 import { db } from '@litomi/db/app'
@@ -19,7 +21,7 @@ function toDisplayValue(value: string) {
 
 const TOP_RECIPIENTS = 50
 
-export async function getDonationRanking(): Promise<DonationRankingItem[]> {
+export async function getDonationRanking(locale: PublicLocale): Promise<DonationRankingItem[]> {
   const rows = await db
     .select({
       recipientType: pointDonationRecipientTable.recipientType,
@@ -33,6 +35,8 @@ export async function getDonationRanking(): Promise<DonationRankingItem[]> {
 
   const artistValues: string[] = []
   const groupValues: string[] = []
+  const artistLabelMap = new Map<string, string>()
+  const groupLabelMap = new Map<string, string>()
 
   for (const r of rows) {
     if (r.recipientType === DONATION_RECIPIENT_TYPE.ARTIST) {
@@ -42,21 +46,18 @@ export async function getDonationRanking(): Promise<DonationRankingItem[]> {
     }
   }
 
-  const artistLabelMap = new Map<string, string>()
-  for (const item of translateArtistList(artistValues, 'ko') ?? []) {
+  for (const item of translateArtistList(artistValues, locale) ?? []) {
     artistLabelMap.set(item.value, item.label)
   }
 
-  const groupLabelMap = new Map<string, string>()
-  for (const item of translateGroupList(groupValues, 'ko') ?? []) {
+  for (const item of translateGroupList(groupValues, locale) ?? []) {
     groupLabelMap.set(item.value, item.label)
   }
 
   return rows.map((r) => {
     const type = r.recipientType === DONATION_RECIPIENT_TYPE.ARTIST ? 'artist' : 'group'
-    const labelRaw =
-      type === 'artist' ? (artistLabelMap.get(r.recipientValue) ?? '') : (groupLabelMap.get(r.recipientValue) ?? '')
-    const label = labelRaw.trim() ? labelRaw : toDisplayValue(r.recipientValue) || r.recipientValue
+    const labelRaw = type === 'artist' ? artistLabelMap.get(r.recipientValue) : groupLabelMap.get(r.recipientValue)
+    const label = labelRaw || toDisplayValue(r.recipientValue) || r.recipientValue
 
     return {
       type,

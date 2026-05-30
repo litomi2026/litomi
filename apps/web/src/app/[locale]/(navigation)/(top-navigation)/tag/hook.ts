@@ -31,14 +31,13 @@ export function useTagQuery({ category, page }: Params) {
 async function fetchTags(category: CategoryParam, page: number, locale: string) {
   const searchParams = new URLSearchParams({
     category,
+    locale,
     page: String(page),
   })
 
-  if (locale) {
-    searchParams.set('locale', locale)
-  }
+  const url = new URL('/api/v1/tag', NEXT_PUBLIC_API_ORIGIN)
+  url.search = searchParams.toString()
 
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/tag?${searchParams}`
   const { data } = await fetchAPIData<GETV1TagResponse>(url)
   return data
 }

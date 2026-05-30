@@ -21,7 +21,7 @@ export default function usePinLibraryMutation() {
     { previous?: InfiniteData<GETV1LibraryListResponse> }
   >({
     mutationFn: async ({ libraryId, action }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/${libraryId}/pin`
+      const url = new URL(`/api/v1/library/${libraryId}/pin`, NEXT_PUBLIC_API_ORIGIN)
       const method = action === 'pin' ? 'POST' : 'DELETE'
       const { data } = await fetchAPIData(url, { method, credentials: 'include' })
       return data

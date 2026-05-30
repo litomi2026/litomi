@@ -17,7 +17,7 @@ import { fetchAPIData } from '@/utils/api-request'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function importReadingHistory(request: POSTV1LibraryHistoryImportBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/history/import`
+  const url = new URL('/api/v1/library/history/import', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1LibraryHistoryImportResponse>(url, {
     method: 'POST',
@@ -30,7 +30,7 @@ export async function importReadingHistory(request: POSTV1LibraryHistoryImportBo
 }
 
 export async function login(request: POSTV1AuthLoginRequest) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/login`
+  const url = new URL('/api/v1/auth/login', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1AuthLoginResponse>(url, {
     method: 'POST',
@@ -43,7 +43,7 @@ export async function login(request: POSTV1AuthLoginRequest) {
 }
 
 export async function requestPasskeyAuthenticationOptions() {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/passkey/options`
+  const url = new URL('/api/v1/auth/passkey/options', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1AuthPasskeyOptionsResponse>(url, {
     method: 'POST',
@@ -54,7 +54,7 @@ export async function requestPasskeyAuthenticationOptions() {
 }
 
 export async function verifyPasskeyAuthentication(request: POSTV1AuthPasskeyVerifyRequest) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/passkey/verify`
+  const url = new URL('/api/v1/auth/passkey/verify', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1AuthPasskeyVerifyResponse>(url, {
     method: 'POST',
@@ -67,7 +67,7 @@ export async function verifyPasskeyAuthentication(request: POSTV1AuthPasskeyVeri
 }
 
 export async function verifyTwoFactorLogin(request: POSTV1AuthLogin2FARequest) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/login/2fa`
+  const url = new URL('/api/v1/auth/login/2fa', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1AuthLogin2FAResponse>(url, {
     method: 'POST',

@@ -7,7 +7,7 @@ import { fetchAPIData } from '@/utils/api-request'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function deleteReadingHistory(body: DELETEV1ReadingHistoryBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/history`
+  const url = new URL('/api/v1/library/history', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<DELETEV1ReadingHistoryResponse>(url, {
     method: 'DELETE',

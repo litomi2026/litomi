@@ -376,7 +376,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
 }
 
 async function createLibraryApi(payload: CreateLibraryPayload): Promise<POSTV1LibraryResponse> {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library`
+  const url = new URL('/api/v1/library', NEXT_PUBLIC_API_ORIGIN)
   const { data } = await fetchAPIData<POSTV1LibraryResponse>(url, {
     method: 'POST',
     credentials: 'include',

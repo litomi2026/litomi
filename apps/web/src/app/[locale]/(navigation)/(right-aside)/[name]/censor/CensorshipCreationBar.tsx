@@ -34,15 +34,18 @@ export default function CensorshipCreationBar() {
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
+      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+
       const { data } = await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ items }),
       })
+
       return data.ids
     },
+
     onSuccess: (ids) => {
       toast.success(`${ids.length}개의 검열 규칙을 추가했어요`)
       setInputValue('')

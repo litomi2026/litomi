@@ -21,7 +21,7 @@ export default function usePatchMySettingsMutation() {
 
   return useMutation<void, ProblemDetailsError, PATCHV1MeSettingsBody, MutationContext>({
     mutationFn: async (body) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/settings`
+      const url = new URL('/api/v1/me/settings', NEXT_PUBLIC_API_ORIGIN)
 
       await fetchAPIData<void>(url, {
         method: 'PATCH',

@@ -79,7 +79,7 @@ export default function MangaReader({ manga }: Props) {
   }
 
   async function handleReadingProgressSave(progress: ReadingProgress, options?: ReadingProgressSaveOptions) {
-    const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${manga.id}/history`
+    const url = new URL(`/api/v1/manga/${manga.id}/history`, NEXT_PUBLIC_API_ORIGIN)
 
     const body: POSTV1MangaIdHistoryBody = {
       lastPage: progress.readablePageNumber,

@@ -35,15 +35,18 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
 
   const updateMutation = useMutation({
     mutationFn: async (items: { id: number; key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
+      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+
       const { data } = await fetchAPIData<PATCHV1CensorshipUpdateResponse>(url, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ items }),
       })
+
       return data.ids
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
       toast.success('검열 규칙을 수정했어요')

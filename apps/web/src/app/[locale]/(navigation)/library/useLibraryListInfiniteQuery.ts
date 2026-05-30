@@ -21,7 +21,8 @@ export async function fetchLibraryList({ cursor, userId }: { cursor: string | nu
     params.set('cursor', cursor)
   }
 
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library?${params}`
+  const url = new URL('/api/v1/library', NEXT_PUBLIC_API_ORIGIN)
+  url.search = params.toString()
   const { data } = await fetchAPIData<GETV1LibraryListResponse>(url, { credentials: 'include' })
   return data
 }

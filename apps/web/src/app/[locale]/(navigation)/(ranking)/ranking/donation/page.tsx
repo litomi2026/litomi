@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { formatNumber } from '@litomi/std'
 import { Heart } from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { Link } from '@/i18n/navigation'
@@ -32,26 +32,26 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/ranking/
 }
 
 export default async function Page() {
+  const t = await getTranslations('RankingDonationPage')
+
   return (
     <div className="p-2">
       <JuicyAdsBanner className="mb-2" />
       <details className="max-w-3xl mx-auto m-4 rounded-xl bg-white/4 border border-white/7">
         <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
           <Heart className="size-4 text-zinc-400" />
-          <span className="font-medium">후원한 만큼 작가에게 돌아가요</span>
-          <span className="ml-auto text-xs text-zinc-500">자세히</span>
+          <span className="font-medium">{t('summaryTitle')}</span>
+          <span className="ml-auto text-xs text-zinc-500">{t('detailsLabel')}</span>
         </summary>
-        <div className="px-4 pb-4 text-sm text-zinc-400">
-          후원해주신 리보는 모두 작가님을 응원하는 데 사용돼요. 획득한 리보로 좋아하는 작품의 창작자를 후원해보세요.
-        </div>
+        <div className="px-4 pb-4 text-sm text-zinc-400">{t('summaryDescription')}</div>
       </details>
       <div className="max-w-3xl mx-auto grid gap-4 overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800">
         <table className="w-full">
           <thead className="border-b border-zinc-800 whitespace-nowrap">
             <tr>
-              <th className="p-4 py-3 text-left text-sm font-medium text-zinc-400">순위</th>
-              <th className="py-3 text-left text-sm font-medium text-zinc-400">대상</th>
-              <th className="p-4 py-3 text-right text-sm font-medium text-zinc-400">총 후원</th>
+              <th className="p-4 py-3 text-left text-sm font-medium text-zinc-400">{t('rankColumn')}</th>
+              <th className="py-3 text-left text-sm font-medium text-zinc-400">{t('recipientColumn')}</th>
+              <th className="p-4 py-3 text-right text-sm font-medium text-zinc-400">{t('totalColumn')}</th>
             </tr>
           </thead>
           <DonationRankingBody />
@@ -62,7 +62,9 @@ export default async function Page() {
 }
 
 async function DonationRankingBody() {
-  const items = await getDonationRanking()
+  const locale = await getLocale()
+  const t = await getTranslations('RankingDonationPage')
+  const items = await getDonationRanking(locale)
 
   return (
     <tbody>
@@ -79,15 +81,17 @@ async function DonationRankingBody() {
               className="flex items-center gap-2 min-w-0 px-4 py-3 hover:underline"
               href={`/search?${new URLSearchParams({ query: `${item.type}:${item.value}` })}`}
               prefetch={false}
-              title="검색으로 이동"
+              title={t('searchTitle')}
             >
-              <span className="text-xs text-zinc-500 shrink-0">{item.type === 'artist' ? '작가' : '단체'}</span>
+              <span className="text-xs text-zinc-500 shrink-0">
+                {item.type === 'artist' ? t('artistType') : t('groupType')}
+              </span>
               <span className="text-sm font-medium text-foreground line-clamp-1">{item.label}</span>
             </Link>
           </td>
           <td className="p-4 py-3 text-right">
             <span className="text-sm font-semibold text-brand tabular-nums">
-              {formatNumber(item.totalReceived)} 리보
+              {t('liboAmount', { amount: formatNumber(item.totalReceived, locale) })}
             </span>
           </td>
         </tr>
@@ -95,7 +99,7 @@ async function DonationRankingBody() {
       {items.length === 0 && (
         <tr>
           <td className="p-6 text-sm text-zinc-500" colSpan={3}>
-            아직 후원 데이터가 없어요
+            {t('empty')}
           </td>
         </tr>
       )}

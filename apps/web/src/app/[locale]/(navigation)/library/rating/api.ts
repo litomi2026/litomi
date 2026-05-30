@@ -7,7 +7,7 @@ import { fetchAPIData } from '@/utils/api-request'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function deleteRatings(body: DELETEV1LibraryRatingBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/rating`
+  const url = new URL('/api/v1/library/rating', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<DELETEV1LibraryRatingResponse>(url, {
     method: 'DELETE',

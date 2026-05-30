@@ -17,7 +17,7 @@ export default function BBatonCallbackPage() {
 
   const completeMutation = useMutation<void, unknown, { code: string; state: string }>({
     mutationFn: async ({ code, state }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bbaton/complete`
+      const url = new URL('/api/v1/bbaton/complete', NEXT_PUBLIC_API_ORIGIN)
 
       await fetchAPIData<void>(url, {
         method: 'POST',

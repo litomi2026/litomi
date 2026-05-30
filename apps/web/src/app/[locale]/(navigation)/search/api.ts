@@ -9,7 +9,7 @@ import { fetchAPIData } from '@/utils/api-request'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function createNotificationCriteria(body: POSTV1NotificationCriteriaBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/notification/criteria`
+  const url = new URL('/api/v1/notification/criteria', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1NotificationCriteriaResponse>(url, {
     method: 'POST',

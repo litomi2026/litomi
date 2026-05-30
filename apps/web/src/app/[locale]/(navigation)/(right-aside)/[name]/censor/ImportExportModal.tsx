@@ -45,15 +45,18 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
+      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+
       const { data } = await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ items }),
       })
+
       return data.ids
     },
+
     onSuccess: (ids) => {
       toast.success(`${ids.length}개 규칙을 추가했어요`)
       setImportText('')

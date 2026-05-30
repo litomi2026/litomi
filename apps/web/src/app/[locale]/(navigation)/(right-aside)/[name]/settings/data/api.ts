@@ -9,7 +9,7 @@ import { fetchAPIData } from '@/utils/api-request'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function exportUserData(body: POSTV1MeExportBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me/export`
+  const url = new URL('/api/v1/me/export', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1MeExportResponse>(url, {
     method: 'POST',

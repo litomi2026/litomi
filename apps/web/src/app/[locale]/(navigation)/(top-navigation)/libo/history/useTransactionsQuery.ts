@@ -13,7 +13,8 @@ type QueryOptions = {
 }
 
 export async function fetchTransactions(searchParams: URLSearchParams) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/transactions?${searchParams}`
+  const url = new URL('/api/v1/points/transactions', NEXT_PUBLIC_API_ORIGIN)
+  url.search = searchParams.toString()
   const { data } = await fetchAPIData<GETV1PointTransactionResponse>(url, { credentials: 'include' })
   return data
 }

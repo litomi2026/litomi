@@ -24,7 +24,7 @@ export function useBookmarkImport() {
     { mode: ImportMode; bookmarks: BookmarkExportData['bookmarks'] }
   >({
     mutationFn: async ({ mode, bookmarks }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/import`
+      const url = new URL('/api/v1/bookmark/import', NEXT_PUBLIC_API_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1BookmarkImportResponse>(url, {
         method: 'POST',

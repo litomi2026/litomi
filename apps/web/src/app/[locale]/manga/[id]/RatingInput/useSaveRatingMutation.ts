@@ -20,7 +20,7 @@ export function useSaveRatingMutation() {
 
   return useMutation<GETV1MangaIdRatingResponse, unknown, Variables>({
     mutationFn: async ({ mangaId, rating }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/rating`
+      const url = new URL(`/api/v1/manga/${mangaId}/rating`, NEXT_PUBLIC_API_ORIGIN)
 
       if (rating === 0) {
         await fetchAPIData<void>(url, { method: 'DELETE', credentials: 'include' })

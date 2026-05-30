@@ -15,7 +15,7 @@ export function useRouletteSpinMutation() {
 
   return useMutation<POSTV1RouletteSpinResponse, ProblemDetailsError, POSTV1RouletteSpinRequest>({
     mutationFn: async ({ bet }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/roulette/spin`
+      const url = new URL('/api/v1/points/roulette/spin', NEXT_PUBLIC_API_ORIGIN)
       const { data } = await fetchAPIData<POSTV1RouletteSpinResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

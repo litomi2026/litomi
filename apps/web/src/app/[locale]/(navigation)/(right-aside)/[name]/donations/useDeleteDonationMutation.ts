@@ -2,6 +2,7 @@ import type { GETV1PointsDonationsMeResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -18,19 +19,21 @@ type Variables = {
 }
 
 export default function useDeleteDonationMutation() {
+  const locale = useLocale()
   const queryClient = useQueryClient()
+  const myDonationsQueryKey = QueryKeys.myDonations(locale)
 
   return useMutation<void, ProblemDetailsError, Variables, MutationContext>({
     mutationFn: async ({ donationId }) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/donations/${donationId}`
+      const url = new URL(`/api/v1/points/donations/${donationId}`, NEXT_PUBLIC_API_ORIGIN)
       await fetchAPIData<void>(url, { method: 'DELETE', credentials: 'include' })
     },
     onMutate: async ({ donationId }) => {
-      await queryClient.cancelQueries({ queryKey: QueryKeys.myDonations })
-      const previous = queryClient.getQueryData<InfiniteData<GETV1PointsDonationsMeResponse>>(QueryKeys.myDonations)
+      await queryClient.cancelQueries({ queryKey: myDonationsQueryKey })
+      const previous = queryClient.getQueryData<InfiniteData<GETV1PointsDonationsMeResponse>>(myDonationsQueryKey)
 
       if (previous) {
-        queryClient.setQueryData<InfiniteData<GETV1PointsDonationsMeResponse>>(QueryKeys.myDonations, {
+        queryClient.setQueryData<InfiniteData<GETV1PointsDonationsMeResponse>>(myDonationsQueryKey, {
           ...previous,
           pages: previous.pages.map((page) => ({
             ...page,
@@ -43,14 +46,14 @@ export default function useDeleteDonationMutation() {
     },
     onError: (_error, _variables, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(QueryKeys.myDonations, context.previous)
+        queryClient.setQueryData(myDonationsQueryKey, context.previous)
       }
     },
     onSuccess: () => {
       toast.success('삭제했어요')
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.myDonations })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.myDonationsBase })
     },
   })
 }

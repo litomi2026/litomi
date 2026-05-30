@@ -47,7 +47,7 @@ type Variables = {
 }
 
 export async function toggleUserFollowing(targetUserId: number, following: boolean) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/user/${targetUserId}/follow`
+  const url = new URL(`/api/v1/user/${targetUserId}/follow`, NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<SetUserFollowResponse>(url, {
     method: following ? 'PUT' : 'DELETE',

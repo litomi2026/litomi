@@ -43,7 +43,7 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/report`
+      const url = new URL(`/api/v1/manga/${mangaId}/report`, NEXT_PUBLIC_API_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1MangaIdReportResponse>(url, {
         method: 'POST',

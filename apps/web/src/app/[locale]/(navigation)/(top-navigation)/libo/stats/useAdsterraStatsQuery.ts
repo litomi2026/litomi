@@ -19,7 +19,8 @@ export function useAdsterraStatsQuery({ startDate, finishDate, enabled = true }:
     queryKey: QueryKeys.adsterraStats(startDate, finishDate),
     queryFn: async () => {
       const params = new URLSearchParams({ start_date: startDate, finish_date: finishDate })
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/adsterra/stats?${params}`
+      const url = new URL('/api/v1/adsterra/stats', NEXT_PUBLIC_API_ORIGIN)
+      url.search = params.toString()
       const { data } = await fetchAPIData<GETV1AdsterraStatsResponse>(url, { credentials: 'include' })
       return data
     },

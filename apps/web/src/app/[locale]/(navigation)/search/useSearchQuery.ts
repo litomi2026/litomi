@@ -38,7 +38,8 @@ export function useSearchQuery() {
         searchParamsWithCursor.delete('skip')
       }
 
-      const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/k/search?${searchParamsWithCursor}`
+      const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
+      url.search = searchParamsWithCursor.toString()
       const { data } = await fetchAPIData<GETProxyKSearchResponse>(url)
       return data
     },

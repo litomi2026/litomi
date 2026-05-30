@@ -1,8 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@litomi/domain/app/metadata'
-
-import { DEFAULT_LOCALE } from '@/i18n/routing'
+import { DEFAULT_LOCALE } from '@litomi/domain/locale'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {

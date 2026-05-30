@@ -6,6 +6,7 @@ import { MANGA_RECOMMENDATION_PER_PAGE } from '@litomi/domain/manga-recommendati
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
+import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
@@ -23,9 +24,11 @@ export default function useMangaRecommendationQuery({
   limit = MANGA_RECOMMENDATION_PER_PAGE,
   userId,
 }: Options) {
+  const locale = useLocale()
+
   return useQuery({
-    queryKey: QueryKeys.mangaRecommendations(userId ?? 0, limit),
-    queryFn: () => fetchMangaRecommendations(limit),
+    queryKey: QueryKeys.mangaRecommendations(userId ?? 0, limit, locale),
+    queryFn: () => fetchMangaRecommendations(limit, locale),
     enabled: enabled && Boolean(userId),
     staleTime: ms('1 day'),
     gcTime: ms('1 day'),
@@ -33,9 +36,10 @@ export default function useMangaRecommendationQuery({
   })
 }
 
-async function fetchMangaRecommendations(limit: number) {
+async function fetchMangaRecommendations(limit: number, locale: string) {
   const url = new URL('/api/v1/manga/recommendation', NEXT_PUBLIC_API_ORIGIN)
   url.searchParams.set('limit', String(limit))
+  url.searchParams.set('locale', locale)
 
   const { data } = await fetchAPIData<GETV1MangaRecommendationResponse>(url, { credentials: 'include' })
   return data

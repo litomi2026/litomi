@@ -40,18 +40,22 @@ export default function RewardedAdSection() {
 
   const verifyTurnstile = useMutation<POSTV1PointTurnstileResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/turnstile`
+      const url = new URL('/api/v1/points/turnstile', NEXT_PUBLIC_API_ORIGIN)
+
       const { data } = await fetchAPIData<POSTV1PointTurnstileResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ token }),
       })
+
       return data
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTurnstile })
     },
+
     onError: (error) => {
       if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
         return

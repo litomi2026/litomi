@@ -7,7 +7,7 @@ import { fetchAPIData } from '@/utils/api-request'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function signup(request: POSTV1AuthSignupRequest) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/auth/signup`
+  const url = new URL('/api/v1/auth/signup', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1AuthSignupResponse>(url, {
     method: 'POST',

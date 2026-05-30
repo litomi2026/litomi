@@ -1,3 +1,5 @@
+import type { PublicLocale } from '@litomi/domain/locale'
+
 import { db } from '@litomi/db/app'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/app/activity'
 import { libraryItemTable } from '@litomi/db/app/library'
@@ -5,12 +7,11 @@ import { TOP_MANGA_PER_PAGE } from '@litomi/domain/ranking/policy'
 import { avg, count, desc, gte, sql } from 'drizzle-orm'
 import ms from 'ms'
 
-import { SupportedLocale } from '@/i18n/routing'
 import { getCatalogMangaMap } from '@/utils/catalog-manga.server'
 
 import { MetricParam, PeriodParam } from '../../../common'
 
-export async function getRankingData(metric: MetricParam, period: PeriodParam, locale: SupportedLocale) {
+export async function getRankingData(metric: MetricParam, period: PeriodParam, locale: PublicLocale) {
   const periodStart = getPeriodStart(period)
   let query
 
@@ -106,10 +107,8 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam, l
     return null
   }
 
-  const catalogMangaMap = await getCatalogMangaMap(
-    rankings.map(({ mangaId }) => mangaId),
-    locale,
-  )
+  const mangaIds = rankings.map(({ mangaId }) => mangaId)
+  const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
 
   return rankings.map((ranking) => ({
     ...ranking,

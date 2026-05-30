@@ -17,7 +17,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 export default function BookmarkDownloadButton() {
   const exportMutation = useMutation({
     mutationFn: async () => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/export`
+      const url = new URL('/api/v1/bookmark/export', NEXT_PUBLIC_API_ORIGIN)
       const { data } = await fetchAPIData<GETV1BookmarkExportResponse>(url, { credentials: 'include' })
       return data.bookmarks
     },

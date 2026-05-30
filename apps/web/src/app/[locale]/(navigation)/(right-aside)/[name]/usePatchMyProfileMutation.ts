@@ -34,7 +34,7 @@ export default function usePatchMyProfileMutation({ onError, onSuccess }: Params
 
   return useMutation<PATCHV1MeResponse, ProblemDetailsError, PATCHV1MeBody, MutationContext>({
     mutationFn: async (body) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/me`
+      const url = new URL('/api/v1/me', NEXT_PUBLIC_API_ORIGIN)
 
       const { data } = await fetchAPIData<PATCHV1MeResponse>(url, {
         method: 'PATCH',

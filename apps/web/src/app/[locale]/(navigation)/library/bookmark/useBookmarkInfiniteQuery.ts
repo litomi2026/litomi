@@ -4,6 +4,7 @@ import { BOOKMARKS_PER_PAGE } from '@litomi/domain/library/policy'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
@@ -15,8 +16,8 @@ type Options = {
   sort?: CollectionItemSort
 }
 
-export async function fetchPaginatedBookmark(cursor: string | null, sort: CollectionItemSort) {
-  const params = new URLSearchParams({ limit: BOOKMARKS_PER_PAGE.toString() })
+export async function fetchPaginatedBookmark(cursor: string | null, sort: CollectionItemSort, locale: string) {
+  const params = new URLSearchParams({ limit: BOOKMARKS_PER_PAGE.toString(), locale })
 
   if (cursor) {
     params.set('cursor', cursor)
@@ -26,7 +27,9 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Collec
     params.set('sort', sort)
   }
 
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark?${params}`
+  const url = new URL('/api/v1/bookmark', NEXT_PUBLIC_API_ORIGIN)
+  url.search = params.toString()
+
   const { data } = await fetchAPIData<GETV1BookmarkResponse>(url, { credentials: 'include' })
   return data
 }
@@ -35,9 +38,11 @@ export default function useBookmarkInfiniteQuery({
   enabled = true,
   sort = DEFAULT_COLLECTION_ITEM_SORT,
 }: Options = {}) {
+  const locale = useLocale()
+
   return useInfiniteQuery({
-    queryKey: QueryKeys.infiniteBookmarks(sort),
-    queryFn: ({ pageParam }) => fetchPaginatedBookmark(pageParam, sort),
+    queryKey: QueryKeys.infiniteBookmarks(sort, locale),
+    queryFn: ({ pageParam }) => fetchPaginatedBookmark(pageParam, sort, locale),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: '',
     enabled,

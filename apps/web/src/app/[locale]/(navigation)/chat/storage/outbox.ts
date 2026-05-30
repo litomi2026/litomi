@@ -192,7 +192,7 @@ async function processAppendMessages(
   }
 
   try {
-    const url = `${backendUrl}/api/v1/character-chat/sessions/${map.serverSessionId}/messages`
+    const url = new URL(`/api/v1/character-chat/sessions/${map.serverSessionId}/messages`, backendUrl)
 
     await fetchAPIData<{ ok: true }>(url, {
       method: 'POST',
@@ -213,7 +213,7 @@ async function processCreateSession(
   { backendUrl }: FlushOptions,
 ) {
   try {
-    const url = `${backendUrl}/api/v1/character-chat/sessions`
+    const url = new URL('/api/v1/character-chat/sessions', backendUrl)
 
     const { data } = await fetchAPIData<{ id: number }>(url, {
       method: 'POST',
