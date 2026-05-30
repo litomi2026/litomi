@@ -7,7 +7,6 @@
     "./app/metadata": "./src/app/metadata.ts",
     "./auth/model": "./src/auth/model.ts",
     "./auth/policy": "./src/auth/policy.ts",
-    "./censorship/blind-tag": "./src/censorship/blind-tag.ts",
     "./censorship/model": "./src/censorship/model.ts",
     "./censorship/policy": "./src/censorship/policy.ts",
     "./generated/emojis": "./src/generated/emojis.ts",

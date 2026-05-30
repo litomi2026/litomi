@@ -2,7 +2,6 @@
 
 import type { POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
-import { BLIND_TAG_VALUES } from '@litomi/domain/censorship/blind-tag'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -17,7 +16,7 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-import { CENSORSHIP_TYPE_PATTERNS } from './constants'
+import { CENSORSHIP_CATEGORIES, DEFAULT_CENSORSHIP_VALUES } from './constants'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -242,7 +241,7 @@ export default function CensorshipCreationBar() {
             <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">
               {t('creationBar.prefixBadge')}
             </span>
-          ) : BLIND_TAG_VALUES.includes(value) ? (
+          ) : DEFAULT_CENSORSHIP_VALUES.some((item) => item.value === value) ? (
             <span className="text-xs text-orange-500 mt-0.5">{t('creationBar.defaultTagBadge')}</span>
           ) : null
         }
@@ -324,11 +323,11 @@ export default function CensorshipCreationBar() {
 function detectTypeAndValue(text: string): { key: CensorshipKey; value: string } {
   const trimmed = text.trim()
 
-  for (const [pattern, key] of Object.entries(CENSORSHIP_TYPE_PATTERNS)) {
-    if (trimmed.toLowerCase().startsWith(pattern)) {
+  for (const { prefix, key } of CENSORSHIP_CATEGORIES) {
+    if (trimmed.toLowerCase().startsWith(prefix)) {
       return {
         key,
-        value: trimmed.slice(pattern.length).trim(),
+        value: trimmed.slice(prefix.length).trim(),
       }
     }
   }

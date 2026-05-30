@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import CensorshipEditForm from './CensorshipEditForm'
-import { CENSORSHIP_LEVEL_META, getCensorshipKeyMessagePath, getCensorshipLevelMessagePath } from './constants'
+import { CENSORSHIP_KEY_MESSAGE_PATHS, CENSORSHIP_LEVELS } from './constants'
 
 type Props = {
   censorship: {
@@ -47,6 +47,8 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
     return <CensorshipEditForm censorship={censorship} onEditCompleted={() => setIsEditing(false)} />
   }
 
+  const levelMeta = CENSORSHIP_LEVELS.find((item) => item.level === level)!
+
   return (
     <div
       aria-selected={isSelected}
@@ -76,10 +78,8 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-semibold">{value}</span>
-                <span className="text-xs px-2 py-0.5 bg-zinc-700 rounded">{t(getCensorshipKeyMessagePath(key))}</span>
-                <span className={`text-xs font-medium ${CENSORSHIP_LEVEL_META[level].color}`}>
-                  {t(getCensorshipLevelMessagePath(level))}
-                </span>
+                <span className="text-xs px-2 py-0.5 bg-zinc-700 rounded">{t(CENSORSHIP_KEY_MESSAGE_PATHS[key])}</span>
+                <span className={`text-xs font-medium ${levelMeta.colorClass}`}>{t(levelMeta.messagePath)}</span>
               </div>
               <div className="text-xs text-zinc-400 mt-1">{t('card.addedAt', { date: dateString })}</div>
             </div>

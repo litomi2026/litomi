@@ -24,7 +24,7 @@ import { fetchAPIData } from '@/utils/api-request'
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
 import CensorshipCreationBar from './CensorshipCreationBar'
 import CensorshipStats from './CensorshipStats'
-import { CENSORSHIP_KEY_ORDER, getCensorshipKeyMessagePath } from './constants'
+import { CENSORSHIP_KEY_MESSAGE_PATHS, CENSORSHIP_KEYS } from './constants'
 import DefaultCensorshipInfo from './DefaultCensorshipInfo'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -175,9 +175,9 @@ export default function Censorships() {
               onChange={(value) => setFilterKey(value === '' ? null : Number(value))}
               options={[
                 { value: '', label: t('list.allTypes') },
-                ...CENSORSHIP_KEY_ORDER.map((key) => ({
+                ...CENSORSHIP_KEYS.map((key) => ({
                   value: String(key),
-                  label: t(getCensorshipKeyMessagePath(key)),
+                  label: t(CENSORSHIP_KEY_MESSAGE_PATHS[key]),
                 })),
               ]}
               value={filterKey?.toString() ?? ''}

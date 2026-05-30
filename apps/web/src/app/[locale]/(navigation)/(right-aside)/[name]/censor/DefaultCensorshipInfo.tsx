@@ -7,13 +7,14 @@ import { toast } from 'sonner'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import usePatchMySettingsMutation from '@/query/usePatchMySettingsMutation'
 
-import { DEFAULT_CENSORED_TAG_GROUPS, getBlindTagMessagePath } from './constants'
+import { DEFAULT_CENSORSHIP_VALUES } from './constants'
 
 export default function DefaultCensorshipInfo() {
   const t = useTranslations('Censorship')
   const { guardLogin, me } = useAdultAccessGuard()
   const patchMySettingsMutation = usePatchMySettingsMutation()
   const defaultCensorshipEnabled = me?.settings.defaultCensorshipEnabled
+  const defaultCensorshipValueGroups = groupDefaultCensorshipValues()
 
   async function handleToggleDefaultCensorship() {
     if (!guardLogin()) {
@@ -65,11 +66,11 @@ export default function DefaultCensorshipInfo() {
         </summary>
         <div className="px-4 pb-4 text-sm text-zinc-400">
           <ul className="space-y-1">
-            {DEFAULT_CENSORED_TAG_GROUPS.map(({ messageKey, values }) => (
-              <li className="flex items-center gap-2" key={messageKey}>
+            {defaultCensorshipValueGroups.map(({ messagePath, values }) => (
+              <li className="flex items-center gap-2" key={messagePath}>
                 <span className="text-zinc-500">•</span>
                 <span>
-                  {t(getBlindTagMessagePath(messageKey))} ({values.join(', ')})
+                  {t(messagePath)} ({values.join(', ')})
                 </span>
               </li>
             ))}
@@ -78,4 +79,16 @@ export default function DefaultCensorshipInfo() {
       </details>
     </div>
   )
+}
+
+function groupDefaultCensorshipValues() {
+  return DEFAULT_CENSORSHIP_VALUES.reduce<{ messagePath: string; values: string[] }[]>((groups, item) => {
+    const group = groups.find(({ messagePath }) => messagePath === item.messagePath)
+    if (group) {
+      group.values.push(item.value)
+    } else {
+      groups.push({ messagePath: item.messagePath, values: [item.value] })
+    }
+    return groups
+  }, [])
 }

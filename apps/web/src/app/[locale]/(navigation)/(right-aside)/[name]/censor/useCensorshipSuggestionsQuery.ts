@@ -3,23 +3,23 @@
 import type { GETSearchSuggestionsResponse } from '@litomi/contracts'
 
 import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/search/policy'
-import { DEFAULT_SUGGESTIONS } from '@litomi/domain/search/suggestion'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
 import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
-import { BLIND_TAG_SUGGESTIONS, CENSORSHIP_PREFIX_SET } from './constants'
+import { CENSORSHIP_CATEGORIES, CENSORSHIP_KEY_MESSAGE_PATHS, DEFAULT_CENSORSHIP_VALUES } from './constants'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Options = {
   query: string
   apiSuggestions: GETSearchSuggestionsResponse
+  blindTagSuggestions: CensorshipSuggestion[]
 }
 
 type Params = {
@@ -41,93 +41,108 @@ export async function fetchCensorshipSuggestions({ query, locale }: Params) {
 
 export default function useCensorshipSuggestionsQuery({ query }: Props) {
   const locale = useLocale()
+  const t = useTranslations('Censorship')
+  const normalizedQuery = normalizeSearchText(query)
 
-  return useQuery({
-    queryKey: QueryKeys.censorshipSuggestions(query, locale),
+  const defaultSuggestions = CENSORSHIP_CATEGORIES.filter(({ defaultSuggestion }) => defaultSuggestion).map(
+    ({ prefix, key }) => ({
+      value: prefix,
+      label: t(CENSORSHIP_KEY_MESSAGE_PATHS[key]),
+    }),
+  )
+
+  const blindTagSuggestions = DEFAULT_CENSORSHIP_VALUES.map(({ value, messagePath }) => ({
+    value,
+    label: t(messagePath),
+  }))
+
+  const suggestionsQuery = useQuery({
+    queryKey: QueryKeys.censorshipSuggestions(normalizedQuery, locale),
     queryFn: async () => {
-      if (query.length < MIN_SUGGESTION_QUERY_LENGTH) {
-        return computeSuggestions({ query, apiSuggestions: [] })
+      if (normalizedQuery.length < MIN_SUGGESTION_QUERY_LENGTH) {
+        const suggestions = computeSuggestions({ query: normalizedQuery, apiSuggestions: [], blindTagSuggestions })
+        return suggestions.length > 0 ? suggestions : defaultSuggestions
       }
 
-      const apiSuggestions = await fetchCensorshipSuggestions({ query, locale })
-      return computeSuggestions({ query, apiSuggestions })
+      const apiSuggestions = await fetchCensorshipSuggestions({ query: normalizedQuery, locale })
+      const suggestions = computeSuggestions({ query: normalizedQuery, apiSuggestions, blindTagSuggestions })
+      return suggestions.length > 0 ? suggestions : defaultSuggestions
     },
-    enabled: query.length > 0,
-    placeholderData: (previousData) => previousData ?? DEFAULT_SUGGESTIONS,
+    enabled: normalizedQuery.length > 0,
+    placeholderData: (previousData) => previousData ?? defaultSuggestions,
   })
+
+  return {
+    ...suggestionsQuery,
+    data: suggestionsQuery.data ?? defaultSuggestions,
+  }
 }
 
-function computeSuggestions({ query, apiSuggestions }: Options) {
+function computeSuggestions({ query, apiSuggestions, blindTagSuggestions }: Options) {
   if (!query) {
-    return DEFAULT_SUGGESTIONS
+    return []
   }
 
   const seenValues = new Set<string>()
   const results: CensorshipSuggestion[] = []
-  const normalizedQuery = query.toLowerCase()
-  const shouldFetchFromApi = normalizedQuery.length >= MIN_SUGGESTION_QUERY_LENGTH
+  const shouldFetchFromApi = query.length >= MIN_SUGGESTION_QUERY_LENGTH
 
   function matchesSearch(s: CensorshipSuggestion): boolean {
-    if (s.value.includes(normalizedQuery)) {
-      return true
-    }
-    return s.label.includes(normalizedQuery)
+    return normalizeSearchText(s.value).includes(query) || normalizeSearchText(s.label).includes(query)
   }
 
-  // Helper for adding unique suggestions - O(1) per check
-  function addUnique(suggestion: CensorshipSuggestion): boolean {
-    if (seenValues.has(suggestion.value)) {
-      return false
+  function addUnique(suggestion: CensorshipSuggestion) {
+    const normalizedValue = normalizeSearchText(suggestion.value)
+
+    if (seenValues.has(normalizedValue)) {
+      return
     }
+
     if (results.length >= MAX_SEARCH_SUGGESTIONS) {
-      return false
+      return
     }
 
-    seenValues.add(suggestion.value)
+    seenValues.add(normalizedValue)
     results.push(suggestion)
-    return true
   }
 
-  // 1. Add matching blind tags first (priority) - O(b) where b = blind tags count
-  for (const blindTag of BLIND_TAG_SUGGESTIONS) {
+  for (const blindTag of blindTagSuggestions) {
     if (matchesSearch(blindTag)) {
-      if (!addUnique(blindTag)) {
+      addUnique(blindTag)
+      if (results.length >= MAX_SEARCH_SUGGESTIONS) {
         break
       }
     }
   }
 
-  // 2. Filter and add API suggestions - O(a) where a = api suggestions count
   if (shouldFetchFromApi && results.length < MAX_SEARCH_SUGGESTIONS) {
     for (const suggestion of apiSuggestions) {
-      if (!matchesSearch(suggestion)) {
-        continue
-      }
-
-      // Check if it's a valid censorship suggestion
       const hasPrefix = hasCensorshipPrefix(suggestion.value)
       const isTag = !hasPrefix && !suggestion.value.includes(':') && suggestion.label.includes(':')
 
       if (hasPrefix || isTag) {
-        if (!addUnique(suggestion)) {
+        addUnique(suggestion)
+        if (results.length >= MAX_SEARCH_SUGGESTIONS) {
           break
         }
       }
     }
   }
 
-  if (results.length > 0) {
-    return results
-  }
-
-  return DEFAULT_SUGGESTIONS
+  return results
 }
 
-// Helper to check if value has censorship prefix - O(k) where k is prefix length (max 10)
 function hasCensorshipPrefix(value: string): boolean {
   const colonIndex = value.indexOf(':')
+
   if (colonIndex === -1) {
     return false
   }
-  return CENSORSHIP_PREFIX_SET.has(value.slice(0, colonIndex + 1))
+
+  const prefix = value.slice(0, colonIndex + 1).toLowerCase()
+  return CENSORSHIP_CATEGORIES.some((category) => category.prefix === prefix)
+}
+
+function normalizeSearchText(value: string) {
+  return value.trim().toLowerCase()
 }

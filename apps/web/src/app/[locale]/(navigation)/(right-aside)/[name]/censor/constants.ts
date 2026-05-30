@@ -1,76 +1,60 @@
-import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@litomi/domain/censorship/blind-tag'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 
-export const CENSORSHIP_KEY_LABELS: Record<CensorshipKey, string> = {
-  [CensorshipKey.ARTIST]: '작가',
-  [CensorshipKey.GROUP]: '그룹',
-  [CensorshipKey.SERIES]: '시리즈',
-  [CensorshipKey.CHARACTER]: '캐릭터',
-  [CensorshipKey.TAG]: '태그',
-  [CensorshipKey.TAG_CATEGORY_FEMALE]: '여성 태그',
-  [CensorshipKey.TAG_CATEGORY_MALE]: '남성 태그',
-  [CensorshipKey.TAG_CATEGORY_MIXED]: '혼합 태그',
-  [CensorshipKey.TAG_CATEGORY_OTHER]: '기타 태그',
-  [CensorshipKey.LANGUAGE]: '언어',
-  [CensorshipKey.UPLOADER]: '업로더',
-  [CensorshipKey.TYPE]: '종류',
-}
+export const CENSORSHIP_KEYS = [
+  CensorshipKey.ARTIST,
+  CensorshipKey.GROUP,
+  CensorshipKey.SERIES,
+  CensorshipKey.CHARACTER,
+  CensorshipKey.TAG,
+  CensorshipKey.TAG_CATEGORY_FEMALE,
+  CensorshipKey.TAG_CATEGORY_MALE,
+  CensorshipKey.TAG_CATEGORY_MIXED,
+  CensorshipKey.TAG_CATEGORY_OTHER,
+  CensorshipKey.LANGUAGE,
+  CensorshipKey.UPLOADER,
+  CensorshipKey.TYPE,
+] as const
 
-export const TYPE_PATTERNS: Record<string, CensorshipKey> = {
-  'artist:': CensorshipKey.ARTIST,
-  'group:': CensorshipKey.GROUP,
-  'series:': CensorshipKey.SERIES,
-  'character:': CensorshipKey.CHARACTER,
-  'female:': CensorshipKey.TAG_CATEGORY_FEMALE,
-  'male:': CensorshipKey.TAG_CATEGORY_MALE,
-  'mixed:': CensorshipKey.TAG_CATEGORY_MIXED,
-  'other:': CensorshipKey.TAG_CATEGORY_OTHER,
-  'language:': CensorshipKey.LANGUAGE,
-  'uploader:': CensorshipKey.UPLOADER,
-  'type:': CensorshipKey.TYPE,
-}
+export const CENSORSHIP_KEY_MESSAGE_PATHS = {
+  [CensorshipKey.ARTIST]: 'common.keys.artist',
+  [CensorshipKey.GROUP]: 'common.keys.group',
+  [CensorshipKey.SERIES]: 'common.keys.series',
+  [CensorshipKey.CHARACTER]: 'common.keys.character',
+  [CensorshipKey.TAG]: 'common.keys.tag',
+  [CensorshipKey.TAG_CATEGORY_FEMALE]: 'common.keys.tagCategoryFemale',
+  [CensorshipKey.TAG_CATEGORY_MALE]: 'common.keys.tagCategoryMale',
+  [CensorshipKey.TAG_CATEGORY_MIXED]: 'common.keys.tagCategoryMixed',
+  [CensorshipKey.TAG_CATEGORY_OTHER]: 'common.keys.tagCategoryOther',
+  [CensorshipKey.LANGUAGE]: 'common.keys.language',
+  [CensorshipKey.UPLOADER]: 'common.keys.uploader',
+  [CensorshipKey.TYPE]: 'common.keys.type',
+} satisfies Record<CensorshipKey, string>
 
-export const CENSORSHIP_LEVEL_LABELS: Record<CensorshipLevel, { label: string; color: string }> = {
-  [CensorshipLevel.LIGHT]: {
-    label: '흐리게',
-    color: 'text-yellow-500',
-  },
-  [CensorshipLevel.HEAVY]: {
-    label: '숨기기',
-    color: 'text-red-500',
-  },
-  [CensorshipLevel.NONE]: {
-    label: '해제',
-    color: 'text-green-500',
-  },
-}
+export const CENSORSHIP_CATEGORIES = [
+  { prefix: 'artist:', key: CensorshipKey.ARTIST, defaultSuggestion: true },
+  { prefix: 'group:', key: CensorshipKey.GROUP, defaultSuggestion: true },
+  { prefix: 'series:', key: CensorshipKey.SERIES, defaultSuggestion: true },
+  { prefix: 'character:', key: CensorshipKey.CHARACTER, defaultSuggestion: true },
+  { prefix: 'female:', key: CensorshipKey.TAG_CATEGORY_FEMALE, defaultSuggestion: true },
+  { prefix: 'male:', key: CensorshipKey.TAG_CATEGORY_MALE, defaultSuggestion: true },
+  { prefix: 'mixed:', key: CensorshipKey.TAG_CATEGORY_MIXED, defaultSuggestion: true },
+  { prefix: 'other:', key: CensorshipKey.TAG_CATEGORY_OTHER, defaultSuggestion: true },
+  { prefix: 'language:', key: CensorshipKey.LANGUAGE, defaultSuggestion: true },
+  { prefix: 'uploader:', key: CensorshipKey.UPLOADER, defaultSuggestion: true },
+  { prefix: 'type:', key: CensorshipKey.TYPE, defaultSuggestion: false },
+] as const
 
-export const LABEL_TO_VALUES = BLIND_TAG_VALUES.reduce<Record<string, string[]>>((acc, tag) => {
-  const label = BLIND_TAG_VALUE_TO_LABEL[tag]
-  if (!acc[label]) acc[label] = []
-  acc[label].push(tag)
-  return acc
-}, {})
+export const DEFAULT_CENSORSHIP_VALUES = [
+  { value: 'bestiality', messagePath: 'common.blindTags.bestiality' },
+  { value: 'guro', messagePath: 'common.blindTags.guro' },
+  { value: 'yaoi', messagePath: 'common.blindTags.bl' },
+  { value: 'males_only', messagePath: 'common.blindTags.bl' },
+  { value: 'scat', messagePath: 'common.blindTags.scat' },
+  { value: 'coprophagia', messagePath: 'common.blindTags.scat' },
+] as const
 
-export const DEFAULT_CENSORED_TAGS = Object.entries(LABEL_TO_VALUES).map(([label, values]) => {
-  return `${label} (${values.join(', ')})`
-})
-
-export const BLIND_TAG_SUGGESTIONS = BLIND_TAG_VALUES.map((value) => ({
-  value,
-  label: BLIND_TAG_VALUE_TO_LABEL[value],
-}))
-
-export const CENSORSHIP_PREFIX_SET = new Set([
-  'artist:',
-  'character:',
-  'female:',
-  'group:',
-  'language:',
-  'male:',
-  'mixed:',
-  'other:',
-  'series:',
-  'type:',
-  'uploader:',
-])
+export const CENSORSHIP_LEVELS = [
+  { level: CensorshipLevel.LIGHT, messagePath: 'common.levels.light', colorClass: 'text-yellow-500' },
+  { level: CensorshipLevel.HEAVY, messagePath: 'common.levels.heavy', colorClass: 'text-red-500' },
+  { level: CensorshipLevel.NONE, messagePath: 'common.levels.none', colorClass: 'text-green-500' },
+] as const

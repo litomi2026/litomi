@@ -12,7 +12,7 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-import { CENSORSHIP_LEVEL_ORDER, getCensorshipLevelMessagePath } from './constants'
+import { CENSORSHIP_LEVELS } from './constants'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -93,7 +93,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
         <div>
           <label className="block text-sm font-medium mb-1">{t('editForm.levelLabel')}</label>
           <div className="flex gap-2">
-            {CENSORSHIP_LEVEL_ORDER.map((levelNum) => {
+            {CENSORSHIP_LEVELS.map(({ level: levelNum, messagePath }) => {
               return (
                 <button
                   aria-pressed={editLevel === levelNum}
@@ -102,7 +102,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
                   onClick={() => setEditLevel(levelNum)}
                   type="button"
                 >
-                  {t(getCensorshipLevelMessagePath(levelNum))}
+                  {t(messagePath)}
                 </button>
               )
             })}

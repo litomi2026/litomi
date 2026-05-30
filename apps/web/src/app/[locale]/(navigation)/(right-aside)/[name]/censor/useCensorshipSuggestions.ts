@@ -1,6 +1,5 @@
 'use client'
 
-import { DEFAULT_SUGGESTIONS } from '@litomi/domain/search/suggestion'
 import { useState } from 'react'
 
 import useDebouncedValue from '@/hook/useDebouncedValue'
@@ -29,14 +28,11 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
     delay: SUGGESTION_DEBOUNCE_MS,
   })
 
-  const {
-    data: suggestions = DEFAULT_SUGGESTIONS,
-    isLoading,
-    isFetching,
-  } = useCensorshipSuggestionsQuery({ query: debouncedWord })
+  const { data: suggestions, isLoading, isFetching } = useCensorshipSuggestionsQuery({ query: debouncedWord })
 
   function navigateSelection(direction: 'down' | 'up') {
     const len = suggestions.length
+
     if (len === 0) {
       return
     }
@@ -83,7 +79,7 @@ function getCurrentWord(inputValue: string, cursorPosition: number) {
   const trimStart = segment.length - segment.trimStart().length
 
   return {
-    word: segment.trim().toLowerCase(),
+    word: segment.trim(),
     start: start + trimStart,
     end,
   }

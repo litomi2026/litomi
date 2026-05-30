@@ -5,7 +5,7 @@ import type { CensorshipItem } from '@litomi/contracts'
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { useTranslations } from 'next-intl'
 
-import { getCensorshipLevelMessagePath } from './constants'
+import { CENSORSHIP_LEVELS } from './constants'
 
 type Props = {
   censorships: CensorshipItem[]
@@ -22,10 +22,6 @@ export default function CensorshipStats({ censorships }: Props) {
     { [CensorshipLevel.LIGHT]: 0, [CensorshipLevel.HEAVY]: 0, [CensorshipLevel.NONE]: 0 },
   )
 
-  const lightCount = levelCount[CensorshipLevel.LIGHT]
-  const heavyCount = levelCount[CensorshipLevel.HEAVY]
-  const noneCount = levelCount[CensorshipLevel.NONE]
-
   return (
     <div className="px-3 pb-4">
       <div className="flex gap-4 text-sm text-zinc-400 overflow-x-auto">
@@ -34,24 +30,20 @@ export default function CensorshipStats({ censorships }: Props) {
           <span>{t('stats.ruleCount', { count: censorships.length })}</span>
         </div>
         <div className="border-l-2 border-zinc-700" />
-        {lightCount > 0 && (
-          <div className="flex items-center gap-1">
-            <span className="font-medium font-mono text-sm text-yellow-500">{lightCount}</span>
-            <span>{t(getCensorshipLevelMessagePath(CensorshipLevel.LIGHT))}</span>
-          </div>
-        )}
-        {heavyCount > 0 && (
-          <div className="flex items-center gap-1">
-            <span className="font-medium font-mono text-sm text-red-500">{heavyCount}</span>
-            <span>{t(getCensorshipLevelMessagePath(CensorshipLevel.HEAVY))}</span>
-          </div>
-        )}
-        {noneCount > 0 && (
-          <div className="flex items-center gap-1">
-            <span className="font-medium font-mono text-sm text-green-500">{noneCount}</span>
-            <span>{t(getCensorshipLevelMessagePath(CensorshipLevel.NONE))}</span>
-          </div>
-        )}
+        {CENSORSHIP_LEVELS.map(({ level, messagePath, colorClass }) => {
+          const count = levelCount[level]
+
+          if (count === 0) {
+            return null
+          }
+
+          return (
+            <div className="flex items-center gap-1" key={level}>
+              <span className={`font-medium font-mono text-sm ${colorClass}`}>{count}</span>
+              <span>{t(messagePath)}</span>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
