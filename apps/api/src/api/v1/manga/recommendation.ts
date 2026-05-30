@@ -24,7 +24,7 @@ route.get(
   zProblemValidator('query', getV1MangaRecommendationQuerySchema),
   async (c) => {
     const userId = c.get('userId')!
-    const { limit } = c.req.valid('query')
+    const { limit, locale } = c.req.valid('query')
 
     try {
       const rows = await db
@@ -41,8 +41,9 @@ route.get(
         .orderBy(asc(mangaRecommendationTable.rank))
         .limit(limit)
 
-      const mangaList = await selectCatalogMangaRecordsByIds(rows.map((row) => row.mangaId))
-      const mangaMap = catalogMangaRecordsToMangaMap(mangaList)
+      const mangaIds = rows.map(({ mangaId }) => mangaId)
+      const mangaList = await selectCatalogMangaRecordsByIds(mangaIds)
+      const mangaMap = catalogMangaRecordsToMangaMap(mangaList, locale)
 
       const result = {
         items: rows.map((row) => ({

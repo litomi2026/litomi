@@ -33,7 +33,7 @@ routes.get(
   zProblemValidator('query', getLibraryItemsQuerySchema),
   async (c) => {
     const { id: libraryId } = c.req.valid('param')
-    const { cursor, limit, scope, sort } = c.req.valid('query')
+    const { cursor, limit, locale, scope, sort } = c.req.valid('query')
     const userId = c.get('userId')
     const cursorData = cursor ? decodeLibraryIdCursor(cursor) : null
     const isPublicScope = scope === 'public'
@@ -80,7 +80,8 @@ routes.get(
 
       const hasNextPage = fetchedItems.length > limit
       const pageItems = hasNextPage ? fetchedItems.slice(0, limit) : fetchedItems
-      const catalogMangaMap = await getCatalogMangaMap(pageItems.map(({ mangaId }) => mangaId))
+      const mangaIds = pageItems.map(({ mangaId }) => mangaId)
+      const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
 
       const items = pageItems.map((item) => ({
         mangaId: item.mangaId,

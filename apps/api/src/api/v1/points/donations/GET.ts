@@ -66,7 +66,7 @@ const PER_PAGE = 20
 
 route.get('/me', requireAuth, zProblemValidator('query', getV1PointsDonationsMeQuerySchema), async (c) => {
   const userId = c.get('userId')!
-  const { cursor } = c.req.valid('query')
+  const { cursor, locale } = c.req.valid('query')
 
   const whereConditions = cursor
     ? and(eq(pointDonationTable.userId, userId), lt(pointDonationTable.id, cursor))
@@ -117,12 +117,12 @@ route.get('/me', requireAuth, zProblemValidator('query', getV1PointsDonationsMeQ
     }
 
     const artistLabelMap = new Map<string, string>()
-    for (const item of translateArtistList([...artistValueSet], 'ko') ?? []) {
+    for (const item of translateArtistList([...artistValueSet], locale) ?? []) {
       artistLabelMap.set(item.value, item.label)
     }
 
     const groupLabelMap = new Map<string, string>()
-    for (const item of translateGroupList([...groupValueSet], 'ko') ?? []) {
+    for (const item of translateGroupList([...groupValueSet], locale) ?? []) {
       groupLabelMap.set(item.value, item.label)
     }
 

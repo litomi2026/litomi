@@ -17,7 +17,7 @@ import { zProblemValidator } from '@/utils/validator'
 const libraryMangaRoutes = new Hono<Env>()
 
 libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySchema), async (c) => {
-  const { cursor, limit } = c.req.valid('query')
+  const { cursor, limit, locale } = c.req.valid('query')
   const decodedCursor = cursor ? decodeLibraryIdCursor(cursor) : null
 
   if (cursor && !decodedCursor) {
@@ -88,7 +88,8 @@ libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySch
     const hasNextPage = rows.length > limit
     const pageRows = hasNextPage ? rows.slice(0, limit) : rows
     const lastRow = pageRows[pageRows.length - 1]
-    const catalogMangaMap = await getCatalogMangaMap(pageRows.map(({ mangaId }) => mangaId))
+    const mangaIds = pageRows.map(({ mangaId }) => mangaId)
+    const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
 
     const items: LibraryMangaItem[] = pageRows.map((row) => ({
       mangaId: row.mangaId,

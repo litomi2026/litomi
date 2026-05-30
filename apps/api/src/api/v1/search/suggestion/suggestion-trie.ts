@@ -115,12 +115,12 @@ function processTranslation(
     labels: languageLabels,
   })
 
-  for (const { value, label } of getAllLanguagesWithLabels('ko')) {
+  for (const { value, label } of getAllLanguagesWithLabels(Locale.KO)) {
     const koLabel = getFirstTranslation(label)
-    const enLabel = getFirstTranslation(translateLanguage(value, 'en'))
-    const jaLabel = getFirstTranslation(translateLanguage(value, 'ja'))
-    const zhCNLabel = getFirstTranslation(translateLanguage(value, 'zh-CN'))
-    const zhTWLabel = getFirstTranslation(translateLanguage(value, 'zh-TW'))
+    const enLabel = getFirstTranslation(translateLanguage(value, Locale.EN))
+    const jaLabel = getFirstTranslation(translateLanguage(value, Locale.JA))
+    const zhCNLabel = getFirstTranslation(translateLanguage(value, Locale.ZH_CN))
+    const zhTWLabel = getFirstTranslation(translateLanguage(value, Locale.ZH_TW))
 
     const suggestion: SuggestionItem = {
       value: `language:${value}`,
