@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_LOCALE, isPublicLocale, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import { useState } from 'react'
 
@@ -12,6 +13,8 @@ export default function ErrorDiagnosticDetails({ digest, pathname }: Props) {
   const [capturedAt] = useState(() => new Date())
   const commitSHA = env.NEXT_PUBLIC_COMMIT_SHA || 'local'
   const environment = env.NEXT_PUBLIC_APP_ENV || 'development'
+  const firstPathSegment = pathname?.split('/')[1] ?? ''
+  const locale = isPublicLocale(firstPathSegment) ? firstPathSegment : DEFAULT_LOCALE
 
   return (
     <div className="mt-4 space-y-3">
@@ -25,7 +28,7 @@ export default function ErrorDiagnosticDetails({ digest, pathname }: Props) {
           <DiagnosticRow label="커밋" value={commitSHA} />
           {pathname && <DiagnosticRow label="경로" value={pathname} />}
           {digest && <DiagnosticRow label="오류 코드" value={digest} />}
-          <DiagnosticRow label="발생 시각" value={capturedAt.toLocaleString('ko-KR')} />
+          <DiagnosticRow label="발생 시각" value={capturedAt.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])} />
         </div>
       </details>
     </div>

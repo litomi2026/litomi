@@ -1,5 +1,8 @@
 'use client'
 
+import './globals.css'
+
+import { DEFAULT_LOCALE } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import * as Sentry from '@sentry/nextjs'
 import { usePathname, useSearchParams } from 'next/navigation'
@@ -30,7 +33,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   }, [error, pathname, searchParams])
 
   return (
-    <html lang="ko">
+    <html lang={DEFAULT_LOCALE}>
       <body className="flex items-center justify-center p-4 h-dvh bg-background">
         <main className="max-w-lg text-center text-foreground">
           <h2 className="my-8 text-2xl font-medium">문제가 발생했어요</h2>
