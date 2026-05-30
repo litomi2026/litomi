@@ -4,6 +4,7 @@ import type { Post } from '@litomi/contracts'
 
 import { PostFilter } from '@litomi/domain/post/filter'
 import { Frown, Repeat } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
@@ -98,6 +99,7 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
 }
 
 function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
+  const locale = useLocale()
   const [hasSystemIssues, setHasSystemIssues] = useState(false)
 
   return (
@@ -107,7 +109,7 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
       </div>
       <h3 className="text-lg font-semibold text-zinc-200 mb-2">글을 불러올 수 없어요</h3>
 
-      <CloudProviderStatus onStatusUpdate={setHasSystemIssues} />
+      <CloudProviderStatus locale={locale} onStatusUpdate={setHasSystemIssues} />
       <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
 
       <button

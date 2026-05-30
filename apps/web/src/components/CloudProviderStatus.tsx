@@ -1,11 +1,9 @@
 'use client'
 
-import { DEFAULT_LOCALE, isPublicLocale, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
+import { DEFAULT_LOCALE, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import ms from 'ms'
 import { useEffect, useState } from 'react'
-
-import { usePathname } from '@/i18n/navigation'
 
 type ServiceStatus = 'critical' | 'major' | 'minor' | 'none' | 'unknown'
 
@@ -65,13 +63,12 @@ const STATUS_LABELS: Record<ServiceStatus, string> = {
 }
 
 interface CloudProviderStatusProps {
+  locale?: string | null
   onStatusUpdate?: (hasIssues: boolean) => void
 }
 
-export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderStatusProps) {
-  const pathname = usePathname()
-  const firstPathSegment = pathname.split('/')[1]
-  const locale = isPublicLocale(firstPathSegment) ? firstPathSegment : DEFAULT_LOCALE
+export default function CloudProviderStatus({ locale, onStatusUpdate }: CloudProviderStatusProps) {
+  const languageTag = getLanguageTag(locale)
 
   const [status, setStatus] = useState<StatusData>({
     aiven: 'unknown',
@@ -160,12 +157,20 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
         <ServiceStatusRow name="리토미 웹 서버" status={status.litomi} />
         {status.lastChecked && (
           <p className="text-zinc-500 text-center pt-1">
-            마지막 확인: {status.lastChecked.toLocaleTimeString(LOCALE_LANGUAGE_TAGS[locale])}
+            마지막 확인: {status.lastChecked.toLocaleTimeString(languageTag)}
           </p>
         )}
       </div>
     </details>
   )
+}
+
+function getLanguageTag(locale: string | null | undefined) {
+  if (locale && locale in LOCALE_LANGUAGE_TAGS) {
+    return LOCALE_LANGUAGE_TAGS[locale as keyof typeof LOCALE_LANGUAGE_TAGS]
+  }
+
+  return LOCALE_LANGUAGE_TAGS[DEFAULT_LOCALE]
 }
 
 function ServiceStatusRow({ name, status }: { name: string; status: ServiceStatus }) {

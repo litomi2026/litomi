@@ -2,10 +2,10 @@
 
 import './globals.css'
 
-import { DEFAULT_LOCALE } from '@litomi/domain/locale'
+import { DEFAULT_LOCALE, isPublicLocale } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import * as Sentry from '@sentry/nextjs'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import type { ErrorProps } from '@/types/nextjs'
@@ -13,11 +13,11 @@ import type { ErrorProps } from '@/types/nextjs'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import ErrorDiagnosticDetails from '@/components/ErrorDiagnosticDetails'
 import RetryGuidance from '@/components/RetryGuidance'
-import { usePathname } from '@/i18n/navigation'
 
 export default function GlobalError({ error, reset }: ErrorProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const locale = getLocaleFromPathname(pathname)
   const [hasSystemIssues, setHasSystemIssues] = useState(false)
 
   useEffect(() => {
@@ -34,13 +34,13 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   }, [error, pathname, searchParams])
 
   return (
-    <html lang={DEFAULT_LOCALE}>
+    <html lang={locale}>
       <body className="flex items-center justify-center p-4 h-dvh bg-background">
         <main className="max-w-lg text-center text-foreground">
           <h2 className="my-8 text-2xl font-medium">문제가 발생했어요</h2>
           <p className="text-sm text-red-400 my-4 break-all">{error.message}</p>
           <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
-          <CloudProviderStatus onStatusUpdate={setHasSystemIssues} />
+          <CloudProviderStatus locale={locale} onStatusUpdate={setHasSystemIssues} />
           <ErrorDiagnosticDetails digest={error.digest} pathname={pathname} />
           <p className="my-4 break-keep text-sm text-zinc-400">
             문제가 계속되면{' '}
@@ -63,4 +63,9 @@ export default function GlobalError({ error, reset }: ErrorProps) {
       </body>
     </html>
   )
+}
+
+function getLocaleFromPathname(pathname: string | null) {
+  const firstPathSegment = pathname?.split('/')[1] ?? ''
+  return isPublicLocale(firstPathSegment) ? firstPathSegment : DEFAULT_LOCALE
 }
