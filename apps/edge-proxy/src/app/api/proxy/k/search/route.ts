@@ -55,24 +55,19 @@ export async function GET(request: Request) {
     'next-views': nextViews,
     'next-views-id': nextViewsId,
     skip,
-    locale,
   } = validation.data
 
   const lowerQuery = convertToKHentaiKey(query?.toLowerCase())
-  const baseSearch = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim() ?? ''
-  const hasLanguageFilter = /\blanguage:\S+/i.test(baseSearch)
+  const search = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim() ?? ''
   const matchedCategories = query?.match(/\btype:(\S+)/i)
-  const languageFilter = !hasLanguageFilter && locale ? getKHentaiLanguageFilter(locale) : ''
-  const search = [languageFilter, baseSearch].filter(Boolean).join(' ')
 
   if (search && search.length > MAX_KHENTAI_SEARCH_QUERY_LENGTH) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 400,
       code: 'query-too-long',
       detail: '검색어가 너무 길어요',
       headers: createProxyHeaders(),
     })
-    return response
   }
 
   const params: KHentaiMangaSearchOptions = {
@@ -82,7 +77,7 @@ export async function GET(request: Request) {
     nextViewsId: nextViewsId?.toString(),
     sort,
     offset: skip?.toString(),
-    categories: matchedCategories ? encodeCategories(matchedCategories[1]) : getKHentaiCategories(locale),
+    categories: matchedCategories ? encodeCategories(matchedCategories[1]) : undefined,
     minViews: minView?.toString(),
     maxViews: maxView?.toString(),
     minPages: minPage?.toString(),
@@ -107,7 +102,7 @@ export async function GET(request: Request) {
   try {
     const revalidate = params.nextId ? sec('30 days') : 0
     const options = { next: { revalidate }, signal: requestSignal }
-    const searchedMangas = await kHentaiClient.searchMangas(params, locale ?? Locale.KO, options)
+    const searchedMangas = await kHentaiClient.searchMangas(params, Locale.KO, options)
     const hasManga = searchedMangas.length > 0
     let nextCursor = null
 
@@ -210,23 +205,6 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       swr: sec('10 minutes'),
     },
   })
-}
-
-function getKHentaiCategories(locale?: Locale) {
-  if (locale === Locale.JA) {
-    return '1,2,3,6'
-  }
-  return undefined
-}
-
-function getKHentaiLanguageFilter(locale: Locale) {
-  return {
-    [Locale.KO]: 'language:korean',
-    [Locale.EN]: 'language:english',
-    [Locale.JA]: '-language:translated',
-    [Locale.ZH_CN]: 'language:chinese',
-    [Locale.ZH_TW]: 'language:chinese',
-  }[locale]
 }
 
 async function postSearchKeyword(keyword: string, signal?: AbortSignal) {

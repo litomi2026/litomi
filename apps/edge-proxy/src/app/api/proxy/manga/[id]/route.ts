@@ -23,11 +23,8 @@ type Params = {
 }
 
 export async function GET(request: Request, { params }: RouteProps<Params>) {
-  const { searchParams } = new URL(request.url)
-
   const validation = GETProxyMangaIdSchema.safeParse({
     id: (await params).id,
-    locale: searchParams.get('locale') ?? Locale.KO,
   })
 
   if (!validation.success) {
@@ -39,7 +36,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     })
   }
 
-  const { id, locale } = validation.data
+  const { id } = validation.data
 
   if (BLACKLISTED_MANGA_IDS.includes(id)) {
     const forbiddenHeaders = createCacheControlHeaders({
@@ -97,7 +94,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     //   })
     // }
 
-    const manga = await fetchMangaFromMultiSources({ id, locale, signal: request.signal })
+    const manga = await fetchMangaFromMultiSources({ id, locale: Locale.KO, signal: request.signal })
 
     if (!manga) {
       const isPermanentlyMissing = id <= LAST_VERIFIED_MANGA_ID
