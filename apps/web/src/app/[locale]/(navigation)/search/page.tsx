@@ -1,33 +1,42 @@
+import type { Metadata } from 'next'
+
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { getViewFromSearchParams } from '@litomi/std'
-import { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
-import { generateOpenGraphMetadata } from '@/lib/metadata'
+import { getLocaleFromParams } from '@/i18n/server'
+import { generateLocalizedMetadata } from '@/lib/metadata'
 import { getSearchSEO } from '@/lib/searchSEO'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import SearchResult, { SearchResultLoading } from './SearchResult'
 import TrendingKeywords from './TrendingKeywords'
 
-export async function generateMetadata({ searchParams }: PageProps<'/search'>): Promise<Metadata> {
-  const seo = getSearchSEO(await searchParams)
+export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/search'>): Promise<Metadata> {
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'Metadata.search' })
+
+  const seo = getSearchSEO(await searchParams, {
+    defaultDescription: t('description'),
+    defaultTitle: t('title'),
+    landingQueryLabels: t.raw('landingQueryLabels') as Record<string, string>,
+    queryDescription: (query) => t('queryDescription', { query }),
+    queryTitle: (query) => t('queryTitle', { query }),
+  })
 
   return {
     title: seo.title,
     description: seo.description,
     robots: seo.robots,
-    ...generateOpenGraphMetadata({
+    ...generateLocalizedMetadata({
       title: seo.title,
       description: seo.description,
-      url: seo.canonical,
+      locale,
+      pathname: seo.canonical,
     }),
-    alternates: {
-      canonical: seo.canonical,
-      languages: { ko: seo.canonical },
-    },
   }
 }
 
