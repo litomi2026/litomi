@@ -2,10 +2,12 @@
 
 import type { CensorshipItem, POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
+import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { env } from '@litomi/env/client'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Download, Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -13,8 +15,6 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 import { downloadBlob } from '@/utils/download'
-
-import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -28,6 +28,29 @@ const PLACEHOLDER_JSON = `[
 
 type ExportFormat = 'csv' | 'json'
 
+const CSV_EXPORT_HEADERS = ['Key', 'Value', 'Level']
+
+const CSV_EXPORT_KEY_LABELS = {
+  [CensorshipKey.ARTIST]: 'Artist',
+  [CensorshipKey.GROUP]: 'Group',
+  [CensorshipKey.SERIES]: 'Series',
+  [CensorshipKey.CHARACTER]: 'Character',
+  [CensorshipKey.TAG]: 'Tag',
+  [CensorshipKey.TAG_CATEGORY_FEMALE]: 'Female tag',
+  [CensorshipKey.TAG_CATEGORY_MALE]: 'Male tag',
+  [CensorshipKey.TAG_CATEGORY_MIXED]: 'Mixed tag',
+  [CensorshipKey.TAG_CATEGORY_OTHER]: 'Other tag',
+  [CensorshipKey.LANGUAGE]: 'Language',
+  [CensorshipKey.UPLOADER]: 'Uploader',
+  [CensorshipKey.TYPE]: 'Type',
+} satisfies Record<CensorshipKey, string>
+
+const CSV_EXPORT_LEVEL_LABELS = {
+  [CensorshipLevel.LIGHT]: 'Blur',
+  [CensorshipLevel.HEAVY]: 'Hide',
+  [CensorshipLevel.NONE]: 'Allow',
+} satisfies Record<CensorshipLevel, string>
+
 type Props = {
   open: boolean
   onClose: () => void
@@ -37,10 +60,11 @@ type Props = {
 type Tab = 'export' | 'import'
 
 export default function ImportExportModal({ open, onClose, censorships }: Props) {
+  const [importText, setImportText] = useState('')
   const [activeTab, setActiveTab] = useState<Tab>('export')
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
-  const [importText, setImportText] = useState('')
   const queryClient = useQueryClient()
+  const t = useTranslations('Censorship')
   const { guardAdultAccess } = useAdultAccessGuard()
 
   const addMutation = useMutation({
@@ -58,7 +82,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
     },
 
     onSuccess: (ids) => {
-      toast.success(`${ids.length}개 규칙을 추가했어요`)
+      toast.success(t('importExport.importSuccessToast', { count: ids.length }))
       setImportText('')
       onClose()
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
@@ -74,24 +98,20 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
       if (exportFormat === 'json') {
         const exportData = censorships.map((c) => ({
           key: c.key,
-          keyLabel: CENSORSHIP_KEY_LABELS[c.key],
           value: c.value,
           level: c.level,
-          levelLabel: CENSORSHIP_LEVEL_LABELS[c.level].label,
         }))
+
         content = JSON.stringify(exportData, null, 2)
         filename = 'censorship-rules.json'
         mimeType = 'application/json'
       } else {
-        const headers = ['유형', '값', '수준']
-        const rows = censorships.map((c) => [
-          CENSORSHIP_KEY_LABELS[c.key],
-          c.value,
-          CENSORSHIP_LEVEL_LABELS[c.level].label,
-        ])
-        const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join(
+        const rows = censorships.map((c) => [CSV_EXPORT_KEY_LABELS[c.key], c.value, CSV_EXPORT_LEVEL_LABELS[c.level]])
+
+        const csvContent = [CSV_EXPORT_HEADERS.join(','), ...rows.map((row) => row.map(formatCsvCell).join(','))].join(
           '\n',
         )
+
         content = csvContent
         filename = 'censorship-rules.csv'
         mimeType = 'text/csv'
@@ -99,10 +119,10 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
 
       const blob = new Blob([content], { type: mimeType })
       downloadBlob(blob, filename)
-      toast.success(`${censorships.length}개 규칙을 내보냈어요`)
+      toast.success(t('importExport.exportSuccessToast', { count: censorships.length }))
       onClose()
     } catch {
-      toast.error('내보내기에 실패했어요')
+      toast.error(t('importExport.exportErrorToast'))
     }
   }
 
@@ -121,23 +141,8 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
       const items: { key: number; value: string; level: number }[] = []
 
       data.forEach((item) => {
-        // Find key by label or use direct key
-        let key = item.key
-        if (typeof key === 'string') {
-          const keyEntry = Object.entries(CENSORSHIP_KEY_LABELS).find(([_, label]) => label === key)
-          if (keyEntry) {
-            key = Number(keyEntry[0])
-          }
-        }
-
-        // Find level by label or use direct level
-        let level = item.level
-        if (typeof level === 'string') {
-          const levelEntry = Object.entries(CENSORSHIP_LEVEL_LABELS).find(([_, { label }]) => label === level)
-          if (levelEntry) {
-            level = Number(levelEntry[0])
-          }
-        }
+        const key = item.key
+        const level = item.level
 
         if (typeof key === 'number' && item.value && typeof level === 'number') {
           items.push({ key, value: item.value, level })
@@ -146,13 +151,13 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
 
       addMutation.mutate(items)
     } catch {
-      toast.warning('올바른 JSON 형식이 아니에요')
+      toast.warning(t('importExport.invalidJsonToast'))
     }
   }
 
   return (
-    <Dialog ariaLabel="규칙 가져오기/내보내기" className="sm:max-w-2xl" onClose={onClose} open={open}>
-      <DialogHeader onClose={onClose} title="규칙 가져오기/내보내기" />
+    <Dialog ariaLabel={t('importExport.title')} className="sm:max-w-2xl" onClose={onClose} open={open}>
+      <DialogHeader onClose={onClose} title={t('importExport.title')} />
 
       {/* Tab Navigation */}
       <div className="flex border-b-2 border-zinc-800 shrink-0">
@@ -162,7 +167,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
           onClick={() => setActiveTab('export')}
           type="button"
         >
-          내보내기
+          {t('importExport.exportTab')}
         </button>
         <button
           aria-pressed={activeTab === 'import'}
@@ -170,7 +175,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
           onClick={() => setActiveTab('import')}
           type="button"
         >
-          가져오기
+          {t('importExport.importTab')}
         </button>
       </div>
 
@@ -178,9 +183,9 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
         {activeTab === 'export' ? (
           <>
             <p className="text-sm text-zinc-400 mb-4">
-              현재 {censorships.length}개의 검열 규칙을 파일로 내보낼 수 있어요
+              {t('importExport.exportDescription', { count: censorships.length })}
             </p>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">파일 형식</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">{t('importExport.fileFormat')}</label>
             <div className="grid sm:grid-cols-2 gap-2">
               <button
                 aria-pressed={exportFormat === 'json'}
@@ -189,7 +194,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
                 type="button"
               >
                 <div className="font-medium">JSON</div>
-                <div className="text-xs text-zinc-400">프로그램 간 호환용</div>
+                <div className="text-xs text-zinc-400">{t('importExport.jsonDescription')}</div>
               </button>
               <button
                 aria-pressed={exportFormat === 'csv'}
@@ -198,14 +203,14 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
                 type="button"
               >
                 <div className="font-medium">CSV</div>
-                <div className="text-xs text-zinc-400">엑셀 편집용</div>
+                <div className="text-xs text-zinc-400">{t('importExport.csvDescription')}</div>
               </button>
             </div>
           </>
         ) : (
           <>
-            <p className="text-sm text-zinc-400 mb-4">JSON 형식의 검열 규칙을 붙여넣어 가져올 수 있어요</p>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">JSON 데이터</label>
+            <p className="text-sm text-zinc-400 mb-4">{t('importExport.importDescription')}</p>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">{t('importExport.jsonData')}</label>
             <textarea
               className="w-full h-64 px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition font-mono text-sm text-zinc-100 placeholder-zinc-500"
               onChange={(e) => setImportText(e.target.value)}
@@ -225,7 +230,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
             type="button"
           >
             <Download className="size-5" />
-            <span>내보내기</span>
+            <span>{t('importExport.exportAction')}</span>
           </button>
         ) : (
           <button
@@ -237,12 +242,12 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
             {addMutation.isPending ? (
               <>
                 <div className="w-5 h-5 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />
-                <span>가져오는 중...</span>
+                <span>{t('importExport.importing')}</span>
               </>
             ) : (
               <>
                 <Upload className="size-5" />
-                <span>가져오기</span>
+                <span>{t('importExport.importAction')}</span>
               </>
             )}
           </button>
@@ -250,4 +255,8 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
       </DialogFooter>
     </Dialog>
   )
+}
+
+function formatCsvCell(value: string) {
+  return `"${value.replaceAll('"', '""')}"`
 }
