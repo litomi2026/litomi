@@ -5,11 +5,11 @@ import { getTranslations } from 'next-intl/server'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import NewYearPage from './NewYearPage'
+import AdStats from './AdStats'
 
-export async function generateMetadata({ params }: PageProps<'/[locale]/nye'>): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/[locale]/libo/stats'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
-  const t = await getTranslations({ locale, namespace: 'Metadata.newYear' })
+  const t = await getTranslations({ locale, namespace: 'Metadata.libo.stats' })
   const title = t('title')
   const description = t('description')
 
@@ -20,11 +20,11 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/nye'>): 
       title,
       description,
       locale,
-      pathname: '/nye',
+      pathname: '/libo/stats',
     }),
   }
 }
 
-export default function Page() {
-  return <NewYearPage />
+export default function LiboStatsPage() {
+  return <AdStats />
 }

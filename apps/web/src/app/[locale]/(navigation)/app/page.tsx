@@ -3,12 +3,28 @@ import type { ReactNode } from 'react'
 
 import { env } from '@litomi/env/client'
 import { Apple, ArrowUpRight, Bot } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
 import InstallPrompt from '@/components/InstallPrompt'
+import { getLocaleFromParams } from '@/i18n/server'
+import { generateLocalizedMetadata } from '@/lib/metadata'
 
-export const metadata: Metadata = {
-  title: '앱으로 사용하기',
-  description: '리토미 앱 설치 방법을 환경별로 안내해요',
+export async function generateMetadata({ params }: PageProps<'/[locale]/app'>): Promise<Metadata> {
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'Metadata.navigation.app' })
+  const title = t('title')
+  const description = t('description')
+
+  return {
+    title,
+    description,
+    ...generateLocalizedMetadata({
+      title,
+      description,
+      locale,
+      pathname: '/app',
+    }),
+  }
 }
 
 const ANDROID_APK_URL = 'https://github.com/litomi2026/litomi/releases/download/mobile-android-latest/litomi.apk'

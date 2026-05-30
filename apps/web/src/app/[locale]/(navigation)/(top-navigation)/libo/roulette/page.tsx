@@ -5,11 +5,11 @@ import { getTranslations } from 'next-intl/server'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import NewYearPage from './NewYearPage'
+import RoulettePageClient from './roulette-page-client'
 
-export async function generateMetadata({ params }: PageProps<'/[locale]/nye'>): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/[locale]/libo/roulette'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
-  const t = await getTranslations({ locale, namespace: 'Metadata.newYear' })
+  const t = await getTranslations({ locale, namespace: 'Metadata.libo.roulette' })
   const title = t('title')
   const description = t('description')
 
@@ -20,11 +20,11 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/nye'>): 
       title,
       description,
       locale,
-      pathname: '/nye',
+      pathname: '/libo/roulette',
     }),
   }
 }
 
-export default function Page() {
-  return <NewYearPage />
+export default function RoulettePage() {
+  return <RoulettePageClient />
 }

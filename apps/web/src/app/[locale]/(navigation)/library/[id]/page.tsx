@@ -1,12 +1,14 @@
+import type { Metadata } from 'next'
+
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
-import { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { z } from 'zod'
 
 import { redirect } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
-import { generateLocalizedPageMetadata } from '@/lib/metadata'
+import { generateLocalizedMetadata } from '@/lib/metadata'
 
 import LibraryItemsClient from './LibraryItemsClient'
 
@@ -28,12 +30,16 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/library/
   }
 
   const { id: libraryId } = validation.data
-  const title = '서재'
+  const t = await getTranslations({ locale, namespace: 'Metadata.library.detail' })
+  const title = t('title')
+  const description = t('description')
 
   return {
     title,
-    ...generateLocalizedPageMetadata({
+    description,
+    ...generateLocalizedMetadata({
       title,
+      description,
       locale,
       pathname: `/library/${libraryId}`,
     }),

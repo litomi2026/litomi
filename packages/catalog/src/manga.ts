@@ -27,13 +27,13 @@ export type CatalogMangaRecord = {
   tagCategories: number[]
 }
 
-export function catalogMangaRecordsToMangaMap(records: readonly CatalogMangaRecord[]): Map<number, Manga> {
-  return new Map(records.map((record) => [record.id, catalogMangaRecordToManga(record)]))
+type CatalogLocale = Locale.EN | Locale.KO
+
+export function catalogMangaRecordsToMangaMap(records: CatalogMangaRecord[], locale: CatalogLocale) {
+  return new Map(records.map((record) => [record.id, catalogMangaRecordToManga(record, locale)]))
 }
 
-export function catalogMangaRecordToManga(record: CatalogMangaRecord): Manga {
-  const locale = Locale.KO
-
+export function catalogMangaRecordToManga(record: CatalogMangaRecord, locale: CatalogLocale): Manga {
   return {
     id: record.id,
     title: record.title,

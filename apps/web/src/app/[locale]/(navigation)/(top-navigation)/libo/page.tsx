@@ -2,14 +2,15 @@ import type { Metadata } from 'next'
 
 import { getTranslations } from 'next-intl/server'
 
+import JuicyAdsScript from '@/components/ads/juicy-ads/JuicyAdsScript'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import NewYearPage from './NewYearPage'
+import RewardedAdSection from './RewardedAdSection'
 
-export async function generateMetadata({ params }: PageProps<'/[locale]/nye'>): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/[locale]/libo'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
-  const t = await getTranslations({ locale, namespace: 'Metadata.newYear' })
+  const t = await getTranslations({ locale, namespace: 'Metadata.libo.index' })
   const title = t('title')
   const description = t('description')
 
@@ -20,11 +21,16 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/nye'>): 
       title,
       description,
       locale,
-      pathname: '/nye',
+      pathname: '/libo',
     }),
   }
 }
 
-export default function Page() {
-  return <NewYearPage />
+export default function PointsPage() {
+  return (
+    <>
+      <JuicyAdsScript />
+      <RewardedAdSection />
+    </>
+  )
 }

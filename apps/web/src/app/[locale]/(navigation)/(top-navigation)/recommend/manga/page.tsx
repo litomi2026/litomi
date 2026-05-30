@@ -5,11 +5,13 @@ import { getTranslations } from 'next-intl/server'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import NewYearPage from './NewYearPage'
+import RecommendMangaPageClient from './RecommendMangaPageClient'
 
-export async function generateMetadata({ params }: PageProps<'/[locale]/nye'>): Promise<Metadata> {
+export const dynamic = 'force-static'
+
+export async function generateMetadata({ params }: PageProps<'/[locale]/recommend/manga'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
-  const t = await getTranslations({ locale, namespace: 'Metadata.newYear' })
+  const t = await getTranslations({ locale, namespace: 'Metadata.explore.recommendManga' })
   const title = t('title')
   const description = t('description')
 
@@ -20,11 +22,11 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/nye'>): 
       title,
       description,
       locale,
-      pathname: '/nye',
+      pathname: '/recommend/manga',
     }),
   }
 }
 
-export default function Page() {
-  return <NewYearPage />
+export default async function Page() {
+  return <RecommendMangaPageClient />
 }
