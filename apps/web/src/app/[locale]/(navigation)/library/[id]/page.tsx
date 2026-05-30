@@ -1,10 +1,12 @@
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { Metadata } from 'next'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { z } from 'zod'
 
-import { generateOpenGraphMetadata } from '@/lib/metadata'
+import { redirect } from '@/i18n/navigation'
+import { getLocaleFromParams } from '@/i18n/server'
+import { generateLocalizedPageMetadata } from '@/lib/metadata'
 
 import LibraryItemsClient from './LibraryItemsClient'
 
@@ -17,7 +19,8 @@ const searchParamsSchema = z.object({
   view: z.enum(View).default(View.CARD),
 })
 
-export async function generateMetadata({ params }: PageProps<'/library/[id]'>): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/[locale]/library/[id]'>): Promise<Metadata> {
+  const locale = await getLocaleFromParams(params)
   const validation = schema.safeParse(await params)
 
   if (!validation.success) {
@@ -29,18 +32,16 @@ export async function generateMetadata({ params }: PageProps<'/library/[id]'>): 
 
   return {
     title,
-    ...generateOpenGraphMetadata({
+    ...generateLocalizedPageMetadata({
       title,
-      url: `/library/${libraryId}`,
+      locale,
+      pathname: `/library/${libraryId}`,
     }),
-    alternates: {
-      canonical: `/library/${libraryId}`,
-      languages: { ko: `/library/${libraryId}` },
-    },
   }
 }
 
-export default async function LibraryDetailPage({ params, searchParams }: PageProps<'/library/[id]'>) {
+export default async function LibraryDetailPage({ params, searchParams }: PageProps<'/[locale]/library/[id]'>) {
+  const locale = await getLocaleFromParams(params)
   const validation = schema.safeParse(await params)
 
   if (!validation.success) {
@@ -51,7 +52,7 @@ export default async function LibraryDetailPage({ params, searchParams }: PagePr
   const searchValidation = searchParamsSchema.safeParse(await searchParams)
 
   if (!searchValidation.success) {
-    redirect(`/library/${libraryId}`)
+    return redirect({ href: `/library/${libraryId}`, locale })
   }
 
   const { sort, view } = searchValidation.data
