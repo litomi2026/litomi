@@ -1,7 +1,7 @@
-import type { SupportedLocale } from './routing'
+import type { PublicLocale } from '@litomi/domain/locale'
 
 declare module 'next-intl' {
   interface AppConfig {
-    Locale: SupportedLocale
+    Locale: PublicLocale
   }
 }

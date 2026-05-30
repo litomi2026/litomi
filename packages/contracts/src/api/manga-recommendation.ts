@@ -1,3 +1,4 @@
+import { Locale } from '@litomi/domain/locale'
 import {
   MANGA_RECOMMENDATION_PER_PAGE,
   MAX_MANGA_RECOMMENDATION_PER_PAGE,
@@ -14,6 +15,7 @@ export const getV1MangaRecommendationQuerySchema = z.object({
     .positive()
     .max(MAX_MANGA_RECOMMENDATION_PER_PAGE)
     .default(MANGA_RECOMMENDATION_PER_PAGE),
+  locale: z.enum(Locale),
 })
 
 export type GETV1MangaRecommendationQuery = z.infer<typeof getV1MangaRecommendationQuerySchema>

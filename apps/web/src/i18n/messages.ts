@@ -1,3 +1,5 @@
+import { PUBLIC_LOCALES, type PublicLocale } from '@litomi/domain/locale'
+
 import { messages as rankingMessages } from '@/app/[locale]/(navigation)/(ranking)/messages'
 import { messages as rightAsideMessages } from '@/app/[locale]/(navigation)/(right-aside)/messages'
 import { messages as liboMessages } from '@/app/[locale]/(navigation)/(top-navigation)/libo/messages'
@@ -10,9 +12,7 @@ import { messages as docMessages } from '@/app/[locale]/doc/messages'
 import { messages as mangaMessages } from '@/app/[locale]/manga/[id]/messages'
 import { messages as appMessages } from '@/app/[locale]/messages'
 
-import { SUPPORTED_LOCALES, type SupportedLocale } from './routing'
-
-export type LocalizedMessages = Record<SupportedLocale, Messages>
+export type LocalizedMessages = Record<PublicLocale, Messages>
 export type Messages = { [key: string]: MessageValue }
 export type MessageValue = string | { [key: string]: MessageValue }
 
@@ -31,10 +31,10 @@ const messageModules = [
 ] satisfies LocalizedMessages[]
 
 const mergedMessages = Object.fromEntries(
-  SUPPORTED_LOCALES.map((locale) => [locale, mergeLocaleMessages(locale)])
+  PUBLIC_LOCALES.map((locale) => [locale, mergeLocaleMessages(locale)])
 ) as LocalizedMessages
 
-export function getMessages(locale: SupportedLocale): Messages {
+export function getMessages(locale: PublicLocale): Messages {
   return mergedMessages[locale]
 }
 
@@ -42,7 +42,7 @@ function isMessages(value: MessageValue | undefined): value is Messages {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function mergeLocaleMessages(locale: SupportedLocale): Messages {
+function mergeLocaleMessages(locale: PublicLocale): Messages {
   return messageModules.reduce<Messages>((merged, moduleMessages) => {
     return mergeMessages(merged, moduleMessages[locale])
   }, {})

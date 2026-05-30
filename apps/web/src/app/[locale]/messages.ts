@@ -1,12 +1,13 @@
 import { APP_METADATA } from '@litomi/domain/app/metadata'
+import { Locale } from '@litomi/domain/locale'
 
 import type { LocalizedMessages } from '@/i18n/messages'
 
 export const messages = {
-  ko: {
+  [Locale.KO]: {
     Metadata: {
       app: {
-        description: APP_METADATA.ko.description,
+        description: APP_METADATA[Locale.KO].description,
       },
       newYear: {
         title: '새해 카운트다운',
@@ -14,10 +15,10 @@ export const messages = {
       },
     },
   },
-  en: {
+  [Locale.EN]: {
     Metadata: {
       app: {
-        description: APP_METADATA.en.description,
+        description: APP_METADATA[Locale.EN].description,
       },
       newYear: {
         title: 'New Year Countdown',

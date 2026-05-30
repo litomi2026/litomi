@@ -1,3 +1,4 @@
+import { Locale } from '@litomi/domain/locale'
 import { ROULETTE_CONFIG, ROULETTE_SEGMENT_IDS } from '@litomi/domain/points/roulette'
 import { z } from 'zod'
 
@@ -73,6 +74,7 @@ export type GETV1PointsDonationRecipientResponse = z.infer<typeof getV1PointsDon
 
 export const getV1PointsDonationsMeQuerySchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),
+  locale: z.enum(Locale),
 })
 
 export type GETV1PointsDonationsMeQuery = z.infer<typeof getV1PointsDonationsMeQuerySchema>

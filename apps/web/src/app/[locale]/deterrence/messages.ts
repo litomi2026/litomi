@@ -1,7 +1,9 @@
+import { Locale } from '@litomi/domain/locale'
+
 import type { LocalizedMessages } from '@/i18n/messages'
 
 export const messages = {
-  ko: {
+  [Locale.KO]: {
     Metadata: {
       deterrence: {
         title: '19세 미만 이용 제한 안내',
@@ -9,7 +11,7 @@ export const messages = {
       },
     },
   },
-  en: {
+  [Locale.EN]: {
     Metadata: {
       deterrence: {
         title: 'Under-19 Access Restriction Notice',

@@ -8,7 +8,7 @@ export enum TrendingType {
 }
 
 export const getSearchSuggestionsQuerySchema = z.object({
-  locale: z.enum(Locale).default(Locale.KO),
+  locale: z.enum(Locale),
   query: z.string().trim().min(2).max(200),
 })
 
@@ -25,7 +25,7 @@ export type GETSearchSuggestionsResponse = z.infer<typeof getSearchSuggestionsRe
 
 export const getTrendingKeywordsQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(10).default(10),
-  locale: z.enum(Locale).default(Locale.KO),
+  locale: z.enum(Locale),
   type: z.enum(TrendingType).default(TrendingType.HOURLY),
 })
 

@@ -1,4 +1,5 @@
-import { Locale } from '@litomi/domain/locale'
+import type { Locale } from '@litomi/domain/locale'
+
 import { type Manga, MANGA_TYPE_VALUE_BY_ID, tagCategoryIntToName } from '@litomi/domain/manga/model'
 
 import { translateArtistList } from './translation/artist'
@@ -27,13 +28,11 @@ export type CatalogMangaRecord = {
   tagCategories: number[]
 }
 
-type CatalogLocale = Locale.EN | Locale.KO
-
-export function catalogMangaRecordsToMangaMap(records: CatalogMangaRecord[], locale: CatalogLocale) {
+export function catalogMangaRecordsToMangaMap(records: CatalogMangaRecord[], locale: Locale) {
   return new Map(records.map((record) => [record.id, catalogMangaRecordToManga(record, locale)]))
 }
 
-export function catalogMangaRecordToManga(record: CatalogMangaRecord, locale: CatalogLocale): Manga {
+export function catalogMangaRecordToManga(record: CatalogMangaRecord, locale: Locale): Manga {
   return {
     id: record.id,
     title: record.title,

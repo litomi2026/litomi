@@ -9,6 +9,7 @@ import {
   READING_HISTORY_PER_PAGE,
 } from '@litomi/domain/library/policy'
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT, RatingSort } from '@litomi/domain/library/sort'
+import { Locale } from '@litomi/domain/locale'
 import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { isSingleEmoji } from '@litomi/domain/utils/emoji'
@@ -127,6 +128,7 @@ export type GETLibraryItemsResponse = z.infer<typeof getLibraryItemsResponseSche
 export const getLibraryItemsQuerySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
+  locale: z.enum(Locale),
   scope: z.enum(['public', 'me']),
   sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
 })
@@ -271,6 +273,7 @@ export type GETV1LibraryMangaResponse = z.infer<typeof getV1LibraryMangaResponse
 export const getV1LibraryMangaQuerySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
+  locale: z.enum(Locale),
 })
 
 export type GETV1LibraryMangaQuery = z.infer<typeof getV1LibraryMangaQuerySchema>

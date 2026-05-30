@@ -1,7 +1,9 @@
+import { Locale } from '@litomi/domain/locale'
+
 import type { LocalizedMessages } from '@/i18n/messages'
 
 export const messages = {
-  ko: {
+  [Locale.KO]: {
     Metadata: {
       doc: {
         compliance2257: {
@@ -27,7 +29,7 @@ export const messages = {
       },
     },
   },
-  en: {
+  [Locale.EN]: {
     Metadata: {
       doc: {
         compliance2257: {
