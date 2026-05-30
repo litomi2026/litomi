@@ -1,8 +1,8 @@
 import type { Post as TPost } from '@litomi/contracts'
 
-import 'dayjs/locale/ko'
-import dayjs from 'dayjs'
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
+import { getLocale } from 'next-intl/server'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { POST_DETAIL_CURRENT_ANCHOR_ID } from '@/components/post/postHref'
@@ -20,9 +20,18 @@ type Props = {
   post: TPost
 }
 
-export default function Post({ post }: Props) {
+export default async function Post({ post }: Props) {
+  const locale = await getLocale()
   const author = post.author
   const referredPost = post.referredPost
+
+  const createdAtLabel = new Date(post.createdAt).toLocaleString(LOCALE_LANGUAGE_TAGS[locale], {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
 
   return (
     <article
@@ -65,7 +74,7 @@ export default function Post({ post }: Props) {
         </Link>
       )}
       <div className="flex items-center gap-1 text-sm text-zinc-500">
-        <span>{dayjs(post.createdAt).locale('ko').format('YYYY년 M월 D일 A h:mm')}</span>
+        <span>{createdAtLabel}</span>
         {/* <span>·</span>
           <span className="text-sm">
             <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수
