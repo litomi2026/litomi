@@ -1,9 +1,10 @@
 'use client'
 
 import { Pencil } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+
+import { useRouter } from '@/i18n/navigation'
 
 import PasskeyNameDialog from './PasskeyNameDialog'
 

@@ -7,13 +7,13 @@ import { getTimezoneOffsetHours, localToUtcHour, utcToLocalHour } from '@litomi/
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, Moon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import type { ProblemDetailsError } from '@/utils/api-request'
 
 import CustomSelect from '@/components/ui/CustomSelect'
+import { useRouter } from '@/i18n/navigation'
 
 import { updatePushSettings } from './api'
 

@@ -5,9 +5,9 @@ import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, Shield } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
+import { useRouter } from '@/i18n/navigation'
 import { ProblemDetailsError } from '@/utils/api-request'
 
 import type { PasskeySignalData } from './common'

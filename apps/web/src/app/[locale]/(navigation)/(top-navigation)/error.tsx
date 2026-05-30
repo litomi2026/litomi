@@ -2,10 +2,11 @@
 
 import { captureException } from '@sentry/nextjs'
 import { TriangleAlert } from 'lucide-react'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 import useCooldown from '@/hook/useCooldown'
+import { usePathname } from '@/i18n/navigation'
 
 type Props = {
   error: Error & { digest?: string }

@@ -3,10 +3,10 @@
 import { env } from '@litomi/env/client'
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
+import { useRouter } from '@/i18n/navigation'
 import { checkIOSDevice, checkIOSSafari, urlBase64ToUint8Array } from '@/utils/browser'
 
 import { createPushSubscription, deletePushSubscriptionByEndpoint } from './api'

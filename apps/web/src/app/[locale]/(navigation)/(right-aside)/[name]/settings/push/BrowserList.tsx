@@ -5,13 +5,13 @@ import type { DELETEV1MePushSubscriptionIdResponse } from '@litomi/contracts'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Monitor, Smartphone, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import type { ProblemDetailsError } from '@/utils/api-request'
 
+import { useRouter } from '@/i18n/navigation'
 import { formatDeviceInfo } from '@/utils/push-device'
 
 import { deletePushSubscription } from './api'

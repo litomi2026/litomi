@@ -1,6 +1,7 @@
 import { PUBLIC_LOCALES, type PublicLocale } from '@litomi/domain/locale'
 
 import { messages as rankingMessages } from '@/app/[locale]/(navigation)/(ranking)/messages'
+import { messages as censorMessages } from '@/app/[locale]/(navigation)/(right-aside)/[name]/censor/messages'
 import { messages as rightAsideMessages } from '@/app/[locale]/(navigation)/(right-aside)/messages'
 import { messages as liboMessages } from '@/app/[locale]/(navigation)/(top-navigation)/libo/messages'
 import { messages as topNavigationMessages } from '@/app/[locale]/(navigation)/(top-navigation)/messages'
@@ -24,6 +25,7 @@ const messageModules = [
   navigationMessages,
   rankingMessages,
   rightAsideMessages,
+  censorMessages,
   topNavigationMessages,
   liboMessages,
   libraryMessages,
@@ -31,7 +33,7 @@ const messageModules = [
 ] satisfies LocalizedMessages[]
 
 const mergedMessages = Object.fromEntries(
-  PUBLIC_LOCALES.map((locale) => [locale, mergeLocaleMessages(locale)])
+  PUBLIC_LOCALES.map((locale) => [locale, mergeLocaleMessages(locale)]),
 ) as LocalizedMessages
 
 export function getMessages(locale: PublicLocale): Messages {

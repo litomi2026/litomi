@@ -5,7 +5,7 @@ import './globals.css'
 import { DEFAULT_LOCALE } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import * as Sentry from '@sentry/nextjs'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import type { ErrorProps } from '@/types/nextjs'
@@ -13,6 +13,7 @@ import type { ErrorProps } from '@/types/nextjs'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import ErrorDiagnosticDetails from '@/components/ErrorDiagnosticDetails'
 import RetryGuidance from '@/components/RetryGuidance'
+import { usePathname } from '@/i18n/navigation'
 
 export default function GlobalError({ error, reset }: ErrorProps) {
   const pathname = usePathname()

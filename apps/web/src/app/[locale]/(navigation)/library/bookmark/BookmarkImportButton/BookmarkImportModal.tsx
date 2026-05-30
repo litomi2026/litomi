@@ -4,11 +4,11 @@ import type { POSTV1BookmarkResponse } from '@litomi/contracts'
 
 import { MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/library/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import MangaImportModal from '@/components/card/MangaImportModal'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
+import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { ProblemDetailsError } from '@/utils/api-request'
 

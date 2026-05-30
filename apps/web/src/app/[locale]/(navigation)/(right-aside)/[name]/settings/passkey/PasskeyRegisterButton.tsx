@@ -4,9 +4,10 @@ import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { startRegistration } from '@simplewebauthn/browser'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
+
+import { useRouter } from '@/i18n/navigation'
 
 import type { PasskeySignalData } from './common'
 

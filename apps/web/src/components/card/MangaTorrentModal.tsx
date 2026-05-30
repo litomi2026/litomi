@@ -8,13 +8,13 @@ import dayjs from 'dayjs'
 import { Copy, ExternalLink, Magnet } from 'lucide-react'
 import ms from 'ms'
 import { useLocale } from 'next-intl'
-import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useRef } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { create } from 'zustand'
 
 import useClipboard from '@/hook/useClipboard'
+import { usePathname } from '@/i18n/navigation'
 
 type MangaTorrentModalStore = {
   isOpen: boolean

@@ -6,7 +6,6 @@ import { CookieKey } from '@litomi/http/cookie'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Cookies from 'js-cookie'
 import { Download, Loader2 } from 'lucide-react'
-import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -18,6 +17,7 @@ import {
 } from '@/components/ads/juicy-ads/popunder'
 import { useDownload } from '@/hook/useDownload'
 import { useThrottleValue } from '@/hook/useThrottleValue'
+import { usePathname } from '@/i18n/navigation'
 import { isAdultVerified } from '@/utils/adult-verification'
 
 const commonButtonStyle =

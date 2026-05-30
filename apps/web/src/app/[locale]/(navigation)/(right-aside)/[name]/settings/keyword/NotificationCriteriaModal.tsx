@@ -13,7 +13,6 @@ import { getInvalidParams } from '@litomi/http/problem-details'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -21,6 +20,7 @@ import { twMerge } from 'tailwind-merge'
 import type { ProblemDetailsError } from '@/utils/api-request'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
+import { useRouter } from '@/i18n/navigation'
 
 import type { NotificationCriteria } from './types'
 

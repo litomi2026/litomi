@@ -1,8 +1,8 @@
 import { Dices, Loader2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import { useRouter } from '@/i18n/navigation'
 import { useShffleStore } from '@/store/shuffle'
 
 type Props = {

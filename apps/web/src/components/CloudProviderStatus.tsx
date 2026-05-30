@@ -3,8 +3,9 @@
 import { DEFAULT_LOCALE, isPublicLocale, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import ms from 'ms'
-import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
+import { usePathname } from '@/i18n/navigation'
 
 type ServiceStatus = 'critical' | 'major' | 'minor' | 'none' | 'unknown'
 

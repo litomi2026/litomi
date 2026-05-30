@@ -8,9 +8,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Loader2, LogOut, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useLocale } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
+import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { ProblemDetailsError } from '@/utils/api-request'
 

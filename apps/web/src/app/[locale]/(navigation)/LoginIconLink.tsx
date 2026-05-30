@@ -1,6 +1,7 @@
 import { LogIn } from 'lucide-react'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
+import { usePathname } from '@/i18n/navigation'
 import { SearchParamKey } from '@/storage'
 
 import SelectableLink from './SelectableLink'

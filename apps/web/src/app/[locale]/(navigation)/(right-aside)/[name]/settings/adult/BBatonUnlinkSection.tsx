@@ -4,10 +4,10 @@ import { AdultVerificationStatus, type GETV1MeResponse, type POSTV1BBatonUnlinkR
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronDown } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
+import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 

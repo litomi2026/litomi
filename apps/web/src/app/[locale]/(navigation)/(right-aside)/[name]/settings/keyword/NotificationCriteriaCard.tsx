@@ -8,7 +8,6 @@ import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { BellOff, Edit3, Trash2 } from 'lucide-react'
 import { useLocale } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -16,6 +15,7 @@ import type { ProblemDetailsError } from '@/utils/api-request'
 
 import IconBell from '@/components/icons/IconBell'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
+import { useRouter } from '@/i18n/navigation'
 
 import type { NotificationCriteria } from './types'
 

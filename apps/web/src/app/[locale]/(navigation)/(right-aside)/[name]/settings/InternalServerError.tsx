@@ -3,9 +3,10 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { RefreshCw, TriangleAlert } from 'lucide-react'
-import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+
+import { usePathname } from '@/i18n/navigation'
 
 export default function InternalServerError({ error, reset }: ErrorBoundaryFallbackProps) {
   const pathname = usePathname()
