@@ -1,12 +1,13 @@
 import 'server-only'
-import { Locale } from '@litomi/domain/locale'
+import type { Locale } from '@litomi/domain/locale'
+
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { translateCategory } from './category'
-import { Multilingual, translateValue } from './common'
+import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
 import groupTranslationJSON from './group.json'
 
-const GROUP_TRANSLATION: Record<string, Multilingual> = groupTranslationJSON
+const GROUP_TRANSLATION: TranslationMap = groupTranslationJSON
 
 /**
  * Get all groups with their translations as value/label pairs for search suggestions
@@ -14,17 +15,11 @@ const GROUP_TRANSLATION: Record<string, Multilingual> = groupTranslationJSON
 export function getAllGroupsWithLabels() {
   return Object.entries(GROUP_TRANSLATION).map(([key, translations]) => ({
     value: `group:${key}`,
-    labels: {
-      en: `${translateCategory('group', Locale.EN)}:${translations.en}`,
-      ko: `${translateCategory('group', Locale.KO)}:${translations.ko || translations.en}`,
-      ja: `${translateCategory('group', Locale.JA)}:${translations.ja || translations.en}`,
-      'zh-CN': `${translateCategory('group', Locale.ZH_CN)}:${translations['zh-CN'] || translations.en}`,
-      'zh-TW': `${translateCategory('group', Locale.ZH_TW)}:${translations['zh-TW'] || translations.en}`,
-    },
+    labels: getPrefixedTranslationLabels('group', translations, translateCategory),
   }))
 }
 
-export function translateGroupList(groupList: string[] | undefined, locale: keyof Multilingual) {
+export function translateGroupList(groupList: string[] | undefined, locale: Locale) {
   return groupList?.map((group) => {
     const normalizedValue = normalizeValue(group)
     return {

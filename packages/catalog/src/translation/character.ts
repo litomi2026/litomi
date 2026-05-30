@@ -1,13 +1,14 @@
 import 'server-only'
-import { Locale } from '@litomi/domain/locale'
+import type { Locale } from '@litomi/domain/locale'
+
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { getCharacterSponsors } from '../sponsor/character'
 import { translateCategory } from './category'
 import characterTranslationJSON from './character.json'
-import { Multilingual, translateValue } from './common'
+import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
 
-const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslationJSON
+const CHARACTER_TRANSLATION: TranslationMap = characterTranslationJSON
 
 /**
  * Get all characters with their translations as value/label pairs for search suggestions
@@ -15,17 +16,11 @@ const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslation
 export function getAllCharactersWithLabels() {
   return Object.entries(CHARACTER_TRANSLATION).map(([characterId, translations]) => ({
     value: `character:${characterId}`,
-    labels: {
-      en: `${translateCategory('character', Locale.EN)}:${translations.en}`,
-      ko: `${translateCategory('character', Locale.KO)}:${translations.ko || translations.en}`,
-      ja: `${translateCategory('character', Locale.JA)}:${translations.ja || translations.en}`,
-      'zh-CN': `${translateCategory('character', Locale.ZH_CN)}:${translations['zh-CN'] || translations.en}`,
-      'zh-TW': `${translateCategory('character', Locale.ZH_TW)}:${translations['zh-TW'] || translations.en}`,
-    },
+    labels: getPrefixedTranslationLabels('character', translations, translateCategory),
   }))
 }
 
-export function translateCharacterList(characterList: string[] | undefined, locale: keyof Multilingual) {
+export function translateCharacterList(characterList: string[] | undefined, locale: Locale) {
   return characterList?.map((character) => {
     const normalizedValue = normalizeValue(character)
     return {

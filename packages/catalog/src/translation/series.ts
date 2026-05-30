@@ -1,12 +1,13 @@
 import 'server-only'
-import { Locale } from '@litomi/domain/locale'
+import type { Locale } from '@litomi/domain/locale'
+
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { translateCategory } from './category'
-import { Multilingual, translateValue } from './common'
+import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
 import seriesTranslationJSON from './series.json'
 
-const SERIES_TRANSLATION: Record<string, Multilingual> = seriesTranslationJSON
+const SERIES_TRANSLATION: TranslationMap = seriesTranslationJSON
 
 /**
  * Get all series with their translations as value/label pairs for search suggestions
@@ -14,17 +15,11 @@ const SERIES_TRANSLATION: Record<string, Multilingual> = seriesTranslationJSON
 export function getAllSeriesWithLabels() {
   return Object.entries(SERIES_TRANSLATION).map(([key, translations]) => ({
     value: `series:${key}`,
-    labels: {
-      en: `${translateCategory('series', Locale.EN)}:${translations.en}`,
-      ko: `${translateCategory('series', Locale.KO)}:${translations.ko || translations.en}`,
-      ja: `${translateCategory('series', Locale.JA)}:${translations.ja || translations.en}`,
-      'zh-CN': `${translateCategory('series', Locale.ZH_CN)}:${translations['zh-CN'] || translations.en}`,
-      'zh-TW': `${translateCategory('series', Locale.ZH_TW)}:${translations['zh-TW'] || translations.en}`,
-    },
+    labels: getPrefixedTranslationLabels('series', translations, translateCategory),
   }))
 }
 
-export function translateSeriesList(seriesList: string[] | undefined, locale: keyof Multilingual) {
+export function translateSeriesList(seriesList: string[] | undefined, locale: Locale) {
   return seriesList?.map((series) => {
     const normalizedValue = normalizeValue(series)
     return {

@@ -1,11 +1,17 @@
 import 'server-only'
+import type { Locale } from '@litomi/domain/locale'
 
 import categoryJSON from './category.json'
-import { Multilingual } from './common'
+import { getTranslationValue, type TranslationEntry } from './common'
 
-const CATEGORY_TRANSLATION: Record<string, Multilingual | undefined> = categoryJSON
+const CATEGORY_TRANSLATION: Record<string, TranslationEntry | undefined> = categoryJSON
 
-export function translateCategory(category: string, locale: keyof Multilingual): string {
+export function translateCategory(category: string, locale: Locale): string {
   const translation = CATEGORY_TRANSLATION[category]
-  return translation?.[locale] ?? translation?.en ?? category
+
+  if (!translation) {
+    return category
+  }
+
+  return getTranslationValue(translation, locale) || category
 }
