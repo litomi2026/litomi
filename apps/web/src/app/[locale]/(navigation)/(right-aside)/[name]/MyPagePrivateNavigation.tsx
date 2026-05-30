@@ -25,7 +25,11 @@ export default function MyPagePrivateNavigation({ username }: Props) {
     ))
   }
 
-  if (me === null || me.name !== username) {
+  if (me === null) {
+    return <MyPageNavigationLink href="/@/settings" label="설정" />
+  }
+
+  if (me.name !== username) {
     return null
   }
 
