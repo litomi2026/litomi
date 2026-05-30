@@ -13,15 +13,15 @@ import { z } from 'zod'
 
 import type { Env } from '@/app'
 
-const langSchema = z.enum(['ko', 'en']).default('ko')
+const dmcaLocaleSchema = z.enum(['ko', 'en']).catch('ko')
 const { APP_ORIGIN } = env
 
-type Lang = z.infer<typeof langSchema>
+type DmcaLocale = z.infer<typeof dmcaLocaleSchema>
 
 const reporterRoleSchema = z.enum(['COPYRIGHT_OWNER', 'AUTHORIZED_AGENT'])
 
 const noticeFormSchema = z.object({
-  lang: langSchema,
+  locale: dmcaLocaleSchema,
   reporterName: z.string().trim().min(1).max(128),
   reporterEmail: z.email().trim().max(320),
   reporterAddress: z.string().trim().min(1).max(10_000),
@@ -36,7 +36,7 @@ const noticeFormSchema = z.object({
 })
 
 const counterFormSchema = z.object({
-  lang: langSchema,
+  locale: dmcaLocaleSchema,
   claimantName: z.string().trim().min(1).max(128),
   claimantEmail: z.email().trim().max(320),
   claimantAddress: z.string().trim().min(1).max(10_000),
@@ -56,10 +56,10 @@ const route = new Hono<Env>()
 
 route.post('/counter', async (c) => {
   const formData = await c.req.raw.formData()
-  const lang = getLangFromFormData(formData)
+  const locale = getLocaleFromRequest(c)
 
   const payload = {
-    lang,
+    locale,
     claimantName: String(formData.get('claimant-name') ?? ''),
     claimantEmail: String(formData.get('claimant-email') ?? ''),
     claimantAddress: String(formData.get('claimant-address') ?? ''),
@@ -76,14 +76,14 @@ route.post('/counter', async (c) => {
   const validation = counterFormSchema.safeParse(payload)
 
   if (!validation.success) {
-    return redirectTo(c, '/doc/dmca/counter', lang, 'invalid')
+    return redirectTo(c, '/doc/dmca/counter', locale, 'invalid')
   }
 
   const data = validation.data
   const mangaIds = extractMangaIdsFromText(data.infringingReferencesRaw)
 
   if (mangaIds.length === 0) {
-    return redirectTo(c, '/doc/dmca/counter', lang, 'no-target')
+    return redirectTo(c, '/doc/dmca/counter', locale, 'no-target')
   }
 
   const counterId = crypto.randomUUID()
@@ -92,7 +92,7 @@ route.post('/counter', async (c) => {
     await db.transaction(async (tx) => {
       await tx.insert(dmcaCounterNoticeTable).values({
         id: counterId,
-        locale: data.lang,
+        locale: data.locale,
         claimantName: data.claimantName,
         claimantEmail: data.claimantEmail,
         claimantAddress: data.claimantAddress,
@@ -115,18 +115,18 @@ route.post('/counter', async (c) => {
     })
   } catch (error) {
     console.error('submitDmcaCounterNotice:', error)
-    return redirectTo(c, '/doc/dmca/counter', lang, 'server')
+    return redirectTo(c, '/doc/dmca/counter', locale, 'server')
   }
 
-  return redirectTo(c, '/doc/dmca/counter/success', lang, undefined, counterId)
+  return redirectTo(c, '/doc/dmca/counter/success', locale, undefined, counterId)
 })
 
 route.post('/notice', async (c) => {
   const formData = await c.req.raw.formData()
-  const lang = getLangFromFormData(formData)
+  const locale = getLocaleFromRequest(c)
 
   const payload = {
-    lang,
+    locale,
     reporterName: String(formData.get('reporter-name') ?? ''),
     reporterEmail: String(formData.get('reporter-email') ?? ''),
     reporterAddress: String(formData.get('reporter-address') ?? ''),
@@ -143,14 +143,14 @@ route.post('/notice', async (c) => {
   const validation = noticeFormSchema.safeParse(payload)
 
   if (!validation.success) {
-    return redirectTo(c, '/doc/dmca', lang, 'invalid')
+    return redirectTo(c, '/doc/dmca', locale, 'invalid')
   }
 
   const data = validation.data
   const mangaIds = extractMangaIdsFromText(data.infringingReferencesRaw)
 
   if (mangaIds.length === 0) {
-    return redirectTo(c, '/doc/dmca', lang, 'no-target')
+    return redirectTo(c, '/doc/dmca', locale, 'no-target')
   }
 
   const noticeId = crypto.randomUUID()
@@ -159,7 +159,7 @@ route.post('/notice', async (c) => {
     await db.transaction(async (tx) => {
       await tx.insert(dmcaNoticeTable).values({
         id: noticeId,
-        locale: data.lang,
+        locale: data.locale,
         reporterName: data.reporterName,
         reporterEmail: data.reporterEmail,
         reporterAddress: data.reporterAddress,
@@ -182,10 +182,10 @@ route.post('/notice', async (c) => {
     })
   } catch (error) {
     console.error('submitDmcaNotice:', error)
-    return redirectTo(c, '/doc/dmca', lang, 'server')
+    return redirectTo(c, '/doc/dmca', locale, 'server')
   }
 
-  return redirectTo(c, '/doc/dmca/success', lang, undefined, noticeId)
+  return redirectTo(c, '/doc/dmca/success', locale, undefined, noticeId)
 })
 
 function extractMangaIdsFromText(text: string): number[] {
@@ -209,14 +209,12 @@ function extractMangaIdsFromText(text: string): number[] {
   return Array.from(new Set(ids)).slice(0, MAX_TARGETS_PER_SUBMISSION)
 }
 
-function getLangFromFormData(formData: FormData): Lang {
-  const raw = formData.get('lang')
-  return langSchema.parse(typeof raw === 'string' ? raw : undefined)
+function getLocaleFromRequest(c: Context<Env>): DmcaLocale {
+  return dmcaLocaleSchema.parse(c.req.query('locale'))
 }
 
-function redirectTo(c: Context<Env>, path: string, lang: Lang, error?: string, caseId?: string) {
-  const url = new URL(path, APP_ORIGIN)
-  url.searchParams.set('lang', lang)
+function redirectTo(c: Context<Env>, path: string, locale: DmcaLocale, error?: string, caseId?: string) {
+  const url = new URL(`/${locale}${path}`, APP_ORIGIN)
 
   if (error) {
     url.searchParams.set('error', error)
