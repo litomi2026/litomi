@@ -1,7 +1,9 @@
 'use client'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2, UploadCloud } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { SubmitEvent, useEffect, useId, useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -33,6 +35,7 @@ export default function MangaImportModal({
   isPending,
   onSubmit,
 }: MangaIdActionModalProps) {
+  const locale = useLocale()
   const inputId = useId()
   const helperTextId = useId()
   const [inputText, setInputText] = useState('')
@@ -106,7 +109,11 @@ export default function MangaImportModal({
             type="submit"
           >
             {isPending ? <Loader2 className="size-5 animate-spin" /> : <UploadCloud className="size-5" />}
-            <span>{mangaIds.length > 0 ? `${mangaIds.length.toLocaleString()}개 가져오기` : '가져오기'}</span>
+            <span>
+              {mangaIds.length > 0
+                ? `${mangaIds.length.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}개 가져오기`
+                : '가져오기'}
+            </span>
           </button>
         </DialogFooter>
       </form>

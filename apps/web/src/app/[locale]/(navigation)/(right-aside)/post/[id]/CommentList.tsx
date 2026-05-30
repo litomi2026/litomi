@@ -2,6 +2,7 @@ import type { PostComment } from '@litomi/db/query/post-comment'
 
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
+import { getLocale } from 'next-intl/server'
 
 import { getPostDetailHref } from '@/components/post/postHref'
 import Squircle from '@/components/ui/Squircle'
@@ -11,7 +12,9 @@ type Props = {
   comments: PostComment[]
 }
 
-export default function CommentList({ comments }: Props) {
+export default async function CommentList({ comments }: Props) {
+  const locale = await getLocale()
+
   if (comments.length === 0) {
     return (
       <section className="border-t px-4 py-8 text-center text-sm text-zinc-500">
@@ -67,7 +70,7 @@ export default function CommentList({ comments }: Props) {
                     className="shrink-0 whitespace-nowrap text-xs text-zinc-500"
                     title={dayjs(comment.createdAt).format('YYYY-MM-DD HH:mm')}
                   >
-                    {formatDistanceToNow(comment.createdAt)}
+                    {formatDistanceToNow(comment.createdAt, locale)}
                   </span>
                 </div>
                 <Link

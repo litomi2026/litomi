@@ -4,6 +4,7 @@ import { NotificationType } from '@litomi/domain/notification/model'
 import { NotificationData } from '@litomi/domain/notification/model'
 import { formatDistanceToNow } from '@litomi/std'
 import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
@@ -41,6 +42,7 @@ export default function NotificationCard({
   selected = false,
   selectionMode = false,
 }: NotificationCardProps) {
+  const locale = useLocale()
   const parsedData = useMemo(
     () => (notification.data ? (JSON.parse(notification.data) as NotificationData) : null),
     [notification.data],
@@ -186,7 +188,9 @@ export default function NotificationCard({
             {isUnread && (
               <Circle className="size-2 shrink-0 text-brand animate-pulse" fill="currentColor" stroke="none" />
             )}
-            <span className="text-xs text-zinc-500">{formatDistanceToNow(new Date(notification.createdAt))}</span>
+            <span className="text-xs text-zinc-500">
+              {formatDistanceToNow(new Date(notification.createdAt), locale)}
+            </span>
           </div>
         </div>
         <div className="flex justify-between gap-2 mt-1">

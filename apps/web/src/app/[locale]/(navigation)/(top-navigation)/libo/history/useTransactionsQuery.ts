@@ -2,6 +2,7 @@ import type { GETV1PointTransactionResponse } from '@litomi/contracts'
 
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
@@ -20,10 +21,13 @@ export async function fetchTransactions(searchParams: URLSearchParams) {
 }
 
 export function useTransactionsQuery({ enabled = true }: QueryOptions = {}) {
+  const locale = useLocale()
+
   return useInfiniteQuery<GETV1PointTransactionResponse>({
-    queryKey: QueryKeys.pointsTransactions,
+    queryKey: QueryKeys.pointsTransactions(locale),
     queryFn: async ({ pageParam }) => {
       const params = new URLSearchParams()
+      params.set('locale', locale)
 
       if (pageParam) {
         params.set('cursor', pageParam.toString())

@@ -2,6 +2,7 @@
 
 import { ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/points/roulette'
 import { formatNumber } from '@litomi/std'
+import { useLocale } from 'next-intl'
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -19,6 +20,7 @@ type WheelSlice = {
 }
 
 export default function RoulettePageClient() {
+  const locale = useLocale()
   const { data: me } = useMeQuery()
   const [displayBet, setDisplayBet] = useState<number>(ROULETTE_CONFIG.minBet)
   const spin = useRouletteSpinMutation()
@@ -130,14 +132,14 @@ export default function RoulettePageClient() {
                     )}
                   >
                     {result.payout > 0 ? '+' : ''}
-                    {formatNumber(result.payout)} <span className="text-sm font-medium text-white/70">리보</span>
+                    {formatNumber(result.payout, locale)} <span className="text-sm font-medium text-white/70">리보</span>
                   </p>
                 </>
               ) : (
                 <>
                   <p className="text-xs text-white/60">배팅</p>
                   <p className="text-lg font-semibold tabular-nums text-white/90 drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)]">
-                    {formatNumber(displayBet)} <span className="text-sm font-medium text-white/70">리보</span>
+                    {formatNumber(displayBet, locale)} <span className="text-sm font-medium text-white/70">리보</span>
                   </p>
                 </>
               )}
@@ -150,7 +152,7 @@ export default function RoulettePageClient() {
           {phase === 'settle' && <p className="text-sm text-zinc-400">멈추는 중…</p>}
           {phase === 'idle' &&
             (hasRevealedResult && result ? (
-              <p className="text-sm text-zinc-500">새 잔액 {formatNumber(result.balance)} 리보</p>
+              <p className="text-sm text-zinc-500">새 잔액 {formatNumber(result.balance, locale)} 리보</p>
             ) : (
               <p className="text-sm text-zinc-500">배팅하고 돌려보세요</p>
             ))}
@@ -237,7 +239,8 @@ export default function RoulettePageClient() {
                 type="number"
               />
               <p className="text-xs text-zinc-500">
-                최소 {formatNumber(ROULETTE_CONFIG.minBet)} 리보 · 최대 {formatNumber(ROULETTE_CONFIG.maxBet)} 리보
+                최소 {formatNumber(ROULETTE_CONFIG.minBet, locale)} 리보 · 최대{' '}
+                {formatNumber(ROULETTE_CONFIG.maxBet, locale)} 리보
               </p>
             </div>
 
@@ -280,9 +283,9 @@ export default function RoulettePageClient() {
             <div className="text-right tabular-nums">
               <p className={result.net >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
                 {result.net >= 0 ? '+' : ''}
-                {formatNumber(result.net)} 리보
+                {formatNumber(result.net, locale)} 리보
               </p>
-              <p className="mt-0.5 text-xs text-zinc-500">잔액 {formatNumber(result.balance)} 리보</p>
+              <p className="mt-0.5 text-xs text-zinc-500">잔액 {formatNumber(result.balance, locale)} 리보</p>
             </div>
           </div>
         </div>

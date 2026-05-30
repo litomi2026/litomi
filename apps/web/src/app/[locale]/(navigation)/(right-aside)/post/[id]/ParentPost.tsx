@@ -2,6 +2,7 @@ import type { Post as TPost } from '@litomi/contracts'
 
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
+import { getLocale } from 'next-intl/server'
 
 import { getPostDetailHref } from '@/components/post/postHref'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
@@ -12,7 +13,8 @@ type Props = {
   post: TPost
 }
 
-export default function ParentPost({ post }: Props) {
+export default async function ParentPost({ post }: Props) {
+  const locale = await getLocale()
   const author = post.author
   const referredPost = post.referredPost
 
@@ -51,7 +53,7 @@ export default function ParentPost({ post }: Props) {
           {author && <span className="min-w-0 break-all text-zinc-500">@{author.name}</span>}
           <span className="text-zinc-500">·</span>
           <span className="shrink-0 text-xs text-zinc-500" title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}>
-            {formatDistanceToNow(new Date(post.createdAt))}
+            {formatDistanceToNow(new Date(post.createdAt), locale)}
           </span>
         </div>
 

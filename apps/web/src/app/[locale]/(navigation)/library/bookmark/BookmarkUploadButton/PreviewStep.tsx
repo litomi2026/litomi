@@ -1,4 +1,8 @@
+'use client'
+
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { Bookmark } from 'lucide-react'
+import { useLocale } from 'next-intl'
 
 import { ImportModeOption } from './ImportModeOption'
 import { BookmarkExportData, ImportMode } from './types'
@@ -11,6 +15,8 @@ type Props = {
 }
 
 export function PreviewStep({ importMode, isVisible, previewData, setImportMode }: Props) {
+  const locale = useLocale()
+
   return (
     <div
       aria-hidden={!isVisible}
@@ -24,12 +30,15 @@ export function PreviewStep({ importMode, isVisible, previewData, setImportMode 
             </div>
             <div className="flex-1">
               <p className="font-semibold text-lg text-foreground">
-                총 <span className="text-blue-400 font-bold">{previewData.totalCount.toLocaleString()}</span>
+                총{' '}
+                <span className="text-blue-400 font-bold">
+                  {previewData.totalCount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
+                </span>
                 개의 북마크
               </p>
               {previewData.exportedAt && (
                 <p className="text-sm text-zinc-400 mt-0.5">
-                  {new Date(previewData.exportedAt).toLocaleDateString('ko-KR')} 내보냄
+                  {new Date(previewData.exportedAt).toLocaleDateString(LOCALE_LANGUAGE_TAGS[locale])} 내보냄
                 </p>
               )}
             </div>

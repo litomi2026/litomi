@@ -2,9 +2,11 @@
 
 import type { GETV1PointsDonationsMeRecipient } from '@litomi/contracts'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { formatDistanceToNow, formatLocalDate, formatNumber } from '@litomi/std'
 import { HeartHandshake, Trash2 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import StatusState from '@/components/status/StatusState'
@@ -15,6 +17,7 @@ import useDeleteDonationMutation from './useDeleteDonationMutation'
 import useMyDonationsInfiniteQuery from './useMyDonationsInfiniteQuery'
 
 export default function DonationsClient() {
+  const locale = useLocale()
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useMyDonationsInfiniteQuery(true)
   const deleteMutation = useDeleteDonationMutation()
   const items = data?.pages.flatMap((p) => p.items) ?? []
@@ -48,7 +51,7 @@ export default function DonationsClient() {
           <ul className="divide-y divide-zinc-800/60">
             {items.map((item) => {
               const createdAt = new Date(item.createdAt)
-              const distanceLabel = formatDistanceToNow(createdAt)
+              const distanceLabel = formatDistanceToNow(createdAt, locale)
               const dateLabel = formatLocalDate(createdAt)
 
               return (
@@ -56,14 +59,14 @@ export default function DonationsClient() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground">후원</p>
-                      <p className="text-xs text-zinc-500" title={createdAt.toLocaleString()}>
+                      <p className="text-xs text-zinc-500" title={createdAt.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}>
                         {distanceLabel ? `${distanceLabel} · ${dateLabel}` : dateLabel}
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
                       <div className="text-right">
                         <p className="text-lg font-semibold text-foreground tabular-nums">
-                          {formatNumber(item.totalAmount)} 리보
+                          {formatNumber(item.totalAmount, locale)} 리보
                         </p>
                         <p className="text-xs text-zinc-500">대상 {item.recipients.length}곳</p>
                       </div>
@@ -108,7 +111,7 @@ export default function DonationsClient() {
                             <span className="text-[11px] text-zinc-500">{recipientTypeLabel}</span>
                             <span className="max-w-48 truncate">{recipientLabel}</span>
                             <span className="text-[11px] text-brand/80 tabular-nums">
-                              {formatNumber(recipient.amount)} 리보
+                              {formatNumber(recipient.amount, locale)} 리보
                             </span>
                           </Link>
                         )

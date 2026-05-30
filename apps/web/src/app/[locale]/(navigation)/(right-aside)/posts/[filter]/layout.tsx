@@ -7,8 +7,6 @@ import { Link } from '@/i18n/navigation'
 import NavigationWithMobileMenu from './NavigationWithMobileMenu'
 import { PostFilterParams, postFilterSchema } from './schema'
 
-export const dynamic = 'error'
-
 export default async function Layout({ params, children }: LayoutProps<'/[locale]/posts/[filter]'>) {
   const validation = postFilterSchema.safeParse(await params)
 

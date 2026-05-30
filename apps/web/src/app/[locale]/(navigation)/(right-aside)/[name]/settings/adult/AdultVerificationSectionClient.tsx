@@ -2,9 +2,11 @@
 
 import type { POSTV1BBatonAttemptResponse } from '@litomi/contracts'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import { formatDistanceToNow, safeParseJSON } from '@litomi/std'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -30,6 +32,7 @@ type Props = {
 }
 
 export default function AdultVerificationSectionClient({ initialVerification, isTwoFactorEnabled }: Props) {
+  const locale = useLocale()
   const [needsManualRefresh, setNeedsManualRefresh] = useState(false)
   const [pendingToast, setPendingToast] = useState<{ previousVerifiedAtMs: number | null } | null>(null)
   const [isVerifyingUI, setIsVerifyingUI] = useState(false)
@@ -40,7 +43,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
   const isVerifyingRef = useRef(false)
   const focusHandlerRef = useRef<(() => void) | null>(null)
   const verifiedAt = initialVerification?.verifiedAt
-  const verifiedAtLabel = verifiedAt ? formatDistanceToNow(new Date(verifiedAt)) : null
+  const verifiedAtLabel = verifiedAt ? formatDistanceToNow(new Date(verifiedAt), locale) : null
   const verifiedAtMs = verifiedAt instanceof Date ? verifiedAt.getTime() : null
 
   const status = useMemo(() => {
@@ -232,7 +235,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
         {verifiedAtLabel && (
           <div className="flex items-center justify-between gap-3">
             <div className="text-sm text-zinc-400">마지막 인증</div>
-            <div className="text-sm text-zinc-200" title={verifiedAt?.toLocaleString()}>
+            <div className="text-sm text-zinc-200" title={verifiedAt?.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}>
               {verifiedAtLabel}
             </div>
           </div>

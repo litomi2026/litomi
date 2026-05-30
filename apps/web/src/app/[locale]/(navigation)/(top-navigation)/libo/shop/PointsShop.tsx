@@ -3,6 +3,7 @@
 import { POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { formatNumber } from '@litomi/std'
 import { Bookmark, BookOpen, Check, LibraryBig, Pin, Star } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -30,6 +31,7 @@ type ShopItem = {
 }
 
 export default function PointsShop() {
+  const locale = useLocale()
   const { data: me } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const { data: points } = usePointsQuery({ enabled: isLoggedIn })
@@ -39,12 +41,11 @@ export default function PointsShop() {
   const balance = points?.balance ?? null
   const [selectedItemId, setSelectedItemId] = useState<string>('bookmark-expansion-small')
 
-  const unknown = '—'
   const isDataReady = me != null && points != null && expansion != null
 
   function formatCurrentMax(current?: number, max?: number, unit: string = '개') {
-    const currentText = current == null ? unknown : formatNumber(current)
-    const maxText = max == null ? unknown : formatNumber(max)
+    const currentText = current == null ? '—' : formatNumber(current, locale)
+    const maxText = max == null ? '—' : formatNumber(max, locale)
     return `${currentText}/${maxText}${unit}`
   }
 
@@ -118,7 +119,7 @@ export default function PointsShop() {
 
     spendPoints.mutate(variables, {
       onSuccess: (data) => {
-        toast.success('구매됐어요', { description: `${item.name} · 잔액 ${formatNumber(data.balance)} 리보` })
+        toast.success('구매했어요', { description: `${item.name} · 잔액 ${formatNumber(data.balance, locale)} 리보` })
       },
     })
   }
@@ -219,7 +220,7 @@ export default function PointsShop() {
                   className="text-right font-semibold text-zinc-200 tabular-nums data-[afford=unaffordable]:text-zinc-500"
                   data-afford={item.affordState}
                 >
-                  {item.price.toLocaleString()} 리보
+                  {formatNumber(item.price, locale)} 리보
                 </p>
                 <span
                   aria-hidden="true"
@@ -245,7 +246,7 @@ export default function PointsShop() {
               {selectedItem ? selectedItem.name : '상품을 선택해 주세요'}
             </p>
             <p className="text-xs text-zinc-500 truncate">
-              {selectedItem ? `${selectedItem.price.toLocaleString()} 리보` : ''}
+              {selectedItem ? `${formatNumber(selectedItem.price, locale)} 리보` : ''}
             </p>
           </div>
 

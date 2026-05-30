@@ -1,7 +1,9 @@
 'use client'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { formatDistanceToNow, formatNumber } from '@litomi/std'
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
+import { useLocale } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import useMeQuery from '@/query/useMeQuery'
@@ -16,6 +18,7 @@ type TransactionErrorInfo = {
 }
 
 export default function TransactionHistory() {
+  const locale = useLocale()
   const { data: me, isPending: isMePending } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const isAuthReady = !isMePending
@@ -81,8 +84,8 @@ export default function TransactionHistory() {
                 <p className="text-sm text-zinc-300 truncate">
                   {tx.description || (tx.type === 'earn' ? '리보 적립' : '리보 사용')}
                 </p>
-                <p className="text-xs text-zinc-500" title={new Date(tx.createdAt).toLocaleString()}>
-                  {formatDistanceToNow(new Date(tx.createdAt))}
+                <p className="text-xs text-zinc-500" title={new Date(tx.createdAt).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}>
+                  {formatDistanceToNow(new Date(tx.createdAt), locale)}
                 </p>
               </div>
 
@@ -92,10 +95,10 @@ export default function TransactionHistory() {
                   data-type={tx.type}
                 >
                   {tx.type === 'earn' ? '+' : ''}
-                  {tx.amount.toLocaleString()} 리보
+                  {tx.amount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])} 리보
                 </p>
-                <p className="text-xs text-zinc-500" title={tx.balanceAfter.toLocaleString()}>
-                  잔액 {formatNumber(tx.balanceAfter)} 리보
+                <p className="text-xs text-zinc-500" title={tx.balanceAfter.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}>
+                  잔액 {formatNumber(tx.balanceAfter, locale)} 리보
                 </p>
               </div>
             </div>

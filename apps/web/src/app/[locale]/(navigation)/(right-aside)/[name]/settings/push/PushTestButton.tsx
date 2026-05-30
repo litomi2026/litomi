@@ -2,8 +2,10 @@
 
 import type { POSTV1MePushTestBody, POSTV1MePushTestResponse } from '@litomi/contracts'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { BellRing } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -20,6 +22,7 @@ type Props = {
 }
 
 export default function PushTestButton({ endpoints }: Props) {
+  const locale = useLocale()
   const [hasTestedOnce, setHasTestedOnce] = useState(false)
   const queryClient = useQueryClient()
 
@@ -41,7 +44,7 @@ export default function PushTestButton({ endpoints }: Props) {
     }
 
     testMutation.mutate({
-      message: `${new Date().toLocaleString()}`,
+      message: new Date().toLocaleString(LOCALE_LANGUAGE_TAGS[locale]),
       endpoint,
     })
   }

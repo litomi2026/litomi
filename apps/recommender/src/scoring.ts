@@ -1,5 +1,6 @@
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
 import { type CatalogMangaRecord, selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
+import { Locale } from '@litomi/domain/locale'
 import { addMangaRecommendationReason } from '@litomi/domain/manga-recommendation/reason'
 import { type Manga } from '@litomi/domain/manga/model'
 
@@ -46,7 +47,7 @@ export async function scoreCandidates(
   const candidateIds = candidates.map((candidate) => candidate.mangaId)
   const records = await selectCatalogMangaRecordsByIds(candidateIds)
   const recordMap = new Map(records.map((record) => [record.id, record]))
-  const mangaMap = catalogMangaRecordsToMangaMap(records)
+  const mangaMap = catalogMangaRecordsToMangaMap(records, Locale.KO)
   const now = Date.now()
   const context = { featurePosterior, mangaMap, now, hiddenCensorshipMatcher }
 

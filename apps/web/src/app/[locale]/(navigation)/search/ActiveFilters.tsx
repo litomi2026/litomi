@@ -1,6 +1,7 @@
 'use client'
 
 import { Loader2, X } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -27,6 +28,7 @@ type Props = {
 
 export default function ActiveFilters({ filters }: Props) {
   const router = useRouter()
+  const locale = useLocale()
   const [isPending, startTransition] = useTransition()
 
   function removeFilter(key: string) {
@@ -58,31 +60,31 @@ export default function ActiveFilters({ filters }: Props) {
     {
       condition: filters.minView || filters.maxView,
       label: '조회수',
-      value: `${formatNumber(filters.minView, '0')} ~ ${formatNumber(filters.maxView, '∞')}`,
+      value: `${formatNumber(filters.minView, '0', locale)} ~ ${formatNumber(filters.maxView, '∞', locale)}`,
       onRemove: () => removeRangeFilter('min-view', 'max-view'),
     },
     {
       condition: filters.minPage || filters.maxPage,
       label: '페이지',
-      value: `${formatNumber(filters.minPage, '1')} ~ ${formatNumber(filters.maxPage, '∞')}`,
+      value: `${formatNumber(filters.minPage, '1', locale)} ~ ${formatNumber(filters.maxPage, '∞', locale)}`,
       onRemove: () => removeRangeFilter('min-page', 'max-page'),
     },
     {
       condition: filters.minRating || filters.maxRating,
       label: '별점',
-      value: `${formatNumber(parseInt(filters.minRating ?? '0') / 100, '0')} ~ ${formatNumber(parseInt(filters.maxRating ?? '0') / 100, '5')}`,
+      value: `${formatNumber(parseInt(filters.minRating ?? '0') / 100, '0', locale)} ~ ${formatNumber(parseInt(filters.maxRating ?? '0') / 100, '5', locale)}`,
       onRemove: () => removeRangeFilter('min-rating', 'max-rating'),
     },
     {
       condition: filters.from || filters.to,
       label: '날짜',
-      value: `${filters.from ? formatDate(filters.from) : '처음'} ~ ${filters.to ? formatDate(filters.to) : '오늘'}`,
+      value: `${filters.from ? formatDate(filters.from, locale) : '처음'} ~ ${filters.to ? formatDate(filters.to, locale) : '오늘'}`,
       onRemove: () => removeRangeFilter('from', 'to'),
     },
     {
       condition: filters.skip && Number(filters.skip) > 0,
       label: '건너뛰기',
-      value: `${formatNumber(filters.skip, '0')}개`,
+      value: `${formatNumber(filters.skip, '0', locale)}개`,
       onRemove: () => removeFilter('skip'),
     },
     {

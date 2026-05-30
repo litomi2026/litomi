@@ -2,10 +2,12 @@
 
 import type { DELETEV1MeSessionResponse } from '@litomi/contracts'
 
+import { Locale } from '@litomi/domain/locale'
 import { formatDistanceToNow } from '@litomi/std'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Loader2, LogOut, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -29,6 +31,7 @@ type Props = {
 }
 
 export default function SessionList({ sessions, hasCurrentPersistentSession }: Props) {
+  const locale = useLocale()
   const router = useRouter()
   const queryClient = useQueryClient()
   const revokeOthersLabel = hasCurrentPersistentSession ? '다른 기기 로그아웃' : '표시된 기기 모두 로그아웃'
@@ -134,7 +137,7 @@ export default function SessionList({ sessions, hasCurrentPersistentSession }: P
 
       <div className="grid gap-2 sm:gap-3">
         {sessions.map((session) => {
-          const { createdLabel, deviceLabel, expiresLabel, icon, lastUsedLabel } = formatSessionInfo(session)
+          const { createdLabel, deviceLabel, expiresLabel, icon, lastUsedLabel } = formatSessionInfo(session, locale)
 
           return (
             <div
@@ -203,10 +206,10 @@ function clearMeCache(queryClient: ReturnType<typeof useQueryClient>) {
   })
 }
 
-function formatSessionInfo(session: PersistentSession) {
+function formatSessionInfo(session: PersistentSession, locale: Locale) {
   const deviceLabel = session.deviceLabel?.trim() || '알 수 없는 기기'
-  const lastUsedLabel = formatDistanceToNow(new Date(session.lastUsedAt))
-  const createdLabel = formatDistanceToNow(new Date(session.createdAt))
+  const lastUsedLabel = formatDistanceToNow(new Date(session.lastUsedAt), locale)
+  const createdLabel = formatDistanceToNow(new Date(session.createdAt), locale)
   const idleExpiresAt = dayjs(session.idleExpiresAt)
   const hoursUntilExpiry = idleExpiresAt.diff(dayjs(), 'hour')
 

@@ -1,3 +1,5 @@
+import { Locale, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
+
 const MINUTE_MS = 60 * 1000
 const SEOUL_TIME_ZONE = 'Asia/Seoul'
 
@@ -91,7 +93,7 @@ function getFormatter(timeZone: string): Intl.DateTimeFormat {
     return cachedFormatter
   }
 
-  const formatter = new Intl.DateTimeFormat('en-US', {
+  const formatter = new Intl.DateTimeFormat(LOCALE_LANGUAGE_TAGS[Locale.EN], {
     day: '2-digit',
     hour: '2-digit',
     hourCycle: 'h23',

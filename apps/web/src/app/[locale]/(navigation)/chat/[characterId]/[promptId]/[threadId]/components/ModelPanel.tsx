@@ -3,6 +3,7 @@
 import { formatBytes, formatNumber } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
 import { ChevronRight, Trash2 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -71,6 +72,7 @@ export function ModelPanel({
   onRemoveInstalledModel,
 }: Props) {
   const [isCustomModelDialogOpen, setIsCustomModelDialogOpen] = useState(false)
+  const locale = useLocale()
   const modelPresetId = useId()
   const isAdvancedDisabled = isLocked || installState.kind === 'installing'
   const isThinkingDisabled = isAdvancedDisabled || !modelPreset.supportsThinking
@@ -78,7 +80,7 @@ export function ModelPanel({
   const maxContextWindowSize = modelPreset.contextWindowSize
   const isContextPercentDisabled = isAdvancedDisabled || typeof maxContextWindowSize !== 'number'
   const contextPercentSelectId = useId()
-  const metaText = buildMetaText(modelPreset)
+  const metaText = buildMetaText(modelPreset, locale)
 
   function handleCustomModelSubmit(fd: FormData) {
     const label = String(fd.get('label'))
@@ -219,7 +221,7 @@ export function ModelPanel({
                 id={contextPercentSelectId}
                 name="context-window-percent"
                 onChange={(value) => onChangeContextWindowPercent(Number.parseInt(value, 10) as ContextWindowPercent)}
-                options={buildContextPercentOptions(maxContextWindowSize)}
+                options={buildContextPercentOptions(maxContextWindowSize, locale)}
                 value={String(contextWindowPercent)}
               />
             </div>
@@ -277,7 +279,7 @@ export function ModelPanel({
   )
 }
 
-function buildContextPercentOptions(maxContextWindowSize?: number) {
+function buildContextPercentOptions(maxContextWindowSize: number | undefined, locale: Parameters<typeof formatNumber>[1]) {
   if (typeof maxContextWindowSize !== 'number') {
     return [{ value: '100', label: '100%' }]
   }
@@ -292,21 +294,24 @@ function buildContextPercentOptions(maxContextWindowSize?: number) {
     if (seen.has(computed)) continue
     seen.add(computed)
 
-    const label = percent === 100 ? `${formatNumber(computed)} (기본)` : formatNumber(computed)
+    const label = percent === 100 ? `${formatNumber(computed, locale)} (기본)` : formatNumber(computed, locale)
     filteredRev.push({ value: String(percent), label })
   }
 
   return filteredRev
 }
 
-function buildMetaText(args: { requiredVramMb?: number; contextWindowSize?: number }): string | null {
+function buildMetaText(
+  args: { requiredVramMb?: number; contextWindowSize?: number },
+  locale: Parameters<typeof formatNumber>[1],
+): string | null {
   const parts: string[] = []
 
   if (args.requiredVramMb) {
     parts.push(`VRAM ${formatBytes(args.requiredVramMb * 1_000_000)}`)
   }
   if (args.contextWindowSize) {
-    parts.push(`Context ${formatNumber(args.contextWindowSize)}`)
+    parts.push(`Context ${formatNumber(args.contextWindowSize, locale)}`)
   }
 
   return parts.length > 0 ? parts.join(' · ') : null

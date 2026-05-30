@@ -3,9 +3,11 @@
 import type { POSTV1MeExportBody, POSTV1MeExportResponse } from '@litomi/contracts'
 import type { ReactNode } from 'react'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Bookmark, Check, Clock, Download, Library, Loader2, ShieldCheck, Star } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -41,6 +43,8 @@ const ALL_TYPES = Object.keys(DATA_CONFIG) as DataType[]
 const DATA_TYPE_VALUES = new Set<string>(ALL_TYPES)
 
 export default function DataExportSectionClient({ counts }: Props) {
+  const locale = useLocale()
+
   const exportMutation = useMutation<POSTV1MeExportResponse, ProblemDetailsError, POSTV1MeExportBody>({
     mutationFn: exportUserData,
 
@@ -123,7 +127,11 @@ export default function DataExportSectionClient({ counts }: Props) {
               </span>
               <span className="text-zinc-400 transition peer-checked:text-brand">{DATA_CONFIG[type].icon}</span>
               <span className="flex-1 min-w-0 text-sm font-medium truncate">{DATA_CONFIG[type].label}</span>
-              {counts && <span className="text-xs text-zinc-500 shrink-0">{counts[type].toLocaleString()}</span>}
+              {counts && (
+                <span className="text-xs text-zinc-500 shrink-0">
+                  {counts[type].toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
+                </span>
+              )}
             </label>
           ))}
         </div>

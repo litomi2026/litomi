@@ -6,6 +6,7 @@ import { formatDistanceFromNow, formatDistanceToNow } from '@litomi/std'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Loader2, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -20,6 +21,7 @@ type Props = {
 }
 
 export default function TrustedBrowsers({ trustedBrowsers }: Props) {
+  const locale = useLocale()
   const [browsers, setBrowsers] = useState<TrustedBrowser[]>(trustedBrowsers)
 
   const revokeSingleMutation = useMutation<DELETEV1MeTrustedBrowserResponse, ProblemDetailsError, number>({
@@ -106,13 +108,13 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
                         className="text-zinc-400"
                         title={`${dayjs(lastUsedAt).format('YYYY년 M월 D일 HH:mm')} 사용`}
                       >
-                        {formatDistanceToNow(new Date(lastUsedAt))}
+                        {formatDistanceToNow(new Date(lastUsedAt), locale)}
                         <span className="hidden sm:inline"> 사용</span>
                       </span>
                     )}
                     {lastUsedAt && <span>•</span>}
                     <span title={`${dayjs(expiresAt).format('YYYY년 M월 D일 HH:mm')} 만료`}>
-                      {formatDistanceFromNow(new Date(expiresAt)) || '이미'}
+                      {formatDistanceFromNow(new Date(expiresAt), locale) || '이미'}
                       <span className="hidden sm:inline"> 만료</span>
                     </span>
                   </div>

@@ -2,11 +2,13 @@
 
 import type { GETV1AnalyticsRealtimeResponse } from '@litomi/contracts'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/ranking/policy'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { ExternalLink, Loader2, Users } from 'lucide-react'
 import ms from 'ms'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { Link } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -18,6 +20,8 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function RealtimeRanking() {
   const isLive = useRealtimeStore((store) => store.isLive)
+  const locale = useLocale()
+  const t = useTranslations('RealtimeRanking')
 
   const { data, error, isLoading } = useQuery({
     queryKey: QueryKeys.realtimeAnalytics,
@@ -32,12 +36,12 @@ export default function RealtimeRanking() {
         <div className="rounded-xl bg-linear-to-br from-zinc-900 to-zinc-800 p-8 shadow-2xl">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-zinc-400">현재 활성 사용자</p>
+              <p className="text-sm text-zinc-400">{t('activeUsersLabel')}</p>
               <p className="mt-2 text-5xl font-bold animate-fade-in [animation-delay:0.5s] [animation-fill-mode:both]">
                 {isLoading ? (
                   <Loader2 className="size-12 p-2 animate-spin" />
                 ) : (
-                  (data?.totalActiveUsers.toLocaleString() ?? '-')
+                  (data?.totalActiveUsers.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]) ?? '-')
                 )}
               </p>
             </div>
@@ -46,33 +50,33 @@ export default function RealtimeRanking() {
             </div>
           </div>
           <div className="mt-4 text-xs text-zinc-500">
-            마지막 업데이트: {data && new Date(data.timestamp).toLocaleTimeString('ko-KR')}
+            {t('lastUpdated', {
+              time: data ? new Date(data.timestamp).toLocaleTimeString(LOCALE_LANGUAGE_TAGS[locale]) : '-',
+            })}
           </div>
         </div>
-        <p className="text-xs mt-2 text-center text-zinc-500">
-          개인정보 보호를 위해 활성 사용자 정보는 익명으로 처리되고 있어요
-        </p>
+        <p className="text-xs mt-2 text-center text-zinc-500">{t('privacyNotice')}</p>
       </div>
 
       {/* Error State */}
       {error && (
         <div className="rounded-xl bg-red-900/20 p-6 text-red-400">
-          <p className="font-semibold">데이터를 불러올 수 없습니다</p>
-          <p className="mt-1 text-sm">잠시 후 다시 시도해주세요.</p>
+          <p className="font-semibold">{t('errorTitle')}</p>
+          <p className="mt-1 text-sm">{t('errorDescription')}</p>
         </div>
       )}
 
       {/* Page Ranking */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold">실시간 인기 페이지</h2>
+        <h2 className="mb-4 text-lg font-semibold">{t('popularPagesTitle')}</h2>
         <div className="overflow-hidden rounded-lg bg-zinc-900">
           {data && data.pageRanking.length > 0 && (
             <table className="w-full">
               <thead className="border-b border-zinc-800 whitespace-nowrap">
                 <tr>
-                  <th className="p-4 py-3 text-left text-sm font-medium text-zinc-400">순위</th>
-                  <th className="py-3 text-left text-sm font-medium text-zinc-400">페이지 제목</th>
-                  <th className="p-4 py-3 text-right text-sm font-medium text-zinc-400">조회수</th>
+                  <th className="p-4 py-3 text-left text-sm font-medium text-zinc-400">{t('rankColumn')}</th>
+                  <th className="py-3 text-left text-sm font-medium text-zinc-400">{t('pageTitleColumn')}</th>
+                  <th className="p-4 py-3 text-right text-sm font-medium text-zinc-400">{t('viewCountColumn')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -101,7 +105,7 @@ export default function RealtimeRanking() {
                     </td>
                     <td className="p-4 py-3 text-right">
                       <span className="text-sm font-semibold text-brand tabular-nums">
-                        {item.activeUsers.toLocaleString()}
+                        {item.activeUsers.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
                       </span>
                     </td>
                   </tr>
@@ -112,7 +116,7 @@ export default function RealtimeRanking() {
         </div>
         {data?.pageRanking.length === 20 && (
           <p className="mt-2 text-center text-xs text-zinc-500">
-            조회수가 {REALTIME_PAGE_VIEW_MIN_THRESHOLD} 이상인 상위 20개 페이지만 표시돼요
+            {t('thresholdNotice', { count: 20, threshold: REALTIME_PAGE_VIEW_MIN_THRESHOLD })}
           </p>
         )}
       </div>
@@ -121,7 +125,7 @@ export default function RealtimeRanking() {
 }
 
 async function fetchRealtimeAnalytics(): Promise<GETV1AnalyticsRealtimeResponse> {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/analytics/realtime`
+  const url = new URL('/api/v1/analytics/realtime', NEXT_PUBLIC_API_ORIGIN)
   const { data } = await fetchAPIData<GETV1AnalyticsRealtimeResponse>(url)
   return data
 }

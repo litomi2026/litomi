@@ -1,9 +1,11 @@
 import type { Post } from '@litomi/contracts'
 import type { ReactNode } from 'react'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { formatDistanceToNow, formatNumber } from '@litomi/std'
 import dayjs from 'dayjs'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
+import { useLocale } from 'next-intl'
 
 import PostMangaCard from '@/app/[locale]/(navigation)/(right-aside)/post/[id]/PostMangaCard'
 import { getPostDetailHref } from '@/components/post/postHref'
@@ -20,6 +22,7 @@ type Props = {
 }
 
 export default function PostCard({ post, showMangaCover }: Props) {
+  const locale = useLocale()
   const author = post.author
   const authorNickname = author?.nickname
   const content = post.content ?? ''
@@ -45,7 +48,7 @@ export default function PostCard({ post, showMangaCover }: Props) {
         className="shrink-0 overflow-hidden text-xs text-zinc-400"
         title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}
       >
-        {formatDistanceToNow(new Date(post.createdAt))}
+        {formatDistanceToNow(new Date(post.createdAt), locale)}
       </div>
     </>
   )
@@ -103,9 +106,13 @@ export default function PostCard({ post, showMangaCover }: Props) {
             prefetch={false}
           >
             {socialStats.map(({ Icon, label, value }) => (
-              <div className="flex items-center gap-1" key={label} title={`${label} ${value.toLocaleString('ko-KR')}`}>
+              <div
+                className="flex items-center gap-1"
+                key={label}
+                title={`${label} ${value.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}`}
+              >
                 <Icon className="size-3.5 shrink-0" />
-                <span className="tabular-nums">{formatNumber(value, 'ko')}</span>
+                <span className="tabular-nums">{formatNumber(value, locale)}</span>
               </div>
             ))}
           </Link>

@@ -131,7 +131,7 @@ export default function LibrarySidebar({
                     <Globe className="size-3 text-zinc-500 shrink-0" />
                   ) : null
                 }
-                description={`${formatNumber(library.itemCount)}개`}
+                description={`${formatNumber(library.itemCount, locale)}개`}
                 href={`/library/${library.id}`}
                 icon={
                   <>
@@ -159,7 +159,7 @@ export default function LibrarySidebar({
                   ) : null
                 }
                 className={!library.isPublic ? 'opacity-50' : ''}
-                description={`${formatNumber(library.itemCount)}개`}
+                description={`${formatNumber(library.itemCount, locale)}개`}
                 href={`/library/${library.id}`}
                 icon={
                   <>
@@ -188,7 +188,7 @@ export default function LibrarySidebar({
                     <Globe className="size-3 text-zinc-500 shrink-0" />
                   ) : null
                 }
-                description={`${formatNumber(library.itemCount)}개`}
+                description={`${formatNumber(library.itemCount, locale)}개`}
                 href={`/library/${library.id}`}
                 icon={
                   <>

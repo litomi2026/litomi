@@ -1,6 +1,8 @@
 'use client'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { ChevronRight, Dice6, History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { type ReactNode } from 'react'
 
 import LinkPending from '@/components/LinkPending'
@@ -26,6 +28,7 @@ type Props = {
 }
 
 export default function LiboNavigation({ children }: Props) {
+  const locale = useLocale()
   const pathname = usePathname()
   const activeTab = getActiveTab(pathname)
   const { data: me } = useMeQuery()
@@ -44,7 +47,11 @@ export default function LiboNavigation({ children }: Props) {
           <div>
             <p className="text-sm text-zinc-300 mb-1">내 리보</p>
             <p className="text-3xl font-semibold tracking-tight text-zinc-50 tabular-nums">
-              {isBalancePending ? '...' : isLoggedIn ? (points?.balance.toLocaleString() ?? '—') : '—'}
+              {isBalancePending
+                ? '...'
+                : isLoggedIn
+                  ? (points?.balance.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]) ?? '—')
+                  : '—'}
               <span className="text-base font-medium text-zinc-300 ml-1">리보</span>
             </p>
           </div>
@@ -57,8 +64,16 @@ export default function LiboNavigation({ children }: Props) {
             <p className="text-zinc-400/90">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>
           ) : (
             <div className="flex gap-3">
-              <span>총 적립 {isBalancePending ? '...' : (points?.totalEarned.toLocaleString() ?? '—')} 리보</span>
-              <span>총 사용 {isBalancePending ? '...' : (points?.totalSpent.toLocaleString() ?? '—')} 리보</span>
+              <span>
+                총 적립{' '}
+                {isBalancePending ? '...' : (points?.totalEarned.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]) ?? '—')}{' '}
+                리보
+              </span>
+              <span>
+                총 사용{' '}
+                {isBalancePending ? '...' : (points?.totalSpent.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]) ?? '—')}{' '}
+                리보
+              </span>
             </div>
           )}
           <Link

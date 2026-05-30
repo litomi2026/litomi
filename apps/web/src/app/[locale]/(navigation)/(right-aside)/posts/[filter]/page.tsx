@@ -12,8 +12,6 @@ import { generateLocalizedMetadata } from '@/lib/metadata'
 import PostList from './MasonryPostList'
 import { PostFilterParams, postFilterSchema } from './schema'
 
-export const dynamic = 'error'
-
 export async function generateMetadata({ params }: PageProps<'/[locale]/posts/[filter]'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'Metadata.community.posts' })

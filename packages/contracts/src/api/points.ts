@@ -182,6 +182,7 @@ export type Transaction = z.infer<typeof transactionSchema>
 
 export const getV1PointTransactionQuerySchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),
+  locale: z.enum(Locale),
 })
 
 export type GETV1PointTransactionQuery = z.infer<typeof getV1PointTransactionQuerySchema>

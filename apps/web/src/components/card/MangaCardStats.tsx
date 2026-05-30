@@ -1,5 +1,8 @@
+'use client'
+
 import { formatNumber } from '@litomi/std'
 import { Bookmark, Eye, Heart, Star } from 'lucide-react'
+import { useLocale } from 'next-intl'
 
 type Props = {
   manga: {
@@ -14,6 +17,8 @@ type Props = {
 }
 
 export default function MangaCardStats({ manga, className = '' }: Props) {
+  const locale = useLocale()
+
   const { rating = 0, ratingCount = 0, viewCount, like = 0, likeAnonymous = 0, bookmarkCount = 0 } = manga
   const totalLikes = like + likeAnonymous
 
@@ -21,26 +26,26 @@ export default function MangaCardStats({ manga, className = '' }: Props) {
     <div className={`flex items-center gap-2.5 text-sm text-zinc-400 ${className}`}>
       <div className="flex items-center gap-1.5">
         <Eye className="size-[1em] shrink-0" />
-        <span className="tabular-nums">{formatNumber(viewCount ?? 0, 'ko')}</span>
+        <span className="tabular-nums">{formatNumber(viewCount ?? 0, locale)}</span>
       </div>
       {bookmarkCount > 0 && (
         <div className="flex items-center gap-1.5">
           <Bookmark className="size-[1em] shrink-0 text-brand" />
-          <span className="tabular-nums">{formatNumber(bookmarkCount, 'ko')}</span>
+          <span className="tabular-nums">{formatNumber(bookmarkCount, locale)}</span>
         </div>
       )}
       {rating > 0 && (
         <div className="flex items-center">
           <RatingStars rating={rating} />
           {ratingCount > 0 && (
-            <span className="text-zinc-500 text-xs ml-0.5">({formatNumber(ratingCount, 'ko')}개)</span>
+            <span className="text-zinc-500 text-xs ml-0.5">({formatNumber(ratingCount, locale)}개)</span>
           )}
         </div>
       )}
       {totalLikes > 0 && (
         <div className="flex items-center gap-1.5">
           <Heart className="size-[1em] shrink-0 text-red-400" />
-          <span className="tabular-nums">{formatNumber(totalLikes, 'ko')}</span>
+          <span className="tabular-nums">{formatNumber(totalLikes, locale)}</span>
         </div>
       )}
     </div>

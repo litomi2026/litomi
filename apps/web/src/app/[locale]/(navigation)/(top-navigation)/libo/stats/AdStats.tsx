@@ -1,9 +1,11 @@
 'use client'
 
+import { Locale, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import { RefreshCw } from 'lucide-react'
 import ms from 'ms'
+import { useLocale } from 'next-intl'
 import { useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -16,17 +18,17 @@ const DEFAULT_RANGE_DAYS = 30
 const PRESET_DAYS = [7, DEFAULT_RANGE_DAYS, MAX_RANGE_DAYS]
 
 const formatters = {
-  int: new Intl.NumberFormat('en-US'),
-  percent: new Intl.NumberFormat('en-US', {
+  int: new Intl.NumberFormat(LOCALE_LANGUAGE_TAGS[Locale.EN]),
+  percent: new Intl.NumberFormat(LOCALE_LANGUAGE_TAGS[Locale.EN], {
     maximumFractionDigits: 2,
   }),
-  moneyUsd: new Intl.NumberFormat('en-US', {
+  moneyUsd: new Intl.NumberFormat(LOCALE_LANGUAGE_TAGS[Locale.EN], {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 3,
     maximumFractionDigits: 3,
   }),
-  decimal3: new Intl.NumberFormat('en-US', {
+  decimal3: new Intl.NumberFormat(LOCALE_LANGUAGE_TAGS[Locale.EN], {
     minimumFractionDigits: 3,
     maximumFractionDigits: 3,
   }),
@@ -38,6 +40,7 @@ type AppliedRange = {
 }
 
 export default function AdStats() {
+  const locale = useLocale()
   const { data: me } = useMeQuery()
   const isLoggedIn = Boolean(me)
 
@@ -220,7 +223,7 @@ export default function AdStats() {
           <p className="text-sm font-medium text-zinc-200">요약</p>
           <p className="text-xs text-zinc-500" title={dayjs(data?.dbDateTime).format('YYYY-MM-DD HH:mm')}>
             {data?.dbDateTime
-              ? `업데이트 ${formatDistanceToNow(new Date(data.dbDateTime))}`
+              ? `업데이트 ${formatDistanceToNow(new Date(data.dbDateTime), locale)}`
               : isFetching
                 ? '업데이트 확인 중…'
                 : ''}

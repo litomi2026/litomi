@@ -1,6 +1,7 @@
 'use client'
 
 import { formatDistanceFromNow } from '@litomi/std'
+import { useLocale } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 
 import type { AdClickResult } from '../types'
@@ -36,6 +37,7 @@ type Props = {
 }
 
 export default function AdsterraBanner300x250({ adSlotId, className = '', rewardEnabled = false, onAdClick }: Props) {
+  const locale = useLocale()
   const slotRef = useRef<HTMLDivElement>(null)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
   const [isScriptError, setIsScriptError] = useState(false)
@@ -50,7 +52,7 @@ export default function AdsterraBanner300x250({ adSlotId, className = '', reward
       onResult: onAdClick,
     })
 
-  const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil)) : null
+  const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil), locale) : null
 
   // NOTE: 광고 불러오기
   useEffect(() => {

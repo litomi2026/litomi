@@ -7,6 +7,7 @@ import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import dayjs from 'dayjs'
 import { Copy, ExternalLink, Magnet } from 'lucide-react'
 import ms from 'ms'
+import { useLocale } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useRef } from 'react'
 import { toast } from 'sonner'
@@ -32,6 +33,7 @@ const useMangaTorrentModalStore = create<MangaTorrentModalStore>()((set) => ({
 }))
 
 export default function MangaTorrentModal() {
+  const locale = useLocale()
   const pathname = usePathname()
   const { copy } = useClipboard()
   const { isOpen, manga, close, clearManga } = useMangaTorrentModalStore()
@@ -188,7 +190,7 @@ export default function MangaTorrentModal() {
                       </div>
                     </div>
                     <p className="text-xs text-zinc-500 mt-1" title={dayjs(addedDate).format('YYYY-MM-DD HH:mm:ss')}>
-                      {formatDistanceToNow(addedDate)} · {formatBytes(torrent.fsize)}
+                      {formatDistanceToNow(addedDate, locale)} · {formatBytes(torrent.fsize)}
                     </p>
                   </li>
                 )

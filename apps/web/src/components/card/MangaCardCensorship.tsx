@@ -3,6 +3,7 @@
 import type { Manga } from '@litomi/domain/manga/model'
 
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
+import { Locale } from '@litomi/domain/locale'
 import { Eye, EyeOff } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import dynamic from 'next/dynamic'
@@ -12,9 +13,25 @@ import useMangaCensorship from '@/hook/useMangaCensorship'
 import { Link } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
 
+import type { ChildrenDayLocale } from './MangaCardCensorshipChildren'
+
 const MangaCardCensorshipChildren = dynamic(() => import('./MangaCardCensorshipChildren'))
 
 const CHILDREN_TAGS = new Set(['kodomo_doushi', 'kodomo_only', 'loli', 'lolicon', 'shota', 'shotacon', 'toddlercon'])
+
+type ChildrenDay = {
+  month: number
+  day: number
+  locale: ChildrenDayLocale
+}
+
+const CHILDREN_DAY_BY_LOCALE = {
+  [Locale.EN]: { month: 11, day: 20, locale: 'en' },
+  [Locale.JA]: { month: 5, day: 5, locale: 'ja' },
+  [Locale.KO]: { month: 5, day: 5, locale: 'ko' },
+  [Locale.ZH_CN]: { month: 6, day: 1, locale: 'zh-CN' },
+  [Locale.ZH_TW]: { month: 4, day: 4, locale: 'zh-TW' },
+} satisfies Record<Locale, ChildrenDay>
 
 type Props = {
   manga: Manga
@@ -37,7 +54,7 @@ export default function MangaCardCensorship({ manga }: Props) {
   }
 
   if (shouldCensorChildren) {
-    return <MangaCardCensorshipChildren locale={childrenDay?.locale} />
+    return <MangaCardCensorshipChildren locale={childrenDay.locale} />
   }
 
   if (!censoringReasons || censoringReasons.length === 0) {
@@ -69,11 +86,7 @@ export default function MangaCardCensorship({ manga }: Props) {
   )
 }
 
-function checkChildrenDay(childrenDay: { month: number; day: number } | undefined) {
-  if (!childrenDay) {
-    return false
-  }
-
+function checkChildrenDay(childrenDay: ChildrenDay) {
   const now = new Date()
   const currentMonth = now.getMonth() + 1
   const currentDay = now.getDate()
@@ -82,19 +95,17 @@ function checkChildrenDay(childrenDay: { month: number; day: number } | undefine
 
 function getChildrenDayForLocale(locale: string) {
   switch (locale) {
-    case 'en':
-    case 'en-US':
-      return { month: 11, day: 20, locale: 'en' }
-    case 'ja':
-    case 'ja-JP':
-      return { month: 5, day: 5, locale: 'ja' }
-    case 'ko':
-    case 'ko-KR':
-      return { month: 5, day: 5, locale: 'ko' }
-    case 'zh':
-    case 'zh-CN':
-      return { month: 6, day: 1, locale: 'zh-CN' }
-    case 'zh-TW':
-      return { month: 4, day: 4, locale: 'zh-TW' }
+    case Locale.EN:
+      return CHILDREN_DAY_BY_LOCALE[Locale.EN]
+    case Locale.JA:
+      return CHILDREN_DAY_BY_LOCALE[Locale.JA]
+    case Locale.KO:
+      return CHILDREN_DAY_BY_LOCALE[Locale.KO]
+    case Locale.ZH_CN:
+      return CHILDREN_DAY_BY_LOCALE[Locale.ZH_CN]
+    case Locale.ZH_TW:
+      return CHILDREN_DAY_BY_LOCALE[Locale.ZH_TW]
+    default:
+      return CHILDREN_DAY_BY_LOCALE[Locale.KO]
   }
 }

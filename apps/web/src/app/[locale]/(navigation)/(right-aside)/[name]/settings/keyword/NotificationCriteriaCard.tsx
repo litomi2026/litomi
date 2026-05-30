@@ -7,6 +7,7 @@ import { formatDistanceToNow } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { BellOff, Edit3, Trash2 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -38,6 +39,7 @@ const CONDITION_TYPE_LABELS: Record<number, string> = {
 const LOCAL_MUTATION_ERROR_STATUSES = [400, 404, 409] as const
 
 export default function NotificationCriteriaCard({ criterion, onEdit }: NotificationCriteriaCardProps) {
+  const locale = useLocale()
   const router = useRouter()
   const { guardAdultAccess } = useAdultAccessGuard()
 
@@ -165,7 +167,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
             {criterion.matchCount > 0 && criterion.lastMatchedAt && <span className="text-zinc-600">·</span>}
             {criterion.lastMatchedAt && (
               <p className="text-xs sm:text-sm text-zinc-500">
-                마지막 {formatDistanceToNow(new Date(criterion.lastMatchedAt))}
+                마지막 {formatDistanceToNow(new Date(criterion.lastMatchedAt), locale)}
               </p>
             )}
           </div>

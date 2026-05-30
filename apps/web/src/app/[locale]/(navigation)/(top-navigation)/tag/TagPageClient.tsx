@@ -1,7 +1,9 @@
 'use client'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { formatNumber } from '@litomi/std'
 import { Loader2 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 
 import PageNavigation from '@/components/PageNavigation'
@@ -33,6 +35,7 @@ const TAB_COLORS: Record<CategoryParam, string> = {
 }
 
 export default function TagPageClient() {
+  const locale = useLocale()
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('category')
   const category = isValidCategory(categoryParam) ? categoryParam : 'female'
@@ -59,8 +62,9 @@ export default function TagPageClient() {
       {/* 태그 개수 정보 */}
       {data && (
         <p className="text-center text-sm text-zinc-400 tabular-nums">
-          {formatNumber(data.pagination.total)}개 중 {((page - 1) * data.pagination.limit + 1).toLocaleString()}-
-          {Math.min(page * data.pagination.limit, data.pagination.total).toLocaleString()}
+          {formatNumber(data.pagination.total, locale)}개 중{' '}
+          {((page - 1) * data.pagination.limit + 1).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}-
+          {Math.min(page * data.pagination.limit, data.pagination.total).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
         </p>
       )}
 
@@ -91,7 +95,7 @@ export default function TagPageClient() {
                 title={value}
               >
                 <span>{label.split(':')[1] || label}</span>
-                <span className="tabular-nums text-xs opacity-60">{formatNumber(count)}</span>
+                <span className="tabular-nums text-xs opacity-60">{formatNumber(count, locale)}</span>
               </Link>
             </li>
           ))}

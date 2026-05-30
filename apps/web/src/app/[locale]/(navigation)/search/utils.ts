@@ -1,16 +1,17 @@
+import { LOCALE_LANGUAGE_TAGS, type PublicLocale } from '@litomi/domain/locale'
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@litomi/domain/search/query-key-alias'
 
-export function formatDate(timestamp: number | string) {
-  return new Date(Number(timestamp) * 1000).toLocaleDateString('ko-KR', {
+export function formatDate(timestamp: number | string, locale: PublicLocale) {
+  return new Date(Number(timestamp) * 1000).toLocaleDateString(LOCALE_LANGUAGE_TAGS[locale], {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   })
 }
 
-export function formatNumber(num: number | string | null | undefined, defaultValue: string) {
+export function formatNumber(num: number | string | null | undefined, defaultValue: string, locale: PublicLocale) {
   if (!num) return defaultValue
-  return Number(num).toLocaleString('ko-KR')
+  return Number(num).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])
 }
 
 export function getWordAtCursor(text: string, cursorPosition: number): { word: string; start: number; end: number } {

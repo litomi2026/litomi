@@ -6,6 +6,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 import { formatNumber } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import ms from 'ms'
+import { useLocale } from 'next-intl'
 import { ComponentProps, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -30,6 +31,7 @@ type Recipient = {
 const PRESETS = [10, 50, 100, 300, 500] as const
 
 export default function DonateButton({ manga, ...props }: Props) {
+  const locale = useLocale()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState<number>(100)
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
@@ -145,7 +147,7 @@ export default function DonateButton({ manga, ...props }: Props) {
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm text-zinc-400">현재 리보</p>
                 <p className="text-sm font-semibold text-foreground tabular-nums">
-                  {isPointsLoading ? '불러오는 중' : points ? `${formatNumber(points.balance)} 리보` : '-'}
+                  {isPointsLoading ? '불러오는 중' : points ? `${formatNumber(points.balance, locale)} 리보` : '-'}
                 </p>
               </div>
               {points && (
@@ -154,7 +156,7 @@ export default function DonateButton({ manga, ...props }: Props) {
                   className="mt-2 text-xs text-zinc-500 aria-current:text-red-400"
                 >
                   후원 후 남는 리보:{' '}
-                  {remainingBalance === null ? '-' : `${formatNumber(Math.max(0, remainingBalance))} 리보`}
+                  {remainingBalance === null ? '-' : `${formatNumber(Math.max(0, remainingBalance), locale)} 리보`}
                 </p>
               )}
               {pointsErrorMessage && <p className="mt-2 text-xs text-red-400">{pointsErrorMessage}</p>}
@@ -208,7 +210,7 @@ export default function DonateButton({ manga, ...props }: Props) {
                     }}
                     type="button"
                   >
-                    {formatNumber(p)} 리보
+                    {formatNumber(p, locale)} 리보
                   </button>
                 ))}
               </div>

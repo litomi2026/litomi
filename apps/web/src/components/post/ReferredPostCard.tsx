@@ -2,6 +2,7 @@ import type { ReferredPost } from '@litomi/contracts'
 
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
+import { getLocale } from 'next-intl/server'
 
 import { Link } from '@/i18n/navigation'
 
@@ -13,7 +14,7 @@ type Props = {
   referredPost: ReferredPost
 }
 
-export default function ReferredPostCard({ referredPost }: Props) {
+export default async function ReferredPostCard({ referredPost }: Props) {
   if (referredPost.isDeleted) {
     return (
       <div className="grid min-w-0 overflow-hidden rounded-2xl border-2 border-zinc-700 bg-zinc-950/50">
@@ -24,6 +25,7 @@ export default function ReferredPostCard({ referredPost }: Props) {
     )
   }
 
+  const locale = await getLocale()
   const { createdAt, updatedAt, imageURLs, author, content, id } = referredPost
 
   return (
@@ -52,7 +54,7 @@ export default function ReferredPostCard({ referredPost }: Props) {
                 </>
               )}
               <div className="shrink-0 text-xs overflow-hidden" title={dayjs(createdAt).format('YYYY-MM-DD HH:mm')}>
-                {formatDistanceToNow(new Date(createdAt))}
+                {formatDistanceToNow(new Date(createdAt), locale)}
                 {updatedAt && <span> (수정됨)</span>}
               </div>
             </div>
