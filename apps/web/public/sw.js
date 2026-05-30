@@ -8,7 +8,7 @@ const CACHE_NAMES = {
 }
 
 const PWA_CRITICAL_APP_SHELLS = [
-  '/',
+  '/ko',
   '/manifest.webmanifest',
   '/web-app-manifest-144x144.png',
   '/web-app-manifest-192x192.png',

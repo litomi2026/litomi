@@ -4,13 +4,13 @@ import type { Manga } from '@litomi/domain/manga/model'
 
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { Eye, EyeOff } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import { useState } from 'react'
 
 import useMangaCensorship from '@/hook/useMangaCensorship'
+import { Link } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
-import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
 const MangaCardCensorshipChildren = dynamic(() => import('./MangaCardCensorshipChildren'))
 
@@ -21,16 +21,16 @@ type Props = {
 }
 
 export default function MangaCardCensorship({ manga }: Props) {
+  const locale = useLocale()
   const { data: me } = useMeQuery()
   const { getMatch } = useMangaCensorship()
   const [isBlurDisabled, setIsBlurDisabled] = useState(false)
 
-  const locale = getLocaleFromCookie() || navigator.language || 'ko'
+  const myName = me?.name ?? ''
   const childrenDay = getChildrenDayForLocale(locale)
   const isChildrenDay = checkChildrenDay(childrenDay)
-  const shouldCensorChildren = isChildrenDay && manga.tags?.some((tag) => CHILDREN_TAGS.has(tag.value))
   const { censoringReasons, highestCensorshipLevel } = getMatch(manga)
-  const myName = me?.name ?? ''
+  const shouldCensorChildren = isChildrenDay && manga.tags?.some((tag) => CHILDREN_TAGS.has(tag.value))
 
   if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
     return null
