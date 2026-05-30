@@ -3,7 +3,8 @@
 import type { ReactNode } from 'react'
 
 import { Menu } from 'lucide-react'
-import Link from 'next/link'
+
+import { Link } from '@/i18n/navigation'
 
 import AutoHideHeader from './auto-hide/AutoHideHeader'
 import IconLogo from './icons/LogoLitomi'

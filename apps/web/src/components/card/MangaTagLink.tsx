@@ -1,8 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-
 import useLongPress from '@/hook/useLongPress'
+import { useRouter } from '@/i18n/navigation'
 
 import MangaTagLabel from './MangaTagLabel'
 

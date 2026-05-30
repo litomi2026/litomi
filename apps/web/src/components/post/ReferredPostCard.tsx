@@ -2,7 +2,8 @@ import type { ReferredPost } from '@litomi/contracts'
 
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
-import Link from 'next/link'
+
+import { Link } from '@/i18n/navigation'
 
 import Squircle from '../ui/Squircle'
 import { getPostDetailHref } from './postHref'

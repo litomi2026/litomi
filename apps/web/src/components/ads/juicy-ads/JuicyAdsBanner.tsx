@@ -3,12 +3,12 @@
 import type { GETV1MeResponse } from '@litomi/contracts'
 import type { ReactNode } from 'react'
 
-import Link from 'next/link'
 import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'
+import { Link } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
 import { isAdultVerified } from '@/utils/adult-verification'
 

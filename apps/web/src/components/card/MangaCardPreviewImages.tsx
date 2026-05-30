@@ -2,9 +2,9 @@
 
 import { Manga } from '@litomi/domain/manga/model'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
+import { Link } from '@/i18n/navigation'
 import { MAX_THUMBNAIL_IMAGES } from '@/ui-policy'
 
 import LinkPending from '../LinkPending'

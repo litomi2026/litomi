@@ -2,11 +2,12 @@
 
 import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { Image, LayoutGrid } from 'lucide-react'
-import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
+import { ReadonlyURLSearchParams, usePathname } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
+import { useRouter } from '@/i18n/navigation'
 
 const VIEW_OPTIONS = [
   { value: View.CARD, label: '카드', Icon: LayoutGrid },

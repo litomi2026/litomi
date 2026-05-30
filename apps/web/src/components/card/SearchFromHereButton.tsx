@@ -1,8 +1,9 @@
 'use client'
 
 import { Loader2, Search } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useCallback, useTransition } from 'react'
+
+import { useRouter } from '@/i18n/navigation'
 
 type Props = {
   className?: string

@@ -1,9 +1,9 @@
 'use client'
 
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ComponentProps, useEffect, useState } from 'react'
 
+import { Link } from '@/i18n/navigation'
 import { SearchParamKey } from '@/storage'
 
 type Props = Omit<ComponentProps<typeof Link>, 'href'>

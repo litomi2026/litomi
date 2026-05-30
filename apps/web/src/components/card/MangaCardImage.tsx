@@ -1,8 +1,9 @@
 import { Manga } from '@litomi/domain/manga/model'
 import { getViewerLink } from '@litomi/domain/utils/manga'
 import { View } from '@litomi/std'
-import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
+
+import { Link } from '@/i18n/navigation'
 
 import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'

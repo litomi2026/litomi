@@ -1,13 +1,13 @@
 'use client'
 
 import { Bookmark, Bot, Clover, FileText, Flame, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { ReactNode, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { DEFAULT_METRIC, DEFAULT_PERIOD } from '@/app/(navigation)/(ranking)/common'
+import { DEFAULT_METRIC, DEFAULT_PERIOD } from '@/app/[locale]/(navigation)/(ranking)/common'
 import OverlayHost from '@/components/ui/OverlayHost'
+import { Link } from '@/i18n/navigation'
+import { usePathname } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
 
 import LinkPending from './LinkPending'

@@ -1,8 +1,9 @@
 'use client'
 
 import { ArrowRight } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useRef } from 'react'
+
+import { useRouter } from '@/i18n/navigation'
 
 type Props = {
   totalPages: number

@@ -1,7 +1,8 @@
 import { CN, DE, ES, FR, HU, IT, JP, KR, NL, PT, RU, TH, US, VN } from 'country-flag-icons/react/3x2'
 import { Globe, Meh, Pencil } from 'lucide-react'
-import Link from 'next/link'
 import { ReactNode } from 'react'
+
+import { Link } from '@/i18n/navigation'
 
 import { getSearchFilter } from './searchFilter'
 

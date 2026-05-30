@@ -1,5 +1,6 @@
 import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
-import Link from 'next/link'
+
+import { Link } from '@/i18n/navigation'
 
 import LinkPending from './LinkPending'
 import NavigationJump from './NavigationJump'

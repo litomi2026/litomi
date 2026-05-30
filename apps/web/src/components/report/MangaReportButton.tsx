@@ -6,12 +6,12 @@ import { env } from '@litomi/env/client'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Flag } from 'lucide-react'
-import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
+import { Link } from '@/i18n/navigation'
 import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env

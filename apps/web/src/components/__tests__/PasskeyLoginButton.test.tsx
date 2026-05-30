@@ -72,7 +72,7 @@ mock.module('sonner', () => ({
   },
 }))
 
-mock.module('@/app/auth/login/api', () => ({
+mock.module('@/app/[locale]/auth/login/api', () => ({
   requestPasskeyAuthenticationOptions: requestPasskeyAuthenticationOptionsMock,
   verifyPasskeyAuthentication: verifyPasskeyAuthenticationMock,
 }))

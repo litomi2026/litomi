@@ -10,7 +10,7 @@ import { twMerge } from 'tailwind-merge'
 
 import type { ProblemDetailsError } from '@/utils/api-request'
 
-import { requestPasskeyAuthenticationOptions, verifyPasskeyAuthentication } from '@/app/auth/login/api'
+import { requestPasskeyAuthenticationOptions, verifyPasskeyAuthentication } from '@/app/[locale]/auth/login/api'
 import { ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/api-request'
 
 type Props = {
