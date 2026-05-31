@@ -3,6 +3,7 @@
 import { formatLocalDate } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import {
   Dispatch,
   RefObject,
@@ -35,11 +36,30 @@ interface FilterPanelProps {
 export default function FilterPanel({ buttonRef, filters, onClose, setFilters, show }: FilterPanelProps) {
   const router = useRouter()
   const pathname = usePathname()
+  const t = useTranslations('Search.filter')
   const [isPending, startTransition] = useTransition()
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
   const isLatestSort = filters.sort === undefined || filters.sort === ''
   const isPopularSort = filters.sort === 'popular'
   const isOldestSort = filters.sort === 'id_asc'
+
+  const sortOptions = [
+    { value: '', label: t('sortOptions.latest') },
+    { value: 'popular', label: t('sortOptions.popular') },
+    { value: 'random', label: t('sortOptions.random') },
+    { value: 'id_asc', label: t('sortOptions.oldest') },
+  ]
+
+  const datePresets = [
+    { label: t('datePresets.today'), days: 0 },
+    { label: t('datePresets.yesterday'), days: 1 },
+    { label: t('datePresets.last7Days'), days: 7 },
+    { label: t('datePresets.last30Days'), days: 30 },
+    { label: t('datePresets.last3Months'), days: 90 },
+    { label: t('datePresets.last6Months'), days: 180 },
+    { label: t('datePresets.last1Year'), days: 365 },
+    { label: t('datePresets.all'), days: -1 },
+  ]
 
   const handleFilterChange = useCallback(
     (key: FilterKey, value: string) => setFilters((prev) => ({ ...prev, [key]: value })),
@@ -150,7 +170,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
   return (
     <Dialog
-      ariaLabel="상세 조건 설정"
+      ariaLabel={t('title')}
       className="sm:fixed sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100dvh-8rem)] sm:border-zinc-700 sm:shadow-xl"
       onClose={onClose}
       open={show}
@@ -159,9 +179,9 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
       <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
         <DialogHeader
           closeButtonClassName="sm:p-1"
-          closeButtonLabel="닫기"
+          closeButtonLabel={t('close')}
           onClose={onClose}
-          title="상세 조건 설정"
+          title={t('title')}
           titleClassName="sm:text-lg"
         />
         <DialogBody
@@ -176,23 +196,22 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         >
           {/* Sort */}
           <div>
-            <label htmlFor="sort">{FILTER_CONFIG.sort.label}</label>
+            <label htmlFor="sort">{t('labels.sort')}</label>
             <CustomSelect
               id="sort"
               onChange={(value) => handleFilterChange('sort', value)}
-              options={FILTER_CONFIG.sort.options}
+              options={sortOptions}
               value={filters.sort ?? ''}
             />
-            {filters.sort === 'random' && (
-              <p className="mt-1 text-xs text-zinc-500">랜덤 정렬은 최대 1분 간격으로 결과가 업데이트돼요</p>
-            )}
+            {filters.sort === 'random' && <p className="mt-1 text-xs text-zinc-500">{t('randomSortNotice')}</p>}
           </div>
 
           {/* View count range */}
           <RangeInput
-            label={FILTER_CONFIG['min-view'].label}
+            label={t('labels.view')}
             max={FILTER_CONFIG['max-view'].max}
             maxId="max-view"
+            maxPlaceholder={t('maxPlaceholder')}
             maxValue={filters['max-view'] ?? ''}
             min={FILTER_CONFIG['min-view'].min}
             minId="min-view"
@@ -205,7 +224,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
           {/* Page count range */}
           <RangeInput
-            label={FILTER_CONFIG['min-page'].label}
+            label={t('labels.page')}
             max={FILTER_CONFIG['max-page'].max}
             maxId="max-page"
             maxPlaceholder="10,000"
@@ -229,12 +248,12 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
           {/* Date range */}
           <RangeInput
-            label={FILTER_CONFIG.from.label}
+            label={t('labels.date')}
             maxId="to-date"
-            maxPlaceholder={FILTER_CONFIG.to.placeholder}
+            maxPlaceholder={t('placeholders.dateTo')}
             maxValue={filters.to ?? ''}
             minId="from-date"
-            minPlaceholder={FILTER_CONFIG.from.placeholder}
+            minPlaceholder={t('placeholders.dateFrom')}
             minValue={filters.from ?? ''}
             onMaxChange={(value) => handleFilterChange('to', value)}
             onMinChange={(value) => handleFilterChange('from', value)}
@@ -243,16 +262,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
           <div className="grid gap-2">
             <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: '오늘', days: 0 },
-                { label: '어제', days: 1 },
-                { label: '최근 7일', days: 7 },
-                { label: '최근 30일', days: 30 },
-                { label: '최근 3개월', days: 90 },
-                { label: '최근 6개월', days: 180 },
-                { label: '최근 1년', days: 365 },
-                { label: '전체', days: -1 },
-              ].map(({ label, days }) => (
+              {datePresets.map(({ label, days }) => (
                 <button
                   className={twMerge(
                     'px-3 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg',
@@ -282,18 +292,18 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           {/* Cursor Pagination Fields */}
           {isPopularSort ? (
             <div>
-              <label htmlFor="next-views">{FILTER_CONFIG['next-views'].label}</label>
+              <label htmlFor="next-views">{t('labels.nextViews')}</label>
               <input
                 className="w-full"
                 id="next-views"
                 min={FILTER_CONFIG['next-views'].min}
                 onChange={(e) => handleFilterChange('next-views', e.target.value)}
                 pattern="[0-9]*"
-                placeholder={FILTER_CONFIG['next-views'].placeholder}
+                placeholder={t('placeholders.nextViews')}
                 type={FILTER_CONFIG['next-views'].type}
                 value={filters['next-views'] ?? ''}
               />
-              <p className="mt-1 text-xs text-zinc-500">시작 조회수 이하의 작품만 표시해요 (커서 페이지네이션)</p>
+              <p className="mt-1 text-xs text-zinc-500">{t('popularCursorNotice')}</p>
             </div>
           ) : (
             <div>
@@ -302,7 +312,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                 className="aria-disabled:opacity-50"
                 htmlFor="next-id"
               >
-                {FILTER_CONFIG['next-id'].label}
+                {t('labels.nextId')}
               </label>
               <input
                 className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
@@ -312,34 +322,32 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                 maxLength={5}
                 onChange={(e) => handleFilterChange('next-id', e.target.value.replace(/\D/g, ''))}
                 pattern="[1-9][0-9]*"
-                placeholder={FILTER_CONFIG['next-id'].placeholder}
-                title={isLatestSort || isOldestSort ? '' : '기본순 또는 오래된순 정렬일 때만 사용할 수 있어요'}
+                placeholder={t('placeholders.nextId')}
+                title={isLatestSort || isOldestSort ? '' : t('idCursorDisabledTitle')}
                 type="text"
                 value={filters['next-id'] ?? ''}
               />
               <p aria-disabled={!(isLatestSort || isOldestSort)} className="mt-1 text-xs text-zinc-500">
-                {isLatestSort || isOldestSort
-                  ? '지정한 ID 이후의 결과만 표시해요'
-                  : '기본순 또는 오래된순 정렬일 때만 사용할 수 있어요'}
+                {isLatestSort || isOldestSort ? t('idCursorNotice') : t('idCursorDisabledNotice')}
               </p>
             </div>
           )}
 
           {/* Skip */}
           <div>
-            <label htmlFor="skip">{FILTER_CONFIG['skip'].label}</label>
+            <label htmlFor="skip">{t('labels.skip')}</label>
             <input
               className="w-full"
               id="skip"
               min={FILTER_CONFIG['skip'].min}
               onChange={(e) => handleFilterChange('skip', e.target.value)}
               pattern="[0-9]*"
-              placeholder={FILTER_CONFIG['skip'].placeholder}
-              title="처음 N개의 결과를 건너뛰어요"
+              placeholder={t('placeholders.skip')}
+              title={t('skipTitle')}
               type={FILTER_CONFIG['skip'].type}
               value={filters['skip'] ?? ''}
             />
-            <p className="mt-1 text-xs text-zinc-500">처음 N개의 결과를 건너뛰어요</p>
+            <p className="mt-1 text-xs text-zinc-500">{t('skipNotice')}</p>
           </div>
         </DialogBody>
 
@@ -353,7 +361,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             onClick={clearFilters}
             type="button"
           >
-            초기화
+            {t('reset')}
           </button>
           <button
             className={twMerge(
@@ -363,7 +371,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             disabled={isPending}
             type="submit"
           >
-            {isPending ? <Loader2 className="size-5 animate-spin" /> : '적용'}
+            {isPending ? <Loader2 className="size-5 animate-spin" /> : t('apply')}
           </button>
         </DialogFooter>
       </form>

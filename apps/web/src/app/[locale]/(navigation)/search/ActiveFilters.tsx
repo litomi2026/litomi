@@ -104,10 +104,7 @@ export default function ActiveFilters({ filters }: Props) {
         .filter((config) => config.condition)
         .map((config) => (
           <div
-            className={twMerge(
-              'relative flex items-center gap-2 pl-3.5 pr-3 py-1.5 transition rounded-full',
-              'bg-zinc-800/80 border border-zinc-700/60',
-            )}
+            className="relative flex items-center gap-2 pl-3.5 pr-3 py-1.5 transition rounded-full bg-zinc-800/80 border border-zinc-700/60"
             key={config.value}
           >
             <span className="text-[13px] font-medium leading-tight">

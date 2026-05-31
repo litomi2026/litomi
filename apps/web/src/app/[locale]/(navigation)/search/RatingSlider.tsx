@@ -1,13 +1,14 @@
 'use client'
 
 import { Star } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { memo, useCallback, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 const RATING_PRESETS = [
-  { label: '망작', min: '0.01', max: '1.5' },
-  { label: '명작', min: '3.5', max: '5' },
-  { label: '만신', min: '4.5', max: '5' },
+  { labelKey: 'low', min: '0.01', max: '1.5' },
+  { labelKey: 'great', min: '3.5', max: '5' },
+  { labelKey: 'masterpiece', min: '4.5', max: '5' },
 ]
 
 type Props = {
@@ -22,6 +23,7 @@ export default memo(RatingSlider)
 
 function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Props) {
   const sliderRef = useRef<HTMLDivElement>(null)
+  const t = useTranslations('Search.rating')
   const [isDragging, setIsDragging] = useState<'max' | 'min' | null>(null)
 
   const min = 0
@@ -118,24 +120,28 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Props) {
   return (
     <fieldset>
       <label className="flex items-center gap-2" htmlFor="min-rating">
-        별점
+        {t('label')}
       </label>
       <div className="flex items-center justify-between my-2">
         <div className="flex gap-2">
-          {RATING_PRESETS.map((preset) => (
-            <button
-              aria-pressed={minValue === preset.min && maxValue === preset.max}
-              className={twMerge(
-                'px-3 py-1 text-xs rounded-lg border transition bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300',
-                'aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100',
-              )}
-              key={preset.label}
-              onClick={() => handlePresetClick(preset)}
-              type="button"
-            >
-              {preset.label}
-            </button>
-          ))}
+          {RATING_PRESETS.map((preset) => {
+            const label = t(`presets.${preset.labelKey}`)
+
+            return (
+              <button
+                aria-pressed={minValue === preset.min && maxValue === preset.max}
+                className={twMerge(
+                  'px-3 py-1 text-xs rounded-lg border transition bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300',
+                  'aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100',
+                )}
+                key={preset.labelKey}
+                onClick={() => handlePresetClick(preset)}
+                type="button"
+              >
+                {label}
+              </button>
+            )
+          })}
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Star
@@ -152,7 +158,7 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Props) {
       <div className="relative h-8 mx-4 flex items-center cursor-pointer" onClick={handleTrackClick} ref={sliderRef}>
         <div className="absolute w-full h-2 bg-zinc-800 rounded-full" />
         <div
-          className="absolute h-2 bg-gradient-to-r from-brand-start to-brand rounded-full"
+          className="absolute h-2 bg-linear-to-r from-brand-start to-brand rounded-full"
           style={{
             left: `${minPos}%`,
             right: `${100 - maxPos}%`,
