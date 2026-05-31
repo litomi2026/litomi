@@ -36,7 +36,6 @@ export default function CensorAuthGate({ username }: Props) {
       <AdultVerificationGate
         description={t('list.adultGateDescription')}
         title={t('list.adultGateTitle')}
-        username={me.name}
       />
     )
   }

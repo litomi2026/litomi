@@ -13,7 +13,6 @@ type Props = {
 const privateLinks = [
   { labelKey: 'censor', path: 'censor' },
   { labelKey: 'donations', path: 'donations' },
-  { labelKey: 'settings', path: 'settings' },
 ] as const
 
 export default function MyPagePrivateNavigation({ username }: Props) {
@@ -29,7 +28,7 @@ export default function MyPagePrivateNavigation({ username }: Props) {
   }
 
   if (me === null) {
-    return <MyPageNavigationLink href="/@/settings" label={t('settings')} />
+    return null
   }
 
   if (me.name !== username) {

@@ -5,24 +5,19 @@ import { toast } from 'sonner'
 
 import { SearchParamKey } from '@/storage'
 
-type ToastOptions = {
-  message?: string
-  username?: string
-}
-
-export function showAdultVerificationRecommendedToast({ message, username }: ToastOptions = {}) {
+export function showAdultVerificationRecommendedToast(message?: string) {
   toast.info(message ?? '성인인증 시 광고가 제거돼요', {
     id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
     duration: ms('5 seconds'),
-    action: getAdultVerificationToastAction({ username }),
+    action: createAdultVerificationToastAction(),
   })
 }
 
-export function showAdultVerificationRequiredToast({ message, username }: ToastOptions = {}) {
+export function showAdultVerificationRequiredToast(message?: string) {
   toast.warning(message ?? '성인인증이 필요해요', {
     id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
     duration: ms('5 seconds'),
-    action: getAdultVerificationToastAction({ username }),
+    action: createAdultVerificationToastAction(),
   })
 }
 
@@ -40,8 +35,8 @@ export function showLiboExpansionRequiredToast(message?: string) {
   })
 }
 
-export function showLoginRequiredToast() {
-  toast.warning('로그인이 필요해요', {
+export function showLoginRequiredToast(message = '로그인이 필요해요') {
+  toast.warning(message, {
     id: LOGIN_REQUIRED_TOAST_ID,
     action: {
       label: '로그인',
@@ -53,37 +48,20 @@ export function showLoginRequiredToast() {
   })
 }
 
-export function showRepeatedAdultVerificationToast({ message, username }: ToastOptions = {}) {
-  toast.warning(message ?? '성인인증을 해주세요', {
-    duration: ms('5 seconds'),
-    action: getAdultVerificationToastAction({ username }),
-  })
+function createAdultVerificationToastAction() {
+  return {
+    label: '익명 성인인증',
+    onClick: createToastClickHandler({
+      id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
+      href: '/settings#adult',
+    }),
+  }
 }
 
 function createToastClickHandler({ id, href }: { id: string; href: string }) {
   return () => {
     toast.dismiss(id)
     window.location.assign(href)
-  }
-}
-
-function getAdultVerificationToastAction({ username }: ToastOptions) {
-  if (username) {
-    return {
-      label: '익명 성인인증',
-      onClick: createToastClickHandler({
-        id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
-        href: `/@${username}/settings#adult`,
-      }),
-    }
-  }
-
-  return {
-    label: '로그인',
-    onClick: createToastClickHandler({
-      id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
-      href: getLoginHref(),
-    }),
   }
 }
 

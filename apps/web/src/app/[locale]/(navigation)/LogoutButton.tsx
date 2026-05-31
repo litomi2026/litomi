@@ -25,7 +25,7 @@ export default function LogoutButton() {
   return (
     <button
       className={twMerge(
-        'group rounded-full p-2 w-full text-red-500 text-sm font-semibold transition whitespace-nowrap',
+        'flex items-center gap-3 group rounded-full p-2 w-full text-red-500 text-sm font-semibold transition whitespace-nowrap',
         'hover:bg-red-500/20 active:scale-95',
         'disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400 sm:px-3 sm:py-2',
       )}
@@ -33,10 +33,8 @@ export default function LogoutButton() {
       onClick={handleLogout}
       type="button"
     >
-      <div className="flex justify-center items-center gap-3">
-        <LogOut className="w-5 transition group-disabled:scale-100" />
-        <span className="min-w-0 hidden md:block">{t('logout')}</span>
-      </div>
+      <LogOut className="w-5 transition group-disabled:scale-100" />
+      <span className="min-w-0 hidden md:block">{t('logout')}</span>
     </button>
   )
 }

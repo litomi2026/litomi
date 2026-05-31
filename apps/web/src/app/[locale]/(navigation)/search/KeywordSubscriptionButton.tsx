@@ -68,8 +68,8 @@ export default function KeywordSubscriptionButton() {
       return
     }
 
-    if (isSubscribed && me) {
-      router.push(`/@${me.name}/settings/#keyword`)
+    if (isSubscribed) {
+      router.push('/settings#keyword')
       return
     }
 

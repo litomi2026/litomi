@@ -66,7 +66,7 @@ function DefaultTitle({ me }: { me?: GETV1MeResponse | null }) {
   return (
     <>
       {me ? (
-        <Link className="font-bold text-foreground p-2 -m-2" href={`/@${me.name}/settings#adult`}>
+        <Link className="font-bold text-foreground p-2 -m-2" href="/settings#adult">
           익명 성인인증
         </Link>
       ) : (
