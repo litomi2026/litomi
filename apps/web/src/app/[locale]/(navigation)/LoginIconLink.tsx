@@ -15,7 +15,7 @@ export default function LoginIconLink() {
 
   return (
     <SelectableLink
-      className="sm:py-1"
+      className="sm:p-2"
       href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(fullPath)}`}
       icon={<LogIn />}
     >
