@@ -27,7 +27,7 @@ type ParsedCategoryToken = {
 }
 
 function formatPlainText(text: string): string {
-  return text.replace(/_/g, ' ')
+  return text.replaceAll('_', ' ')
 }
 
 function normalizeCategory(rawCategory: string): string {

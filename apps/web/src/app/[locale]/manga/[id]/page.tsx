@@ -103,7 +103,7 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]'>
   return (
     <main className="h-full">
       <script
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replaceAll('<', '\\u003c') }}
         type="application/ld+json"
       />
       <MangaPage id={id} initialManga={manga} />

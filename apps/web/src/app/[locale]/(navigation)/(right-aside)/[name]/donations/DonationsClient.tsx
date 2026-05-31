@@ -156,7 +156,7 @@ function getRecipientDisplayLabel(recipient: { type: 'artist' | 'group'; value: 
   }
 
   const normalized = recipient.value.trim().replace(/^(artist:|group:)/, '')
-  return normalized ? normalized.replace(/_/g, ' ') : trimmedLabel
+  return normalized ? normalized.replaceAll('_', ' ') : trimmedLabel
 }
 
 function getRecipientSearchValue(recipient: { type: 'artist' | 'group'; value: string; label: string }) {

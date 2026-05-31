@@ -23,7 +23,7 @@ export function generateFakeCredentials(loginId: string): Array<{
     const credentialHash = Math.abs(hash + i * 12345)
       .toString(16)
       .padStart(16, '0')
-    const fakeCredentialId = btoa(credentialHash).replace(/=/g, '').slice(0, 43)
+    const fakeCredentialId = btoa(credentialHash).replaceAll('=', '').slice(0, 43)
 
     const transportIndex = (hash + i) % 4
     let transports: AuthenticatorTransportFuture[]

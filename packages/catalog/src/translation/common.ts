@@ -38,8 +38,8 @@ export function translateValue(dict: TranslationMap, normalizedValue: string, lo
   const translation = dict[normalizedValue]
 
   if (!translation) {
-    return normalizedValue.replace(/_/g, ' ')
+    return normalizedValue.replaceAll('_', ' ')
   }
 
-  return getTranslationValue(translation, locale) || normalizedValue.replace(/_/g, ' ')
+  return getTranslationValue(translation, locale) || normalizedValue.replaceAll('_', ' ')
 }

@@ -119,7 +119,7 @@ function computeSingleSexPrefixFromKey(key: string): 'both' | 'female' | 'male' 
 
 function deriveEnglishLabelFromKey(key: string): string {
   const raw = key.includes(':') ? key.split(':').slice(1).join(':') : key
-  return raw.replace(/_/g, ' ')
+  return raw.replaceAll('_', ' ')
 }
 
 async function fetchJson<T>(url: string, timeoutMs: number): Promise<T> {
