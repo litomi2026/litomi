@@ -5,8 +5,8 @@ namespace: litomi-prod
 
 resources:
   - ../../base
-  - cataloger-cronjob.yaml
-  - recommender-cronjob.yaml
+  # - cataloger-cronjob.yaml
+  # - recommender-cronjob.yaml
   - hpa-api.yaml
   - hpa-web.yaml
   - namespace.yaml
