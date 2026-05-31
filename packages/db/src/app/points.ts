@@ -17,7 +17,6 @@ export const adImpressionTokenTable = pgTable(
   },
   (table) => [
     index('idx_ad_impression_token_user').on(table.userId),
-    index('idx_ad_impression_token_token').on(table.token),
     uniqueIndex('idx_ad_token_unique_user_ad_slot').on(table.userId, table.adSlotId),
   ],
 ).enableRLS()

@@ -60,7 +60,6 @@ export const threadTable = pgTable(
   (table) => [
     index('idx_thread_character_id').on(table.characterId),
     index('idx_thread_prompt_id').on(table.promptId),
-    index('idx_thread_user_id').on(table.userId),
     index('idx_thread_user_id_updated_at').on(table.userId, table.updatedAt.desc()),
     index('idx_thread_visibility').on(table.visibility),
   ],
@@ -77,8 +76,5 @@ export const messageTable = pgTable(
     content: text('content').notNull(),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [
-    index('idx_message_thread_id').on(table.threadId),
-    index('idx_message_thread_id_created_at').on(table.threadId, table.createdAt.desc()),
-  ],
+  (table) => [index('idx_message_thread_id_created_at').on(table.threadId, table.createdAt.desc())],
 ).enableRLS()

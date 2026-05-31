@@ -5,6 +5,7 @@ import { MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/manga/policy'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { create } from 'zustand'
@@ -55,9 +56,10 @@ export const useMangaDetailModal = () => {
 export function MangaDetailModal() {
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [showAllLines, setShowAllLines] = useState(false)
-  const pathname = usePathname()
   const { isOpen, params, setParams } = useMangaDetailModalStore()
   const { close } = useMangaDetailModal()
+  const pathname = usePathname()
+  const t = useTranslations('MangaViewer.detail')
   const { manga = {} as Manga } = params
 
   const {
@@ -112,13 +114,13 @@ export function MangaDetailModal() {
 
   return (
     <Dialog
-      ariaLabel="작품 정보"
+      ariaLabel={t('modalTitle')}
       className="text-sm md:text-base"
       onAfterClose={() => setParams()}
       onClose={close}
       open={isOpen}
     >
-      <DialogHeader onClose={close} title="작품 정보" />
+      <DialogHeader onClose={close} title={t('modalTitle')} />
       <DialogBody className="flex flex-col gap-4">
         <h3 className="font-bold text-lg md:text-xl">{title}</h3>
         {description && (
@@ -131,7 +133,7 @@ export function MangaDetailModal() {
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   type="button"
                 >
-                  {showFullDescription ? '간략히' : '더보기'}
+                  {showFullDescription ? t('showLess') : t('showMore')}
                 </button>
               )}
             </p>
@@ -141,14 +143,14 @@ export function MangaDetailModal() {
         <div className="flex-1">
           <div className="flex flex-col gap-2 [&_strong]:whitespace-nowrap">
             <div className="flex gap-2 min-w-0">
-              <strong>품번</strong>
+              <strong>{t('fields.id')}</strong>
               <div className="min-w-0 flex-1">
                 <MangaMetadataLink filterType="id" value={id?.toString() ?? ''} />
               </div>
             </div>
             {languages && languages.length > 0 && (
               <div className="flex gap-2 min-w-0">
-                <strong>언어</strong>
+                <strong>{t('fields.language')}</strong>
                 <div className="min-w-0 flex-1">
                   <MangaMetadataList filterType="language" labeledValues={languages} />
                 </div>
@@ -156,7 +158,7 @@ export function MangaDetailModal() {
             )}
             {type && (
               <div className="flex gap-2 min-w-0">
-                <strong>종류</strong>
+                <strong>{t('fields.type')}</strong>
                 <div className="min-w-0 flex-1">
                   <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
                 </div>
@@ -164,7 +166,7 @@ export function MangaDetailModal() {
             )}
             {artists && artists.length > 0 && (
               <div className="flex gap-2 min-w-0">
-                <strong>작가</strong>
+                <strong>{t('fields.artist')}</strong>
                 <div className="min-w-0 flex-1">
                   <MangaMetadataListWithLink filterType="artist" items={artists} />
                 </div>
@@ -172,7 +174,7 @@ export function MangaDetailModal() {
             )}
             {group && group.length > 0 && (
               <div className="flex gap-2 min-w-0">
-                <strong>그룹</strong>
+                <strong>{t('fields.group')}</strong>
                 <div className="min-w-0 flex-1">
                   <MangaMetadataList filterType="group" labeledValues={group} />
                 </div>
@@ -180,7 +182,7 @@ export function MangaDetailModal() {
             )}
             {series && series.length > 0 && (
               <div className="flex gap-2 min-w-0">
-                <strong>시리즈</strong>
+                <strong>{t('fields.series')}</strong>
                 <div className="min-w-0 flex-1">
                   <MangaMetadataList filterType="series" labeledValues={series} />
                 </div>
@@ -188,7 +190,7 @@ export function MangaDetailModal() {
             )}
             {characters && characters.length > 0 && (
               <div className="flex gap-2 min-w-0">
-                <strong>캐릭터</strong>
+                <strong>{t('fields.character')}</strong>
                 <div className="min-w-0 flex-1">
                   <MangaMetadataListWithLink filterType="character" items={characters} />
                 </div>
@@ -196,7 +198,7 @@ export function MangaDetailModal() {
             )}
             {uploader && (
               <div className="flex gap-2 min-w-0">
-                <strong>업로더</strong>
+                <strong>{t('fields.uploader')}</strong>
                 <div className="min-w-0 flex-1">
                   <MangaMetadataLink filterType="uploader" value={uploader} />
                 </div>
@@ -204,7 +206,7 @@ export function MangaDetailModal() {
             )}
             {date && (
               <div className="flex gap-2 min-w-0">
-                <strong>날짜</strong>
+                <strong>{t('fields.date')}</strong>
                 <div className="min-w-0 flex-1">
                   <Link
                     className="hover:underline focus:underline break-all"
@@ -223,14 +225,16 @@ export function MangaDetailModal() {
           {lines && lines.length > 0 && (
             <div className="border-t border-zinc-800 pt-3">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-zinc-400 text-sm font-medium">대사 미리보기</span>
+                <span className="text-zinc-400 text-sm font-medium">{t('linePreview')}</span>
                 {hasMoreLines && (
                   <button
                     className="text-brand font-medium group-hover:underline transition text-xs"
                     onClick={() => setShowAllLines(!showAllLines)}
                     type="button"
                   >
-                    {showAllLines ? `접기` : `더보기 (+${lines.length - MANGA_INITIAL_LINES})`}
+                    {showAllLines
+                      ? t('collapse')
+                      : t('showMoreWithCount', { count: lines.length - MANGA_INITIAL_LINES })}
                   </button>
                 )}
               </div>

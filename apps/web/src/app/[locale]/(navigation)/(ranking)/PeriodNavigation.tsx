@@ -8,7 +8,8 @@ import { Link } from '@/i18n/navigation'
 
 import {
   DEFAULT_METRIC,
-  DEFAULT_PERIOD,
+  isMetricParam,
+  isPeriodParam,
   Params,
   PeriodParam,
   periodParams,
@@ -16,9 +17,9 @@ import {
 } from './common'
 
 export default function PeriodNavigation() {
-  const { metric, period } = useParams<Params>()
+  const { metric: metricParam, period: periodParam } = useParams<Params>()
   const t = useTranslations('RankingPage')
-  const show = Boolean(metric && period)
+  const show = isMetricParam(metricParam) && isPeriodParam(periodParam)
 
   if (!show) {
     return null
@@ -28,9 +29,9 @@ export default function PeriodNavigation() {
     <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap overscroll-none">
       {periodParams.map((periodValue: PeriodParam) => (
         <Link
-          aria-current={period === periodValue ? 'page' : undefined}
+          aria-current={periodParam === periodValue ? 'page' : undefined}
           className={SECONDARY_RANKING_NAV_LINK_CLASSNAME}
-          href={`/ranking/${metric || DEFAULT_METRIC}/${periodValue || DEFAULT_PERIOD}`}
+          href={`/ranking/${metricParam || DEFAULT_METRIC}/${periodValue}`}
           key={periodValue}
           prefetch={false}
         >

@@ -9,6 +9,7 @@ import { Link } from '@/i18n/navigation'
 import {
   DEFAULT_PERIOD,
   getPrimaryRankingIconClassName,
+  isPeriodParam,
   metricInfo,
   MetricParam,
   Params,
@@ -25,12 +26,13 @@ export default function MetricLink({ value }: Props) {
 
   const isSelected = metric === value
   const info = metricInfo[value]
+  const targetPeriod = isPeriodParam(period) ? period : DEFAULT_PERIOD
 
   return (
     <Link
       aria-current={isSelected ? 'page' : undefined}
       className={PRIMARY_RANKING_NAV_LINK_CLASSNAME}
-      href={`/ranking/${value}/${period || DEFAULT_PERIOD}`}
+      href={`/ranking/${value}/${targetPeriod}`}
       prefetch={false}
     >
       <LinkPending className="size-4">

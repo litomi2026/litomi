@@ -48,7 +48,6 @@ export const userRatingTable = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
-    index('idx_user_rating_updated_at').on(table.updatedAt.desc()),
     index('idx_user_rating_manga_rating_user').on(table.mangaId, table.rating, table.userId),
   ],
 ).enableRLS()

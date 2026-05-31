@@ -289,19 +289,19 @@ export const messages = {
       doc: {
         compliance2257: {
           title: '2257 コンプライアンス案内',
-          description: 'Litomi の 18 U.S.C. §2257 および §2257A に関する運営原則を案内します。',
+          description: 'リトミの 18 U.S.C. §2257 および §2257A に関する運営原則を案内します。',
         },
         dmca: {
           title: '著作権/DMCA 通報',
-          description: 'Litomi に著作権または DMCA 通報を提出する方法を案内します。',
+          description: 'リトミに著作権または DMCA 通報を提出する方法を案内します。',
         },
         privacy: {
           title: 'プライバシーポリシー',
-          description: 'Litomi がどの情報をどの目的で処理するかを案内します。',
+          description: 'リトミがどの情報をどの目的で処理するかを案内します。',
         },
         terms: {
           title: '利用規約',
-          description: 'Litomi サービスの利用に適用される規約を案内します。',
+          description: 'リトミサービスの利用に適用される規約を案内します。',
         },
         youthProtection: {
           title: '青少年保護ポリシー',
@@ -355,7 +355,7 @@ export const messages = {
             workDescription: '著作物の説明',
             workURL: '著作物 URL (任意)',
             infringingSection: '侵害物の識別',
-            infringingReferences: 'Litomi 作品 URL または作品 ID',
+            infringingReferences: 'リトミ作品 URL または作品 ID',
             infringingPlaceholder: '例)\nhttps://litomi.in/manga/123\n123\nhttps://litomi.in/manga/456',
             infringingHelp:
               '作品 URL に /manga/数字 が含まれている場合は自動で認識します。複数ある場合は改行で入力してください。',
@@ -402,7 +402,7 @@ export const messages = {
             claimantPhone: '電話番号',
             relatedSection: '関連情報',
             relatedNoticeId: '関連受付番号 (任意)',
-            infringingReferences: 'Litomi 作品 URL または作品 ID',
+            infringingReferences: 'リトミ作品 URL または作品 ID',
             infringingHelp:
               '作品 URL に /manga/数字 が含まれている場合は自動で認識します。複数ある場合は改行で入力してください。',
             claimSection: '主張内容',
@@ -429,19 +429,19 @@ export const messages = {
       doc: {
         compliance2257: {
           title: '2257 合规说明',
-          description: '说明 Litomi 关于 18 U.S.C. §2257 和 §2257A 的运营原则。',
+          description: '说明莉托米关于 18 U.S.C. §2257 和 §2257A 的运营原则。',
         },
         dmca: {
           title: '版权/DMCA 举报',
-          description: '说明如何向 Litomi 提交版权或 DMCA 举报。',
+          description: '说明如何向莉托米提交版权或 DMCA 举报。',
         },
         privacy: {
           title: '隐私政策',
-          description: '说明 Litomi 会处理哪些信息以及处理目的。',
+          description: '说明莉托米会处理哪些信息以及处理目的。',
         },
         terms: {
           title: '使用条款',
-          description: '说明适用于使用 Litomi 服务的条款。',
+          description: '说明适用于使用莉托米服务的条款。',
         },
         youthProtection: {
           title: '青少年保护政策',
@@ -494,7 +494,7 @@ export const messages = {
             workDescription: '作品说明',
             workURL: '作品 URL（可选）',
             infringingSection: '识别侵权内容',
-            infringingReferences: 'Litomi 作品 URL 或作品 ID',
+            infringingReferences: '莉托米作品 URL 或作品 ID',
             infringingPlaceholder: '例）\nhttps://litomi.in/manga/123\n123\nhttps://litomi.in/manga/456',
             infringingHelp: '如果作品 URL 中包含 /manga/数字，会自动识别。多个项目请换行填写。',
             statementsSection: '声明',
@@ -540,7 +540,7 @@ export const messages = {
             claimantPhone: '电话号码',
             relatedSection: '相关信息',
             relatedNoticeId: '相关受理编号（可选）',
-            infringingReferences: 'Litomi 作品 URL 或作品 ID',
+            infringingReferences: '莉托米作品 URL 或作品 ID',
             infringingHelp: '如果作品 URL 中包含 /manga/数字，会自动识别。多个项目请换行填写。',
             claimSection: '主张内容',
             claimDetails: '许可/权限依据',

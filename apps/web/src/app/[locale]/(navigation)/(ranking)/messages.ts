@@ -178,7 +178,7 @@ export const messages = {
       ranking: {
         realtime: {
           title: 'リアルタイム',
-          description: 'Litomi のリアルタイム訪問者状況を確認しましょう。',
+          description: 'リトミのリアルタイム訪問者状況を確認しましょう。',
         },
         donation: {
           title: '支援ランキング',
@@ -219,7 +219,7 @@ export const messages = {
       donationTitle: '支援ランキング',
       realtime: 'リアルタイム',
       realtimeTitle: 'リアルタイム人気',
-      description: 'Litomi の作品人気ランキングは、利用者が増えるほど正確になります。ぜひ周りにも共有してください。',
+      description: 'リトミの作品人気ランキングは、利用者が増えるほど正確になります。ぜひ周りにも共有してください。',
       title: '{period} {metric} ランキング',
       metrics: {
         view: '閲覧',
@@ -263,7 +263,7 @@ export const messages = {
       ranking: {
         realtime: {
           title: '实时',
-          description: '查看 Litomi 的实时访客情况。',
+          description: '查看莉托米的实时访客情况。',
         },
         donation: {
           title: '赞助排行',
@@ -303,7 +303,7 @@ export const messages = {
       donationTitle: '赞助排行',
       realtime: '实时',
       realtimeTitle: '实时热门',
-      description: 'Litomi 的作品人气排行会随着使用人数增加而更准确。欢迎分享给更多人。',
+      description: '莉托米的作品人气排行会随着使用人数增加而更准确。欢迎分享给更多人。',
       title: '{period}{metric}排行',
       metrics: {
         view: '浏览',

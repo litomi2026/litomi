@@ -40,6 +40,9 @@ export const periodParams = [
   PeriodParam.YEAR,
 ] as const
 
+const metricParamValues = Object.values(MetricParam)
+const periodParamValues = Object.values(PeriodParam)
+
 export const PRIMARY_RANKING_NAV_LINK_CLASSNAME =
   'relative flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-zinc-500 transition hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-[current=page]:pointer-events-none aria-[current=page]:font-semibold aria-[current=page]:text-foreground after:pointer-events-none after:absolute after:right-4 after:bottom-0.5 after:left-4 after:h-0.5 after:rounded-full after:bg-foreground after:opacity-0 after:transition aria-[current=page]:after:opacity-100'
 
@@ -56,4 +59,12 @@ export function getPrimaryRankingIconClassName(selected: boolean, selectedIconSt
   }
 
   return 'size-4 shrink-0 stroke-[2.75] transition-[fill,stroke-width]'
+}
+
+export function isMetricParam(value: unknown): value is MetricParam {
+  return typeof value === 'string' && metricParamValues.includes(value as MetricParam)
+}
+
+export function isPeriodParam(value: unknown): value is PeriodParam {
+  return typeof value === 'string' && periodParamValues.includes(value as PeriodParam)
 }

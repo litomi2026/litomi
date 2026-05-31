@@ -122,7 +122,7 @@ export const messages = {
       navigation: {
         app: {
           title: 'アプリとして使う',
-          description: 'Litomi アプリのインストール方法を環境別に案内します。',
+          description: 'リトミアプリのインストール方法を環境別に案内します。',
         },
         chat: {
           title: 'AI チャット',
@@ -132,8 +132,8 @@ export const messages = {
       search: {
         title: '検索',
         queryTitle: '{query} 検索',
-        description: 'Litomi で言語、種類、作家、シリーズ、キャラクター、タグ条件から漫画や同人誌を検索できます。',
-        queryDescription: '{query} 条件に合う漫画や同人誌を Litomi で探しましょう。',
+        description: 'リトミで言語、種類、作家、シリーズ、キャラクター、タグ条件から漫画や同人誌を検索できます。',
+        queryDescription: '{query} 条件に合う漫画や同人誌をリトミで探しましょう。',
         landingQueryLabels: {
           'language:korean': '韓国語作品',
           'type:doujinshi': '同人誌',
@@ -179,7 +179,7 @@ export const messages = {
       navigation: {
         app: {
           title: '作为应用使用',
-          description: '按环境说明 Litomi 应用的安装方法。',
+          description: '按环境说明莉托米应用的安装方法。',
         },
         chat: {
           title: 'AI 聊天',
@@ -189,8 +189,8 @@ export const messages = {
       search: {
         title: '搜索',
         queryTitle: '{query} 搜索',
-        description: '在 Litomi 按语言、类型、作者、系列、角色和标签条件搜索漫画与同人志。',
-        queryDescription: '在 Litomi 查找符合 {query} 条件的漫画和同人志。',
+        description: '在莉托米按语言、类型、作者、系列、角色和标签条件搜索漫画与同人志。',
+        queryDescription: '在莉托米查找符合 {query} 条件的漫画和同人志。',
         landingQueryLabels: {
           'language:korean': '韩语作品',
           'type:doujinshi': '同人志',

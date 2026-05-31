@@ -3,7 +3,7 @@ import { readingHistoryTable } from '@litomi/db/app/activity'
 import { and, count, desc, eq, ne } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { Eye } from 'lucide-react'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import { getCatalogMangaMap } from '@/utils/catalog-manga.server'
 
@@ -21,12 +21,14 @@ export default async function AlsoViewedSection({ mangaId }: Props) {
   }
 
   const locale = await getLocale()
+  const t = await getTranslations('MangaViewer.detail')
   const catalogMangaMap = await getCatalogMangaMap(alsoViewedIds, locale)
 
   return (
     <div className="border-b p-4">
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
-        <Eye className="size-4" />이 작품과 함께 본 작품
+        <Eye className="size-4" />
+        {t('alsoViewedTitle')}
       </h3>
       <MangaCardList
         catalogMangas={alsoViewedIds.map((id) => catalogMangaMap.get(id))}

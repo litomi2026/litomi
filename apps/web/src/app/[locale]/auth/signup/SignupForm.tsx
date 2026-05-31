@@ -3,11 +3,10 @@
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { Eye, EyeOff, Info, Loader2, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/api-request'
 
 import IconLogo from '@/components/icons/LogoLitomi'
 import TurnstileWidget from '@/components/TurnstileWidget'
@@ -18,15 +17,18 @@ import {
   clearSignupInputValidity,
   clearSignupLoginId,
   clearSignupValidity,
+  getSignupErrorMessage,
+  getSignupInput,
+  reportInputValidity,
   toggleSignupPasswordVisibility,
-  validateSignupRequest,
 } from './signup-form'
 import useSignupMutation, { SIGNUP_LOCAL_ERROR_STATUSES } from './useSignupMutation'
 
 export default function SignupForm() {
-  const formRef = useRef<HTMLFormElement>(null)
-  const turnstileRef = useRef<TurnstileInstance>(null)
   const [hasTurnstileToken, setHasTurnstileToken] = useState(false)
+  const turnstileRef = useRef<TurnstileInstance>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+  const t = useTranslations('Auth.signup')
 
   function resetTurnstile() {
     turnstileRef.current?.reset()
@@ -53,7 +55,7 @@ export default function SignupForm() {
           return
         }
 
-        toast.warning(getSignupErrorMessage(error))
+        toast.warning(getSignupErrorMessage(error, t('fallbackError')))
       })
     },
   })
@@ -66,7 +68,7 @@ export default function SignupForm() {
 
     if (!turnstileToken) {
       resetTurnstile()
-      toast.warning('Cloudflare 보안 검증을 완료해 주세요')
+      toast.warning(t('turnstileRequired'))
       return
     }
 
@@ -80,7 +82,13 @@ export default function SignupForm() {
       turnstileToken,
     }
 
-    if (!validateSignupRequest(e.currentTarget, body)) {
+    if (body.password !== body.passwordConfirm) {
+      reportInputValidity(getSignupInput(e.currentTarget, 'password-confirm'), t('passwordMismatch'))
+      return
+    }
+
+    if (body.loginId === body.password) {
+      reportInputValidity(getSignupInput(e.currentTarget, 'password'), t('passwordSameAsLoginId'))
       return
     }
 
@@ -94,8 +102,8 @@ export default function SignupForm() {
       </Link>
 
       <div className="text-center">
-        <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">회원가입</h2>
-        <p className="mt-2 text-sm text-zinc-400">몇 가지만 입력하고 시작해요</p>
+        <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">{t('title')}</h2>
+        <p className="mt-2 text-sm text-zinc-400">{t('description')}</p>
       </div>
 
       <form
@@ -109,7 +117,7 @@ export default function SignupForm() {
         <div className="grid gap-4">
           <div>
             <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="signup-username">
-              아이디
+              {t('loginId')}
             </label>
             <div className="relative group">
               <input
@@ -131,13 +139,13 @@ export default function SignupForm() {
                 minLength={2}
                 name="login-id"
                 pattern={LOGIN_ID_PATTERN}
-                placeholder="아이디"
+                placeholder={t('loginIdPlaceholder')}
                 required
                 spellCheck={false}
                 type="text"
               />
               <button
-                aria-label="아이디 지우기"
+                aria-label={t('clearLoginId')}
                 className={twMerge(
                   'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
                   'opacity-0 pointer-events-none',
@@ -154,13 +162,13 @@ export default function SignupForm() {
               </button>
             </div>
             <p className="mt-1 text-xs text-zinc-400" id="signup-username-help">
-              영문과 숫자, _ 를 사용해서 2자 이상 입력해 주세요
+              {t('loginIdHelp')}
             </p>
           </div>
 
           <div>
             <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="signup-new-password">
-              비밀번호
+              {t('password')}
             </label>
             <div className="relative group">
               <input
@@ -181,13 +189,13 @@ export default function SignupForm() {
                 minLength={8}
                 name="password"
                 pattern={PASSWORD_PATTERN}
-                placeholder="비밀번호"
+                placeholder={t('passwordPlaceholder')}
                 required
                 spellCheck={false}
                 type="password"
               />
               <button
-                aria-label="비밀번호 표시"
+                aria-label={t('showPassword')}
                 className={twMerge(
                   'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
                   'opacity-0 pointer-events-none',
@@ -206,7 +214,7 @@ export default function SignupForm() {
               </button>
             </div>
             <p className="mt-1 text-xs text-zinc-400" id="signup-password-help">
-              영문과 숫자를 포함해서 8자 이상 입력해 주세요
+              {t('passwordHelp')}
             </p>
           </div>
 
@@ -215,7 +223,7 @@ export default function SignupForm() {
               className="block mb-1.5 text-sm font-medium text-zinc-300"
               htmlFor="signup-new-password-confirmation"
             >
-              비밀번호 확인
+              {t('passwordConfirm')}
             </label>
             <div className="relative group">
               <input
@@ -235,13 +243,13 @@ export default function SignupForm() {
                 maxLength={64}
                 minLength={8}
                 name="password-confirm"
-                placeholder="비밀번호 확인"
+                placeholder={t('passwordConfirmPlaceholder')}
                 required
                 spellCheck={false}
                 type="password"
               />
               <button
-                aria-label="비밀번호 표시"
+                aria-label={t('showPassword')}
                 className={twMerge(
                   'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
                   'opacity-0 pointer-events-none',
@@ -260,13 +268,13 @@ export default function SignupForm() {
               </button>
             </div>
             <p className="mt-1 text-xs text-zinc-400" id="signup-password-confirmation-help">
-              비밀번호는 안전하게 암호화해서 저장돼요
+              {t('passwordConfirmHelp')}
             </p>
           </div>
 
           <div>
             <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="signup-nickname">
-              닉네임
+              {t('nickname')}
             </label>
             <input
               aria-describedby="signup-nickname-help"
@@ -285,12 +293,12 @@ export default function SignupForm() {
               maxLength={32}
               minLength={2}
               name="nickname"
-              placeholder="닉네임(선택)"
+              placeholder={t('nicknamePlaceholder')}
               spellCheck={false}
               type="text"
             />
             <p className="mt-1 text-xs text-zinc-400" id="signup-nickname-help">
-              2자 이상 입력해 주세요(비워두면 자동으로 생성돼요)
+              {t('nicknameHelp')}
             </p>
           </div>
         </div>
@@ -299,11 +307,8 @@ export default function SignupForm() {
           <div className="flex gap-3">
             <Info className="size-4 text-zinc-300/80 shrink-0 mt-0.5" />
             <div className="text-zinc-400">
-              <p className="text-sm font-medium text-zinc-200 mb-1">자동 삭제 안내</p>
-              <p className="text-xs">
-                개인정보 보호를 위해 3개월 동안 활동이 없으면 계정이 자동으로 삭제돼요. 원하면 설정에서 해당 기간을
-                변경할 수 있어요.
-              </p>
+              <p className="text-sm font-medium text-zinc-200 mb-1">{t('autoDeletionTitle')}</p>
+              <p className="text-xs">{t('autoDeletionDescription')}</p>
             </div>
           </div>
         </div>
@@ -319,7 +324,7 @@ export default function SignupForm() {
           type="submit"
         >
           {isPending ? <Loader2 className="size-5 animate-spin" /> : null}
-          {isPending ? '회원가입 중...' : '회원가입'}
+          {isPending ? t('submitting') : t('submit')}
         </button>
 
         <TurnstileWidget
@@ -332,39 +337,35 @@ export default function SignupForm() {
 
       <div className="grid gap-2 text-center text-xs text-zinc-400">
         <p className="flex flex-wrap gap-1 justify-center">
-          가입하면
+          {t('termsPrefix')}
           <Link
             className="underline underline-offset-4 hover:text-zinc-200 transition"
             href="/doc/terms"
             prefetch={false}
           >
-            이용약관
+            {t('termsAction')}
           </Link>
-          과
+          {t('termsMiddle')}
           <Link
             className="underline underline-offset-4 hover:text-zinc-200 transition"
             href="/doc/privacy"
             prefetch={false}
           >
-            개인정보처리방침
+            {t('privacyAction')}
           </Link>
-          에 동의하게 돼요
+          {t('termsSuffix')}
         </p>
         <p className="flex flex-wrap gap-1 justify-center">
-          이미 계정이 있나요?
+          {t('loginPrompt')}
           <Link
             className="underline underline-offset-4 hover:text-zinc-200 transition"
             href="/auth/login"
             prefetch={false}
           >
-            로그인
+            {t('loginAction')}
           </Link>
         </p>
       </div>
     </div>
   )
-}
-
-function getSignupErrorMessage(error: ProblemDetailsError) {
-  return typeof error.problem.detail === 'string' ? error.problem.detail : '회원가입 중 오류가 발생했어요'
 }

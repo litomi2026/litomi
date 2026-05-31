@@ -85,7 +85,7 @@ export const messages = {
         donationCard: {
           title: '리토미를 함께 키워주세요',
           description:
-            '매달 10~15만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요',
+            '매달 약 10~15만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요',
           socialLabel: '소셜',
           discordAction: 'Discord 서버 참여',
           donationLabel: '후원',
@@ -272,7 +272,7 @@ export const messages = {
         donationCard: {
           title: 'Help Litomi grow',
           description:
-            'Server costs run about KRW 100,000-150,000 each month, and your support helps us keep the service running without harmful ads.',
+            'Server costs run about $70-100 each month, and your support helps us keep the service running without harmful ads.',
           socialLabel: 'Social',
           discordAction: 'Join Discord server',
           donationLabel: 'Support',
@@ -458,9 +458,9 @@ export const messages = {
           excludeSearch: 'このタグを除外して検索',
         },
         donationCard: {
-          title: 'Litomi を一緒に育ててください',
+          title: 'リトミを一緒に育ててください',
           description:
-            '毎月 10万-15万ウォンのサーバー費用がかかります。有害な広告なしでサービスを運営するため、皆さんの支援が必要です。',
+            '毎月約11,000-16,000円のサーバー費用がかかります。有害な広告なしでサービスを運営するため、皆さんの支援が必要です。',
           socialLabel: 'ソーシャル',
           discordAction: 'Discord サーバーに参加',
           donationLabel: '支援',
@@ -644,8 +644,8 @@ export const messages = {
           excludeSearch: '排除此标签后搜索',
         },
         donationCard: {
-          title: '一起让 Litomi 成长',
-          description: '每月会产生约 10-15 万韩元的服务器费用。为了在没有有害广告的情况下运营服务，我们需要你的帮助。',
+          title: '一起让莉托米成长',
+          description: '每月约需 500-700 元服务器费用。为了在没有有害广告的情况下运营服务，我们需要你的帮助。',
           socialLabel: '社交',
           discordAction: '加入 Discord 服务器',
           donationLabel: '赞助',

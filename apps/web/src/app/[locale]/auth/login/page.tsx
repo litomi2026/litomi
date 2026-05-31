@@ -11,6 +11,7 @@ import LoginForm from './LoginForm'
 export async function generateMetadata({ params }: PageProps<'/[locale]/auth/login'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'Metadata.auth.login' })
+
   const title = t('title')
   const description = t('description')
 
@@ -26,10 +27,13 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/auth/log
   }
 }
 
-export default function Page() {
+export default async function Page({ params }: PageProps<'/[locale]/auth/login'>) {
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'Metadata.auth.login' })
+
   return (
     <main className={`min-h-dvh flex items-center justify-center p-4 sm:p-8 ${styles.background}`}>
-      <h1 className="sr-only">로그인</h1>
+      <h1 className="sr-only">{t('title')}</h1>
       <div className={`${styles.card} w-full max-w-lg rounded-2xl p-5 sm:p-6`}>
         <LoginForm />
       </div>
