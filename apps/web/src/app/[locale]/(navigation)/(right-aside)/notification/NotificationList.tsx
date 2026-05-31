@@ -70,7 +70,6 @@ export default function NotificationList() {
       <AdultVerificationGate
         description="알림을 확인하려면 익명 성인인증이 필요해요"
         title="성인인증이 필요해요"
-        username={me.name}
       />
     )
   }
@@ -130,21 +129,19 @@ export default function NotificationList() {
 }
 
 function EmptyState() {
-  const { data: me } = useMeQuery()
   const searchParams = useSearchParams()
   const filter = searchParams.get(SearchParams.FILTER) as NotificationFilter | null
   const content = getEmptyContent(filter)
-  const username = me?.name ?? ''
   const showKeywordSetting = content.showKeywordSetting
 
   return (
     <StatusState description={content.description} icon={content.icon} title={content.title}>
       {showKeywordSetting && (
         <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
-          <StatusActionLink className="max-w-none" href={`/@${username}/settings#push`}>
+          <StatusActionLink className="max-w-none" href="/settings#push">
             푸시 알림 켜기
           </StatusActionLink>
-          <StatusActionLink className="max-w-none" href={`/@${username}/settings#keyword`} variant="secondary">
+          <StatusActionLink className="max-w-none" href="/settings#keyword" variant="secondary">
             키워드 알림 설정
           </StatusActionLink>
         </div>

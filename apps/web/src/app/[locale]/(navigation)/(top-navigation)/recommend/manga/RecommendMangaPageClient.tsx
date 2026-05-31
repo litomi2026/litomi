@@ -56,7 +56,6 @@ export default function RecommendMangaPageClient() {
       <AdultVerificationGate
         description="추천 작품을 보려면 익명 성인인증이 필요해요"
         title="성인인증이 필요해요"
-        username={me.name}
       />
     )
   }

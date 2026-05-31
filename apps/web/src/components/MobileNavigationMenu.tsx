@@ -8,7 +8,6 @@ import { twMerge } from 'tailwind-merge'
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '@/app/[locale]/(navigation)/(ranking)/common'
 import OverlayHost from '@/components/ui/OverlayHost'
 import { Link, usePathname } from '@/i18n/navigation'
-import useMeQuery from '@/query/useMeQuery'
 
 import LinkPending from './LinkPending'
 
@@ -32,8 +31,6 @@ export default function MobileNavigationMenu({ onClose }: Props) {
   const pathname = usePathname()
   const initialPathnameRef = useRef(pathname)
   const t = useTranslations('Navigation.mobileMenu')
-  const { data: me } = useMeQuery()
-  const username = me?.name ?? ''
 
   // NOTE: 메뉴가 열릴 때 body 스크롤을 방지함
   useEffect(() => {
@@ -161,7 +158,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             title={t('fortune')}
           />
           <MobileMenuLink
-            href={`/@${username}/settings`}
+            href="/settings"
             icon={<Settings />}
             onClose={onClose}
             pathname={pathname}

@@ -185,7 +185,6 @@ export default function LibraryItemsClient({ initialSort, initialView, libraryId
         <AdultVerificationGate
           description={t('empty.adultDescription')}
           title={t('empty.adultTitle')}
-          username={me?.name}
         />
       </>
     )

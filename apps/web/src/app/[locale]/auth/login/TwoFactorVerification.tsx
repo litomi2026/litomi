@@ -12,7 +12,7 @@ import { twMerge } from 'tailwind-merge'
 
 import type { ProblemDetailsError } from '@/utils/api-request'
 
-import OneTimeCodeInput from '@/app/[locale]/(navigation)/(right-aside)/[name]/settings/two-factor/components/OneTimeCodeInput'
+import OneTimeCodeInput from '@/app/[locale]/(navigation)/(right-aside)/settings/two-factor/components/OneTimeCodeInput'
 
 import { verifyTwoFactorLogin } from './api'
 import { applyTwoFactorProblem, clearTwoFactorValidity } from './util'
