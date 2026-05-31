@@ -80,7 +80,7 @@ export default function ActiveFilters({ filters }: Props) {
     {
       condition: filters.minRating || filters.maxRating,
       label: t('rating'),
-      value: `${formatNumber(parseInt(filters.minRating ?? '0') / 100, '0', locale)} ~ ${formatNumber(parseInt(filters.maxRating ?? '0') / 100, '5', locale)}`,
+      value: `${formatNumber(parseInt(filters.minRating ?? '0', 10) / 100, '0', locale)} ~ ${formatNumber(parseInt(filters.maxRating ?? '0', 10) / 100, '5', locale)}`,
       onRemove: () => removeRangeFilter(SearchParam.MIN_RATING, SearchParam.MAX_RATING),
     },
     {

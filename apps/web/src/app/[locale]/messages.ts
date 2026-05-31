@@ -71,7 +71,7 @@ export const messages = {
           empty: '토렌트가 없어요',
           openAction: '열기',
           copyAction: '복사',
-          help: '<open>열기</open>를 누르면 토렌트 앱이 자동으로 실행되는데, 실행되지 않으면 <copy>복사</copy> 버튼으로 마그넷 주소를 복사해 주세요.',
+          help: '{openAction}를 누르면 토렌트 앱이 열려요. 열리지 않으면 {copyAction} 버튼으로 마그넷 주소를 복사해 주세요.',
           fileCount: ' (토렌트 파일 {count}개)',
         },
         tagOptions: {
@@ -258,7 +258,7 @@ export const messages = {
           empty: 'No torrents',
           openAction: 'Open',
           copyAction: 'Copy',
-          help: 'Press <open>Open</open> to launch your torrent app. If it does not open, use <copy>Copy</copy> to copy the magnet link.',
+          help: 'Press {openAction} to launch your torrent app. If it does not open, use {copyAction} to copy the magnet link.',
           fileCount: ' ({count, plural, one {# torrent file} other {# torrent files}})',
         },
         tagOptions: {

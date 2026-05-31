@@ -124,7 +124,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
 
       return [
         {
-          type: Number.parseInt(type),
+          type: Number.parseInt(type, 10),
           value: trimmedValue,
           isExcluded: excludedConditionIds.has(row.id),
         },

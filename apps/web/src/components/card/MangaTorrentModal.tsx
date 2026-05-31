@@ -149,9 +149,9 @@ export default function MangaTorrentModal() {
         ) : (
           <>
             <p className="text-xs text-zinc-500">
-              {t.rich('help', {
-                open: (chunks) => <span className="font-medium text-zinc-300">{chunks}</span>,
-                copy: (chunks) => <span className="font-medium text-zinc-300">{chunks}</span>,
+              {t('help', {
+                openAction: t('openAction'),
+                copyAction: t('copyAction'),
               })}
               {torrentCount >= 10 && t('fileCount', { count: torrentCount })}
             </p>
