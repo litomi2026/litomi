@@ -6,6 +6,7 @@ import { CookieKey } from '@litomi/http/cookie'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Cookies from 'js-cookie'
 import { Download, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -35,19 +36,53 @@ type Props = {
 }
 
 export default function DownloadButton({ manga, className = '' }: Props) {
-  const pathname = usePathname()
   const { isDownloading, downloadedCount, downloadAllImages, me } = useDownload({ manga })
   const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
+  const t = useTranslations('Common.mangaCard.download')
+  const pathname = usePathname()
 
   const { images = [] } = manga
   const totalCount = images.length
-  const progress = totalCount > 0 ? Math.round((throttledCount / totalCount) * 100) : 0
   const isDisabled = isDownloading || totalCount === 0
-  const label = getProgressText({ isDownloading, progress, throttledCount, totalCount })
-  const progressWidth = isDownloading ? `${Math.max(progress, 6)}%` : '0%'
   const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
   const shouldEnablePopunder = me === undefined ? !hasAuthHint : !isAdultVerified(me)
   const shouldAttachPopunder = shouldEnablePopunder && !isDisabled
+  const progress = totalCount > 0 ? Math.round((throttledCount / totalCount) * 100) : 0
+  const progressWidth = isDownloading ? `${Math.max(progress, 6)}%` : '0%'
+  const label = getProgressText()
+  const title = getButtonTitle(label)
+
+  function getProgressText() {
+    if (totalCount === 0) {
+      return t('noImages')
+    }
+
+    if (!isDownloading) {
+      return t('action')
+    }
+
+    if (progress === 0) {
+      return t('preparing')
+    }
+
+    if (progress >= 100) {
+      return t('saving')
+    }
+
+    return totalCount > 20 ? `${throttledCount}/${totalCount}` : `${progress}%`
+  }
+
+  function getButtonTitle(label: string) {
+    if (totalCount === 0) {
+      return t('noImagesTitle')
+    }
+
+    if (!isDownloading) {
+      return t('actionTitle', { count: totalCount })
+    }
+
+    return t('progressTitle', { label })
+  }
 
   useEffect(() => {
     if (!shouldAttachPopunder) {
@@ -67,7 +102,7 @@ export default function DownloadButton({ manga, className = '' }: Props) {
       className={twMerge(commonButtonStyle, shouldAttachPopunder && JUICY_POPUNDER_TRIGGER_CLASS, className)}
       disabled={isDisabled}
       onClick={downloadAllImages}
-      title={getButtonTitle({ isDownloading, label, totalCount })}
+      title={title}
       type="button"
     >
       {isDownloading && (
@@ -92,6 +127,8 @@ export default function DownloadButton({ manga, className = '' }: Props) {
 }
 
 export function DownloadButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
+  const t = useTranslations('Common.mangaCard.download')
+
   useEffect(() => {
     toast.error('다운로드 중 오류가 발생했어요')
   }, [error])
@@ -103,57 +140,7 @@ export function DownloadButtonError({ error, reset }: ErrorBoundaryFallbackProps
       type="button"
     >
       <Download className="size-4" />
-      <span>오류</span>
+      <span>{t('error')}</span>
     </button>
   )
-}
-
-function getButtonTitle({
-  isDownloading,
-  label,
-  totalCount,
-}: {
-  isDownloading: boolean
-  label: string
-  totalCount: number
-}) {
-  if (totalCount === 0) {
-    return '다운로드할 이미지가 없어요'
-  }
-
-  if (!isDownloading) {
-    return `이미지 ${totalCount}장 다운로드`
-  }
-
-  return `다운로드 진행 중 ${label}`
-}
-
-function getProgressText({
-  isDownloading,
-  progress,
-  throttledCount,
-  totalCount,
-}: {
-  isDownloading: boolean
-  progress: number
-  throttledCount: number
-  totalCount: number
-}) {
-  if (totalCount === 0) {
-    return '이미지 없음'
-  }
-
-  if (!isDownloading) {
-    return '다운로드'
-  }
-
-  if (progress === 0) {
-    return '준비 중'
-  }
-
-  if (progress >= 100) {
-    return '저장 중'
-  }
-
-  return totalCount > 20 ? `${throttledCount}/${totalCount}` : `${progress}%`
 }
