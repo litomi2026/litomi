@@ -5,7 +5,7 @@ import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { formatDistanceToNow, formatNumber } from '@litomi/std'
 import dayjs from 'dayjs'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import PostMangaCard from '@/app/[locale]/(navigation)/(right-aside)/post/[id]/PostMangaCard'
 import { getPostDetailHref } from '@/components/post/postHref'
@@ -23,15 +23,19 @@ type Props = {
 
 export default function PostCard({ post, showMangaCover }: Props) {
   const locale = useLocale()
+  const commonT = useTranslations('Community.common')
+  const postT = useTranslations('Community.post')
+  const postsT = useTranslations('Community.posts')
+
   const author = post.author
   const authorNickname = author?.nickname
   const content = post.content ?? ''
   const hasInternalURL = checkInternalURL(content)
 
   const socialStats = [
-    { Icon: MessageCircle, label: '댓글', value: post.commentCount },
-    { Icon: Repeat, label: '리포스트', value: post.repostCount },
-    { Icon: Heart, label: '좋아요', value: post.likeCount },
+    { Icon: MessageCircle, label: postT('comments'), value: post.commentCount },
+    { Icon: Repeat, label: postT('reposts'), value: post.repostCount },
+    { Icon: Heart, label: postT('likes'), value: post.likeCount },
   ].filter((stat) => stat.value > 0)
 
   const hasSocialStats = socialStats.length > 0
@@ -39,10 +43,10 @@ export default function PostCard({ post, showMangaCover }: Props) {
   const authorMeta = (
     <>
       <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-foreground">
-        {(authorNickname ?? '탈퇴').slice(0, 2)}
+        {(authorNickname ?? commonT('deletedUserShort')).slice(0, 2)}
       </Squircle>
       <div className="ml-1 min-w-0 flex-1 truncate" title={authorNickname}>
-        {authorNickname ?? <span className="text-zinc-400">탈퇴한 사용자예요</span>}
+        {authorNickname ?? <span className="text-zinc-400">{commonT('deletedUser')}</span>}
       </div>
       <div
         className="shrink-0 overflow-hidden text-xs text-zinc-400"
@@ -74,13 +78,13 @@ export default function PostCard({ post, showMangaCover }: Props) {
               href={getPostDetailHref(post.id)}
               prefetch={false}
             >
-              자세히 보기
+              {postsT('detailLink')}
             </Link>
           </div>
         ) : (
           <Link className="block p-3" href={getPostDetailHref(post.id)} prefetch={false}>
             <p className="min-w-0 whitespace-pre-wrap break-all text-sm leading-relaxed line-clamp-4 text-zinc-100">
-              {content || <span className="text-zinc-400">삭제된 글이에요</span>}
+              {content || <span className="text-zinc-400">{commonT('deletedPost')}</span>}
             </p>
           </Link>
         )}

@@ -2,7 +2,7 @@ import type { ReferredPost } from '@litomi/contracts'
 
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import { Link } from '@/i18n/navigation'
 
@@ -15,11 +15,13 @@ type Props = {
 }
 
 export default async function ReferredPostCard({ referredPost }: Props) {
+  const t = await getTranslations('Community.common')
+
   if (referredPost.isDeleted) {
     return (
       <div className="grid min-w-0 overflow-hidden rounded-2xl border-2 border-zinc-700 bg-zinc-950/50">
         <div className="grid gap-1 p-3">
-          <p className="min-w-0 whitespace-pre-wrap break-all text-zinc-500">글이 삭제됐어요</p>
+          <p className="min-w-0 whitespace-pre-wrap break-all text-zinc-500">{t('deletedPost')}</p>
         </div>
       </div>
     )
@@ -38,13 +40,13 @@ export default async function ReferredPostCard({ referredPost }: Props) {
         <div className="flex min-w-0 justify-between gap-1">
           <div className="flex min-w-0 gap-1 whitespace-nowrap">
             <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-foreground">
-              {author?.nickname.slice(0, 2) ?? '탈퇴'}
+              {author?.nickname.slice(0, 2) ?? t('deletedUserShort')}
             </Squircle>
             <div
               aria-disabled={!author}
               className="min-w-0 max-w-40 overflow-hidden font-semibold aria-disabled:text-zinc-500"
             >
-              {author?.nickname ?? '탈퇴한 사용자예요'}
+              {author?.nickname ?? t('deletedUser')}
             </div>
             <div className="flex min-w-0 items-center gap-1 text-zinc-500">
               {author && (
@@ -55,7 +57,7 @@ export default async function ReferredPostCard({ referredPost }: Props) {
               )}
               <div className="shrink-0 text-xs overflow-hidden" title={dayjs(createdAt).format('YYYY-MM-DD HH:mm')}>
                 {formatDistanceToNow(new Date(createdAt), locale)}
-                {updatedAt && <span> (수정됨)</span>}
+                {updatedAt && <span> ({t('edited')})</span>}
               </div>
             </div>
           </div>
@@ -63,7 +65,7 @@ export default async function ReferredPostCard({ referredPost }: Props) {
         {content ? (
           <p className="min-w-0 whitespace-pre-wrap break-all">{content}</p>
         ) : (
-          <p className="min-w-0 whitespace-pre-wrap break-all text-zinc-500">글이 삭제됐어요</p>
+          <p className="min-w-0 whitespace-pre-wrap break-all text-zinc-500">{t('deletedPost')}</p>
         )}
       </div>
       {imageURLs && <PostImages className="w-full max-h-[512px] overflow-hidden" urls={imageURLs} />}

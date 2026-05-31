@@ -4,7 +4,7 @@ import type { Post } from '@litomi/contracts'
 
 import { PostFilter } from '@litomi/domain/post/filter'
 import { Frown, Repeat } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
@@ -31,6 +31,7 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
 
   const allPosts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data])
   const masonryColumnCount = useMasonryColumnCount()
+  const t = useTranslations('Community.posts')
 
   const masonryColumns = useMemo(
     () => splitIntoMasonryColumns(allPosts, masonryColumnCount, (post) => estimatePostCardWeight(post, showMangaCover)),
@@ -87,12 +88,12 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
 
       {hasNextPage && (
         <output className="block py-4" ref={ref}>
-          {isFetchingNextPage && <span className="sr-only">글을 가져오는 중</span>}
+          {isFetchingNextPage && <span className="sr-only">{t('loading')}</span>}
         </output>
       )}
 
       {!hasNextPage && allPosts.length > 0 && (
-        <div className="py-8 text-center text-sm text-zinc-600 sm:py-12">모든 글을 확인했어요</div>
+        <div className="py-8 text-center text-sm text-zinc-600 sm:py-12">{t('endReached')}</div>
       )}
     </div>
   )
@@ -100,6 +101,8 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
 
 function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
   const locale = useLocale()
+  const t = useTranslations('Community.posts')
+  const commonT = useTranslations('Community.common')
   const [hasSystemIssues, setHasSystemIssues] = useState(false)
 
   return (
@@ -107,7 +110,7 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
       <div aria-label="error icon" className="mb-4" role="img">
         <Frown aria-hidden className="size-10 text-zinc-500" />
       </div>
-      <h3 className="text-lg font-semibold text-zinc-200 mb-2">글을 불러올 수 없어요</h3>
+      <h3 className="text-lg font-semibold text-zinc-200 mb-2">{t('loadErrorTitle')}</h3>
 
       <CloudProviderStatus locale={locale} onStatusUpdate={setHasSystemIssues} />
       <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
@@ -117,13 +120,13 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
         onClick={retry}
       >
         <Repeat className="size-4" />
-        <span>다시 시도</span>
+        <span>{commonT('retry')}</span>
       </button>
 
       <div className="mt-6 text-xs text-zinc-600">
-        문제가 지속되면{' '}
+        {t('persistentProblemPrefix')}{' '}
         <Link className="underline hover:text-zinc-400" href="/posts/all" prefetch={false}>
-          다른 글을 확인해보세요
+          {t('browseOtherPosts')}
         </Link>
       </div>
     </div>

@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/post/[id
 }
 
 export default async function Page({ params }: PageProps<'/[locale]/post/[id]'>) {
+  const t = await getTranslations('Community.post')
   const validation = postParamsSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -56,7 +57,7 @@ export default async function Page({ params }: PageProps<'/[locale]/post/[id]'>)
   return (
     <>
       {conversation.parentPosts.length > 0 && (
-        <section aria-label="상위 글">
+        <section aria-label={t('parentPostsLabel')}>
           {conversation.parentPosts.map((parentPost) => (
             <ParentPost key={parentPost.id} post={parentPost} />
           ))}
