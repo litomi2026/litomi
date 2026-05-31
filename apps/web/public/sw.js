@@ -1,4 +1,4 @@
-const CACHE_VERSION = '20250904'
+const CACHE_VERSION = '20260531'
 
 const CACHE_NAMES = {
   STATIC: `static-cache-${CACHE_VERSION}`,
@@ -8,7 +8,7 @@ const CACHE_NAMES = {
 }
 
 const PWA_CRITICAL_APP_SHELLS = [
-  '/ko',
+  '/',
   '/manifest.webmanifest',
   '/web-app-manifest-144x144.png',
   '/web-app-manifest-192x192.png',

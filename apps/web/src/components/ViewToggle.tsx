@@ -2,6 +2,7 @@
 
 import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { Image, LayoutGrid } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -10,8 +11,8 @@ import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { usePathname, useRouter } from '@/i18n/navigation'
 
 const VIEW_OPTIONS = [
-  { value: View.CARD, label: '카드', Icon: LayoutGrid },
-  { value: View.IMAGE, label: '그림', Icon: Image },
+  { value: View.CARD, labelKey: 'card', Icon: LayoutGrid },
+  { value: View.IMAGE, labelKey: 'image', Icon: Image },
 ] as const
 
 type Props = {
@@ -20,10 +21,11 @@ type Props = {
 }
 
 export default function ViewToggle({ className = '', initialView = View.CARD }: Props) {
+  const [view, setCurrentView] = useState<View>(initialView)
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const t = useTranslations('Search.view')
   const pathname = usePathname()
   const router = useRouter()
-  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([])
-  const [view, setCurrentView] = useState<View>(initialView)
 
   function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
     setCurrentView(getViewFromSearchParams(searchParams))
@@ -92,7 +94,7 @@ export default function ViewToggle({ className = '', initialView = View.CARD }: 
     <>
       <SearchParamsSync onUpdate={handleViewUpdate} />
       <div
-        aria-label="작품 보기 방식"
+        aria-label={t('label')}
         className={twMerge(
           'relative inline-grid grid-cols-2 overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900/92 p-0.5 text-sm text-zinc-400 shadow-sm',
           className,
@@ -104,26 +106,29 @@ export default function ViewToggle({ className = '', initialView = View.CARD }: 
           className="pointer-events-none absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-[0.65rem] border border-zinc-700 bg-zinc-800 shadow-sm transition ease-out"
           style={{ transform: `translateX(${view === View.IMAGE ? 100 : 0}%)` }}
         />
-        {VIEW_OPTIONS.map(({ value, label, Icon }, index) => (
-          <button
-            aria-checked={view === value}
-            aria-label={label}
-            className="relative z-10 inline-flex min-h-8 min-w-12 touch-manipulation select-none items-center justify-center gap-0.5 rounded-[0.65rem] px-2 py-1 text-sm font-medium text-zinc-400 transition hover:text-foreground active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-checked:font-semibold aria-checked:text-foreground sm:min-w-[3.4rem] sm:px-2.5"
-            key={value}
-            onClick={() => setView(value)}
-            onKeyDown={(event) => handleKeyDown(event, index)}
-            ref={(node) => {
-              buttonRefs.current[index] = node
-            }}
-            role="radio"
-            tabIndex={view === value ? 0 : -1}
-            title={label}
-            type="button"
-          >
-            <Icon aria-hidden className="hidden size-4 shrink-0 sm:block" strokeWidth={2.25} />
-            <span>{label}</span>
-          </button>
-        ))}
+        {VIEW_OPTIONS.map(({ value, labelKey, Icon }, index) => {
+          const label = t(labelKey)
+
+          return (
+            <button
+              aria-checked={view === value}
+              className="relative z-10 inline-flex min-h-8 min-w-12 touch-manipulation select-none items-center justify-center gap-0.5 rounded-[0.65rem] px-2 py-1 text-sm font-medium text-zinc-400 transition hover:text-foreground active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-checked:font-semibold aria-checked:text-foreground sm:min-w-[3.4rem] sm:px-2.5"
+              key={value}
+              onClick={() => setView(value)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+              ref={(node) => {
+                buttonRefs.current[index] = node
+              }}
+              role="radio"
+              tabIndex={view === value ? 0 : -1}
+              title={label}
+              type="button"
+            >
+              <Icon aria-hidden className="hidden size-4 shrink-0 sm:block" strokeWidth={2.25} />
+              <span>{label}</span>
+            </button>
+          )
+        })}
       </div>
     </>
   )
