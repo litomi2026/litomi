@@ -44,16 +44,15 @@ export function shouldRetryError(error: unknown, failureCount: number, maxRetrie
   return message.includes('fetch') || message.includes('network')
 }
 
-function getCachedUsername(queryClient: QueryClient): string | undefined {
+function showForbiddenProblemToast(queryClient: QueryClient) {
   const me = queryClient.getQueryData(QueryKeys.me)
-  if (!me || typeof me !== 'object') {
-    return undefined
+
+  if (me) {
+    showAdultVerificationRequiredToast()
+    return
   }
-  if (!('name' in me)) {
-    return undefined
-  }
-  const name = me.name
-  return typeof name === 'string' && name.length > 0 ? name : undefined
+
+  showLoginRequiredToast()
 }
 
 const queryClient = new QueryClient({
@@ -75,7 +74,7 @@ const queryClient = new QueryClient({
         if (error.status >= 500) {
           toast.error(error.message || '요청 처리 중 오류가 발생했어요')
         } else if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
-          showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
+          showForbiddenProblemToast(queryClient)
         } else if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
           showLiboExpansionRequiredToast(error.message)
         } else if (isAuthenticationRequiredError(error)) {
@@ -102,7 +101,7 @@ const queryClient = new QueryClient({
         }
 
         if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
-          showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
+          showForbiddenProblemToast(queryClient)
           return
         }
 

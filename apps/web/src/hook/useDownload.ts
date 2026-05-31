@@ -4,7 +4,7 @@ import { createLitomiProxyMangaImageURL, createThirdPartyMangaImageURLs } from '
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { showAdultVerificationRecommendedToast } from '@/lib/toast'
+import { showAdultVerificationRecommendedToast, showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { isAdultVerified } from '@/utils/adult-verification'
 import { downloadMultipleImages } from '@/utils/download'
@@ -31,11 +31,11 @@ export function useDownload({ manga }: Props) {
     }
 
     if (!isAdultVerified(me)) {
-      const toastOption = me
-        ? { message: '성인인증하면 다운로드 시 광고가 제거돼요', username: me.name }
-        : { message: '로그인하면 다운로드 시 광고가 제거돼요' }
-
-      showAdultVerificationRecommendedToast(toastOption)
+      if (me) {
+        showAdultVerificationRecommendedToast('성인인증하면 다운로드 시 광고가 제거돼요')
+      } else {
+        showLoginRequiredToast('로그인하면 다운로드 시 광고가 제거돼요')
+      }
     }
 
     setIsDownloading(true)

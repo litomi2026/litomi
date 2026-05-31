@@ -32,7 +32,7 @@ export default function useAdultAccessGuard() {
     }
 
     if (!canAccess) {
-      showAdultVerificationRequiredToast({ username: me.name })
+      showAdultVerificationRequiredToast()
       return false
     }
 
