@@ -1,6 +1,7 @@
 'use client'
 
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, Settings } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import Squircle from '@/components/ui/Squircle'
 import TooltipPopover from '@/components/ui/TooltipPopover'
@@ -12,6 +13,7 @@ import LogoutButton from './LogoutButton'
 
 export default function Profile() {
   const { data: me } = useMeQuery()
+  const t = useTranslations('Profile.navigation')
 
   if (me === undefined) {
     return <ProfileSkeleton />
@@ -44,7 +46,14 @@ export default function Profile() {
         </div>
         <MoreHorizontal className="shrink-0 hidden size-11 p-3 2xl:block" />
       </Link>
-      <div className="p-4 -ml-2 min-w-40 mb-2 rounded-2xl border-2 border-zinc-700 transition bg-zinc-900">
+      <div className="grid gap-1 p-4 -ml-2 min-w-40 mb-2 rounded-2xl border-2 border-zinc-700 transition bg-zinc-900">
+        <Link
+          className="group flex items-center gap-3 rounded-full p-2 text-sm font-semibold text-zinc-200 transition hover:bg-zinc-800 active:scale-95 sm:px-3 sm:py-2"
+          href="/settings"
+        >
+          <Settings className="w-5 transition" />
+          <span className="min-w-0 hidden md:block">{t('settings')}</span>
+        </Link>
         <LogoutButton />
       </div>
     </TooltipPopover>

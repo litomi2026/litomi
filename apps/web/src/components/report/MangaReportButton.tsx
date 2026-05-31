@@ -41,7 +41,6 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
   const [open, setOpen] = useState(false)
   const t = useTranslations('Common.report')
   const { guardAdultAccess, me } = useAdultAccessGuard()
-  const isAdultGateRequired = me?.adultVerification.required === true
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
@@ -108,10 +107,10 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
             />
           </div>
           <div className="grid gap-1 p-3 py-2 text-xs text-zinc-500">
-            {isAdultGateRequired && (
+            {me?.adultVerification.required && (
               <p>
                 {t('adultVerificationPrefix')}
-                <Link className="underline underline-offset-2" href={`/@${me?.name}/settings#adult`} prefetch={false}>
+                <Link className="underline underline-offset-2" href="/settings#adult" prefetch={false}>
                   {t('adultVerificationAction')}
                 </Link>
                 {t('adultVerificationSuffix')}
