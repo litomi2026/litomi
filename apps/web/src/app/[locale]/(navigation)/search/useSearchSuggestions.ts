@@ -1,5 +1,6 @@
 import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/search/policy'
-import { useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { useState } from 'react'
 
 import useDebouncedValue from '@/hook/useDebouncedValue'
 
@@ -14,6 +15,7 @@ type Props = {
 }
 
 export default function useSearchSuggestions({ keyword }: Props) {
+  const t = useTranslations('Search.suggestions')
   const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
 
   const debouncedKeyword = useDebouncedValue({
@@ -23,33 +25,36 @@ export default function useSearchSuggestions({ keyword }: Props) {
 
   const { data: suggestions = [], isLoading, isFetching } = useSearchSuggestionsQuery({ query: debouncedKeyword })
 
-  const defaultSuggestions = useMemo(() => {
+  const staticSuggestions = SEARCH_SUGGESTIONS.map((value) => ({
+    value,
+    label: t(`labels.${value}`),
+  }))
+
+  const searchSuggestions = getSearchSuggestions()
+
+  function getSearchSuggestions() {
     if (keyword.length >= MIN_SUGGESTION_QUERY_LENGTH) {
-      return []
+      if (suggestions.length > 0) {
+        return suggestions.slice(0, MAX_SEARCH_SUGGESTIONS)
+      }
+
+      return staticSuggestions
+        .filter((suggestion) => suggestion.value.startsWith(debouncedKeyword))
+        .slice(0, MAX_SEARCH_SUGGESTIONS)
     }
 
-    if (keyword === '') {
-      return SEARCH_SUGGESTIONS
-    } else {
-      return SEARCH_SUGGESTIONS.filter((filter) => filter.value.startsWith(keyword))
+    if (keyword) {
+      return staticSuggestions.filter((suggestion) => suggestion.value.startsWith(keyword))
     }
-  }, [keyword])
 
-  const searchSuggestions = useMemo(() => {
-    const a =
-      suggestions.length > 0
-        ? suggestions
-        : SEARCH_SUGGESTIONS.filter((filter) => filter.value.startsWith(debouncedKeyword))
+    return staticSuggestions
+  }
 
-    const suggestionMap = new Map(a.map((suggestion) => [suggestion.label, suggestion]))
-    return Array.from(suggestionMap.values()).slice(0, MAX_SEARCH_SUGGESTIONS)
-  }, [debouncedKeyword, suggestions])
-
-  const resetSelection = () => {
+  function resetSelection() {
     setSelectedIndex(INITIAL_SELECTED_INDEX)
   }
 
-  const navigateSelection = (direction: 'down' | 'up') => {
+  function navigateSelection(direction: 'down' | 'up') {
     if (direction === 'down') {
       setSelectedIndex((prev) => (prev < searchSuggestions.length - 1 ? prev + 1 : 0))
     } else {
@@ -60,7 +65,7 @@ export default function useSearchSuggestions({ keyword }: Props) {
   return {
     selectedIndex,
     setSelectedIndex,
-    searchSuggestions: keyword.length >= MIN_SUGGESTION_QUERY_LENGTH ? searchSuggestions : defaultSuggestions,
+    searchSuggestions,
     showHeader: keyword === '',
     resetSelection,
     navigateSelection,
