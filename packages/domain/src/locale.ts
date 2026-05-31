@@ -8,7 +8,7 @@ export enum Locale {
 
 export const DEFAULT_LOCALE = Locale.KO
 
-export const PUBLIC_LOCALES = [Locale.KO, Locale.EN] as const
+export const PUBLIC_LOCALES = [Locale.KO, Locale.EN, Locale.JA, Locale.ZH_CN] as const
 export type PublicLocale = (typeof PUBLIC_LOCALES)[number]
 export type PublicLocaleCode = `${PublicLocale}`
 

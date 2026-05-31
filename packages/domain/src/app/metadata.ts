@@ -19,4 +19,14 @@ export const APP_METADATA = {
       'A manga web viewer for browsing E-Hentai-style manga, doujinshi, and illustrations in one ad-free place.',
     shortName: 'Litomi',
   },
+  [Locale.JA]: {
+    applicationName: 'Litomi - 漫画ウェブビューア',
+    description: 'E-Hentai 系の漫画、同人誌、イラストを広告なしでまとめて楽しめる漫画ウェブビューアです。',
+    shortName: 'Litomi',
+  },
+  [Locale.ZH_CN]: {
+    applicationName: 'Litomi - 漫画网页阅读器',
+    description: '一个漫画网页阅读器，可在无广告环境中集中浏览 E-Hentai 系漫画、同人志和插画。',
+    shortName: 'Litomi',
+  },
 } satisfies Record<PublicLocale, { applicationName: string; description: string; shortName: string }>
