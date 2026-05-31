@@ -11,7 +11,6 @@ import dynamic from 'next/dynamic'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
-import AdultVerificationGate from '@/components/AdultVerificationGate'
 import StatusState from '@/components/status/StatusState'
 import CustomSelect from '@/components/ui/CustomSelect'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -39,7 +38,7 @@ export default function Censorships() {
   const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
   const queryClient = useQueryClient()
   const t = useTranslations('Censorship')
-  const { canAccess, guardAdultAccess, me } = useAdultAccessGuard()
+  const { guardAdultAccess } = useAdultAccessGuard()
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
     useCensorshipsInfiniteQuery()
@@ -122,16 +121,6 @@ export default function Censorships() {
 
     setDeletingIds(new Set(selectedIds))
     deleteMutation.mutate(Array.from(selectedIds))
-  }
-
-  if (me && !canAccess) {
-    return (
-      <AdultVerificationGate
-        description={t('list.adultGateDescription')}
-        title={t('list.adultGateTitle')}
-        username={me.name}
-      />
-    )
   }
 
   return (
