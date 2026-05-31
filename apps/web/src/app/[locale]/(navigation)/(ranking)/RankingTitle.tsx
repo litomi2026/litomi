@@ -2,25 +2,29 @@
 
 import { TOP_MANGA_PER_PAGE } from '@litomi/domain/ranking/policy'
 import { TrendingUp } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useParams } from 'next/navigation'
 
 import { usePathname } from '@/i18n/navigation'
 
-import { metricInfo, Params, periodLabels } from './common'
+import { DEFAULT_METRIC, DEFAULT_PERIOD, Params } from './common'
 
 export default function RankingTitle() {
   const { metric, period } = useParams<Params>()
   const pathname = usePathname()
-  const currentMetric = metricInfo[metric]
+  const t = useTranslations('RankingPage')
 
   function renderTitle() {
     if (pathname.startsWith('/ranking/donation')) {
-      return '후원 랭킹'
+      return t('donationTitle')
     }
     if (pathname === '/realtime') {
-      return '실시간 인기'
+      return t('realtimeTitle')
     }
-    return `${periodLabels[period] || '실시간'} ${currentMetric?.label ?? ''} 순위`.trim()
+    return t('title', {
+      metric: t(`metrics.${metric || DEFAULT_METRIC}`),
+      period: t(`periods.${period || DEFAULT_PERIOD}`),
+    })
   }
 
   return (

@@ -26,10 +26,12 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/realtime
   }
 }
 
-export default function RealtimePage() {
+export default async function RealtimePage() {
+  const t = await getTranslations('RealtimeRanking')
+
   return (
     <div className="grid gap-6 mx-auto max-w-screen-sm w-full p-4">
-      <h1 className="text-3xl font-bold sr-only">실시간 방문자 현황</h1>
+      <h1 className="text-3xl font-bold sr-only">{t('title')}</h1>
       <RealtimeToggleButton />
       <RealtimeRanking />
     </div>

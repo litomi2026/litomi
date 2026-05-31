@@ -4,6 +4,7 @@ import { signalUnknownPasskeyCredential } from '@litomi/auth/passkey'
 import { browserSupportsWebAuthnAutofill, startAuthentication } from '@simplewebauthn/browser'
 import { useMutation } from '@tanstack/react-query'
 import { Fingerprint, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { RefObject, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -36,6 +37,7 @@ type User = {
 export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turnstile }: Props) {
   const [supportsAutofill, setSupportsAutofill] = useState(false)
   const lastCredentialIdRef = useRef<string | null>(null)
+  const t = useTranslations('Auth.loginButton')
 
   const { mutate: verifyPasskey, isPending } = useMutation({
     mutationFn: verifyPasskeyAuthentication,
@@ -191,11 +193,11 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
       )}
       disabled={disabled || isPending}
       onClick={() => runPasskeyLogin('button')}
-      title="패스키로 로그인"
+      title={t('passkey')}
       type="button"
     >
       {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : <Fingerprint className="size-5 shrink-0" />}
-      <span>패스키로 로그인</span>
+      <span>{t('passkey')}</span>
     </button>
   )
 }

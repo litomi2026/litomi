@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useParams } from 'next/navigation'
 
 import LinkPending from '@/components/LinkPending'
@@ -20,6 +21,8 @@ type Props = {
 
 export default function MetricLink({ value }: Props) {
   const { metric, period } = useParams<Params>()
+  const t = useTranslations('RankingPage')
+
   const isSelected = metric === value
   const info = metricInfo[value]
 
@@ -33,7 +36,7 @@ export default function MetricLink({ value }: Props) {
       <LinkPending className="size-4">
         <info.icon className={getPrimaryRankingIconClassName(isSelected, info.selectedIconStyle)} />
       </LinkPending>
-      {info.label}
+      {t(`metrics.${value}`)}
     </Link>
   )
 }

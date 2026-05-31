@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 
 import LinkPending from '@/components/LinkPending'
+import LocaleSwitcher from '@/components/LocaleSwitcher'
 import SEOText from '@/components/SEOText'
 import { Link } from '@/i18n/navigation'
 
@@ -12,6 +13,7 @@ export default async function Home() {
 
   return (
     <main className="h-dvh flex flex-col items-center justify-center gap-5 mx-auto p-4 text-center">
+      <LocaleSwitcher className="fixed right-[calc(1rem+var(--safe-area-right))] top-[calc(0.75rem+var(--safe-area-top))] z-20" />
       <svg className="w-14 shrink-0" viewBox="0 0 100 100">
         <circle cx="50" cy="50" fill="white" r="45" stroke="red" strokeWidth="10" />
         <text

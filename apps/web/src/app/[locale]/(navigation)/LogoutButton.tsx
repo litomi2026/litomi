@@ -1,6 +1,7 @@
 'use client'
 
 import { LogOut } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -9,6 +10,7 @@ import useLogoutMutation from '@/query/useLogoutMutation'
 
 export default function LogoutButton() {
   const { mutate: logout, isPending } = useLogoutMutation()
+  const t = useTranslations('Profile.navigation')
 
   function handleLogout() {
     logout(undefined, {
@@ -33,7 +35,7 @@ export default function LogoutButton() {
     >
       <div className="flex justify-center items-center gap-3">
         <LogOut className="w-5 transition group-disabled:scale-100" />
-        <span className="min-w-0 hidden md:block">로그아웃</span>
+        <span className="min-w-0 hidden md:block">{t('logout')}</span>
       </div>
     </button>
   )

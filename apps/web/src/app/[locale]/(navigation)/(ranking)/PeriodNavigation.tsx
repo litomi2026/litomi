@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useParams } from 'next/navigation'
 
 import LinkPending from '@/components/LinkPending'
@@ -9,13 +10,14 @@ import {
   DEFAULT_METRIC,
   DEFAULT_PERIOD,
   Params,
-  periodLabels,
   PeriodParam,
+  periodParams,
   SECONDARY_RANKING_NAV_LINK_CLASSNAME,
 } from './common'
 
 export default function PeriodNavigation() {
   const { metric, period } = useParams<Params>()
+  const t = useTranslations('RankingPage')
   const show = Boolean(metric && period)
 
   if (!show) {
@@ -24,22 +26,17 @@ export default function PeriodNavigation() {
 
   return (
     <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap overscroll-none">
-      {Object.keys(periodLabels).map((value) => {
-        const periodValue = value as PeriodParam
-        const label = periodLabels[periodValue]
-
-        return (
-          <Link
-            aria-current={period === periodValue ? 'page' : undefined}
-            className={SECONDARY_RANKING_NAV_LINK_CLASSNAME}
-            href={`/ranking/${metric || DEFAULT_METRIC}/${periodValue || DEFAULT_PERIOD}`}
-            key={periodValue}
-            prefetch={false}
-          >
-            <LinkPending className="h-5 w-6">{label}</LinkPending>
-          </Link>
-        )
-      })}
+      {periodParams.map((periodValue: PeriodParam) => (
+        <Link
+          aria-current={period === periodValue ? 'page' : undefined}
+          className={SECONDARY_RANKING_NAV_LINK_CLASSNAME}
+          href={`/ranking/${metric || DEFAULT_METRIC}/${periodValue || DEFAULT_PERIOD}`}
+          key={periodValue}
+          prefetch={false}
+        >
+          <LinkPending className="h-5 w-6">{t(`periods.${periodValue}`)}</LinkPending>
+        </Link>
+      ))}
     </nav>
   )
 }

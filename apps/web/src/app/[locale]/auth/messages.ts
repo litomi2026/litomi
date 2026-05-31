@@ -16,6 +16,12 @@ export const messages = {
         },
       },
     },
+    Auth: {
+      loginButton: {
+        action: '로그인',
+        passkey: '패스키로 로그인',
+      },
+    },
   },
   [Locale.EN]: {
     Metadata: {
@@ -28,6 +34,12 @@ export const messages = {
           title: 'Sign up',
           description: 'Create a Litomi account to manage manga and libraries.',
         },
+      },
+    },
+    Auth: {
+      loginButton: {
+        action: 'Log in',
+        passkey: 'Log in with passkey',
       },
     },
   },

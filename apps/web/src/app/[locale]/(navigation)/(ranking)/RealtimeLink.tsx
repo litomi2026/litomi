@@ -1,6 +1,7 @@
 'use client'
 
 import { Activity } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import LinkPending from '@/components/LinkPending'
 import { Link } from '@/i18n/navigation'
@@ -11,6 +12,7 @@ import { getPrimaryRankingIconClassName, PRIMARY_RANKING_NAV_LINK_CLASSNAME } fr
 export default function RealtimeLink() {
   const pathname = usePathname()
   const isRealtimePage = pathname === '/realtime'
+  const t = useTranslations('RankingPage')
 
   return (
     <Link
@@ -22,7 +24,7 @@ export default function RealtimeLink() {
       <LinkPending className="size-4">
         <Activity className={getPrimaryRankingIconClassName(isRealtimePage, 'stroke-bold')} />
       </LinkPending>
-      실시간
+      {t('realtime')}
     </Link>
   )
 }

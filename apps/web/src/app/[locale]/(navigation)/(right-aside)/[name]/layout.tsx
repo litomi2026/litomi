@@ -1,4 +1,5 @@
 import { getUsernameFromParam } from '@litomi/std'
+import { getTranslations } from 'next-intl/server'
 import { twMerge } from 'tailwind-merge'
 
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
@@ -9,8 +10,10 @@ import UserProfile from './UserProfile'
 
 export default async function Layout({ params, children }: LayoutProps<'/[locale]/[name]'>) {
   const { name } = await params
+  const t = await getTranslations('Profile.navigation')
+
   const username = getUsernameFromParam(name)
-  const publicLinks = [{ href: `/@${username}`, label: '이야기' }]
+  const publicLinks = [{ href: `/@${username}`, label: t('stories') }]
 
   return (
     <main className="flex flex-col grow">
