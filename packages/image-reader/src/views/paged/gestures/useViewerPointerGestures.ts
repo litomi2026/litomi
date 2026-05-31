@@ -481,7 +481,6 @@ export default function useViewerPointerGestures({
     if (
       isIgnoredNonPrimaryPointer ||
       (e.pointerType === 'mouse' && e.button !== 0) ||
-      isScreenEdge(e.clientX) ||
       shouldIgnoreViewerGestureTarget(e.target)
     ) {
       ignoredPointerIdsRef.current.add(e.pointerId)
@@ -747,6 +746,11 @@ export default function useViewerPointerGestures({
       Math.abs(diffX) > Math.abs(diffY) * DIRECTION_LOCK_RATIO
 
     if (isHorizontalPageSwipe) {
+      if (isScreenEdge(gesture.startX)) {
+        resetGesture()
+        return
+      }
+
       if (canScrollAxis(gesture.scrollableAxes, 'x')) {
         resetGesture()
         return
