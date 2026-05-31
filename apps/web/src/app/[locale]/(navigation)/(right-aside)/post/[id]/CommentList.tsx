@@ -2,7 +2,7 @@ import type { PostComment } from '@litomi/db/query/post-comment'
 
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import { getPostDetailHref } from '@/components/post/postHref'
 import Squircle from '@/components/ui/Squircle'
@@ -14,25 +14,22 @@ type Props = {
 
 export default async function CommentList({ comments }: Props) {
   const locale = await getLocale()
+  const t = await getTranslations('Community')
 
   if (comments.length === 0) {
-    return (
-      <section className="border-t px-4 py-8 text-center text-sm text-zinc-500">
-        아직 답글이 없어요. 가장 먼저 남겨보세요.
-      </section>
-    )
+    return <section className="border-t px-4 py-8 text-center text-sm text-zinc-500">{t('post.emptyReplies')}</section>
   }
 
   return (
-    <section aria-label="답글" className="border-t">
-      <div className="px-4 pt-3 pb-2 text-sm font-semibold text-zinc-400">답글</div>
+    <section aria-label={t('post.replies')} className="border-t">
+      <div className="px-4 pt-3 pb-2 text-sm font-semibold text-zinc-400">{t('post.replies')}</div>
       <ol className="divide-y divide-zinc-900">
         {comments.map((comment) => {
           const author = comment.author
 
           const authorAvatar = (
             <Squircle className="w-10 shrink-0" src={author?.imageURL}>
-              {(author?.nickname ?? '탈퇴').slice(0, 2)}
+              {(author?.nickname ?? t('common.deletedUserShort')).slice(0, 2)}
             </Squircle>
           )
 
@@ -40,7 +37,7 @@ export default async function CommentList({ comments }: Props) {
             <div className="min-w-0">
               <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 leading-5">
                 <span className={`truncate text-[0.98rem] ${author ? 'font-bold text-zinc-100' : 'text-zinc-500'}`}>
-                  {author?.nickname ?? '탈퇴한 사용자예요'}
+                  {author?.nickname ?? t('common.deletedUser')}
                 </span>
                 {author && <span className="truncate text-[0.98rem] text-zinc-500">@{author.name}</span>}
               </div>
@@ -78,7 +75,7 @@ export default async function CommentList({ comments }: Props) {
                   href={getPostDetailHref(comment.id)}
                   prefetch={false}
                 >
-                  {comment.content ?? '삭제된 답글이에요'}
+                  {comment.content ?? t('post.deletedReply')}
                 </Link>
               </article>
             </li>

@@ -2,7 +2,7 @@ import type { Post as TPost } from '@litomi/contracts'
 
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { POST_DETAIL_CURRENT_ANCHOR_ID } from '@/components/post/postHref'
@@ -22,6 +22,7 @@ type Props = {
 
 export default async function Post({ post }: Props) {
   const locale = await getLocale()
+  const t = await getTranslations('Community')
   const author = post.author
   const referredPost = post.referredPost
 
@@ -45,7 +46,7 @@ export default async function Post({ post }: Props) {
           </Squircle>
           <div>
             <div aria-disabled={!author} className="font-semibold aria-disabled:text-zinc-500">
-              {author?.nickname ?? '탈퇴한 사용자예요'}
+              {author?.nickname ?? t('common.deletedUser')}
             </div>
             {author && <div className="text-zinc-500">@{author.name}</div>}
           </div>
@@ -75,10 +76,6 @@ export default async function Post({ post }: Props) {
       )}
       <div className="flex items-center gap-1 text-sm text-zinc-500">
         <span>{createdAtLabel}</span>
-        {/* <span>·</span>
-          <span className="text-sm">
-            <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수
-          </span> */}
       </div>
       <div className="flex justify-between gap-1 border-y px-2 py-1 text-sm">
         <div className="flex items-center">
@@ -114,11 +111,15 @@ export default async function Post({ post }: Props) {
           </button>
         </div>
       </div>
-      <PostCreationForm buttonText="답글" className="flex" parentPostId={post.id} placeholder="답글 게시하기">
+      <PostCreationForm
+        buttonText={t('post.reply')}
+        className="flex"
+        parentPostId={post.id}
+        placeholder={t('post.replyPlaceholder')}
+      >
         {author && (
           <p className="text-left">
-            <span className="font-semibold text-foreground">@{author.name} </span>
-            에게 보내는 답글
+            <span className="font-semibold text-foreground">{t('post.replyingTo', { name: author.name })}</span>
           </p>
         )}
       </PostCreationForm>
