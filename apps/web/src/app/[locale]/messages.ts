@@ -645,7 +645,7 @@ export const messages = {
         },
         donationCard: {
           title: '一起让莉托米成长',
-          description: '每月约需 450-700 元服务器费用。为了在没有有害广告的情况下运营服务，我们需要你的帮助。',
+          description: '每月约需 500-700 元服务器费用。为了在没有有害广告的情况下运营服务，我们需要你的帮助。',
           socialLabel: '社交',
           discordAction: '加入 Discord 服务器',
           donationLabel: '赞助',

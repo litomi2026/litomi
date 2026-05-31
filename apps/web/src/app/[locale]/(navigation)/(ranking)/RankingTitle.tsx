@@ -7,10 +7,10 @@ import { useParams } from 'next/navigation'
 
 import { usePathname } from '@/i18n/navigation'
 
-import { DEFAULT_METRIC, DEFAULT_PERIOD, Params } from './common'
+import { DEFAULT_METRIC, DEFAULT_PERIOD, isMetricParam, isPeriodParam, Params } from './common'
 
 export default function RankingTitle() {
-  const { metric, period } = useParams<Params>()
+  const { metric: metricParam, period: periodParam } = useParams<Params>()
   const pathname = usePathname()
   const t = useTranslations('RankingPage')
 
@@ -21,9 +21,13 @@ export default function RankingTitle() {
     if (pathname === '/realtime') {
       return t('realtimeTitle')
     }
+
+    const metric = isMetricParam(metricParam) ? metricParam : DEFAULT_METRIC
+    const period = isPeriodParam(periodParam) ? periodParam : DEFAULT_PERIOD
+
     return t('title', {
-      metric: t(`metrics.${metric || DEFAULT_METRIC}`),
-      period: t(`periods.${period || DEFAULT_PERIOD}`),
+      metric: t(`metrics.${metric}`),
+      period: t(`periods.${period}`),
     })
   }
 
