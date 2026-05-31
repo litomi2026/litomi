@@ -19,4 +19,20 @@ export const messages = {
       },
     },
   },
+  [Locale.JA]: {
+    Metadata: {
+      deterrence: {
+        title: '19歳未満の利用制限に関するお知らせ',
+        description: '未成年者と保護者向けに、利用制限と保護機能の設定方法を案内します。',
+      },
+    },
+  },
+  [Locale.ZH_CN]: {
+    Metadata: {
+      deterrence: {
+        title: '未满 19 岁访问限制说明',
+        description: '面向未成年人和监护人，说明访问限制与保护功能设置。',
+      },
+    },
+  },
 } satisfies LocalizedMessages

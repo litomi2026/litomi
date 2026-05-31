@@ -695,7 +695,7 @@ const transportOption = (curl: CurlInfo, transport: Transport) => {
   return transport
 }
 
-const curlQuote = (value: string) => `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`
+const curlQuote = (value: string) => `"${value.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`
 
 const writeCurlConfig = async (params: {
   configPath: string

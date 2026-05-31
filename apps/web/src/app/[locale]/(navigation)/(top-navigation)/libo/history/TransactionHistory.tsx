@@ -42,22 +42,26 @@ export default function TransactionHistory() {
   const isInitialLoading = !isAuthReady || (isLoggedIn && isTransactionsPending)
   const showEmpty = isAuthReady && isLoggedIn && !isInitialLoading && !isInitialError && transactions.length === 0
 
+  if (isAuthReady && !isLoggedIn) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-zinc-500">로그인하면 거래 내역을 확인할 수 있어요</p>
+      </div>
+    )
+  }
+
+  if (isAuthReady && isLoggedIn && !canAccess) {
+    return (
+      <AdultVerificationGate
+        description="거래 내역을 보려면 익명 성인인증이 필요해요"
+        title="성인인증이 필요해요"
+        username={me?.name}
+      />
+    )
+  }
+
   return (
     <div className="space-y-3">
-      {isAuthReady && !isLoggedIn && (
-        <div className="text-center py-8">
-          <p className="text-zinc-500">로그인하면 거래 내역을 확인할 수 있어요</p>
-        </div>
-      )}
-
-      {isAuthReady && isLoggedIn && !canAccess && (
-        <AdultVerificationGate
-          description="거래 내역을 보려면 익명 성인인증이 필요해요"
-          title="성인인증이 필요해요"
-          username={me?.name}
-        />
-      )}
-
       {isInitialError && (
         <TransactionHistoryErrorBanner error={error} isRetrying={isFetching} onRetry={() => refetch()} />
       )}

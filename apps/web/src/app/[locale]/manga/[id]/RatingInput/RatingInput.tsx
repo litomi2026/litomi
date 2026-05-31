@@ -175,7 +175,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       e.preventDefault()
       newRating = Math.min(5, rating + 1)
     } else if (e.key >= '1' && e.key <= '5') {
-      newRating = parseInt(e.key)
+      newRating = parseInt(e.key, 10)
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       if (rating > 0) {

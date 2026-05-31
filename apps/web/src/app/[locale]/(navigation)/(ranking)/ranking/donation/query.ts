@@ -16,7 +16,7 @@ export type DonationRankingItem = {
 function toDisplayValue(value: string) {
   const trimmed = value.trim()
   if (!trimmed) return ''
-  return trimmed.replace(/_/g, ' ')
+  return trimmed.replaceAll('_', ' ')
 }
 
 const TOP_RECIPIENTS = 50

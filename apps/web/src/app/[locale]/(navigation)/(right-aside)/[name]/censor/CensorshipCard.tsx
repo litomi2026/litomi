@@ -4,7 +4,7 @@ import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { Check, SquarePen } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { type ChangeEvent, type MouseEvent, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import CensorshipEditForm from './CensorshipEditForm'
@@ -29,7 +29,7 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
   const t = useTranslations('Censorship')
   const locale = useLocale()
 
-  function handleEdit(e: React.MouseEvent<HTMLButtonElement>) {
+  function handleEdit(e: MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
 
     if (!isDeleting) {
@@ -37,7 +37,7 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
     }
   }
 
-  function handleSelect(e: React.MouseEvent<HTMLButtonElement>) {
+  function handleSelect(e: ChangeEvent<HTMLInputElement>) {
     e.stopPropagation()
 
     if (!isDeleting) {
@@ -74,17 +74,18 @@ export default function CensorshipCard({ censorship, isSelected, isDeleting = fa
       )}
 
       <div className="flex min-h-16 items-center gap-3 px-4 py-3 sm:px-5">
-        <button
-          aria-checked={isSelected}
-          aria-label={t('card.selectAriaLabel', { value })}
-          className="flex size-5 shrink-0 items-center justify-center rounded-md border border-zinc-600 transition aria-checked:border-brand aria-checked:bg-brand"
-          disabled={isDeleting}
-          onClick={handleSelect}
-          role="checkbox"
-          type="button"
-        >
-          {isSelected && <Check className="size-3 text-background" />}
-        </button>
+        <span className="relative flex size-5 shrink-0 items-center justify-center">
+          <input
+            aria-label={t('card.selectAriaLabel', { value })}
+            checked={isSelected}
+            className="size-5 appearance-none rounded-md border border-zinc-600 transition cursor-pointer checked:border-brand checked:bg-brand disabled:cursor-not-allowed"
+            disabled={isDeleting}
+            onChange={handleSelect}
+            onClick={(e) => e.stopPropagation()}
+            type="checkbox"
+          />
+          {isSelected && <Check className="pointer-events-none absolute size-3 text-background" />}
+        </span>
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
             <span className="min-w-0 truncate text-sm font-semibold text-zinc-100 sm:text-base">{value}</span>

@@ -248,7 +248,7 @@ function isClearlyNotOfficialHost(url: string) {
 }
 
 function normalizeKeyForQuery(key: string) {
-  return key.replace(/_/g, ' ')
+  return key.replaceAll('_', ' ')
 }
 
 function parseArgs(argv: string[]): Args {
@@ -455,7 +455,7 @@ async function fetchJsonWithTimeout(url: string, timeoutMs: number): Promise<unk
 async function fetchTextViaCurl(url: string, timeoutMs: number) {
   const timeoutSeconds = Math.max(1, Math.ceil(timeoutMs / 1000))
 
-  const escape = (value: string) => value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+  const escape = (value: string) => value.replaceAll('\\', '\\\\').replaceAll('"', '\\"')
 
   // URL에 api_key가 포함될 수 있어서(쿼리 파라미터 방식), process args에 남기지 않도록 curl config stdin을 사용해요.
   const curlConfig = [

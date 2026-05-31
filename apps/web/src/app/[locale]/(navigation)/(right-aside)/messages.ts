@@ -165,4 +165,165 @@ export const messages = {
       },
     },
   },
+  [Locale.JA]: {
+    Metadata: {
+      community: {
+        posts: {
+          title: 'ストーリー',
+          description: 'Litomi ユーザーのストーリーやおすすめ投稿を確認しましょう。',
+        },
+        notification: {
+          title: '通知',
+          description: '新着作品とサービス通知を確認しましょう。',
+        },
+        post: {
+          deletedTitle: '削除された投稿です',
+        },
+        profile: {
+          indexTitle: 'ストーリー',
+          title: '{nickname} (@{name}) のストーリー',
+          missingTitle: '存在しないユーザー',
+          description: 'フォロー中 {followingCount}人 · フォロワー {followerCount}人',
+          missingDescription: '@{username} ユーザーが見つかりません。',
+        },
+        settings: {
+          title: '設定',
+          description: 'アカウント、セキュリティ、通知、言語、テーマ設定を管理します。',
+        },
+        censor: {
+          title: '検閲',
+          description: 'コンテンツの表示とブロックに関する設定を管理します。',
+        },
+      },
+    },
+    Profile: {
+      navigation: {
+        myLitomi: 'マイ Litomi',
+        logout: 'ログアウト',
+        stories: 'ストーリー',
+        censor: '検閲',
+        donations: '支援',
+        settings: '設定',
+      },
+      fallback: {
+        missingUser: '存在しないユーザー',
+        guest: 'ゲスト',
+        loginPrompt: 'ログインするとすべての機能を利用できます',
+        missingDescription: '存在しないユーザーです',
+      },
+      summary: {
+        joinedAt: '登録日: {date}',
+        following: 'フォロー中',
+        followers: 'フォロワー',
+      },
+      posts: {
+        createPlaceholder: '最初の投稿を書いてみましょう',
+        emptyTitle: 'まだ投稿がありません',
+        emptyDescription: '考えを共有して他のユーザーと交流しましょう',
+      },
+      notFound: {
+        title: 'ユーザーが見つかりません',
+        description: 'アドレスが変わったか、公開プロフィールが見つかりません',
+        action: 'ストーリー一覧へ',
+      },
+      edit: {
+        action: 'プロフィール編集',
+        imageAlt: 'プロフィール画像',
+        loginId: 'ログイン ID',
+        immutable: '変更できません',
+        name: '名前',
+        namePlaceholder: '一意の名前を入力してください',
+        nameHelp: 'この名前で見つけてもらえます (2-32文字)',
+        nickname: 'ニックネーム',
+        nicknamePlaceholder: '使用するニックネームを入力してください',
+        nicknameHelp: '他のユーザーに表示される名前です (2-32文字)',
+        imageURL: 'プロフィール画像 URL',
+        imageURLHelp: '画像は正方形をおすすめします',
+        propagationNotice:
+          'クラウド費用を抑えるためサーバートラフィックを制限しており、変更の反映に最大1分かかることがあります。',
+        reset: 'リセット',
+        save: '保存',
+      },
+    },
+  },
+  [Locale.ZH_CN]: {
+    Metadata: {
+      community: {
+        posts: {
+          title: '动态',
+          description: '查看 Litomi 用户发布的动态和推荐内容。',
+        },
+        notification: {
+          title: '通知',
+          description: '查看新作品和服务通知。',
+        },
+        post: {
+          deletedTitle: '这篇帖子已删除',
+        },
+        profile: {
+          indexTitle: '动态',
+          title: '{nickname} (@{name}) 的动态',
+          missingTitle: '用户不存在',
+          description: '正在关注 {followingCount} 人 · 关注者 {followerCount} 人',
+          missingDescription: '找不到 @{username} 用户。',
+        },
+        settings: {
+          title: '设置',
+          description: '管理账号、安全、通知、语言和主题设置。',
+        },
+        censor: {
+          title: '屏蔽',
+          description: '管理内容显示和屏蔽相关设置。',
+        },
+      },
+    },
+    Profile: {
+      navigation: {
+        myLitomi: '我的 Litomi',
+        logout: '退出登录',
+        stories: '动态',
+        censor: '屏蔽',
+        donations: '赞助',
+        settings: '设置',
+      },
+      fallback: {
+        missingUser: '用户不存在',
+        guest: '游客',
+        loginPrompt: '登录后即可使用全部功能',
+        missingDescription: '该用户不存在',
+      },
+      summary: {
+        joinedAt: '加入日期：{date}',
+        following: '正在关注',
+        followers: '关注者',
+      },
+      posts: {
+        createPlaceholder: '写下第一篇动态吧',
+        emptyTitle: '还没有发布过动态',
+        emptyDescription: '分享想法，与其他用户交流',
+      },
+      notFound: {
+        title: '找不到用户',
+        description: '地址可能已变更，或找不到公开资料',
+        action: '前往动态列表',
+      },
+      edit: {
+        action: '编辑资料',
+        imageAlt: '头像',
+        loginId: '登录 ID',
+        immutable: '无法更改',
+        name: '名称',
+        namePlaceholder: '请输入唯一名称',
+        nameHelp: '其他人可以通过该名称找到你（2-32 个字符）',
+        nickname: '昵称',
+        nicknamePlaceholder: '请输入要使用的昵称',
+        nicknameHelp: '显示给其他用户的名称（2-32 个字符）',
+        imageURL: '头像 URL',
+        imageURLHelp: '建议使用正方形图片',
+        propagationNotice: '为降低云成本，服务器流量受到限制，变更最多可能需要 1 分钟才会显示。',
+        reset: '重置',
+        save: '保存',
+      },
+    },
+  },
 } satisfies LocalizedMessages

@@ -85,7 +85,7 @@ export function clearProfileValidity(form: HTMLFormElement | null) {
 }
 
 export function encodePasskeyUserId(userId: number) {
-  return btoa(String(userId)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+  return btoa(String(userId)).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '')
 }
 
 export function getProfileProblemFieldErrors(problem: ProblemDetails): ProfileFieldErrors {

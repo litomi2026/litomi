@@ -266,5 +266,5 @@ export default function DonateButton({ manga, ...props }: Props) {
 }
 
 function formatRecipientText(value: string) {
-  return value.trim().replace(/_/g, ' ')
+  return value.trim().replaceAll('_', ' ')
 }

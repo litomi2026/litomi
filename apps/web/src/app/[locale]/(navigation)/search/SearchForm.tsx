@@ -38,7 +38,7 @@ export default function SearchForm({ className = '' }: Props) {
     useRecentSearches()
 
   const { selectedIndex, searchSuggestions, resetSelection, navigateSelection, isLoading, isFetching } =
-    useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/g, '') })
+    useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/, '') })
 
   const selectSuggestion = useCallback(
     (suggestion: SuggestionItem) => {

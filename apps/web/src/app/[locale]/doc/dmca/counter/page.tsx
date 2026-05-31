@@ -1,4 +1,4 @@
-import { Locale } from '@litomi/domain/locale'
+import { LOCALE_NATIVE_NAMES, PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 
@@ -30,26 +30,20 @@ export default async function Page({ params, searchParams }: PageProps<'/[locale
   return (
     <div className="p-4 md:p-8">
       <div className="max-w-prose mx-auto pb-safe px-safe">
-        <div className="flex items-center justify-end gap-2 text-xs">
+        <div className="flex flex-wrap items-center justify-end gap-2 text-xs">
           <span className="text-zinc-500">{t('languageLabel')}</span>
-          <Link
-            aria-current={locale === Locale.KO ? 'page' : undefined}
-            className="rounded-full border border-zinc-800 px-2 py-1 hover:bg-zinc-900"
-            href="/doc/dmca/counter"
-            locale={Locale.KO}
-            prefetch={false}
-          >
-            한국어
-          </Link>
-          <Link
-            aria-current={locale === Locale.EN ? 'page' : undefined}
-            className="rounded-full border border-zinc-800 px-2 py-1 hover:bg-zinc-900"
-            href="/doc/dmca/counter"
-            locale={Locale.EN}
-            prefetch={false}
-          >
-            English
-          </Link>
+          {PUBLIC_LOCALES.map((code) => (
+            <Link
+              aria-current={locale === code ? 'page' : undefined}
+              className="rounded-full border border-zinc-800 px-2 py-1 hover:bg-zinc-900"
+              href="/doc/dmca/counter"
+              key={code}
+              locale={code}
+              prefetch={false}
+            >
+              {LOCALE_NATIVE_NAMES[code]}
+            </Link>
+          ))}
         </div>
         <div className="mt-4 flex items-start justify-between gap-4">
           <div>

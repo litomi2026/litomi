@@ -286,7 +286,7 @@ function createTermScoreClause(field: string, value: string, boost: number) {
 }
 
 function createVersionedIndexName(alias: string) {
-  const timestamp = new Date().toISOString().replaceAll(/\D/g, '').slice(0, 17)
+  const timestamp = new Date().toISOString().replace(/\D/g, '').slice(0, 17)
   return `${alias}-${timestamp}`
 }
 

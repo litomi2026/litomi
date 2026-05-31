@@ -4,8 +4,7 @@ import { ComponentProps, ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import LinkPending from '@/components/LinkPending'
-import { Link } from '@/i18n/navigation'
-import { usePathname } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 
 type Props = ComponentProps<typeof Link> & {
   className?: string

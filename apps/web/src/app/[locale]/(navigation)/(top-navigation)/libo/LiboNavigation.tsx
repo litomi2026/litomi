@@ -6,8 +6,7 @@ import { useLocale } from 'next-intl'
 import { type ReactNode } from 'react'
 
 import LinkPending from '@/components/LinkPending'
-import { Link } from '@/i18n/navigation'
-import { usePathname } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
 
 import { LIBO_PAGE_LAYOUT } from './constant'

@@ -111,4 +111,112 @@ export const messages = {
       },
     },
   },
+  [Locale.JA]: {
+    Metadata: {
+      explore: {
+        fortune: {
+          title: '今日の運勢',
+          description: '今日の雰囲気と流れを気軽に確認してみましょう。',
+        },
+        new: {
+          title: '新着',
+          pagedTitle: '新着作品 {page}ページ',
+          description: '新しく追加された作品を新着順で確認しましょう。',
+        },
+        random: {
+          title: 'ランダム',
+          description: 'ランダムにおすすめされる作品を見てみましょう。',
+        },
+        recommendManga: {
+          title: 'おすすめ作品',
+          description: 'Litomi がおすすめする作品を確認しましょう。',
+        },
+        tag: {
+          title: 'タグ',
+          description: 'タグ別に作品を探しましょう。',
+        },
+      },
+    },
+    TopNavigation: {
+      actions: {
+        label: 'クイック移動',
+        menu: 'メニューを開く',
+        recommend: 'おすすめ',
+        new: '新着',
+        random: 'ランダム',
+        liveCam: 'ライブセックスカム',
+        randomRefresh: {
+          loadingTitle: '読み込み中...',
+          cooldownTitle: '少し待ってからお試しください',
+          refreshTitle: '更新',
+          loading: '読み込み中',
+          seconds: '{seconds}秒',
+          refresh: '更新',
+        },
+      },
+      footer: {
+        installApp: 'アプリをインストール',
+        terms: '利用規約',
+        privacy: 'プライバシーポリシー',
+        ageRestriction: '年齢制限ルール',
+        notice2257: '2257 通知',
+        dmca: '著作権/DMCA',
+        youthProtection: '青少年保護ポリシー',
+      },
+    },
+  },
+  [Locale.ZH_CN]: {
+    Metadata: {
+      explore: {
+        fortune: {
+          title: '今日运势',
+          description: '轻松看看今天的氛围和走势。',
+        },
+        new: {
+          title: '新作',
+          pagedTitle: '新作第 {page} 页',
+          description: '按最新顺序查看新添加的作品。',
+        },
+        random: {
+          title: '随机',
+          description: '浏览随机推荐的作品。',
+        },
+        recommendManga: {
+          title: '推荐作品',
+          description: '查看 Litomi 推荐的作品。',
+        },
+        tag: {
+          title: '标签',
+          description: '按标签探索作品。',
+        },
+      },
+    },
+    TopNavigation: {
+      actions: {
+        label: '快速导航',
+        menu: '打开菜单',
+        recommend: '推荐',
+        new: '新作',
+        random: '随机',
+        liveCam: '性爱视频直播',
+        randomRefresh: {
+          loadingTitle: '加载中...',
+          cooldownTitle: '请稍后再试',
+          refreshTitle: '刷新',
+          loading: '加载中',
+          seconds: '{seconds}秒',
+          refresh: '刷新',
+        },
+      },
+      footer: {
+        installApp: '安装应用',
+        terms: '使用条款',
+        privacy: '隐私政策',
+        ageRestriction: '年龄限制规则',
+        notice2257: '2257 声明',
+        dmca: '版权/DMCA',
+        youthProtection: '青少年保护政策',
+      },
+    },
+  },
 } satisfies LocalizedMessages

@@ -1290,7 +1290,7 @@ class FireworkEngine {
   }
 
   private skyLightingSelector(): number {
-    return parseInt(this.config.skyLighting)
+    return parseInt(this.config.skyLighting, 10)
   }
 
   private startAnimation() {
@@ -1510,7 +1510,7 @@ class FireworkEngine {
   }
 
   private updateQuality() {
-    this.quality = parseInt(this.config.quality)
+    this.quality = parseInt(this.config.quality, 10)
     this.isLowQuality = this.quality === QUALITY_LOW
     this.isHighQuality = this.quality === QUALITY_HIGH
     this.Spark.drawWidth = this.quality === QUALITY_HIGH ? 0.75 : 1

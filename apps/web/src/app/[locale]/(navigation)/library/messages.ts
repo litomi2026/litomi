@@ -55,4 +55,56 @@ export const messages = {
       },
     },
   },
+  [Locale.JA]: {
+    Metadata: {
+      library: {
+        index: {
+          title: '公開ライブラリ',
+          description: '他のユーザーが公開した作品ライブラリを見てみましょう。',
+        },
+        detail: {
+          title: 'ライブラリ',
+          description: '公開ライブラリに保存された作品を確認しましょう。',
+        },
+        bookmark: {
+          title: 'ブックマーク',
+          description: 'ブックマークした作品をまとめて見られます。',
+        },
+        history: {
+          title: '閲覧履歴',
+          description: '最近閲覧した作品の履歴を確認しましょう。',
+        },
+        rating: {
+          title: '作品評価',
+          description: '評価した作品を見直して整理しましょう。',
+        },
+      },
+    },
+  },
+  [Locale.ZH_CN]: {
+    Metadata: {
+      library: {
+        index: {
+          title: '公开书库',
+          description: '浏览其他用户公开分享的作品书库。',
+        },
+        detail: {
+          title: '书库',
+          description: '查看公开书库中收藏的作品。',
+        },
+        bookmark: {
+          title: '书签',
+          description: '集中查看你已加入书签的作品。',
+        },
+        history: {
+          title: '阅读记录',
+          description: '查看你最近阅读过的作品记录。',
+        },
+        rating: {
+          title: '作品评分',
+          description: '查看并整理你评分过的作品。',
+        },
+      },
+    },
+  },
 } satisfies LocalizedMessages

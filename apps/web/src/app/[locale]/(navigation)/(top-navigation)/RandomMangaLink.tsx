@@ -5,8 +5,7 @@ import { Dices } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
-import { Link } from '@/i18n/navigation'
-import { usePathname } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 
 import RandomRefreshButton from './RandomRefreshButton'
