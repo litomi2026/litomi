@@ -23,7 +23,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
-import { cache, Suspense } from 'react'
+import { Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
@@ -101,13 +101,22 @@ export default async function SettingsPage() {
     )
   }
 
-  const [me, settings, [isTwoFactorEnabled]] = await Promise.all([
-    getMe(userId),
-    readUserSettings(userId),
+  const [[me], [isTwoFactorEnabled], settings] = await Promise.all([
+    db
+      .select({
+        id: userTable.id,
+        loginId: userTable.loginId,
+        name: userTable.name,
+        nickname: userTable.nickname,
+        imageURL: userTable.imageURL,
+      })
+      .from(userTable)
+      .where(eq(userTable.id, userId)),
     db
       .select({ userId: twoFactorTable.userId })
       .from(twoFactorTable)
       .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt))),
+    readUserSettings(userId),
   ])
 
   return (
@@ -242,21 +251,6 @@ export default async function SettingsPage() {
     </>
   )
 }
-
-const getMe = cache(async (userId: number) => {
-  const [user] = await db
-    .select({
-      id: userTable.id,
-      loginId: userTable.loginId,
-      name: userTable.name,
-      nickname: userTable.nickname,
-      imageURL: userTable.imageURL,
-    })
-    .from(userTable)
-    .where(eq(userTable.id, userId))
-
-  return user
-})
 
 function LoadingFallback() {
   return (
