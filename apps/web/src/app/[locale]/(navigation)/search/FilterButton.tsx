@@ -13,7 +13,7 @@ import useMounted from '@/hook/useMounted'
 
 import type { FilterState } from './constants'
 
-import { FILTER_KEYS, isDateFilter } from './constants'
+import { FILTER_KEYS, isDateFilter, SearchParam } from './constants'
 
 // NOTE: 필터 패널은 사용자가 필터를 클릭할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
 const FilterPanel = dynamic(() => import('./FilterPanel'))
@@ -40,7 +40,7 @@ export default function FilterButton() {
 
       if (isDateFilter(key)) {
         initialState[key] = formatLocalDate(new Date(Number(value) * 1000))
-      } else if (key === 'min-rating' || key === 'max-rating') {
+      } else if (key === SearchParam.MIN_RATING || key === SearchParam.MAX_RATING) {
         initialState[key] = (Number(value) / 100).toFixed(1)
       } else {
         initialState[key] = value

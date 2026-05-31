@@ -16,6 +16,7 @@ import { useRouter } from '@/i18n/navigation'
 import { ProblemDetailsError } from '@/utils/api-request'
 
 import { createNotificationCriteria } from './api'
+import { SearchParam } from './constants'
 import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 
 export default function KeywordSubscriptionButton() {
@@ -44,7 +45,7 @@ export default function KeywordSubscriptionButton() {
   const isPending = createCriteriaMutation.isPending
 
   function handleUpdateQuery(searchParams: ReadonlyURLSearchParams) {
-    setQuery(parseSearchQuery(searchParams.get('query') ?? ''))
+    setQuery(parseSearchQuery(searchParams.get(SearchParam.QUERY) ?? ''))
   }
 
   function handleToggleSubscription() {

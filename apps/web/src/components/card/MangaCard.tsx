@@ -6,6 +6,8 @@ import { ExternalLink } from 'lucide-react'
 import { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
+
 import BookmarkButton, { BookmarkButtonError } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
 import MangaCardDate from './MangaCardDate'
@@ -65,8 +67,8 @@ export default function MangaCard({
   const viewerLink = getViewerLink(id)
   const config = VARIANT_CONFIG[variant]
   const parsedSearchParams = new URLSearchParams(searchParams)
-  const query = parsedSearchParams.get('query')
-  const isDefaultSearchSort = !parsedSearchParams.get('sort')
+  const query = parsedSearchParams.get(SearchPageSearchParam.QUERY)
+  const isDefaultSearchSort = !parsedSearchParams.get(SearchPageSearchParam.SORT)
 
   return (
     <article

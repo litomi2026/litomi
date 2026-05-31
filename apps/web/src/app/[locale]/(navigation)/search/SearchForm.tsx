@@ -11,6 +11,7 @@ import { twMerge } from 'tailwind-merge'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { usePathname, useRouter } from '@/i18n/navigation'
 
+import { SearchParam } from './constants'
 import SuggestionDropdown, { type SuggestionItem } from './SuggestionDropdown'
 import useRecentSearches from './useRecentSearches'
 import useSearchSuggestions from './useSearchSuggestions'
@@ -184,13 +185,13 @@ export default function SearchForm({ className = '' }: Props) {
       const convertedQuery = keyword.trim()
       const translatedKeyword = translateKoreanToEnglish(convertedQuery)
       const finalQuery = translatedKeyword || convertedQuery
-      params.set('query', finalQuery)
+      params.set(SearchParam.QUERY, finalQuery)
 
       if (isAutoSaveEnabled) {
         saveRecentSearch(finalQuery)
       }
     } else {
-      params.delete('query')
+      params.delete(SearchParam.QUERY)
     }
 
     startSearching(() => {
@@ -199,7 +200,7 @@ export default function SearchForm({ className = '' }: Props) {
   }
 
   function handleSearchParamUpdate(searchParams: ReadonlyURLSearchParams) {
-    const query = searchParams.get('query') ?? ''
+    const query = searchParams.get(SearchParam.QUERY) ?? ''
     setKeyword(query)
     setCursorPosition(query.length)
   }
@@ -264,7 +265,7 @@ export default function SearchForm({ className = '' }: Props) {
               '[&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0',
             )}
             maxLength={MAX_SEARCH_QUERY_LENGTH}
-            name="query"
+            name={SearchParam.QUERY}
             onBlur={handleBlur}
             onChange={handleInputChange}
             onFocus={handleFocus}

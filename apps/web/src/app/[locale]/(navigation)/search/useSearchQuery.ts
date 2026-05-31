@@ -8,7 +8,7 @@ import { useSearchParams } from 'next/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
+import { SearchParam, SearchSort } from './constants'
 
 const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 
@@ -19,7 +19,7 @@ type GETProxyKSearchResponse = {
 
 export function useSearchQuery() {
   const searchParams = useSearchParams()
-  const whitelisted = whitelistSearchParams(searchParams, SEARCH_PAGE_SEARCH_PARAMS)
+  const whitelisted = whitelistSearchParams(searchParams, Object.values(SearchParam))
 
   return useInfiniteQuery<GETProxyKSearchResponse, Error>({
     queryKey: QueryKeys.search(whitelisted),
@@ -28,14 +28,14 @@ export function useSearchQuery() {
 
       if (pageParam) {
         const cursor = pageParam.toString()
-        if (searchParamsWithCursor.get('sort') === 'popular') {
+        if (searchParamsWithCursor.get(SearchParam.SORT) === SearchSort.POPULAR) {
           const [nextViews, nextViewsId] = cursor.split('-')
-          searchParamsWithCursor.set('next-views', nextViews)
-          searchParamsWithCursor.set('next-views-id', nextViewsId)
+          searchParamsWithCursor.set(SearchParam.NEXT_VIEWS, nextViews)
+          searchParamsWithCursor.set(SearchParam.NEXT_VIEWS_ID, nextViewsId)
         } else {
-          searchParamsWithCursor.set('next-id', cursor)
+          searchParamsWithCursor.set(SearchParam.NEXT_ID, cursor)
         }
-        searchParamsWithCursor.delete('skip')
+        searchParamsWithCursor.delete(SearchParam.SKIP)
       }
 
       const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)

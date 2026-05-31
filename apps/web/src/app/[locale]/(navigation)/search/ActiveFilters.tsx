@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { useRouter } from '@/i18n/navigation'
 
-import { FILTER_KEYS } from './constants'
+import { FILTER_KEYS, SearchParam, SearchSort } from './constants'
 import { formatDate, formatNumber } from './utils'
 
 type Props = {
@@ -33,6 +33,12 @@ export default function ActiveFilters({ filters }: Props) {
   const t = useTranslations('Search.activeFilter')
   const sortT = useTranslations('Search.filter.sortOptions')
 
+  const sortLabels: Partial<Record<string, string>> = {
+    [SearchSort.RANDOM]: sortT('random'),
+    [SearchSort.OLDEST]: sortT('oldest'),
+    [SearchSort.POPULAR]: sortT('popular'),
+  }
+
   function removeFilter(key: string) {
     const params = new URLSearchParams(window.location.search)
     params.delete(key)
@@ -56,45 +62,44 @@ export default function ActiveFilters({ filters }: Props) {
     {
       condition: filters.sort,
       label: t('sort'),
-      value:
-        filters.sort && { random: sortT('random'), id_asc: sortT('oldest'), popular: sortT('popular') }[filters.sort],
-      onRemove: () => removeFilter('sort'),
+      value: filters.sort ? sortLabels[filters.sort] : undefined,
+      onRemove: () => removeFilter(SearchParam.SORT),
     },
     {
       condition: filters.minView || filters.maxView,
       label: t('view'),
       value: `${formatNumber(filters.minView, '0', locale)} ~ ${formatNumber(filters.maxView, '∞', locale)}`,
-      onRemove: () => removeRangeFilter('min-view', 'max-view'),
+      onRemove: () => removeRangeFilter(SearchParam.MIN_VIEW, SearchParam.MAX_VIEW),
     },
     {
       condition: filters.minPage || filters.maxPage,
       label: t('page'),
       value: `${formatNumber(filters.minPage, '1', locale)} ~ ${formatNumber(filters.maxPage, '∞', locale)}`,
-      onRemove: () => removeRangeFilter('min-page', 'max-page'),
+      onRemove: () => removeRangeFilter(SearchParam.MIN_PAGE, SearchParam.MAX_PAGE),
     },
     {
       condition: filters.minRating || filters.maxRating,
       label: t('rating'),
       value: `${formatNumber(parseInt(filters.minRating ?? '0') / 100, '0', locale)} ~ ${formatNumber(parseInt(filters.maxRating ?? '0') / 100, '5', locale)}`,
-      onRemove: () => removeRangeFilter('min-rating', 'max-rating'),
+      onRemove: () => removeRangeFilter(SearchParam.MIN_RATING, SearchParam.MAX_RATING),
     },
     {
       condition: filters.from || filters.to,
       label: t('date'),
       value: `${filters.from ? formatDate(filters.from, locale) : t('beginning')} ~ ${filters.to ? formatDate(filters.to, locale) : t('today')}`,
-      onRemove: () => removeRangeFilter('from', 'to'),
+      onRemove: () => removeRangeFilter(SearchParam.FROM, SearchParam.TO),
     },
     {
       condition: filters.skip && Number(filters.skip) > 0,
       label: t('skip'),
       value: t('countSuffix', { count: formatNumber(filters.skip, '0', locale) }),
-      onRemove: () => removeFilter('skip'),
+      onRemove: () => removeFilter(SearchParam.SKIP),
     },
     {
       condition: filters.nextId,
       label: t('nextId'),
       value: filters.nextId,
-      onRemove: () => removeFilter('next-id'),
+      onRemove: () => removeFilter(SearchParam.NEXT_ID),
     },
   ]
 

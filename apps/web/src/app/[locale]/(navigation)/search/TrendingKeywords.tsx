@@ -8,6 +8,7 @@ import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useS
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
+import { SearchParam } from './constants'
 import KeywordLink from './KeywordLink'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
@@ -169,7 +170,7 @@ export default function TrendingKeywords({ view }: Props) {
   }
 
   function createKeywordHref(value: string) {
-    const searchParams = new URLSearchParams({ query: value })
+    const searchParams = new URLSearchParams({ [SearchParam.QUERY]: value })
 
     if (view === View.IMAGE) {
       searchParams.set('view', View.IMAGE)

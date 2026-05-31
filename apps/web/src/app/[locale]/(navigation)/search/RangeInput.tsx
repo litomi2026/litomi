@@ -8,8 +8,8 @@ type BaseProps = {
   maxValue: string
   onMinChange: (value: string) => void
   onMaxChange: (value: string) => void
-  minPlaceholder?: string
-  maxPlaceholder?: string
+  minPlaceholder: string
+  maxPlaceholder: string
   className?: string
 }
 
@@ -34,8 +34,8 @@ export default function RangeInput({
   maxValue,
   onMinChange,
   onMaxChange,
-  minPlaceholder = '최소',
-  maxPlaceholder = '최대',
+  minPlaceholder,
+  maxPlaceholder,
   className,
   ...props
 }: RangeInputProps) {

@@ -25,6 +25,7 @@ import { ProblemDetailsError } from '@/utils/api-request'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
+import { SearchParam, SearchSort } from './constants'
 
 const Error400 = dynamic(() => import('./Error400'))
 const SearchResultError = dynamic(() => import('./SearchResultError'))
@@ -72,7 +73,7 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
   const visibleMangas = mangas.filter(isVisible)
   const measurementKey = `${searchParamsString}:${heavySignature}`
   const scrollRestorationKey = `search-results:${measurementKey}`
-  const showRefreshButton = searchParams.get('sort') === 'random'
+  const showRefreshButton = searchParams.get(SearchParam.SORT) === SearchSort.RANDOM
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
 

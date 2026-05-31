@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Copy, EyeOff, Loader2, Search } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import BottomSheet, { BottomSheetItem } from '@/components/ui/BottomSheet'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import useClipboard from '@/hook/useClipboard'
@@ -83,10 +84,10 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
 
   function handleExcludeSearch() {
     const searchParams = new URLSearchParams(window.location.search)
-    const query = searchParams.get('query') ?? ''
+    const query = searchParams.get(SearchPageSearchParam.QUERY) ?? ''
     const excludeTag = `-${fullTag}`
     const newQuery = query ? `${query} ${excludeTag}` : excludeTag
-    searchParams.set('query', newQuery)
+    searchParams.set(SearchPageSearchParam.QUERY, newQuery)
     router.push(`/search?${searchParams}`)
     onClose()
   }

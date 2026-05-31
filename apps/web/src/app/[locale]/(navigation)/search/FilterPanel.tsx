@@ -19,9 +19,9 @@ import { twMerge } from 'tailwind-merge'
 import CustomSelect from '@/components/ui/CustomSelect'
 import { usePathname, useRouter } from '@/i18n/navigation'
 
-import type { FilterKey, FilterState } from './constants'
+import type { FilterKey, FilterState, SearchSortParamValue } from './constants'
 
-import { FILTER_CONFIG, FILTER_KEYS, isDateFilter } from './constants'
+import { DEFAULT_SEARCH_SORT, FILTER_CONFIG, FILTER_KEYS, isDateFilter, SearchParam, SearchSort } from './constants'
 import RangeInput from './RangeInput'
 import RatingSlider from './RatingSlider'
 
@@ -39,15 +39,17 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
   const t = useTranslations('Search.filter')
   const [isPending, startTransition] = useTransition()
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
-  const isLatestSort = filters.sort === undefined || filters.sort === ''
-  const isPopularSort = filters.sort === 'popular'
-  const isOldestSort = filters.sort === 'id_asc'
 
-  const sortOptions = [
-    { value: '', label: t('sortOptions.latest') },
-    { value: 'popular', label: t('sortOptions.popular') },
-    { value: 'random', label: t('sortOptions.random') },
-    { value: 'id_asc', label: t('sortOptions.oldest') },
+  const sort = filters[SearchParam.SORT]
+  const isLatestSort = sort === undefined || sort === DEFAULT_SEARCH_SORT
+  const isPopularSort = sort === SearchSort.POPULAR
+  const isOldestSort = sort === SearchSort.OLDEST
+
+  const sortOptions: { label: string; value: SearchSortParamValue }[] = [
+    { value: DEFAULT_SEARCH_SORT, label: t('sortOptions.latest') },
+    { value: SearchSort.POPULAR, label: t('sortOptions.popular') },
+    { value: SearchSort.RANDOM, label: t('sortOptions.random') },
+    { value: SearchSort.OLDEST, label: t('sortOptions.oldest') },
   ]
 
   const datePresets = [
@@ -80,7 +82,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           return
         }
 
-        if (key === 'min-rating' || key === 'max-rating') {
+        if (key === SearchParam.MIN_RATING || key === SearchParam.MAX_RATING) {
           params.set(key, Math.round(parseFloat(value) * 100).toString())
           return
         }
@@ -92,7 +94,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
         const date = new Date(value)
 
-        if (key === 'to') {
+        if (key === SearchParam.TO) {
           date.setHours(23, 59, 59, 999)
         } else {
           date.setHours(0, 0, 0, 0)
@@ -104,14 +106,14 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
       // Clean up pagination params
       if (isPopularSort) {
-        params.delete('next-id')
+        params.delete(SearchParam.NEXT_ID)
       } else if (isLatestSort || isOldestSort) {
-        params.delete('next-views')
-        params.delete('next-views-id')
+        params.delete(SearchParam.NEXT_VIEWS)
+        params.delete(SearchParam.NEXT_VIEWS_ID)
       } else {
-        params.delete('next-id')
-        params.delete('next-views')
-        params.delete('next-views-id')
+        params.delete(SearchParam.NEXT_ID)
+        params.delete(SearchParam.NEXT_VIEWS)
+        params.delete(SearchParam.NEXT_VIEWS_ID)
       }
 
       startTransition(() => {
@@ -196,54 +198,54 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         >
           {/* Sort */}
           <div>
-            <label htmlFor="sort">{t('labels.sort')}</label>
+            <label htmlFor={SearchParam.SORT}>{t('labels.sort')}</label>
             <CustomSelect
-              id="sort"
-              onChange={(value) => handleFilterChange('sort', value)}
+              id={SearchParam.SORT}
+              onChange={(value) => handleFilterChange(SearchParam.SORT, value)}
               options={sortOptions}
-              value={filters.sort ?? ''}
+              value={filters[SearchParam.SORT] ?? DEFAULT_SEARCH_SORT}
             />
-            {filters.sort === 'random' && <p className="mt-1 text-xs text-zinc-500">{t('randomSortNotice')}</p>}
+            {sort === SearchSort.RANDOM && <p className="mt-1 text-xs text-zinc-500">{t('randomSortNotice')}</p>}
           </div>
 
           {/* View count range */}
           <RangeInput
             label={t('labels.view')}
-            max={FILTER_CONFIG['max-view'].max}
-            maxId="max-view"
+            max={FILTER_CONFIG[SearchParam.MAX_VIEW].max}
+            maxId={SearchParam.MAX_VIEW}
             maxPlaceholder={t('maxPlaceholder')}
-            maxValue={filters['max-view'] ?? ''}
-            min={FILTER_CONFIG['min-view'].min}
-            minId="min-view"
+            maxValue={filters[SearchParam.MAX_VIEW] ?? ''}
+            min={FILTER_CONFIG[SearchParam.MIN_VIEW].min}
+            minId={SearchParam.MIN_VIEW}
             minPlaceholder="0"
-            minValue={filters['min-view'] ?? ''}
-            onMaxChange={(value) => handleFilterChange('max-view', value)}
-            onMinChange={(value) => handleFilterChange('min-view', value)}
+            minValue={filters[SearchParam.MIN_VIEW] ?? ''}
+            onMaxChange={(value) => handleFilterChange(SearchParam.MAX_VIEW, value)}
+            onMinChange={(value) => handleFilterChange(SearchParam.MIN_VIEW, value)}
             type="number"
           />
 
           {/* Page count range */}
           <RangeInput
             label={t('labels.page')}
-            max={FILTER_CONFIG['max-page'].max}
-            maxId="max-page"
+            max={FILTER_CONFIG[SearchParam.MAX_PAGE].max}
+            maxId={SearchParam.MAX_PAGE}
             maxPlaceholder="10,000"
-            maxValue={filters['max-page'] ?? ''}
-            min={FILTER_CONFIG['min-page'].min}
-            minId="min-page"
+            maxValue={filters[SearchParam.MAX_PAGE] ?? ''}
+            min={FILTER_CONFIG[SearchParam.MIN_PAGE].min}
+            minId={SearchParam.MIN_PAGE}
             minPlaceholder="1"
-            minValue={filters['min-page'] ?? ''}
-            onMaxChange={(value) => handleFilterChange('max-page', value)}
-            onMinChange={(value) => handleFilterChange('min-page', value)}
+            minValue={filters[SearchParam.MIN_PAGE] ?? ''}
+            onMaxChange={(value) => handleFilterChange(SearchParam.MAX_PAGE, value)}
+            onMinChange={(value) => handleFilterChange(SearchParam.MIN_PAGE, value)}
             type="number"
           />
 
           {/* Rating range */}
           <RatingSlider
-            maxValue={filters['max-rating']}
-            minValue={filters['min-rating']}
-            onMaxChange={(value) => handleFilterChange('max-rating', value)}
-            onMinChange={(value) => handleFilterChange('min-rating', value)}
+            maxValue={filters[SearchParam.MAX_RATING]}
+            minValue={filters[SearchParam.MIN_RATING]}
+            onMaxChange={(value) => handleFilterChange(SearchParam.MAX_RATING, value)}
+            onMinChange={(value) => handleFilterChange(SearchParam.MIN_RATING, value)}
           />
 
           {/* Date range */}
@@ -251,12 +253,12 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             label={t('labels.date')}
             maxId="to-date"
             maxPlaceholder={t('placeholders.dateTo')}
-            maxValue={filters.to ?? ''}
+            maxValue={filters[SearchParam.TO] ?? ''}
             minId="from-date"
             minPlaceholder={t('placeholders.dateFrom')}
-            minValue={filters.from ?? ''}
-            onMaxChange={(value) => handleFilterChange('to', value)}
-            onMinChange={(value) => handleFilterChange('from', value)}
+            minValue={filters[SearchParam.FROM] ?? ''}
+            onMaxChange={(value) => handleFilterChange(SearchParam.TO, value)}
+            onMinChange={(value) => handleFilterChange(SearchParam.FROM, value)}
             type="date"
           />
 
@@ -271,14 +273,14 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                   key={label}
                   onClick={() => {
                     if (days === -1) {
-                      handleFilterChange('from', '')
-                      handleFilterChange('to', '')
+                      handleFilterChange(SearchParam.FROM, '')
+                      handleFilterChange(SearchParam.TO, '')
                     } else {
                       const to = new Date()
                       const from = new Date()
                       from.setDate(from.getDate() - days)
-                      handleFilterChange('from', formatLocalDate(from))
-                      handleFilterChange('to', formatLocalDate(to))
+                      handleFilterChange(SearchParam.FROM, formatLocalDate(from))
+                      handleFilterChange(SearchParam.TO, formatLocalDate(to))
                     }
                   }}
                   type="button"
@@ -292,16 +294,16 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           {/* Cursor Pagination Fields */}
           {isPopularSort ? (
             <div>
-              <label htmlFor="next-views">{t('labels.nextViews')}</label>
+              <label htmlFor={SearchParam.NEXT_VIEWS}>{t('labels.nextViews')}</label>
               <input
                 className="w-full"
-                id="next-views"
-                min={FILTER_CONFIG['next-views'].min}
-                onChange={(e) => handleFilterChange('next-views', e.target.value)}
+                id={SearchParam.NEXT_VIEWS}
+                min={FILTER_CONFIG[SearchParam.NEXT_VIEWS].min}
+                onChange={(e) => handleFilterChange(SearchParam.NEXT_VIEWS, e.target.value)}
                 pattern="[0-9]*"
                 placeholder={t('placeholders.nextViews')}
-                type={FILTER_CONFIG['next-views'].type}
-                value={filters['next-views'] ?? ''}
+                type={FILTER_CONFIG[SearchParam.NEXT_VIEWS].type}
+                value={filters[SearchParam.NEXT_VIEWS] ?? ''}
               />
               <p className="mt-1 text-xs text-zinc-500">{t('popularCursorNotice')}</p>
             </div>
@@ -310,22 +312,22 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
               <label
                 aria-disabled={!(isLatestSort || isOldestSort)}
                 className="aria-disabled:opacity-50"
-                htmlFor="next-id"
+                htmlFor={SearchParam.NEXT_ID}
               >
                 {t('labels.nextId')}
               </label>
               <input
                 className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!(isLatestSort || isOldestSort)}
-                id="next-id"
+                id={SearchParam.NEXT_ID}
                 inputMode="numeric"
                 maxLength={5}
-                onChange={(e) => handleFilterChange('next-id', e.target.value.replace(/\D/g, ''))}
+                onChange={(e) => handleFilterChange(SearchParam.NEXT_ID, e.target.value.replace(/\D/g, ''))}
                 pattern="[1-9][0-9]*"
                 placeholder={t('placeholders.nextId')}
                 title={isLatestSort || isOldestSort ? '' : t('idCursorDisabledTitle')}
                 type="text"
-                value={filters['next-id'] ?? ''}
+                value={filters[SearchParam.NEXT_ID] ?? ''}
               />
               <p aria-disabled={!(isLatestSort || isOldestSort)} className="mt-1 text-xs text-zinc-500">
                 {isLatestSort || isOldestSort ? t('idCursorNotice') : t('idCursorDisabledNotice')}
@@ -335,17 +337,17 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
           {/* Skip */}
           <div>
-            <label htmlFor="skip">{t('labels.skip')}</label>
+            <label htmlFor={SearchParam.SKIP}>{t('labels.skip')}</label>
             <input
               className="w-full"
-              id="skip"
-              min={FILTER_CONFIG['skip'].min}
-              onChange={(e) => handleFilterChange('skip', e.target.value)}
+              id={SearchParam.SKIP}
+              min={FILTER_CONFIG[SearchParam.SKIP].min}
+              onChange={(e) => handleFilterChange(SearchParam.SKIP, e.target.value)}
               pattern="[0-9]*"
               placeholder={t('placeholders.skip')}
               title={t('skipTitle')}
-              type={FILTER_CONFIG['skip'].type}
-              value={filters['skip'] ?? ''}
+              type={FILTER_CONFIG[SearchParam.SKIP].type}
+              value={filters[SearchParam.SKIP] ?? ''}
             />
             <p className="mt-1 text-xs text-zinc-500">{t('skipNotice')}</p>
           </div>

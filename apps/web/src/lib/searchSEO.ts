@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 
 import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
+
 type SearchParamsInput = Record<string, string | string[] | undefined>
 
 type SearchSEO = {
@@ -30,17 +32,17 @@ export function getSearchCanonicalPath(query: string) {
     return '/search'
   }
 
-  const params = new URLSearchParams({ query: normalizedQuery })
+  const params = new URLSearchParams({ [SearchPageSearchParam.QUERY]: normalizedQuery })
   return `/search?${params}`
 }
 
 export function getSearchSEO(searchParams: SearchParamsInput, copy: SearchSEOCopy): SearchSEO {
-  const query = normalizeSearchQuery(readSearchParamValue(searchParams.query))
+  const query = normalizeSearchQuery(readSearchParamValue(searchParams[SearchPageSearchParam.QUERY]))
   const canonicalQuery = query.toLowerCase()
   const displayQuery = formatSearchQuery(query, copy.landingQueryLabels).slice(0, MAX_SEARCH_META_QUERY_LENGTH)
 
   const hasNonIndexableParams = Object.entries(searchParams).some(([key, value]) => {
-    return key !== 'query' && readSearchParamValue(value) !== ''
+    return key !== SearchPageSearchParam.QUERY && readSearchParamValue(value) !== ''
   })
 
   const idSearchCanonical = getIdSearchCanonicalPath(canonicalQuery)

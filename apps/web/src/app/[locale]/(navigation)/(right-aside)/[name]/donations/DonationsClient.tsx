@@ -9,6 +9,7 @@ import { HeartHandshake, Trash2 } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import StatusState from '@/components/status/StatusState'
 import { Link } from '@/i18n/navigation'
 import { ProblemDetailsError } from '@/utils/api-request'
@@ -59,7 +60,10 @@ export default function DonationsClient() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground">후원</p>
-                      <p className="text-xs text-zinc-500" title={createdAt.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}>
+                      <p
+                        className="text-xs text-zinc-500"
+                        title={createdAt.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
+                      >
                         {distanceLabel ? `${distanceLabel} · ${dateLabel}` : dateLabel}
                       </p>
                     </div>
@@ -94,7 +98,7 @@ export default function DonationsClient() {
                         const recipientTypeLabel = getRecipientTypeLabel(recipient.type)
                         const recipientQueryValue = getRecipientSearchValue(recipient)
                         const href = recipientQueryValue
-                          ? `/search?${new URLSearchParams({ query: recipientQueryValue })}`
+                          ? `/search?${new URLSearchParams({ [SearchPageSearchParam.QUERY]: recipientQueryValue })}`
                           : '/search'
 
                         return (

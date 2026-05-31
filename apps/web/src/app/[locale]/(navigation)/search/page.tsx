@@ -12,6 +12,7 @@ import { generateLocalizedMetadata } from '@/lib/metadata'
 import { getSearchSEO } from '@/lib/searchSEO'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
+import { SearchParam } from './constants'
 import SearchResult, { SearchResultLoading } from './SearchResult'
 import TrendingKeywords from './TrendingKeywords'
 
@@ -54,22 +55,22 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
   }
 
   const filters = {
-    sort: params.get('sort'),
-    minView: params.get('min-view'),
-    maxView: params.get('max-view'),
-    minPage: params.get('min-page'),
-    maxPage: params.get('max-page'),
-    minRating: params.get('min-rating'),
-    maxRating: params.get('max-rating'),
-    from: params.get('from'),
-    to: params.get('to'),
-    nextId: params.get('next-id'),
-    skip: params.get('skip'),
+    sort: params.get(SearchParam.SORT),
+    minView: params.get(SearchParam.MIN_VIEW),
+    maxView: params.get(SearchParam.MAX_VIEW),
+    minPage: params.get(SearchParam.MIN_PAGE),
+    maxPage: params.get(SearchParam.MAX_PAGE),
+    minRating: params.get(SearchParam.MIN_RATING),
+    maxRating: params.get(SearchParam.MAX_RATING),
+    from: params.get(SearchParam.FROM),
+    to: params.get(SearchParam.TO),
+    nextId: params.get(SearchParam.NEXT_ID),
+    skip: params.get(SearchParam.SKIP),
   }
 
   const view = getViewFromSearchParams(params)
   const hasActiveFilters = Boolean(Object.values(filters).some(Boolean))
-  const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.SEARCH, params.get('query'))
+  const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.SEARCH, params.get(SearchParam.QUERY))
 
   const header = (
     <div className="flex flex-col gap-2 p-2 pb-0">

@@ -1,6 +1,8 @@
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
+
 export function getSearchFilter(filterPattern: string, searchParams = '') {
   const params = new URLSearchParams(searchParams)
-  const query = params.get('query') ?? ''
+  const query = params.get(SearchPageSearchParam.QUERY) ?? ''
   const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const wordBoundaryRegex = new RegExp(`\\b${escapedPattern}\\b`)
   const isActive = wordBoundaryRegex.test(query)
@@ -11,7 +13,7 @@ export function getSearchFilter(filterPattern: string, searchParams = '') {
       ? `${query} ${filterPattern}`
       : filterPattern
 
-  params.set('query', newQuery)
+  params.set(SearchPageSearchParam.QUERY, newQuery)
 
   return {
     href: `/search?${params}`,

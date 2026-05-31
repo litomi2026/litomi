@@ -3,6 +3,7 @@
 import { Loader2, Search } from 'lucide-react'
 import { useCallback, useTransition } from 'react'
 
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import { useRouter } from '@/i18n/navigation'
 
 type Props = {
@@ -18,7 +19,7 @@ export default function SearchFromHereButton({ className = '', isDefaultSort, ma
 
   const handleSearchFromHere = useCallback(() => {
     const params = new URLSearchParams(window.location.search)
-    params.set('next-id', (mangaId + 1).toString())
+    params.set(SearchPageSearchParam.NEXT_ID, (mangaId + 1).toString())
 
     startTransition(() => {
       router.push(`/search?${params}`)

@@ -4,6 +4,7 @@ import { formatNumber } from '@litomi/std'
 import { Heart } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
 
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { Link } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
@@ -79,7 +80,7 @@ async function DonationRankingBody() {
           <td className="p-0">
             <Link
               className="flex items-center gap-2 min-w-0 px-4 py-3 hover:underline"
-              href={`/search?${new URLSearchParams({ query: `${item.type}:${item.value}` })}`}
+              href={`/search?${new URLSearchParams({ [SearchPageSearchParam.QUERY]: `${item.type}:${item.value}` })}`}
               prefetch={false}
               title={t('searchTitle')}
             >
