@@ -1,6 +1,7 @@
 'use client'
 
 import { LibraryBig, MessageCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import BookmarkButton from '@/components/card/BookmarkButton'
@@ -21,9 +22,10 @@ type Props = {
 }
 
 export default function LastPage({ manga }: Props) {
-  const { id: mangaId } = manga
-  const { data: me } = useMeQuery()
   const { open: openLibraryModal } = useLibraryModal()
+  const t = useTranslations('MangaViewer.lastPage')
+  const { data: me } = useMeQuery()
+  const { id: mangaId } = manga
 
   function handleOpenLibraryModal(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
@@ -65,7 +67,7 @@ export default function LastPage({ manga }: Props) {
             type="button"
           >
             <LibraryBig className="size-4" />
-            <span>서재 추가</span>
+            <span>{t('addToLibrary')}</span>
           </button>
           <Link
             className={twMerge(
@@ -78,7 +80,7 @@ export default function LastPage({ manga }: Props) {
             prefetch={false}
           >
             <MessageCircle className="size-4" />
-            작품 후기
+            {t('reviews')}
           </Link>
         </div>
         <div className="grid grid-cols-2 justify-center gap-2">

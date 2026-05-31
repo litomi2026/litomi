@@ -6,7 +6,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 import { formatNumber } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import ms from 'ms'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { ComponentProps, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -31,45 +31,46 @@ type Recipient = {
 const PRESETS = [10, 50, 100, 300, 500] as const
 
 export default function DonateButton({ manga, ...props }: Props) {
-  const locale = useLocale()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState<number>(100)
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
   const [localMessage, setLocalMessage] = useState<string | null>(null)
-
+  const locale = useLocale()
   const router = useRouter()
   const { data: me } = useMeQuery()
-  const { data: points, error: pointsError, isLoading: isPointsLoading } = usePointsQuery({ enabled: open })
+  const t = useTranslations('MangaViewer.donate')
   const donateMutation = usePointsDonateMutation()
+  const { data: points, error: pointsError, isLoading: isPointsLoading } = usePointsQuery({ enabled: open })
 
   const remainingBalance = points ? points.balance - amount : null
   const isAmountValid = Number.isFinite(amount) && amount > 0 && Number.isInteger(amount)
+  const selectedLookup = new Set(selectedKeys)
+
   const canSubmit =
     selectedKeys.length > 0 && isAmountValid && !donateMutation.isPending && (points ? points.balance >= amount : true)
 
-  function toKey(r: Pick<Recipient, 'type' | 'value'>) {
-    return `${r.type}:${r.value}`
+  const recipients: Recipient[] = [
+    ...(manga.artists?.map((artist) => ({
+      type: 'artist' as const,
+      value: artist.value,
+      label: artist.label,
+    })) ?? []),
+    ...(manga.group?.map((group) => ({
+      type: 'group' as const,
+      value: group.value,
+      label: group.label,
+    })) ?? []),
+  ]
+
+  const selectedRecipients: Recipient[] = recipients.filter((r) => selectedLookup.has(`${r.type}:${r.value}`))
+
+  function getRecipientTypeLabel(type: Recipient['type']) {
+    return type === 'artist' ? t('recipientType.artist') : t('recipientType.group')
   }
 
   function getDisplayLabel(r: Recipient) {
-    const trimmedLabel = r.label.trim()
-    const isGenericLabel = trimmedLabel === (r.type === 'artist' ? '작가' : '단체') || trimmedLabel === '그룹'
-
-    if (trimmedLabel && !isGenericLabel) {
-      return trimmedLabel
-    }
-
-    const normalized = r.value.trim().replace(/^(artist:|group:)/, '')
-    return normalized ? normalized.replace(/_/g, ' ') : r.type === 'artist' ? '작가' : '단체'
+    return formatRecipientText(r.label) || formatRecipientText(r.value) || getRecipientTypeLabel(r.type)
   }
-
-  const recipients: Recipient[] = [
-    ...(manga.artists?.map((artist) => ({ type: 'artist' as const, value: artist.value, label: artist.label })) ?? []),
-    ...(manga.group?.map((group) => ({ type: 'group' as const, value: group.value, label: group.label })) ?? []),
-  ]
-
-  const selectedLookup = new Set(selectedKeys)
-  const selectedRecipients: Recipient[] = recipients.filter((r) => selectedLookup.has(toKey(r)))
 
   function toggleRecipient(key: string) {
     setSelectedKeys((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
@@ -85,7 +86,7 @@ export default function DonateButton({ manga, ...props }: Props) {
     if (!error) return null
     if (error instanceof ProblemDetailsError) return error.problem.detail ?? error.problem.title
     if (error instanceof Error) return error.message
-    return '문제가 발생했어요'
+    return t('fallbackError')
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -93,11 +94,12 @@ export default function DonateButton({ manga, ...props }: Props) {
     setLocalMessage(null)
 
     if (!isAmountValid) {
-      setLocalMessage('후원 금액을 확인해 주세요')
+      setLocalMessage(t('invalidAmount'))
       return
     }
+
     if (selectedRecipients.length === 0) {
-      setLocalMessage('후원 대상을 선택해 주세요')
+      setLocalMessage(t('missingRecipient'))
       return
     }
 
@@ -126,7 +128,7 @@ export default function DonateButton({ manga, ...props }: Props) {
         })
       },
       onError: (err) => {
-        setLocalMessage(getErrorMessage(err) ?? '후원에 실패했어요')
+        setLocalMessage(getErrorMessage(err) ?? t('failure'))
       },
     })
   }
@@ -135,19 +137,23 @@ export default function DonateButton({ manga, ...props }: Props) {
 
   return (
     <>
-      <button aria-label="후원하기" onClick={() => setOpen(true)} {...props}>
-        후원
+      <button aria-label={t('action')} onClick={() => setOpen(true)} {...props}>
+        {t('shortAction')}
       </button>
-      <Dialog ariaLabel="후원하기" onClose={close} open={open}>
+      <Dialog ariaLabel={t('action')} onClose={close} open={open}>
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
-          <DialogHeader onClose={close} title="작가 후원하기" />
+          <DialogHeader onClose={close} title={t('title')} />
           <DialogBody className="flex flex-col gap-4 sm:p-6">
-            획득한 리보로 좋아하는 작품의 창작자를 후원해보세요.
+            {t('description')}
             <div className="rounded-xl bg-zinc-900 p-4 border border-zinc-800">
               <div className="flex items-center justify-between gap-3">
-                <p className="text-sm text-zinc-400">현재 리보</p>
+                <p className="text-sm text-zinc-400">{t('currentBalance')}</p>
                 <p className="text-sm font-semibold text-foreground tabular-nums">
-                  {isPointsLoading ? '불러오는 중' : points ? `${formatNumber(points.balance, locale)} 리보` : '-'}
+                  {isPointsLoading
+                    ? t('loading')
+                    : points
+                      ? t('liboAmount', { amount: formatNumber(points.balance, locale) })
+                      : '-'}
                 </p>
               </div>
               {points && (
@@ -155,21 +161,22 @@ export default function DonateButton({ manga, ...props }: Props) {
                   aria-current={remainingBalance !== null && remainingBalance < 0}
                   className="mt-2 text-xs text-zinc-500 aria-current:text-red-400"
                 >
-                  후원 후 남는 리보:{' '}
-                  {remainingBalance === null ? '-' : `${formatNumber(Math.max(0, remainingBalance), locale)} 리보`}
+                  {t('remainingBalance', {
+                    amount: remainingBalance === null ? '-' : formatNumber(Math.max(0, remainingBalance), locale),
+                  })}
                 </p>
               )}
               {pointsErrorMessage && <p className="mt-2 text-xs text-red-400">{pointsErrorMessage}</p>}
             </div>
             <div className="grid gap-2">
-              <p className="text-sm font-semibold text-foreground">대상</p>
+              <p className="text-sm font-semibold text-foreground">{t('recipient')}</p>
               {recipients.length === 0 ? (
-                <p className="text-sm text-zinc-500">이 작품에는 작가/단체 정보가 없어요</p>
+                <p className="text-sm text-zinc-500">{t('emptyRecipients')}</p>
               ) : (
                 <div className="grid gap-2">
                   {recipients.map((r) => {
-                    const key = toKey(r)
-                    const isSelected = selectedKeys.includes(key)
+                    const recipientKey = `${r.type}:${r.value}`
+                    const isSelected = selectedKeys.includes(recipientKey)
                     return (
                       <button
                         aria-pressed={isSelected}
@@ -177,16 +184,17 @@ export default function DonateButton({ manga, ...props }: Props) {
                           'flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-left text-sm transition',
                           'hover:border-zinc-700 aria-pressed:border-brand aria-pressed:bg-brand/10',
                         )}
-                        key={key}
-                        onClick={() => toggleRecipient(key)}
-                        title={getDisplayLabel(r)}
+                        key={recipientKey}
+                        onClick={() => toggleRecipient(recipientKey)}
                         type="button"
                       >
                         <span className="min-w-0 flex-1">
                           <span className="block text-foreground truncate">{getDisplayLabel(r)}</span>
-                          <span className="block text-xs text-zinc-500">{r.type === 'artist' ? '작가' : '단체'}</span>
+                          <span className="block text-xs text-zinc-500">{getRecipientTypeLabel(r.type)}</span>
                         </span>
-                        <span className="shrink-0 text-xs text-zinc-500">{isSelected ? '선택됨' : '선택'}</span>
+                        <span className="shrink-0 text-xs text-zinc-500">
+                          {isSelected ? t('selected') : t('select')}
+                        </span>
                       </button>
                     )
                   })}
@@ -194,7 +202,7 @@ export default function DonateButton({ manga, ...props }: Props) {
               )}
             </div>
             <div className="grid gap-2">
-              <p className="text-sm font-semibold text-foreground">금액</p>
+              <p className="text-sm font-semibold text-foreground">{t('amount')}</p>
               <div className="flex flex-wrap gap-2">
                 {PRESETS.map((p) => (
                   <button
@@ -210,12 +218,12 @@ export default function DonateButton({ manga, ...props }: Props) {
                     }}
                     type="button"
                   >
-                    {formatNumber(p, locale)} 리보
+                    {t('liboAmount', { amount: formatNumber(p, locale) })}
                   </button>
                 ))}
               </div>
               <label className="grid gap-1" htmlFor="donation-amount">
-                <span className="text-xs text-zinc-500">직접 입력</span>
+                <span className="text-xs text-zinc-500">{t('customAmount')}</span>
                 <input
                   className="h-11 rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-sm text-foreground outline-none focus:border-zinc-600"
                   id="donation-amount"
@@ -227,7 +235,7 @@ export default function DonateButton({ manga, ...props }: Props) {
                     setAmount(Number.isFinite(next) ? next : 0)
                     setLocalMessage(null)
                   }}
-                  placeholder="예) 100"
+                  placeholder={t('amountPlaceholder')}
                   type="number"
                   value={Number.isFinite(amount) ? amount : 0}
                 />
@@ -241,18 +249,22 @@ export default function DonateButton({ manga, ...props }: Props) {
               onClick={close}
               type="button"
             >
-              취소
+              {t('cancel')}
             </button>
             <button
               aria-disabled={!canSubmit}
               className="flex-1 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-background transition aria-disabled:opacity-50 aria-disabled:pointer-events-none"
               type="submit"
             >
-              {donateMutation.isPending ? '후원 중...' : '후원하기'}
+              {donateMutation.isPending ? t('submitting') : t('action')}
             </button>
           </DialogFooter>
         </form>
       </Dialog>
     </>
   )
+}
+
+function formatRecipientText(value: string) {
+  return value.trim().replace(/_/g, ' ')
 }

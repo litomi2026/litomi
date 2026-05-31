@@ -2,6 +2,7 @@
 
 import type { Manga } from '@litomi/domain/manga/model'
 
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 
@@ -23,7 +24,11 @@ type Props = {
   initialManga?: Manga | null
 }
 
+type Translator = ReturnType<typeof useTranslations>
+
 export default function MangaPage({ id, initialManga }: Props) {
+  const unlockT = useTranslations('MangaViewer.unlock')
+  const metadataT = useTranslations('MangaViewer.metadata')
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const unlockTimeoutRef = useRef<number>(null)
   const { data: me } = useMeQuery()
@@ -33,7 +38,7 @@ export default function MangaPage({ id, initialManga }: Props) {
 
   const data = mangaMap.get(id) ?? (!isWaitingForAdClick && !initialManga ? createLoadingManga(id) : undefined)
   const manga = prepareManga(data, initialManga)
-  const metadata = prepareMetadata(manga)
+  const metadata = prepareMetadata(manga, metadataT)
 
   function handleAdClick() {
     if (unlockTimeoutRef.current !== null) {
@@ -71,10 +76,11 @@ export default function MangaPage({ id, initialManga }: Props) {
         onAdClick={handleAdClick}
         title={
           <div className="grid gap-0.5 text-center">
-            <p className="text-zinc-300 text-sm">작품을 보려면 광고를 클릭해주세요.</p>
+            <p className="text-zinc-300 text-sm">{unlockT('title')}</p>
             <p>
-              <LoginPageLink className="text-foreground">로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수
-              있어요.
+              {unlockT('loginPrefix')}
+              <LoginPageLink className="text-foreground">{unlockT('loginAction')}</LoginPageLink>
+              {unlockT('loginSuffix')}
             </p>
           </div>
         }
@@ -106,7 +112,7 @@ function prepareManga(data: Manga | undefined, initialManga: Manga | null | unde
   return initialManga ? { ...initialManga, ...data } : data
 }
 
-function prepareMetadata(manga: Manga | null | undefined) {
+function prepareMetadata(manga: Manga | null | undefined, t: Translator) {
   if (!manga || !manga.images || manga.images.length === 0) {
     return {}
   }
@@ -118,7 +124,7 @@ function prepareMetadata(manga: Manga | null | undefined) {
       .slice(0, 3)
       .map((a) => a.label)
       .join(', ')
-    parts.push(`작가: ${artistNames}`)
+    parts.push(`${t('artist')}: ${artistNames}`)
   }
 
   if (manga.series && manga.series.length > 0) {
@@ -126,7 +132,7 @@ function prepareMetadata(manga: Manga | null | undefined) {
       .slice(0, 2)
       .map((s) => s.label)
       .join(', ')
-    parts.push(`시리즈: ${seriesNames}`)
+    parts.push(`${t('series')}: ${seriesNames}`)
   }
 
   if (manga.characters && manga.characters.length > 0) {
@@ -134,7 +140,7 @@ function prepareMetadata(manga: Manga | null | undefined) {
       .slice(0, 3)
       .map((c) => c.label)
       .join(', ')
-    parts.push(`캐릭터: ${characterNames}`)
+    parts.push(`${t('character')}: ${characterNames}`)
   }
 
   if (manga.tags && manga.tags.length > 0) {
@@ -142,20 +148,20 @@ function prepareMetadata(manga: Manga | null | undefined) {
       .slice(0, 5)
       .map((t) => t.label)
       .join(', ')
-    parts.push(`태그: ${tagNames}`)
+    parts.push(`${t('tag')}: ${tagNames}`)
   }
 
   if (manga.type) {
-    parts.push(`종류: ${manga.type}`)
+    parts.push(`${t('type')}: ${manga.type}`)
   }
 
   if (manga.languages && manga.languages.length > 0) {
     const languages = manga.languages.map((l) => l.label).join(', ')
-    parts.push(`언어: ${languages}`)
+    parts.push(`${t('language')}: ${languages}`)
   }
 
   if (manga.count) {
-    parts.push(`${manga.count} 페이지`)
+    parts.push(t('pages', { count: manga.count }))
   }
 
   const description = manga.description || parts.join(' • ')

@@ -1,6 +1,7 @@
 'use client'
 
 import { Star, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -15,6 +16,8 @@ type Props = {
   className?: string
 }
 
+type RatingTextKey = 'texts.five' | 'texts.four' | 'texts.one' | 'texts.three' | 'texts.two'
+
 const MIN_RATING = 1
 const MAX_RATING = 5
 const HORIZONTAL_THRESHOLD = 5
@@ -22,15 +25,17 @@ const VERTICAL_THRESHOLD = 10
 const DIRECTION_DETERMINATION_THRESHOLD = 15
 
 export default function RatingInput({ mangaId, className = '' }: Props) {
-  const { data: existingRating } = useUserRatingQuery(mangaId)
-  const { data: me } = useMeQuery()
-  const { mutate: saveRating, isPending } = useSaveRatingMutation()
-  const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [justSaved, setJustSaved] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [rating, setRating] = useState(0)
   const initialPointerPos = useRef<{ x: number; y: number } | null>(null)
   const gestureDirection = useRef<'horizontal' | 'vertical' | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { data: me } = useMeQuery()
+  const { data: existingRating } = useUserRatingQuery(mangaId)
+  const { mutate: saveRating, isPending } = useSaveRatingMutation()
+  const t = useTranslations('MangaViewer.ratingInput')
+
   const isInteractionDisabled = me === undefined || isPending
   const displayRating = hoveredRating || rating
 
@@ -214,15 +219,15 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   return (
     <div className={`flex min-w-0 flex-col items-center justify-center gap-4 ${className}`}>
       <div className="grid min-w-0 gap-2 text-center">
-        <h2 className="text-xl font-semibold text-foreground">작품이 어떠셨나요?</h2>
+        <h2 className="text-xl font-semibold text-foreground">{t('title')}</h2>
         <p className="text-zinc-400 text-sm max-w-sm mx-auto">
-          별점을 드래그하거나 클릭해서 {existingRating?.rating ? '수정' : '평가'}해주세요
+          {existingRating?.rating ? t('descriptionEdit') : t('descriptionRate')}
         </p>
       </div>
       <div
         aria-current={hoveredRating > 0}
         aria-disabled={isInteractionDisabled}
-        aria-label="별점 선택"
+        aria-label={t('sliderLabel')}
         aria-valuemax={MAX_RATING}
         aria-valuemin={MIN_RATING}
         aria-valuenow={rating}
@@ -240,7 +245,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
           <button
             aria-busy={justSaved && value <= rating}
             aria-current={value <= displayRating}
-            aria-label={`${value}점`}
+            aria-label={t('starLabel', { value })}
             className="aspect-square min-w-0 transition pointer-events-none aria-current:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out] p-1"
             disabled={isInteractionDisabled}
             key={value}
@@ -264,7 +269,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
             {displayRating}.0
             <span className="text-base sm:text-lg ml-2 text-zinc-400">/ 5.0</span>
           </div>
-          {displayRating > 0 && <div className="text-sm text-zinc-400">{getRatingText(displayRating)}</div>}
+          {displayRating > 0 && <div className="text-sm text-zinc-400">{getRatingText(displayRating, t)}</div>}
         </div>
       </div>
       <div
@@ -277,25 +282,25 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
           onClick={handleCancelClick}
         >
           <X className="size-4" />
-          평가 취소
+          {t('cancel')}
         </button>
       </div>
     </div>
   )
 }
 
-function getRatingText(rating: number): string {
+function getRatingText(rating: number, t: (key: RatingTextKey) => string): string {
   switch (rating) {
     case 1:
-      return '별로예요 😞'
+      return t('texts.one')
     case 2:
-      return '아쉬워요 😐'
+      return t('texts.two')
     case 3:
-      return '괜찮아요 🙂'
+      return t('texts.three')
     case 4:
-      return '재밌어요 😊'
+      return t('texts.four')
     case 5:
-      return '최고예요 😍'
+      return t('texts.five')
     default:
       return ''
   }
