@@ -1,5 +1,6 @@
 import { LabeledValue } from '@litomi/domain/manga/model'
 import { ExternalLink } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import MangaMetadataLink from './MangaMetadataLink'
 
@@ -18,6 +19,8 @@ type Props = {
 const MAX_LABEL_LENGTH = 8
 
 export default function MangaMetadataListWithLink({ filterType, items, searchParams }: Props) {
+  const t = useTranslations('Common.mangaCard.metadata')
+
   return (
     <ul className="break-all">
       {items.map(({ value, label, links }, i) => (
@@ -30,7 +33,7 @@ export default function MangaMetadataListWithLink({ filterType, items, searchPar
                 href={links[0].value}
                 rel="noopener"
                 target="_blank"
-                title={`${label || value}의 ${links[0].label} 후원하기`}
+                title={t('supportTitle', { name: label || value, platform: links[0].label })}
               >
                 <span className="text-xs font-medium">
                   {links[0].label.slice(0, MAX_LABEL_LENGTH)}

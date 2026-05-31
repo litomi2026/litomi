@@ -1,8 +1,9 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import useLongPress from '@/hook/useLongPress'
+import { useRouter } from '@/i18n/navigation'
 
 import MangaTagLabel from './MangaTagLabel'
 
@@ -35,6 +36,7 @@ export default function MangaTagLink({
   disabled,
 }: Props) {
   const router = useRouter()
+  const t = useTranslations('Common.mangaCard.censorship')
   const tagColor = tagStyles[category] ?? 'bg-zinc-900'
 
   const longPressHandlers = useLongPress({
@@ -49,7 +51,7 @@ export default function MangaTagLink({
       className={`rounded px-1 text-foreground transition break-all select-none cursor-pointer hover:underline focus:underline active:opacity-80 aria-current:ring-2 aria-current:ring-brand data-censored:line-through data-censored:opacity-70 ${tagColor}`}
       data-censored={isCensored || undefined}
       role="link"
-      title={isCensored ? '검열됨' : value}
+      title={isCensored ? t('tagCensored') : value}
       {...longPressHandlers}
     >
       <MangaTagLabel>{label}</MangaTagLabel>

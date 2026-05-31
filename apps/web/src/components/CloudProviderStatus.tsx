@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_LOCALE, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import ms from 'ms'
 import { useEffect, useState } from 'react'
@@ -41,7 +42,7 @@ const STATUS_ENDPOINTS = {
   aiven: 'https://status.aiven.io/api/v2/status.json',
   supabase: 'https://status.supabase.com/api/v2/status.json',
   vercel: 'https://www.vercel-status.com/api/v2/status.json',
-  api: `${env.NEXT_PUBLIC_API_ORIGIN}/health`,
+  api: new URL('/health', env.NEXT_PUBLIC_API_ORIGIN).toString(),
   litomi: '/api/health',
 }
 
@@ -62,10 +63,13 @@ const STATUS_LABELS: Record<ServiceStatus, string> = {
 }
 
 interface CloudProviderStatusProps {
+  locale?: string | null
   onStatusUpdate?: (hasIssues: boolean) => void
 }
 
-export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderStatusProps) {
+export default function CloudProviderStatus({ locale, onStatusUpdate }: CloudProviderStatusProps) {
+  const languageTag = getLanguageTag(locale)
+
   const [status, setStatus] = useState<StatusData>({
     aiven: 'unknown',
     api: 'unknown',
@@ -74,6 +78,10 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
     vercel: 'unknown',
     lastChecked: null,
   })
+
+  const hasIssues = [status.supabase, status.vercel, status.api, status.litomi].some(
+    (s) => s === 'minor' || s === 'major' || s === 'critical',
+  )
 
   useEffect(() => {
     async function checkStatus() {
@@ -119,10 +127,6 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
     return () => clearInterval(interval)
   }, [])
 
-  const hasIssues = [status.supabase, status.vercel, status.api, status.litomi].some(
-    (s) => s === 'minor' || s === 'major' || s === 'critical',
-  )
-
   useEffect(() => {
     if (onStatusUpdate && status.lastChecked) {
       onStatusUpdate(hasIssues)
@@ -153,12 +157,20 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
         <ServiceStatusRow name="리토미 웹 서버" status={status.litomi} />
         {status.lastChecked && (
           <p className="text-zinc-500 text-center pt-1">
-            마지막 확인: {status.lastChecked.toLocaleTimeString('ko-KR')}
+            마지막 확인: {status.lastChecked.toLocaleTimeString(languageTag)}
           </p>
         )}
       </div>
     </details>
   )
+}
+
+function getLanguageTag(locale: string | null | undefined) {
+  if (locale && locale in LOCALE_LANGUAGE_TAGS) {
+    return LOCALE_LANGUAGE_TAGS[locale as keyof typeof LOCALE_LANGUAGE_TAGS]
+  }
+
+  return LOCALE_LANGUAGE_TAGS[DEFAULT_LOCALE]
 }
 
 function ServiceStatusRow({ name, status }: { name: string; status: ServiceStatus }) {

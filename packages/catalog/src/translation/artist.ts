@@ -1,13 +1,14 @@
 import 'server-only'
-import { Locale } from '@litomi/domain/locale'
+import type { Locale } from '@litomi/domain/locale'
+
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { getArtistSponsors } from '../sponsor/artist'
 import artistTranslationJSON from './artist.json'
 import { translateCategory } from './category'
-import { Multilingual, translateValue } from './common'
+import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
 
-const ARTIST_TRANSLATION: Record<string, Multilingual> = artistTranslationJSON
+const ARTIST_TRANSLATION: TranslationMap = artistTranslationJSON
 
 /**
  * Get all artists with their translations as value/label pairs for search suggestions
@@ -15,17 +16,11 @@ const ARTIST_TRANSLATION: Record<string, Multilingual> = artistTranslationJSON
 export function getAllArtistsWithLabels() {
   return Object.entries(ARTIST_TRANSLATION).map(([key, translations]) => ({
     value: `artist:${key}`,
-    labels: {
-      en: `${translateCategory('artist', Locale.EN)}:${translations.en}`,
-      ko: `${translateCategory('artist', Locale.KO)}:${translations.ko || translations.en}`,
-      ja: `${translateCategory('artist', Locale.JA)}:${translations.ja || translations.en}`,
-      'zh-CN': `${translateCategory('artist', Locale.ZH_CN)}:${translations['zh-CN'] || translations.en}`,
-      'zh-TW': `${translateCategory('artist', Locale.ZH_TW)}:${translations['zh-TW'] || translations.en}`,
-    },
+    labels: getPrefixedTranslationLabels('artist', translations, translateCategory),
   }))
 }
 
-export function translateArtistList(artistList: string[] | undefined, locale: keyof Multilingual) {
+export function translateArtistList(artistList: string[] | undefined, locale: Locale) {
   return artistList?.map((artist) => {
     const normalizedValue = normalizeValue(artist)
     return {

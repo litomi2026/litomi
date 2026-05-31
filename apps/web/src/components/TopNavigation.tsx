@@ -3,7 +3,9 @@
 import type { ReactNode } from 'react'
 
 import { Menu } from 'lucide-react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+
+import { Link } from '@/i18n/navigation'
 
 import AutoHideHeader from './auto-hide/AutoHideHeader'
 import IconLogo from './icons/LogoLitomi'
@@ -15,11 +17,13 @@ type Props = {
 }
 
 export default function TopNavigation({ children, className, onMenuClick }: Props) {
+  const t = useTranslations('Navigation.mobileMenu')
+
   return (
     <AutoHideHeader className={className} role="navigation">
       <div className="flex items-center justify-between gap-2 px-2 pt-safe sm:hidden">
         <button
-          aria-label="메뉴 열기"
+          aria-label={t('open')}
           className="relative hover:bg-zinc-800 rounded-lg transition"
           onClick={onMenuClick}
           type="button"

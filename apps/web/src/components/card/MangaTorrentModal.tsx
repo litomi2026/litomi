@@ -7,13 +7,14 @@ import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import dayjs from 'dayjs'
 import { Copy, ExternalLink, Magnet } from 'lucide-react'
 import ms from 'ms'
-import { usePathname } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { create } from 'zustand'
 
 import useClipboard from '@/hook/useClipboard'
+import { usePathname } from '@/i18n/navigation'
 
 type MangaTorrentModalStore = {
   isOpen: boolean
@@ -33,11 +34,13 @@ const useMangaTorrentModalStore = create<MangaTorrentModalStore>()((set) => ({
 
 export default function MangaTorrentModal() {
   const pathname = usePathname()
-  const { copy } = useClipboard()
-  const { isOpen, manga, close, clearManga } = useMangaTorrentModalStore()
-  const hasShownOpenHelpRef = useRef(false)
   const pathnameRef = useRef(pathname)
+  const hasShownOpenHelpRef = useRef(false)
   const openAttemptCleanupRef = useRef<(() => void) | null>(null)
+  const locale = useLocale()
+  const { copy } = useClipboard()
+  const t = useTranslations('Common.mangaCard.torrent')
+  const { isOpen, manga, close, clearManga } = useMangaTorrentModalStore()
 
   const torrents = useMemo(() => {
     const list = manga?.torrents ?? []
@@ -136,19 +139,21 @@ export default function MangaTorrentModal() {
   }, [isOpen])
 
   return (
-    <Dialog ariaLabel="토렌트" className="sm:max-w-prose" onAfterClose={clearManga} onClose={close} open={isOpen}>
-      <DialogHeader onClose={close} title={`[토렌트] ${manga?.title ?? ''}`} />
+    <Dialog ariaLabel={t('title')} className="sm:max-w-prose" onAfterClose={clearManga} onClose={close} open={isOpen}>
+      <DialogHeader onClose={close} title={t('dialogTitle', { title: manga?.title ?? '' })} />
       <DialogBody className="space-y-2">
         {!manga ? null : torrentCount === 0 ? (
           <div className="text-center py-12">
-            <p className="text-zinc-400">토렌트가 없어요</p>
+            <p className="text-zinc-400">{t('empty')}</p>
           </div>
         ) : (
           <>
             <p className="text-xs text-zinc-500">
-              <span className="font-medium text-zinc-300">열기</span>를 누르면 토렌트 앱이 자동으로 실행되는데, 실행되지
-              않으면 <span className="font-medium text-zinc-300">복사</span> 버튼으로 마그넷 주소를 복사해 주세요.
-              {torrentCount >= 10 && ` (토렌트 파일 ${torrentCount}개)`}
+              {t.rich('help', {
+                open: (chunks) => <span className="font-medium text-zinc-300">{chunks}</span>,
+                copy: (chunks) => <span className="font-medium text-zinc-300">{chunks}</span>,
+              })}
+              {torrentCount >= 10 && t('fileCount', { count: torrentCount })}
             </p>
             <ul className="grid gap-2">
               {torrents.map((torrent) => {
@@ -172,7 +177,7 @@ export default function MangaTorrentModal() {
                           rel="noreferrer"
                         >
                           <ExternalLink className="size-3 text-zinc-300" />
-                          열기
+                          {t('openAction')}
                         </a>
                         <button
                           className={twMerge(
@@ -183,12 +188,12 @@ export default function MangaTorrentModal() {
                           type="button"
                         >
                           <Copy className="size-3 text-zinc-300" />
-                          복사
+                          {t('copyAction')}
                         </button>
                       </div>
                     </div>
                     <p className="text-xs text-zinc-500 mt-1" title={dayjs(addedDate).format('YYYY-MM-DD HH:mm:ss')}>
-                      {formatDistanceToNow(addedDate)} · {formatBytes(torrent.fsize)}
+                      {formatDistanceToNow(addedDate, locale)} · {formatBytes(torrent.fsize)}
                     </p>
                   </li>
                 )

@@ -1,4 +1,3 @@
-import type { Locale } from '@litomi/domain/locale'
 import type { Manga } from '@litomi/domain/manga/model'
 
 export enum Sort {
@@ -22,7 +21,6 @@ export type GETProxyKSearchRequest = {
   'next-views'?: number
   'next-views-id'?: number
   skip?: number
-  locale?: Locale
 }
 
 export type GETProxyKSearchResponse = {

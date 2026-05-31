@@ -1,25 +1,27 @@
 import 'server-only'
+import type { Locale } from '@litomi/domain/locale'
+
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
-import type { Multilingual } from './common'
-
+import { getTranslationValue, type TranslationMap } from './common'
 import languageTranslationJSON from './language.json'
 
-const LANGUAGE_TRANSLATION: Record<string, Multilingual> = languageTranslationJSON
+const LANGUAGE_TRANSLATION: TranslationMap = languageTranslationJSON
 
-export function getAllLanguagesWithLabels(locale: keyof Multilingual) {
+export function getAllLanguagesWithLabels(locale: Locale) {
   return Object.entries(LANGUAGE_TRANSLATION).map(([key, translations]) => ({
     value: key,
-    label: translations[locale] ?? key,
+    label: getTranslationValue(translations, locale) || key,
   }))
 }
 
-export function translateLanguage(normalizedValue: string, locale: keyof Multilingual) {
+export function translateLanguage(normalizedValue: string, locale: Locale) {
+  const fallback = normalizedValue.replaceAll('_', ' ')
   const translation = LANGUAGE_TRANSLATION[normalizedValue]
-  return translation?.[locale] ?? normalizedValue.replaceAll('_', ' ')
+  return translation ? getTranslationValue(translation, locale) || fallback : fallback
 }
 
-export function translateLanguageList(values: string[] | undefined, locale: keyof Multilingual) {
+export function translateLanguageList(values: string[] | undefined, locale: Locale) {
   return values?.map((value) => {
     const normalizedValue = normalizeValue(value)
     return {

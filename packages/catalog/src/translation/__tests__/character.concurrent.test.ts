@@ -1,16 +1,17 @@
+import { Locale } from '@litomi/domain/locale'
 import { describe, expect, test } from 'bun:test'
 
 import { getAllCharactersWithLabels, translateCharacterList } from '../character'
 
 describe('translateCharacterList', () => {
   test('알려진 캐릭터를 한국어로 번역한다', () => {
-    expect(translateCharacterList(['aerith_gainsborough'], 'ko')).toEqual([
+    expect(translateCharacterList(['aerith_gainsborough'], Locale.KO)).toEqual([
       { value: 'aerith_gainsborough', label: '에어리스 게인즈버러', links: undefined },
     ])
   })
 
   test('번역이 없으면 정규화된 값을 반환한다', () => {
-    expect(translateCharacterList(['Some Random Character'], 'ko')).toEqual([
+    expect(translateCharacterList(['Some Random Character'], Locale.KO)).toEqual([
       { value: 'some_random_character', label: 'some random character', links: undefined },
     ])
   })

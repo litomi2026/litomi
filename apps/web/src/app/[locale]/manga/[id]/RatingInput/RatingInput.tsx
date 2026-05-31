@@ -1,0 +1,307 @@
+'use client'
+
+import { Star, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
+
+import { showLoginRequiredToast } from '@/lib/toast'
+import useMeQuery from '@/query/useMeQuery'
+
+import { useSaveRatingMutation } from './useSaveRatingMutation'
+import { useUserRatingQuery } from './useUserRatingQuery'
+
+type Props = {
+  mangaId: number
+  className?: string
+}
+
+type RatingTextKey = 'texts.five' | 'texts.four' | 'texts.one' | 'texts.three' | 'texts.two'
+
+const MIN_RATING = 1
+const MAX_RATING = 5
+const HORIZONTAL_THRESHOLD = 5
+const VERTICAL_THRESHOLD = 10
+const DIRECTION_DETERMINATION_THRESHOLD = 15
+
+export default function RatingInput({ mangaId, className = '' }: Props) {
+  const [hoveredRating, setHoveredRating] = useState(0)
+  const [justSaved, setJustSaved] = useState(false)
+  const [rating, setRating] = useState(0)
+  const initialPointerPos = useRef<{ x: number; y: number } | null>(null)
+  const gestureDirection = useRef<'horizontal' | 'vertical' | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { data: me } = useMeQuery()
+  const { data: existingRating } = useUserRatingQuery(mangaId)
+  const { mutate: saveRating, isPending } = useSaveRatingMutation()
+  const t = useTranslations('MangaViewer.ratingInput')
+
+  const isInteractionDisabled = me === undefined || isPending
+  const displayRating = hoveredRating || rating
+
+  const handleRating = useCallback(
+    (value: number, force = false) => {
+      if (me === null) {
+        showLoginRequiredToast()
+        return
+      }
+
+      if (!force && value === rating) {
+        return
+      }
+
+      const previousRating = rating
+      setRating(value)
+
+      const variables = {
+        mangaId,
+        rating: value,
+      }
+
+      saveRating(variables, {
+        onSuccess: (result) => {
+          setJustSaved(true)
+          setTimeout(() => setJustSaved(false), 1000)
+
+          if (!result) {
+            toast.info('평가를 취소했어요')
+          } else {
+            toast.success(`${result.rating}점으로 평가했어요`)
+          }
+        },
+        onError: () => setRating(previousRating),
+      })
+    },
+    [me, rating, mangaId, saveRating],
+  )
+
+  const getRatingFromPosition = useCallback((clientX: number) => {
+    if (!containerRef.current) {
+      return 0
+    }
+
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = clientX - rect.left
+    const width = rect.width
+    const starWidth = width / MAX_RATING
+    const starIndex = Math.floor(x / starWidth)
+
+    return Math.max(MIN_RATING, Math.min(starIndex + 1, MAX_RATING))
+  }, [])
+
+  function clearPointerState() {
+    setHoveredRating(0)
+    initialPointerPos.current = null
+    gestureDirection.current = null
+  }
+
+  function handlePointerDown(e: React.PointerEvent) {
+    e.stopPropagation()
+    initialPointerPos.current = { x: e.clientX, y: e.clientY }
+    gestureDirection.current = null
+  }
+
+  function handlePointerMove(e: React.PointerEvent) {
+    if (!initialPointerPos.current) {
+      return
+    }
+
+    const deltaX = Math.abs(e.clientX - initialPointerPos.current.x)
+    const deltaY = Math.abs(e.clientY - initialPointerPos.current.y)
+    const totalMovement = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+
+    if (!gestureDirection.current) {
+      if (totalMovement >= DIRECTION_DETERMINATION_THRESHOLD) {
+        const ratio = deltaX / (deltaY || 1)
+
+        if (ratio > 1.5) {
+          gestureDirection.current = 'horizontal'
+        } else if (ratio < 0.66) {
+          gestureDirection.current = 'vertical'
+        } else if (deltaY > VERTICAL_THRESHOLD) {
+          gestureDirection.current = 'vertical'
+        } else if (deltaX > HORIZONTAL_THRESHOLD) {
+          gestureDirection.current = 'horizontal'
+        }
+      }
+    }
+
+    if (gestureDirection.current === 'vertical') {
+      clearPointerState()
+      return
+    }
+
+    if (gestureDirection.current === 'horizontal' || (!gestureDirection.current && deltaX > HORIZONTAL_THRESHOLD)) {
+      e.preventDefault()
+      const value = getRatingFromPosition(e.clientX)
+
+      if (value > 0 && value !== hoveredRating) {
+        if ('vibrate' in navigator) {
+          navigator.vibrate(10)
+        }
+        setHoveredRating(value)
+      }
+    }
+  }
+
+  const handlePointerUp = useCallback(
+    (e: PointerEvent | React.PointerEvent) => {
+      e.stopPropagation()
+
+      if (!initialPointerPos.current) {
+        return
+      }
+
+      if (gestureDirection.current === 'horizontal' || !gestureDirection.current) {
+        handleRating(hoveredRating || getRatingFromPosition(e.clientX))
+      }
+
+      clearPointerState()
+    },
+    [hoveredRating, handleRating, getRatingFromPosition],
+  )
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    let newRating = rating
+
+    if (e.key === 'ArrowLeft') {
+      newRating = Math.max(1, rating - 1)
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      newRating = Math.max(1, rating - 1)
+    } else if (e.key === 'ArrowRight') {
+      newRating = Math.min(5, rating + 1)
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      newRating = Math.min(5, rating + 1)
+    } else if (e.key >= '1' && e.key <= '5') {
+      newRating = parseInt(e.key)
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      if (rating > 0) {
+        handleRating(rating, true)
+      }
+      return
+    } else {
+      return
+    }
+
+    setRating(newRating)
+    setHoveredRating(newRating)
+    setTimeout(() => setHoveredRating(0), 500)
+  }
+
+  function handleCancelClick(e: React.MouseEvent) {
+    e.stopPropagation()
+    handleRating(0)
+  }
+
+  // NOTE: 드래그 중에 컴포넌트 밖에서 포인터가 올라오면 평가를 적용하기 위해
+  useEffect(() => {
+    if (!initialPointerPos.current) {
+      return
+    }
+
+    document.addEventListener('pointerup', handlePointerUp)
+
+    return () => {
+      document.removeEventListener('pointerup', handlePointerUp)
+    }
+  }, [handlePointerUp])
+
+  // NOTE: 기존 평가가 있으면 표시함
+  useEffect(() => {
+    if (existingRating?.rating) {
+      setRating(existingRating.rating)
+    }
+  }, [existingRating])
+
+  return (
+    <div className={`flex min-w-0 flex-col items-center justify-center gap-4 ${className}`}>
+      <div className="grid min-w-0 gap-2 text-center">
+        <h2 className="text-xl font-semibold text-foreground">{t('title')}</h2>
+        <p className="text-zinc-400 text-sm max-w-sm mx-auto">
+          {existingRating?.rating ? t('descriptionEdit') : t('descriptionRate')}
+        </p>
+      </div>
+      <div
+        aria-current={hoveredRating > 0}
+        aria-disabled={isInteractionDisabled}
+        aria-label={t('sliderLabel')}
+        aria-valuemax={MAX_RATING}
+        aria-valuemin={MIN_RATING}
+        aria-valuenow={rating}
+        className="grid w-full max-w-xs grid-cols-5 gap-1 sm:gap-2 select-none cursor-pointer outline-none touch-pan-y aria-current:cursor-grabbing aria-disabled:cursor-default aria-disabled:pointer-events-none aria-disabled:opacity-60 py-2"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={handleKeyDown}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        ref={containerRef}
+        role="slider"
+        tabIndex={isInteractionDisabled ? -1 : 0}
+      >
+        {[1, 2, 3, 4, 5].map((value, i) => (
+          <button
+            aria-busy={justSaved && value <= rating}
+            aria-current={value <= displayRating}
+            aria-label={t('starLabel', { value })}
+            className="aspect-square min-w-0 transition pointer-events-none aria-current:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out] p-1"
+            disabled={isInteractionDisabled}
+            key={value}
+            style={{ animationDelay: `${i * 50}ms` }}
+            tabIndex={-1}
+          >
+            <Star
+              aria-current={value <= displayRating}
+              aria-pressed={hoveredRating > 0 && value === displayRating}
+              className="size-full transition text-zinc-600 aria-current:fill-brand aria-current:text-brand aria-pressed:scale-125 aria-pressed:rotate-12"
+            />
+          </button>
+        ))}
+      </div>
+      <div className="text-center">
+        <div className="grid gap-1 min-h-16">
+          <div
+            aria-current={displayRating > 0}
+            className="text-2xl sm:text-3xl font-bold text-zinc-500 aria-current:text-brand transition"
+          >
+            {displayRating}.0
+            <span className="text-base sm:text-lg ml-2 text-zinc-400">/ 5.0</span>
+          </div>
+          {displayRating > 0 && <div className="text-sm text-zinc-400">{getRatingText(displayRating, t)}</div>}
+        </div>
+      </div>
+      <div
+        aria-hidden={rating === 0}
+        className="flex gap-4 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+      >
+        <button
+          className="flex items-center gap-2 text-zinc-500 hover:text-red-400 rounded-full text-sm transition p-3 py-2 -m-2 hover:bg-red-400/10"
+          disabled={isInteractionDisabled}
+          onClick={handleCancelClick}
+        >
+          <X className="size-4" />
+          {t('cancel')}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function getRatingText(rating: number, t: (key: RatingTextKey) => string): string {
+  switch (rating) {
+    case 1:
+      return t('texts.one')
+    case 2:
+      return t('texts.two')
+    case 3:
+      return t('texts.three')
+    case 4:
+      return t('texts.four')
+    case 5:
+      return t('texts.five')
+    default:
+      return ''
+  }
+}

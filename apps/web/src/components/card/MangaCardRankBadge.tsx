@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
 }
 
 export default function MangaCardRankBadge({ rank, className = '' }: Props) {
+  const t = useTranslations('Common.mangaCard.rank')
   const isTopRank = rank <= 3
 
   return (
@@ -16,9 +18,9 @@ export default function MangaCardRankBadge({ rank, className = '' }: Props) {
         className,
       )}
     >
-      <span className="sr-only">현재 순위 </span>
+      <span className="sr-only">{t('prefix')}</span>
       {rank}
-      <span className="sr-only">위</span>
+      <span className="sr-only">{t('suffix')}</span>
     </div>
   )
 }

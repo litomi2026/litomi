@@ -1,6 +1,7 @@
 'use client'
 
 import { formatDistanceFromNow } from '@litomi/std'
+import { useLocale } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -44,6 +45,7 @@ export default function JuicyAdsSlot({
   showFooter,
   onAdClick,
 }: Props) {
+  const locale = useLocale()
   const slotRef = useRef<HTMLDivElement>(null)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
   const [isScriptError, setIsScriptError] = useState(false)
@@ -58,7 +60,7 @@ export default function JuicyAdsSlot({
       onResult: onAdClick,
     })
 
-  const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil)) : null
+  const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil), locale) : null
 
   // NOTE: JuicyAds 스크립트가 로드되기 전에 adzone을 등록해야 함
   useEffect(() => {

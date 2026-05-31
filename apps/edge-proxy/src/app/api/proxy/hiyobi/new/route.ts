@@ -13,7 +13,6 @@ export const runtime = 'edge'
 
 const GETProxyHiyobiNewSchema = z.object({
   page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
-  locale: z.enum(Locale).default(Locale.KO),
 })
 
 export async function GET(request: Request) {
@@ -31,7 +30,7 @@ export async function GET(request: Request) {
     return response
   }
 
-  const { page, locale } = validation.data
+  const { page } = validation.data
 
   if (request.signal?.aborted) {
     const response = createProblemDetailsResponse(request, {
@@ -44,7 +43,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const mangas = await hiyobiClient.fetchMangas({ page, locale, signal: request.signal })
+    const mangas = await hiyobiClient.fetchMangas({ page, locale: Locale.KO, signal: request.signal })
 
     const headers = createProxyHeaders(
       createCacheControlHeaders({

@@ -26,14 +26,14 @@ describe('GET /api/v1/bookmark', () => {
     const { auth } = await createBookmarkAuthContext()
 
     const response = await requestBackend({
-      path: '/api/v1/bookmark?cursor=invalid-cursor',
+      path: '/api/v1/bookmark?locale=ko&cursor=invalid-cursor',
       cookies: auth.cookieHeader,
     })
 
     await expectProblemResponse(response, {
       status: 400,
       code: 'bad-request',
-      instance: '/api/v1/bookmark?cursor=invalid-cursor',
+      instance: '/api/v1/bookmark?locale=ko&cursor=invalid-cursor',
     })
   })
 
@@ -57,7 +57,7 @@ describe('GET /api/v1/bookmark', () => {
     ])
 
     const firstResponse = await requestBackend({
-      path: '/api/v1/bookmark?limit=2',
+      path: '/api/v1/bookmark?locale=ko&limit=2',
       cookies: auth.cookieHeader,
     })
 
@@ -75,7 +75,7 @@ describe('GET /api/v1/bookmark', () => {
     })
 
     const secondResponse = await requestBackend({
-      path: `/api/v1/bookmark?limit=2&cursor=${firstBody.nextCursor}`,
+      path: `/api/v1/bookmark?locale=ko&limit=2&cursor=${firstBody.nextCursor}`,
       cookies: auth.cookieHeader,
     })
 
@@ -104,7 +104,7 @@ describe('GET /api/v1/bookmark', () => {
     ])
 
     const firstResponse = await requestBackend({
-      path: '/api/v1/bookmark?limit=2&sort=created-asc',
+      path: '/api/v1/bookmark?locale=ko&limit=2&sort=created-asc',
       cookies: auth.cookieHeader,
     })
 
@@ -122,7 +122,7 @@ describe('GET /api/v1/bookmark', () => {
     })
 
     const secondResponse = await requestBackend({
-      path: `/api/v1/bookmark?limit=2&sort=created-asc&cursor=${firstBody.nextCursor}`,
+      path: `/api/v1/bookmark?locale=ko&limit=2&sort=created-asc&cursor=${firstBody.nextCursor}`,
       cookies: auth.cookieHeader,
     })
 
@@ -150,7 +150,7 @@ describe('GET /api/v1/bookmark', () => {
     ])
 
     const firstResponse = await requestBackend({
-      path: '/api/v1/bookmark?limit=2&sort=manga-id-asc',
+      path: '/api/v1/bookmark?locale=ko&limit=2&sort=manga-id-asc',
       cookies: auth.cookieHeader,
     })
 
@@ -168,7 +168,7 @@ describe('GET /api/v1/bookmark', () => {
     })
 
     const secondResponse = await requestBackend({
-      path: `/api/v1/bookmark?limit=2&sort=manga-id-asc&cursor=${firstBody.nextCursor}`,
+      path: `/api/v1/bookmark?locale=ko&limit=2&sort=manga-id-asc&cursor=${firstBody.nextCursor}`,
       cookies: auth.cookieHeader,
     })
 

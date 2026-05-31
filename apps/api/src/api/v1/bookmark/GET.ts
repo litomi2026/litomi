@@ -18,7 +18,7 @@ route.get('/', requireAuth, zProblemValidator('query', getV1BookmarkQuerySchema)
   const userId = c.get('userId')!
 
   try {
-    const { cursor, limit, sort } = c.req.valid('query')
+    const { cursor, limit, locale, sort } = c.req.valid('query')
 
     let cursorMangaId: number | undefined
     let cursorTime: Date | undefined
@@ -45,7 +45,8 @@ route.get('/', requireAuth, zProblemValidator('query', getV1BookmarkQuerySchema)
     const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows
     const lastBookmark = bookmarks[bookmarks.length - 1]
     const nextCursor = hasNextPage ? getNextCollectionItemCursor(lastBookmark) : null
-    const catalogMangaMap = await getCatalogMangaMap(bookmarks.map(({ mangaId }) => mangaId))
+    const mangaIds = bookmarks.map(({ mangaId }) => mangaId)
+    const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
 
     const response = {
       bookmarks: bookmarks.map(({ mangaId, createdAt }) => ({

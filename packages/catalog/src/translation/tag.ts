@@ -1,26 +1,30 @@
 import 'server-only'
+import type { Locale } from '@litomi/domain/locale'
+
 import { MangaTag } from '@litomi/domain/manga/model'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
-import { Multilingual, MultilingualMultiLabels } from './common'
+import { getPrimaryTranslation, type TranslationEntry } from './common'
 import tagCategoryJSON from './tag-category.json'
 import tagMixedJSON from './tag-mixed.json'
 import tagOtherJSON from './tag-other.json'
 import tagSingleSexJSON from './tag-single-sex.json'
 import tagUnisexTranslations from './tag-unisex.json'
 
-const TAG_CATEGORY_TRANSLATION: Record<string, MultilingualMultiLabels | undefined> = tagCategoryJSON
-const TAG_MIXED_TRANSLATION: Record<string, MultilingualMultiLabels | undefined> = tagMixedJSON
-const TAG_OTHER_TRANSLATION: Record<string, MultilingualMultiLabels | undefined> = tagOtherJSON
-const TAG_SINGLE_SEX_TRANSLATION: Record<string, MultilingualMultiLabels | undefined> = tagSingleSexJSON
-const TAG_UNISEX_TRANSLATION: Record<string, MultilingualMultiLabels | undefined> = tagUnisexTranslations
+type TagTranslationEntry = TranslationEntry<string | string[]>
 
-export function translateTag(categoryFallback: string, value: string, locale: keyof Multilingual): MangaTag {
+const TAG_CATEGORY_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagCategoryJSON
+const TAG_MIXED_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagMixedJSON
+const TAG_OTHER_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagOtherJSON
+const TAG_SINGLE_SEX_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagSingleSexJSON
+const TAG_UNISEX_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagUnisexTranslations
+
+export function translateTag(categoryFallback: string, value: string, locale: Locale): MangaTag {
   const normalizedValue = normalizeValue(value)
   const { translation, category } = findTranslation(normalizedValue, categoryFallback)
   const translatedCategory = translateTagCategory(category, locale)
-  const localeValue = translation?.[locale] ?? translation?.en
-  const translatedValue = (Array.isArray(localeValue) ? localeValue[0] : localeValue) || normalizedValue
+
+  const translatedValue = translation ? getPrimaryTranslation(translation, locale) || normalizedValue : normalizedValue
 
   return {
     category,
@@ -33,7 +37,7 @@ function findTranslation(
   normalizedValue: string,
   category: string,
 ): {
-  translation: MultilingualMultiLabels | null
+  translation: TagTranslationEntry | null
   category: string
 } {
   const translation = TAG_SINGLE_SEX_TRANSLATION[`${category}:${normalizedValue}`]
@@ -74,8 +78,7 @@ function findTranslation(
   }
 }
 
-function translateTagCategory(category: string, locale: keyof Multilingual): string {
+function translateTagCategory(category: string, locale: Locale): string {
   const translation = TAG_CATEGORY_TRANSLATION[category]
-  const localeValue = translation?.[locale] ?? translation?.en
-  return Array.isArray(localeValue) ? localeValue[0] : (localeValue ?? category)
+  return translation ? getPrimaryTranslation(translation, locale) || category : category
 }

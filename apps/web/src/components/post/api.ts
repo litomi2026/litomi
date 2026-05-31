@@ -15,7 +15,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 export type SetPostLikeResponse = DELETEV1PostIdLikeResponse | PUTV1PostIdLikeResponse
 
 export async function createPost(body: POSTV1PostBody) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post`
+  const url = new URL('/api/v1/post', NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1PostResponse>(url, {
     method: 'POST',
@@ -28,7 +28,7 @@ export async function createPost(body: POSTV1PostBody) {
 }
 
 export async function deletePost(postId: number) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post/${postId}`
+  const url = new URL(`/api/v1/post/${postId}`, NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<DELETEV1PostIdResponse>(url, {
     method: 'DELETE',
@@ -39,7 +39,7 @@ export async function deletePost(postId: number) {
 }
 
 export async function toggleLikingPost(postId: number, liked: boolean) {
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post/${postId}/like`
+  const url = new URL(`/api/v1/post/${postId}/like`, NEXT_PUBLIC_API_ORIGIN)
 
   const { data } = await fetchAPIData<SetPostLikeResponse>(url, {
     method: liked ? 'PUT' : 'DELETE',

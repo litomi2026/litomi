@@ -6,12 +6,13 @@ import { env } from '@litomi/env/client'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Flag } from 'lucide-react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
+import { Link } from '@/i18n/navigation'
 import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -37,13 +38,14 @@ type ReasonButtonProps = {
 }
 
 export default function MangaReportButton({ mangaId, className = '', labelClassName = '' }: Props) {
-  const { guardAdultAccess, me } = useAdultAccessGuard()
   const [open, setOpen] = useState(false)
+  const t = useTranslations('Common.report')
+  const { guardAdultAccess, me } = useAdultAccessGuard()
   const isAdultGateRequired = me?.adultVerification.required === true
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/report`
+      const url = new URL(`/api/v1/manga/${mangaId}/report`, NEXT_PUBLIC_API_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1MangaIdReportResponse>(url, {
         method: 'POST',
@@ -56,9 +58,9 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
     },
     onSuccess: (data) => {
       if (data.duplicated) {
-        toast.info('이미 신고했어요')
+        toast.info(t('duplicated'))
       } else {
-        toast.success('신고가 접수됐어요')
+        toast.success(t('submitted'))
       }
     },
     onSettled: () => setOpen(false),
@@ -77,7 +79,7 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
   return (
     <>
       <button
-        aria-label="신고"
+        aria-label={t('shortAction')}
         className={twMerge(
           'flex w-full items-center justify-center gap-2 rounded-lg border border-foreground/20 px-4 py-2 text-foreground transition',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 hover:bg-foreground/10',
@@ -87,39 +89,40 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
         type="button"
       >
         <Flag className="size-4" />
-        <span className={twMerge('text-sm font-semibold hidden lg:inline', labelClassName)}>신고하기</span>
+        <span className={twMerge('text-sm font-semibold hidden lg:inline', labelClassName)}>{t('action')}</span>
       </button>
 
-      <Dialog ariaLabel="작품 신고" onClose={() => setOpen(false)} open={open}>
-        <DialogHeader onClose={() => setOpen(false)} title="작품 신고" />
+      <Dialog ariaLabel={t('title')} onClose={() => setOpen(false)} open={open}>
+        <DialogHeader onClose={() => setOpen(false)} title={t('title')} />
         <DialogBody className="p-2 space-y-2">
           <div className="grid gap-1">
             <ReasonButton
               disabled={reportMutation.isPending}
-              label="실존 인물 딥페이크 같아요"
+              label={t('reasons.deepfake')}
               onClick={() => reportMutation.mutate({ reason: MangaReportReason.DEEPFAKE })}
             />
             <ReasonButton
               disabled={reportMutation.isPending}
-              label="미성년자로 보이는 실존 인물이 나와요"
+              label={t('reasons.realPersonMinor')}
               onClick={() => reportMutation.mutate({ reason: MangaReportReason.REAL_PERSON_MINOR })}
             />
           </div>
           <div className="grid gap-1 p-3 py-2 text-xs text-zinc-500">
             {isAdultGateRequired && (
               <p>
+                {t('adultVerificationPrefix')}
                 <Link className="underline underline-offset-2" href={`/@${me?.name}/settings#adult`} prefetch={false}>
-                  비바톤 익명 인증
+                  {t('adultVerificationAction')}
                 </Link>
-                을 완료한 사용자만 신고할 수 있어요
+                {t('adultVerificationSuffix')}
               </p>
             )}
             <p>
-              저작권/DMCA 신고는{' '}
+              {t('dmcaPrefix')}{' '}
               <Link className="underline underline-offset-2" href="/doc/dmca" prefetch={false}>
-                여기에서
+                {t('dmcaAction')}
               </Link>{' '}
-              할 수 있어요
+              {t('dmcaSuffix')}
             </p>
           </div>
         </DialogBody>
@@ -130,7 +133,7 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
             onClick={() => setOpen(false)}
             type="button"
           >
-            취소
+            {t('cancel')}
           </button>
         </DialogFooter>
       </Dialog>

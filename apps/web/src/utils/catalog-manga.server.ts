@@ -1,14 +1,15 @@
 import 'server-only'
 
+import type { PublicLocale } from '@litomi/domain/locale'
 import type { Manga } from '@litomi/domain/manga/model'
 
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
 import { selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
 
-export async function getCatalogMangaMap(mangaIds: readonly number[]): Promise<Map<number, Manga>> {
+export async function getCatalogMangaMap(mangaIds: number[], locale: PublicLocale): Promise<Map<number, Manga>> {
   try {
     const records = await selectCatalogMangaRecordsByIds(mangaIds)
-    return catalogMangaRecordsToMangaMap(records)
+    return catalogMangaRecordsToMangaMap(records, locale)
   } catch (error) {
     console.error('Catalog manga lookup failed:', error)
     return new Map()

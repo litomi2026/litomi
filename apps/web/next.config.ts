@@ -6,6 +6,7 @@ import { sec } from '@litomi/std'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
 import { withBotId } from 'botid/next/config'
+import createNextIntlPlugin from 'next-intl/plugin'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -126,9 +127,12 @@ const nextConfig: NextConfig = {
   }),
 }
 
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
+const withNextIntlConfig = withNextIntl(nextConfig)
+
 const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
-})(nextConfig)
+})(withNextIntlConfig)
 
 export default withSentryConfig(withBotId(withAnalyzer), {
   org: process.env.SENTRY_ORG,

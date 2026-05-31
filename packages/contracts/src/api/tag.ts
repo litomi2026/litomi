@@ -10,7 +10,7 @@ export const getV1TagQuerySchema = z.object({
   category: z.enum(TagCategoryParam),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(TAGS_PER_PAGE).default(TAGS_PER_PAGE),
-  locale: z.enum(Locale).default(Locale.KO),
+  locale: z.enum(Locale),
 })
 
 export type GETV1TagQuery = z.infer<typeof getV1TagQuerySchema>

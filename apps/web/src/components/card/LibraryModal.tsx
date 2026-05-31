@@ -4,13 +4,14 @@ import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { create } from 'zustand'
 
-import { addMangaToLibraries } from '@/app/(navigation)/library/api'
+import { addMangaToLibraries } from '@/app/[locale]/(navigation)/library/api'
+import { Link } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 
 import useLibrariesQuery from './useLibrariesQuery'
@@ -30,6 +31,7 @@ const useLibraryModalStore = create<LibraryModalStore>()((set) => ({
 }))
 
 export default function LibraryModal() {
+  const t = useTranslations('Common.libraryModal')
   const { isOpen, mangaId, setIsOpen, setMangaId } = useLibraryModalStore()
   const queryClient = useQueryClient()
   const [selectedLibraryIds, setSelectedLibraryIds] = useState<Set<number>>(new Set())
@@ -45,14 +47,14 @@ export default function LibraryModal() {
     mutationFn: addMangaToLibraries,
     onSuccess: ({ addedCount }, { libraryIds }) => {
       if (addedCount === 0) {
-        toast.warning(`해당 서재에 이미 추가되어 있어요`)
+        toast.warning(t('duplicated'))
         return
       }
 
       if (addedCount === libraryIds.length) {
-        toast.success(`${addedCount}개 서재에 추가했어요`)
+        toast.success(t('added', { count: addedCount }))
       } else if (addedCount > 0) {
-        toast.success(`${addedCount}개 서재에 추가했어요 (중복 ${libraryIds.length - addedCount}개)`)
+        toast.success(t('addedWithDuplicates', { count: addedCount, duplicateCount: libraryIds.length - addedCount }))
       }
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
@@ -102,37 +104,37 @@ export default function LibraryModal() {
 
   return (
     <Dialog
-      ariaLabel="서재에 추가"
+      ariaLabel={t('title')}
       className="sm:max-w-prose"
       onAfterClose={handleAfterClose}
       onClose={requestClose}
       open={isOpen}
     >
       <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
-        <DialogHeader onClose={requestClose} title="서재에 추가" />
+        <DialogHeader onClose={requestClose} title={t('title')} />
 
         <DialogBody className="flex flex-col gap-4">
           {isLibrariesPending ? (
             <div className="flex flex-1 items-center justify-center py-12">
               <div className="flex items-center gap-2 text-zinc-400">
                 <Loader2 className="size-5 animate-spin" />
-                <span className="text-sm">불러오는 중이에요</span>
+                <span className="text-sm">{t('loading')}</span>
               </div>
             </div>
           ) : isLibrariesError ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-4 py-12 text-center">
-              <p className="text-sm text-zinc-400">서재 목록을 불러오지 못했어요</p>
+              <p className="text-sm text-zinc-400">{t('loadError')}</p>
               <button
                 className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition font-medium text-zinc-200"
                 onClick={() => refetchLibraries()}
                 type="button"
               >
-                다시 시도
+                {t('retry')}
               </button>
             </div>
           ) : libraries?.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-zinc-400 mb-6">아직 서재가 없어요</p>
+              <p className="text-zinc-400 mb-6">{t('empty')}</p>
               <Link
                 className={twMerge(
                   'inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand hover:bg-brand/90',
@@ -143,7 +145,7 @@ export default function LibraryModal() {
                 prefetch={false}
               >
                 <Plus className="size-5 shrink-0" />
-                <span>서재 만들기</span>
+                <span>{t('create')}</span>
               </Link>
             </div>
           ) : (
@@ -167,7 +169,7 @@ export default function LibraryModal() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium break-all line-clamp-1 text-zinc-100">{library.name}</h3>
-                  <p className="text-sm text-zinc-400">{library.itemCount}개 작품</p>
+                  <p className="text-sm text-zinc-400">{t('itemCount', { count: library.itemCount })}</p>
                 </div>
               </label>
             ))
@@ -190,7 +192,9 @@ export default function LibraryModal() {
                 <Plus className="size-5" />
               )}
               <span>
-                {selectedLibraryIds.size > 0 ? `${selectedLibraryIds.size}개 서재에 추가` : '서재를 선택해 주세요'}
+                {selectedLibraryIds.size > 0
+                  ? t('addSelected', { count: selectedLibraryIds.size })
+                  : t('selectLibrary')}
               </span>
             </button>
             <button
@@ -202,7 +206,7 @@ export default function LibraryModal() {
               onClick={requestClose}
               type="button"
             >
-              취소
+              {t('cancel')}
             </button>
           </DialogFooter>
         )}

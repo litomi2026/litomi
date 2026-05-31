@@ -1,5 +1,4 @@
 import 'server-only'
-import { Locale } from '@litomi/domain/locale'
 import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { z } from 'zod'
 
@@ -21,7 +20,6 @@ export const GETProxyKSearchSchema = z
     'next-views': z.coerce.number().int().min(0).optional(),
     'next-views-id': z.coerce.number().int().positive().optional(),
     skip: z.coerce.number().int().min(0).max(10000).optional(),
-    locale: z.enum(Locale).optional(),
   })
   .refine(
     (data) => {

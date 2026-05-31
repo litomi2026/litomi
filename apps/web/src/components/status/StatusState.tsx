@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 
-import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
+
+import { Link } from '@/i18n/navigation'
 
 import { getStatusActionClassName, type StatusActionVariant } from './styles'
 

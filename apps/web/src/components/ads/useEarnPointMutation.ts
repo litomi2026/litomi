@@ -15,7 +15,7 @@ export function useEarnPointMutation() {
 
   return useMutation<POSTV1PointEarnResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/points/earn`
+      const url = new URL('/api/v1/points/earn', NEXT_PUBLIC_API_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1PointEarnResponse>(url, {
         method: 'POST',
@@ -28,7 +28,7 @@ export function useEarnPointMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.points })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactions })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactionsBase })
     },
     meta: { suppressGlobalErrorToastForStatuses: [403] },
   })

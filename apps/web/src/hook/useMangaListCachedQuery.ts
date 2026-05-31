@@ -101,7 +101,7 @@ export default function useMangaListCachedQuery({
         throw new InactiveQueuedMangaRequestError()
       }
 
-      const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/manga/${id}`
+      const url = new URL(`/api/proxy/manga/${id}`, NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
       const { data, response } = await fetchAPIData<Manga>(url)
 
       if (isDegradedResponse(response.headers)) {

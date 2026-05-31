@@ -14,7 +14,8 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchCensorshipsMap() {
   const params = new URLSearchParams({ limit: MAX_CENSORSHIPS_PER_USER.toString() })
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship?${params}`
+  const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+  url.search = params.toString()
   const { data } = await fetchAPIData<GETV1CensorshipResponse>(url, { credentials: 'include' })
   const lookup = new Map<string, CensorshipItem>()
 

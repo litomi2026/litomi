@@ -1,45 +1,51 @@
-import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
 import type { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
 
-import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME } from '@litomi/domain/app/metadata'
-import { env } from '@litomi/env/client'
+import { APP_METADATA } from '@litomi/domain/app/metadata'
+import { DEFAULT_LOCALE, LOCALE_OPEN_GRAPH_TAGS, PUBLIC_LOCALES, type PublicLocale } from '@litomi/domain/locale'
 
-export const defaultOpenGraph: OpenGraph = {
-  title: APPLICATION_NAME,
-  description: DESCRIPTION,
-  url: env.NEXT_PUBLIC_APP_ORIGIN,
-  siteName: SHORT_NAME,
-  images: [{ url: '/og-image.webp', alt: SHORT_NAME }],
-  type: 'website',
-  locale: 'ko_KR',
-  alternateLocale: ['en_US', 'ja_JP'],
-}
+import { getPathname } from '@/i18n/navigation'
 
 type Params = {
   title?: string
   description?: string
   images?: Twitter['images']
-  url?: string
+  pathname: string
+  locale: PublicLocale
 }
 
-export function generateOpenGraphMetadata({ title, description, images, url }: Params = {}) {
-  const metadataOverrides = {
-    title: title ? `${title} - ${SHORT_NAME}` : defaultOpenGraph.title,
-    description: description || defaultOpenGraph.description,
+export function generateLocalizedMetadata({ pathname, locale, title, description, images }: Params) {
+  const canonical = getPathname({ href: pathname, locale })
+  const { applicationName, description: defaultDescription, shortName } = APP_METADATA[locale]
+  const openGraphLocale = LOCALE_OPEN_GRAPH_TAGS[locale]
+
+  const socialMetadata = {
+    title: title ? `${title} - ${shortName}` : applicationName,
+    description: description ?? defaultDescription,
+    images: images ?? [{ url: '/og-image.webp', alt: shortName }],
   }
 
   return {
+    alternates: {
+      canonical,
+      languages: {
+        ...Object.fromEntries(PUBLIC_LOCALES.map((locale) => [locale, getPathname({ href: pathname, locale })])),
+        'x-default': getPathname({ href: pathname, locale: DEFAULT_LOCALE }),
+      },
+    },
     openGraph: {
-      ...defaultOpenGraph,
-      ...metadataOverrides,
-      images: images || defaultOpenGraph.images,
-      ...(url && { url }),
+      ...socialMetadata,
+      locale: openGraphLocale,
+      alternateLocale: PUBLIC_LOCALES.map((locale) => LOCALE_OPEN_GRAPH_TAGS[locale]).filter(
+        (locale) => locale !== openGraphLocale,
+      ),
+      siteName: shortName,
+      type: 'website',
+      url: canonical,
     },
     twitter: {
+      ...socialMetadata,
       card: 'summary_large_image',
       site: '@litomi_in',
-      ...metadataOverrides,
-      images: defaultOpenGraph.images,
     },
   }
 }

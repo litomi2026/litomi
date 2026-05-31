@@ -6,12 +6,14 @@ import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Copy, EyeOff, Loader2, Search } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import BottomSheet, { BottomSheetItem } from '@/components/ui/BottomSheet'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import useClipboard from '@/hook/useClipboard'
+import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import { fetchAPIData } from '@/utils/api-request'
@@ -34,11 +36,12 @@ const TAG_CATEGORY_TO_CENSORSHIP_KEY: Record<string, CensorshipKey> = {
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function TagOptionsSheet({ isOpen, onClose, category, value, label }: Props) {
-  const { copy } = useClipboard()
-  const router = useRouter()
   const { canAccess, guardAdultAccess, me } = useAdultAccessGuard()
   const { data: censorshipsMap } = useCensorshipsMapQuery()
+  const t = useTranslations('Common.mangaCard.tagOptions')
   const queryClient = useQueryClient()
+  const { copy } = useClipboard()
+  const router = useRouter()
 
   const isLoggedIn = Boolean(me)
   const censorshipKey = TAG_CATEGORY_TO_CENSORSHIP_KEY[category] ?? CensorshipKey.TAG
@@ -49,7 +52,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
 
   const toggleCensorshipMutation = useMutation({
     mutationFn: async () => {
-      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/censorship`
+      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
 
       if (isCensored && existingCensorship) {
         await fetchAPIData<DELETEV1CensorshipDeleteResponse>(url, {
@@ -83,10 +86,10 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
 
   function handleExcludeSearch() {
     const searchParams = new URLSearchParams(window.location.search)
-    const query = searchParams.get('query') ?? ''
+    const query = searchParams.get(SearchPageSearchParam.QUERY) ?? ''
     const excludeTag = `-${fullTag}`
     const newQuery = query ? `${query} ${excludeTag}` : excludeTag
-    searchParams.set('query', newQuery)
+    searchParams.set(SearchPageSearchParam.QUERY, newQuery)
     router.push(`/search?${searchParams}`)
     onClose()
   }
@@ -107,7 +110,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
     <BottomSheet isOpen={isOpen} onClose={onClose} title={label}>
       <BottomSheetItem onClick={handleCopy}>
         <Copy className="size-5 text-zinc-400" />
-        <span>태그 복사</span>
+        <span>{t('copy')}</span>
       </BottomSheetItem>
 
       <BottomSheetItem disabled={!isLoggedIn || toggleCensorshipMutation.isPending} onClick={handleToggleCensorship}>
@@ -116,14 +119,16 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
         ) : (
           <EyeOff className="size-5 text-zinc-400" />
         )}
-        <span>{isCensored ? '검열 해제' : '검열하기'}</span>
-        {!isLoggedIn && <span className="text-xs text-zinc-500 ml-auto">로그인 필요</span>}
-        {isLoggedIn && !canAccess && <span className="text-xs text-zinc-500 ml-auto">성인인증 필요</span>}
+        <span>{isCensored ? t('uncensor') : t('censor')}</span>
+        {!isLoggedIn && <span className="text-xs text-zinc-500 ml-auto">{t('loginRequired')}</span>}
+        {isLoggedIn && !canAccess && (
+          <span className="text-xs text-zinc-500 ml-auto">{t('adultVerificationRequired')}</span>
+        )}
       </BottomSheetItem>
 
       <BottomSheetItem onClick={handleExcludeSearch}>
         <Search className="size-5 text-zinc-400" />
-        <span>이 태그 제외하고 검색</span>
+        <span>{t('excludeSearch')}</span>
       </BottomSheetItem>
     </BottomSheet>
   )

@@ -17,7 +17,8 @@ export async function fetchLibraries() {
   const params = new URLSearchParams()
   params.set('scope', 'me')
 
-  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library?${params}`
+  const url = new URL('/api/v1/library', NEXT_PUBLIC_API_ORIGIN)
+  url.search = params.toString()
   const { data } = await fetchAPIData<GETV1LibraryListResponse>(url, { credentials: 'include' })
   return data.libraries
 }

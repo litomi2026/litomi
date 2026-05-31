@@ -1,8 +1,9 @@
 'use client'
 
 import { ArrowRight } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { ComponentProps } from 'react'
+
+import { useRouter } from '@/i18n/navigation'
 
 interface Props extends ComponentProps<'button'> {
   fallbackUrl?: string

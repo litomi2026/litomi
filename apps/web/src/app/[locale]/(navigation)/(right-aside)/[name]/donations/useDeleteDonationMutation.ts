@@ -1,0 +1,59 @@
+import type { GETV1PointsDonationsMeResponse } from '@litomi/contracts'
+
+import { env } from '@litomi/env/client'
+import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
+import { toast } from 'sonner'
+
+import { QueryKeys } from '@/lib/react-query/query-keys'
+import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
+
+const { NEXT_PUBLIC_API_ORIGIN } = env
+
+type MutationContext = {
+  previous?: InfiniteData<GETV1PointsDonationsMeResponse>
+}
+
+type Variables = {
+  donationId: number
+}
+
+export default function useDeleteDonationMutation() {
+  const locale = useLocale()
+  const queryClient = useQueryClient()
+  const myDonationsQueryKey = QueryKeys.myDonations(locale)
+
+  return useMutation<void, ProblemDetailsError, Variables, MutationContext>({
+    mutationFn: async ({ donationId }) => {
+      const url = new URL(`/api/v1/points/donations/${donationId}`, NEXT_PUBLIC_API_ORIGIN)
+      await fetchAPIData<void>(url, { method: 'DELETE', credentials: 'include' })
+    },
+    onMutate: async ({ donationId }) => {
+      await queryClient.cancelQueries({ queryKey: myDonationsQueryKey })
+      const previous = queryClient.getQueryData<InfiniteData<GETV1PointsDonationsMeResponse>>(myDonationsQueryKey)
+
+      if (previous) {
+        queryClient.setQueryData<InfiniteData<GETV1PointsDonationsMeResponse>>(myDonationsQueryKey, {
+          ...previous,
+          pages: previous.pages.map((page) => ({
+            ...page,
+            items: page.items.filter((item) => item.id !== donationId),
+          })),
+        })
+      }
+
+      return { previous }
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(myDonationsQueryKey, context.previous)
+      }
+    },
+    onSuccess: () => {
+      toast.success('삭제했어요')
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.myDonationsBase })
+    },
+  })
+}

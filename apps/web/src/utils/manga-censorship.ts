@@ -1,8 +1,9 @@
 import type { CensorshipItem } from '@litomi/contracts'
 import type { Manga } from '@litomi/domain/manga/model'
 
-import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@litomi/domain/censorship/blind-tag'
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+
+import { DEFAULT_CENSORSHIP_VALUES } from '@/app/[locale]/(navigation)/(right-aside)/[name]/censor/constants'
 
 export type MangaCensorshipMatch = {
   censoringReasons?: string[]
@@ -44,21 +45,21 @@ export function getMatchedCensorships({ manga, censorshipsMap, defaultCensorship
     const tagKey = `${CensorshipKey.TAG}:${tag.value}`
     const tagMatches = censorshipsMap?.get(tagKey)
 
-    if (BLIND_TAG_VALUES.includes(tag.value)) {
+    if (DEFAULT_CENSORSHIP_VALUES.some((item) => item.value === tag.value)) {
       if (tagMatches?.level === CensorshipLevel.NONE) {
         continue
       }
 
       if (tagMatches) {
-        matchedLabels.push(BLIND_TAG_VALUE_TO_LABEL[tag.value])
+        matchedLabels.push(getTagDisplayLabel(tag.label))
         highest = Math.max(highest, tagMatches.level)
       } else if (defaultCensorshipEnabled) {
-        matchedLabels.push(BLIND_TAG_VALUE_TO_LABEL[tag.value])
+        matchedLabels.push(getTagDisplayLabel(tag.label))
         highest = Math.max(highest, CensorshipLevel.LIGHT)
       }
     } else {
       if (tagMatches && tagMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(tag.label.split(':')[1])
+        matchedLabels.push(getTagDisplayLabel(tag.label))
         highest = Math.max(highest, tagMatches.level)
       }
     }
@@ -74,7 +75,7 @@ export function getMatchedCensorships({ manga, censorshipsMap, defaultCensorship
     const tagMatches = censorshipsMap.get(`${tagKey}:${tag.value}`)
 
     if (tagMatches && tagMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(tag.label.split(':')[1])
+      matchedLabels.push(getTagDisplayLabel(tag.label))
       highest = Math.max(highest, tagMatches.level)
     }
   }
@@ -161,6 +162,10 @@ function createCensorshipMatch(matchedLabels: string[], highest: CensorshipLevel
     censoringReasons: Array.from(new Set(matchedLabels)),
     highestCensorshipLevel: highest,
   }
+}
+
+function getTagDisplayLabel(label: string) {
+  return label.split(':')[1] ?? label
 }
 
 function mapTagCategoryToCensorshipKey(category: string) {

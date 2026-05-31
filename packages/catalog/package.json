@@ -9,7 +9,6 @@
     "./translation/artist": "./src/translation/artist.ts",
     "./translation/category": "./src/translation/category.ts",
     "./translation/character": "./src/translation/character.ts",
-    "./translation/common": "./src/translation/common.ts",
     "./translation/group": "./src/translation/group.ts",
     "./translation/language": "./src/translation/language.ts",
     "./translation/series": "./src/translation/series.ts",

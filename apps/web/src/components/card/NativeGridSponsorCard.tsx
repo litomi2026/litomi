@@ -4,6 +4,7 @@ import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 
 import { View } from '@litomi/std'
 import { ExternalLink } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { type CSSProperties, useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -38,18 +39,21 @@ type NativeGridSponsorCardStyle = CSSProperties &
     string
   >
 
-export default function NativeGridSponsorCard({ className, sponsor, variant = View.CARD }: Props) {
-  const imageCount = sponsor.imageUrls.length
-  const [imageIndex, setImageIndex] = useState(0)
+type SponsorDisclosureKey = 'disclosure' | 'publicAd' | 'publicCampaign'
 
+export default function NativeGridSponsorCard({ className, sponsor, variant = View.CARD }: Props) {
+  const [imageIndex, setImageIndex] = useState(0)
+  const t = useTranslations('Common.mangaCard.sponsor')
+
+  const imageCount = sponsor.imageUrls.length
   const activeImageIndex = imageCount > 0 ? imageIndex % imageCount : 0
   const imageUrl = sponsor.imageUrls[activeImageIndex]
-  const disclosureLabel = sponsor.label.trim() || '광고'
+  const disclosureLabel = getDisclosureLabel(sponsor.label, t)
   const advertiserLabel = sponsor.advertiserName?.trim()
-  const ctaLabel = sponsor.ctaLabel?.trim() || '사이트 열기'
+  const ctaLabel = sponsor.ctaLabel?.trim() || t('cta')
   const sponsorContextLabel = [disclosureLabel, advertiserLabel].filter(Boolean).join(', ')
-  const imageLinkLabel = `${sponsorContextLabel}: ${sponsor.title} 이미지 열기, 새 탭에서 열림`
-  const sponsorLinkLabel = `${sponsorContextLabel}: ${sponsor.title} 광고주 사이트 열기, 새 탭에서 열림`
+  const imageLinkLabel = t('imageLinkLabel', { context: sponsorContextLabel, title: sponsor.title })
+  const sponsorLinkLabel = t('sponsorLinkLabel', { context: sponsorContextLabel, title: sponsor.title })
   const viewEventCooldownKey = `${sponsor.id}:${sponsor.placementId}:${sponsor.creativeId}`
   const theme = sponsor.theme
 
@@ -143,7 +147,7 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
             {sponsor.imageUrls.map((url, index) => (
               <button
                 aria-current={index === activeImageIndex ? 'true' : undefined}
-                aria-label={`${sponsor.title} 광고 이미지 ${index + 1}/${imageCount} 보기`}
+                aria-label={t('imageIndexLabel', { count: imageCount, index: index + 1, title: sponsor.title })}
                 className={twMerge(
                   'h-1.5 w-1.5 rounded-full bg-white/45 transition-[width,background-color] hover:bg-white/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--native-grid-sponsor-accent)',
                   index === activeImageIndex && 'w-4 bg-white/90',
@@ -181,4 +185,20 @@ export default function NativeGridSponsorCard({ className, sponsor, variant = Vi
       )}
     </article>
   )
+}
+
+function getDisclosureLabel(label: string, t: (key: SponsorDisclosureKey) => string) {
+  const trimmedLabel = label.trim()
+
+  switch (trimmedLabel) {
+    case '':
+    case '광고':
+      return t('disclosure')
+    case '공익 광고':
+      return t('publicAd')
+    case '공익 캠페인':
+      return t('publicCampaign')
+    default:
+      return trimmedLabel
+  }
 }

@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 
 import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 
+import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
+
 type SearchParamsInput = Record<string, string | string[] | undefined>
 
 type SearchSEO = {
@@ -11,15 +13,17 @@ type SearchSEO = {
   title: string
 }
 
-const MAX_SEARCH_META_QUERY_LENGTH = 50
-
-const SEARCH_LANDING_QUERY_LABELS: Record<string, string> = {
-  'language:korean': '한국어 작품',
-  'type:doujinshi': '동인지',
-  'type:manga': '망가',
+type SearchSEOCopy = {
+  defaultDescription: string
+  defaultTitle: string
+  landingQueryLabels: Record<string, string>
+  queryDescription: (query: string) => string
+  queryTitle: (query: string) => string
 }
 
-export const SEARCH_LANDING_QUERIES = ['', ...Object.keys(SEARCH_LANDING_QUERY_LABELS)]
+const MAX_SEARCH_META_QUERY_LENGTH = 50
+
+export const SEARCH_LANDING_QUERIES = ['', 'language:korean', 'type:doujinshi', 'type:manga']
 
 export function getSearchCanonicalPath(query: string) {
   const normalizedQuery = normalizeSearchQuery(query).toLowerCase()
@@ -28,27 +32,24 @@ export function getSearchCanonicalPath(query: string) {
     return '/search'
   }
 
-  const params = new URLSearchParams({ query: normalizedQuery })
+  const params = new URLSearchParams({ [SearchPageSearchParam.QUERY]: normalizedQuery })
   return `/search?${params}`
 }
 
-export function getSearchSEO(searchParams: SearchParamsInput): SearchSEO {
-  const query = normalizeSearchQuery(readSearchParamValue(searchParams.query))
+export function getSearchSEO(searchParams: SearchParamsInput, copy: SearchSEOCopy): SearchSEO {
+  const query = normalizeSearchQuery(readSearchParamValue(searchParams[SearchPageSearchParam.QUERY]))
   const canonicalQuery = query.toLowerCase()
-  const displayQuery = formatSearchQuery(query).slice(0, MAX_SEARCH_META_QUERY_LENGTH)
+  const displayQuery = formatSearchQuery(query, copy.landingQueryLabels).slice(0, MAX_SEARCH_META_QUERY_LENGTH)
 
   const hasNonIndexableParams = Object.entries(searchParams).some(([key, value]) => {
-    return key !== 'query' && readSearchParamValue(value) !== ''
+    return key !== SearchPageSearchParam.QUERY && readSearchParamValue(value) !== ''
   })
 
   const idSearchCanonical = getIdSearchCanonicalPath(canonicalQuery)
   const isIndexable = !hasNonIndexableParams && SEARCH_LANDING_QUERIES.includes(canonicalQuery)
   const canonical = idSearchCanonical ?? getSearchCanonicalPath(query)
-  const title = displayQuery ? `${displayQuery} 검색` : '검색'
-
-  const description = displayQuery
-    ? `${displayQuery} 조건에 맞는 만화와 동인지를 리토미에서 찾아보세요.`
-    : '리토미에서 언어, 종류, 작가, 시리즈, 캐릭터, 태그 조건으로 만화와 동인지를 검색하세요.'
+  const title = displayQuery ? copy.queryTitle(displayQuery) : copy.defaultTitle
+  const description = displayQuery ? copy.queryDescription(displayQuery) : copy.defaultDescription
 
   return {
     canonical,
@@ -61,7 +62,7 @@ export function getSearchSEO(searchParams: SearchParamsInput): SearchSEO {
   }
 }
 
-function formatSearchQuery(query: string) {
+function formatSearchQuery(query: string, landingQueryLabels: Record<string, string>) {
   if (!query) {
     return ''
   }
@@ -69,7 +70,7 @@ function formatSearchQuery(query: string) {
   return query
     .split(/\s+/)
     .filter(Boolean)
-    .map((token) => SEARCH_LANDING_QUERY_LABELS[token.toLowerCase()] ?? token)
+    .map((token) => landingQueryLabels[token.toLowerCase()] ?? token)
     .join(' · ')
 }
 

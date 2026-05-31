@@ -2,9 +2,10 @@
 
 import { Manga } from '@litomi/domain/manga/model'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 
+import { Link } from '@/i18n/navigation'
 import { MAX_THUMBNAIL_IMAGES } from '@/ui-policy'
 
 import LinkPending from '../LinkPending'
@@ -18,9 +19,11 @@ type Props = {
 }
 
 export default function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Props) {
-  const { images = [] } = manga
-  const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
+  const sliderRef = useRef<HTMLAnchorElement>(null)
+  const t = useTranslations('Common.mangaCard.preview')
+
+  const { images = [] } = manga
   const totalSlides = Math.min(images.length, MAX_THUMBNAIL_IMAGES)
   const prevIndex = (activeIndex - 1 + totalSlides) % totalSlides
   const nextIndex = (activeIndex + 1) % totalSlides
@@ -71,14 +74,14 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
         ))}
       </Link>
       <button
-        aria-label="이전 이미지"
+        aria-label={t('previous')}
         className="pointer-coarse:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(prevIndex)}
       >
         <ChevronLeft className="size-4" />
       </button>
       <button
-        aria-label="다음 이미지"
+        aria-label={t('next')}
         className="pointer-coarse:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(nextIndex)}
       >

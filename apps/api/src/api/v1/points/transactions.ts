@@ -5,6 +5,7 @@ import {
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pointTransactionTable } from '@litomi/db/app/points'
+import { Locale, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -23,8 +24,7 @@ const PER_PAGE = 20
 
 route.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1PointTransactionQuerySchema), async (c) => {
   const userId = c.get('userId')!
-
-  const { cursor } = c.req.valid('query')
+  const { cursor, locale } = c.req.valid('query')
 
   const whereConditions = cursor
     ? and(eq(pointTransactionTable.userId, userId), lt(pointTransactionTable.id, cursor))
@@ -55,7 +55,7 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1PointT
       type: t.amount > 0 ? 'earn' : 'spend',
       amount: t.amount,
       balanceAfter: t.balanceAfter,
-      description: getTransactionDescription({ amount: t.amount, transactionType: t.type }),
+      description: getTransactionDescription({ amount: t.amount, locale, transactionType: t.type }),
       createdAt: t.createdAt.toISOString(),
     }))
 
@@ -72,38 +72,146 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1PointT
 
 export default route
 
+type ExpansionKind = 'bookmark' | 'history' | 'library' | 'rating'
+
 type TransactionDescriptionParams = {
   transactionType: number
   amount: number
+  locale: Locale
 }
 
-function getTransactionDescription({ transactionType, amount }: TransactionDescriptionParams): string | null {
+type TransactionLabelKey =
+  | 'adClick'
+  | 'adminGrant'
+  | 'badgePurchase'
+  | 'donation'
+  | 'pointUnit'
+  | 'rouletteBet'
+  | 'roulettePayout'
+  | 'themePurchase'
+
+function getTransactionDescription({ transactionType, amount, locale }: TransactionDescriptionParams): string | null {
+  const labels = TRANSACTION_LABELS[locale]
+  const amountLabel = amount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])
+  const absoluteAmountLabel = Math.abs(amount).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])
+
   switch (transactionType) {
     case TRANSACTION_TYPE.AD_CLICK:
-      return '광고 클릭'
+      return labels.adClick
     case TRANSACTION_TYPE.ADMIN_GRANT:
-      return `운영 지급 (+${amount.toLocaleString()} 리보)`
+      return `${labels.adminGrant} (+${amountLabel} ${labels.pointUnit})`
     case TRANSACTION_TYPE.BADGE_PURCHASE:
-      return '프로필 뱃지 구매'
+      return labels.badgePurchase
     case TRANSACTION_TYPE.BOOKMARK_EXPANSION_LARGE:
-      return `북마크 확장 (+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개)`
+      return getExpansionLabel(locale, 'bookmark', POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT)
     case TRANSACTION_TYPE.BOOKMARK_EXPANSION_SMALL:
-      return `북마크 확장 (+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개)`
+      return getExpansionLabel(locale, 'bookmark', POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT)
     case TRANSACTION_TYPE.DONATION:
-      return '후원'
+      return labels.donation
     case TRANSACTION_TYPE.HISTORY_EXPANSION:
-      return `감상 기록 확장 (+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개)`
+      return getExpansionLabel(locale, 'history', POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT)
     case TRANSACTION_TYPE.LIBRARY_EXPANSION:
-      return `내 서재 확장 (+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개)`
+      return getExpansionLabel(locale, 'library', POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT)
     case TRANSACTION_TYPE.RATING_EXPANSION:
-      return `평가 확장 (+${POINT_CONSTANTS.RATING_EXPANSION_AMOUNT}개)`
+      return getExpansionLabel(locale, 'rating', POINT_CONSTANTS.RATING_EXPANSION_AMOUNT)
     case TRANSACTION_TYPE.ROULETTE_BET:
-      return `룰렛 배팅 (-${Math.abs(amount).toLocaleString()} 리보)`
+      return `${labels.rouletteBet} (-${absoluteAmountLabel} ${labels.pointUnit})`
     case TRANSACTION_TYPE.ROULETTE_PAYOUT:
-      return `룰렛 당첨 (+${amount.toLocaleString()} 리보)`
+      return `${labels.roulettePayout} (+${amountLabel} ${labels.pointUnit})`
     case TRANSACTION_TYPE.THEME_PURCHASE:
-      return '커스텀 테마 구매'
+      return labels.themePurchase
     default:
       return null
   }
+}
+
+const TRANSACTION_LABELS = {
+  [Locale.KO]: {
+    adClick: '광고 클릭',
+    adminGrant: '운영 지급',
+    badgePurchase: '프로필 뱃지 구매',
+    donation: '후원',
+    pointUnit: '리보',
+    rouletteBet: '룰렛 배팅',
+    roulettePayout: '룰렛 당첨',
+    themePurchase: '커스텀 테마 구매',
+  },
+  [Locale.EN]: {
+    adClick: 'Ad click',
+    adminGrant: 'Admin grant',
+    badgePurchase: 'Profile badge purchase',
+    donation: 'Donation',
+    pointUnit: 'Libo',
+    rouletteBet: 'Roulette bet',
+    roulettePayout: 'Roulette payout',
+    themePurchase: 'Custom theme purchase',
+  },
+  [Locale.JA]: {
+    adClick: 'Ad click',
+    adminGrant: 'Admin grant',
+    badgePurchase: 'Profile badge purchase',
+    donation: 'Donation',
+    pointUnit: 'Libo',
+    rouletteBet: 'Roulette bet',
+    roulettePayout: 'Roulette payout',
+    themePurchase: 'Custom theme purchase',
+  },
+  [Locale.ZH_CN]: {
+    adClick: 'Ad click',
+    adminGrant: 'Admin grant',
+    badgePurchase: 'Profile badge purchase',
+    donation: 'Donation',
+    pointUnit: 'Libo',
+    rouletteBet: 'Roulette bet',
+    roulettePayout: 'Roulette payout',
+    themePurchase: 'Custom theme purchase',
+  },
+  [Locale.ZH_TW]: {
+    adClick: 'Ad click',
+    adminGrant: 'Admin grant',
+    badgePurchase: 'Profile badge purchase',
+    donation: 'Donation',
+    pointUnit: 'Libo',
+    rouletteBet: 'Roulette bet',
+    roulettePayout: 'Roulette payout',
+    themePurchase: 'Custom theme purchase',
+  },
+} satisfies Record<Locale, Record<TransactionLabelKey, string>>
+
+const EXPANSION_LABELS = {
+  [Locale.KO]: {
+    bookmark: '북마크 확장',
+    history: '감상 기록 확장',
+    library: '내 서재 확장',
+    rating: '평가 확장',
+  },
+  [Locale.EN]: {
+    bookmark: 'Bookmark expansion',
+    history: 'History expansion',
+    library: 'Library expansion',
+    rating: 'Rating expansion',
+  },
+  [Locale.JA]: {
+    bookmark: 'Bookmark expansion',
+    history: 'History expansion',
+    library: 'Library expansion',
+    rating: 'Rating expansion',
+  },
+  [Locale.ZH_CN]: {
+    bookmark: 'Bookmark expansion',
+    history: 'History expansion',
+    library: 'Library expansion',
+    rating: 'Rating expansion',
+  },
+  [Locale.ZH_TW]: {
+    bookmark: 'Bookmark expansion',
+    history: 'History expansion',
+    library: 'Library expansion',
+    rating: 'Rating expansion',
+  },
+} satisfies Record<Locale, Record<ExpansionKind, string>>
+
+function getExpansionLabel(locale: Locale, kind: ExpansionKind, amount: number): string {
+  const label = EXPANSION_LABELS[locale][kind]
+  return locale === Locale.KO ? `${label} (+${amount}개)` : `${label} (+${amount})`
 }

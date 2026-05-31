@@ -1,4 +1,4 @@
-const CACHE_VERSION = '20250904'
+const CACHE_VERSION = '20260531'
 
 const CACHE_NAMES = {
   STATIC: `static-cache-${CACHE_VERSION}`,
