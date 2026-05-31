@@ -1,7 +1,6 @@
 import {
   bigint,
   foreignKey,
-  index,
   integer,
   pgTable,
   primaryKey,
@@ -20,7 +19,6 @@ export const mangaRecommendationSetTable = pgTable(
       .references(() => userTable.id, { onDelete: 'cascade' }),
     generatedAt: timestamp('generated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [index('idx_manga_recommendation_set_generated_at').on(table.generatedAt)],
 ).enableRLS()
 
 export const mangaRecommendationTable = pgTable(

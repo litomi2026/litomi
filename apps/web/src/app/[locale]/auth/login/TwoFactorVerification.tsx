@@ -5,6 +5,7 @@ import { BACKUP_CODE_PATTERN } from '@litomi/domain/auth/policy'
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Key, Loader2, RectangleEllipsis } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -36,8 +37,9 @@ interface Props {
 }
 
 export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallenge, twoFactorData }: Props) {
-  const formRef = useRef<HTMLFormElement>(null)
   const [isBackupCode, setIsBackupCode] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+  const t = useTranslations('Auth.twoFactor')
 
   const { mutate: submitTwoFactor, isPending } = useMutation({
     mutationFn: verifyTwoFactorLogin,
@@ -55,15 +57,15 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           return
         }
 
-        toast.warning(error.problem.detail ?? '2단계 인증을 확인할 수 없어요')
+        toast.warning(error.problem.detail ?? t('fallbackError'))
       })
     },
     onSuccess: (data) => {
       if (data.isBackupCode) {
         if (data.backupCodeCount > 0) {
-          toast.info(`남은 복구 코드: ${data.backupCodeCount}개`)
+          toast.info(t('backupCodeRemaining', { count: data.backupCodeCount }))
         } else {
-          toast.warning('복구 코드를 모두 사용했어요. 새로운 복구 코드를 생성해 주세요.')
+          toast.warning(t('backupCodeUsedUp'))
         }
       }
 
@@ -104,9 +106,9 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
         <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-white/4 border border-white/7 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
           <RectangleEllipsis className="size-6 text-zinc-200" />
         </div>
-        <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">2단계 인증</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">{t('title')}</h2>
         <p className="mt-2 text-sm text-zinc-400">
-          {isBackupCode ? '복구 코드를 입력해 주세요' : '인증 앱의 6자리 코드를 입력해 주세요'}
+          {isBackupCode ? t('backupCodeDescription') : t('appCodeDescription')}
         </p>
       </div>
 
@@ -120,7 +122,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
       >
         <div>
           <label className="sr-only" htmlFor="token">
-            인증 코드
+            {t('tokenLabel')}
           </label>
           <OneTimeCodeInput
             autoCapitalize={isBackupCode ? 'characters' : 'off'}
@@ -147,13 +149,13 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           <div
             aria-disabled={isBackupCode}
             className="flex items-center gap-2 transition aria-disabled:opacity-50"
-            title={isBackupCode ? '복구 코드를 사용하면 브라우저 신뢰 설정을 사용할 수 없어요' : ''}
+            title={isBackupCode ? t('backupCodeTrustDisabled') : ''}
           >
             <label className="text-sm text-zinc-400 cursor-pointer" htmlFor="trust-browser">
-              이 브라우저 신뢰(30일)
+              {t('trustBrowser')}
             </label>
             <Toggle
-              aria-label="브라우저 신뢰하기"
+              aria-label={t('trustBrowserAria')}
               className={twMerge(
                 'w-10 bg-white/6 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.28)] after:bg-white after:border-white/20 transition',
                 'peer-checked:bg-brand/65 peer-checked:border-transparent',
@@ -178,7 +180,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           type="submit"
         >
           {isPending ? <Loader2 className="size-5 animate-spin" /> : null}
-          {isPending ? '확인 중...' : '확인'}
+          {isPending ? t('submitting') : t('submit')}
         </button>
 
         <div className="flex items-center justify-between pt-1">
@@ -189,7 +191,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             type="button"
           >
             <Key className="mr-1 size-4" />
-            {isBackupCode ? '인증 코드 사용' : '복구 코드 사용'}
+            {isBackupCode ? t('useAuthCode') : t('useBackupCode')}
           </button>
 
           <button
@@ -198,7 +200,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             onClick={onCancel}
             type="button"
           >
-            취소
+            {t('cancel')}
           </button>
         </div>
       </form>

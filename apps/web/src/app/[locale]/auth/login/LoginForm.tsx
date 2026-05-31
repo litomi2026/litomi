@@ -9,6 +9,7 @@ import { Toggle } from '@litomi/ui'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { MouseEvent, SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -43,14 +44,15 @@ const LOGIN_LOCAL_ERROR_STATUSES = [400, 401]
 type User = POSTV1AuthLoginAuthenticatedResponse | POSTV1AuthPasskeyVerifyResponse
 
 export default function LoginForm() {
-  const router = useRouter()
-  const formRef = useRef<HTMLFormElement>(null)
-  const passwordInputRef = useRef<HTMLInputElement | null>(null)
-  const turnstileRef = useRef<TurnstileInstance>(null)
-  const queryClient = useQueryClient()
-  const [hasTurnstileToken, setHasTurnstileToken] = useState(false)
   const [twoFactorData, setTwoFactorData] = useState<TwoFactorData | null>(null)
   const [pkceChallenge, setPkceChallenge] = useState<PKCEChallenge | null>(null)
+  const [hasTurnstileToken, setHasTurnstileToken] = useState(false)
+  const passwordInputRef = useRef<HTMLInputElement | null>(null)
+  const turnstileRef = useRef<TurnstileInstance>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+  const t = useTranslations('Auth.login')
+  const queryClient = useQueryClient()
+  const router = useRouter()
 
   const { mutate: submitLogin, isPending } = useMutation({
     mutationFn: login,
@@ -69,7 +71,7 @@ export default function LoginForm() {
           return
         }
 
-        toast.warning(error.problem.detail ?? '로그인할 수 없어요')
+        toast.warning(error.problem.detail ?? t('fallbackError'))
       })
     },
     onSuccess: (data, variables) => {
@@ -136,7 +138,7 @@ export default function LoginForm() {
   }
 
   async function handleLoginSuccess({ loginId, name, id, lastLoginAt, lastLogoutAt }: User) {
-    toast.success(`${loginId} 계정으로 로그인했어요`)
+    toast.success(t('success', { loginId }))
     setTwoFactorData(null)
     setPkceChallenge(null)
 
@@ -174,7 +176,7 @@ export default function LoginForm() {
 
     if (!turnstileToken) {
       resetTurnstile()
-      toast.warning('Cloudflare 보안 검증을 완료해 주세요')
+      toast.warning(t('turnstileRequired'))
       return
     }
 
@@ -221,8 +223,8 @@ export default function LoginForm() {
       ) : (
         <>
           <div className="text-center">
-            <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">로그인</h2>
-            <p className="mt-2 text-sm text-zinc-400">아이디/비밀번호 또는 패스키로 계속해요</p>
+            <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">{t('title')}</h2>
+            <p className="mt-2 text-sm text-zinc-400">{t('description')}</p>
           </div>
 
           <form
@@ -236,7 +238,7 @@ export default function LoginForm() {
             <div className="grid gap-4">
               <div>
                 <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-username">
-                  아이디
+                  {t('loginId')}
                 </label>
                 <div className="relative group">
                   <input
@@ -257,13 +259,13 @@ export default function LoginForm() {
                     minLength={2}
                     name="login-id"
                     pattern={LOGIN_ID_PATTERN}
-                    placeholder="아이디"
+                    placeholder={t('loginIdPlaceholder')}
                     required
                     spellCheck={false}
                     type="text"
                   />
                   <button
-                    aria-label="아이디 지우기"
+                    aria-label={t('clearLoginId')}
                     className={twMerge(
                       'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
                       'opacity-0 pointer-events-none',
@@ -283,7 +285,7 @@ export default function LoginForm() {
 
               <div>
                 <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-current-password">
-                  비밀번호
+                  {t('password')}
                 </label>
                 <div className="relative group">
                   <input
@@ -303,14 +305,14 @@ export default function LoginForm() {
                     minLength={8}
                     name="password"
                     pattern={PASSWORD_PATTERN}
-                    placeholder="비밀번호"
+                    placeholder={t('passwordPlaceholder')}
                     ref={passwordInputRef}
                     required
                     spellCheck={false}
                     type="password"
                   />
                   <button
-                    aria-label="비밀번호 표시"
+                    aria-label={t('showPassword')}
                     className={twMerge(
                       'absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition',
                       'opacity-0 pointer-events-none',
@@ -333,10 +335,10 @@ export default function LoginForm() {
               <div className="flex justify-end">
                 <div className="flex items-center gap-2">
                   <label className="text-sm text-zinc-400 select-none cursor-pointer" htmlFor="remember">
-                    로그인 유지
+                    {t('remember')}
                   </label>
                   <Toggle
-                    aria-label="로그인 유지"
+                    aria-label={t('rememberAria')}
                     className={twMerge(
                       'w-10 bg-white/6 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.28)] after:bg-white after:border-white/20 transition',
                       'peer-checked:bg-brand/65 peer-checked:border-transparent',
@@ -362,7 +364,7 @@ export default function LoginForm() {
               type="submit"
             >
               {isPending ? <Loader2 className="size-5 animate-spin" /> : null}
-              {isPending ? '로그인 중...' : '로그인'}
+              {isPending ? t('submitting') : t('submit')}
             </button>
 
             <div className="relative">
@@ -370,7 +372,7 @@ export default function LoginForm() {
                 <div className="w-full border-t border-white/7" />
               </div>
               <div className="flex justify-center text-sm">
-                <span className="relative z-10 px-4 bg-transparent text-zinc-500">또는</span>
+                <span className="relative z-10 px-4 bg-transparent text-zinc-500">{t('divider')}</span>
               </div>
             </div>
 
@@ -393,9 +395,9 @@ export default function LoginForm() {
           </form>
 
           <p className="text-center flex flex-wrap gap-1 justify-center text-xs text-zinc-400">
-            처음이신가요?
+            {t('signupPrompt')}
             <SignupLink className="underline underline-offset-4 hover:text-zinc-200 transition" prefetch={false}>
-              회원가입
+              {t('signupAction')}
             </SignupLink>
           </p>
         </>

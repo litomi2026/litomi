@@ -3,6 +3,7 @@
 import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@litomi/contracts'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import type { ProblemDetailsError } from '@/utils/api-request'
@@ -23,12 +24,13 @@ interface Params {
 export default function useSignupMutation({ onError }: Params = {}) {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const t = useTranslations('Auth.signup')
 
   return useMutation<POSTV1AuthSignupResponse, ProblemDetailsError, POSTV1AuthSignupRequest>({
     mutationFn: signup,
     onError,
     onSuccess: async ({ loginId, name, userId, nickname }) => {
-      toast.success(`${loginId} 계정으로 가입했어요`)
+      toast.success(t('success', { loginId }))
 
       if (userId) {
         identify(userId)

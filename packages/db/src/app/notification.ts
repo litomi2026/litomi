@@ -92,7 +92,6 @@ export const notificationConditionTable = pgTable(
     isExcluded: boolean('is_excluded').notNull().default(false), // true = exclude this condition from matches
   },
   (table) => [
-    index('idx_notification_condition_criteria').on(table.criteriaId),
     index('idx_notification_condition_type_value').on(table.type, table.value, table.isExcluded),
     unique('idx_notification_condition_unique').on(table.criteriaId, table.type, table.value),
   ],

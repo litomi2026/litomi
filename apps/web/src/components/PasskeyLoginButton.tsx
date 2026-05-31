@@ -53,7 +53,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
         return
       }
 
-      toast.warning(error.problem.detail ?? '패스키를 검증할 수 없어요')
+      toast.warning(error.problem.detail ?? t('error.verificationFailed'))
     },
     onSuccess,
     meta: { suppressGlobalErrorToastForStatuses: PASSKEY_LOCAL_ERROR_STATUSES },
@@ -69,7 +69,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
     turnstile.reset()
 
     if (!isAutofill) {
-      toast.warning('Cloudflare 보안 검증을 완료해 주세요')
+      toast.warning(t('error.turnstileRequired'))
     }
   }
 
@@ -89,15 +89,15 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
 
       if (error instanceof ProblemDetailsErrorClass) {
         if (error.status >= 500) {
-          toast.error('패스키 인증 중 오류가 발생했어요')
+          toast.error(t('error.authError'))
         } else {
-          toast.warning(error.problem.detail ?? '패스키 인증을 시작할 수 없어요')
+          toast.warning(error.problem.detail ?? t('error.startFailed'))
         }
 
         return null
       }
 
-      toast.error('패스키 인증 중 오류가 발생했어요')
+      toast.error(t('error.authError'))
       return null
     }
   }
@@ -140,11 +140,11 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
 
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
-          toast.warning('패스키 인증이 취소됐어요')
+          toast.warning(t('error.canceled'))
         } else if (error.name === 'NotSupportedError') {
-          toast.warning('이 브라우저는 패스키를 지원하지 않아요')
+          toast.warning(t('error.unsupported'))
         } else {
-          toast.error('패스키 인증 중 오류가 발생했어요')
+          toast.error(t('error.authError'))
         }
       }
     }

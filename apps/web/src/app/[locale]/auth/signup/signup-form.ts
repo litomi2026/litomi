@@ -1,7 +1,8 @@
-import type { POSTV1AuthSignupRequest } from '@litomi/contracts'
 import type { ProblemDetails } from '@litomi/http/problem-details'
 
 import { getInvalidParams } from '@litomi/http/problem-details'
+
+import { ProblemDetailsError } from '@/utils/api-request'
 
 type SignupFormFieldName = 'cf-turnstile-response' | 'login-id' | 'nickname' | 'password-confirm' | 'password'
 type SignupPasswordFieldName = 'password-confirm' | 'password'
@@ -78,6 +79,25 @@ export function clearSignupValidity(form: HTMLFormElement | null) {
   getSignupInput(form, signupInputNames.passwordConfirm)?.setCustomValidity('')
 }
 
+export function getSignupErrorMessage(error: ProblemDetailsError, fallback: string) {
+  return typeof error.problem.detail === 'string' ? error.problem.detail : fallback
+}
+
+export function getSignupInput(form: HTMLFormElement | null, field: SignupFormFieldName) {
+  const input = form?.elements.namedItem(field)
+  return input instanceof HTMLInputElement ? input : null
+}
+
+export function reportInputValidity(input: HTMLInputElement | null, message: string) {
+  if (!input) {
+    return
+  }
+
+  input.setCustomValidity(message)
+  input.focus()
+  input.reportValidity()
+}
+
 export function toggleSignupPasswordVisibility(
   form: HTMLFormElement | null,
   field: SignupPasswordFieldName,
@@ -100,35 +120,6 @@ export function toggleSignupPasswordVisibility(
   input.focus()
 }
 
-export function validateSignupRequest(form: HTMLFormElement | null, request: POSTV1AuthSignupRequest) {
-  if (request.password !== request.passwordConfirm) {
-    reportInputValidity(getSignupInput(form, 'password-confirm'), '비밀번호와 비밀번호 확인 값이 일치하지 않아요')
-    return false
-  }
-
-  if (request.loginId === request.password) {
-    reportInputValidity(getSignupInput(form, 'password'), '아이디와 비밀번호는 같을 수 없어요')
-    return false
-  }
-
-  return true
-}
-
-function getSignupInput(form: HTMLFormElement | null, field: SignupFormFieldName) {
-  const input = form?.elements.namedItem(field)
-  return input instanceof HTMLInputElement ? input : null
-}
-
 function isSignupServerFieldName(name: string): name is SignupServerFieldName {
   return name === 'loginId' || name === 'nickname' || name === 'password' || name === 'passwordConfirm'
-}
-
-function reportInputValidity(input: HTMLInputElement | null, message: string) {
-  if (!input) {
-    return
-  }
-
-  input.setCustomValidity(message)
-  input.focus()
-  input.reportValidity()
 }
