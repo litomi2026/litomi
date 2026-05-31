@@ -104,6 +104,38 @@ export const messages = {
         copySuccess: '링크가 복사되었어요',
         copyError: '복사에 실패했어요',
         copyAction: '링크 복사하기',
+        templates: {
+          x: {
+            legendQuestion: '🔥 {title} - 이거 레전드 아님...?',
+            isThisReal: '😱 이거 진짜...? {title} 대박',
+            everyoneWatching: '💎 다들 이미 보고 있는 {title} ㄷㄷ',
+            regretMissing: '👀 {title}\n이거 놓치면 후회함',
+            hiddenMasterpiece: '🎨 {title} - 완전 숨은 명작',
+          },
+          facebook: {
+            lateDiscovery: '✨ {title}\n\n진짜 대박이던데 왜 이제 알았을까 😭\n지금 바로 확인 👆',
+            anyoneKnows: '🔥 혹시 {title} 아는 사람?\n완전 숨은 명작이던데... 👀',
+            talkInComments: '💎 {title}\n\n이거 진심 레전드\n댓글로 얘기하자 💬',
+            worthLook: '🎨 {title} 발견!\n\n놓치지 마세요 ✨',
+          },
+          telegram: {
+            worthSharing: '💎 {title}\n그룹에 공유하고 싶은 작품!',
+            legend: '🔥 {title}\n이거 완전 레전드',
+            hiddenGem: '✨ {title} - 숨은 명작 발견',
+            mustWatch: '🎨 {title}\n다들 이거 봐야 함',
+          },
+          line: {
+            funTogether: '이거 ㄹㅇ 꿀잼ㅋㅋㅋ\n{title}\n같이 보자 💬',
+            foundGreat: '{title} 발견\n이거 완전 대박 🔥',
+            lookAtThis: '헐 {title}\n이거 봐봐 ㄷㄷ',
+            legendary: '{title}\n진심 레전드 👀',
+          },
+          native: {
+            hot: '🔥 {title} - 이거 대박',
+            recommendation: '✨ {title} 추천!',
+            hiddenGem: '💎 {title} - 숨은 명작',
+          },
+        },
       },
       forbidden: {
         title: '접근 제한된 콘텐츠',
@@ -227,6 +259,38 @@ export const messages = {
         copySuccess: 'Link copied',
         copyError: 'Could not copy link',
         copyAction: 'Copy link',
+        templates: {
+          x: {
+            legendQuestion: '🔥 {title} - hidden gem?',
+            isThisReal: '👀 Found this one: {title}',
+            everyoneWatching: '💎 {title}\nWorth checking out',
+            regretMissing: '✨ {title} recommendation',
+            hiddenMasterpiece: '🎨 {title} - underrated pick',
+          },
+          facebook: {
+            lateDiscovery: '✨ {title}\n\nFound a hidden gem worth checking out.',
+            anyoneKnows: '🔥 Anyone know {title}?\nThis one surprised me.',
+            talkInComments: '💎 {title}\n\nAdding this to the list.',
+            worthLook: '🎨 Found {title}.\nWorth a look.',
+          },
+          telegram: {
+            worthSharing: '💎 {title}\nA work worth sharing.',
+            legend: '🔥 {title}\nFound a good one.',
+            hiddenGem: '✨ {title} - hidden gem',
+            mustWatch: '🎨 {title}\nWorth a look.',
+          },
+          line: {
+            funTogether: 'Found this one\n{title}',
+            foundGreat: '{title}\nWorth checking out',
+            lookAtThis: 'Take a look at {title}',
+            legendary: '{title}\nThis one is good',
+          },
+          native: {
+            hot: '🔥 {title}',
+            recommendation: '✨ {title} recommendation',
+            hiddenGem: '💎 {title} - hidden gem',
+          },
+        },
       },
       forbidden: {
         title: 'Restricted content',

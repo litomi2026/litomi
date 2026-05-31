@@ -1,9 +1,11 @@
 'use client'
 
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
+
 import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import { Check, Link, Share2, X } from 'lucide-react'
-import { ComponentProps, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { type ComponentProps, useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import LogoFacebook from '@/components/icons/LogoFacebook'
@@ -13,11 +15,14 @@ import LogoX from '@/components/icons/LogoX'
 
 type CopyStatus = 'error' | 'idle' | 'success'
 
+const X_CHAR_LIMIT = 280
+const X_EXTRA_SPACE = 10
+
 interface Props extends ComponentProps<'button'> {
   manga: Manga
 }
-
 type SharePlatform = {
+  id: SharePlatformId
   name: string
   icon: React.ComponentType<ComponentProps<'svg'>>
   color: string
@@ -25,14 +30,31 @@ type SharePlatform = {
   action: (url: string, sharingText: string) => void
 }
 
+type SharePlatformId = Exclude<ShareTarget, 'native'>
+
+type ShareTarget = 'facebook' | 'line' | 'native' | 'telegram' | 'x'
+
 export default function ShareButton({ manga, className, ...props }: Props) {
-  const [isOpened, setIsOpened] = useState(false)
-  const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
   const [supportsNativeShare, setSupportsNativeShare] = useState(false)
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
+  const [isOpened, setIsOpened] = useState(false)
+  const t = useTranslations('MangaViewer.share')
+
+  function getSharingText(platform: ShareTarget): string {
+    const templatePath = getRandomShareTemplatePath(platform, t.raw(`templates.${platform}`))
+
+    if (platform !== 'x') {
+      return t(templatePath, { title: manga.title })
+    }
+
+    const templateOverhead = getTwitterCharCount(t(templatePath, { title: '' }))
+    const availableForTitle = X_CHAR_LIMIT - templateOverhead - window.location.href.length - X_EXTRA_SPACE
+    return t(templatePath, { title: truncateForTwitter(manga.title, availableForTitle) })
+  }
 
   async function handleNativeShare() {
     try {
-      const sharingText = getSharingText(manga, 'native')
+      const sharingText = getSharingText('native')
 
       await navigator.share({
         title: document.title,
@@ -72,29 +94,29 @@ export default function ShareButton({ manga, className, ...props }: Props) {
       <button
         className={twMerge('flex gap-2 items-center', className)}
         onClick={() => setIsOpened(true)}
-        title="공유하기"
+        title={t('action')}
         {...props}
       >
         <Share2 className="size-6" />
-        <span className="text-sm font-semibold hidden lg:inline">공유하기</span>
+        <span className="text-sm font-semibold hidden lg:inline">{t('action')}</span>
       </button>
-      <Dialog ariaLabel="공유하기" onClose={() => setIsOpened(false)} open={isOpened}>
-        <DialogHeader onClose={() => setIsOpened(false)} title="공유하기" />
+      <Dialog ariaLabel={t('action')} onClose={() => setIsOpened(false)} open={isOpened}>
+        <DialogHeader onClose={() => setIsOpened(false)} title={t('action')} />
         <DialogBody className="flex flex-col gap-4 sm:p-6">
           {supportsNativeShare && (
             <>
               <button
-                aria-label="기기 공유"
+                aria-label={t('nativeShare')}
                 className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-98"
                 onClick={handleNativeShare}
                 type="button"
               >
                 <Share2 className="size-5" />
-                기기 공유
+                {t('nativeShare')}
               </button>
               <div className="flex items-center gap-3">
                 <div className="flex-1 border-t border-zinc-700" />
-                <span className="text-xs text-zinc-500">또는</span>
+                <span className="text-xs text-zinc-500">{t('or')}</span>
                 <div className="flex-1 border-t border-zinc-700" />
               </div>
             </>
@@ -105,11 +127,11 @@ export default function ShareButton({ manga, className, ...props }: Props) {
               const Icon = platform.icon
               return (
                 <button
-                  aria-label={`${platform.name}에 공유하기`}
+                  aria-label={t('shareTo', { platform: platform.name })}
                   className={`flex flex-col items-center justify-center gap-2 p-2 sm:p-4 rounded-xl ${platform.color} ${platform.hoverColor} transition active:scale-95 touch-manipulation`}
-                  key={platform.name}
+                  key={platform.id}
                   onClick={() => {
-                    const sharingText = getSharingText(manga, platform.name.toLowerCase())
+                    const sharingText = getSharingText(platform.id)
                     platform.action(window.location.href, sharingText)
                   }}
                   type="button"
@@ -126,25 +148,25 @@ export default function ShareButton({ manga, className, ...props }: Props) {
               {copyStatus === 'success' ? (
                 <p className="inline-flex items-center justify-center gap-1.5 text-green-400 font-medium">
                   <Check aria-hidden className="size-4 shrink-0" />
-                  링크가 복사되었어요
+                  {t('copySuccess')}
                 </p>
               ) : copyStatus === 'error' ? (
                 <p className="inline-flex items-center justify-center gap-1.5 text-red-400 font-medium">
                   <X aria-hidden className="size-4 shrink-0" />
-                  복사에 실패했어요
+                  {t('copyError')}
                 </p>
               ) : (
-                <p className="text-zinc-500">링크 복사</p>
+                <p className="text-zinc-500">{t('copyStatusIdle')}</p>
               )}
             </div>
             <button
-              aria-label="링크 복사하기"
+              aria-label={t('copyAction')}
               className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition border-2 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600 active:scale-95 touch-manipulation"
               onClick={handleCopy}
               type="button"
             >
               <Link className="size-5" />
-              링크 복사하기
+              {t('copyAction')}
             </button>
           </div>
         </DialogBody>
@@ -153,65 +175,10 @@ export default function ShareButton({ manga, className, ...props }: Props) {
   )
 }
 
-function getSharingText(manga: Manga, platform: string): string {
-  const { title } = manga
-
-  // Platform-specific templates optimized for engagement based on viral content research
-  // Patterns: Brevity (< 20 words), Emotional hooks, 1-2 emojis, Korean colloquial language
-  const templates = {
-    x: [
-      // Curiosity hook - highest CTR pattern
-      (t: string) => `🔥 ${t} - 이거 레전드 아님...?`,
-      (t: string) => `😱 이거 진짜...? ${t} 대박`,
-      // FOMO-driven - high urgency
-      (t: string) => `💎 다들 이미 보고 있는 ${t} ㄷㄷ`,
-      (t: string) => `👀 ${t}\n이거 놓치면 후회함`,
-      // Direct recommendation - personal touch
-      (t: string) => `🎨 ${t} - 완전 숨은 명작`,
-    ],
-    facebook: [
-      // Longer format works on Facebook with line breaks for visual hierarchy
-      `✨ ${title}\n\n진짜 대박이던데 왜 이제 알았을까 😭\n지금 바로 확인 👆`,
-      `🔥 혹시 ${title} 아는 사람?\n완전 숨은 명작이던데... 👀`,
-      `💎 ${title}\n\n이거 진심 레전드\n댓글로 얘기하자 💬`,
-      `🎨 ${title} 발견!\n\n놓치지 마세요 ✨`,
-    ],
-    line: [
-      // Very casual, friend-to-friend tone with Korean text speak
-      `이거 ㄹㅇ 꿀잼ㅋㅋㅋ\n${title}\n같이 보자 💬`,
-      `${title} 발견\n이거 완전 대박 🔥`,
-      `헐 ${title}\n이거 봐봐 ㄷㄷ`,
-      `${title}\n진심 레전드 👀`,
-    ],
-    telegram: [
-      // Community-focused, group sharing optimized
-      `💎 ${title}\n그룹에 공유하고 싶은 작품!`,
-      `🔥 ${title}\n이거 완전 레전드`,
-      `✨ ${title} - 숨은 명작 발견`,
-      `🎨 ${title}\n다들 이거 봐야 함`,
-    ],
-    native: [
-      // For native device sharing (iOS/Android share sheet)
-      `🔥 ${title} - 이거 대박`,
-      `✨ ${title} 추천!`,
-      `💎 ${title} - 숨은 명작`,
-    ],
-  }
-
-  if (platform === 'x') {
-    const xTemplates = templates.x
-    const selectedTemplate = xTemplates[Math.floor(Math.random() * xTemplates.length)]
-    const templateOverhead = getTwitterCharCount(selectedTemplate(''))
-    const X_CHAR_LIMIT = 280
-    const EXTRA_SPACE = 10
-    const currentUrl = window.location.href
-    const availableForTitle = X_CHAR_LIMIT - templateOverhead - currentUrl.length - EXTRA_SPACE
-    const truncatedTitle = truncateForTwitter(title, availableForTitle)
-    return selectedTemplate(truncatedTitle)
-  }
-
-  const platformTemplates = templates[platform as keyof typeof templates] as string[]
-  return platformTemplates[Math.floor(Math.random() * platformTemplates.length)]
+function getRandomShareTemplatePath(platform: ShareTarget, templates: Record<string, string>) {
+  const keys = Object.keys(templates)
+  const key = keys[Math.floor(Math.random() * keys.length)]
+  return `templates.${platform}.${key}`
 }
 
 /**
@@ -230,9 +197,13 @@ function getTwitterCharCount(text: string): number {
 /**
  * Truncate title to fit within Twitter's character limit
  * Twitter limit: 280 chars (unicode=2, alphabet=1)
- * URL takes ~23 chars (t.co shortlink)
+ * The caller passes the remaining title budget after template and URL overhead.
  */
 function truncateForTwitter(title: string, maxChars: number): string {
+  if (maxChars <= 0) {
+    return ''
+  }
+
   const titleCharCount = getTwitterCharCount(title)
 
   if (titleCharCount <= maxChars) {
@@ -240,25 +211,30 @@ function truncateForTwitter(title: string, maxChars: number): string {
   }
 
   // Truncate and add ellipsis
-  let i = 0
+  let endIndex = 0
   let currentCount = 0
   const ellipsis = '...'
   const ellipsisCount = 3
+
+  if (maxChars <= ellipsisCount) {
+    return ''
+  }
 
   for (const char of title) {
     const charCount = char.charCodeAt(0) >= 0x20 && char.charCodeAt(0) <= 0x7e ? 1 : 2
     if (currentCount + charCount + ellipsisCount > maxChars) {
       break
     }
-    i += 1
+    endIndex += char.length
     currentCount += charCount
   }
 
-  return title.slice(0, i) + ellipsis
+  return title.slice(0, endIndex) + ellipsis
 }
 
 const sharePlatforms: SharePlatform[] = [
   {
+    id: 'x',
     name: 'X',
     icon: LogoX,
     color: 'bg-zinc-800',
@@ -269,6 +245,7 @@ const sharePlatforms: SharePlatform[] = [
     },
   },
   {
+    id: 'facebook',
     name: 'Facebook',
     icon: LogoFacebook,
     color: 'bg-blue-600',
@@ -279,6 +256,7 @@ const sharePlatforms: SharePlatform[] = [
     },
   },
   {
+    id: 'telegram',
     name: 'Telegram',
     icon: LogoTelegram,
     color: 'bg-sky-500',
@@ -289,6 +267,7 @@ const sharePlatforms: SharePlatform[] = [
     },
   },
   {
+    id: 'line',
     name: 'LINE',
     icon: LogoLine,
     color: 'bg-green-500',
