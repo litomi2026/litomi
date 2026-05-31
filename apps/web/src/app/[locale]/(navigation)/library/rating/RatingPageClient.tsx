@@ -4,6 +4,7 @@ import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
 import { Manga } from '@litomi/domain/manga/model'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { Star } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
@@ -30,14 +31,14 @@ type Props = {
   initialView: View
 }
 
-const SORT_OPTIONS: { value: RatingSort; label: string }[] = [
-  { value: RatingSort.UPDATED_DESC, label: '최근 수정순' },
-  { value: RatingSort.CREATED_DESC, label: '최근 평가순' },
-  { value: RatingSort.RATING_DESC, label: '평점 높은순' },
-  { value: RatingSort.RATING_ASC, label: '평점 낮은순' },
-  { value: RatingSort.MANGA_ID_DESC, label: '작품 ID 높은순' },
-  { value: RatingSort.MANGA_ID_ASC, label: '작품 ID 낮은순' },
-]
+const SORT_OPTIONS = [
+  { value: RatingSort.UPDATED_DESC, labelKey: 'ratingUpdatedDesc' },
+  { value: RatingSort.CREATED_DESC, labelKey: 'ratingCreatedDesc' },
+  { value: RatingSort.RATING_DESC, labelKey: 'ratingDesc' },
+  { value: RatingSort.RATING_ASC, labelKey: 'ratingAsc' },
+  { value: RatingSort.MANGA_ID_DESC, labelKey: 'mangaIdDesc' },
+  { value: RatingSort.MANGA_ID_ASC, labelKey: 'mangaIdAsc' },
+] as const
 
 type MangaListProps = {
   isSelectionMode: boolean
@@ -54,6 +55,8 @@ export default function RatingPageClient({ initialSort, initialView }: Props) {
   const { exit, isSelectionMode } = useLibrarySelection()
   const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
+  const t = useTranslations('Library')
+  const sortT = useTranslations('Library.sort')
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useRatingInfiniteQuery({ enabled: Boolean(me), sort })
@@ -124,7 +127,7 @@ export default function RatingPageClient({ initialSort, initialView }: Props) {
         >
           {SORT_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
-              {option.label}
+              {sortT(option.labelKey)}
             </option>
           ))}
         </select>
@@ -137,9 +140,9 @@ export default function RatingPageClient({ initialSort, initialView }: Props) {
               <h4 className="bg-background border-b px-4 py-2 flex items-center">
                 <div className="flex items-center gap-x-0.5">
                   <StarRating rating={rating} />
-                  <span className="ml-2 text-sm text-zinc-400">({rating}점)</span>
+                  <span className="ml-2 text-sm text-zinc-400">({t('rating.groupLabel', { rating })})</span>
                 </div>
-                <span className="ml-auto text-sm text-zinc-500">{items.length}개 작품</span>
+                <span className="ml-auto text-sm text-zinc-500">{t('rating.groupCount', { count: items.length })}</span>
               </h4>
               <MangaList
                 isSelectionMode={isSelectionMode}
