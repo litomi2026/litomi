@@ -61,6 +61,7 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]/d
   }
 
   const { id } = validation.data
+  const t = await getTranslations('MangaViewer.detail')
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
@@ -69,7 +70,7 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]/d
           className="hover:bg-zinc-500/20 focus-visible:outline-zinc-500 rounded-full p-2 -m-2 transition"
           fallbackUrl={`/manga/${id}`}
         />
-        <h2 className="text-xl font-bold">작품 상세</h2>
+        <h2 className="text-xl font-bold">{t('pageTitle')}</h2>
         <div className="ml-auto">
           <MangaReportButton className="border-0" mangaId={id} />
         </div>
@@ -83,21 +84,18 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]/d
         <div className="border-b">
           <RatingInput className="p-4 py-8" mangaId={id} />
         </div>
-        <PostCreationForm className="flex p-4 border-b" mangaId={id} placeholder="이 작품은 어땠나요?" />
-        <PostList filter={PostFilter.MANGA} mangaId={id} NotFound={<EmptyState />} />
+        <PostCreationForm className="flex p-4 border-b" mangaId={id} placeholder={t('postPlaceholder')} />
+        <PostList
+          filter={PostFilter.MANGA}
+          mangaId={id}
+          NotFound={<EmptyState description={t('emptyPostsDescription')} title={t('emptyPostsTitle')} />}
+        />
       </div>
       <MobileNavigationSpacer />
     </main>
   )
 }
 
-function EmptyState() {
-  return (
-    <StatusState
-      className="py-16"
-      description="첫 번째로 이 작품에 대해 이야기해보세요"
-      icon={<Book className="size-8" />}
-      title="이 작품에 대한 글이 없어요"
-    />
-  )
+function EmptyState({ description, title }: { description: string; title: string }) {
+  return <StatusState className="py-16" description={description} icon={<Book className="size-8" />} title={title} />
 }

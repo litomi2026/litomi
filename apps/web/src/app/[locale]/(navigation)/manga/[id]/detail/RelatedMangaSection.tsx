@@ -1,6 +1,7 @@
 'use client'
 
 import { Link2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 
@@ -12,6 +13,8 @@ type Props = {
 
 export default function RelatedMangaSection({ mangaId }: Props) {
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: [mangaId] })
+  const t = useTranslations('MangaViewer.detail')
+
   const manga = mangaMap.get(mangaId)
   const relatedIds = manga?.related ?? []
 
@@ -23,7 +26,7 @@ export default function RelatedMangaSection({ mangaId }: Props) {
     <div className="border-b p-4">
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
         <Link2 className="size-4" />
-        이런 작품 찾으세요?
+        {t('relatedTitle')}
       </h3>
       <MangaCardList mangaIds={relatedIds.toReversed()} />
     </div>

@@ -2,6 +2,7 @@ import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { count, eq } from 'drizzle-orm'
 import { BarChart3, Star } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
 type Props = {
   mangaId: number
@@ -22,6 +23,7 @@ export default async function RatingDistributionSection({ mangaId }: Props) {
 
   const averageRating = distribution.reduce((sum, d) => sum + d.rating * d.count, 0) / totalCount
   const maxCount = Math.max(...distribution.map((d) => d.count))
+  const t = await getTranslations('MangaViewer.detail')
 
   return (
     <details className="group border-b p-4">
@@ -29,14 +31,14 @@ export default async function RatingDistributionSection({ mangaId }: Props) {
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-zinc-400 flex items-center gap-2">
             <BarChart3 className="size-4" />
-            평점 분포
+            {t('ratingDistributionTitle')}
           </h3>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
               <Star className="size-4 fill-brand text-brand" />
               <span className="text-lg font-bold text-zinc-100">{averageRating.toFixed(1)}</span>
             </div>
-            <span className="text-xs text-zinc-500">{totalCount}명</span>
+            <span className="text-xs text-zinc-500">{t('ratingUserCount', { count: totalCount })}</span>
           </div>
         </div>
       </summary>

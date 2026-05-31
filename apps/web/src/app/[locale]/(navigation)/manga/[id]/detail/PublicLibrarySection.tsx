@@ -3,6 +3,7 @@ import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { and, desc, eq } from 'drizzle-orm'
 import { Library } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
 import { Link } from '@/i18n/navigation'
 
@@ -16,10 +17,13 @@ export default async function PublicLibrarySection({ mangaId }: Props) {
     return null
   }
 
+  const t = await getTranslations('MangaViewer.detail')
+
   return (
     <div className="border-b p-4">
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
-        <Library className="size-4" />이 작품이 포함된 공개 서재
+        <Library className="size-4" />
+        {t('publicLibrariesTitle')}
       </h3>
       <ul className="flex gap-2 overflow-x-auto scrollbar-hidden snap-x snap-mandatory">
         {libraries.map((library) => (
@@ -39,7 +43,7 @@ export default async function PublicLibrarySection({ mangaId }: Props) {
                   </div>
                 )}
                 <h4 className="text-sm font-medium text-zinc-200 line-clamp-1 break-all">{library.name}</h4>
-                <p className="text-xs text-zinc-500 shrink-0">{library.itemCount}개</p>
+                <p className="text-xs text-zinc-500 shrink-0">{t('itemCount', { count: library.itemCount })}</p>
               </div>
               <p className="text-xs text-zinc-500 line-clamp-1 break-all">{library.description}</p>
             </Link>
