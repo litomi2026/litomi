@@ -1,6 +1,5 @@
 import type { Manga } from '@litomi/domain/manga/model'
 
-import { Locale } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
@@ -22,7 +21,6 @@ export function useNewMangaQuery({ page }: QueryOptions) {
 
 async function fetchNewManga(page: number) {
   const url = new URL('/api/proxy/hiyobi/new', NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN)
-  url.searchParams.set('locale', Locale.KO)
   url.searchParams.set('page', String(page))
   const { data } = await fetchAPIData<Manga[]>(url)
   return data

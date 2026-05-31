@@ -1,6 +1,7 @@
 'use client'
 
 import { Menu } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 
 import MobileNavigationMenu from '@/components/MobileNavigationMenu'
@@ -9,6 +10,7 @@ import { topNavigationActionClassName } from './topNavigationActionConfig'
 
 export default function MobileNavigationButton() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const t = useTranslations('TopNavigation.actions')
 
   const handleMenuClick = useCallback(() => {
     setIsMenuOpen(true)
@@ -21,7 +23,7 @@ export default function MobileNavigationButton() {
   return (
     <>
       <button
-        aria-label="메뉴 열기"
+        aria-label={t('menu')}
         className={`${topNavigationActionClassName} sm:hidden`}
         onClick={handleMenuClick}
         type="button"

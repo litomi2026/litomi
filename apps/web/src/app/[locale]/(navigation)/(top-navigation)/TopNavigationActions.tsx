@@ -1,3 +1,5 @@
+import { getTranslations } from 'next-intl/server'
+
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
 
 import LiveCamPromotionLink from './LiveCamPromotionLink'
@@ -7,10 +9,12 @@ import NordVPNPromotionLink from './NordVPNPromotionLink'
 import RandomMangaLink from './RandomMangaLink'
 import RecommendMangaLink from './RecommendMangaLink'
 
-export default function TopNavigationActions() {
+export default async function TopNavigationActions() {
+  const t = await getTranslations('TopNavigation.actions')
+
   return (
     <AutoHideHeader className="sticky top-0 z-40 -mx-2 border-b-2 border-background bg-background/90 px-2 pt-[calc(0.5rem+var(--safe-area-top))] pb-2 backdrop-blur">
-      <nav aria-label="빠른 이동" className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end md:text-base">
+      <nav aria-label={t('label')} className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end md:text-base">
         <MobileNavigationButton />
         <RecommendMangaLink />
         <NewMangaLink />

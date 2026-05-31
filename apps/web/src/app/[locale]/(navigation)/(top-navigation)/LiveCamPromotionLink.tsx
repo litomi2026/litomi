@@ -1,6 +1,7 @@
 'use client'
 
 import { Webcam } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'
@@ -9,6 +10,8 @@ import { createPromotionEventParams } from '@/lib/analytics/promotion'
 import { LIVE_CAM_AD_URL, topNavigationActionClassName } from './topNavigationActionConfig'
 
 export default function LiveCamPromotionLink() {
+  const t = useTranslations('TopNavigation.actions')
+
   const promotionParams = createPromotionEventParams({
     creative_name: 'top-navigation-button',
     creative_slot: 'top-navigation',
@@ -32,7 +35,7 @@ export default function LiveCamPromotionLink() {
       target="_blank"
     >
       <Webcam className="size-5 hidden sm:block" />
-      라이브 섹스 캠
+      {t('liveCam')}
     </a>
   )
 }

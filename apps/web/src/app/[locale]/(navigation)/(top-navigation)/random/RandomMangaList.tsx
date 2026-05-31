@@ -3,6 +3,7 @@
 import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 
 import { View } from '@litomi/std'
+import { useTranslations } from 'next-intl'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
@@ -18,6 +19,7 @@ type Props = {
 }
 
 export default function RandomMangaList({ nativeGridSponsor }: Props) {
+  const t = useTranslations('Common.manga')
   const { data, isLoading, error } = useRandomMangaQuery()
   const { isVisible } = useMangaCensorship()
 
@@ -49,7 +51,7 @@ export default function RandomMangaList({ nativeGridSponsor }: Props) {
   if (error || mangas.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-zinc-500">작품을 불러올 수 없어요</p>
+        <p className="text-zinc-500">{t('loadError')}</p>
       </div>
     )
   }

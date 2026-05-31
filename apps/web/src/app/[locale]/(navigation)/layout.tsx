@@ -1,4 +1,5 @@
 import { Bookmark, Bot, Clover, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import { twMerge } from 'tailwind-merge'
 
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
@@ -15,6 +16,8 @@ import ProfileLink from './ProfileLink'
 import SelectableLink from './SelectableLink'
 
 export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
+  const t = await getTranslations('Navigation.sidebar')
+
   return (
     <div className="flex flex-col min-h-full mx-auto px-safe max-w-screen-2xl sm:flex-row">
       <SeasonalEffects />
@@ -30,10 +33,10 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
             <IconLogo className="w-8" priority />
           </Link>
           <SelectableLink href="/new/1" icon={<IconHome />} selectedIconStyle="fill">
-            홈
+            {t('home')}
           </SelectableLink>
           <SelectableLink href="/search" icon={<Search />}>
-            검색
+            {t('search')}
           </SelectableLink>
           <SelectableLink
             className="hidden sm:block"
@@ -41,10 +44,10 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
             icon={<Flame />}
             selectedIconStyle="fill"
           >
-            인기
+            {t('ranking')}
           </SelectableLink>
           <SelectableLink href="/library" icon={<LibraryBig />} selectedIconStyle="fill">
-            서재
+            {t('library')}
           </SelectableLink>
           <SelectableLink
             className="hidden sm:block"
@@ -52,7 +55,7 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
             icon={<Bookmark />}
             selectedIconStyle="fill"
           >
-            북마크
+            {t('bookmark')}
           </SelectableLink>
           <SelectableLink
             className="hidden sm:block"
@@ -61,14 +64,14 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
             icon={<FileText />}
             selectedIconStyle="fill-soft"
           >
-            이야기
+            {t('posts')}
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/tag" icon={<Tag />} selectedIconStyle="fill-soft">
-            태그
+            {t('tag')}
           </SelectableLink>
           <div className="relative">
             <SelectableLink className="h-full" href="/notification" icon={<IconBell />} selectedIconStyle="fill">
-              알림
+              {t('notification')}
             </SelectableLink>
             <NotificationCount />
           </div>
@@ -79,13 +82,13 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
             icon={<PiggyBank />}
             selectedIconStyle="fill-soft"
           >
-            리보
+            {t('libo')}
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/chat" icon={<Bot />} selectedIconStyle="stroke">
-            AI 채팅
+            {t('chat')}
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/fortune" hrefMatch="/fortune" icon={<Clover />}>
-            운세
+            {t('fortune')}
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
         </nav>
