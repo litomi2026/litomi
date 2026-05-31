@@ -1,3 +1,6 @@
+import { useTranslations } from 'next-intl'
+import { twMerge } from 'tailwind-merge'
+
 import { Link } from '@/i18n/navigation'
 import { ProblemDetailsError } from '@/utils/api-request'
 
@@ -8,18 +11,16 @@ type Props = {
 }
 
 export default function SearchResultError({ error, isRetrying, onRetry }: Props) {
+  const t = useTranslations('Search.resultError')
   const info = getSearchErrorInfo(error)
-  const showMessage = Boolean(info.message && info.message.trim() !== info.title.trim())
+  const title = info.title || t('fallbackTitle')
+  const description = info.message && info.message.trim() !== title.trim() ? info.message : t('fallbackDescription')
 
   return (
     <main className="flex flex-col grow justify-center items-center gap-6 text-center px-4">
       <div className="space-y-2 max-w-md">
-        <h2 className="text-xl md:text-2xl font-semibold">{info.title}</h2>
-        {showMessage ? (
-          <p className="text-sm text-zinc-400">{info.message}</p>
-        ) : (
-          <p className="text-sm text-zinc-400">잠시 후 다시 시도해 주세요</p>
-        )}
+        <h2 className="text-xl md:text-2xl font-semibold">{title}</h2>
+        <p className="text-sm text-zinc-400">{description}</p>
       </div>
       <div className="flex gap-3">
         {info.canRetry && (
@@ -29,19 +30,18 @@ export default function SearchResultError({ error, isRetrying, onRetry }: Props)
             onClick={onRetry}
             type="button"
           >
-            다시 시도
+            {t('retry')}
           </button>
         )}
         <Link
-          className={
-            info.canRetry
-              ? 'rounded-full px-6 py-2 text-sm font-medium text-zinc-400 transition hover:text-zinc-300'
-              : 'rounded-full bg-zinc-800 px-6 py-2 text-sm font-medium transition hover:bg-zinc-700'
-          }
+          className={twMerge(
+            'rounded-full px-6 py-2 text-sm font-medium transition',
+            info.canRetry ? 'text-zinc-400 hover:text-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+          )}
           href="/search"
           prefetch={false}
         >
-          검색 초기화
+          {t('reset')}
         </Link>
       </div>
     </main>
@@ -52,22 +52,19 @@ function getSearchErrorInfo(error: unknown) {
   if (error instanceof ProblemDetailsError) {
     return {
       title: error.problem.title,
-      message: error.problem.detail || '잠시 후 다시 시도해 주세요',
+      message: error.problem.detail,
       canRetry: error.isRetryable,
     }
   }
 
   if (error instanceof Error) {
     return {
-      title: '검색 중 오류가 발생했어요',
-      message: error.message || '잠시 후 다시 시도해 주세요',
+      message: error.message,
       canRetry: true,
     }
   }
 
   return {
-    title: '검색 중 오류가 발생했어요',
-    message: '잠시 후 다시 시도해 주세요',
     canRetry: true,
   }
 }
