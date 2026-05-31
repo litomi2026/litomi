@@ -3,8 +3,7 @@
 import { env } from '@litomi/env/client'
 import { toast } from 'sonner'
 
-import { Link } from '@/i18n/navigation'
-import { useRouter } from '@/i18n/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
 
 import type { CharacterDefinition, CharacterPromptDefinition } from '../../../types/characterDefinition'
 

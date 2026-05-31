@@ -33,7 +33,7 @@ export function PreviewStep({ importMode, isVisible, previewData, setImportMode 
                 총{' '}
                 <span className="text-blue-400 font-bold">
                   {previewData.totalCount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
-                </span>
+                </span>{' '}
                 개의 북마크
               </p>
               {previewData.exportedAt && (

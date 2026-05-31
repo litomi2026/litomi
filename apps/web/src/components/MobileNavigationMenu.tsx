@@ -7,8 +7,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '@/app/[locale]/(navigation)/(ranking)/common'
 import OverlayHost from '@/components/ui/OverlayHost'
-import { Link } from '@/i18n/navigation'
-import { usePathname } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
 
 import LinkPending from './LinkPending'

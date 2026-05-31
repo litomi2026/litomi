@@ -4,15 +4,14 @@ import { Heart } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import LinkPending from '@/components/LinkPending'
-import { Link } from '@/i18n/navigation'
-import { usePathname } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 
 import { getPrimaryRankingIconClassName, PRIMARY_RANKING_NAV_LINK_CLASSNAME } from './common'
 
 export default function DonationLink() {
   const pathname = usePathname()
-  const isDonationPage = pathname.startsWith('/ranking/donation')
   const t = useTranslations('RankingPage')
+  const isDonationPage = pathname.startsWith('/ranking/donation')
 
   return (
     <Link
