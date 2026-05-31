@@ -61,8 +61,6 @@ export const messages = {
       },
       trending: {
         title: '인기 검색어',
-        desktopPrefix: '인기',
-        desktopSuffix: '검색어',
         scrollRight: '오른쪽으로 스크롤하기',
         indicator: '키워드 {index}',
       },
@@ -177,8 +175,8 @@ export const messages = {
       noResults: 'No results found.',
       view: {
         label: 'Work view mode',
-        card: 'Cards',
-        image: 'Images',
+        card: 'Card',
+        image: 'Image',
       },
       form: {
         placeholder: 'Press / to search',
@@ -227,9 +225,7 @@ export const messages = {
         },
       },
       trending: {
-        title: 'Trending searches',
-        desktopPrefix: 'Trending',
-        desktopSuffix: 'searches',
+        title: 'Trending',
         scrollRight: 'Scroll right',
         indicator: 'Keyword {index}',
       },

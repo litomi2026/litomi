@@ -246,8 +246,7 @@ export default function TrendingKeywords({ view }: Props) {
       {/* Desktop */}
       <div className="relative hidden sm:grid grid-cols-[auto_1fr] items-center gap-2 rounded-lg md:px-3 md:p-2 md:bg-zinc-900/50">
         <div className="flex items-center gap-1 py-1 text-zinc-500 text-xs">
-          <span>{t('desktopPrefix')}</span>
-          <span className="hidden sm:inline">{t('desktopSuffix')}</span>
+          <span>{t('title')}</span>
         </div>
         <ScrollingButton
           className="right-1"
