@@ -1,5 +1,8 @@
+import type { PublicLocale } from '@litomi/domain/locale'
+
+import { APP_METADATA } from '@litomi/domain/app/metadata'
 import { Home, Search, SearchX } from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import { twMerge } from 'tailwind-merge'
 
@@ -25,7 +28,10 @@ const shelfItems = [
 ]
 
 export default async function NotFound() {
+  const locale = (await getLocale()) as PublicLocale
   const t = await getTranslations('NotFound')
+
+  const shortName = APP_METADATA[locale].shortName
   const titleLines = [t('titleLine1'), t('titleLine2')]
 
   return (
@@ -43,7 +49,7 @@ export default async function NotFound() {
           <div className="mb-8 inline-flex items-center gap-3">
             <span className="grid size-12 place-items-center rounded-2xl border border-zinc-800 bg-zinc-950/80 shadow-[0_16px_36px_rgba(0,0,0,0.24)]">
               <Image
-                alt="Litomi"
+                alt={shortName}
                 className="size-7 object-contain"
                 height={342}
                 priority
@@ -51,7 +57,7 @@ export default async function NotFound() {
                 width={299}
               />
             </span>
-            <span className="text-sm font-bold text-zinc-300">Litomi</span>
+            <span className="text-sm font-bold text-zinc-300">{shortName}</span>
           </div>
 
           <p className="font-mono text-sm font-bold leading-6 text-brand-start">404 / PAGE NOT FOUND</p>

@@ -1,15 +1,18 @@
-import { SHORT_NAME } from '@litomi/domain/app/metadata'
+import { APP_METADATA } from '@litomi/domain/app/metadata'
 import { Download } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 
 import ScrollButtons from '@/components/ScrollButtons'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { Link } from '@/i18n/navigation'
+import { getLocaleFromParams } from '@/i18n/server'
 
 import TopNavigationActions from './TopNavigationActions'
 
-export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
+export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
+  const locale = await getLocaleFromParams(params)
   const t = await getTranslations('TopNavigation.footer')
+  const shortName = APP_METADATA[locale].shortName
 
   return (
     <div className="flex flex-col flex-1 gap-2 px-2 pb-2">
@@ -26,7 +29,7 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
             <span>{t('installApp')}</span>
           </div>
         </Link>
-        <p>ⓒ 2025. {SHORT_NAME}. All rights reserved.</p>
+        <p>ⓒ 2025. {shortName}. All rights reserved.</p>
         <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
           <Link className="hover:underline" href="/doc/terms" prefetch={false}>
             {t('terms')}

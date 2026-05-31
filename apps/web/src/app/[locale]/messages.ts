@@ -458,7 +458,7 @@ export const messages = {
           excludeSearch: 'このタグを除外して検索',
         },
         donationCard: {
-          title: 'Litomi を一緒に育ててください',
+          title: 'リトミを一緒に育ててください',
           description:
             '毎月 10万-15万ウォンのサーバー費用がかかります。有害な広告なしでサービスを運営するため、皆さんの支援が必要です。',
           socialLabel: 'ソーシャル',
@@ -644,7 +644,7 @@ export const messages = {
           excludeSearch: '排除此标签后搜索',
         },
         donationCard: {
-          title: '一起让 Litomi 成长',
+          title: '一起让莉托米成长',
           description: '每月会产生约 10-15 万韩元的服务器费用。为了在没有有害广告的情况下运营服务，我们需要你的帮助。',
           socialLabel: '社交',
           discordAction: '加入 Discord 服务器',

@@ -170,7 +170,7 @@ export const messages = {
       community: {
         posts: {
           title: 'ストーリー',
-          description: 'Litomi ユーザーのストーリーやおすすめ投稿を確認しましょう。',
+          description: 'リトミユーザーのストーリーやおすすめ投稿を確認しましょう。',
         },
         notification: {
           title: '通知',
@@ -198,7 +198,7 @@ export const messages = {
     },
     Profile: {
       navigation: {
-        myLitomi: 'マイ Litomi',
+        myLitomi: 'マイリトミ',
         logout: 'ログアウト',
         stories: 'ストーリー',
         censor: '検閲',
@@ -251,7 +251,7 @@ export const messages = {
       community: {
         posts: {
           title: '动态',
-          description: '查看 Litomi 用户发布的动态和推荐内容。',
+          description: '查看莉托米用户发布的动态和推荐内容。',
         },
         notification: {
           title: '通知',
@@ -279,7 +279,7 @@ export const messages = {
     },
     Profile: {
       navigation: {
-        myLitomi: '我的 Litomi',
+        myLitomi: '我的莉托米',
         logout: '退出登录',
         stories: '动态',
         censor: '屏蔽',

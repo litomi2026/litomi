@@ -1,5 +1,8 @@
-import { SHORT_NAME } from '@litomi/domain/app/metadata'
+import type { PublicLocale } from '@litomi/domain/locale'
+
+import { APP_METADATA } from '@litomi/domain/app/metadata'
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
+import { useLocale } from 'next-intl'
 import { useEffect } from 'react'
 
 type Props = {
@@ -9,14 +12,17 @@ type Props = {
 }
 
 export default function usePageMetadata({ title, description, image }: Props) {
+  const locale = useLocale() as PublicLocale
+  const shortName = APP_METADATA[locale].shortName
+
   useEffect(() => {
     if (title) {
-      const fullTitle = `${title.slice(0, MAX_MANGA_TITLE_LENGTH)} - ${SHORT_NAME}`
+      const fullTitle = `${title.slice(0, MAX_MANGA_TITLE_LENGTH)} - ${shortName}`
       document.title = fullTitle
       updateMetaTag('property', 'og:title', fullTitle)
       updateMetaTag('name', 'twitter:title', fullTitle)
     }
-  }, [title])
+  }, [shortName, title])
 
   useEffect(() => {
     if (description) {

@@ -48,11 +48,11 @@ export const messages = {
       auth: {
         login: {
           title: 'ログイン',
-          description: 'Litomi アカウントにログインしてください。',
+          description: 'リトミアカウントにログインしてください。',
         },
         signup: {
           title: '新規登録',
-          description: 'Litomi アカウントを作成して、作品とライブラリを管理しましょう。',
+          description: 'リトミアカウントを作成して、作品とライブラリを管理しましょう。',
         },
       },
     },
@@ -68,11 +68,11 @@ export const messages = {
       auth: {
         login: {
           title: '登录',
-          description: '登录你的 Litomi 账号。',
+          description: '登录你的莉托米账号。',
         },
         signup: {
           title: '注册',
-          description: '创建 Litomi 账号，管理作品和书库。',
+          description: '创建莉托米账号，管理作品和书库。',
         },
       },
     },
