@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowRight } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -17,6 +18,7 @@ type Props = {
 export default function MangaIdJumpForm({ autoFocus, className = '', currentMangaId, formId, onNavigate }: Props) {
   const inputId = useId()
   const router = useRouter()
+  const t = useTranslations('MangaViewer.jump')
 
   function handleInput(event: React.InputEvent<HTMLInputElement>) {
     event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '')
@@ -40,13 +42,13 @@ export default function MangaIdJumpForm({ autoFocus, className = '', currentMang
 
   return (
     <form
-      aria-label="작품 번호로 이동"
+      aria-label={t('formLabel')}
       className={twMerge('items-center gap-1 rounded-full bg-zinc-900 p-1', className)}
       id={formId}
       onSubmit={handleSubmit}
     >
       <label className="sr-only" htmlFor={inputId}>
-        작품 번호
+        {t('inputLabel')}
       </label>
       <input
         autoComplete="off"
@@ -60,12 +62,12 @@ export default function MangaIdJumpForm({ autoFocus, className = '', currentMang
         pattern="[1-9][0-9]*"
         placeholder={`${currentMangaId}`}
         required
-        title="작품 번호"
+        title={t('inputLabel')}
         type="text"
       />
       <button
         className="rounded-full p-1.5 transition hover:bg-zinc-800 active:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70"
-        title="작품 번호로 이동"
+        title={t('action')}
         type="submit"
       >
         <ArrowRight className="size-5" />

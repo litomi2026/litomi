@@ -1,6 +1,7 @@
 'use client'
 
 import { CandyCane, PartyPopper } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import LogoDiscord from '@/components/icons/LogoDiscord'
@@ -16,12 +17,13 @@ type Props = {
 }
 
 export default function CTAButton({ className = '' }: Props) {
+  const t = useTranslations('Home.cta')
   const period = getPeriod()
 
   if (period === Period.CHRISTMAS) {
     return (
       <Link className={twMerge('flex justify-center items-center gap-2 rounded', className)} href="/" prefetch={false}>
-        <CandyCane className="size-5" /> 메리 크리스마스
+        <CandyCane className="size-5" /> {t('christmas')}
       </Link>
     )
   }
@@ -33,7 +35,7 @@ export default function CTAButton({ className = '' }: Props) {
         href="/nye"
         prefetch={false}
       >
-        <PartyPopper className="size-5" /> 새해 카운트다운
+        <PartyPopper className="size-5" /> {t('newYear')}
       </Link>
     )
   }

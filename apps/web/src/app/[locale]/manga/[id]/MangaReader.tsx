@@ -12,7 +12,7 @@ import Reader, {
 } from '@litomi/image-reader'
 import { useQueryClient } from '@tanstack/react-query'
 import { Hash, MessageCircle } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -48,11 +48,12 @@ const TOP_BUTTON_CLASS_NAME =
 export default function MangaReader({ manga }: Props) {
   const [isMangaIdJumpOpen, setIsMangaIdJumpOpen] = useState(false)
   const { lastPage } = useMangaReadingHistory(manga.id)
-  const { data: me } = useMeQuery()
+  const t = useTranslations('MangaViewer.toolbar')
   const queryClient = useQueryClient()
+  const { data: me } = useMeQuery()
+  const locale = useLocale()
 
   const pages = createMangaReaderPages(manga)
-  const locale = useLocale()
   const canSyncReadingProgress = isAdultVerified(me) && me?.settings.historySyncEnabled
 
   function handleReaderNotice(notice: ReaderNotice) {
@@ -101,7 +102,7 @@ export default function MangaReader({ manga }: Props) {
 
     return (
       <MangaImage
-        alt={`${manga.title} ${page.imageIndex + 1}페이지`}
+        alt={t('pageAlt', { title: manga.title, page: page.imageIndex + 1 })}
         fetchPriority={fetchPriority}
         imageIndex={page.imageIndex}
         mangaId={manga.id}
@@ -119,7 +120,7 @@ export default function MangaReader({ manga }: Props) {
 
     return (
       <MangaImage
-        alt={`${pageIndex + 1}페이지 미리보기`}
+        alt={t('thumbnailAlt', { page: pageIndex + 1 })}
         className="h-full w-full object-cover"
         fetchPriority={fetchPriority}
         imageIndex={page.imageIndex}
@@ -151,7 +152,7 @@ export default function MangaReader({ manga }: Props) {
               aria-expanded={isMangaIdJumpOpen}
               className={`${TOP_BUTTON_CLASS_NAME} md:hidden`}
               onClick={() => setIsMangaIdJumpOpen((prev) => !prev)}
-              title="작품 번호로 이동"
+              title={t('jumpToManga')}
               type="button"
             >
               <Hash className="size-6" />
@@ -160,10 +161,10 @@ export default function MangaReader({ manga }: Props) {
               className={twMerge('flex items-center gap-2', TOP_BUTTON_CLASS_NAME)}
               href={`/manga/${manga.id}/detail`}
               prefetch={false}
-              title="작품 상세"
+              title={t('detail')}
             >
               <MessageCircle className="size-6" />
-              <span className="text-sm font-semibold hidden lg:inline">작품 상세</span>
+              <span className="text-sm font-semibold hidden lg:inline">{t('detail')}</span>
             </Link>
             <ShareButton className={TOP_BUTTON_CLASS_NAME} manga={manga} />
           </div>

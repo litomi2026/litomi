@@ -3,6 +3,7 @@
 import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/notification/policy'
 import { useMutation } from '@tanstack/react-query'
 import { BellRing, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -18,12 +19,14 @@ import { createNotificationCriteria } from './api'
 import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 
 export default function KeywordSubscriptionButton() {
-  const [isSubscribed, setIsSubscribed] = useState(false)
-  const router = useRouter()
-  const { guardAdultAccess, me } = useAdultAccessGuard()
   const [query, setQuery] = useState<ParsedSearchQuery>(() => parseSearchQuery(''))
-  const buttonTitle = isSubscribed ? '키워드 알림 설정을 확인해요' : '키워드 알림을 설정해요'
-  const buttonLabel = isSubscribed ? '설정 보기' : '키워드 알림'
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  const { guardAdultAccess, me } = useAdultAccessGuard()
+  const t = useTranslations('Search.subscription')
+  const router = useRouter()
+
+  const buttonTitle = isSubscribed ? t('subscribedTitle') : t('subscribeTitle')
+  const buttonLabel = isSubscribed ? t('subscribedLabel') : t('subscribeLabel')
 
   const createCriteriaMutation = useMutation({
     mutationFn: createNotificationCriteria,
@@ -33,7 +36,7 @@ export default function KeywordSubscriptionButton() {
       }
     },
     onSuccess: () => {
-      toast.success(`키워드 알림이 설정됐어요: ${query?.suggestedName ?? ''}`)
+      toast.success(t('success', { name: query?.suggestedName ?? '' }))
       setIsSubscribed(true)
     },
   })
@@ -50,17 +53,17 @@ export default function KeywordSubscriptionButton() {
     }
 
     if (!query.suggestedName) {
-      toast.warning('검색어를 입력해 주세요')
+      toast.warning(t('missingQuery'))
       return
     }
 
     if (query.conditions.length === 0) {
-      toast.warning('키워드 알림으로 등록할 수 있는 검색 조건이 없어요')
+      toast.warning(t('emptyConditions'))
       return
     }
 
     if (query.conditions.length > MAX_NOTIFICATION_CRITERIA_CONDITIONS) {
-      toast.warning(`최대 ${MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 설정할 수 있어요`)
+      toast.warning(t('tooManyConditions', { count: MAX_NOTIFICATION_CRITERIA_CONDITIONS }))
       return
     }
 

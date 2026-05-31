@@ -3,7 +3,7 @@
 import { Locale } from '@litomi/domain/locale'
 import { View } from '@litomi/std'
 import { ChevronRight } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
@@ -27,6 +27,7 @@ export default function TrendingKeywords({ view }: Props) {
   const scrollContainerDesktopRef = useRef<HTMLDivElement>(null)
   const scrollDebounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const locale = useLocale()
+  const t = useTranslations('Search.trending')
   const { data } = useTrendingKeywordsQuery()
   const { ref: lastRef, inView: isLastKeywordInView } = useInView()
 
@@ -196,7 +197,7 @@ export default function TrendingKeywords({ view }: Props) {
       {/* Mobile */}
       <div className="relative grid gap-2 sm:hidden">
         <div className="flex items-center justify-between text-zinc-500 text-xs">
-          <span>인기 검색어</span>
+          <span>{t('title')}</span>
           {trendingKeywordCount > 1 && (
             <span className="text-zinc-600">
               {currentIndex + 1} / {trendingKeywordCount}
@@ -231,7 +232,7 @@ export default function TrendingKeywords({ view }: Props) {
             {trendingKeywords.map(({ value }, i) => (
               <button
                 aria-current={currentIndex === i}
-                aria-label={`Keyword ${i + 1}`}
+                aria-label={t('indicator', { index: i + 1 })}
                 className="rounded-full transition-all shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"
                 key={value}
                 onClick={() => handleClick(i)}
@@ -244,14 +245,14 @@ export default function TrendingKeywords({ view }: Props) {
       {/* Desktop */}
       <div className="relative hidden sm:grid grid-cols-[auto_1fr] items-center gap-2 rounded-lg md:px-3 md:p-2 md:bg-zinc-900/50">
         <div className="flex items-center gap-1 py-1 text-zinc-500 text-xs">
-          <span>인기</span>
-          <span className="hidden sm:inline">검색어</span>
+          <span>{t('desktopPrefix')}</span>
+          <span className="hidden sm:inline">{t('desktopSuffix')}</span>
         </div>
         <ScrollingButton
           className="right-1"
           disabled={isLastKeywordInView}
           onClick={scrollRight}
-          title="오른쪽으로 스크롤하기"
+          title={t('scrollRight')}
         >
           <ChevronRight className="size-4" strokeWidth={2.5} />
         </ScrollingButton>

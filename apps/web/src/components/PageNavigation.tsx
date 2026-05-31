@@ -1,4 +1,7 @@
+'use client'
+
 import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Link } from '@/i18n/navigation'
 
@@ -22,6 +25,7 @@ export default function PageNavigation({
   hrefPrefix = '',
   hrefSuffix = '',
 }: Props) {
+  const t = useTranslations('Common.pagination')
   const { startPage, endPage, visiblePageNumbers } = getVisiblePageRange(currentPage, totalPages, VISIBLE_PAGES)
 
   const commonClassName =
@@ -33,7 +37,7 @@ export default function PageNavigation({
     >
       {currentPage > VISIBLE_PAGES / 2 && (
         <Link
-          aria-label="첫 페이지"
+          aria-label={t('firstPage')}
           className={`hidden sm:flex ${commonClassName}`}
           href={`${hrefPrefix}${1}${hrefSuffix}`}
           prefetch={false}
@@ -45,7 +49,7 @@ export default function PageNavigation({
       )}
       {startPage > 1 && (
         <Link
-          aria-label={`이전 ${VISIBLE_PAGES} 페이지`}
+          aria-label={t('previousPages', { count: VISIBLE_PAGES })}
           className={`flex ${commonClassName}`}
           href={`${hrefPrefix}${Math.max(1, currentPage - VISIBLE_PAGES)}${hrefSuffix}`}
           prefetch={false}
@@ -57,7 +61,7 @@ export default function PageNavigation({
       )}
       <Link
         aria-disabled={currentPage <= 1}
-        aria-label="이전 페이지"
+        aria-label={t('previousPage')}
         className={`flex ${commonClassName}`}
         href={`${hrefPrefix}${Math.max(1, currentPage - 1)}${hrefSuffix}`}
         prefetch={false}
@@ -81,7 +85,7 @@ export default function PageNavigation({
       <div className="flex gap-2">
         <Link
           aria-disabled={currentPage >= totalPages}
-          aria-label="다음 페이지"
+          aria-label={t('nextPage')}
           className={`flex ${commonClassName}`}
           href={`${hrefPrefix}${Math.min(currentPage + 1, totalPages)}${hrefSuffix}`}
           prefetch={false}
@@ -92,7 +96,7 @@ export default function PageNavigation({
         </Link>
         {endPage < totalPages && (
           <Link
-            aria-label={`다음 ${VISIBLE_PAGES} 페이지 `}
+            aria-label={t('nextPages', { count: VISIBLE_PAGES })}
             className={`flex ${commonClassName}`}
             href={`${hrefPrefix}${Math.min(currentPage + VISIBLE_PAGES, totalPages)}${hrefSuffix}`}
             prefetch={false}
@@ -105,7 +109,7 @@ export default function PageNavigation({
         {currentPage < totalPages && (
           <Link
             aria-disabled={currentPage >= totalPages}
-            aria-label="마지막 페이지"
+            aria-label={t('lastPage')}
             className={`hidden sm:flex ${commonClassName}`}
             href={`${hrefPrefix}${totalPages}${hrefSuffix}`}
             prefetch={false}

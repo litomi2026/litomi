@@ -1,37 +1,44 @@
 import { ShieldAlert } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 import { Link } from '@/i18n/navigation'
 
-export default function Forbidden() {
+export default async function Forbidden() {
+  const t = await getTranslations('MangaViewer.forbidden')
+  const description = t('description').split('\n')
+
   return (
     <StatusState
       className="min-h-dvh"
       description={
         <>
-          이 작품은 커뮤니티 가이드라인 또는 법적 규정에 따라
-          <br className="hidden sm:block" />
-          현재 열람이 제한되어 있습니다
+          {description.map((line, index) => (
+            <span key={line}>
+              {index > 0 && <br className="hidden sm:block" />}
+              {line}
+            </span>
+          ))}
         </>
       }
       icon={<ShieldAlert className="size-8" />}
       intent="blocked"
-      title="접근 제한된 콘텐츠"
+      title={t('title')}
     >
       <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
         <StatusActionLink className="max-w-none" href="/new/1" variant="secondary">
-          신작 페이지
+          {t('newAction')}
         </StatusActionLink>
         <StatusActionLink className="max-w-none" href="/">
-          홈으로 가기
+          {t('homeAction')}
         </StatusActionLink>
       </div>
       <p className="max-w-sm text-xs leading-5 text-zinc-600">
-        제한 사유에 대한 문의는{' '}
+        {t('termsPrefix')}{' '}
         <Link className="text-zinc-500 underline underline-offset-2 transition hover:text-zinc-400" href="/doc/terms">
-          이용약관
+          {t('termsAction')}
         </Link>
-        을 참고해 주세요
+        {t('termsSuffix')}
       </p>
     </StatusState>
   )

@@ -8,6 +8,7 @@ import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Bookmark, Loader2 } from 'lucide-react'
 import ms from 'ms'
+import { useTranslations } from 'next-intl'
 import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -28,6 +29,7 @@ type Props = {
 }
 
 export default function BookmarkButton({ manga, className }: Props) {
+  const t = useTranslations('Common.bookmark')
   const { guardAdultAccess, guardLogin } = useAdultAccessGuard()
   const { data: bookmarks } = useBookmarkQuery()
   const { open: openLibraryModal } = useLibraryModal()
@@ -59,9 +61,9 @@ export default function BookmarkButton({ manga, className }: Props) {
       const toastId = `bookmark-toggle-${mangaId}`
 
       if (shouldBookmark) {
-        toast.success('북마크에 추가했어요', {
+        toast.success(t('added'), {
           action: {
-            label: '서재에도 추가',
+            label: t('addToLibrary'),
             onClick: () => {
               toast.dismiss(toastId)
               openLibraryModal(mangaId)
@@ -134,13 +136,15 @@ export default function BookmarkButton({ manga, className }: Props) {
         ) : (
           <Bookmark className="size-4" fill={isBookmarked ? 'currentColor' : 'none'} />
         )}
-        <span>북마크</span>
+        <span>{t('label')}</span>
       </button>
     </div>
   )
 }
 
 export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
+  const t = useTranslations('Common.bookmark')
+
   useEffect(() => {
     captureException(error, { extra: { name: 'BookmarkButtonError' } })
   }, [error])
@@ -151,7 +155,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
       onClick={reset}
     >
       <Bookmark className="size-4 text-red-700" />
-      <span className="text-red-700">오류</span>
+      <span className="text-red-700">{t('error')}</span>
     </button>
   )
 }

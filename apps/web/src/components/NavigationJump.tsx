@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowRight } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useRef } from 'react'
 
 import { useRouter } from '@/i18n/navigation'
@@ -14,6 +15,7 @@ type Props = {
 export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix = '' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+  const t = useTranslations('Common.pagination')
 
   function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -33,7 +35,7 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
   return (
     <form className="flex gap-2 relative sm:hidden" onSubmit={handleSubmit}>
       <label className="sr-only" htmlFor="page-input">
-        이동할 페이지 번호
+        {t('jumpInputLabel')}
       </label>
       <input
         className="w-14 p-1 border border-zinc-200 rounded focus:outline-none focus:ring-1 focus:ring-zinc-300"
@@ -48,7 +50,7 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
         type="text"
       />
       <button
-        aria-label="특정 페이지로 이동"
+        aria-label={t('jumpAction')}
         className="whitespace-nowrap p-2 bg-zinc-800 text-foreground rounded hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-300"
         type="submit"
       >

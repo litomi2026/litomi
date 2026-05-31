@@ -1,7 +1,7 @@
 'use client'
 
 import { Loader2, X } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -30,6 +30,8 @@ export default function ActiveFilters({ filters }: Props) {
   const router = useRouter()
   const locale = useLocale()
   const [isPending, startTransition] = useTransition()
+  const t = useTranslations('Search.activeFilter')
+  const sortT = useTranslations('Search.filter.sortOptions')
 
   function removeFilter(key: string) {
     const params = new URLSearchParams(window.location.search)
@@ -53,43 +55,44 @@ export default function ActiveFilters({ filters }: Props) {
   const filterConfigs = [
     {
       condition: filters.sort,
-      label: '정렬',
-      value: filters.sort && { random: '랜덤', id_asc: '오래된 순', popular: '인기순' }[filters.sort],
+      label: t('sort'),
+      value:
+        filters.sort && { random: sortT('random'), id_asc: sortT('oldest'), popular: sortT('popular') }[filters.sort],
       onRemove: () => removeFilter('sort'),
     },
     {
       condition: filters.minView || filters.maxView,
-      label: '조회수',
+      label: t('view'),
       value: `${formatNumber(filters.minView, '0', locale)} ~ ${formatNumber(filters.maxView, '∞', locale)}`,
       onRemove: () => removeRangeFilter('min-view', 'max-view'),
     },
     {
       condition: filters.minPage || filters.maxPage,
-      label: '페이지',
+      label: t('page'),
       value: `${formatNumber(filters.minPage, '1', locale)} ~ ${formatNumber(filters.maxPage, '∞', locale)}`,
       onRemove: () => removeRangeFilter('min-page', 'max-page'),
     },
     {
       condition: filters.minRating || filters.maxRating,
-      label: '별점',
+      label: t('rating'),
       value: `${formatNumber(parseInt(filters.minRating ?? '0') / 100, '0', locale)} ~ ${formatNumber(parseInt(filters.maxRating ?? '0') / 100, '5', locale)}`,
       onRemove: () => removeRangeFilter('min-rating', 'max-rating'),
     },
     {
       condition: filters.from || filters.to,
-      label: '날짜',
-      value: `${filters.from ? formatDate(filters.from, locale) : '처음'} ~ ${filters.to ? formatDate(filters.to, locale) : '오늘'}`,
+      label: t('date'),
+      value: `${filters.from ? formatDate(filters.from, locale) : t('beginning')} ~ ${filters.to ? formatDate(filters.to, locale) : t('today')}`,
       onRemove: () => removeRangeFilter('from', 'to'),
     },
     {
       condition: filters.skip && Number(filters.skip) > 0,
-      label: '건너뛰기',
-      value: `${formatNumber(filters.skip, '0', locale)}개`,
+      label: t('skip'),
+      value: t('countSuffix', { count: formatNumber(filters.skip, '0', locale) }),
       onRemove: () => removeFilter('skip'),
     },
     {
       condition: filters.nextId,
-      label: '시작 ID',
+      label: t('nextId'),
       value: filters.nextId,
       onRemove: () => removeFilter('next-id'),
     },
@@ -113,7 +116,7 @@ export default function ActiveFilters({ filters }: Props) {
               <span className="text-zinc-200">{config.value}</span>
             </span>
             <button
-              aria-label={`${config.label} 조건 제거`}
+              aria-label={t('remove', { label: config.label })}
               className={twMerge(
                 'flex items-center justify-center size-7 p-1.5 -m-2 transition',
                 'text-zinc-500 hover:text-zinc-300 active:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed',
@@ -132,6 +135,7 @@ export default function ActiveFilters({ filters }: Props) {
 
 export function ClearAllFilters() {
   const router = useRouter()
+  const t = useTranslations('Search.activeFilter')
   const [isPending, startTransition] = useTransition()
 
   function clearAllFilters() {
@@ -148,7 +152,7 @@ export function ClearAllFilters() {
 
   return (
     <button
-      aria-label="모든 조건 제거"
+      aria-label={t('removeAll')}
       className={twMerge(
         'flex items-center gap-1.5 p-2 py-1 transition text-xs font-medium text-zinc-500',
         'hover:text-zinc-300 active:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed',
@@ -160,10 +164,10 @@ export function ClearAllFilters() {
       {isPending ? (
         <>
           <Loader2 className="size-4 animate-spin" />
-          <span>제거 중</span>
+          <span>{t('removing')}</span>
         </>
       ) : (
-        '모두 지우기'
+        t('clearAll')
       )}
     </button>
   )

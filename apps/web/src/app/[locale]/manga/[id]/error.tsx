@@ -2,6 +2,7 @@
 
 import { captureException } from '@sentry/nextjs'
 import { TriangleAlert } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 
 import useCooldown from '@/hook/useCooldown'
@@ -13,8 +14,9 @@ type Props = {
 }
 
 export default function ErrorPage({ error, reset }: Props) {
-  const cooldown = useCooldown()
   const pathname = usePathname()
+  const cooldown = useCooldown()
+  const t = useTranslations('MangaViewer.error')
 
   useEffect(() => {
     captureException(error, {
@@ -27,7 +29,7 @@ export default function ErrorPage({ error, reset }: Props) {
     <main className="flex flex-col justify-center items-center gap-6 text-center h-dvh">
       <h1 className="flex items-center justify-center gap-2 text-xl md:text-2xl">
         <TriangleAlert aria-hidden className="size-6 shrink-0 text-amber-400" />
-        오류가 발생했어요
+        {t('title')}
       </h1>
       <div className="grid gap-2">
         <span className="text-sm">{error.digest}</span>
@@ -38,7 +40,7 @@ export default function ErrorPage({ error, reset }: Props) {
         disabled={cooldown > 0}
         onClick={reset}
       >
-        다시 시도하기 {cooldown > 0 && `(${cooldown / 1000}초)`}
+        {cooldown > 0 ? t('retryWithCooldown', { seconds: cooldown / 1000 }) : t('retry')}
       </button>
     </main>
   )

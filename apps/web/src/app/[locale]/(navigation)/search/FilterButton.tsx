@@ -2,6 +2,7 @@
 
 import { formatLocalDate } from '@litomi/std'
 import { SlidersHorizontal } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useRef, useState } from 'react'
@@ -18,6 +19,7 @@ import { FILTER_KEYS, isDateFilter } from './constants'
 const FilterPanel = dynamic(() => import('./FilterPanel'))
 
 export default function FilterButton() {
+  const t = useTranslations('Search.filter')
   const [showFilters, setShowFilters] = useState(false)
   const mounted = useMounted()
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -53,7 +55,7 @@ export default function FilterButton() {
       <SearchParamsSync onUpdate={handleSearchParamUpdate} />
       <button
         aria-expanded={showFilters}
-        aria-label="상세 조건 설정"
+        aria-label={t('title')}
         aria-pressed={hasActiveFilters}
         className={twMerge(
           'relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[1.1rem] border transition',
@@ -64,11 +66,11 @@ export default function FilterButton() {
         )}
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
-        title="상세 조건 설정"
+        title={t('title')}
         type="button"
       >
         <SlidersHorizontal aria-hidden className="size-4 sm:size-5" />
-        <span className="md:hidden lg:inline">조건</span>
+        <span className="md:hidden lg:inline">{t('button')}</span>
         {hasActiveFilters && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-xs font-bold bg-brand text-background rounded-full">
             {activeFilterCount}

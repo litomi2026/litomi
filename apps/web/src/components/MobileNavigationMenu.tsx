@@ -1,6 +1,7 @@
 'use client'
 
 import { Bookmark, Bot, Clover, FileText, Flame, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReactNode, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -30,9 +31,10 @@ type SelectedIconStyle = 'fill-soft' | 'fill' | 'stroke'
 
 export default function MobileNavigationMenu({ onClose }: Props) {
   const pathname = usePathname()
+  const initialPathnameRef = useRef(pathname)
+  const t = useTranslations('Navigation.mobileMenu')
   const { data: me } = useMeQuery()
   const username = me?.name ?? ''
-  const initialPathnameRef = useRef(pathname)
 
   // NOTE: 메뉴가 열릴 때 body 스크롤을 방지함
   useEffect(() => {
@@ -63,16 +65,16 @@ export default function MobileNavigationMenu({ onClose }: Props) {
   return (
     <OverlayHost>
       <div className="pointer-events-auto fixed inset-0 animate-fade-in-fast">
-        <button aria-label="메뉴 닫기" className="absolute inset-0 bg-background/50" onClick={onClose} type="button" />
+        <button aria-label={t('close')} className="absolute inset-0 bg-background/50" onClick={onClose} type="button" />
       </div>
       <aside
-        aria-label="모바일 메뉴"
+        aria-label={t('menuLabel')}
         className="pointer-events-auto fixed inset-y-0 left-0 flex max-w-3xs w-full flex-col border-r-2 bg-background shadow animate-fade-in-fast"
       >
         <div className="flex items-center justify-between border-b-2 border-zinc-800 p-4 pl-[calc(1rem+var(--safe-area-left))] pt-[calc(1rem+var(--safe-area-top))]">
-          <h2 className="text-lg font-bold pl-4">메뉴</h2>
+          <h2 className="text-lg font-bold pl-4">{t('menu')}</h2>
           <button
-            aria-label="메뉴 닫기"
+            aria-label={t('close')}
             className="p-2 -m-2 hover:bg-zinc-800 rounded-lg transition"
             onClick={onClose}
             type="button"
@@ -81,7 +83,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
           </button>
         </div>
         <nav
-          aria-label="모바일 보조 메뉴"
+          aria-label={t('navLabel')}
           className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3 pl-[calc(0.75rem+var(--safe-area-left))] pb-[calc(0.75rem+var(--safe-area-bottom))]"
         >
           <MobileMenuLink
@@ -90,7 +92,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill"
-            title="인기"
+            title={t('ranking')}
           />
           <MobileMenuLink
             href="/library/bookmark"
@@ -98,7 +100,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill"
-            title="북마크"
+            title={t('bookmark')}
           />
           <MobileMenuLink
             href="/posts/recommend"
@@ -107,7 +109,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill-soft"
-            title="이야기"
+            title={t('posts')}
           />
           <MobileMenuLink
             href="/tag"
@@ -116,7 +118,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill-soft"
-            title="태그"
+            title={t('tag')}
           />
           <MobileMenuLink
             href="/chat"
@@ -124,7 +126,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="stroke"
-            title="AI 채팅"
+            title={t('chat')}
           />
           <MobileMenuLink
             href="/libo"
@@ -133,7 +135,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill-soft"
-            title="리보"
+            title={t('libo')}
           />
           <MobileMenuLink
             href="/library/history"
@@ -141,7 +143,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill-soft"
-            title="감상 기록"
+            title={t('history')}
           />
           <MobileMenuLink
             href="/library/rating"
@@ -149,7 +151,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill"
-            title="평가"
+            title={t('rating')}
           />
           <MobileMenuLink
             href="/fortune"
@@ -157,7 +159,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             icon={<Clover />}
             onClose={onClose}
             pathname={pathname}
-            title="운세"
+            title={t('fortune')}
           />
           <MobileMenuLink
             href={`/@${username}/settings`}
@@ -165,7 +167,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill-soft"
-            title="설정"
+            title={t('settings')}
           />
         </nav>
       </aside>

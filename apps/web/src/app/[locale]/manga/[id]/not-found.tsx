@@ -1,16 +1,19 @@
 import { SearchX } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations('MangaViewer.notFound')
+
   return (
     <StatusState
       className="min-h-dvh"
-      description="주소가 바뀌었거나 더 이상 제공되지 않는 작품일 수 있어요"
+      description={t('description')}
       icon={<SearchX className="size-8" />}
-      title="작품을 찾을 수 없어요"
+      title={t('title')}
     >
-      <StatusActionLink href="/new/1">다른 작품 보러가기</StatusActionLink>
+      <StatusActionLink href="/new/1">{t('action')}</StatusActionLink>
     </StatusState>
   )
 }

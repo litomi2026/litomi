@@ -1,4 +1,5 @@
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReactNode, RefObject, useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -35,6 +36,8 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
   renderRightContent,
   dropdownRef,
 }: Props<T>) {
+  const t = useTranslations('Search.suggestionDropdown')
+
   // NOTE: 선택된 항목이 화면에 보이도록 자동으로 스크롤함
   useEffect(() => {
     if (selectedIndex >= 0 && dropdownRef?.current) {
@@ -94,20 +97,20 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
           ))}
         </div>
         {suggestions.length === 0 && searchTerm && !isLoading && (
-          <div className="text-center py-4 text-zinc-500 text-sm">검색 결과가 없습니다</div>
+          <div className="text-center py-4 text-zinc-500 text-sm">{t('noResults')}</div>
         )}
       </div>
       {suggestions.length > 1 && (
         <div className="sticky bottom-0 border-t border-zinc-800 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-500 backdrop-blur-sm">
           <div className="flex flex-wrap gap-x-3 gap-y-1">
             <span className="whitespace-nowrap">
-              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">↑↓</kbd> 이동
+              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">↑↓</kbd> {t('move')}
             </span>
             <span className="whitespace-nowrap">
-              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">Enter</kbd> 선택
+              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">Enter</kbd> {t('select')}
             </span>
             <span className="whitespace-nowrap">
-              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">Esc</kbd> 취소
+              <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1 py-0.5 text-xs">Esc</kbd> {t('cancel')}
             </span>
           </div>
         </div>

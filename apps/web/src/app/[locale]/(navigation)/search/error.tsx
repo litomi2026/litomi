@@ -2,12 +2,13 @@
 
 import { captureException } from '@sentry/nextjs'
 import { TriangleAlert } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
 import useCooldown from '@/hook/useCooldown'
-import { usePathname } from '@/i18n/navigation'
+import { usePathname, useRouter } from '@/i18n/navigation'
 
 type Props = {
   error: Error & { digest?: string }
@@ -15,8 +16,10 @@ type Props = {
 }
 
 export default function ErrorPage({ error, reset }: Props) {
+  const t = useTranslations('Search.errorBoundary')
   const cooldown = useCooldown()
   const pathname = usePathname()
+  const router = useRouter()
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -28,15 +31,15 @@ export default function ErrorPage({ error, reset }: Props) {
 
   const getErrorMessage = () => {
     if (error.message.includes('429')) {
-      return '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.'
+      return t('rateLimited')
     }
     if (error.message.includes('500')) {
-      return '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+      return t('serverError')
     }
     if (error.message.includes('503')) {
-      return '서버 점검 중입니다. 잠시 후 다시 시도해주세요.'
+      return t('maintenance')
     }
-    return error.message || '알 수 없는 오류가 발생했습니다.'
+    return error.message || t('unknown')
   }
 
   return (
@@ -45,10 +48,10 @@ export default function ErrorPage({ error, reset }: Props) {
       <main className="flex flex-col grow justify-center items-center gap-6 text-center px-4">
         <h1 className="flex items-center justify-center gap-2 text-xl md:text-2xl">
           <TriangleAlert aria-hidden className="size-6 shrink-0 text-amber-400" />
-          검색 중 오류가 발생했어요
+          {t('title')}
         </h1>
         <div className="grid gap-2 max-w-md">
-          {error.digest && <span className="text-sm text-zinc-500">오류 코드: {error.digest}</span>}
+          {error.digest && <span className="text-sm text-zinc-500">{t('errorCode', { digest: error.digest })}</span>}
           <p className="text-red-400">{getErrorMessage()}</p>
         </div>
         <div className="flex gap-2">
@@ -57,13 +60,13 @@ export default function ErrorPage({ error, reset }: Props) {
             disabled={cooldown > 0}
             onClick={reset}
           >
-            다시 시도하기 {cooldown > 0 && `(${cooldown / 1000}초)`}
+            {cooldown > 0 ? t('retryWithCooldown', { seconds: cooldown / 1000 }) : t('retry')}
           </button>
           <button
             className="bg-zinc-800 text-sm font-semibold rounded-full min-w-40 hover:bg-zinc-700 active:bg-zinc-800 px-4 py-2 transition border border-zinc-700"
-            onClick={() => (window.location.href = '/search')}
+            onClick={() => router.replace('/search')}
           >
-            검색 조건 초기화
+            {t('reset')}
           </button>
         </div>
       </main>

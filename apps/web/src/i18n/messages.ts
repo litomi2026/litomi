@@ -7,6 +7,7 @@ import { messages as liboMessages } from '@/app/[locale]/(navigation)/(top-navig
 import { messages as topNavigationMessages } from '@/app/[locale]/(navigation)/(top-navigation)/messages'
 import { messages as libraryMessages } from '@/app/[locale]/(navigation)/library/messages'
 import { messages as navigationMessages } from '@/app/[locale]/(navigation)/messages'
+import { messages as searchMessages } from '@/app/[locale]/(navigation)/search/messages'
 import { messages as authMessages } from '@/app/[locale]/auth/messages'
 import { messages as deterrenceMessages } from '@/app/[locale]/deterrence/messages'
 import { messages as docMessages } from '@/app/[locale]/doc/messages'
@@ -29,6 +30,7 @@ const messageModules = [
   topNavigationMessages,
   liboMessages,
   libraryMessages,
+  searchMessages,
   mangaMessages,
 ] satisfies LocalizedMessages[]
 

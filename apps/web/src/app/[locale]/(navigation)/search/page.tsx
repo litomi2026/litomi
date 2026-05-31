@@ -41,6 +41,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<'/[lo
 }
 
 export default async function Page({ searchParams }: PageProps<'/[locale]/search'>) {
+  const t = await getTranslations('Search')
   const resolvedSearchParams = await searchParams
   const params = new URLSearchParams()
 
@@ -75,7 +76,7 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
       {hasActiveFilters ? (
         <div className="gap-2 pb-2 hidden sm:grid">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-zinc-400">적용된 조건</h3>
+            <h3 className="text-sm font-medium text-zinc-400">{t('activeFilters')}</h3>
             <ClearAllFilters />
           </div>
           <ActiveFilters filters={filters} />

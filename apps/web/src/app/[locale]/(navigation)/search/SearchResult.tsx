@@ -5,6 +5,7 @@ import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 import type { ReactNode } from 'react'
 
 import { getViewFromSearchParams, View } from '@litomi/std'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -46,6 +47,7 @@ type Props = {
 type SearchResultItem = LoadingItem | MangaItem | NativeGridSponsorItem
 
 export default function SearchResult({ header, nativeGridSponsor }: Props) {
+  const t = useTranslations('Search')
   const searchParams = useSearchParams()
   const searchParamsString = searchParams.toString()
   const view = getViewFromSearchParams(searchParams)
@@ -162,7 +164,7 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
     return (
       <SearchSpacer>
         <div className="flex flex-col grow justify-center items-center">
-          <p className="text-zinc-500">검색 결과가 없습니다.</p>
+          <p className="text-zinc-500">{t('noResults')}</p>
         </div>
       </SearchSpacer>
     )
