@@ -5,6 +5,7 @@ import type { POSTV1PostBody, POSTV1PostResponse } from '@litomi/contracts'
 import { MAX_POST_CONTENT_LENGTH } from '@litomi/domain/post/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { type ReactNode, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
@@ -34,7 +35,7 @@ export default function PostCreationForm({
   className = '',
   children,
   placeholder,
-  buttonText = '게시하기',
+  buttonText,
   mangaId,
   parentPostId,
   referredPostId,
@@ -44,6 +45,7 @@ export default function PostCreationForm({
   const { data: me } = useMeQuery()
   const queryClient = useQueryClient()
   const router = useRouter()
+  const t = useTranslations('Community')
   const isAuthPending = me === undefined
   const isGuest = me === null
 
@@ -51,7 +53,7 @@ export default function PostCreationForm({
     mutationFn: createPost,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.postsBase })
-      toast.success('글을 작성했어요')
+      toast.success(t('post.success'))
       setContent('')
 
       if (parentPostId) {
@@ -110,7 +112,7 @@ export default function PostCreationForm({
           onChange={(e) => setContent(e.target.value)}
           onFocus={() => setHasFocusedBefore(true)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t('posts.creationPlaceholder')}
           required
           value={content}
         />
@@ -130,7 +132,7 @@ export default function PostCreationForm({
                 disabled={isAuthPending || isGuest || isPending}
                 type="submit"
               >
-                {buttonText}
+                {buttonText ?? t('post.submit')}
                 {isPending && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Loader2 className="size-4 text-zinc-900 animate-spin" />
