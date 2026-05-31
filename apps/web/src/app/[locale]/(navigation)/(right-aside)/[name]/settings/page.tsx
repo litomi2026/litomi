@@ -127,7 +127,7 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/[nam
       {languageSelector}
       {themeSelector}
       <CollapsibleSection
-        description="관심 키워드를 등록하여 새로운 작품 알림을 받아보세요"
+        description="관심 키워드를 등록하여 신작 알림을 받아보세요"
         icon={<CaseSensitive className="size-5 shrink-0 text-brand" />}
         id="keyword"
         title="키워드 알림"
@@ -151,7 +151,7 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/[nam
         </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
-        description="감상 기록 자동 저장과 광고 표시 방식을 관리하세요"
+        description="감상 기록 저장과 광고 표시 방식을 관리하세요"
         icon={<Settings className="size-5 shrink-0" />}
         id="content"
         title="개인 설정"
@@ -159,7 +159,7 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/[nam
         <ContentSettingsForm initialSettings={settings} />
       </CollapsibleSection>
       <CollapsibleSection
-        description="내 데이터를 백업할 수 있어요"
+        description="내 데이터를 다운로드할 수 있어요"
         icon={<Download className="size-5 shrink-0" />}
         id="data"
         title="데이터 내보내기"
@@ -207,7 +207,7 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/[nam
         </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
-        description="로그인 유지 중인 브라우저와 기기를 확인하고 종료하세요"
+        description="로그인 유지 중인 기기를 확인하고 종료하세요"
         icon={<MonitorSmartphone className="size-5 shrink-0" />}
         id="session"
         title="로그인 기기 관리"
@@ -219,7 +219,7 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/[nam
         </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
-        description="개인정보 보호를 위해 계정 자동 삭제 기간을 관리하세요"
+        description="개인정보 보호를 위해 계정을 자동으로 삭제하세요"
         icon={<CalendarMinus className="size-5 shrink-0" />}
         id="privacy"
         title="계정 자동 삭제"

@@ -31,7 +31,7 @@ export default function TopNavigation({ children, className, onMenuClick }: Prop
           <Menu className="size-9 p-2" />
         </button>
         <Link className="group p-2 focus:outline-none sm:hidden" href="/" prefetch={false}>
-          <IconLogo className="size-6" priority />
+          <IconLogo className="h-6 w-auto" priority />
         </Link>
         <div className="w-12" />
       </div>

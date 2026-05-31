@@ -29,7 +29,7 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
             <span>{t('installApp')}</span>
           </div>
         </Link>
-        <p>ⓒ 2025. {shortName}. All rights reserved.</p>
+        <p>© 2025 {shortName}. All rights reserved.</p>
         <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
           <Link className="hover:underline" href="/doc/terms" prefetch={false}>
             {t('terms')}
