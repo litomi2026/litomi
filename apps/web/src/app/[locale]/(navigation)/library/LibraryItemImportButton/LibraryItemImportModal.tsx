@@ -4,6 +4,7 @@ import type { POSTV1LibraryItemCopyBody, POSTV1LibraryItemCopyResponse } from '@
 
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { bulkCopyToLibrary } from '@/app/[locale]/(navigation)/library/api'
@@ -16,6 +17,8 @@ import { useImportMangaModalStore } from './store'
 export default function LibraryItemImportModal() {
   const { libraryId, setLibraryId } = useImportMangaModalStore()
   const queryClient = useQueryClient()
+  const t = useTranslations('Library.import')
+  const bulkT = useTranslations('Library.bulk')
 
   const bulkImportMutation = useMutation<POSTV1LibraryItemCopyResponse, ProblemDetailsError, POSTV1LibraryItemCopyBody>(
     {
@@ -28,8 +31,8 @@ export default function LibraryItemImportModal() {
         ])
 
         const failedCount = mangaIds.length - successCount
-        const extraMessage = failedCount > 0 ? ` (중복 ${failedCount}개)` : ''
-        toast.success(`${successCount}개 작품을 가져왔어요${extraMessage}`)
+        const extraMessage = failedCount > 0 ? bulkT('duplicateSuffix', { count: failedCount }) : ''
+        toast.success(t('success', { count: successCount, extra: extraMessage }))
         handleClose()
       },
     },
@@ -45,7 +48,7 @@ export default function LibraryItemImportModal() {
 
   function handleImport(mangaIds: number[]) {
     if (!libraryId) {
-      toast.warning('서재를 선택해 주세요')
+      toast.warning(t('selectLibraryWarning'))
       return
     }
 

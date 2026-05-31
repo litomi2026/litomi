@@ -2,7 +2,7 @@ import type { Post as TPost } from '@litomi/contracts'
 
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import { getPostDetailHref } from '@/components/post/postHref'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
@@ -15,12 +15,13 @@ type Props = {
 
 export default async function ParentPost({ post }: Props) {
   const locale = await getLocale()
+  const t = await getTranslations('Community')
   const author = post.author
   const referredPost = post.referredPost
 
   const avatar = (
     <Squircle className="w-10 shrink-0" src={author?.imageURL}>
-      {(author?.nickname ?? '탈퇴').slice(0, 2)}
+      {(author?.nickname ?? t('common.deletedUserShort')).slice(0, 2)}
     </Squircle>
   )
 
@@ -28,7 +29,11 @@ export default async function ParentPost({ post }: Props) {
     <article className="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-3 px-4 pt-3">
       <div className="flex flex-col items-center self-stretch">
         {author ? (
-          <Link aria-label={`${author.nickname} 프로필`} href={`/@${author.name}`} prefetch={false}>
+          <Link
+            aria-label={t('common.profileAria', { nickname: author.nickname })}
+            href={`/@${author.name}`}
+            prefetch={false}
+          >
             {avatar}
           </Link>
         ) : (
@@ -48,7 +53,7 @@ export default async function ParentPost({ post }: Props) {
               <span className="break-all">{author.nickname}</span>
             </Link>
           ) : (
-            <span className="font-bold text-zinc-500">탈퇴한 사용자예요</span>
+            <span className="font-bold text-zinc-500">{t('common.deletedUser')}</span>
           )}
           {author && <span className="min-w-0 break-all text-zinc-500">@{author.name}</span>}
           <span className="text-zinc-500">·</span>
@@ -63,7 +68,7 @@ export default async function ParentPost({ post }: Props) {
           prefetch={false}
         >
           <p className="min-w-0 whitespace-pre-wrap break-all text-[0.98rem] leading-relaxed text-zinc-100">
-            {post.content || <span className="text-zinc-500">삭제된 글이에요</span>}
+            {post.content || <span className="text-zinc-500">{t('common.deletedPost')}</span>}
           </p>
         </Link>
 
@@ -79,7 +84,7 @@ export default async function ParentPost({ post }: Props) {
             href={`/manga/${post.mangaId}`}
             prefetch={false}
           >
-            관련 작품 보기
+            {t('post.viewRelatedWork')}
           </Link>
         )}
       </div>

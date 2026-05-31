@@ -10,6 +10,7 @@ import type { InfiniteData } from '@tanstack/react-query'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -22,6 +23,7 @@ import { deleteBookmarks } from './api'
 export default function useBulkDeleteBookmarkAction(): BulkActionDescriptor {
   const queryClient = useQueryClient()
   const { exit, selectedCount, selectedIds } = useLibrarySelection()
+  const t = useTranslations('Library.bulk')
 
   const mutation = useMutation({
     mutationFn: deleteBookmarks,
@@ -46,9 +48,9 @@ export default function useBulkDeleteBookmarkAction(): BulkActionDescriptor {
       queryClient.invalidateQueries({ queryKey: QueryKeys.librarySummaryBase })
 
       if (deletedCount === 0) {
-        toast.warning('이미 삭제된 북마크예요')
+        toast.warning(t('bookmarkDelete.alreadyDeleted'))
       } else {
-        toast.success(`${deletedCount}개 작품의 북마크를 삭제했어요`)
+        toast.success(t('bookmarkDelete.success', { count: deletedCount }))
       }
 
       exit()
@@ -56,22 +58,22 @@ export default function useBulkDeleteBookmarkAction(): BulkActionDescriptor {
   })
 
   return {
-    ariaLabel: '북마크 삭제',
-    confirmLabel: '삭제',
-    description: `선택한 ${selectedCount}개 작품을 북마크에서 삭제할까요?`,
+    ariaLabel: t('bookmarkDelete.title'),
+    confirmLabel: t('bookmarkDelete.label'),
+    description: t('bookmarkDelete.description', { count: selectedCount }),
     icon: Trash2,
     id: 'delete-bookmarks',
-    label: '삭제',
+    label: t('bookmarkDelete.label'),
     onConfirm: () => {
       mutation.mutate({
         mangaIds: Array.from(selectedIds),
       } satisfies DELETEV1BookmarkBody)
     },
     pending: mutation.isPending,
-    title: '북마크 삭제',
+    title: t('bookmarkDelete.title'),
     tone: 'danger',
     type: 'confirm',
-    warning: '삭제한 북마크는 되돌릴 수 없어요.',
+    warning: t('bookmarkDelete.warning'),
   }
 }
 

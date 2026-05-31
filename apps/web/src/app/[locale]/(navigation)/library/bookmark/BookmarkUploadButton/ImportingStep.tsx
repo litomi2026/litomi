@@ -1,10 +1,13 @@
 import { Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type Props = {
   isVisible: boolean
 }
 
 export function ImportingStep({ isVisible }: Props) {
+  const t = useTranslations('Library.bookmark')
+
   return (
     <div
       aria-hidden={!isVisible}
@@ -16,8 +19,8 @@ export function ImportingStep({ isVisible }: Props) {
           <div className="absolute inset-0 border-4 border-transparent border-t-blue-600 border-r-blue-500 rounded-full animate-spin" />
           <Upload className="absolute inset-0 m-auto size-10 text-blue-400" />
         </div>
-        <p className="text-foreground font-semibold text-lg mb-2">북마크를 업로드하는 중</p>
-        <p className="text-sm text-zinc-500">잠시만 기다려주세요</p>
+        <p className="text-foreground font-semibold text-lg mb-2">{t('uploadProgressTitle')}</p>
+        <p className="text-sm text-zinc-500">{t('uploadProgressDescription')}</p>
       </div>
     </div>
   )

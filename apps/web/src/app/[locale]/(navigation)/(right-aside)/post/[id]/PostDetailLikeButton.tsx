@@ -1,6 +1,7 @@
 'use client'
 
 import { Heart } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import usePostLikeMutation from '@/components/post/usePostLikeMutation'
@@ -18,11 +19,11 @@ type Props = {
 }
 
 export default function PostDetailLikeButton({ likeCount, postId }: Props) {
-  const { data: me } = useMeQuery()
-  const { data: likedPostIds } = useLikedPostIdsQuery()
-  const { isPending: isLikePending, setLiked } = usePostLikeMutation(postId)
-
   const [optimisticLikeState, setOptimisticLikeState] = useState<OptimisticLikeState>()
+  const { isPending: isLikePending, setLiked } = usePostLikeMutation(postId)
+  const { data: likedPostIds } = useLikedPostIdsQuery()
+  const t = useTranslations('Community.post')
+  const { data: me } = useMeQuery()
 
   const likedFromQuery = likedPostIds?.has(postId)
   const isLikeStateLoading = me === undefined || (Boolean(me) && likedPostIds === undefined)
@@ -52,7 +53,7 @@ export default function PostDetailLikeButton({ likeCount, postId }: Props) {
 
   return (
     <button
-      aria-label="좋아요"
+      aria-label={t('likes')}
       aria-pressed={resolvedIsLiked}
       className="group flex items-center w-fit transition hover:text-red-600 disabled:opacity-50"
       disabled={isLikePending || isLikeStateLoading}

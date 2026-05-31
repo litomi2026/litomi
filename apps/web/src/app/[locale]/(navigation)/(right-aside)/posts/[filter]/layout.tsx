@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 
@@ -14,6 +15,7 @@ export default async function Layout({ params, children }: LayoutProps<'/[locale
     notFound()
   }
 
+  const t = await getTranslations('Community.posts')
   const { filter } = validation.data
   const isrecommend = filter === PostFilterParams.RECOMMEND
   const isFollowing = filter === PostFilterParams.FOLLOWING
@@ -34,18 +36,18 @@ export default async function Layout({ params, children }: LayoutProps<'/[locale
           )}
         >
           <Link aria-selected={isrecommend} href="recommend" prefetch={false}>
-            추천
+            {t('recommend')}
             <div aria-selected={isrecommend} className={barClassName} />
           </Link>
           <Link aria-selected={isFollowing} href="following" prefetch={false}>
-            팔로우 중
+            {t('following')}
             <div aria-selected={isFollowing} className={barClassName} />
           </Link>
         </div>
       </NavigationWithMobileMenu>
       <div className="h-[calc(6.5rem+var(--safe-area-top))] sm:hidden" />
-      <h2 className="sr-only">이야기 목록</h2>
-      <PostCreationForm className="flex p-4 border-b" placeholder="무슨 일이 일어나고 있나요?" />
+      <h2 className="sr-only">{t('listTitle')}</h2>
+      <PostCreationForm className="flex p-4 border-b" placeholder={t('creationPlaceholder')} />
       {children}
     </>
   )

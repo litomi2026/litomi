@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Copy } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -18,14 +19,15 @@ type Options = {
 export default function useBulkCopyToLibraryAction({ libraries }: Options): BulkActionDescriptor {
   const queryClient = useQueryClient()
   const { exit, selectedCount, selectedIds } = useLibrarySelection()
+  const t = useTranslations('Library.bulk')
 
   const mutation = useMutation({
     mutationFn: bulkCopyToLibrary,
     onSuccess: ({ copiedCount }, { mangaIds, toLibraryId }) => {
       const alreadyExistsCount = mangaIds.length - copiedCount
-      const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
+      const extraMessage = alreadyExistsCount > 0 ? t('failedSuffix', { count: alreadyExistsCount }) : ''
 
-      toast.success(`${copiedCount}개 작품을 복사했어요${extraMessage}`)
+      toast.success(t('copy.success', { count: copiedCount, extra: extraMessage }))
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
@@ -35,13 +37,13 @@ export default function useBulkCopyToLibraryAction({ libraries }: Options): Bulk
   })
 
   return {
-    dialogDescription: `${selectedCount}개 작품을 복사할 서재를 선택하세요`,
-    dialogTitle: '서재에 복사',
-    disabledReason: libraries.length === 0 ? '복사할 내 서재가 없어요' : undefined,
-    emptyMessage: '복사할 수 있는 내 서재가 없어요',
+    dialogDescription: t('copy.description', { count: selectedCount }),
+    dialogTitle: t('copy.title'),
+    disabledReason: libraries.length === 0 ? t('copy.disabledNoLibrary') : undefined,
+    emptyMessage: t('copy.empty'),
     icon: Copy,
     id: 'copy',
-    label: '복사',
+    label: t('copy.label'),
     libraries,
     onSelectLibrary: (libraryId: number) => {
       mutation.mutate({

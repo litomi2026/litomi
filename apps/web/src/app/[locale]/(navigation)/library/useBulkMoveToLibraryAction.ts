@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FolderInput } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -19,14 +20,15 @@ type Options = {
 export default function useBulkMoveToLibraryAction({ currentLibraryId, libraries }: Options): BulkActionDescriptor {
   const queryClient = useQueryClient()
   const { exit, selectedCount, selectedIds } = useLibrarySelection()
+  const t = useTranslations('Library.bulk')
 
   const mutation = useMutation({
     mutationFn: bulkMoveToLibrary,
     onSuccess: ({ movedCount }, { fromLibraryId, mangaIds, toLibraryId }) => {
       const alreadyExistsCount = mangaIds.length - movedCount
-      const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
+      const extraMessage = alreadyExistsCount > 0 ? t('failedSuffix', { count: alreadyExistsCount }) : ''
 
-      toast.success(`${movedCount}개 작품을 이동했어요${extraMessage}`)
+      toast.success(t('move.success', { count: movedCount, extra: extraMessage }))
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
@@ -38,24 +40,24 @@ export default function useBulkMoveToLibraryAction({ currentLibraryId, libraries
 
   function getDisabledReason() {
     if (currentLibraryId == null) {
-      return '현재 서재 정보를 확인할 수 없어요'
+      return t('move.disabledNoCurrentLibrary')
     }
 
     if (libraries.length === 0) {
-      return '이동할 다른 내 서재가 없어요'
+      return t('move.disabledNoLibrary')
     }
 
     return undefined
   }
 
   return {
-    dialogDescription: `${selectedCount}개 작품을 이동할 서재를 선택하세요`,
-    dialogTitle: '서재로 이동',
+    dialogDescription: t('move.description', { count: selectedCount }),
+    dialogTitle: t('move.title'),
     disabledReason: getDisabledReason(),
-    emptyMessage: '이동할 수 있는 다른 서재가 없어요',
+    emptyMessage: t('move.empty'),
     icon: FolderInput,
     id: 'move',
-    label: '이동',
+    label: t('move.label'),
     libraries,
     onSelectLibrary: (libraryId: number) => {
       if (!currentLibraryId) {

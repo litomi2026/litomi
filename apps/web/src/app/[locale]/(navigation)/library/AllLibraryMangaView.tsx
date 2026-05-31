@@ -5,6 +5,7 @@ import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { Library } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
@@ -65,6 +66,7 @@ export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: 
   const [view, setView] = useState<View>(initialView)
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { heavySignature, isVisible } = useMangaCensorship()
+  const t = useTranslations('Library.empty')
 
   const {
     data,
@@ -173,9 +175,9 @@ export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: 
       <>
         <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
         <StatusState
-          description="다른 사용자들이 공개한 서재가 아직 없어요"
+          description={t('publicDescription')}
           icon={<Library className="size-8" />}
-          title="공개된 서재가 없어요"
+          title={t('publicTitle')}
         />
       </>
     )

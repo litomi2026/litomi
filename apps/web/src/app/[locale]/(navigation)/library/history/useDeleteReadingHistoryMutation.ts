@@ -3,6 +3,7 @@
 import type { DELETEV1ReadingHistoryBody } from '@litomi/contracts'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -23,6 +24,7 @@ type Options = {
 
 export default function useDeleteReadingHistoryMutation({ source, onSuccess }: Options) {
   const queryClient = useQueryClient()
+  const t = useTranslations('Library.history')
 
   return useMutation({
     mutationFn: (body: DELETEV1ReadingHistoryBody) =>
@@ -44,14 +46,14 @@ export default function useDeleteReadingHistoryMutation({ source, onSuccess }: O
 
       if (variables.mode === 'all') {
         if (deletedCount === 0) {
-          toast.warning('삭제할 감상 기록이 없어요')
+          toast.warning(t('emptyClearTitle'))
         } else {
-          toast.success('감상 기록을 모두 삭제했어요')
+          toast.success(t('allDeleted'))
         }
       } else if (deletedCount === 0) {
-        toast.warning('이미 삭제된 감상 기록이에요')
+        toast.warning(t('alreadyDeleted'))
       } else {
-        toast.success(`${deletedCount}개 작품의 감상 기록을 삭제했어요`)
+        toast.success(t('selectedDeleted', { count: deletedCount }))
       }
 
       onSuccess?.()

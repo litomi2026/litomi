@@ -3,7 +3,7 @@
 import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import { formatNumber } from '@litomi/std'
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { type RefObject, useRef } from 'react'
 
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -69,6 +69,7 @@ export default function LibrarySidebar({
   const publicMangaCount = publicLibraries.reduce((sum, lib) => sum + lib.itemCount, 0)
   const showLibrariesSkeleton = Boolean(pagination?.isPending) && libraries.length === 0
   const locale = useLocale()
+  const t = useTranslations('Library')
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: pagination?.hasNextPage && !pagination?.isFetchNextPageError,
@@ -81,41 +82,53 @@ export default function LibrarySidebar({
     <aside className={`border-r ${className}`} ref={asideRef}>
       <div className="grid gap-2 p-2">
         <div className="flex items-center justify-center lg:justify-between">
-          <h2 className="text-sm font-medium text-zinc-400 hidden lg:block">서재</h2>
+          <h2 className="text-sm font-medium text-zinc-400 hidden lg:block">{t('sidebar.title')}</h2>
           <CreateLibraryButton />
         </div>
         <LibrarySidebarLink
-          description={`작품 ${formatNumber(publicMangaCount, locale)}개`}
+          description={t('sidebar.publicWorkCount', { count: formatNumber(publicMangaCount, locale) })}
           href="/library"
           icon={<LibraryBig className="size-4 text-background" />}
           iconBackground="linear-gradient(to bottom right, var(--color-brand-start), var(--color-brand))"
           onClick={onClick}
-          title="공개 서재"
+          title={t('sidebar.publicLibraries')}
         />
         <div className="h-px bg-zinc-800 my-1" />
         <LibrarySidebarLink
-          description={historyCount !== undefined ? `${formatNumber(historyCount, locale)}개 작품` : '...'}
+          description={
+            historyCount !== undefined
+              ? t('common.workCount', { count: formatNumber(historyCount, locale) })
+              : t('sidebar.loading')
+          }
           href="/library/history"
           icon={<Clock className="size-4 text-background" />}
           iconBackground="var(--color-brand)"
           onClick={onClick}
-          title="감상 기록"
+          title={t('sidebar.history')}
         />
         <LibrarySidebarLink
-          description={bookmarkCount !== undefined ? `${formatNumber(bookmarkCount, locale)}개 작품` : '...'}
+          description={
+            bookmarkCount !== undefined
+              ? t('common.workCount', { count: formatNumber(bookmarkCount, locale) })
+              : t('sidebar.loading')
+          }
           href="/library/bookmark"
           icon={<Bookmark className="size-4 text-background" />}
           iconBackground="var(--color-brand)"
           onClick={onClick}
-          title="북마크"
+          title={t('sidebar.bookmark')}
         />
         <LibrarySidebarLink
-          description={ratingCount !== undefined ? `${formatNumber(ratingCount, locale)}개 작품` : '...'}
+          description={
+            ratingCount !== undefined
+              ? t('common.workCount', { count: formatNumber(ratingCount, locale) })
+              : t('sidebar.loading')
+          }
           href="/library/rating"
           icon={<Star className="size-4 text-background" />}
           iconBackground="var(--color-brand)"
           onClick={onClick}
-          title="평가"
+          title={t('sidebar.rating')}
         />
         {(libraries.length > 0 || showLibrariesSkeleton) && <div className="h-px bg-zinc-800 my-1" />}
         {showLibrariesSkeleton ? (
@@ -131,7 +144,7 @@ export default function LibrarySidebar({
                     <Globe className="size-3 text-zinc-500 shrink-0" />
                   ) : null
                 }
-                description={`${formatNumber(library.itemCount, locale)}개`}
+                description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
                 href={`/library/${library.id}`}
                 icon={
                   <>
@@ -159,7 +172,7 @@ export default function LibrarySidebar({
                   ) : null
                 }
                 className={!library.isPublic ? 'opacity-50' : ''}
-                description={`${formatNumber(library.itemCount, locale)}개`}
+                description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
                 href={`/library/${library.id}`}
                 icon={
                   <>
@@ -188,7 +201,7 @@ export default function LibrarySidebar({
                     <Globe className="size-3 text-zinc-500 shrink-0" />
                   ) : null
                 }
-                description={`${formatNumber(library.itemCount, locale)}개`}
+                description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
                 href={`/library/${library.id}`}
                 icon={
                   <>
@@ -219,7 +232,7 @@ export default function LibrarySidebar({
             onClick={pagination.onRetryNextPage}
             type="button"
           >
-            다시 시도해요
+            {t('common.retry')}
           </button>
         )}
       </div>

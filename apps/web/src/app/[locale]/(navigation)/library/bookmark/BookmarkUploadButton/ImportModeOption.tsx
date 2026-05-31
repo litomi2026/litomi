@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import { ImportMode } from './types'
@@ -50,6 +51,7 @@ export function ImportModeOption({
   showWarning,
   title,
 }: Props) {
+  const t = useTranslations('Library.bookmark')
   const isSelected = currentMode === mode
   const colorClasses = colors[colorScheme]
 
@@ -82,7 +84,7 @@ export function ImportModeOption({
               aria-hidden
               className={`text-xs bg-linear-to-r ${colorClasses.badge} whitespace-nowrap text-foreground px-3 py-1.5 rounded-full font-medium shadow-md ${colorClasses.badgeShadow}`}
             >
-              권장
+              {t('recommended')}
             </span>
           )}
         </div>
@@ -98,7 +100,7 @@ export function ImportModeOption({
                   strokeWidth={2}
                 />
               </svg>
-              이 작업은 되돌릴 수 없습니다
+              {t('irreversible')}
             </p>
           </div>
         )}

@@ -1,4 +1,7 @@
+'use client'
+
 import { Star } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
@@ -7,17 +10,19 @@ import { Link } from '@/i18n/navigation'
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 
 export default function NotFound() {
+  const t = useTranslations('Library')
+
   return (
     <>
       <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <div className="flex-1 flex items-center justify-center">
         <StatusState
-          description="작품을 평가하고 나만의 취향을 기록해보세요"
+          description={t('empty.ratingDescription')}
           icon={<Star className="size-8" />}
-          title="아직 평가한 작품이 없어요"
+          title={t('empty.ratingTitle')}
         >
           <Link className={getStatusActionClassName('primary')} href="/library" prefetch={false}>
-            작품 둘러보기
+            {t('common.browseWorks')}
           </Link>
         </StatusState>
       </div>

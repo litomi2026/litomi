@@ -1,42 +1,45 @@
+import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 export const STEP_MAP = {
   idle: {
-    label: '파일 선택',
+    labelKey: 'uploadStepFile',
     step: 1,
   },
   preview: {
-    label: '옵션 설정',
+    labelKey: 'uploadStepOptions',
     step: 2,
   },
   importing: {
-    label: '업로드',
+    labelKey: 'uploadStepUpload',
     step: 3,
   },
   complete: {
-    label: '완료',
+    labelKey: 'uploadStepComplete',
     step: 4,
   },
-}
+} as const
 
 type Props = {
   currentStep: number
 }
 
 export function ProgressIndicator({ currentStep }: Props) {
+  const t = useTranslations('Library.bookmark')
+
   return (
     <div className="flex items-center justify-between relative px-4">
       <div className="absolute top-1/2 left-8 right-8 h-0.5 bg-zinc-800/60 -translate-y-1/2" />
       <div
-        className="absolute top-1/2 left-8 h-0.5 bg-gradient-to-r from-blue-600 to-blue-500 -translate-y-1/2 transition ease-out"
+        className="absolute top-1/2 left-8 h-0.5 bg-linear-to-r from-blue-600 to-blue-500 -translate-y-1/2 transition ease-out"
         style={{ width: `calc(${((currentStep - 1) / 3) * 100}% * (100% - 4rem) / 100%)` }}
       />
-      {Object.values(STEP_MAP).map(({ label, step }) => {
+      {Object.values(STEP_MAP).map(({ labelKey, step }) => {
         const isActive = step <= currentStep
         const isCurrent = step === currentStep
 
         return (
-          <div className="relative z-10 flex flex-col items-center" key={label}>
+          <div className="relative z-10 flex flex-col items-center" key={labelKey}>
             <div
               aria-current={isCurrent}
               aria-selected={isActive}
@@ -49,7 +52,7 @@ export function ProgressIndicator({ currentStep }: Props) {
             </div>
             {isCurrent && (
               <span className="text-xs mt-3 absolute top-full whitespace-nowrap font-medium text-zinc-300">
-                {label}
+                {t(labelKey)}
               </span>
             )}
           </div>

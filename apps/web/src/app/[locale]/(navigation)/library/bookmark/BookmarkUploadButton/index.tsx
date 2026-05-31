@@ -1,6 +1,7 @@
 'use client'
 
 import { Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { getStatusActionClassName } from '@/components/status/styles'
 
@@ -17,6 +18,7 @@ const CTA_BUTTON_CLASS_NAME = getStatusActionClassName('secondary', 'max-w-none'
 
 export default function BookmarkUploadButton({ variant = 'toolbar' }: Props) {
   const setIsOpen = useBookmarkUploadModalStore((store) => store.setIsOpen)
+  const t = useTranslations('Library.bookmark')
 
   const className = {
     cta: CTA_BUTTON_CLASS_NAME,
@@ -27,7 +29,11 @@ export default function BookmarkUploadButton({ variant = 'toolbar' }: Props) {
     <button className={className} onClick={() => setIsOpen(true)} type="button">
       <span className="flex items-center justify-center gap-2">
         <Upload className="size-5 shrink-0" />
-        {variant === 'cta' ? <span>내보낸 북마크 복원</span> : <span className="hidden md:block">북마크 복원</span>}
+        {variant === 'cta' ? (
+          <span>{t('restoreExported')}</span>
+        ) : (
+          <span className="hidden md:block">{t('restore')}</span>
+        )}
       </span>
     </button>
   )

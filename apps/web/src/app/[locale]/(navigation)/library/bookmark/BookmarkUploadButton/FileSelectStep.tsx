@@ -1,4 +1,5 @@
 import { Bookmark } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type Props = {
   fileInputRef: React.RefObject<HTMLInputElement | null>
@@ -7,15 +8,15 @@ type Props = {
 }
 
 export function FileSelectStep({ fileInputRef, isVisible, onFileSelect }: Props) {
+  const t = useTranslations('Library.bookmark')
+
   return (
     <div
       aria-hidden={!isVisible}
       className="absolute inset-0 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
     >
       <div className="flex flex-col h-full p-6">
-        <p className="text-sm text-zinc-400 text-center mb-4 leading-relaxed">
-          리토미에서 내보낸 북마크 파일을 선택해주세요
-        </p>
+        <p className="text-sm text-zinc-400 text-center mb-4 leading-relaxed">{t('uploadSelectDescription')}</p>
         <label className="cursor-pointer flex-1 flex items-center justify-center group">
           <input
             accept=".json,application/json"
@@ -28,8 +29,8 @@ export function FileSelectStep({ fileInputRef, isVisible, onFileSelect }: Props)
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-linear-to-br from-zinc-800 to-zinc-800/80 flex items-center justify-center transition group-hover:from-blue-600/10 group-hover:to-blue-500/10">
               <Bookmark className="size-8 shrink-0 text-zinc-400 transition group-hover:text-blue-400" />
             </div>
-            <p className="font-semibold text-zinc-200 mb-2 text-lg">파일을 선택하세요</p>
-            <p className="text-sm text-zinc-500">JSON 파일 (최대 1MB)</p>
+            <p className="font-semibold text-zinc-200 mb-2 text-lg">{t('uploadSelectTitle')}</p>
+            <p className="text-sm text-zinc-500">{t('uploadSelectHelp')}</p>
           </div>
         </label>
       </div>

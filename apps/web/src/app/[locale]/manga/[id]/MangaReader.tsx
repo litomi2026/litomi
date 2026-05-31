@@ -160,7 +160,6 @@ export default function MangaReader({ manga }: Props) {
             <Link
               className={twMerge('flex items-center gap-2', TOP_BUTTON_CLASS_NAME)}
               href={`/manga/${manga.id}/detail`}
-              prefetch={false}
               title={t('detail')}
             >
               <MessageCircle className="size-6" />

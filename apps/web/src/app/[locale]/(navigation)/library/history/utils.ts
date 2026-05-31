@@ -4,16 +4,6 @@ import ms from 'ms'
 
 export type DateGroup = 'lastMonth' | 'lastWeek' | 'older' | 'thisMonth' | 'thisWeek' | 'today' | 'yesterday'
 
-export const DATE_GROUP_LABELS: Record<DateGroup, string> = {
-  today: '오늘',
-  yesterday: '어제',
-  thisWeek: '이번 주',
-  lastWeek: '지난 주',
-  thisMonth: '이번 달',
-  lastMonth: '지난 달',
-  older: '이전',
-}
-
 const GROUP_ORDER: DateGroup[] = ['today', 'yesterday', 'thisWeek', 'lastWeek', 'thisMonth', 'lastMonth', 'older']
 const GROUP_ORDER_MAP = new Map(GROUP_ORDER.map((group, index) => [group, index]))
 

@@ -43,10 +43,11 @@ export default async function RatingPage({ params, searchParams }: PageProps<'/[
   }
 
   const { sort, view } = validation.data
+  const t = await getTranslations({ locale, namespace: 'Metadata.library.rating' })
 
   return (
     <main className="flex-1 flex flex-col">
-      <h1 className="sr-only">작품 평가</h1>
+      <h1 className="sr-only">{t('title')}</h1>
       <RatingPageClient initialSort={sort} initialView={view} />
     </main>
   )

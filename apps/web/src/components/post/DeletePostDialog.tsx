@@ -3,6 +3,7 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'
@@ -33,6 +34,7 @@ export default function DeletePostDialog({
 }: Props) {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const t = useTranslations('Community')
 
   const deletePostMutation = useMutation<void, ProblemDetailsError, number, MutationContext>({
     mutationFn: deletePost,
@@ -48,7 +50,7 @@ export default function DeletePostDialog({
       }
     },
     onSuccess: () => {
-      toast.success('글을 삭제했어요')
+      toast.success(t('delete.success'))
       onOpenChange(false)
 
       if (redirectOnDelete) {
@@ -65,16 +67,16 @@ export default function DeletePostDialog({
   })
 
   return (
-    <Dialog ariaLabel="글 삭제" className="sm:max-w-sm" onClose={() => onOpenChange(false)} open={open}>
-      <DialogHeader onClose={() => onOpenChange(false)} title="글 삭제" />
+    <Dialog ariaLabel={t('delete.title')} className="sm:max-w-sm" onClose={() => onOpenChange(false)} open={open}>
+      <DialogHeader onClose={() => onOpenChange(false)} title={t('delete.title')} />
 
       <DialogBody className="p-5">
         <div className="flex flex-col items-center text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-800">
             <Trash2 className="size-6 shrink-0 text-red-500" />
           </div>
-          <p className="text-sm text-zinc-300">이 글을 삭제할까요?</p>
-          <p className="mt-2 text-sm text-zinc-500">삭제하면 되돌릴 수 없어요.</p>
+          <p className="text-sm text-zinc-300">{t('delete.description')}</p>
+          <p className="mt-2 text-sm text-zinc-500">{t('delete.warning')}</p>
         </div>
       </DialogBody>
 
@@ -86,7 +88,7 @@ export default function DeletePostDialog({
           type="button"
         >
           {deletePostMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}{' '}
-          삭제
+          {t('common.delete')}
         </button>
         <button
           className="h-10 flex-1 rounded-lg bg-zinc-800 font-medium text-zinc-300 transition hover:bg-zinc-700 disabled:opacity-50"
@@ -94,7 +96,7 @@ export default function DeletePostDialog({
           onClick={() => onOpenChange(false)}
           type="button"
         >
-          취소
+          {t('common.cancel')}
         </button>
       </DialogFooter>
     </Dialog>

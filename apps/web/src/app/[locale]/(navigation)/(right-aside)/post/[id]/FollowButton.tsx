@@ -2,6 +2,7 @@
 
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Check, Loader2, UserPlus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -24,6 +25,7 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
   const [isOpened, setIsOpened] = useState(false)
   const { data: me } = useMeQuery()
   const { data: followingUserIds } = useFollowingUserSetQuery()
+  const t = useTranslations('Community')
 
   const isFollowing = followingUserIds?.has(leader.id) ?? initialFollowing
 
@@ -88,20 +90,20 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
         ) : (
           <UserPlus aria-hidden="true" className="size-4" />
         )}
-        <span>{isFollowing ? '팔로잉' : '팔로우'}</span>
+        <span>{isFollowing ? t('follow.following') : t('follow.follow')}</span>
       </button>
-      <Dialog ariaLabel="언팔로우" className="sm:max-w-lg" onClose={() => setIsOpened(false)} open={isOpened}>
+      <Dialog
+        ariaLabel={t('follow.unfollow')}
+        className="sm:max-w-lg"
+        onClose={() => setIsOpened(false)}
+        open={isOpened}
+      >
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleUnfollowSubmit}>
-          <DialogHeader onClose={() => setIsOpened(false)} title="언팔로우" />
+          <DialogHeader onClose={() => setIsOpened(false)} title={t('follow.unfollow')} />
 
           <DialogBody className="p-6">
-            <h4 className="pb-2 text-lg font-bold">
-              @<span>{leader.name}</span> 님을 언팔로우할까요?
-            </h4>
-            <p className="text-zinc-400 text-sm">
-              이 사용자들의 게시물은 더 이상 추천 타임라인에 표시되지 않습니다. 이러한 사용자의 프로필은 게시물이
-              비공개로 설정되지 않는 한 계속 볼 수 있습니다.
-            </p>
+            <h4 className="pb-2 text-lg font-bold">{t('follow.question', { name: leader.name })}</h4>
+            <p className="text-zinc-400 text-sm">{t('follow.description')}</p>
           </DialogBody>
 
           <DialogFooter className="grid gap-3">
@@ -110,7 +112,7 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
               disabled={!me || isPending}
               type="submit"
             >
-              언팔로우
+              {t('follow.unfollow')}
             </button>
             <button
               className="rounded-2xl border border-zinc-700 bg-zinc-900/80 p-3 font-semibold text-zinc-100 transition hover:bg-zinc-800 disabled:opacity-50"
@@ -118,7 +120,7 @@ export default function FollowButton({ initialFollowing, leader, onError, onOpti
               onClick={() => setIsOpened(false)}
               type="button"
             >
-              취소
+              {t('common.cancel')}
             </button>
           </DialogFooter>
         </form>

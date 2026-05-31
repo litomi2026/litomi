@@ -2,6 +2,7 @@
 
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReactNode } from 'react'
 
 type Props = {
@@ -27,6 +28,8 @@ export default function BulkDeleteDialog({
   title,
   warning,
 }: Props) {
+  const t = useTranslations('Library.common')
+
   return (
     <Dialog ariaLabel={ariaLabel} className="sm:max-w-sm" onClose={onClose} open={open}>
       <DialogHeader onClose={onClose} title={title} />
@@ -57,7 +60,7 @@ export default function BulkDeleteDialog({
           onClick={onClose}
           type="button"
         >
-          취소
+          {t('cancel')}
         </button>
       </DialogFooter>
     </Dialog>

@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -18,14 +19,15 @@ type Options = {
 export default function useBulkRemoveFromLibraryAction({ libraryId }: Options): BulkActionDescriptor {
   const queryClient = useQueryClient()
   const { exit, selectedCount, selectedIds } = useLibrarySelection()
+  const t = useTranslations('Library.bulk')
 
   const mutation = useMutation({
     mutationFn: bulkRemoveFromLibrary,
     onSuccess: ({ removedCount }, variables) => {
       if (removedCount === 0) {
-        toast.warning('이미 제거된 작품이에요')
+        toast.warning(t('remove.alreadyRemoved'))
       } else {
-        toast.success(`${removedCount}개 작품을 제거했어요`)
+        toast.success(t('remove.success', { count: removedCount }))
       }
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
@@ -37,13 +39,13 @@ export default function useBulkRemoveFromLibraryAction({ libraryId }: Options): 
   })
 
   return {
-    ariaLabel: '서재에서 제거',
-    confirmLabel: '제거',
-    description: `선택한 ${selectedCount}개 작품을 이 서재에서 제거할까요?`,
-    disabledReason: libraryId == null ? '현재 서재 정보를 확인할 수 없어요' : undefined,
+    ariaLabel: t('remove.title'),
+    confirmLabel: t('remove.label'),
+    description: t('remove.description', { count: selectedCount }),
+    disabledReason: libraryId == null ? t('move.disabledNoCurrentLibrary') : undefined,
     icon: Trash2,
     id: 'remove',
-    label: '제거',
+    label: t('remove.label'),
     onConfirm: () => {
       if (!libraryId) {
         return
@@ -55,9 +57,9 @@ export default function useBulkRemoveFromLibraryAction({ libraryId }: Options): 
       })
     },
     pending: mutation.isPending,
-    title: '서재에서 제거',
+    title: t('remove.title'),
     tone: 'danger',
     type: 'confirm',
-    warning: '제거한 작품은 현재 서재에서만 사라지고 작품 자체는 삭제되지 않아요.',
+    warning: t('remove.warning'),
   }
 }

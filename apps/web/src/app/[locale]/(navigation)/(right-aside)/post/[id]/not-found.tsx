@@ -1,15 +1,20 @@
+'use client'
+
 import { FileQuestion } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 export default function NotFound() {
+  const t = useTranslations('Community.post')
+
   return (
     <StatusState
-      description="삭제되었거나 더 이상 공개되지 않는 이야기일 수 있어요"
+      description={t('notFoundDescription')}
       icon={<FileQuestion className="size-8" />}
-      title="이야기를 찾을 수 없어요"
+      title={t('notFoundTitle')}
     >
-      <StatusActionLink href="/posts/recommend">이야기 목록으로 가기</StatusActionLink>
+      <StatusActionLink href="/posts/recommend">{t('notFoundAction')}</StatusActionLink>
     </StatusState>
   )
 }

@@ -1,4 +1,5 @@
 import { MapPin } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import PostBaseButton from './PostBaseButton'
@@ -9,9 +10,11 @@ type Props = {
 }
 
 export default function PostGeolocationButton({ disabled, onLocationChange }: Props) {
+  const t = useTranslations('Community.geolocation')
+
   function handleClick() {
     if (!navigator.geolocation) {
-      toast.warning('위치 정보를 가져올 수 없어요')
+      toast.warning(t('unavailable'))
       return
     }
 
@@ -19,11 +22,11 @@ export default function PostGeolocationButton({ disabled, onLocationChange }: Pr
       (position) => {
         const { latitude, longitude } = position.coords
         onLocationChange({ lat: latitude, lon: longitude })
-        toast.warning('위치 기능은 현재 지원하지 않아요')
+        toast.warning(t('unsupported'))
       },
       (error) => {
         console.warn(error)
-        toast.warning('위치 정보를 가져올 수 없어요')
+        toast.warning(t('unavailable'))
       },
     )
   }

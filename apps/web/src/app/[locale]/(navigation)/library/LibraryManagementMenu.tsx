@@ -1,6 +1,7 @@
 'use client'
 
 import { Edit, MoreVertical, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
@@ -27,21 +28,22 @@ type Props = {
 export default function LibraryManagementMenu({ library, className = '' }: Props) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const t = useTranslations('Library.management')
 
   return (
     <>
       <Dropdown>
-        <DropdownTrigger aria-label="서재 관리" className={`hover:bg-zinc-800 rounded-lg transition ${className}`}>
+        <DropdownTrigger aria-label={t('ariaLabel')} className={`hover:bg-zinc-800 rounded-lg transition ${className}`}>
           <MoreVertical className="size-5" />
         </DropdownTrigger>
         <DropdownContent align="end" className="w-48 opacity-100">
           <DropdownItem onClick={() => setIsEditModalOpen(true)}>
             <Edit className="size-4 mr-2" />
-            서재 수정
+            {t('edit')}
           </DropdownItem>
           <DropdownItem className="text-red-400" onClick={() => setIsDeleteModalOpen(true)}>
             <Trash2 className="size-4 mr-2" />
-            서재 삭제
+            {t('delete')}
           </DropdownItem>
         </DropdownContent>
       </Dropdown>

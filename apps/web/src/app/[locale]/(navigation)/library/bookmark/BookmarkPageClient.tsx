@@ -2,6 +2,7 @@
 
 import { CollectionItemSort } from '@litomi/domain/library/sort'
 import { getViewFromSearchParams, View } from '@litomi/std'
+import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
@@ -53,6 +54,7 @@ export default function BookmarkPageClient({ initialSort, initialView }: Props) 
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { heavySignature, isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
+  const sortT = useTranslations('Library.sort')
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useBookmarkInfiniteQuery({ enabled: Boolean(me), sort })
@@ -117,7 +119,7 @@ export default function BookmarkPageClient({ initialSort, initialView }: Props) 
           >
             {COLLECTION_ITEM_SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {sortT(option.labelKey)}
               </option>
             ))}
           </select>

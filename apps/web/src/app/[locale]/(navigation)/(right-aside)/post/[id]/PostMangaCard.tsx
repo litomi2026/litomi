@@ -1,6 +1,7 @@
 'use client'
 
 import { MessageCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import MangaImage from '@/components/MangaImage'
@@ -15,6 +16,8 @@ type Props = {
 
 export default function PostMangaCard({ mangaId, variant = 'inline', imageClassName = '' }: Props) {
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: [mangaId] })
+  const t = useTranslations('Community.post')
+
   const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
   const title = manga.title
   const thumbnailUrl = manga.images?.[0]?.original?.url ?? manga.images?.[0]?.thumbnail?.url
@@ -48,7 +51,7 @@ export default function PostMangaCard({ mangaId, variant = 'inline', imageClassN
           <MessageCircle className="size-5 text-brand shrink-0 mt-0.5" />
           <h3 className="font-bold text-base leading-tight line-clamp-2 wrap-break-word break-all">{title}</h3>
         </div>
-        <span className="text-sm text-zinc-400">작품 보기</span>
+        <span className="text-sm text-zinc-400">{t('viewWork')}</span>
       </div>
     </>
   )
