@@ -26,7 +26,7 @@ export default function LanguageSettings() {
   }
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-2 sm:grid-cols-2">
       {PUBLIC_LOCALES.map((code) => {
         const isSelected = currentLocale === code
         const label = LOCALE_NATIVE_NAMES[code]
