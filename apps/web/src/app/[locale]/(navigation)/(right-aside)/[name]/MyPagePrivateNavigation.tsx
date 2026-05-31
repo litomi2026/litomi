@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import useMeQuery from '@/query/useMeQuery'
 
 import MyPageNavigationLink from './MyPageNavigationLink'
@@ -9,13 +11,14 @@ type Props = {
 }
 
 const privateLinks = [
-  { path: 'censor', label: '검열' },
-  { path: 'donations', label: '후원' },
-  { path: 'settings', label: '설정' },
-]
+  { labelKey: 'censor', path: 'censor' },
+  { labelKey: 'donations', path: 'donations' },
+  { labelKey: 'settings', path: 'settings' },
+] as const
 
 export default function MyPagePrivateNavigation({ username }: Props) {
   const { data: me } = useMeQuery()
+  const t = useTranslations('Profile.navigation')
 
   if (me === undefined) {
     return privateLinks.map(({ path }) => (
@@ -26,14 +29,14 @@ export default function MyPagePrivateNavigation({ username }: Props) {
   }
 
   if (me === null) {
-    return <MyPageNavigationLink href="/@/settings" label="설정" />
+    return <MyPageNavigationLink href="/@/settings" label={t('settings')} />
   }
 
   if (me.name !== username) {
     return null
   }
 
-  return privateLinks.map(({ path, label }) => (
-    <MyPageNavigationLink href={`/@${username}/${path}`} key={path} label={label} />
+  return privateLinks.map(({ labelKey, path }) => (
+    <MyPageNavigationLink href={`/@${username}/${path}`} key={path} label={t(labelKey)} />
   ))
 }

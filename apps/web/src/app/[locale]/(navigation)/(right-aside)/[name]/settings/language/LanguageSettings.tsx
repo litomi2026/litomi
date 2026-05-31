@@ -1,7 +1,6 @@
 'use client'
 
-import { Locale } from '@litomi/domain/locale'
-import { KR, US } from 'country-flag-icons/react/3x2'
+import { LOCALE_LANGUAGE_TAGS, LOCALE_NATIVE_NAMES, PUBLIC_LOCALES, type PublicLocale } from '@litomi/domain/locale'
 import { Check } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useTransition } from 'react'
@@ -9,23 +8,13 @@ import { twMerge } from 'tailwind-merge'
 
 import { usePathname, useRouter } from '@/i18n/navigation'
 
-const LANGUAGES = [
-  { code: Locale.KO, label: '한국어', Flag: KR },
-  { code: Locale.EN, label: 'English', Flag: US },
-  // { code: Locale.JA, label: '日本語', Flag: JP },
-  // { code: Locale.ZH_CN, label: '简体中文', Flag: CN },
-  // { code: Locale.ZH_TW, label: '繁體中文', Flag: TW },
-] as const
-
-type LanguageCode = (typeof LANGUAGES)[number]['code']
-
 export default function LanguageSettings() {
   const router = useRouter()
   const pathname = usePathname()
   const currentLocale = useLocale()
   const [isPending, startTransition] = useTransition()
 
-  function handleLanguageChange(language: LanguageCode) {
+  function handleLanguageChange(language: PublicLocale) {
     if (language === currentLocale || isPending) {
       return
     }
@@ -38,8 +27,9 @@ export default function LanguageSettings() {
 
   return (
     <div className="grid gap-2">
-      {LANGUAGES.map(({ code, label, Flag }) => {
+      {PUBLIC_LOCALES.map((code) => {
         const isSelected = currentLocale === code
+        const label = LOCALE_NATIVE_NAMES[code]
 
         return (
           <button
@@ -50,10 +40,10 @@ export default function LanguageSettings() {
             )}
             disabled={isPending}
             key={code}
+            lang={LOCALE_LANGUAGE_TAGS[code]}
             onClick={() => handleLanguageChange(code)}
             type="button"
           >
-            <Flag className="size-6 rounded-sm shrink-0" />
             <span className="flex-1 font-medium">{label}</span>
             {isSelected && <Check className="size-5 text-brand shrink-0" />}
           </button>
