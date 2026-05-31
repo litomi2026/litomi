@@ -2,6 +2,7 @@
 
 import { Dialog, DialogBody, DialogHeader } from '@litomi/ui'
 import { Check, Copy, Share2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -19,8 +20,9 @@ export default function ShareLibraryButton({ className = '', library }: Props) {
   const [isCopied, setIsCopied] = useState(false)
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const shareUrl = `${origin}/library/${id}`
+  const t = useTranslations('Library.share')
 
-  const handleClose = () => {
+  function handleClose() {
     setIsModalOpen(false)
   }
 
@@ -30,7 +32,7 @@ export default function ShareLibraryButton({ className = '', library }: Props) {
       setIsCopied(true)
       setTimeout(() => setIsCopied(false), 2000)
     } catch {
-      toast.error('링크 복사에 실패했어요')
+      toast.error(t('copyError'))
     }
   }
 
@@ -39,22 +41,22 @@ export default function ShareLibraryButton({ className = '', library }: Props) {
       <button
         className={`hover:bg-zinc-800 rounded-lg transition ${className}`}
         onClick={() => setIsModalOpen(true)}
-        title="서재 공유"
+        title={t('title')}
         type="button"
       >
         <Share2 className="size-5" />
       </button>
-      <Dialog ariaLabel="서재 공유" onClose={handleClose} open={isModalOpen}>
-        <DialogHeader onClose={handleClose} title="서재 공유" />
+      <Dialog ariaLabel={t('title')} onClose={handleClose} open={isModalOpen}>
+        <DialogHeader onClose={handleClose} title={t('title')} />
         <DialogBody className="flex flex-col gap-4">
-          <p className="text-sm text-zinc-400">이 서재는 링크를 통해 누구나 볼 수 있어요</p>
+          <p className="text-sm text-zinc-400">{t('description')}</p>
           <div className="p-4 bg-zinc-800/50 rounded-lg">
             <h3 className="font-medium text-center line-clamp-1 break-all text-zinc-100" title={name}>
               {name}
             </h3>
           </div>
           <div className="grid gap-2">
-            <label className="block text-sm font-medium text-zinc-300">공유 링크</label>
+            <label className="block text-sm font-medium text-zinc-300">{t('linkLabel')}</label>
             <div className="flex gap-2">
               <input
                 className="flex-1 px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 text-sm text-zinc-100 cursor-text select-all outline-none focus:border-zinc-500 transition"
@@ -70,12 +72,12 @@ export default function ShareLibraryButton({ className = '', library }: Props) {
                 {isCopied ? (
                   <>
                     <Check className="size-4 shrink-0" />
-                    <span>완료</span>
+                    <span>{t('done')}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="size-4 shrink-0" />
-                    <span>복사</span>
+                    <span>{t('copy')}</span>
                   </>
                 )}
               </button>

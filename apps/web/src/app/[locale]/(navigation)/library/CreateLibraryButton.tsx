@@ -13,6 +13,7 @@ import { normalizeString } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus, Shuffle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { type SubmitEvent, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -49,6 +50,8 @@ export default function CreateLibraryButton({ className = '' }: Props) {
   const nameInputRef = useRef<HTMLInputElement>(null)
   const colorInputId = useId()
   const iconInputId = useId()
+  const t = useTranslations('Library.create')
+  const commonT = useTranslations('Library.common')
 
   const createMutation = useMutation<POSTV1LibraryResponse, ProblemDetailsError, CreateLibraryPayload>({
     mutationFn: createLibraryApi,
@@ -108,7 +111,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
       )
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
-      toast.success('서재를 생성했어요')
+      toast.success(t('success'))
       handleClose()
     },
   })
@@ -147,7 +150,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
     const formData = new FormData(event.currentTarget)
     const name = formData.get('name')?.toString() ?? ''
     const description = normalizeString(formData.get('description')?.toString())
-    const icon = getValidLibraryIcon(selectedIcon)
+    const icon = getValidLibraryIcon(selectedIcon, commonT('singleEmoji'))
 
     if (!icon) {
       return
@@ -169,7 +172,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
       const nextIcon = await getRandomLibraryIcon(excludedIcon)
       setSelectedIcon(nextIcon)
     } catch {
-      toast.warning('랜덤 아이콘을 불러오지 못했어요')
+      toast.warning(t('randomIconError'))
     } finally {
       setIsRandomIconPending(false)
     }
@@ -192,15 +195,15 @@ export default function CreateLibraryButton({ className = '' }: Props) {
         onClick={handleOpen}
         onFocus={preloadLibraryEmojiList}
         onMouseEnter={preloadLibraryEmojiList}
-        title="서재 만들기"
+        title={t('title')}
         type="button"
       >
         <Plus className="size-5 shrink-0" />
-        <span className="font-medium sm:hidden">서재 만들기</span>
+        <span className="font-medium sm:hidden">{t('title')}</span>
       </button>
-      <Dialog ariaLabel="서재 만들기" onClose={handleClose} open={isModalOpen}>
+      <Dialog ariaLabel={t('title')} onClose={handleClose} open={isModalOpen}>
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
-          <DialogHeader onClose={handleClose} title="서재 만들기" />
+          <DialogHeader onClose={handleClose} title={t('title')} />
           <DialogBody className="overflow-x-hidden flex flex-col gap-4 relative">
             <div className="flex items-center justify-center p-4">
               <div
@@ -214,7 +217,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor={iconInputId}>
-                아이콘
+                {t('icon')}
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -237,7 +240,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
                   value={selectedIcon}
                 />
                 <button
-                  aria-label="랜덤 아이콘으로 변경"
+                  aria-label={t('randomIcon')}
                   className={twMerge(
                     'inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900',
                     'text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800',
@@ -247,7 +250,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
                   onClick={() => updateRandomIcon(selectedIcon)}
                   onFocus={preloadLibraryEmojiList}
                   onMouseEnter={preloadLibraryEmojiList}
-                  title="랜덤 아이콘으로 변경"
+                  title={t('randomIcon')}
                   type="button"
                 >
                   {isRandomIconPending ? <Loader2 className="size-4 animate-spin" /> : <Shuffle className="size-4" />}
@@ -256,7 +259,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor={colorInputId}>
-                색상
+                {t('color')}
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -274,7 +277,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
                   value={selectedColor}
                 />
                 <button
-                  aria-label="랜덤 색상으로 변경"
+                  aria-label={t('randomColor')}
                   className={twMerge(
                     'inline-flex size-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900',
                     'text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800',
@@ -282,7 +285,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
                   )}
                   disabled={isPending}
                   onClick={() => setSelectedColor(getRandomLibraryColor())}
-                  title="랜덤 색상으로 변경"
+                  title={t('randomColor')}
                   type="button"
                 >
                   <Shuffle className="size-4" />
@@ -293,7 +296,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
             {/* Name Input */}
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor="name">
-                서재 이름
+                {t('name')}
               </label>
               <input
                 autoCapitalize="off"
@@ -303,7 +306,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
                 id="name"
                 maxLength={MAX_LIBRARY_NAME_LENGTH}
                 name="name"
-                placeholder="순애작"
+                placeholder={t('namePlaceholder')}
                 ref={nameInputRef}
                 required
                 type="text"
@@ -313,7 +316,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
             {/* Description Input */}
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2" htmlFor="description">
-                설명 (선택사항)
+                {t('description')}
               </label>
               <textarea
                 className="w-full p-3 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
@@ -321,24 +324,24 @@ export default function CreateLibraryButton({ className = '' }: Props) {
                 id="description"
                 maxLength={MAX_LIBRARY_DESCRIPTION_LENGTH}
                 name="description"
-                placeholder="달달한 순애만"
+                placeholder={t('descriptionPlaceholder')}
                 rows={3}
               />
             </div>
 
             {/* Public Toggle */}
             <div>
-              <div className="block text-sm font-medium text-zinc-300 mb-2">공개 설정</div>
+              <div className="block text-sm font-medium text-zinc-300 mb-2">{t('visibility')}</div>
               <label className="w-full block p-4 rounded-lg border-2 bg-zinc-900 border-zinc-700 hover:border-zinc-600 transition">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-zinc-100">{isPublic ? '공개 서재' : '비공개 서재'}</div>
+                    <div className="font-medium text-zinc-100">{isPublic ? t('publicTitle') : t('privateTitle')}</div>
                     <div className="text-sm text-zinc-400">
-                      {isPublic ? '다른 사용자들이 이 서재를 볼 수 있어요' : '나만 볼 수 있는 서재예요'}
+                      {isPublic ? t('publicDescription') : t('privateDescription')}
                     </div>
                   </div>
                   <Toggle
-                    aria-label="서재 공개 설정"
+                    aria-label={t('visibilityAria')}
                     checked={isPublic}
                     className="w-12 peer-checked:bg-brand/80"
                     disabled={isPending}
@@ -358,7 +361,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
               onClick={handleClose}
               type="button"
             >
-              취소
+              {commonT('cancel')}
             </button>
             <button
               className="flex-1 px-4 py-3 text-background font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
@@ -366,7 +369,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
               type="submit"
             >
               {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : <Plus className="size-5 shrink-0" />}
-              <span>생성하기</span>
+              <span>{t('submit')}</span>
             </button>
           </DialogFooter>
         </form>

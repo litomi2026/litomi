@@ -1,6 +1,7 @@
 'use client'
 
 import { UploadCloud } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { getStatusActionClassName } from '@/components/status/styles'
 
@@ -20,6 +21,7 @@ const ICON_BUTTON_CLASS_NAME =
 
 export default function BookmarkImportButton({ variant = 'toolbar' }: Props) {
   const setIsOpen = useBookmarkImportModalStore((store) => store.setIsOpen)
+  const t = useTranslations('Library.bookmark')
 
   const className = {
     cta: CTA_BUTTON_CLASS_NAME,
@@ -29,20 +31,20 @@ export default function BookmarkImportButton({ variant = 'toolbar' }: Props) {
 
   return (
     <button
-      aria-label="ID로 추가"
+      aria-label={t('addById')}
       className={className}
       onClick={() => setIsOpen(true)}
-      title="ID로 추가"
+      title={t('addById')}
       type="button"
     >
       <span className="flex items-center justify-center gap-2">
         <UploadCloud className="size-5 shrink-0" />
         {variant === 'cta' ? (
-          <span>작품 ID로 여러 개 추가</span>
+          <span>{t('addByIds')}</span>
         ) : variant === 'icon' ? (
-          <span className="sr-only">ID로 추가</span>
+          <span className="sr-only">{t('addById')}</span>
         ) : (
-          <span className="hidden md:block">ID로 추가</span>
+          <span className="hidden md:block">{t('addById')}</span>
         )}
       </span>
     </button>

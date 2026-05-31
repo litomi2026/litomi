@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import { ResultCard } from './ResultCard'
@@ -9,6 +10,8 @@ type Props = {
 }
 
 export function CompleteStep({ importResult, isVisible }: Props) {
+  const t = useTranslations('Library.bookmark')
+
   return (
     <div
       aria-hidden={!isVisible}
@@ -26,14 +29,14 @@ export function CompleteStep({ importResult, isVisible }: Props) {
               <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-foreground">업로드 완료!</h3>
+          <h3 className="text-xl font-bold text-foreground">{t('uploadCompleteTitle')}</h3>
         </div>
         <div className="space-y-3 flex-1 overflow-y-auto">
           {importResult.imported > 0 && (
-            <ResultCard count={importResult.imported} label="성공적으로 가져옴" type="success" />
+            <ResultCard count={importResult.imported} label={t('uploadSuccessLabel')} type="success" />
           )}
           {importResult.skipped > 0 && (
-            <ResultCard count={importResult.skipped} label="중복으로 건너뜀" type="warning" />
+            <ResultCard count={importResult.skipped} label={t('uploadSkippedLabel')} type="warning" />
           )}
         </div>
       </div>

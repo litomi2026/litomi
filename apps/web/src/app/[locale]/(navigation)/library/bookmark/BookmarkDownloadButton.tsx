@@ -6,6 +6,7 @@ import { env } from '@litomi/env/client'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Download } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -15,6 +16,8 @@ import { downloadBlob } from '@/utils/download'
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function BookmarkDownloadButton() {
+  const t = useTranslations('Library.bookmark')
+
   const exportMutation = useMutation({
     mutationFn: async () => {
       const url = new URL('/api/v1/bookmark/export', NEXT_PUBLIC_API_ORIGIN)
@@ -24,7 +27,7 @@ export default function BookmarkDownloadButton() {
 
     onSuccess: (bookmarks) => {
       if (bookmarks.length === 0) {
-        toast.warning('다운로드할 북마크가 없어요')
+        toast.warning(t('downloadEmpty'))
         return
       }
 
@@ -40,16 +43,16 @@ export default function BookmarkDownloadButton() {
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
       const filename = `litomi-bookmarks-${dayjs().format('YYYY-MM-DD')}.json`
       downloadBlob(blob, filename)
-      toast.success('북마크를 다운로드했어요')
+      toast.success(t('downloadSuccess'))
     },
   })
 
   function getDisabledTitle() {
     if (exportMutation.isPending) {
-      return '북마크 가져오는 중'
+      return t('downloading')
     }
 
-    return '북마크 다운로드'
+    return t('download')
   }
 
   function handleExport() {
@@ -72,7 +75,7 @@ export default function BookmarkDownloadButton() {
       type="button"
     >
       <Download className="size-5" />
-      <span className="hidden md:block">북마크 백업</span>
+      <span className="hidden md:block">{t('backup')}</span>
     </button>
   )
 }

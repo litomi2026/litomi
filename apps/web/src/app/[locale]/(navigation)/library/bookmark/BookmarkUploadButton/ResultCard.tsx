@@ -1,7 +1,7 @@
 'use client'
 
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { ReactNode } from 'react'
 
 const colors = {
@@ -31,6 +31,7 @@ type Props = {
 
 export function ResultCard({ children, count, label, type }: Props) {
   const locale = useLocale()
+  const t = useTranslations('Library.bookmark')
   const colorClasses = colors[type]
 
   return (
@@ -39,7 +40,7 @@ export function ResultCard({ children, count, label, type }: Props) {
     >
       <span className="font-medium text-zinc-200">{label}</span>
       <span className={`font-bold ${colorClasses.text} text-lg`}>
-        {count.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}개
+        {t('uploadResultCount', { count: count.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]) })}
       </span>
       {children}
     </div>

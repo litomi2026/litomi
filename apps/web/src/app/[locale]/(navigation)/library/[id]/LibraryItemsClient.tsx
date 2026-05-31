@@ -3,6 +3,7 @@
 import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
 import { isProblemType, problemCode } from '@litomi/http/problem-details'
 import { getViewFromSearchParams, View } from '@litomi/std'
+import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
@@ -55,6 +56,8 @@ export default function LibraryItemsClient({ initialSort, initialView, libraryId
   const { heavySignature, isVisible } = useMangaCensorship()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const userId = me?.id
+  const t = useTranslations('Library')
+  const sortT = useTranslations('Library.sort')
 
   const {
     data: library,
@@ -147,7 +150,7 @@ export default function LibraryItemsClient({ initialSort, initialView, libraryId
           >
             {COLLECTION_ITEM_SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {sortT(option.labelKey)}
               </option>
             ))}
           </select>
@@ -180,8 +183,8 @@ export default function LibraryItemsClient({ initialSort, initialView, libraryId
       <>
         <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
         <AdultVerificationGate
-          description={`비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.`}
-          title="성인인증이 필요해요"
+          description={t('empty.adultDescription')}
+          title={t('empty.adultTitle')}
           username={me?.name}
         />
       </>
@@ -193,7 +196,7 @@ export default function LibraryItemsClient({ initialSort, initialView, libraryId
       <>
         <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
         <div className="flex-1 flex flex-col justify-center items-center">
-          <p className="text-zinc-500">서재를 불러오지 못했어요</p>
+          <p className="text-zinc-500">{t('empty.libraryLoadError')}</p>
         </div>
       </>
     )
@@ -208,7 +211,7 @@ export default function LibraryItemsClient({ initialSort, initialView, libraryId
       <>
         <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
         <div className="flex-1 flex flex-col justify-center items-center">
-          <p className="text-zinc-500">{`${library?.name ?? '서재'}가 비어 있어요`}</p>
+          <p className="text-zinc-500">{t('empty.libraryEmpty', { name: library?.name ?? t('common.library') })}</p>
         </div>
       </>
     )

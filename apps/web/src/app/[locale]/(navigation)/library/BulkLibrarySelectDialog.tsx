@@ -2,6 +2,7 @@
 
 import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
+import { useTranslations } from 'next-intl'
 
 import type { BulkTargetLibrary } from './bulkActionTypes'
 
@@ -28,6 +29,8 @@ export default function BulkLibrarySelectDialog({
   open,
   title,
 }: Props) {
+  const t = useTranslations('Library.bulk')
+
   return (
     <Dialog ariaLabel={ariaLabel} onClose={onClose} open={open}>
       <DialogHeader onClose={onClose} title={title} />
@@ -51,7 +54,7 @@ export default function BulkLibrarySelectDialog({
               </div>
               <div className="flex-1">
                 <h3 className="font-medium text-zinc-100 line-clamp-1 break-all">{library.name}</h3>
-                <p className="text-sm text-zinc-400">{library.itemCount}개 작품</p>
+                <p className="text-sm text-zinc-400">{t('libraryItemCount', { count: library.itemCount })}</p>
               </div>
             </button>
           ))}
@@ -66,7 +69,7 @@ export default function BulkLibrarySelectDialog({
           onClick={onClose}
           type="button"
         >
-          취소
+          {t('cancel')}
         </button>
       </DialogFooter>
     </Dialog>

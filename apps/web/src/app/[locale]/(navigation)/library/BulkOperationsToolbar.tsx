@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import type { BulkActionDescriptor } from './bulkActionTypes'
@@ -16,8 +17,10 @@ type Props = {
 }
 
 export default function BulkOperationsToolbar({ actions }: Props) {
-  const { selectedCount } = useLibrarySelection()
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  const { selectedCount } = useLibrarySelection()
+  const t = useTranslations('Library.common')
+
   const isAnyPending = actions.some((action) => action.pending)
   const activeAction = actions.find((action) => action.id === activeActionId) ?? null
 
@@ -29,11 +32,11 @@ export default function BulkOperationsToolbar({ actions }: Props) {
 
   function getDisabledReason(actionDisabledReason?: string) {
     if (selectedCount === 0) {
-      return '작품을 선택해 주세요'
+      return t('selectWorks')
     }
 
     if (isAnyPending) {
-      return '처리 중이에요'
+      return t('processing')
     }
 
     return actionDisabledReason ?? ''
@@ -42,7 +45,7 @@ export default function BulkOperationsToolbar({ actions }: Props) {
   return (
     <>
       <div className="flex-1 flex items-center justify-between gap-2">
-        <span className="py-2.5 text-sm sm:text-base font-medium">{selectedCount}개 선택</span>
+        <span className="py-2.5 text-sm sm:text-base font-medium">{t('selectedCount', { count: selectedCount })}</span>
         <div className="flex items-center gap-2">
           {actions.map((action) => {
             const Icon = action.icon

@@ -4,6 +4,7 @@ import type { POSTV1BookmarkResponse } from '@litomi/contracts'
 
 import { MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/library/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import MangaImportModal from '@/components/card/MangaImportModal'
@@ -20,6 +21,7 @@ export default function BookmarkImportModal() {
   const { guardAdultAccess } = useAdultAccessGuard()
   const queryClient = useQueryClient()
   const router = useRouter()
+  const t = useTranslations('Library.bookmark')
 
   const mutation = useMutation<POSTV1BookmarkResponse, ProblemDetailsError, { mangaIds: number[] }>({
     mutationFn: addBookmarks,
@@ -37,20 +39,35 @@ export default function BookmarkImportModal() {
         const summary: string[] = []
 
         if (duplicateCount > 0) {
-          summary.push(`중복 ${duplicateCount}개`)
+          summary.push(t('duplicateSummary', { count: duplicateCount }))
         }
         if (overflowCount > 0) {
-          summary.push(`한도 초과 ${overflowCount}개`)
+          summary.push(t('overflowSummary', { count: overflowCount }))
         }
 
         const suffix = summary.length > 0 ? ` (${summary.join(', ')})` : ''
-        toast.success(`${createdCount}개 작품을 북마크했어요${suffix}`)
+        toast.success(t('imported', { count: createdCount, extra: suffix }))
         setIsOpen(false)
         router.refresh()
         return
       }
 
-      toast.warning(getNoopBookmarkMessage(duplicateCount, overflowCount))
+      if (duplicateCount > 0 && overflowCount === 0) {
+        toast.warning(t('noopDuplicate', { count: duplicateCount }))
+        return
+      }
+
+      if (overflowCount > 0 && duplicateCount === 0) {
+        toast.warning(t('noopOverflow', { count: overflowCount }))
+        return
+      }
+
+      if (duplicateCount > 0 && overflowCount > 0) {
+        toast.warning(t('noopMixed', { duplicateCount, overflowCount }))
+        return
+      }
+
+      toast.warning(t('noopFailed'))
     },
   })
 
@@ -80,20 +97,4 @@ export default function BookmarkImportModal() {
       open={isOpen}
     />
   )
-}
-
-function getNoopBookmarkMessage(duplicateCount: number, overflowCount: number) {
-  if (duplicateCount > 0 && overflowCount === 0) {
-    return `${duplicateCount}개 작품이 이미 북마크돼 있어요`
-  }
-
-  if (overflowCount > 0 && duplicateCount === 0) {
-    return `${overflowCount}개 작품은 북마크 한도 때문에 추가하지 못했어요`
-  }
-
-  if (duplicateCount > 0 && overflowCount > 0) {
-    return `새로 추가된 북마크가 없어요 (중복 ${duplicateCount}개, 한도 초과 ${overflowCount}개)`
-  }
-
-  return '북마크를 추가하지 못했어요'
 }

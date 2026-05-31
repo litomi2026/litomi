@@ -2,7 +2,7 @@
 
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { Bookmark } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { ImportModeOption } from './ImportModeOption'
 import { BookmarkExportData, ImportMode } from './types'
@@ -16,6 +16,7 @@ type Props = {
 
 export function PreviewStep({ importMode, isVisible, previewData, setImportMode }: Props) {
   const locale = useLocale()
+  const t = useTranslations('Library.bookmark')
 
   return (
     <div
@@ -30,40 +31,40 @@ export function PreviewStep({ importMode, isVisible, previewData, setImportMode 
             </div>
             <div className="flex-1">
               <p className="font-semibold text-lg text-foreground">
-                총{' '}
-                <span className="text-blue-400 font-bold">
-                  {previewData.totalCount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
-                </span>{' '}
-                개의 북마크
+                {t('uploadTotalBookmarks', {
+                  count: previewData.totalCount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]),
+                })}
               </p>
               {previewData.exportedAt && (
                 <p className="text-sm text-zinc-400 mt-0.5">
-                  {new Date(previewData.exportedAt).toLocaleDateString(LOCALE_LANGUAGE_TAGS[locale])} 내보냄
+                  {t('uploadExportedAt', {
+                    date: new Date(previewData.exportedAt).toLocaleDateString(LOCALE_LANGUAGE_TAGS[locale]),
+                  })}
                 </p>
               )}
             </div>
           </div>
         </div>
         <div className="space-y-4">
-          <h3 className="font-semibold text-foreground text-lg">가져오기 방식 선택</h3>
+          <h3 className="font-semibold text-foreground text-lg">{t('uploadModeTitle')}</h3>
           <div className="space-y-3">
             <ImportModeOption
               colorScheme="blue"
               currentMode={importMode}
-              description="현재 북마크를 유지하면서 새로운 북마크를 추가해요"
+              description={t('uploadMergeDescription')}
               mode="merge"
               onChange={setImportMode}
               showBadge
-              title="기존 북마크와 병합"
+              title={t('uploadMergeTitle')}
             />
             <ImportModeOption
               colorScheme="orange"
               currentMode={importMode}
-              description="현재 북마크를 모두 삭제하고 새로운 북마크로 교체해요"
+              description={t('uploadReplaceDescription')}
               mode="replace"
               onChange={setImportMode}
               showWarning
-              title="모든 북마크 교체"
+              title={t('uploadReplaceTitle')}
             />
           </div>
         </div>
