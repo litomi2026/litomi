@@ -1,6 +1,8 @@
 'use client'
 
+import { MAX_BOOKMARK_FILE_SIZE } from '@litomi/domain/library/policy'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
+import { useTranslations } from 'next-intl'
 import { useRef } from 'react'
 import { toast } from 'sonner'
 
@@ -12,11 +14,12 @@ import { PreviewStep } from './PreviewStep'
 import { ProgressIndicator, STEP_MAP } from './ProgressIndicator'
 import { useBookmarkUploadModalStore } from './store'
 import { useBookmarkImport } from './useBookmarkImport'
-import { validateBookmarkData, validateFile } from './utils'
+import { validateBookmarkData } from './utils'
 
 export default function BookmarkUploadModal() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const { isOpen, setIsOpen } = useBookmarkUploadModalStore()
+  const t = useTranslations('Library.bookmark')
 
   const { importMode, importResult, importState, handleFileLoad, performImport, previewData, reset, setImportMode } =
     useBookmarkImport()
@@ -24,7 +27,17 @@ export default function BookmarkUploadModal() {
   function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
 
-    if (!file || !validateFile(file)) {
+    if (!file) {
+      return
+    }
+
+    if (file.type !== 'application/json') {
+      toast.error(t('jsonOnly'))
+      return
+    }
+
+    if (file.size > MAX_BOOKMARK_FILE_SIZE) {
+      toast.error(t('fileTooLarge'))
       return
     }
 
@@ -39,14 +52,14 @@ export default function BookmarkUploadModal() {
         const data = JSON.parse(e.target.result)
 
         if (!validateBookmarkData(data)) {
-          toast.warning('잘못된 파일 형식이에요')
+          toast.warning(t('invalidFileType'))
           return
         }
 
         handleFileLoad(data)
       } catch (error) {
         console.error('File parse error:', error)
-        toast.warning('파일을 읽을 수 없어요')
+        toast.warning(t('fileReadError'))
       }
     }
 
@@ -75,13 +88,13 @@ export default function BookmarkUploadModal() {
 
   return (
     <Dialog
-      ariaLabel="북마크 복원"
+      ariaLabel={t('restore')}
       className="sm:max-w-lg"
       onAfterClose={handleAfterClose}
       onClose={handleClose}
       open={isOpen}
     >
-      <DialogHeader onClose={handleClose} title="북마크 복원" />
+      <DialogHeader onClose={handleClose} title={t('restore')} />
 
       <DialogBody className="p-0 overflow-y-hidden flex flex-col">
         <div className="p-5 pb-10 border-b border-zinc-800/40 bg-linear-to-b from-zinc-900 to-zinc-900/95 shrink-0">

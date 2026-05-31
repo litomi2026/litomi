@@ -24,19 +24,19 @@ export async function getRandomLibraryIcon(excludedIcon?: string, random = Math.
   return icon
 }
 
-export function getValidLibraryIcon(value: string | undefined): string | null {
+export function preloadLibraryEmojiList() {
+  loadLibraryEmojiList()
+}
+
+export function validateLibraryIcon(value: string | undefined, invalidMessage: string): string | null {
   const icon = normalizeString(value)
 
   if (!icon || !isSingleEmoji(icon)) {
-    toast.warning('이모지를 하나만 입력해 주세요')
+    toast.warning(invalidMessage)
     return null
   }
 
   return icon
-}
-
-export function preloadLibraryEmojiList() {
-  loadLibraryEmojiList()
 }
 
 async function loadLibraryEmojiList(): Promise<readonly string[]> {

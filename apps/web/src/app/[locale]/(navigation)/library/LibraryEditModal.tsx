@@ -12,6 +12,7 @@ import { normalizeString } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check, Loader2, Shuffle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { type SubmitEvent, useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -21,7 +22,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 
 import { updateLibrary } from './api'
 import { getRandomLibraryColor } from './libraryColorInput'
-import { getRandomLibraryIcon, getValidLibraryIcon, preloadLibraryEmojiList } from './libraryIconInput'
+import { getRandomLibraryIcon, preloadLibraryEmojiList, validateLibraryIcon } from './libraryIconInput'
 
 type Library = {
   id: number
@@ -47,6 +48,9 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
   const iconInputId = useId()
   const queryClient = useQueryClient()
   const { guardAdultAccess } = useAdultAccessGuard()
+  const t = useTranslations('Library.edit')
+  const createT = useTranslations('Library.create')
+  const commonT = useTranslations('Library.common')
 
   const updateLibraryMutation = useMutation({
     mutationFn: ({ body, libraryId }: { libraryId: number; body: PATCHV1LibraryIdBody }) =>
@@ -105,7 +109,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
 
-      toast.success('서재가 수정됐어요')
+      toast.success(t('success'))
       onOpenChange(false)
     },
   })
@@ -120,7 +124,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
     const formData = new FormData(event.currentTarget)
     const name = formData.get('name')?.toString().trim() ?? ''
     const description = formData.get('description')?.toString() ?? null
-    const icon = getValidLibraryIcon(selectedIcon)
+    const icon = validateLibraryIcon(selectedIcon, commonT('singleEmoji'))
 
     if (!icon) {
       return
@@ -153,7 +157,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
       const nextIcon = await getRandomLibraryIcon(excludedIcon)
       setSelectedIcon(nextIcon)
     } catch {
-      toast.warning('랜덤 아이콘을 불러오지 못했어요')
+      toast.warning(createT('randomIconError'))
     } finally {
       setIsRandomIconPending(false)
     }
@@ -170,9 +174,9 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
   }, [library.color, library.icon, library.isPublic, open])
 
   return (
-    <Dialog ariaLabel="서재 수정" onClose={() => onOpenChange(false)} open={open}>
+    <Dialog ariaLabel={t('title')} onClose={() => onOpenChange(false)} open={open}>
       <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
-        <DialogHeader onClose={() => onOpenChange(false)} title="서재 수정" />
+        <DialogHeader onClose={() => onOpenChange(false)} title={t('title')} />
         <DialogBody className="grid gap-4">
           <div className="flex items-center justify-center p-4">
             <div
@@ -187,7 +191,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
 
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5" htmlFor={iconInputId}>
-              아이콘
+              {t('icon')}
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -210,7 +214,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
                 value={selectedIcon}
               />
               <button
-                aria-label="랜덤 아이콘으로 변경"
+                aria-label={createT('randomIcon')}
                 className={twMerge(
                   'inline-flex size-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900',
                   'text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800',
@@ -220,7 +224,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
                 onClick={() => updateRandomIcon(selectedIcon)}
                 onFocus={preloadLibraryEmojiList}
                 onMouseEnter={preloadLibraryEmojiList}
-                title="랜덤 아이콘으로 변경"
+                title={createT('randomIcon')}
                 type="button"
               >
                 {isRandomIconPending ? <Loader2 className="size-4 animate-spin" /> : <Shuffle className="size-4" />}
@@ -230,7 +234,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
 
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5" htmlFor={colorInputId}>
-              색상
+              {t('color')}
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -248,7 +252,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
                 value={selectedColor}
               />
               <button
-                aria-label="랜덤 색상으로 변경"
+                aria-label={createT('randomColor')}
                 className={twMerge(
                   'inline-flex size-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900',
                   'text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-800',
@@ -256,7 +260,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
                 )}
                 disabled={updateLibraryMutation.isPending}
                 onClick={() => setSelectedColor(getRandomLibraryColor())}
-                title="랜덤 색상으로 변경"
+                title={createT('randomColor')}
                 type="button"
               >
                 <Shuffle className="size-4" />
@@ -266,7 +270,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
 
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5" htmlFor="library-name">
-              이름
+              {t('name')}
             </label>
             <input
               className="w-full px-3 py-2 bg-zinc-800 border rounded-lg border-zinc-700 focus:outline-none focus:ring-2 focus:border-transparent focus:ring-zinc-600"
@@ -277,17 +281,17 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
               minLength={1}
               name="name"
               pattern=".*\S.*"
-              placeholder="서재 이름"
+              placeholder={t('namePlaceholder')}
               required
-              title="서재 이름을 입력해 주세요"
+              title={t('nameTitle')}
               type="text"
             />
-            <p className="text-xs mt-1 text-zinc-500">{`서재 이름을 입력해주세요 (최대 ${MAX_LIBRARY_NAME_LENGTH}자)`}</p>
+            <p className="text-xs mt-1 text-zinc-500">{t('nameHelp', { count: MAX_LIBRARY_NAME_LENGTH })}</p>
           </div>
 
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5" htmlFor="library-description">
-              설명 (선택)
+              {t('description')}
             </label>
             <textarea
               className="w-full px-3 py-2 bg-zinc-800 border rounded-lg border-zinc-700 focus:outline-none focus:ring-2 focus:border-transparent focus:ring-zinc-600 resize-none"
@@ -296,19 +300,19 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
               id="library-description"
               maxLength={MAX_LIBRARY_DESCRIPTION_LENGTH}
               name="description"
-              placeholder="서재 설명"
+              placeholder={t('descriptionPlaceholder')}
               rows={3}
             />
-            <p className="text-xs text-zinc-500">{`서재에 대한 설명을 추가할 수 있어요 (최대 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자)`}</p>
+            <p className="text-xs text-zinc-500">{t('descriptionHelp', { count: MAX_LIBRARY_DESCRIPTION_LENGTH })}</p>
           </div>
 
           <div className="flex items-center justify-between mt-2">
             <div>
-              <div className="text-sm text-zinc-100">공개 설정</div>
-              <div className="text-xs text-zinc-500 mt-0.5">다른 사용자가 이 서재를 볼 수 있어요</div>
+              <div className="text-sm text-zinc-100">{t('visibility')}</div>
+              <div className="text-xs text-zinc-500 mt-0.5">{t('visibilityDescription')}</div>
             </div>
             <Toggle
-              aria-label="서재 공개 설정"
+              aria-label={createT('visibilityAria')}
               checked={isPublic}
               className="w-12 peer-checked:bg-brand/80"
               disabled={updateLibraryMutation.isPending}
@@ -327,7 +331,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
             onClick={() => onOpenChange(false)}
             type="button"
           >
-            취소
+            {commonT('cancel')}
           </button>
           <button
             className={twMerge(
@@ -342,7 +346,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
             ) : (
               <Check className="size-4" />
             )}
-            <span>수정하기</span>
+            <span>{t('submit')}</span>
           </button>
         </DialogFooter>
       </form>

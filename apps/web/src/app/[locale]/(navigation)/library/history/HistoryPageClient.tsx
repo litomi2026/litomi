@@ -28,9 +28,8 @@ export default function HistoryPageClient() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useReadingHistoryInfiniteQuery({ enabled: me !== undefined, source })
 
-  const historyItems = data?.pages.flatMap((page) => page.items) ?? []
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
-  const showLoadingSkeleton = (!data && (me === undefined || isLoading)) || isFetchingNextPage
+  const historyItems = data?.pages.flatMap((page) => page.items) ?? []
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: canAutoLoadMore,
@@ -42,6 +41,7 @@ export default function HistoryPageClient() {
   const { isSelectionMode } = useLibrarySelection()
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: historyItems.map((item) => item.mangaId) })
 
+  const showLoadingSkeleton = (!data && (me === undefined || isLoading)) || isFetchingNextPage
   const visibleHistoryItems = historyItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
   const historyIndexMap = new Map(visibleHistoryItems.map((item, index) => [item.mangaId, index]))
   const groupedHistory = groupHistoryByDate(visibleHistoryItems)

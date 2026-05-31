@@ -23,7 +23,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
 
 import { getRandomLibraryColor } from './libraryColorInput'
-import { getRandomLibraryIcon, getValidLibraryIcon, preloadLibraryEmojiList } from './libraryIconInput'
+import { getRandomLibraryIcon, preloadLibraryEmojiList, validateLibraryIcon } from './libraryIconInput'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
@@ -150,7 +150,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
     const formData = new FormData(event.currentTarget)
     const name = formData.get('name')?.toString() ?? ''
     const description = normalizeString(formData.get('description')?.toString())
-    const icon = getValidLibraryIcon(selectedIcon, commonT('singleEmoji'))
+    const icon = validateLibraryIcon(selectedIcon, commonT('singleEmoji'))
 
     if (!icon) {
       return
