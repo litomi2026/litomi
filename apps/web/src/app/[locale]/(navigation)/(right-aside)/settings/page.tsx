@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
+import { userTable } from '@litomi/db/app/user'
 import { readUserSettings } from '@litomi/db/query/user-settings'
-import { getUsernameFromParam } from '@litomi/std'
 import { ErrorBoundary } from '@suspensive/react'
 import { and, eq, isNull } from 'drizzle-orm'
 import {
@@ -23,19 +23,17 @@ import {
   Trash2,
 } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
-import { Suspense } from 'react'
+import { cache, Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import { getMe } from '../common'
 import AdultVerificationSection from './adult/AdultVerificationSection'
 import ContentSettingsForm from './content/ContentSettingsForm'
 import DataExportSection from './data/DataExportSection'
 import AccountDeletionForm from './delete/AccountDeletionForm'
-import Forbidden from './Forbidden'
 import InternalServerError from './InternalServerError'
 import KeywordSettings from './keyword/KeywordSettings'
 import LanguageSettings from './language/LanguageSettings'
@@ -47,11 +45,8 @@ import SessionSettings from './session/SessionSettings'
 import ThemeSettings from './theme/ThemeSettings'
 import TwoFactorSettings from './two-factor/TwoFactorSettings'
 
-export async function generateMetadata({ params }: PageProps<'/[locale]/[name]/settings'>): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/[locale]/settings'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
-  const { name } = await params
-  const username = getUsernameFromParam(name)
-  const pathname = username ? `/@${username}/settings` : '/@/settings'
   const t = await getTranslations({ locale, namespace: 'Metadata.community.settings' })
   const title = t('title')
   const description = t('description')
@@ -63,12 +58,12 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/[name]/s
       title,
       description,
       locale,
-      pathname,
+      pathname: '/settings',
     }),
   }
 }
 
-export default async function SettingsPage({ params }: PageProps<'/[locale]/[name]/settings'>) {
+export default async function SettingsPage() {
   const userId = await getUserIdFromCookie()
 
   const languageSelector = (
@@ -106,9 +101,6 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/[nam
     )
   }
 
-  const { name } = await params
-  const usernameFromParam = getUsernameFromParam(name)
-
   const [me, settings, [isTwoFactorEnabled]] = await Promise.all([
     getMe(userId),
     readUserSettings(userId),
@@ -117,10 +109,6 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/[nam
       .from(twoFactorTable)
       .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt))),
   ])
-
-  if (me.name !== usernameFromParam) {
-    return <Forbidden loginUsername={me.name} />
-  }
 
   return (
     <>
@@ -254,6 +242,21 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/[nam
     </>
   )
 }
+
+const getMe = cache(async (userId: number) => {
+  const [user] = await db
+    .select({
+      id: userTable.id,
+      loginId: userTable.loginId,
+      name: userTable.name,
+      nickname: userTable.nickname,
+      imageURL: userTable.imageURL,
+    })
+    .from(userTable)
+    .where(eq(userTable.id, userId))
+
+  return user
+})
 
 function LoadingFallback() {
   return (
