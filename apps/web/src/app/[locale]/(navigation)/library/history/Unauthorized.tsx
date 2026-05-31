@@ -1,4 +1,7 @@
+'use client'
+
 import { LockKeyhole } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import LoginButton from '@/components/LoginButton'
 import StatusState from '@/components/status/StatusState'
@@ -7,26 +10,28 @@ import { Link } from '@/i18n/navigation'
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 
 export default function Unauthorized() {
+  const t = useTranslations('Library')
+
   return (
     <>
       <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <div className="flex-1 flex items-center justify-center">
         <StatusState
-          description="계정을 만들고 읽은 작품을 자동으로 기록하세요"
+          description={t('empty.historyUnauthorizedDescription')}
           icon={<LockKeyhole className="size-8" />}
           intent="auth"
-          title="감상 기록은 로그인이 필요해요"
+          title={t('empty.historyUnauthorizedTitle')}
         >
           <div className="flex flex-col w-full items-center gap-3">
-            <LoginButton>로그인하기</LoginButton>
+            <LoginButton>{t('common.login')}</LoginButton>
             <p className="text-sm text-zinc-500">
-              처음이신가요?{' '}
+              {t('common.signupPrompt')}{' '}
               <Link
                 className="text-zinc-300 underline hover:text-zinc-100 transition"
                 href="/auth/signup"
                 prefetch={false}
               >
-                회원가입
+                {t('common.signup')}
               </Link>
             </p>
           </div>

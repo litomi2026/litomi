@@ -2,6 +2,7 @@ import type { GETV1LibraryListResponse, LibraryListItem } from '@litomi/contract
 
 import { env } from '@litomi/env/client'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -13,6 +14,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 export default function usePinLibraryMutation() {
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
+  const t = useTranslations('Library.pin')
 
   return useMutation<
     unknown,
@@ -80,7 +82,7 @@ export default function usePinLibraryMutation() {
     },
     onSuccess: (_data, variables) => {
       if (variables.action === 'pin') {
-        toast.success('서재를 고정했어요')
+        toast.success(t('pinned'))
       }
     },
   })

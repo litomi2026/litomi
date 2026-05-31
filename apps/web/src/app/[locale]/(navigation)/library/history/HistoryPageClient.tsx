@@ -1,6 +1,7 @@
 'use client'
 
 import { View } from '@litomi/std'
+import { useTranslations } from 'next-intl'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -17,10 +18,11 @@ import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import NotFound from './NotFound'
 import useReadingHistoryInfiniteQuery from './useReadingHistoryInfiniteQuery'
-import { DATE_GROUP_LABELS, groupHistoryByDate } from './utils'
+import { groupHistoryByDate } from './utils'
 
 export default function HistoryPageClient() {
   const { data: me } = useMeQuery()
+  const t = useTranslations('Library.history.group')
   const source = isAdultVerified(me) ? 'server' : 'local'
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
@@ -55,7 +57,7 @@ export default function HistoryPageClient() {
         {groupedHistory?.map(([dateGroup, items]) => (
           <div key={dateGroup}>
             <h4 className="bg-background border-b border-white/5 px-4 py-2 text-sm font-medium text-zinc-400">
-              {DATE_GROUP_LABELS[dateGroup]}
+              {t(dateGroup)}
             </h4>
             <div className={`grid ${MANGA_GRID_COLUMN[View.CARD]} gap-2 p-2`}>
               {items.map(({ mangaId, lastPage }) => {

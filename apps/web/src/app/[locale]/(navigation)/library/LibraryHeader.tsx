@@ -1,6 +1,7 @@
 'use client'
 
 import { Edit, Menu, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -84,13 +85,13 @@ export default function LibraryHeader({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const drawerScrollContainerRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
-  const { bookmarkCount, historyCount, ratingCount } = summary ?? {}
+  const t = useTranslations('Library')
   const pageKind = getLibraryPageKind(pathname)
+  const deleteRatingsAction = useBulkDeleteRatingAction()
+  const deleteBookmarksAction = useBulkDeleteBookmarkAction()
   const { isSelectionMode, enter, exit } = useLibrarySelection()
   const currentLibrary = useCurrentLibraryMeta({ enabled: pageKind === 'detail', userId })
-  const deleteBookmarksAction = useBulkDeleteBookmarkAction()
   const deleteReadingHistoryAction = useBulkDeleteReadingHistoryAction({ source: historySource, userId })
-  const deleteRatingsAction = useBulkDeleteRatingAction()
 
   const permissions =
     pageKind === 'history' && historySource === 'local' && !userId
@@ -102,16 +103,17 @@ export default function LibraryHeader({
         }
       : getBulkOperationPermissions(pageKind, currentLibrary, userId)
 
+  const { bookmarkCount, historyCount, ratingCount } = summary ?? {}
   const isOwner = currentLibrary?.userId === userId
   const isPublicLibrary = currentLibrary?.isPublic
   const currentLibraryId = currentLibrary?.id
 
   const headerTitle = {
-    bookmark: '북마크',
-    browse: '공개 서재 둘러보기',
-    detail: currentLibrary?.name ?? '서재',
-    history: '감상 기록',
-    rating: '평가',
+    bookmark: t('header.pageTitle.bookmark'),
+    browse: t('header.pageTitle.browse'),
+    detail: currentLibrary?.name ?? t('header.pageTitle.detailFallback'),
+    history: t('header.pageTitle.history'),
+    rating: t('header.pageTitle.rating'),
   }[pageKind]
 
   const ownedLibraries = libraries
@@ -252,7 +254,7 @@ export default function LibraryHeader({
         <div className="flex min-h-(--library-header-height) items-center justify-between gap-3 p-2.5 sm:p-3">
           <div className="flex items-center gap-3">
             <button
-              aria-label="library-menu"
+              aria-label={t('header.menu')}
               className="p-3 -mx-2 hover:bg-zinc-800 rounded-lg transition sm:hidden"
               onClick={openDrawer}
               type="button"
@@ -296,7 +298,7 @@ export default function LibraryHeader({
                 className="p-3 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
                 disabled={isEmpty}
                 onClick={handleSelectionModeChange}
-                title={isEmpty ? '작품이 없어요' : '선택 모드 전환'}
+                title={isEmpty ? t('header.emptySelectionTitle') : t('header.selectionToggleTitle')}
                 type="button"
               >
                 {isSelectionMode ? <X className="size-5" /> : <Edit className="size-5" />}
@@ -316,7 +318,9 @@ export default function LibraryHeader({
             ref={drawerScrollContainerRef}
           >
             <div className="sticky top-0 bg-background flex items-center justify-between p-4 border-b border-zinc-800">
-              <h2 className="text-lg font-medium">{pageKind === 'browse' ? '공개 서재' : '서재'}</h2>
+              <h2 className="text-lg font-medium">
+                {pageKind === 'browse' ? t('header.browseDrawerTitle') : t('header.drawerTitle')}
+              </h2>
               <button
                 className="p-3 -m-2 hover:bg-zinc-800 rounded-lg transition"
                 onClick={closeDrawer}

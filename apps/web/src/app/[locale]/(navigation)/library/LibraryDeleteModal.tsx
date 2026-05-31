@@ -5,6 +5,7 @@ import type { GETV1LibraryListResponse, LibraryListItem } from '@litomi/contract
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -24,6 +25,8 @@ type Props = {
 export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, open, onOpenChange }: Props) {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const t = useTranslations('Library.deleteModal')
+  const commonT = useTranslations('Library.common')
 
   const deleteLibraryMutation = useMutation({
     mutationFn: deleteLibrary,
@@ -56,26 +59,26 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
 
-      toast.success('서재가 삭제됐어요')
+      toast.success(t('success'))
       onOpenChange(false)
       router.push('/library')
     },
   })
 
   return (
-    <Dialog ariaLabel="서재 삭제" className="sm:max-w-sm" onClose={() => onOpenChange(false)} open={open}>
-      <DialogHeader onClose={() => onOpenChange(false)} title="서재 삭제" />
+    <Dialog ariaLabel={t('title')} className="sm:max-w-sm" onClose={() => onOpenChange(false)} open={open}>
+      <DialogHeader onClose={() => onOpenChange(false)} title={t('title')} />
 
       <DialogBody className="p-5">
         <div className="flex flex-col items-center text-center">
           <div className="mb-3 h-12 w-12 rounded-xl bg-zinc-800 flex items-center justify-center">
             <Trash2 className="size-6 shrink-0 text-red-500" />
           </div>
-          <p className="text-sm text-zinc-400 mb-3 break-all">"{libraryName}" 서재를 삭제할까요?</p>
+          <p className="text-sm text-zinc-400 mb-3 break-all">{t('description', { name: libraryName })}</p>
           {itemCount > 0 && (
             <p className="text-sm text-red-400">
-              서재에 {itemCount}개의 작품이 있어요. <br />
-              삭제하면 모든 작품이 서재에서 제거돼요.
+              {t('itemWarning', { count: itemCount })} <br />
+              {t('itemWarningSuffix')}
             </p>
           )}
         </div>
@@ -96,7 +99,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
           ) : (
             <Trash2 className="size-4" />
           )}{' '}
-          삭제
+          {commonT('delete')}
         </button>
         <button
           className={twMerge(
@@ -107,7 +110,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
           onClick={() => onOpenChange(false)}
           type="button"
         >
-          취소
+          {commonT('cancel')}
         </button>
       </DialogFooter>
     </Dialog>

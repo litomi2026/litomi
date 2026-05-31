@@ -10,6 +10,7 @@ import type { InfiniteData } from '@tanstack/react-query'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -22,6 +23,7 @@ import { deleteRatings } from './api'
 export default function useBulkDeleteRatingAction(): BulkActionDescriptor {
   const queryClient = useQueryClient()
   const { exit, selectedCount, selectedIds } = useLibrarySelection()
+  const t = useTranslations('Library.bulk')
 
   const mutation = useMutation({
     mutationFn: deleteRatings,
@@ -45,9 +47,9 @@ export default function useBulkDeleteRatingAction(): BulkActionDescriptor {
       queryClient.invalidateQueries({ queryKey: QueryKeys.librarySummaryBase })
 
       if (deletedCount === 0) {
-        toast.warning('이미 삭제된 평가예요')
+        toast.warning(t('ratingDelete.alreadyDeleted'))
       } else {
-        toast.success(`${deletedCount}개 작품의 평가를 삭제했어요`)
+        toast.success(t('ratingDelete.success', { count: deletedCount }))
       }
 
       exit()
@@ -55,22 +57,22 @@ export default function useBulkDeleteRatingAction(): BulkActionDescriptor {
   })
 
   return {
-    ariaLabel: '평가 삭제',
-    confirmLabel: '삭제',
-    description: `선택한 ${selectedCount}개 작품의 평가를 삭제할까요?`,
+    ariaLabel: t('ratingDelete.title'),
+    confirmLabel: t('ratingDelete.label'),
+    description: t('ratingDelete.description', { count: selectedCount }),
     icon: Trash2,
     id: 'delete-ratings',
-    label: '삭제',
+    label: t('ratingDelete.label'),
     onConfirm: () => {
       mutation.mutate({
         mangaIds: Array.from(selectedIds),
       } satisfies DELETEV1LibraryRatingBody)
     },
     pending: mutation.isPending,
-    title: '평가 삭제',
+    title: t('ratingDelete.title'),
     tone: 'danger',
     type: 'confirm',
-    warning: '삭제한 평가는 되돌릴 수 없어요.',
+    warning: t('ratingDelete.warning'),
   }
 }
 

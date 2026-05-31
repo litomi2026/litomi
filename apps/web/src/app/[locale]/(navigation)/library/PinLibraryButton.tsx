@@ -3,6 +3,7 @@
 import type { LibraryListItem } from '@litomi/contracts'
 
 import { Pin } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -23,6 +24,7 @@ export default function PinLibraryButton({ className = '', libraryId, library }:
   const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id, enabled: !!me })
   const isPinned = pinnedData?.pages.some((page) => page.libraries.some((lib) => lib.id === libraryId))
   const [isAnimating, setIsAnimating] = useState(false)
+  const t = useTranslations('Library.pin')
 
   function handlePinToggle() {
     const action = isPinned ? 'unpin' : 'pin'
@@ -48,7 +50,7 @@ export default function PinLibraryButton({ className = '', libraryId, library }:
       )}
       disabled={isPending}
       onClick={handlePinToggle}
-      title={isPinned ? '고정 해제' : '서재 고정'}
+      title={isPinned ? t('unpin') : t('pin')}
       type="button"
     >
       <Pin
