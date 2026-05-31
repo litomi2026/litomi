@@ -1,7 +1,8 @@
 'use client'
 
 import { Loader2, Search } from 'lucide-react'
-import { useCallback, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
+import { useTransition } from 'react'
 
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import { useRouter } from '@/i18n/navigation'
@@ -15,29 +16,30 @@ type Props = {
 export default function SearchFromHereButton({ className = '', isDefaultSort, mangaId }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const t = useTranslations('Common.mangaCard.searchFromHere')
   const isDisabled = !isDefaultSort || isPending
 
-  const handleSearchFromHere = useCallback(() => {
+  function handleSearchFromHere() {
     const params = new URLSearchParams(window.location.search)
     params.set(SearchPageSearchParam.NEXT_ID, (mangaId + 1).toString())
 
     startTransition(() => {
       router.push(`/search?${params}`)
     })
-  }, [mangaId, router])
+  }
 
   return (
     <button
       className={`flex justify-center items-center gap-1 ${className}`}
       disabled={isDisabled}
       onClick={handleSearchFromHere}
-      title={isDefaultSort ? '이 작품부터 검색 결과를 다시 불러와요' : '기본순 정렬일 때만 사용할 수 있어요'}
+      title={isDefaultSort ? t('title') : t('disabledTitle')}
       type="button"
     >
       {isPending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4 shrink-0" />}
       <span className="text-sm font-medium whitespace-nowrap">
-        <span>여기부터</span>
-        <span className="hidden sm:inline"> 재검색</span>
+        <span>{t('prefix')}</span>
+        <span className="hidden sm:inline">{t('suffix')}</span>
       </span>
     </button>
   )

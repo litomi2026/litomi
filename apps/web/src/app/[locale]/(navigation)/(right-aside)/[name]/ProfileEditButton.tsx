@@ -4,6 +4,7 @@ import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
 import { getSafeProfileImageURL } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { SquarePen } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { SubmitEvent, SyntheticEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -36,10 +37,11 @@ export default function ProfileEditButton({ me }: Props) {
   const [currentMe, setCurrentMe] = useState(me)
   const [showModal, setShowModal] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<ProfileFieldErrors>({})
-  const formRef = useRef<HTMLFormElement | null>(null)
-  const router = useRouter()
   const defaultProfileImageURL = getSafeProfileImageURL(currentMe.imageURL ?? '')
   const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
+  const formRef = useRef<HTMLFormElement | null>(null)
+  const t = useTranslations('Profile.edit')
+  const router = useRouter()
 
   const editMutation = usePatchMyProfileMutation({
     onError: (error) => {
@@ -171,9 +173,9 @@ export default function ProfileEditButton({ me }: Props) {
         type="button"
       >
         <SquarePen className="size-5 shrink-0" />
-        <span className="min-w-0 hidden md:block">프로필 수정</span>
+        <span className="min-w-0 hidden md:block">{t('action')}</span>
       </button>
-      <Dialog ariaLabel="프로필 수정" className="sm:max-w-2xl" onClose={handleClose} open={showModal}>
+      <Dialog ariaLabel={t('action')} className="sm:max-w-2xl" onClose={handleClose} open={showModal}>
         <form
           className="flex flex-1 flex-col min-h-0"
           onInput={handleFormInput}
@@ -181,20 +183,20 @@ export default function ProfileEditButton({ me }: Props) {
           onSubmit={handleSubmit}
           ref={formRef}
         >
-          <DialogHeader onClose={handleClose} title="프로필 수정" />
+          <DialogHeader onClose={handleClose} title={t('action')} />
           <DialogBody className="p-0 sm:p-0">
             <div className="relative">
               <div className="h-32 bg-linear-to-b from-zinc-800 to-zinc-900" />
               <div className="absolute bottom-0 left-4 transform translate-y-1/2">
                 <div className="w-24 h-24 rounded-full border-4 border-background overflow-hidden bg-zinc-800">
-                  <img alt="프로필 이미지" className="w-full h-full object-cover" src={profileImageURL || undefined} />
+                  <img alt={t('imageAlt')} className="w-full h-full object-cover" src={profileImageURL || undefined} />
                 </div>
               </div>
             </div>
             <div className="grid gap-4 p-4 pt-16">
               <div className="grid gap-1">
                 <label className="block text-sm font-medium text-zinc-400" htmlFor="loginId">
-                  아이디
+                  {t('loginId')}
                 </label>
                 <input
                   className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-500 cursor-not-allowed"
@@ -203,11 +205,11 @@ export default function ProfileEditButton({ me }: Props) {
                   id="loginId"
                   type="text"
                 />
-                <p className="text-xs text-zinc-600">변경할 수 없어요</p>
+                <p className="text-xs text-zinc-600">{t('immutable')}</p>
               </div>
               <div className="grid gap-1">
                 <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.name}>
-                  이름
+                  {t('name')}
                 </label>
                 <input
                   aria-invalid={!!fieldErrors.name}
@@ -222,16 +224,16 @@ export default function ProfileEditButton({ me }: Props) {
                   maxLength={32}
                   minLength={2}
                   name={formId.name}
-                  placeholder="고유한 이름을 입력하세요"
+                  placeholder={t('namePlaceholder')}
                   type="text"
                 />
                 <p aria-invalid={!!fieldErrors.name} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                  {fieldErrors.name || '이름으로 찾을 수 있어요 (2-32자)'}
+                  {fieldErrors.name || t('nameHelp')}
                 </p>
               </div>
               <div className="grid gap-1">
                 <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.nickname}>
-                  닉네임
+                  {t('nickname')}
                 </label>
                 <input
                   aria-invalid={!!fieldErrors.nickname}
@@ -245,16 +247,16 @@ export default function ProfileEditButton({ me }: Props) {
                   maxLength={32}
                   minLength={2}
                   name={formId.nickname}
-                  placeholder="사용할 닉네임을 입력하세요"
+                  placeholder={t('nicknamePlaceholder')}
                   type="text"
                 />
                 <p aria-invalid={!!fieldErrors.nickname} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                  {fieldErrors.nickname || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
+                  {fieldErrors.nickname || t('nicknameHelp')}
                 </p>
               </div>
               <div className="grid gap-1">
                 <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.imageURL}>
-                  프로필 이미지 URL
+                  {t('imageURL')}
                 </label>
                 <input
                   aria-invalid={!!fieldErrors.imageURL}
@@ -275,25 +277,25 @@ export default function ProfileEditButton({ me }: Props) {
                   type="url"
                 />
                 <p aria-invalid={!!fieldErrors.imageURL} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                  {fieldErrors.imageURL || '이미지는 정사각형 비율을 권장해요'}
+                  {fieldErrors.imageURL || t('imageURLHelp')}
                 </p>
               </div>
               <p className="p-3 bg-zinc-800/50 rounded-lg text-xs text-zinc-400 leading-relaxed">
-                클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어 변경 사항이 반영되는데 최대 1분이 소요될 수 있어요
+                {t('propagationNotice')}
               </p>
             </div>
           </DialogBody>
           <DialogFooter className="bg-zinc-900/50">
             <div className="flex items-center justify-between">
               <button className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-300" type="reset">
-                초기화
+                {t('reset')}
               </button>
               <button
                 className="px-6 py-2 bg-white text-black font-medium text-sm rounded-lg hover:bg-zinc-200 active:bg-zinc-300 disabled:opacity-50"
                 disabled={isPending}
                 type="submit"
               >
-                저장
+                {t('save')}
               </button>
             </div>
           </DialogFooter>

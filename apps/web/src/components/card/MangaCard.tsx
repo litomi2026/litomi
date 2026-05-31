@@ -3,6 +3,7 @@ import { getViewerLink } from '@litomi/domain/utils/manga'
 import { View } from '@litomi/std'
 import { ErrorBoundary } from '@suspensive/react'
 import { ExternalLink } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -69,6 +70,7 @@ export default function MangaCard({
   const parsedSearchParams = new URLSearchParams(searchParams)
   const query = parsedSearchParams.get(SearchPageSearchParam.QUERY)
   const isDefaultSearchSort = !parsedSearchParams.get(SearchPageSearchParam.SORT)
+  const t = useTranslations('Common.mangaCard.metadata')
 
   return (
     <article
@@ -99,7 +101,7 @@ export default function MangaCard({
             </div>
             {type && (
               <div className="flex gap-1">
-                <dt>종류</dt>
+                <dt>{t('type')}</dt>
                 <MangaMetadataLink
                   filterType="type"
                   label={type.label}
@@ -110,31 +112,31 @@ export default function MangaCard({
             )}
             {artists && artists.length > 0 && (
               <div className="flex gap-1">
-                <dt>작가</dt>
+                <dt>{t('artist')}</dt>
                 <MangaMetadataListWithLink filterType="artist" items={artists} searchParams={searchParams} />
               </div>
             )}
             {group && group.length > 0 && (
               <div className="flex gap-1">
-                <dt>그룹</dt>
+                <dt>{t('group')}</dt>
                 <MangaMetadataList filterType="group" labeledValues={group} searchParams={searchParams} />
               </div>
             )}
             {series && series.length > 0 && (
               <div className="flex gap-1">
-                <dt>시리즈</dt>
+                <dt>{t('series')}</dt>
                 <MangaMetadataList filterType="series" labeledValues={series} searchParams={searchParams} />
               </div>
             )}
             {characters && characters.length > 0 && (
               <div className="flex gap-1">
-                <dt>캐릭터</dt>
+                <dt>{t('character')}</dt>
                 <MangaMetadataListWithLink filterType="character" items={characters} searchParams={searchParams} />
               </div>
             )}
             {uploader && (
               <div className="flex gap-1">
-                <dt>업로더</dt>
+                <dt>{t('uploader')}</dt>
                 <MangaMetadataLink filterType="uploader" searchParams={searchParams} value={uploader} />
               </div>
             )}

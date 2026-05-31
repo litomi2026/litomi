@@ -1,5 +1,6 @@
 import { CN, DE, ES, FR, HU, IT, JP, KR, NL, PT, RU, TH, US, VN } from 'country-flag-icons/react/3x2'
 import { Globe, Meh, Pencil } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReactNode } from 'react'
 
 import { Link } from '@/i18n/navigation'
@@ -53,16 +54,17 @@ const LANGUAGE_CODES: Record<string, string> = {
 }
 
 export default function MangaLanguageLink({ className = '', language, searchParams }: Props) {
+  const t = useTranslations('Common.mangaCard.metadata')
   const { href, isActive } = getSearchFilter(`language:${language}`, searchParams)
 
   return (
     <Link
       aria-current={isActive}
-      aria-label={`Filter by ${language}`}
+      aria-label={t('languageAria', { language })}
       className={`group relative px-1.5 py-0.5 text-xs font-medium rounded-md bg-zinc-700 transition aria-current:ring-2 aria-current:ring-brand aria-current:bg-zinc-700 ${className}`}
       href={href}
       prefetch={false}
-      title={`${language} 작품 보기`}
+      title={t('languageFilter', { language })}
     >
       <LanguageBadgeContent language={language} />
     </Link>

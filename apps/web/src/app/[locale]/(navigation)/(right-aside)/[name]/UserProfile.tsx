@@ -1,5 +1,5 @@
-import dayjs from 'dayjs'
 import { Calendar, User } from 'lucide-react'
+import { getLocale, getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 
 import MyPageButtons from './MyPageButtons'
@@ -11,6 +11,7 @@ type Props = {
 
 export default async function UserProfile({ username }: Props) {
   const profile = username ? await getPublicUserProfile(username) : null
+  const t = await getTranslations('Profile')
 
   return (
     <>
@@ -32,7 +33,10 @@ export default async function UserProfile({ username }: Props) {
               <MyPageButtons user={profile} />
             </>
           ) : (
-            <UserProfileIdentity name={username} nickname={username ? '존재하지 않는 사용자' : '비회원'} />
+            <UserProfileIdentity
+              name={username}
+              nickname={username ? t('fallback.missingUser') : t('fallback.guest')}
+            />
           )}
         </div>
         <UserProfileDescription profile={profile} username={username} />
@@ -41,28 +45,35 @@ export default async function UserProfile({ username }: Props) {
   )
 }
 
-function UserProfileDescription({ profile, username }: { profile: PublicUserProfile | null; username: string }) {
+async function UserProfileDescription({ profile, username }: { profile: PublicUserProfile | null; username: string }) {
+  const locale = await getLocale()
+  const t = await getTranslations('Profile')
+
   if (!username) {
-    return <div className="mt-2 h-19 text-zinc-500 text-sm">로그인하면 모든 기능을 이용할 수 있어요</div>
+    return <div className="mt-2 h-19 text-zinc-500 text-sm">{t('fallback.loginPrompt')}</div>
   }
 
   if (!profile) {
-    return <div className="mt-2 h-19 text-zinc-500 text-sm">존재하지 않는 사용자예요</div>
+    return <div className="mt-2 h-19 text-zinc-500 text-sm">{t('fallback.missingDescription')}</div>
   }
+
+  const joinedAt = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(
+    new Date(profile.createdAt),
+  )
 
   return (
     <>
       <div className="mt-2 flex items-center gap-1 text-zinc-500 text-sm">
-        <Calendar className="size-4" /> 가입일: {dayjs(profile.createdAt).format('YYYY년 M월')}
+        <Calendar className="size-4" /> {t('summary.joinedAt', { date: joinedAt })}
       </div>
       <div className="mt-4 flex gap-6">
         <div className="flex gap-2">
           <span className="font-bold">{profile.followingCount ?? '.'}</span>
-          <span className="text-zinc-500">팔로우 중</span>
+          <span className="text-zinc-500">{t('summary.following')}</span>
         </div>
         <div className="flex gap-2">
           <span className="font-bold">{profile.followerCount ?? '.'}</span>
-          <span className="text-zinc-500">팔로워</span>
+          <span className="text-zinc-500">{t('summary.followers')}</span>
         </div>
       </div>
     </>

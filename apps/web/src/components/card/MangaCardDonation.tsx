@@ -1,6 +1,7 @@
 'use client'
 
 import { Heart } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'
@@ -10,6 +11,8 @@ import LogoDiscord from '../icons/LogoDiscord'
 import { MangaCardSkeleton } from './MangaCard'
 
 export default function MangaCardDonation() {
+  const t = useTranslations('Common.mangaCard.donationCard')
+
   const { ref: cardRef } = useGAViewEvent({
     eventName: 'view_promotion',
     eventParams: createPromotionEventParams({
@@ -42,14 +45,12 @@ export default function MangaCardDonation() {
               <Heart className="size-6 fill-current text-brand animate-heartbeat" />
             </div>
           </div>
-          <h3 className="text-lg font-semibold text-foreground">리토미를 함께 키워주세요</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t('title')}</h3>
         </div>
-        <p className="text-sm text-zinc-400 leading-relaxed">
-          매달 10~15만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요
-        </p>
+        <p className="text-sm text-zinc-400 leading-relaxed">{t('description')}</p>
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-2">
-            <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">소셜</span>
+            <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">{t('socialLabel')}</span>
             <div className="flex flex-col gap-2">
               <a
                 className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
@@ -59,12 +60,12 @@ export default function MangaCardDonation() {
                 target="_blank"
               >
                 <LogoDiscord className="size-4" />
-                <span>Discord 서버 참여</span>
+                <span>{t('discordAction')}</span>
               </a>
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">후원</span>
+            <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">{t('donationLabel')}</span>
             <div className="grid grid-cols-2 gap-2">
               <a
                 className="p-3 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
@@ -87,7 +88,7 @@ export default function MangaCardDonation() {
             </div>
           </div>
         </div>
-        <p className="text-xs text-zinc-500">참여해주신다면 감사하겠습니다 🙇</p>
+        <p className="text-xs text-zinc-500">{t('thanks')}</p>
       </div>
     </MangaCardSkeleton>
   )

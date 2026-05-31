@@ -2,7 +2,7 @@
 
 import { formatNumber } from '@litomi/std'
 import { Bookmark, Eye, Heart, Star } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 type Props = {
   manga: {
@@ -18,6 +18,7 @@ type Props = {
 
 export default function MangaCardStats({ manga, className = '' }: Props) {
   const locale = useLocale()
+  const t = useTranslations('Common.mangaCard.stats')
 
   const { rating = 0, ratingCount = 0, viewCount, like = 0, likeAnonymous = 0, bookmarkCount = 0 } = manga
   const totalLikes = like + likeAnonymous
@@ -36,9 +37,11 @@ export default function MangaCardStats({ manga, className = '' }: Props) {
       )}
       {rating > 0 && (
         <div className="flex items-center">
-          <RatingStars rating={rating} />
+          <RatingStars rating={rating} ratingLabel={t('rating', { rating: rating.toFixed(1) })} />
           {ratingCount > 0 && (
-            <span className="text-zinc-500 text-xs ml-0.5">({formatNumber(ratingCount, locale)}개)</span>
+            <span className="text-zinc-500 text-xs ml-0.5">
+              ({t('ratingCount', { count: formatNumber(ratingCount, locale) })})
+            </span>
           )}
         </div>
       )}
@@ -52,14 +55,14 @@ export default function MangaCardStats({ manga, className = '' }: Props) {
   )
 }
 
-function RatingStars({ rating }: { rating: number }) {
+function RatingStars({ rating, ratingLabel }: { rating: number; ratingLabel: string }) {
   const fullStars = Math.floor(rating)
   const partialStar = rating % 1
   const hasPartialStar = partialStar > 0
   const emptyStars = 5 - fullStars - (hasPartialStar ? 1 : 0)
 
   return (
-    <div aria-label={`평점 ${rating.toFixed(1)}점`} className="flex items-center gap-0.5">
+    <div aria-label={ratingLabel} className="flex items-center gap-0.5">
       {Array.from({ length: fullStars }).map((_, i) => (
         <Star className="size-[1em] shrink-0 text-brand" key={`full-${i}`} />
       ))}

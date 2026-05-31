@@ -1,15 +1,16 @@
+'use client'
+
 import { UserRoundX } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 export default function NotFound() {
+  const t = useTranslations('Profile.notFound')
+
   return (
-    <StatusState
-      description="주소가 바뀌었거나 공개된 프로필을 찾을 수 없어요"
-      icon={<UserRoundX className="size-8" />}
-      title="사용자를 찾을 수 없어요"
-    >
-      <StatusActionLink href="/posts/recommend">이야기 목록으로 가기</StatusActionLink>
+    <StatusState description={t('description')} icon={<UserRoundX className="size-8" />} title={t('title')}>
+      <StatusActionLink href="/posts/recommend">{t('action')}</StatusActionLink>
     </StatusState>
   )
 }

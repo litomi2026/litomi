@@ -2,6 +2,7 @@
 
 import { PostFilter } from '@litomi/domain/post/filter'
 import { SquarePen } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
 import StatusState from '@/components/status/StatusState'
@@ -29,17 +30,19 @@ export default function UserPostList({ username }: Props) {
 }
 
 function EmptyState({ isCurrentUser }: { isCurrentUser: boolean }) {
+  const t = useTranslations('Profile.posts')
+
   if (!isCurrentUser) {
     return <NotFound />
   }
 
   return (
     <div className="flex flex-col grow">
-      <PostCreationForm className="flex p-4 border-b" placeholder="첫 글을 작성해보세요!" />
+      <PostCreationForm className="flex p-4 border-b" placeholder={t('createPlaceholder')} />
       <StatusState
-        description="생각을 공유하고 다른 사용자들과 소통해보세요"
+        description={t('emptyDescription')}
         icon={<SquarePen className="size-8" />}
-        title="아직 작성한 글이 없어요"
+        title={t('emptyTitle')}
       />
     </div>
   )

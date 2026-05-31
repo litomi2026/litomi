@@ -5,7 +5,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { Locale } from '@litomi/domain/locale'
 import { Eye, EyeOff } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
@@ -38,10 +38,11 @@ type Props = {
 }
 
 export default function MangaCardCensorship({ manga }: Props) {
-  const locale = useLocale()
-  const { data: me } = useMeQuery()
-  const { getMatch } = useMangaCensorship()
   const [isBlurDisabled, setIsBlurDisabled] = useState(false)
+  const t = useTranslations('Common.mangaCard.censorship')
+  const { getMatch } = useMangaCensorship()
+  const { data: me } = useMeQuery()
+  const locale = useLocale()
 
   const myName = me?.name ?? ''
   const childrenDay = getChildrenDayForLocale(locale)
@@ -69,7 +70,7 @@ export default function MangaCardCensorship({ manga }: Props) {
       <button
         className="absolute top-2 right-2 p-2.5 rounded-full bg-background/90 hover:bg-background border border-zinc-700 pointer-events-auto transition"
         onClick={() => setIsBlurDisabled(!isBlurDisabled)}
-        title={isBlurDisabled ? '검열 적용' : '검열 임시 해제'}
+        title={isBlurDisabled ? t('apply') : t('temporaryDisable')}
         type="button"
       >
         {isBlurDisabled ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
@@ -80,7 +81,7 @@ export default function MangaCardCensorship({ manga }: Props) {
         href={`/@${myName}/censor`}
         prefetch={false}
       >
-        {censoringReasons.join(', ')} 작품 검열
+        {t('workCensored', { reasons: censoringReasons.join(', ') })}
       </Link>
     </div>
   )
