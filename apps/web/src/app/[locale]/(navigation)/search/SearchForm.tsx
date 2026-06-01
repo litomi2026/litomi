@@ -254,7 +254,7 @@ export default function SearchForm({ className = '' }: Props) {
             autoCapitalize="off"
             autoComplete="off"
             className={twMerge(
-              'bg-transparent px-3.5 py-2 pr-10 text-foreground min-w-0 w-full placeholder-zinc-500/95 text-base leading-5 focus:outline-none',
+              'bg-transparent px-3.5 py-2 pr-10 text-foreground min-w-0 w-full placeholder-zinc-500/95 leading-5 focus:outline-none',
               '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none',
               '[&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0',
             )}

@@ -41,7 +41,7 @@ export default function MyInfoSync() {
 
     channel.onmessage = (event: MessageEvent<UserSettingsBroadcastMessage>) => {
       queryClient.setQueryData<GETV1MeResponse | null>(QueryKeys.me, (current) => {
-        if (!current || current.id !== event.data.userId) {
+        if (current?.id !== event.data.userId) {
           return current
         }
 

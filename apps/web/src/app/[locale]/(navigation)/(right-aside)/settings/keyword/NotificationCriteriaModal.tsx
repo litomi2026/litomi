@@ -187,7 +187,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               aria-invalid={Boolean(nameError)}
               autoCapitalize="off"
               className={twMerge(
-                'w-full text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500',
+                'w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500',
                 'focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-transparent',
                 'aria-invalid:ring-2 aria-invalid:ring-red-500 disabled:opacity-50 transition',
               )}

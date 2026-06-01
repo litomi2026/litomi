@@ -207,7 +207,7 @@ export default function FilterPanel({ buttonRef, onAfterClose, onClose, show }: 
           className={twMerge(
             'flex flex-col gap-4',
             '[&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1',
-            '[&_input]:text-base [&_input]:px-3 [&_input]:py-2 [&_input]:rounded-lg',
+            '[&_input]:px-3 [&_input]:py-2 [&_input]:rounded-lg',
             '[&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-700 [&_input]:placeholder-zinc-500',
             '[&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-400 [&_input]:focus:border-transparent [&_input]:invalid:ring-2 [&_input]:invalid:ring-red-500',
             '[&_input]:[appearance:textfield] [&_input]:[&::-webkit-outer-spin-button]:appearance-none [&_input]:[&::-webkit-inner-spin-button]:appearance-none',

@@ -197,7 +197,7 @@ export default function CensorshipCreationBar() {
           autoCapitalize="off"
           autoComplete="off"
           className={twMerge(
-            'h-11 w-full rounded-lg border border-zinc-800 bg-zinc-950/45 pl-3 pr-24 text-base outline-none transition',
+            'h-11 w-full rounded-lg border border-zinc-800 bg-zinc-950/45 pl-3 pr-24 outline-none transition',
             'placeholder:text-zinc-500 focus:border-zinc-600 focus:bg-zinc-950/65 focus:ring-2 focus:ring-brand/15 disabled:cursor-not-allowed disabled:opacity-50',
           )}
           disabled={addMutation.isPending}

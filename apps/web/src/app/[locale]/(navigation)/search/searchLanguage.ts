@@ -4,8 +4,8 @@ import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { LocalStorageKey } from '@/storage'
 
 const PREFIX = 'language:'
-const LANGUAGE_FILTER_QUERY_PATTERN = new RegExp(`(?:^|\\s)${PREFIX}([^\\s]*)`, 'i')
-const LANGUAGE_FILTER_TOKEN_PATTERN = new RegExp(`(?:^|\\s)${PREFIX}[^\\s]*`, 'gi')
+const LANGUAGE_FILTER_QUERY_PATTERN = new RegExp(String.raw`(?:^|\s)${PREFIX}([^\s]*)`, 'i')
+const LANGUAGE_FILTER_TOKEN_PATTERN = new RegExp(String.raw`(?:^|\s)${PREFIX}[^\s]*`, 'gi')
 
 type MeWithSearchLanguage = {
   settings: {

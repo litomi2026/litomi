@@ -82,7 +82,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
           <input
             autoCapitalize="off"
             autoFocus
-            className="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950/45 px-3 text-base outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-brand/15"
+            className="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950/45 px-3 outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-brand/15"
             id={inputId}
             onChange={(e) => setEditValue(e.target.value)}
             required

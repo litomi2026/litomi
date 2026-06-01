@@ -10,7 +10,7 @@ type Props = {
 }
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-800 bg-zinc-950/60 p-3 text-base text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-700'
+  'w-full rounded-xl border border-zinc-800 bg-zinc-950/60 p-3 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-700'
 
 const textareaClass = `${inputClass} min-h-28 resize-y`
 const { NEXT_PUBLIC_API_ORIGIN } = env

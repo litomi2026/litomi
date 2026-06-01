@@ -27,7 +27,7 @@ const CONSEQUENCES = [
 
 const deletionFieldLabelClassName = 'block mb-1.5 text-sm font-medium text-zinc-200'
 
-const deletionFieldClassName = `w-full rounded-2xl bg-white/[0.035] border border-white/10 px-4 py-3 text-base leading-6 text-zinc-50 placeholder:text-zinc-500 transition
+const deletionFieldClassName = `w-full rounded-2xl bg-white/[0.035] border border-white/10 px-4 py-3 leading-6 text-zinc-50 placeholder:text-zinc-500 transition
   focus:outline-none focus:ring-2 focus:ring-white/10 focus:border-transparent
   disabled:opacity-60 disabled:cursor-not-allowed
   user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/25`
@@ -268,7 +268,7 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
                 </label>
                 <OneTimeCodeInput
                   aria-describedby="account-deletion-token-help"
-                  className={`${deletionFieldClassName} text-center font-medium font-mono tabular-nums tracking-widest`}
+                  className={`${deletionFieldClassName} text-center text-base font-medium font-mono tabular-nums tracking-widest`}
                   disabled={isPending}
                   id="account-deletion-token"
                   onChange={(e) => setToken(e.target.value)}
