@@ -30,9 +30,3 @@ export function setViewToSearchParams(searchParams: URLSearchParams, view: View)
   searchParams.delete('view')
   return searchParams
 }
-
-export function whitelistSearchParams(params: URLSearchParams, whitelist: readonly string[]) {
-  const allowed = new Set(whitelist)
-  const filtered = Array.from(params).filter(([key]) => allowed.has(key))
-  return new URLSearchParams(filtered)
-}

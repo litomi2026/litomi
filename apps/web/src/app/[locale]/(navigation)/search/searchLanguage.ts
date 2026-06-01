@@ -13,8 +13,8 @@ type MeWithSearchLanguage = {
   }
 }
 
-export function addLanguageFilterIfMissing(query: string, language: string) {
-  const trimmedQuery = query.trim()
+export function addLanguageFilterIfMissing(query: string | null, language: string) {
+  const trimmedQuery = query?.trim() ?? ''
 
   if (language === SEARCH_LANGUAGE_ALL || LANGUAGE_FILTER_QUERY_PATTERN.test(trimmedQuery)) {
     return trimmedQuery
