@@ -11,7 +11,7 @@ import { twMerge } from 'tailwind-merge'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 
 import { FILTER_PARAM_KEYS, SearchParam } from './constants'
-import { getLanguageFromSearchQuery } from './searchLanguage'
+import { getLanguageFilter } from './searchLanguage'
 
 // NOTE: 필터 패널은 사용자가 필터를 클릭할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
 const FilterPanel = dynamic(() => import('./FilterPanel'))
@@ -26,7 +26,7 @@ export default function FilterButton() {
   const hasActiveFilters = activeFilterCount > 0
 
   function handleSearchParamUpdate(searchParams: ReadonlyURLSearchParams) {
-    const hasLanguage = getLanguageFromSearchQuery(searchParams.get(SearchParam.QUERY))
+    const hasLanguage = getLanguageFilter(searchParams.get(SearchParam.QUERY))
 
     const currentFilterCount = FILTER_PARAM_KEYS.reduce(
       (count, key) => count + (searchParams.get(key) ? 1 : 0),

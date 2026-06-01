@@ -13,6 +13,7 @@ import { getSearchSEO } from '@/lib/searchSEO'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import { SearchParam } from './constants'
+import { getLanguageFilter } from './searchLanguage'
 import SearchResult, { SearchResultLoading } from './SearchResult'
 import TrendingKeywords from './TrendingKeywords'
 
@@ -56,6 +57,7 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
 
   const filters = {
     sort: params.get(SearchParam.SORT),
+    language: getLanguageFilter(params.get(SearchParam.QUERY)),
     minView: params.get(SearchParam.MIN_VIEW),
     maxView: params.get(SearchParam.MAX_VIEW),
     minPage: params.get(SearchParam.MIN_PAGE),

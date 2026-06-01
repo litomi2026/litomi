@@ -7,12 +7,14 @@ import { twMerge } from 'tailwind-merge'
 
 import { useRouter } from '@/i18n/navigation'
 
-import { FILTER_KEYS, SearchParam, SearchSort } from './constants'
+import { FILTER_PARAM_KEYS, SearchParam, SearchSort } from './constants'
+import { removeLanguageFilter } from './searchLanguage'
 import { formatDate, formatNumber } from './utils'
 
 type Props = {
   filters: {
     sort: string | null
+    language: string | null
     minView: string | null
     maxView: string | null
     minPage: string | null
@@ -39,7 +41,7 @@ export default function ActiveFilters({ filters }: Props) {
     [SearchSort.POPULAR]: sortT('popular'),
   }
 
-  function removeFilter(key: string) {
+  function removeActiveFilter(key: string) {
     const params = new URLSearchParams(window.location.search)
     params.delete(key)
 
@@ -48,7 +50,22 @@ export default function ActiveFilters({ filters }: Props) {
     })
   }
 
-  function removeRangeFilter(minKey: string, maxKey: string) {
+  function removeActiveLanguageFilter() {
+    const params = new URLSearchParams(window.location.search)
+    const query = removeLanguageFilter(params.get(SearchParam.QUERY))
+
+    if (query) {
+      params.set(SearchParam.QUERY, query)
+    } else {
+      params.delete(SearchParam.QUERY)
+    }
+
+    startTransition(() => {
+      router.replace(`/search?${params}`)
+    })
+  }
+
+  function removeActiveRangeFilter(minKey: string, maxKey: string) {
     const params = new URLSearchParams(window.location.search)
     params.delete(minKey)
     params.delete(maxKey)
@@ -63,43 +80,49 @@ export default function ActiveFilters({ filters }: Props) {
       condition: filters.sort,
       label: t('sort'),
       value: filters.sort ? sortLabels[filters.sort] : undefined,
-      onRemove: () => removeFilter(SearchParam.SORT),
+      onRemove: () => removeActiveFilter(SearchParam.SORT),
+    },
+    {
+      condition: filters.language,
+      label: t('language'),
+      value: filters.language,
+      onRemove: removeActiveLanguageFilter,
     },
     {
       condition: filters.minView || filters.maxView,
       label: t('view'),
       value: `${formatNumber(filters.minView, '0', locale)} ~ ${formatNumber(filters.maxView, '∞', locale)}`,
-      onRemove: () => removeRangeFilter(SearchParam.MIN_VIEW, SearchParam.MAX_VIEW),
+      onRemove: () => removeActiveRangeFilter(SearchParam.MIN_VIEW, SearchParam.MAX_VIEW),
     },
     {
       condition: filters.minPage || filters.maxPage,
       label: t('page'),
       value: `${formatNumber(filters.minPage, '1', locale)} ~ ${formatNumber(filters.maxPage, '∞', locale)}`,
-      onRemove: () => removeRangeFilter(SearchParam.MIN_PAGE, SearchParam.MAX_PAGE),
+      onRemove: () => removeActiveRangeFilter(SearchParam.MIN_PAGE, SearchParam.MAX_PAGE),
     },
     {
       condition: filters.minRating || filters.maxRating,
       label: t('rating'),
       value: `${formatNumber(parseInt(filters.minRating ?? '0', 10) / 100, '0', locale)} ~ ${formatNumber(parseInt(filters.maxRating ?? '0', 10) / 100, '5', locale)}`,
-      onRemove: () => removeRangeFilter(SearchParam.MIN_RATING, SearchParam.MAX_RATING),
+      onRemove: () => removeActiveRangeFilter(SearchParam.MIN_RATING, SearchParam.MAX_RATING),
     },
     {
       condition: filters.from || filters.to,
       label: t('date'),
       value: `${filters.from ? formatDate(filters.from, locale) : t('beginning')} ~ ${filters.to ? formatDate(filters.to, locale) : t('today')}`,
-      onRemove: () => removeRangeFilter(SearchParam.FROM, SearchParam.TO),
+      onRemove: () => removeActiveRangeFilter(SearchParam.FROM, SearchParam.TO),
     },
     {
       condition: filters.skip && Number(filters.skip) > 0,
       label: t('skip'),
       value: t('countSuffix', { count: formatNumber(filters.skip, '0', locale) }),
-      onRemove: () => removeFilter(SearchParam.SKIP),
+      onRemove: () => removeActiveFilter(SearchParam.SKIP),
     },
     {
       condition: filters.nextId,
       label: t('nextId'),
       value: filters.nextId,
-      onRemove: () => removeFilter(SearchParam.NEXT_ID),
+      onRemove: () => removeActiveFilter(SearchParam.NEXT_ID),
     },
   ]
 
@@ -142,8 +165,15 @@ export function ClearAllFilters() {
 
   function clearAllFilters() {
     const params = new URLSearchParams(window.location.search)
+    const query = removeLanguageFilter(params.get(SearchParam.QUERY))
 
-    FILTER_KEYS.forEach((key) => {
+    if (query) {
+      params.set(SearchParam.QUERY, query)
+    } else {
+      params.delete(SearchParam.QUERY)
+    }
+
+    FILTER_PARAM_KEYS.forEach((key) => {
       params.delete(key)
     })
 

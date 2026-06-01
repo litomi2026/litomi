@@ -15,12 +15,14 @@ export default function useRecentSearches() {
   const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(true)
 
   function saveRecentSearch(query: string) {
-    if (!query.trim()) {
+    const trimmedQuery = query.trim()
+
+    if (!trimmedQuery) {
       return
     }
 
     const newSearch: RecentSearch = {
-      query: query.trim(),
+      query: trimmedQuery,
       timestamp: Date.now(),
     }
 

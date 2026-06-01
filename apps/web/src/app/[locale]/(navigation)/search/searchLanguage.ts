@@ -3,8 +3,22 @@ import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { LocalStorageKey } from '@/storage'
 
-export function getLanguageFromSearchQuery(query: string | null | undefined) {
-  const match = query?.match(SEARCH_LANGUAGE_QUERY_PATTERN)
+const PREFIX = 'language:'
+const LANGUAGE_FILTER_QUERY_PATTERN = new RegExp(`(?:^|\\s)${PREFIX}([^\\s]*)`, 'i')
+const LANGUAGE_FILTER_TOKEN_PATTERN = new RegExp(`(?:^|\\s)${PREFIX}[^\\s]*`, 'gi')
+
+export function addLanguageFilterIfMissing(query: string, language: string) {
+  const trimmedQuery = query.trim()
+
+  if (language === SEARCH_LANGUAGE_ALL || LANGUAGE_FILTER_QUERY_PATTERN.test(trimmedQuery)) {
+    return trimmedQuery
+  }
+
+  return trimmedQuery ? `${trimmedQuery} ${PREFIX}${language}` : `${PREFIX}${language}`
+}
+
+export function getLanguageFilter(query: string | null | undefined) {
+  const match = query?.match(LANGUAGE_FILTER_QUERY_PATTERN)
   const language = match?.[1] ? normalizeValue(match[1]) : ''
   return language && isSearchLanguage(language) ? language : ''
 }
@@ -20,6 +34,20 @@ export function readStoredSearchLanguage() {
   } catch {
     return DEFAULT_SEARCH_LANGUAGE
   }
+}
+
+export function removeLanguageFilter(query: string | null | undefined) {
+  return query?.replace(LANGUAGE_FILTER_TOKEN_PATTERN, '').trim()
+}
+
+export function setLanguageFilter(query: string | null, language: string | null | undefined) {
+  const queryWithoutLanguage = removeLanguageFilter(query)
+
+  if (!language || language === SEARCH_LANGUAGE_ALL) {
+    return queryWithoutLanguage
+  }
+
+  return queryWithoutLanguage ? `${queryWithoutLanguage} ${PREFIX}${language}` : `${PREFIX}${language}`
 }
 
 export function writeStoredSearchLanguage(language: string) {

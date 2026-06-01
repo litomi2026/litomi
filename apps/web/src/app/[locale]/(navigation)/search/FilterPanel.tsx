@@ -24,7 +24,7 @@ import {
 } from './constants'
 import RangeInput from './RangeInput'
 import RatingSlider from './RatingSlider'
-import { getLanguageFromSearchQuery, removeLanguageInSearchQuery, setLanguageInSearchQuery } from './searchLanguage'
+import { getLanguageFilter, removeLanguageFilter, setLanguageFilter } from './searchLanguage'
 import useSearchLanguageOptions from './useSearchLanguageOptions'
 
 interface FilterPanelProps {
@@ -77,7 +77,7 @@ export default function FilterPanel({ buttonRef, onAfterClose, onClose, show }: 
     e.preventDefault()
 
     const params = new URLSearchParams(window.location.search)
-    const query = setLanguageInSearchQuery(params.get(SearchParam.QUERY), searchLanguage)
+    const query = setLanguageFilter(params.get(SearchParam.QUERY), searchLanguage)
 
     if (query) {
       params.set(SearchParam.QUERY, query)
@@ -138,7 +138,7 @@ export default function FilterPanel({ buttonRef, onAfterClose, onClose, show }: 
     setSearchLanguage('')
 
     const params = new URLSearchParams(window.location.search)
-    const query = removeLanguageInSearchQuery(params.get(SearchParam.QUERY))
+    const query = removeLanguageFilter(params.get(SearchParam.QUERY))
 
     if (query) {
       params.set(SearchParam.QUERY, query)
@@ -425,5 +425,5 @@ function readInitialFilterState() {
 }
 
 function readInitialSearchLanguage() {
-  return getLanguageFromSearchQuery(new URLSearchParams(window.location.search).get(SearchParam.QUERY))
+  return getLanguageFilter(new URLSearchParams(window.location.search).get(SearchParam.QUERY))
 }
