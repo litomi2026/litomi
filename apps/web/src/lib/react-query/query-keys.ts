@@ -72,6 +72,7 @@ export const QueryKeys = {
   webtoonList: (provider: string, domain: string) => ['webtoon', 'list', provider, domain],
   webtoonSeries: (provider: string, domain: string, path: string) => ['webtoon', 'series', provider, domain, path],
 
-  proxyKRandom: ['proxy', 'k', 'random'],
+  proxyKRandomBase: ['proxy', 'k', 'random'],
+  proxyKRandom: (searchParams: URLSearchParams) => ['proxy', 'k', 'random', Object.fromEntries(searchParams)],
   proxyHiyobiNew: (page: number) => ['proxy', 'hiyobi', 'new', page],
 }

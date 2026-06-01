@@ -19,9 +19,9 @@ export default function RandomMangaLink({ timer }: Props) {
   const pathname = usePathname()
   const queryClient = useQueryClient()
   const isRandomPage = pathname === '/random'
-  const randomQueryKey = QueryKeys.proxyKRandom
   const t = useTranslations('TopNavigation.actions')
-  const isFetchingRandom = useIsFetching({ queryKey: randomQueryKey, exact: true }) > 0
+  const randomQueryKey = QueryKeys.proxyKRandomBase
+  const isFetchingRandom = useIsFetching({ queryKey: randomQueryKey }) > 0
 
   if (!isRandomPage) {
     return (
@@ -40,7 +40,7 @@ export default function RandomMangaLink({ timer }: Props) {
     <RandomRefreshButton
       className={topNavigationActionClassName}
       isLoading={isFetchingRandom}
-      onClick={() => queryClient.refetchQueries({ queryKey: randomQueryKey, exact: true })}
+      onClick={() => queryClient.refetchQueries({ queryKey: randomQueryKey })}
       timer={timer}
     />
   )
