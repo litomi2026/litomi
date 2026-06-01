@@ -14,13 +14,13 @@ import { suggestionTrie } from './suggestion-trie'
 const suggestionRoutes = new Hono<Env>()
 
 suggestionRoutes.get('/', zProblemValidator('query', getSearchSuggestionsQuerySchema), async (c) => {
-  const { locale, query } = c.req.valid('query')
+  const { limit, locale, query } = c.req.valid('query')
 
   if (queryBlacklist.some((regex) => regex.test(query))) {
     return problemResponse(c, { status: 400 })
   }
 
-  const suggestions = suggestionTrie.search(query, locale)
+  const suggestions = suggestionTrie.search(query, locale, limit)
 
   const cacheControl = createCacheControl({
     public: true,

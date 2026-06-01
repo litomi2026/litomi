@@ -2,14 +2,13 @@
 
 import type { GETV1MeResponse } from '@litomi/contracts'
 
-import { patchUserSettings, type UserSettingsBroadcastMessage } from '@litomi/domain/utils/user-settings'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
 import { identify } from '@/lib/analytics/browser'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { BroadcastChannelKey } from '@/storage'
+import { BroadcastChannelKey, type UserSettingsBroadcastMessage } from '@/storage'
 import { hasAdultAccess } from '@/utils/adult-verification'
 
 export default function MyInfoSync() {
@@ -48,7 +47,7 @@ export default function MyInfoSync() {
 
         return {
           ...current,
-          settings: patchUserSettings(current.settings, event.data.settings),
+          settings: event.data.settings,
         }
       })
     }

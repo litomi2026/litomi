@@ -1,3 +1,5 @@
+import type { UserSettings } from '@litomi/domain/utils/user-settings'
+
 export enum BroadcastChannelKey {
   USER_SETTINGS = 'user-settings',
 }
@@ -17,6 +19,11 @@ export enum SearchParamKey {
 
 export enum SessionStorageKey {
   READING_HISTORY = 'rh',
+}
+
+export type UserSettingsBroadcastMessage = {
+  settings: UserSettings
+  userId: number
 }
 
 export const SessionStorageKeyMap = {

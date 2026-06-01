@@ -7,7 +7,7 @@ import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { BroadcastChannelKey } from '@/storage'
+import { BroadcastChannelKey, type UserSettingsBroadcastMessage } from '@/storage'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -64,7 +64,7 @@ export default function usePatchMySettingsMutation() {
         channel.postMessage({
           userId: currentMe.id,
           settings: currentMe.settings,
-        })
+        } satisfies UserSettingsBroadcastMessage)
 
         channel.close()
       }
