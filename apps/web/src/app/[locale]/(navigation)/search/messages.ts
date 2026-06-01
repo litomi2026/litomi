@@ -80,8 +80,10 @@ export const messages = {
         skipTitle: '처음 N개의 결과를 건너뛰어요',
         skipNotice: '처음 N개의 결과를 건너뛰어요',
         customInput: '직접 입력',
+        languageAll: '모든 언어',
         labels: {
           sort: '정렬',
+          language: '작품 언어',
           view: '조회수',
           page: '페이지 수',
           rating: '별점',
@@ -118,6 +120,7 @@ export const messages = {
       },
       activeFilter: {
         sort: '정렬',
+        language: '작품 언어',
         view: '조회수',
         page: '페이지',
         rating: '별점',
@@ -245,8 +248,10 @@ export const messages = {
         skipTitle: 'Skip the first N results',
         skipNotice: 'Skip the first N results',
         customInput: 'Custom',
+        languageAll: 'All languages',
         labels: {
           sort: 'Sort',
+          language: 'Work language',
           view: 'Views',
           page: 'Pages',
           rating: 'Rating',
@@ -283,6 +288,7 @@ export const messages = {
       },
       activeFilter: {
         sort: 'Sort',
+        language: 'Language',
         view: 'Views',
         page: 'Pages',
         rating: 'Rating',
@@ -410,8 +416,10 @@ export const messages = {
         skipTitle: '最初の N 件の結果をスキップします',
         skipNotice: '最初の N 件の結果をスキップします',
         customInput: '直接入力',
+        languageAll: 'すべての言語',
         labels: {
           sort: '並び替え',
+          language: '作品の言語',
           view: '閲覧数',
           page: 'ページ数',
           rating: '評価',
@@ -448,6 +456,7 @@ export const messages = {
       },
       activeFilter: {
         sort: '並び替え',
+        language: '言語',
         view: '閲覧数',
         page: 'ページ',
         rating: '評価',
@@ -575,8 +584,10 @@ export const messages = {
         skipTitle: '跳过前 N 个结果',
         skipNotice: '跳过前 N 个结果',
         customInput: '手动输入',
+        languageAll: '所有语言',
         labels: {
           sort: '排序',
+          language: '作品语言',
           view: '浏览量',
           page: '页数',
           rating: '评分',
@@ -613,6 +624,7 @@ export const messages = {
       },
       activeFilter: {
         sort: '排序',
+        language: '语言',
         view: '浏览量',
         page: '页数',
         rating: '评分',

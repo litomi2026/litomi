@@ -43,7 +43,7 @@ export default function ConditionInput({ isPending, onRemove, row, showRemoveBut
             autoCapitalize="off"
             autoComplete="off"
             className={twMerge(
-              'min-w-0 flex-1 text-base px-3 py-2 bg-transparent placeholder-zinc-500',
+              'min-w-0 flex-1 px-3 py-2 bg-transparent placeholder-zinc-500',
               'focus:outline-none disabled:opacity-50 transition',
             )}
             defaultValue={row.initialCondition?.value ?? ''}

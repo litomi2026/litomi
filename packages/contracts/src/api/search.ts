@@ -8,6 +8,7 @@ export enum TrendingType {
 }
 
 export const getSearchSuggestionsQuerySchema = z.object({
+  limit: z.coerce.number().int().positive().max(50).default(10),
   locale: z.enum(Locale),
   query: z.string().trim().min(2).max(200),
 })

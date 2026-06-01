@@ -5,7 +5,7 @@ import { Toggle } from '@litomi/ui'
 import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
-import { SubmitEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { SubmitEvent, useEffect, useRef, useState, useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
@@ -28,11 +28,11 @@ export default function SearchForm({ className = '' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const beforeDeletedCharacter = useRef('')
-  const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
   const router = useRouter()
   const pathname = usePathname()
   const t = useTranslations('Search.form')
   const [isSearching, startSearching] = useTransition()
+  const currentWordInfo = getWordAtCursor(keyword, cursorPosition)
 
   const { recentSearches, isAutoSaveEnabled, saveRecentSearch, removeRecentSearch, setAutoSaveEnabled } =
     useRecentSearches()
@@ -40,27 +40,24 @@ export default function SearchForm({ className = '' }: Props) {
   const { selectedIndex, searchSuggestions, resetSelection, navigateSelection, isLoading, isFetching } =
     useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/, '') })
 
-  const selectSuggestion = useCallback(
-    (suggestion: SuggestionItem) => {
-      const before = keyword.slice(0, currentWordInfo.start)
-      const after = keyword.slice(currentWordInfo.end)
-      const newKeyword = before + suggestion.value + after
-      const newCursorPosition = currentWordInfo.start + suggestion.value.length
+  function selectSuggestion(suggestion: SuggestionItem) {
+    const before = keyword.slice(0, currentWordInfo.start)
+    const after = keyword.slice(currentWordInfo.end)
+    const newKeyword = before + suggestion.value + after
+    const newCursorPosition = currentWordInfo.start + suggestion.value.length
 
-      setKeyword(newKeyword)
-      setCursorPosition(newCursorPosition)
-      setShowSuggestions(false)
-      resetSelection()
-      inputRef.current?.focus()
+    setKeyword(newKeyword)
+    setCursorPosition(newCursorPosition)
+    setShowSuggestions(false)
+    resetSelection()
+    inputRef.current?.focus()
 
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPosition
-        }
-      }, 0)
-    },
-    [keyword, currentWordInfo, setShowSuggestions, resetSelection],
-  )
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPosition
+      }
+    }, 0)
+  }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== 'Backspace') {
@@ -180,15 +177,12 @@ export default function SearchForm({ className = '' }: Props) {
     setShowSuggestions(false)
 
     const params = new URLSearchParams(window.location.search)
+    const newQuery = translateKoreanToEnglish(keyword).trim()
 
-    if (keyword.trim()) {
-      const convertedQuery = keyword.trim()
-      const translatedKeyword = translateKoreanToEnglish(convertedQuery)
-      const finalQuery = translatedKeyword || convertedQuery
-      params.set(SearchParam.QUERY, finalQuery)
-
+    if (newQuery) {
+      params.set(SearchParam.QUERY, newQuery)
       if (isAutoSaveEnabled) {
-        saveRecentSearch(finalQuery)
+        saveRecentSearch(newQuery)
       }
     } else {
       params.delete(SearchParam.QUERY)
@@ -241,7 +235,7 @@ export default function SearchForm({ className = '' }: Props) {
 
     document.addEventListener('mousedown', handleOutsideClick)
     return () => document.removeEventListener('mousedown', handleOutsideClick)
-  }, [setShowSuggestions])
+  }, [])
 
   return (
     <div className={`relative ${className}`}>
@@ -260,7 +254,7 @@ export default function SearchForm({ className = '' }: Props) {
             autoCapitalize="off"
             autoComplete="off"
             className={twMerge(
-              'bg-transparent px-3.5 py-2 pr-10 text-foreground min-w-0 w-full placeholder-zinc-500/95 text-base leading-5 focus:outline-none',
+              'bg-transparent px-3.5 py-2 pr-10 text-foreground min-w-0 w-full placeholder-zinc-500/95 leading-5 focus:outline-none',
               '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none',
               '[&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0',
             )}

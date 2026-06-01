@@ -27,6 +27,7 @@ route.patch('/', zProblemValidator('json', patchV1MeSettingsBodySchema), async (
         historySyncEnabled: nextSettings.historySyncEnabled,
         adultVerifiedAdVisible: nextSettings.adultVerifiedAdVisible,
         defaultCensorshipEnabled: nextSettings.defaultCensorshipEnabled,
+        searchLanguage: nextSettings.searchLanguage,
         autoDeletionDay: nextSettings.autoDeletionDay,
       })
       .onConflictDoUpdate({
@@ -37,6 +38,7 @@ route.patch('/', zProblemValidator('json', patchV1MeSettingsBodySchema), async (
           ...(patch.defaultCensorshipEnabled !== undefined && {
             defaultCensorshipEnabled: patch.defaultCensorshipEnabled,
           }),
+          ...(patch.searchLanguage !== undefined && { searchLanguage: patch.searchLanguage }),
           ...(patch.autoDeletionDay !== undefined && { autoDeletionDay: patch.autoDeletionDay }),
         },
       })

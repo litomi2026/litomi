@@ -23,6 +23,7 @@ type POSTSearchTrendingBody = {
 export const runtime = 'edge'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
+const JAPANESE_LANGUAGE_DEFAULT_CATEGORIES = encodeCategories('doujinshi,manga,artist_cg,image_set')
 
 export async function GET(request: Request) {
   const requestSignal = request.signal
@@ -57,9 +58,10 @@ export async function GET(request: Request) {
     skip,
   } = validation.data
 
-  const lowerQuery = convertToKHentaiKey(query?.toLowerCase())
+  const { defaultCategories, rewrittenQuery } = rewriteJapaneseLanguageQuery(query)
+  const lowerQuery = convertToKHentaiKey(rewrittenQuery?.toLowerCase())
   const search = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim() ?? ''
-  const matchedCategories = query?.match(/\btype:(\S+)/i)
+  const matchedCategories = rewrittenQuery?.match(/(?:^|\s)type:(\S+)/i)
 
   if (search && search.length > MAX_KHENTAI_SEARCH_QUERY_LENGTH) {
     return createProblemDetailsResponse(request, {
@@ -77,7 +79,7 @@ export async function GET(request: Request) {
     nextViewsId: nextViewsId?.toString(),
     sort,
     offset: skip?.toString(),
-    categories: matchedCategories ? encodeCategories(matchedCategories[1]) : undefined,
+    categories: matchedCategories ? encodeCategories(matchedCategories[1]) : defaultCategories,
     minViews: minView?.toString(),
     maxViews: maxView?.toString(),
     minPages: minPage?.toString(),
@@ -86,7 +88,7 @@ export async function GET(request: Request) {
     endDate: to?.toString(),
     minRating: minRating?.toString(),
     maxRating: maxRating?.toString(),
-    uploader: query?.match(/\buploader:(\S+)/i)?.[1],
+    uploader: rewrittenQuery?.match(/\buploader:(\S+)/i)?.[1],
   }
 
   if (requestSignal?.aborted) {
@@ -137,7 +139,7 @@ export async function GET(request: Request) {
     }
 
     const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
-    const mangas = filterMangasByMinusPrefix(filteredMangas, query)
+    const mangas = filterMangasByMinusPrefix(filteredMangas, rewrittenQuery)
     const response: GETProxyKSearchResponse = {
       mangas,
       nextCursor,
@@ -222,5 +224,37 @@ async function postSearchKeyword(keyword: string, signal?: AbortSignal) {
       return
     }
     console.error('trackSearchKeyword error:', error instanceof Error ? error.message : String(error))
+  }
+}
+
+function rewriteJapaneseLanguageQuery(query: string | undefined) {
+  if (!query) {
+    return {
+      rewrittenQuery: query,
+      defaultCategories: undefined,
+    }
+  }
+
+  const tokens = query.trim().split(/\s+/)
+  const hasJapaneseLanguage = tokens.some((token) => token.toLowerCase() === 'language:japanese')
+
+  if (!hasJapaneseLanguage) {
+    return {
+      rewrittenQuery: query,
+      defaultCategories: undefined,
+    }
+  }
+
+  const rewrittenTokens = tokens.filter((token) => token.toLowerCase() !== 'language:japanese')
+
+  if (!rewrittenTokens.some((token) => token.toLowerCase() === '-language:translated')) {
+    rewrittenTokens.push('-language:translated')
+  }
+
+  const hasType = rewrittenTokens.some((token) => /^type:/i.test(token))
+
+  return {
+    rewrittenQuery: rewrittenTokens.join(' '),
+    defaultCategories: hasType ? undefined : JAPANESE_LANGUAGE_DEFAULT_CATEGORIES,
   }
 }

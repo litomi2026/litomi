@@ -1,6 +1,8 @@
 import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 
 import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
+import { isSearchLanguage } from '@litomi/domain/search/language'
+import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { z } from 'zod'
 
 const passwordSchema = z
@@ -19,6 +21,13 @@ const nicknameSchema = z
   .string()
   .min(2, { error: '닉네임은 최소 2자 이상이어야 해요' })
   .max(32, { error: '닉네임은 최대 32자까지 입력할 수 있어요' })
+
+const searchLanguageSchema = z
+  .string()
+  .trim()
+  .min(1, { error: '검색 언어를 입력해 주세요' })
+  .transform(normalizeValue)
+  .refine(isSearchLanguage, { error: '검색 언어 형식이 올바르지 않아요' })
 
 export const imageURLSchema = z
   .url('프로필 이미지 주소가 URL 형식이 아니에요')
@@ -42,6 +51,7 @@ export const userSettingsSchema = z.object({
   historySyncEnabled: z.boolean(),
   adultVerifiedAdVisible: z.boolean(),
   defaultCensorshipEnabled: z.boolean(),
+  searchLanguage: searchLanguageSchema,
   autoDeletionDay: z.number().int().min(0).max(1500),
 })
 
@@ -102,6 +112,7 @@ export const patchV1MeSettingsBodySchema = z
     historySyncEnabled: z.boolean().optional(),
     adultVerifiedAdVisible: z.boolean().optional(),
     defaultCensorshipEnabled: z.boolean().optional(),
+    searchLanguage: searchLanguageSchema.optional(),
     autoDeletionDay: z.number().int().min(0).max(1500).optional(),
   })
   .refine((value) => Object.values(value).some((item) => item !== undefined), {

@@ -1,60 +1,46 @@
 'use client'
 
-import { formatLocalDate } from '@litomi/std'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
+
 import { SlidersHorizontal } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
-import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
-import useMounted from '@/hook/useMounted'
 
-import type { FilterState } from './constants'
-
-import { FILTER_KEYS, isDateFilter, SearchParam } from './constants'
+import { FILTER_PARAM_KEYS, SearchParam } from './constants'
+import { getLanguageFilter } from './searchLanguage'
 
 // NOTE: 필터 패널은 사용자가 필터를 클릭할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
 const FilterPanel = dynamic(() => import('./FilterPanel'))
 
-export default function FilterButton() {
-  const t = useTranslations('Search.filter')
-  const [showFilters, setShowFilters] = useState(false)
-  const mounted = useMounted()
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const [filters, setFilters] = useState<FilterState>({})
-  const hasActiveFilters = FILTER_KEYS.some((key) => Boolean(filters[key]))
-  const activeFilterCount = FILTER_KEYS.filter((key) => Boolean(filters[key])).length
+type FilterPanelState = 'closed' | 'closing' | 'open'
 
-  function handleClose() {
-    setShowFilters(false)
-  }
+export default function FilterButton() {
+  const [filterPanelState, setFilterPanelState] = useState<FilterPanelState>('closed')
+  const [activeFilterCount, setActiveFilterCount] = useState(0)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const t = useTranslations('Search.filter')
+  const hasActiveFilters = activeFilterCount > 0
 
   function handleSearchParamUpdate(searchParams: ReadonlyURLSearchParams) {
-    const initialState: FilterState = {}
+    const hasLanguage = getLanguageFilter(searchParams.get(SearchParam.QUERY))
 
-    FILTER_KEYS.forEach((key) => {
-      const value = searchParams.get(key)
-      if (!value) return
+    const currentFilterCount = FILTER_PARAM_KEYS.reduce(
+      (count, key) => count + (searchParams.get(key) ? 1 : 0),
+      hasLanguage ? 1 : 0,
+    )
 
-      if (isDateFilter(key)) {
-        initialState[key] = formatLocalDate(new Date(Number(value) * 1000))
-      } else if (key === SearchParam.MIN_RATING || key === SearchParam.MAX_RATING) {
-        initialState[key] = (Number(value) / 100).toFixed(1)
-      } else {
-        initialState[key] = value
-      }
-    })
-
-    setFilters(initialState)
+    setActiveFilterCount(currentFilterCount)
   }
 
   return (
     <div className="relative">
       <SearchParamsSync onUpdate={handleSearchParamUpdate} />
       <button
-        aria-expanded={showFilters}
+        aria-expanded={filterPanelState === 'open'}
         aria-label={t('title')}
         aria-pressed={hasActiveFilters}
         className={twMerge(
@@ -64,7 +50,7 @@ export default function FilterButton() {
           'focus:outline-none focus:ring-2 focus:ring-zinc-500/30 focus:ring-offset-2 focus:ring-offset-background',
           'aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-foreground aria-pressed:hover:border-brand',
         )}
-        onClick={() => setShowFilters(!showFilters)}
+        onClick={() => setFilterPanelState('open')}
         ref={buttonRef}
         title={t('title')}
         type="button"
@@ -77,13 +63,12 @@ export default function FilterButton() {
           </span>
         )}
       </button>
-      {mounted && (
+      {filterPanelState !== 'closed' && (
         <FilterPanel
           buttonRef={buttonRef}
-          filters={filters}
-          onClose={handleClose}
-          setFilters={setFilters}
-          show={showFilters}
+          onAfterClose={() => setFilterPanelState('closed')}
+          onClose={() => setFilterPanelState('closing')}
+          show={filterPanelState === 'open'}
         />
       )}
     </div>

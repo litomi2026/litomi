@@ -10,6 +10,7 @@ export async function readUserSettings(userId: number): Promise<UserSettings> {
       historySyncEnabled: userSettingsTable.historySyncEnabled,
       adultVerifiedAdVisible: userSettingsTable.adultVerifiedAdVisible,
       defaultCensorshipEnabled: userSettingsTable.defaultCensorshipEnabled,
+      searchLanguage: userSettingsTable.searchLanguage,
       autoDeletionDay: userSettingsTable.autoDeletionDay,
     })
     .from(userTable)
@@ -24,6 +25,7 @@ export async function readUserSettings(userId: number): Promise<UserSettings> {
     historySyncEnabled: row.historySyncEnabled ?? undefined,
     adultVerifiedAdVisible: row.adultVerifiedAdVisible ?? undefined,
     defaultCensorshipEnabled: row.defaultCensorshipEnabled ?? undefined,
+    searchLanguage: row.searchLanguage ?? undefined,
     autoDeletionDay: row.autoDeletionDay ?? undefined,
   })
 }

@@ -1,19 +1,12 @@
 'use client'
 
+import type { RefObject, SubmitEvent } from 'react'
+
 import { formatLocalDate } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  SubmitEvent,
-  useCallback,
-  useEffect,
-  useState,
-  useTransition,
-} from 'react'
+import { useLayoutEffect, useState, useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import CustomSelect from '@/components/ui/CustomSelect'
@@ -21,29 +14,42 @@ import { usePathname, useRouter } from '@/i18n/navigation'
 
 import type { FilterKey, FilterState, SearchSortParamValue } from './constants'
 
-import { DEFAULT_SEARCH_SORT, FILTER_CONFIG, FILTER_KEYS, isDateFilter, SearchParam, SearchSort } from './constants'
+import {
+  DEFAULT_SEARCH_SORT,
+  FILTER_CONFIG,
+  FILTER_PARAM_KEYS,
+  isDateFilter,
+  SearchParam,
+  SearchSort,
+} from './constants'
 import RangeInput from './RangeInput'
 import RatingSlider from './RatingSlider'
+import { getLanguageFilter, removeLanguageFilter, setLanguageFilter } from './searchLanguage'
+import useSearchLanguageOptions from './useSearchLanguageOptions'
 
 interface FilterPanelProps {
   buttonRef: RefObject<HTMLButtonElement | null>
-  filters: FilterState
+  onAfterClose: () => void
   onClose: () => void
-  setFilters: Dispatch<SetStateAction<FilterState>>
   show: boolean
 }
 
-export default function FilterPanel({ buttonRef, filters, onClose, setFilters, show }: FilterPanelProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const t = useTranslations('Search.filter')
-  const [isPending, startTransition] = useTransition()
+export default function FilterPanel({ buttonRef, onAfterClose, onClose, show }: FilterPanelProps) {
+  const [filters, setFilters] = useState(readInitialFilterState)
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
+  const [searchLanguage, setSearchLanguage] = useState(readInitialSearchLanguage)
+  const fetchedLanguageOptions = useSearchLanguageOptions()
+  const [isPending, startTransition] = useTransition()
+  const t = useTranslations('Search.filter')
+  const pathname = usePathname()
+  const router = useRouter()
 
   const sort = filters[SearchParam.SORT]
   const isLatestSort = sort === undefined || sort === DEFAULT_SEARCH_SORT
   const isPopularSort = sort === SearchSort.POPULAR
   const isOldestSort = sort === SearchSort.OLDEST
+
+  const languageOptions = [{ value: '', label: t('languageAll') }, ...fetchedLanguageOptions]
 
   const sortOptions: { label: string; value: SearchSortParamValue }[] = [
     { value: DEFAULT_SEARCH_SORT, label: t('sortOptions.latest') },
@@ -63,78 +69,90 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
     { label: t('datePresets.all'), days: -1 },
   ]
 
-  const handleFilterChange = useCallback(
-    (key: FilterKey, value: string) => setFilters((prev) => ({ ...prev, [key]: value })),
-    [setFilters],
-  )
+  function handleFilterChange(key: FilterKey, value: string) {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+  }
 
-  const handleSubmit = useCallback(
-    (e: SubmitEvent<HTMLFormElement>) => {
-      e.preventDefault()
-
-      const params = new URLSearchParams(window.location.search)
-
-      FILTER_KEYS.forEach((key) => {
-        const value = filters[key]
-
-        if (!value) {
-          params.delete(key)
-          return
-        }
-
-        if (key === SearchParam.MIN_RATING || key === SearchParam.MAX_RATING) {
-          params.set(key, Math.round(parseFloat(value) * 100).toString())
-          return
-        }
-
-        if (!isDateFilter(key)) {
-          params.set(key, value)
-          return
-        }
-
-        const date = new Date(value)
-
-        if (key === SearchParam.TO) {
-          date.setHours(23, 59, 59, 999)
-        } else {
-          date.setHours(0, 0, 0, 0)
-        }
-
-        const timestamp = Math.floor(date.getTime() / 1000)
-        params.set(key, timestamp.toString())
-      })
-
-      // Clean up pagination params
-      if (isPopularSort) {
-        params.delete(SearchParam.NEXT_ID)
-      } else if (isLatestSort || isOldestSort) {
-        params.delete(SearchParam.NEXT_VIEWS)
-        params.delete(SearchParam.NEXT_VIEWS_ID)
-      } else {
-        params.delete(SearchParam.NEXT_ID)
-        params.delete(SearchParam.NEXT_VIEWS)
-        params.delete(SearchParam.NEXT_VIEWS_ID)
-      }
-
-      startTransition(() => {
-        router.replace(`${pathname}?${params}`)
-        onClose()
-      })
-    },
-    [filters, isLatestSort, isPopularSort, isOldestSort, onClose, pathname, router],
-  )
-
-  const clearFilters = useCallback(() => {
-    setFilters({})
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+    e.preventDefault()
 
     const params = new URLSearchParams(window.location.search)
-    FILTER_KEYS.forEach((key) => params.delete(key))
+    const query = setLanguageFilter(params.get(SearchParam.QUERY), searchLanguage)
+
+    if (query) {
+      params.set(SearchParam.QUERY, query)
+    } else {
+      params.delete(SearchParam.QUERY)
+    }
+
+    FILTER_PARAM_KEYS.forEach((key) => {
+      const value = filters[key]
+
+      if (!value) {
+        params.delete(key)
+        return
+      }
+
+      if (key === SearchParam.MIN_RATING || key === SearchParam.MAX_RATING) {
+        params.set(key, Math.round(parseFloat(value) * 100).toString())
+        return
+      }
+
+      if (!isDateFilter(key)) {
+        params.set(key, value)
+        return
+      }
+
+      const date = new Date(value)
+
+      if (key === SearchParam.TO) {
+        date.setHours(23, 59, 59, 999)
+      } else {
+        date.setHours(0, 0, 0, 0)
+      }
+
+      const timestamp = Math.floor(date.getTime() / 1000)
+      params.set(key, timestamp.toString())
+    })
+
+    // Clean up pagination params
+    if (isPopularSort) {
+      params.delete(SearchParam.NEXT_ID)
+    } else if (isLatestSort || isOldestSort) {
+      params.delete(SearchParam.NEXT_VIEWS)
+      params.delete(SearchParam.NEXT_VIEWS_ID)
+    } else {
+      params.delete(SearchParam.NEXT_ID)
+      params.delete(SearchParam.NEXT_VIEWS)
+      params.delete(SearchParam.NEXT_VIEWS_ID)
+    }
 
     startTransition(() => {
       router.replace(`${pathname}?${params}`)
       onClose()
     })
-  }, [pathname, router, setFilters, onClose])
+  }
+
+  function clearFilters() {
+    setFilters({})
+    setSearchLanguage('')
+
+    const params = new URLSearchParams(window.location.search)
+    const query = removeLanguageFilter(params.get(SearchParam.QUERY))
+
+    if (query) {
+      params.set(SearchParam.QUERY, query)
+    } else {
+      params.delete(SearchParam.QUERY)
+    }
+
+    FILTER_PARAM_KEYS.forEach((key) => params.delete(key))
+
+    startTransition(() => {
+      router.replace(`${pathname}?${params}`)
+      onClose()
+    })
+  }
 
   const filterPanelStyle =
     buttonRect && window.innerWidth >= 640
@@ -144,28 +162,26 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         }
       : undefined
 
-  // NOTE: 화면 크기가 변경될 때 필터 레이아웃을 변경함
-  useEffect(() => {
-    if (!buttonRef.current) {
-      return
+  // NOTE: 화면 크기가 변경될 때 컴포넌트 레이아웃 위치도 같이 변경해요
+  useLayoutEffect(() => {
+    function updateButtonRect() {
+      if (buttonRef.current) {
+        setButtonRect(buttonRef.current.getBoundingClientRect())
+      }
     }
 
-    let timeoutId: NodeJS.Timeout
+    let timeoutId: ReturnType<typeof setTimeout>
 
-    const handleDebouncedResize = () => {
+    function handleResize() {
       clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
-        if (buttonRef.current) {
-          setButtonRect(buttonRef.current.getBoundingClientRect())
-        }
-      }, 300)
+      timeoutId = setTimeout(updateButtonRect, 300)
     }
 
-    handleDebouncedResize()
-    window.addEventListener('resize', handleDebouncedResize)
+    updateButtonRect()
+    window.addEventListener('resize', handleResize)
 
     return () => {
-      window.removeEventListener('resize', handleDebouncedResize)
+      window.removeEventListener('resize', handleResize)
       clearTimeout(timeoutId)
     }
   }, [buttonRef])
@@ -174,6 +190,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
     <Dialog
       ariaLabel={t('title')}
       className="sm:fixed sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100dvh-8rem)] sm:border-zinc-700 sm:shadow-xl"
+      onAfterClose={onAfterClose}
       onClose={onClose}
       open={show}
       style={filterPanelStyle}
@@ -190,7 +207,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           className={twMerge(
             'flex flex-col gap-4',
             '[&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1',
-            '[&_input]:text-base [&_input]:px-3 [&_input]:py-2 [&_input]:rounded-lg',
+            '[&_input]:px-3 [&_input]:py-2 [&_input]:rounded-lg',
             '[&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-700 [&_input]:placeholder-zinc-500',
             '[&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-400 [&_input]:focus:border-transparent [&_input]:invalid:ring-2 [&_input]:invalid:ring-red-500',
             '[&_input]:[appearance:textfield] [&_input]:[&::-webkit-outer-spin-button]:appearance-none [&_input]:[&::-webkit-inner-spin-button]:appearance-none',
@@ -206,6 +223,12 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
               value={filters[SearchParam.SORT] ?? DEFAULT_SEARCH_SORT}
             />
             {sort === SearchSort.RANDOM && <p className="mt-1 text-xs text-zinc-500">{t('randomSortNotice')}</p>}
+          </div>
+
+          {/* Language */}
+          <div>
+            <label htmlFor="language">{t('labels.language')}</label>
+            <CustomSelect id="language" onChange={setSearchLanguage} options={languageOptions} value={searchLanguage} />
           </div>
 
           {/* View count range */}
@@ -379,4 +402,28 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
       </form>
     </Dialog>
   )
+}
+
+function readInitialFilterState() {
+  const searchParams = new URLSearchParams(window.location.search)
+  const filters: FilterState = {}
+
+  FILTER_PARAM_KEYS.forEach((key) => {
+    const value = searchParams.get(key)
+    if (!value) return
+
+    if (isDateFilter(key)) {
+      filters[key] = formatLocalDate(new Date(Number(value) * 1000))
+    } else if (key === SearchParam.MIN_RATING || key === SearchParam.MAX_RATING) {
+      filters[key] = (Number(value) / 100).toFixed(1)
+    } else {
+      filters[key] = value
+    }
+  })
+
+  return filters
+}
+
+function readInitialSearchLanguage() {
+  return getLanguageFilter(new URLSearchParams(window.location.search).get(SearchParam.QUERY))
 }

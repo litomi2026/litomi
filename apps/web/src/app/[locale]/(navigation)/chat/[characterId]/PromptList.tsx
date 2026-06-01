@@ -50,7 +50,7 @@ export default function PromptList({ characterId }: Props) {
           성격 검색
         </label>
         <input
-          className="w-full rounded-xl border border-white/7 bg-white/3 px-3 py-2 text-sm placeholder:text-zinc-500"
+          className="w-full rounded-xl border border-white/7 bg-white/3 px-3 py-2 placeholder:text-zinc-500"
           id="prompt-search"
           name="prompt-search"
           onChange={(e) => setQuery(e.target.value)}

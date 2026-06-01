@@ -10,6 +10,7 @@ import useMeQuery from '@/query/useMeQuery'
 
 import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
+import SelectableLink from './SelectableLink'
 
 export default function Profile() {
   const { data: me } = useMeQuery()
@@ -20,7 +21,19 @@ export default function Profile() {
   }
 
   if (me === null) {
-    return <LoginIconLink />
+    return (
+      <div>
+        <SelectableLink
+          className="hidden sm:block sm:px-2"
+          href="/settings"
+          icon={<Settings />}
+          selectedIconStyle="fill-soft"
+        >
+          {t('settings')}
+        </SelectableLink>
+        <LoginIconLink />
+      </div>
+    )
   }
 
   const { name, imageURL, nickname } = me

@@ -144,7 +144,7 @@ export default function LibraryItemsClient({ initialSort, initialView, libraryId
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         {isOwner && (
           <select
-            className="bg-zinc-900 text-sm px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
+            className="bg-zinc-900 text-base px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
             onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
             value={sort}
           >

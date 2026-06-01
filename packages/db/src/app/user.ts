@@ -1,3 +1,4 @@
+import { DEFAULT_SEARCH_LANGUAGE, MAX_SEARCH_LANGUAGE_LENGTH } from '@litomi/domain/search/language'
 import { sql } from 'drizzle-orm'
 import {
   bigint,
@@ -32,6 +33,9 @@ export const userSettingsTable = pgTable('user_settings', {
   historySyncEnabled: boolean('history_sync_enabled').notNull().default(true),
   adultVerifiedAdVisible: boolean('adult_verified_ad_visible').notNull().default(false),
   defaultCensorshipEnabled: boolean('default_censorship_enabled').notNull().default(true),
+  searchLanguage: varchar('search_language', { length: MAX_SEARCH_LANGUAGE_LENGTH })
+    .notNull()
+    .default(DEFAULT_SEARCH_LANGUAGE),
   autoDeletionDay: smallint('auto_deletion_day').notNull().default(90), // 0 = disabled
 }).enableRLS()
 

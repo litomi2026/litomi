@@ -29,7 +29,7 @@ export default function CharacterList() {
           캐릭터 검색
         </label>
         <input
-          className="w-full rounded-xl border border-white/7 bg-white/3 px-3 py-2 text-sm placeholder:text-zinc-500"
+          className="w-full rounded-xl border border-white/7 bg-white/3 px-3 py-2 placeholder:text-zinc-500"
           id="character-search"
           name="character-search"
           onChange={(e) => setQuery(e.target.value)}

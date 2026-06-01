@@ -31,6 +31,7 @@ route.get('/', async (c) => {
         historySyncEnabled: userSettingsTable.historySyncEnabled,
         adultVerifiedAdVisible: userSettingsTable.adultVerifiedAdVisible,
         defaultCensorshipEnabled: userSettingsTable.defaultCensorshipEnabled,
+        searchLanguage: userSettingsTable.searchLanguage,
         autoDeletionDay: userSettingsTable.autoDeletionDay,
       })
       .from(userTable)
@@ -50,6 +51,7 @@ route.get('/', async (c) => {
       historySyncEnabled: user.historySyncEnabled ?? undefined,
       adultVerifiedAdVisible: user.adultVerifiedAdVisible ?? undefined,
       defaultCensorshipEnabled: user.defaultCensorshipEnabled ?? undefined,
+      searchLanguage: user.searchLanguage ?? undefined,
       autoDeletionDay: user.autoDeletionDay ?? undefined,
     })
 

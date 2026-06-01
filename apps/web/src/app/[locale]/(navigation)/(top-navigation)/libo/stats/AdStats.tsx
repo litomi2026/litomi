@@ -167,7 +167,7 @@ export default function AdStats() {
           <label className="grid gap-1 text-xs text-zinc-500" htmlFor="start-date">
             시작 날짜
             <input
-              className="h-10 rounded-lg bg-white/5 border border-white/7 px-3 text-sm text-zinc-100"
+              className="h-10 rounded-lg bg-white/5 border border-white/7 px-3 text-base text-zinc-100"
               defaultValue={appliedRange.startDate}
               id="start-date"
               max={appliedRange.finishDate}
@@ -187,7 +187,7 @@ export default function AdStats() {
           <label className="grid gap-1 text-xs text-zinc-500" htmlFor="finish-date">
             종료 날짜
             <input
-              className="h-10 rounded-lg bg-white/5 border border-white/7 px-3 text-sm text-zinc-100"
+              className="h-10 rounded-lg bg-white/5 border border-white/7 px-3 text-base text-zinc-100"
               defaultValue={appliedRange.finishDate}
               id="finish-date"
               min={appliedRange.startDate}

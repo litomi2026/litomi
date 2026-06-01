@@ -35,7 +35,7 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
                 이름
               </label>
               <input
-                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
+                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-base"
                 id="custom-model-label"
                 name="label"
                 placeholder="예: 14B · 12GB"
@@ -48,7 +48,7 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
                 VRAM(MB) (선택)
               </label>
               <input
-                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
+                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-base tabular-nums"
                 id="custom-model-vram"
                 min={0}
                 name="required-vram-mb"
@@ -64,7 +64,7 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
               model_id
             </label>
             <input
-              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
+              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-base tabular-nums"
               id="custom-model-id"
               name="model-id"
               placeholder="예: Qwen2.5-14B-Instruct-q4f16_1-MLC"
@@ -78,7 +78,7 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
               HuggingFace URL (MLC 가중치)
             </label>
             <input
-              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
+              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-base tabular-nums"
               id="custom-model-url"
               name="model-url"
               placeholder="예: https://huggingface.co/mlc-ai/..."
@@ -92,7 +92,7 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
               model_lib URL (wasm)
             </label>
             <input
-              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
+              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-base tabular-nums"
               id="custom-model-lib-url"
               name="model-lib-url"
               placeholder="예: https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/..."
@@ -106,7 +106,7 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
               설명 (선택)
             </label>
             <input
-              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
+              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-base"
               id="custom-model-description"
               name="description"
               placeholder="예: 캐릭터 롤플레이용"

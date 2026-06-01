@@ -58,7 +58,7 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
           </p>
           <div className="flex items-center gap-2">
             <input
-              className="flex-1 w-full rounded bg-zinc-800 px-3 py-2 text-xs font-mono text-zinc-300"
+              className="flex-1 w-full rounded bg-zinc-800 px-3 py-2 font-mono text-zinc-300"
               name="secret"
               readOnly
               type="text"

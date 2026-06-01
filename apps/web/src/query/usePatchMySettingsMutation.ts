@@ -7,7 +7,7 @@ import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { LocalStorageKey } from '@/storage'
+import { BroadcastChannelKey, type UserSettingsBroadcastMessage } from '@/storage'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
@@ -58,19 +58,15 @@ export default function usePatchMySettingsMutation() {
     onSuccess: () => {
       const currentMe = queryClient.getQueryData<GETV1MeResponse | null>(QueryKeys.me)
 
-      if (currentMe && typeof window !== 'undefined') {
-        try {
-          localStorage.setItem(
-            LocalStorageKey.USER_SETTINGS_SIGNAL,
-            JSON.stringify({
-              userId: currentMe.id,
-              settings: currentMe.settings,
-              at: Date.now(),
-            }),
-          )
-        } catch {
-          // 다른 탭 동기화 신호 기록 실패는 현재 탭 저장 성공에 영향을 주지 않아요.
-        }
+      if (currentMe && typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel(BroadcastChannelKey.USER_SETTINGS)
+
+        channel.postMessage({
+          userId: currentMe.id,
+          settings: currentMe.settings,
+        } satisfies UserSettingsBroadcastMessage)
+
+        channel.close()
       }
     },
   })

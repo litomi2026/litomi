@@ -1,7 +1,10 @@
+import { DEFAULT_SEARCH_LANGUAGE } from '../search/language'
+
 export type UserSettings = {
   historySyncEnabled: boolean
   adultVerifiedAdVisible: boolean
   defaultCensorshipEnabled: boolean
+  searchLanguage: string
   autoDeletionDay: number
 }
 
@@ -11,13 +14,8 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   historySyncEnabled: true,
   adultVerifiedAdVisible: false,
   defaultCensorshipEnabled: true,
+  searchLanguage: DEFAULT_SEARCH_LANGUAGE,
   autoDeletionDay: 90,
-}
-
-export type UserSettingsSignal = {
-  userId: number
-  settings: UserSettings
-  at: number
 }
 
 export function patchUserSettings(current: UserSettings | null | undefined, patch: UserSettingsPatch): UserSettings {
@@ -32,6 +30,7 @@ export function resolveUserSettings(value?: Partial<UserSettings> | null): UserS
     historySyncEnabled: value?.historySyncEnabled ?? DEFAULT_USER_SETTINGS.historySyncEnabled,
     adultVerifiedAdVisible: value?.adultVerifiedAdVisible ?? DEFAULT_USER_SETTINGS.adultVerifiedAdVisible,
     defaultCensorshipEnabled: value?.defaultCensorshipEnabled ?? DEFAULT_USER_SETTINGS.defaultCensorshipEnabled,
+    searchLanguage: value?.searchLanguage ?? DEFAULT_USER_SETTINGS.searchLanguage,
     autoDeletionDay: value?.autoDeletionDay ?? DEFAULT_USER_SETTINGS.autoDeletionDay,
   }
 }

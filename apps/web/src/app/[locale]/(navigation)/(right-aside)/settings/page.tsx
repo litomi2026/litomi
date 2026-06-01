@@ -18,6 +18,7 @@ import {
   MonitorSmartphone,
   Palette,
   RectangleEllipsis,
+  Search,
   Settings,
   ShieldCheck,
   Trash2,
@@ -37,6 +38,7 @@ import AccountDeletionForm from './delete/AccountDeletionForm'
 import InternalServerError from './InternalServerError'
 import KeywordSettings from './keyword/KeywordSettings'
 import LanguageSettings from './language/LanguageSettings'
+import SearchLanguageSettings from './language/SearchLanguageSettings'
 import PasskeySettings from './passkey/PasskeySettings'
 import PasswordChangeForm from './password/PasswordChangeForm'
 import AutoDeletionForm from './privacy/AutoDeletionForm'
@@ -68,12 +70,23 @@ export default async function SettingsPage() {
 
   const languageSelector = (
     <CollapsibleSection
-      description="이 기기에서 사용할 언어를 선택하세요"
+      description="앱 화면에서 사용할 언어를 선택하세요"
       icon={<Languages className="size-5 shrink-0 text-brand" />}
-      id="language"
-      title="언어"
+      id="ui-language"
+      title="화면 언어"
     >
       <LanguageSettings />
+    </CollapsibleSection>
+  )
+
+  const guestSearchLanguageSelector = (
+    <CollapsibleSection
+      description="새 검색어에 기본으로 추가할 작품 언어를 선택하세요"
+      icon={<Search className="size-5 shrink-0 text-brand" />}
+      id="search-language"
+      title="검색 언어"
+    >
+      <SearchLanguageSettings isAuthenticated={false} />
     </CollapsibleSection>
   )
 
@@ -96,6 +109,7 @@ export default async function SettingsPage() {
     return (
       <>
         {languageSelector}
+        {guestSearchLanguageSelector}
         {themeSelector}
       </>
     )
@@ -122,6 +136,14 @@ export default async function SettingsPage() {
   return (
     <>
       {languageSelector}
+      <CollapsibleSection
+        description="새 검색어에 기본으로 추가할 작품 언어를 선택하세요"
+        icon={<Search className="size-5 shrink-0 text-brand" />}
+        id="search-language"
+        title="검색 언어"
+      >
+        <SearchLanguageSettings initialSearchLanguage={settings.searchLanguage} isAuthenticated />
+      </CollapsibleSection>
       {themeSelector}
       <CollapsibleSection
         description="관심 키워드를 등록하여 신작 알림을 받아보세요"
