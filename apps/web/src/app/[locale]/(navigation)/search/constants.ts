@@ -105,7 +105,7 @@ export const FILTER_CONFIG = {
   },
 } satisfies Record<FilterKey, FilterConfig>
 
-export const FILTER_KEYS = Object.keys(FILTER_CONFIG) as FilterKey[]
+export const FILTER_PARAM_KEYS = Object.keys(FILTER_CONFIG) as FilterKey[]
 export const isDateFilter = (key: FilterKey) => FILTER_CONFIG[key]?.type === 'date'
 
 export type FilterKey = Exclude<SearchParam, typeof SearchParam.QUERY>

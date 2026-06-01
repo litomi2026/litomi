@@ -2,6 +2,13 @@ import { DEFAULT_SEARCH_LANGUAGE, isSearchLanguage, SEARCH_LANGUAGE_ALL } from '
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { LocalStorageKey } from '@/storage'
+
+export function getLanguageFromSearchQuery(query: string | null | undefined) {
+  const match = query?.match(SEARCH_LANGUAGE_QUERY_PATTERN)
+  const language = match?.[1] ? normalizeValue(match[1]) : ''
+  return language && isSearchLanguage(language) ? language : ''
+}
+
 export function readStoredSearchLanguage() {
   if (typeof window === 'undefined') {
     return DEFAULT_SEARCH_LANGUAGE
