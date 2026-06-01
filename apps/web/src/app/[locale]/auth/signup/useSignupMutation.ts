@@ -10,11 +10,11 @@ import type { ProblemDetailsError } from '@/utils/api-request'
 
 import { useRouter } from '@/i18n/navigation'
 import { identify, track } from '@/lib/analytics/browser'
+import { getAuthSuccessRedirect, getCurrentAuthRedirect } from '@/lib/auth-redirect'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
-import { SearchParamKey } from '@/storage'
-import { sanitizeRedirect } from '@/utils'
 
 import { signup } from './api'
+
 export const SIGNUP_LOCAL_ERROR_STATUSES = [400, 409]
 
 interface Params {
@@ -39,12 +39,7 @@ export default function useSignupMutation({ onError }: Params = {}) {
 
       await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
 
-      const params = new URLSearchParams(window.location.search)
-      const redirect = params.get(SearchParamKey.REDIRECT)
-      const sanitizedURL = sanitizeRedirect(redirect) || '/'
-      const redirectURL = sanitizedURL.replace(/^\/@(?=\/|$|\?)/, `/@${name}`)
-
-      router.replace(redirectURL)
+      router.replace(getAuthSuccessRedirect(getCurrentAuthRedirect(), name))
     },
     meta: { suppressGlobalErrorToastForStatuses: SIGNUP_LOCAL_ERROR_STATUSES },
   })

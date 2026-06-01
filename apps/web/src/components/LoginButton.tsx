@@ -3,24 +3,24 @@
 import { LogIn } from 'lucide-react'
 import { ReactNode } from 'react'
 
+import LinkPending from '@/components/LinkPending'
 import { getStatusActionClassName } from '@/components/status/styles'
-import { Link, usePathname } from '@/i18n/navigation'
-import { SearchParamKey } from '@/storage'
+import useCurrentPathWithSearch from '@/hook/useCurrentPathWithSearch'
+import { Link } from '@/i18n/navigation'
+import { getAuthRedirectHref } from '@/lib/auth-redirect'
 
 type Props = {
   children: ReactNode
 }
 
 export default function LoginButton({ children }: Props) {
-  const pathname = usePathname()
+  const redirect = useCurrentPathWithSearch()
 
   return (
-    <Link
-      className={getStatusActionClassName('primary')}
-      href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(pathname)}`}
-      prefetch={false}
-    >
-      <LogIn className="size-5" />
+    <Link className={getStatusActionClassName('primary')} href={getAuthRedirectHref('/auth/login', redirect)}>
+      <LinkPending className="size-5">
+        <LogIn className="size-5" />
+      </LinkPending>
       {children}
     </Link>
   )

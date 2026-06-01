@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import LoginButton from '@/components/LoginButton'
 import StatusState from '@/components/status/StatusState'
 import { Link } from '@/i18n/navigation'
-import { SearchParamKey } from '@/storage'
+import { getAuthRedirectHref } from '@/lib/auth-redirect'
 
 export default function Unauthorized() {
   const t = useTranslations('Censorship')
@@ -22,7 +22,7 @@ export default function Unauthorized() {
           {t('unauthorized.signupPrompt')}{' '}
           <Link
             className="text-zinc-300 underline transition hover:text-zinc-100"
-            href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/censor')}`}
+            href={getAuthRedirectHref('/auth/signup', '/@/censor')}
             prefetch={false}
           >
             {t('unauthorized.signupAction')}

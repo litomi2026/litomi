@@ -4,13 +4,14 @@ import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { Eye, EyeOff, Info, Loader2, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { SubmitEvent, useRef, useState } from 'react'
+import { SubmitEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import IconLogo from '@/components/icons/LogoLitomi'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { Link } from '@/i18n/navigation'
+import { getAuthRedirectHref, getCurrentAuthRedirect } from '@/lib/auth-redirect'
 
 import {
   applySignupProblem,
@@ -26,6 +27,7 @@ import useSignupMutation, { SIGNUP_LOCAL_ERROR_STATUSES } from './useSignupMutat
 
 export default function SignupForm() {
   const [hasTurnstileToken, setHasTurnstileToken] = useState(false)
+  const [loginHref, setLoginHref] = useState('/auth/login')
   const turnstileRef = useRef<TurnstileInstance>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const t = useTranslations('Auth.signup')
@@ -94,6 +96,14 @@ export default function SignupForm() {
 
     submitSignup(body)
   }
+
+  useEffect(() => {
+    const redirect = getCurrentAuthRedirect()
+
+    if (redirect) {
+      setLoginHref(getAuthRedirectHref('/auth/login', redirect))
+    }
+  }, [])
 
   return (
     <div className="grid gap-6 sm:gap-7">
@@ -359,7 +369,7 @@ export default function SignupForm() {
           {t('loginPrompt')}
           <Link
             className="underline underline-offset-4 hover:text-zinc-200 transition"
-            href="/auth/login"
+            href={loginHref}
             prefetch={false}
           >
             {t('loginAction')}

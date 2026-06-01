@@ -1,14 +1,16 @@
 'use client'
 
-import { MoreHorizontal, Settings } from 'lucide-react'
+import { LogIn, MoreHorizontal, Settings } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
+import LinkPending from '@/components/LinkPending'
 import Squircle from '@/components/ui/Squircle'
 import TooltipPopover from '@/components/ui/TooltipPopover'
-import { Link } from '@/i18n/navigation'
+import useCurrentPathWithSearch from '@/hook/useCurrentPathWithSearch'
+import { Link, usePathname } from '@/i18n/navigation'
+import { getAuthRedirectHref } from '@/lib/auth-redirect'
 import useMeQuery from '@/query/useMeQuery'
 
-import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
 import SelectableLink from './SelectableLink'
 
@@ -21,19 +23,7 @@ export default function Profile() {
   }
 
   if (me === null) {
-    return (
-      <div>
-        <SelectableLink
-          className="hidden sm:block sm:px-2"
-          href="/settings"
-          icon={<Settings />}
-          selectedIconStyle="fill-soft"
-        >
-          {t('settings')}
-        </SelectableLink>
-        <LoginIconLink />
-      </div>
-    )
+    return <GuestProfileActions settingsLabel={t('settings')} />
   }
 
   const { name, imageURL, nickname } = me
@@ -82,5 +72,44 @@ export function ProfileSkeleton() {
         <div className="h-5 animate-fade-in rounded-full bg-zinc-700" />
       </div>
     </div>
+  )
+}
+
+function GuestProfileActions({ settingsLabel }: { settingsLabel: string }) {
+  const pathname = usePathname()
+  const redirect = useCurrentPathWithSearch()
+  const t = useTranslations('Auth.loginButton')
+  const loginHref = getAuthRedirectHref('/auth/login', redirect)
+
+  return (
+    <>
+      <div className="contents sm:hidden">
+        <SelectableLink className="sm:p-2" href={loginHref} icon={<LogIn />}>
+          {t('action')}
+        </SelectableLink>
+      </div>
+      <div className="hidden w-full items-center justify-center sm:grid sm:p-2 2xl:flex 2xl:gap-2">
+        <Link
+          className="group order-2 flex size-10 items-center justify-center rounded-full text-zinc-400 transition hover:text-foreground active:scale-90 2xl:order-1 2xl:size-auto 2xl:flex-1 2xl:justify-start 2xl:gap-3 2xl:px-3 2xl:py-3"
+          href={loginHref}
+        >
+          <LinkPending className="shrink-0 text-foreground">
+            <LogIn className="size-6 shrink-0" />
+          </LinkPending>
+          <span className="hidden min-w-0 font-medium 2xl:block">{t('action')}</span>
+        </Link>
+        <Link
+          aria-current={pathname === '/settings' ? 'page' : undefined}
+          aria-label={settingsLabel}
+          className="order-1 flex size-10 items-center justify-center rounded-full text-zinc-400 transition hover:text-foreground active:scale-90 aria-[current=page]:bg-zinc-900 aria-[current=page]:text-foreground aria-[current=page]:[&_svg]:fill-current aria-[current=page]:[&_svg]:[fill-opacity:0.3] 2xl:order-2 2xl:size-11"
+          href="/settings"
+          title={settingsLabel}
+        >
+          <LinkPending className="shrink-0">
+            <Settings className="size-6 shrink-0 transition" />
+          </LinkPending>
+        </Link>
+      </div>
+    </>
   )
 }

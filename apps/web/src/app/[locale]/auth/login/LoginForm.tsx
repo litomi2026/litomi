@@ -10,7 +10,7 @@ import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { MouseEvent, SubmitEvent, useRef, useState } from 'react'
+import { MouseEvent, SubmitEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -21,15 +21,13 @@ import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { Link, useRouter } from '@/i18n/navigation'
 import { identify, track } from '@/lib/analytics/browser'
+import { getAuthRedirectHref, getAuthSuccessRedirect, getCurrentAuthRedirect } from '@/lib/auth-redirect'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
-import { SearchParamKey } from '@/storage'
-import { sanitizeRedirect } from '@/utils'
 import { isAdultVerified } from '@/utils/adult-verification'
 import { getLocalReadingHistoryArray, removeLocalReadingHistory } from '@/utils/reading-history-index'
 
 import { importReadingHistory, login } from './api'
-import SignupLink from './SignupLink'
 import TwoFactorVerification from './TwoFactorVerification'
 import { applyLoginProblem, clearLoginId, clearLoginValidity } from './util'
 
@@ -47,6 +45,7 @@ export default function LoginForm() {
   const [twoFactorData, setTwoFactorData] = useState<TwoFactorData | null>(null)
   const [pkceChallenge, setPkceChallenge] = useState<PKCEChallenge | null>(null)
   const [hasTurnstileToken, setHasTurnstileToken] = useState(false)
+  const [signupHref, setSignupHref] = useState('/auth/signup')
   const passwordInputRef = useRef<HTMLInputElement | null>(null)
   const turnstileRef = useRef<TurnstileInstance>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -154,11 +153,7 @@ export default function LoginForm() {
       await migrateReadingHistory({ localHistories: localHistory }).catch(() => undefined)
     }
 
-    const params = new URLSearchParams(window.location.search)
-    const redirect = params.get(SearchParamKey.REDIRECT)
-    const sanitizedURL = sanitizeRedirect(redirect) || '/'
-    const redirectURL = sanitizedURL.replace(/^\/@(?=\/|$|\?)/, `/@${name}`)
-    router.replace(redirectURL)
+    router.replace(getAuthSuccessRedirect(getCurrentAuthRedirect(), name))
   }
 
   async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
@@ -202,6 +197,14 @@ export default function LoginForm() {
       e.target.setCustomValidity('')
     }
   }
+
+  useEffect(() => {
+    const redirect = getCurrentAuthRedirect()
+
+    if (redirect) {
+      setSignupHref(getAuthRedirectHref('/auth/signup', redirect))
+    }
+  }, [])
 
   return (
     <div className="grid gap-6 sm:gap-7">
@@ -396,9 +399,13 @@ export default function LoginForm() {
 
           <p className="text-center flex flex-wrap gap-1 justify-center text-xs text-zinc-400">
             {t('signupPrompt')}
-            <SignupLink className="underline underline-offset-4 hover:text-zinc-200 transition" prefetch={false}>
+            <Link
+              className="underline underline-offset-4 hover:text-zinc-200 transition"
+              href={signupHref}
+              prefetch={false}
+            >
               {t('signupAction')}
-            </SignupLink>
+            </Link>
           </p>
         </>
       )}
