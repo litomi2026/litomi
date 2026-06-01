@@ -28,11 +28,11 @@ export default function SearchForm({ className = '' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const beforeDeletedCharacter = useRef('')
-  const currentWordInfo = getWordAtCursor(keyword, cursorPosition)
   const router = useRouter()
   const pathname = usePathname()
   const t = useTranslations('Search.form')
   const [isSearching, startSearching] = useTransition()
+  const currentWordInfo = getWordAtCursor(keyword, cursorPosition)
 
   const { recentSearches, isAutoSaveEnabled, saveRecentSearch, removeRecentSearch, setAutoSaveEnabled } =
     useRecentSearches()
