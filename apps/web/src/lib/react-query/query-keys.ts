@@ -60,7 +60,7 @@ export const QueryKeys = {
     locale,
   ],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
-  searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
+  searchSuggestions: (query: string, locale: string, limit?: number) => ['search', 'suggestions', locale, query, limit],
   censorshipSuggestions: (query: string, locale: string) => ['censorship', 'suggestions', locale, query],
   postsBase: ['posts'],
   followingPosts: ['posts', PostFilter.FOLLOWING],
