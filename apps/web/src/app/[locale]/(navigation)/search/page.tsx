@@ -77,7 +77,7 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
   const header = (
     <div className="flex flex-col gap-2 p-2 pb-0">
       {hasActiveFilters ? (
-        <div className="gap-2 pb-2 hidden sm:grid">
+        <div className="gap-2 p-1 hidden sm:grid">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium text-zinc-400">{t('activeFilters')}</h3>
             <ClearAllFilters />
