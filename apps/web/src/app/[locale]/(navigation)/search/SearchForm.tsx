@@ -5,7 +5,7 @@ import { Toggle } from '@litomi/ui'
 import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
-import { SubmitEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { SubmitEvent, useEffect, useRef, useState, useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
@@ -28,7 +28,7 @@ export default function SearchForm({ className = '' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const beforeDeletedCharacter = useRef('')
-  const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
+  const currentWordInfo = getWordAtCursor(keyword, cursorPosition)
   const router = useRouter()
   const pathname = usePathname()
   const t = useTranslations('Search.form')
@@ -238,7 +238,7 @@ export default function SearchForm({ className = '' }: Props) {
 
     document.addEventListener('mousedown', handleOutsideClick)
     return () => document.removeEventListener('mousedown', handleOutsideClick)
-  }, [setShowSuggestions])
+  }, [])
 
   return (
     <div className={`relative ${className}`}>
