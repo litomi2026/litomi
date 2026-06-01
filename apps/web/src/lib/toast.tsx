@@ -3,7 +3,7 @@
 import ms from 'ms'
 import { toast } from 'sonner'
 
-import { SearchParamKey } from '@/storage'
+import { getAuthRedirectHref, getPathWithSearch } from '@/lib/auth-redirect'
 
 export function showAdultVerificationRecommendedToast(message?: string) {
   toast.info(message ?? '성인인증 시 광고가 제거돼요', {
@@ -42,7 +42,7 @@ export function showLoginRequiredToast(message = '로그인이 필요해요') {
       label: '로그인',
       onClick: createToastClickHandler({
         id: LOGIN_REQUIRED_TOAST_ID,
-        href: getLoginHref(),
+        href: getAuthRedirectHref('/auth/login', getPathWithSearch(window.location.pathname, window.location.search)),
       }),
     },
   })
@@ -63,11 +63,6 @@ function createToastClickHandler({ id, href }: { id: string; href: string }) {
     toast.dismiss(id)
     window.location.assign(href)
   }
-}
-
-function getLoginHref() {
-  const currentPath = `${window.location.pathname}${window.location.search}`
-  return `/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(currentPath)}`
 }
 
 const ADULT_VERIFICATION_REQUIRED_TOAST_ID = 'adult-verification-required'

@@ -1,27 +1,21 @@
 'use client'
 
-import { type ComponentProps, useEffect, useState } from 'react'
+import { type ComponentProps } from 'react'
+import { twMerge } from 'tailwind-merge'
 
-import { Link, usePathname } from '@/i18n/navigation'
-import { SearchParamKey } from '@/storage'
+import useCurrentPathWithSearch from '@/hook/useCurrentPathWithSearch'
+import { Link } from '@/i18n/navigation'
+import { getAuthRedirectHref } from '@/lib/auth-redirect'
 
 type Props = Omit<ComponentProps<typeof Link>, 'href'>
 
-export default function LoginPageLink({ className = '', children, ...props }: Props) {
-  const pathname = usePathname()
-  const [searchParams, setSearchParams] = useState('')
-  const fullPath = `${pathname}?${searchParams}`
-
-  useEffect(() => {
-    setSearchParams(new URLSearchParams(window.location.search).toString())
-  }, [])
+export default function LoginPageLink({ className = '', children }: Props) {
+  const redirect = useCurrentPathWithSearch()
 
   return (
     <Link
-      prefetch={false}
-      {...props}
-      className={`font-bold text-xs p-2 -m-2 ${className}`}
-      href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(fullPath)}`}
+      className={twMerge('font-bold text-xs p-2 -m-2', className)}
+      href={getAuthRedirectHref('/auth/login', redirect)}
     >
       {children}
     </Link>
