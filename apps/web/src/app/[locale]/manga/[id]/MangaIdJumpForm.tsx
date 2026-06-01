@@ -53,7 +53,7 @@ export default function MangaIdJumpForm({ autoFocus, className = '', currentMang
       <input
         autoComplete="off"
         autoFocus={autoFocus}
-        className="h-8 min-w-0 flex-1 rounded-full bg-transparent px-2 text-base tabular-nums text-foreground placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/70"
+        className="h-8 min-w-0 flex-1 rounded-full bg-transparent px-2 text-base tabular-nums text-foreground placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/70 md:text-sm"
         id={inputId}
         inputMode="numeric"
         maxLength={9}
