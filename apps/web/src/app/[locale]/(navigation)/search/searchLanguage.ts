@@ -7,6 +7,12 @@ const PREFIX = 'language:'
 const LANGUAGE_FILTER_QUERY_PATTERN = new RegExp(`(?:^|\\s)${PREFIX}([^\\s]*)`, 'i')
 const LANGUAGE_FILTER_TOKEN_PATTERN = new RegExp(`(?:^|\\s)${PREFIX}[^\\s]*`, 'gi')
 
+type MeWithSearchLanguage = {
+  settings: {
+    searchLanguage: string
+  }
+}
+
 export function addLanguageFilterIfMissing(query: string, language: string) {
   const trimmedQuery = query.trim()
 
@@ -21,6 +27,14 @@ export function getLanguageFilter(query: string | null | undefined) {
   const match = query?.match(LANGUAGE_FILTER_QUERY_PATTERN)
   const language = match?.[1] ? normalizeValue(match[1]) : ''
   return language && isSearchLanguage(language) ? language : ''
+}
+
+export function readPreferredSearchLanguage(me: MeWithSearchLanguage | null | undefined) {
+  if (me) {
+    return me.settings.searchLanguage
+  }
+
+  return me === null ? readStoredSearchLanguage() : DEFAULT_SEARCH_LANGUAGE
 }
 
 export function readStoredSearchLanguage() {

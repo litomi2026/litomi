@@ -10,8 +10,10 @@ import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { usePathname, useRouter } from '@/i18n/navigation'
+import useMeQuery from '@/query/useMeQuery'
 
 import { SearchParam } from './constants'
+import { addLanguageFilterIfMissing, readPreferredSearchLanguage } from './searchLanguage'
 import SuggestionDropdown, { type SuggestionItem } from './SuggestionDropdown'
 import useRecentSearches from './useRecentSearches'
 import useSearchSuggestions from './useSearchSuggestions'
@@ -30,6 +32,7 @@ export default function SearchForm({ className = '' }: Props) {
   const beforeDeletedCharacter = useRef('')
   const router = useRouter()
   const pathname = usePathname()
+  const { data: me } = useMeQuery()
   const t = useTranslations('Search.form')
   const [isSearching, startSearching] = useTransition()
   const currentWordInfo = getWordAtCursor(keyword, cursorPosition)
@@ -177,15 +180,13 @@ export default function SearchForm({ className = '' }: Props) {
     setShowSuggestions(false)
 
     const params = new URLSearchParams(window.location.search)
+    const translated = translateKoreanToEnglish(keyword)
+    const newQuery = addLanguageFilterIfMissing(translated, readPreferredSearchLanguage(me))
 
-    if (keyword.trim()) {
-      const convertedQuery = keyword.trim()
-      const translatedKeyword = translateKoreanToEnglish(convertedQuery)
-      const finalQuery = translatedKeyword || convertedQuery
-      params.set(SearchParam.QUERY, finalQuery)
-
+    if (newQuery) {
+      params.set(SearchParam.QUERY, newQuery)
       if (isAutoSaveEnabled) {
-        saveRecentSearch(finalQuery)
+        saveRecentSearch(newQuery)
       }
     } else {
       params.delete(SearchParam.QUERY)

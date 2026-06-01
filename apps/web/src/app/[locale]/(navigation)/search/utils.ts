@@ -42,7 +42,7 @@ export function getWordAtCursor(text: string, cursorPosition: number): { word: s
  * Translates Korean query keys to English
  * Example: "여성:tag" -> "female:tag"
  */
-export function translateKoreanToEnglish(query?: string) {
+export function translateKoreanToEnglish(query: string) {
   if (!query) return query
 
   let translatedQuery = query
