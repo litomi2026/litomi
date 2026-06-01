@@ -40,27 +40,24 @@ export default function SearchForm({ className = '' }: Props) {
   const { selectedIndex, searchSuggestions, resetSelection, navigateSelection, isLoading, isFetching } =
     useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/, '') })
 
-  const selectSuggestion = useCallback(
-    (suggestion: SuggestionItem) => {
-      const before = keyword.slice(0, currentWordInfo.start)
-      const after = keyword.slice(currentWordInfo.end)
-      const newKeyword = before + suggestion.value + after
-      const newCursorPosition = currentWordInfo.start + suggestion.value.length
+  function selectSuggestion(suggestion: SuggestionItem) {
+    const before = keyword.slice(0, currentWordInfo.start)
+    const after = keyword.slice(currentWordInfo.end)
+    const newKeyword = before + suggestion.value + after
+    const newCursorPosition = currentWordInfo.start + suggestion.value.length
 
-      setKeyword(newKeyword)
-      setCursorPosition(newCursorPosition)
-      setShowSuggestions(false)
-      resetSelection()
-      inputRef.current?.focus()
+    setKeyword(newKeyword)
+    setCursorPosition(newCursorPosition)
+    setShowSuggestions(false)
+    resetSelection()
+    inputRef.current?.focus()
 
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPosition
-        }
-      }, 0)
-    },
-    [keyword, currentWordInfo, setShowSuggestions, resetSelection],
-  )
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPosition
+      }
+    }, 0)
+  }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== 'Backspace') {
