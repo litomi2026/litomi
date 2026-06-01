@@ -67,7 +67,7 @@ replacements:
 images:
   - name: litomi-web
     newName: ghcr.io/litomi2026/litomi-web
-    digest: sha256:07b9e2341531be0f606efbf0f4d3ff8b10ec1746a415487fd93c576dfa43fd59
+    digest: sha256:9de078742ff35910ebc6eff8e9979c830f3be9e2bc61f2a2c8ebbb14c2bb2d9c
   - name: litomi-api
     newName: ghcr.io/litomi2026/litomi-api
-    digest: sha256:c753dad1e678a7d46ca83373ddebf1a395f5ecf36c5a6103a867d6673d2d984d
+    digest: sha256:54577df9fcdbead95b7a8855b9870706a061684c4c2d60869bbbcd4aad179bc5
