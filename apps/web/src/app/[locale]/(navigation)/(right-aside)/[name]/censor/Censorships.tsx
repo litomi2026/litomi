@@ -176,7 +176,7 @@ export default function Censorships() {
               <Search className="absolute left-3 top-1/2 size-4 shrink-0 -translate-y-1/2 text-zinc-500" />
               <input
                 aria-label={t('list.searchPlaceholder')}
-                className="h-10 w-full rounded-lg border border-zinc-800 bg-zinc-950/45 pl-9 pr-3 text-sm outline-none transition placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-2 focus:ring-brand/15 disabled:opacity-50"
+                className="h-10 w-full rounded-lg border border-zinc-800 bg-zinc-950/45 pl-9 pr-3 text-base outline-none transition placeholder:text-zinc-500 focus:border-zinc-600 focus:ring-2 focus:ring-brand/15 disabled:opacity-50"
                 disabled={isLoading || isDeleting}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('list.searchPlaceholder')}

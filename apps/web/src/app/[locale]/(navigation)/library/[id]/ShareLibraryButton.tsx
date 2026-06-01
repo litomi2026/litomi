@@ -59,7 +59,7 @@ export default function ShareLibraryButton({ className = '', library }: Props) {
             <label className="block text-sm font-medium text-zinc-300">{t('linkLabel')}</label>
             <div className="flex gap-2">
               <input
-                className="flex-1 px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 text-sm text-zinc-100 cursor-text select-all outline-none focus:border-zinc-500 transition"
+                className="flex-1 px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 text-base text-zinc-100 cursor-text select-all outline-none focus:border-zinc-500 transition"
                 onClick={(e) => e.currentTarget.select()}
                 readOnly
                 value={shareUrl}

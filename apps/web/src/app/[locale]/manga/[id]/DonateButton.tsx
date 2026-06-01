@@ -225,7 +225,7 @@ export default function DonateButton({ manga, ...props }: Props) {
               <label className="grid gap-1" htmlFor="donation-amount">
                 <span className="text-xs text-zinc-500">{t('customAmount')}</span>
                 <input
-                  className="h-11 rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-sm text-foreground outline-none focus:border-zinc-600"
+                  className="h-11 rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-base text-foreground outline-none focus:border-zinc-600"
                   id="donation-amount"
                   inputMode="numeric"
                   min={1}

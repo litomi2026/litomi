@@ -212,7 +212,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
             <p className="text-sm text-zinc-400 mb-4">{t('importExport.importDescription')}</p>
             <label className="block text-sm font-medium text-zinc-300 mb-2">{t('importExport.jsonData')}</label>
             <textarea
-              className="w-full h-64 px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition font-mono text-sm text-zinc-100 placeholder-zinc-500"
+              className="w-full h-64 px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition font-mono text-base text-zinc-100 placeholder-zinc-500"
               onChange={(e) => setImportText(e.target.value)}
               placeholder={PLACEHOLDER_JSON}
               value={importText}
