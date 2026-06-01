@@ -5,11 +5,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 
-import { Link } from '@/i18n/navigation'
 import { MAX_THUMBNAIL_IMAGES } from '@/ui-policy'
 
 import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'
+import MangaThumbnailLink from './MangaThumbnailLink'
 
 type Props = {
   className?: string
@@ -56,7 +56,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
 
   return (
     <>
-      <Link className={className} href={href} prefetch={false} ref={sliderRef}>
+      <MangaThumbnailLink className={className} href={href} prefetch={false} ref={sliderRef}>
         <LinkPending
           className="size-6"
           wrapperClassName="flex items-center justify-center absolute inset-0 bg-background/80 animate-fade-in-fast"
@@ -72,7 +72,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
             variant="thumbnail"
           />
         ))}
-      </Link>
+      </MangaThumbnailLink>
       <button
         aria-label={t('previous')}
         className="pointer-coarse:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
