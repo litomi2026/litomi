@@ -27,6 +27,7 @@
     "./post/model": "./src/post/model.ts",
     "./post/policy": "./src/post/policy.ts",
     "./ranking/policy": "./src/ranking/policy.ts",
+    "./search/language": "./src/search/language.ts",
     "./search/policy": "./src/search/policy.ts",
     "./search/query-key-alias": "./src/search/query-key-alias.ts",
     "./search/suggestion": "./src/search/suggestion.ts",
