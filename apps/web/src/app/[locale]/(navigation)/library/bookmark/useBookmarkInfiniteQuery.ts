@@ -1,7 +1,7 @@
 import type { GETV1BookmarkResponse } from '@litomi/contracts'
 
 import { BOOKMARKS_PER_PAGE } from '@litomi/domain/library/policy'
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
+import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
@@ -13,10 +13,10 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Options = {
   enabled?: boolean
-  sort?: CollectionItemSort
+  sort?: LibraryItemSort
 }
 
-export async function fetchPaginatedBookmark(cursor: string | null, sort: CollectionItemSort, locale: string) {
+export async function fetchPaginatedBookmark(cursor: string | null, sort: LibraryItemSort, locale: string) {
   const params = new URLSearchParams({ limit: BOOKMARKS_PER_PAGE.toString(), locale })
 
   if (cursor) {
@@ -34,10 +34,7 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Collec
   return data
 }
 
-export default function useBookmarkInfiniteQuery({
-  enabled = true,
-  sort = DEFAULT_COLLECTION_ITEM_SORT,
-}: Options = {}) {
+export default function useBookmarkInfiniteQuery({ enabled = true, sort = DEFAULT_LIBRARY_ITEM_SORT }: Options = {}) {
   const locale = useLocale()
 
   return useInfiniteQuery({

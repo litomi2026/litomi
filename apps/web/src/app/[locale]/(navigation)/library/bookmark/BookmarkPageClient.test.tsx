@@ -1,7 +1,7 @@
 import '@test/setup.dom'
 import type { GETV1BookmarkResponse } from '@litomi/contracts'
 
-import { CollectionItemSort } from '@litomi/domain/library/sort'
+import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestNavigationWrapper } from '@test/utils/navigation'
@@ -77,7 +77,7 @@ describe('BookmarkPageClient', () => {
     const view = renderWithLibrarySelection(
       <BookmarkPageClient
         initialData={basePage}
-        initialSort={CollectionItemSort.CREATED_DESC}
+        initialSort={LibraryItemSort.CREATED_DESC}
         initialView={View.IMAGE}
       />,
     )
@@ -91,24 +91,24 @@ describe('BookmarkPageClient', () => {
   test('정렬을 변경하면 새 쿼리로 재조회하고 URL을 갱신한다', async () => {
     fetchRoutes.push({
       matcher: ({ url }) =>
-        url.pathname === '/api/v1/bookmark' && url.searchParams.get('sort') === CollectionItemSort.MANGA_ID_ASC,
+        url.pathname === '/api/v1/bookmark' && url.searchParams.get('sort') === LibraryItemSort.MANGA_ID_ASC,
       response: () => jsonResponse(basePage),
     })
 
     const view = renderWithLibrarySelection(
       <BookmarkPageClient
         initialData={basePage}
-        initialSort={CollectionItemSort.CREATED_DESC}
+        initialSort={LibraryItemSort.CREATED_DESC}
         initialView={View.IMAGE}
       />,
     )
 
     fireEvent.change(view.getByRole('combobox'), {
-      target: { value: CollectionItemSort.MANGA_ID_ASC },
+      target: { value: LibraryItemSort.MANGA_ID_ASC },
     })
 
     expect(view.container.querySelectorAll('article')).toHaveLength(1)
-    expect(window.location.search).toBe(`?view=${View.IMAGE}&sort=${CollectionItemSort.MANGA_ID_ASC}`)
+    expect(window.location.search).toBe(`?view=${View.IMAGE}&sort=${LibraryItemSort.MANGA_ID_ASC}`)
 
     await waitFor(() => {
       const bookmarkRequests = fetchController.calls.filter(({ url }) => url.pathname === '/api/v1/bookmark')
@@ -117,14 +117,14 @@ describe('BookmarkPageClient', () => {
     })
 
     const bookmarkRequests = fetchController.calls.filter(({ url }) => url.pathname === '/api/v1/bookmark')
-    expect(bookmarkRequests[0]?.url.searchParams.get('sort')).toBe(CollectionItemSort.MANGA_ID_ASC)
+    expect(bookmarkRequests[0]?.url.searchParams.get('sort')).toBe(LibraryItemSort.MANGA_ID_ASC)
   })
 
   test('북마크가 비어 있으면 빈 상태를 렌더링한다', () => {
     const view = renderWithLibrarySelection(
       <BookmarkPageClient
         initialData={{ bookmarks: [], nextCursor: null }}
-        initialSort={CollectionItemSort.CREATED_DESC}
+        initialSort={LibraryItemSort.CREATED_DESC}
         initialView={View.IMAGE}
       />,
     )
@@ -136,7 +136,7 @@ describe('BookmarkPageClient', () => {
     const view = renderWithLibrarySelection(
       <BookmarkPageClient
         initialData={{ bookmarks: [{ mangaId: 101, createdAt: Date.now() }], nextCursor: null }}
-        initialSort={CollectionItemSort.CREATED_DESC}
+        initialSort={LibraryItemSort.CREATED_DESC}
         initialView={View.IMAGE}
       />,
       true,

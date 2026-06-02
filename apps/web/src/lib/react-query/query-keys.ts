@@ -1,4 +1,4 @@
-import { CollectionItemSort, RatingSort } from '@litomi/domain/library/sort'
+import { LibraryItemSort, RatingSort } from '@litomi/domain/library/sort'
 import { PostFilter } from '@litomi/domain/post/filter'
 
 export const QueryKeys = {
@@ -9,7 +9,7 @@ export const QueryKeys = {
   bookmarks: ['me', 'bookmarks'],
   likedPosts: ['me', 'posts', 'liked'],
   infiniteBookmarksBase: ['me', 'bookmarks', 'infinite'],
-  infiniteBookmarks: (sort: CollectionItemSort, locale: string) => [...QueryKeys.infiniteBookmarksBase, sort, locale],
+  infiniteBookmarks: (sort: LibraryItemSort, locale: string) => [...QueryKeys.infiniteBookmarksBase, sort, locale],
   infiniteReadingHistory: (source: 'local' | 'server') => ['me', 'readingHistory', 'infinite', source],
   infiniteRatings: (sort: RatingSort) => ['me', 'ratings', 'infinite', sort],
   censorship: ['me', 'censorships'],
@@ -33,7 +33,7 @@ export const QueryKeys = {
   librarySummary: (userId?: number) => ['library', 'summary', userId ?? 'guest'],
   libraryMeta: (libraryId: number, userId?: number) => ['library', 'meta', libraryId, userId ?? 'guest'],
   libraryItemsBase: (libraryId: number) => ['me', 'library', libraryId, 'items'],
-  libraryItems: (libraryId: number, scope: 'me' | 'public', sort: CollectionItemSort, locale: string) => [
+  libraryItems: (libraryId: number, scope: 'me' | 'public', sort: LibraryItemSort, locale: string) => [
     ...QueryKeys.libraryItemsBase(libraryId),
     scope,
     sort,

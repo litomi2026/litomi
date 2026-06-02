@@ -2,8 +2,8 @@ import type { SQL } from 'drizzle-orm'
 
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
-import { getCollectionItemCursorCondition, getCollectionItemOrderByClauses } from '@litomi/db/sql/collection-item-sort'
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
+import { getLibraryItemCursorCondition, getLibraryItemOrderByClauses } from '@litomi/db/sql/library-item-sort'
+import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -15,7 +15,7 @@ export type BookmarkRow = {
 const baseParamsSchema = z.strictObject({
   userId: z.number().int().positive(),
   limit: z.number().int().positive().optional(),
-  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+  sort: z.enum(LibraryItemSort).default(DEFAULT_LIBRARY_ITEM_SORT),
 })
 
 const paramsSchema = z.union([
@@ -47,7 +47,7 @@ export async function selectBookmark(params: Params) {
     .select(bookmarkSelection.default)
     .from(bookmarkTable)
     .where(whereClause)
-    .orderBy(...getCollectionItemOrderByClauses(sort, bookmarkTable))
+    .orderBy(...getLibraryItemOrderByClauses(sort, bookmarkTable))
 
   if (limit) {
     return query.limit(limit)
@@ -79,9 +79,9 @@ function buildBookmarkWhereClause(params: Params) {
       timestamp: params.cursorTime.getTime(),
     }
 
-    const sort = params.sort ?? DEFAULT_COLLECTION_ITEM_SORT
+    const sort = params.sort ?? DEFAULT_LIBRARY_ITEM_SORT
 
-    conditions.push(getCollectionItemCursorCondition(sort, cursor, bookmarkTable))
+    conditions.push(getLibraryItemCursorCondition(sort, cursor, bookmarkTable))
   }
 
   return and(...conditions)

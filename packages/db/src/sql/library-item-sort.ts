@@ -1,41 +1,41 @@
 import 'server-only'
-import { CollectionItemSort } from '@litomi/domain/library/sort'
+import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { and, asc, desc, eq, gt, lt, or, SQL } from 'drizzle-orm'
 import { AnyPgColumn } from 'drizzle-orm/pg-core'
 
-export type CollectionItemCursor = {
+export type LibraryItemCursor = {
   mangaId: number
   timestamp: number
 }
 
-export type CollectionItemRow = {
+export type LibraryItemRow = {
   mangaId: number
   createdAt: Date
 }
 
-type CollectionItemColumns = {
+type LibraryItemColumns = {
   createdAt: AnyPgColumn
   mangaId: AnyPgColumn
 }
 
-export function getCollectionItemCursorCondition(
-  sort: CollectionItemSort,
-  cursor: CollectionItemCursor,
-  columns: CollectionItemColumns,
+export function getLibraryItemCursorCondition(
+  sort: LibraryItemSort,
+  cursor: LibraryItemCursor,
+  columns: LibraryItemColumns,
 ) {
   const cursorTime = new Date(cursor.timestamp)
 
   switch (sort) {
-    case CollectionItemSort.CREATED_ASC:
+    case LibraryItemSort.CREATED_ASC:
       return or(
         gt(columns.createdAt, cursorTime),
         and(eq(columns.createdAt, cursorTime), gt(columns.mangaId, cursor.mangaId)),
       )!
-    case CollectionItemSort.MANGA_ID_ASC:
+    case LibraryItemSort.MANGA_ID_ASC:
       return gt(columns.mangaId, cursor.mangaId)
-    case CollectionItemSort.MANGA_ID_DESC:
+    case LibraryItemSort.MANGA_ID_DESC:
       return lt(columns.mangaId, cursor.mangaId)
-    case CollectionItemSort.CREATED_DESC:
+    case LibraryItemSort.CREATED_DESC:
     default:
       return or(
         lt(columns.createdAt, cursorTime),
@@ -44,20 +44,20 @@ export function getCollectionItemCursorCondition(
   }
 }
 
-export function getCollectionItemOrderByClauses(sort: CollectionItemSort, columns: CollectionItemColumns): SQL[] {
+export function getLibraryItemOrderByClauses(sort: LibraryItemSort, columns: LibraryItemColumns): SQL[] {
   switch (sort) {
-    case CollectionItemSort.CREATED_ASC:
+    case LibraryItemSort.CREATED_ASC:
       return [asc(columns.createdAt), asc(columns.mangaId)]
-    case CollectionItemSort.MANGA_ID_ASC:
+    case LibraryItemSort.MANGA_ID_ASC:
       return [asc(columns.mangaId)]
-    case CollectionItemSort.MANGA_ID_DESC:
+    case LibraryItemSort.MANGA_ID_DESC:
       return [desc(columns.mangaId)]
-    case CollectionItemSort.CREATED_DESC:
+    case LibraryItemSort.CREATED_DESC:
     default:
       return [desc(columns.createdAt), desc(columns.mangaId)]
   }
 }
 
-export function getNextCollectionItemCursor(row: CollectionItemRow) {
+export function getNextLibraryItemCursor(row: LibraryItemRow) {
   return `${row.createdAt.getTime()}-${row.mangaId}`
 }
