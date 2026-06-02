@@ -88,9 +88,9 @@ function GuestProfileActions({ settingsLabel }: { settingsLabel: string }) {
           {t('action')}
         </SelectableLink>
       </div>
-      <div className="hidden w-full items-center justify-center sm:grid sm:p-2 2xl:flex 2xl:gap-2">
+      <div className="hidden w-full sm:grid 2xl:flex 2xl:items-center">
         <Link
-          className="group order-2 flex size-10 items-center justify-center rounded-full text-zinc-400 transition hover:text-foreground active:scale-90 2xl:order-1 2xl:size-auto 2xl:flex-1 2xl:justify-start 2xl:gap-3 2xl:px-3 2xl:py-3"
+          className="group order-2 p-5 flex items-center justify-center text-zinc-400 transition hover:text-foreground active:scale-90 2xl:order-1 2xl:flex-1 2xl:justify-start 2xl:gap-5"
           href={loginHref}
         >
           <LinkPending className="shrink-0 text-foreground">
@@ -101,7 +101,7 @@ function GuestProfileActions({ settingsLabel }: { settingsLabel: string }) {
         <Link
           aria-current={pathname === '/settings' ? 'page' : undefined}
           aria-label={settingsLabel}
-          className="order-1 flex size-10 items-center justify-center rounded-full text-zinc-400 transition hover:text-foreground active:scale-90 aria-[current=page]:bg-zinc-900 aria-[current=page]:text-foreground aria-[current=page]:[&_svg]:fill-current aria-[current=page]:[&_svg]:[fill-opacity:0.3] 2xl:order-2 2xl:size-11"
+          className="order-1 p-3 flex items-center justify-center text-zinc-400 transition hover:text-foreground active:scale-90 aria-[current=page]:bg-zinc-900 aria-[current=page]:text-foreground aria-[current=page]:[&_svg]:fill-current aria-[current=page]:[&_svg]:[fill-opacity:0.3] 2xl:order-2"
           href="/settings"
           title={settingsLabel}
         >
