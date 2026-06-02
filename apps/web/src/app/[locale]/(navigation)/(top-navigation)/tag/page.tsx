@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { getTranslations } from 'next-intl/server'
+import { Suspense } from 'react'
 
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
@@ -26,5 +27,9 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/tag'>): 
 }
 
 export default function Page() {
-  return <TagPageClient />
+  return (
+    <Suspense>
+      <TagPageClient />
+    </Suspense>
+  )
 }
