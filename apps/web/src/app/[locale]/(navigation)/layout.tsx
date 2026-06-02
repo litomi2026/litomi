@@ -85,8 +85,8 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
           >
             {t('libo')}
           </SelectableLink>
-          <MoreNavigationPopover className="hidden sm:flex justify-center" />
           <ProfileLink className="hidden sm:block" />
+          <MoreNavigationPopover className="hidden sm:flex justify-center" />
         </nav>
         <Profile />
       </AutoHideHeader>
