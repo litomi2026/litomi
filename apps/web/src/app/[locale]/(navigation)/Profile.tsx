@@ -94,7 +94,7 @@ function GuestProfileActions({ settingsLabel }: { settingsLabel: string }) {
           href={loginHref}
         >
           <LinkPending className="shrink-0 text-foreground">
-            <LogIn className="size-6 shrink-0" />
+            <LogIn className="size-6 shrink-0 text-foreground" />
           </LinkPending>
           <span className="hidden min-w-0 font-medium 2xl:block">{t('action')}</span>
         </Link>
