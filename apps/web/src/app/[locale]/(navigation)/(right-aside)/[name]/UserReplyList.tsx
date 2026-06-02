@@ -8,9 +8,9 @@ type Props = {
   username: string
 }
 
-export default function UserPostList({ username }: Props) {
+export default function UserReplyList({ username }: Props) {
   const { data: me } = useMeQuery()
   const viewer = me === undefined ? 'pending' : me?.name === username ? 'self' : 'other'
 
-  return <PostList source={{ type: 'userPosts', username, viewer }} />
+  return <PostList source={{ type: 'userReplies', username, viewer }} />
 }

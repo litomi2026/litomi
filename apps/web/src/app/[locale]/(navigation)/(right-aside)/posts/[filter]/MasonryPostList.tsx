@@ -2,41 +2,30 @@
 
 import type { Post } from '@litomi/contracts'
 
-import { PostFilter } from '@litomi/domain/post/filter'
-import { Frown, Repeat } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import CloudProviderStatus from '@/components/CloudProviderStatus'
-import RetryGuidance from '@/components/RetryGuidance'
-import { Link } from '@/i18n/navigation'
-import usePostInfiniteQuery from '@/query/usePostsQuery'
-import { ProblemDetailsError } from '@/utils/api-request'
-
-import FollowingUnauthorized from './FollowingUnauthorized'
 import PostCard, { PostSkeleton } from './PostCard'
 
 type Props = {
-  filter: PostFilter
-  mangaId?: number
-  username?: string
-  NotFound: ReactNode
-  showMangaCover?: boolean
+  hasNextPage: boolean
+  isFetchingNextPage: boolean
+  loadNextPage: () => unknown
+  posts: readonly Post[]
+  showMangaCover: boolean
 }
 
-export default function MasonryPostList({ filter, mangaId, username, NotFound, showMangaCover }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } =
-    usePostInfiniteQuery(filter, mangaId, username)
-
-  const allPosts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data])
+export default function MasonryPostList({
+  hasNextPage,
+  isFetchingNextPage,
+  loadNextPage,
+  posts,
+  showMangaCover,
+}: Props) {
   const masonryColumnCount = useMasonryColumnCount()
+  const masonryColumns = splitIntoMasonryColumns(posts, masonryColumnCount, showMangaCover)
   const t = useTranslations('Community.posts')
-
-  const masonryColumns = useMemo(
-    () => splitIntoMasonryColumns(allPosts, masonryColumnCount, (post) => estimatePostCardWeight(post, showMangaCover)),
-    [allPosts, masonryColumnCount, showMangaCover],
-  )
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -45,33 +34,9 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
+      void loadNextPage()
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
-
-  if (isLoading) {
-    return (
-      <div className="p-2 md:p-3">
-        <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {[...Array(6)].map((_, i) => (
-            <PostSkeleton key={i} showMangaCover={showMangaCover} />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (isError) {
-    if (filter === PostFilter.FOLLOWING && error instanceof ProblemDetailsError && error.status === 401) {
-      return <FollowingUnauthorized />
-    }
-
-    return <ErrorState error={error} retry={() => refetch()} />
-  }
-
-  if (allPosts.length === 0) {
-    return NotFound
-  }
+  }, [inView, hasNextPage, isFetchingNextPage, loadNextPage])
 
   return (
     <div className="flex-1 p-2 md:p-3">
@@ -92,81 +57,41 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound, s
         </output>
       )}
 
-      {!hasNextPage && allPosts.length > 0 && (
+      {!hasNextPage && posts.length > 0 && (
         <div className="py-8 text-center text-sm text-zinc-600 sm:py-12">{t('endReached')}</div>
       )}
     </div>
   )
 }
 
-function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
-  const locale = useLocale()
-  const t = useTranslations('Community.posts')
-  const commonT = useTranslations('Community.common')
-  const [hasSystemIssues, setHasSystemIssues] = useState(false)
-
+export function MasonryPostListSkeleton({ showMangaCover }: { showMangaCover: boolean }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center py-8 p-4">
-      <div aria-label="error icon" className="mb-4" role="img">
-        <Frown aria-hidden className="size-10 text-zinc-500" />
-      </div>
-      <h3 className="text-lg font-semibold text-zinc-200 mb-2">{t('loadErrorTitle')}</h3>
-
-      <CloudProviderStatus locale={locale} onStatusUpdate={setHasSystemIssues} />
-      <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
-
-      <button
-        className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition mt-4"
-        onClick={retry}
-      >
-        <Repeat className="size-4" />
-        <span>{commonT('retry')}</span>
-      </button>
-
-      <div className="mt-6 text-xs text-zinc-600">
-        {t('persistentProblemPrefix')}{' '}
-        <Link className="underline hover:text-zinc-400" href="/posts/all" prefetch={false}>
-          {t('browseOtherPosts')}
-        </Link>
+    <div className="p-2 md:p-3">
+      <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+        {[...Array(6)].map((_, i) => (
+          <PostSkeleton key={i} showMangaCover={showMangaCover} />
+        ))}
       </div>
     </div>
   )
 }
 
-function estimatePostCardWeight(post: Post, showMangaCover?: boolean) {
-  if (!showMangaCover) {
-    return 1
-  }
+function splitIntoMasonryColumns(posts: readonly Post[], columnCount: number, showMangaCover: boolean) {
+  const columns: Post[][] = Array.from({ length: columnCount }, () => [])
+  const columnWeights = Array.from({ length: columnCount }, () => 0)
 
-  return post.mangaId ? 3.3 : 1
-}
-
-function splitIntoMasonryColumns<T>(items: readonly T[], columnCount: number, getItemWeight?: (item: T) => number) {
-  const safeColumnCount = Math.max(1, columnCount)
-  const columns: T[][] = Array.from({ length: safeColumnCount }, () => [])
-
-  if (!getItemWeight) {
-    items.forEach((item, index) => {
-      columns[index % safeColumnCount]?.push(item)
-    })
-
-    return columns
-  }
-
-  const columnWeights = Array.from({ length: safeColumnCount }, () => 0)
-
-  for (const item of items) {
-    const itemWeight = Math.max(0, getItemWeight(item))
+  for (const post of posts) {
+    const postWeight = showMangaCover && post.mangaId ? 3.3 : 1
 
     let targetColumn = 0
-    for (let i = 1; i < safeColumnCount; i++) {
+    for (let i = 1; i < columnCount; i++) {
       if (columnWeights[i]! < columnWeights[targetColumn]!) {
         targetColumn = i
       }
     }
 
-    columns[targetColumn]!.push(item)
-    columnWeights[targetColumn]! += itemWeight
+    columns[targetColumn]!.push(post)
+    columnWeights[targetColumn]! += postWeight
   }
 
   return columns
