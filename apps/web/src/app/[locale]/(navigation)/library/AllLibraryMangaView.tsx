@@ -2,11 +2,11 @@
 
 import type { Manga } from '@litomi/domain/manga/model'
 import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 
-import { getViewFromSearchParams, View } from '@litomi/std'
+import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { Library } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
@@ -34,6 +34,11 @@ import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
 
 type AllLibraryMangaItem = LoadingItem | MangaItem | NativeGridSponsorItem
 
+type ContentProps = Props & {
+  onViewChange: (view: View) => void
+  view: View
+}
+
 type Library = {
   id: number
   name: string
@@ -58,12 +63,42 @@ type MangaItem = VirtualMangaGridItem & {
 }
 
 type Props = {
-  initialView: View
   nativeGridSponsor?: NativeGridSponsor | null
 }
 
-export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: Props) {
-  const [view, setView] = useState<View>(initialView)
+export default function AllLibraryMangaView({ nativeGridSponsor }: Props) {
+  const [view, setView] = useState<View>(View.CARD)
+
+  function handleSearchParamsUpdate(searchParams: ReadonlyURLSearchParams) {
+    const nextView = getViewFromSearchParams(searchParams)
+    setView(nextView)
+    replaceURL(nextView)
+  }
+
+  function handleViewChange(nextView: View) {
+    setView(nextView)
+    replaceURL(nextView)
+  }
+
+  function replaceURL(nextView: View) {
+    const url = new URL(window.location.href)
+    setViewToSearchParams(url.searchParams, nextView)
+
+    const href = url.toString()
+    if (href !== window.location.href) {
+      window.history.replaceState(window.history.state, '', href)
+    }
+  }
+
+  return (
+    <>
+      <SearchParamsSync onUpdate={handleSearchParamsUpdate} />
+      <AllLibraryMangaContent nativeGridSponsor={nativeGridSponsor} onViewChange={handleViewChange} view={view} />
+    </>
+  )
+}
+
+function AllLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: ContentProps) {
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { heavySignature, isVisible } = useMangaCensorship()
   const t = useTranslations('Library.empty')
@@ -109,7 +144,7 @@ export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: 
       <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <JuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
-        <ViewToggle initialView={initialView} />
+        <ViewToggle onViewChange={onViewChange} view={view} />
       </div>
     </>
   )
@@ -153,10 +188,6 @@ export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: 
     )
   }
 
-  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
-    setView(getViewFromSearchParams(searchParams))
-  }
-
   if (isInitialLoading) {
     return (
       <>
@@ -184,23 +215,20 @@ export default function AllLibraryMangaView({ initialView, nativeGridSponsor }: 
   }
 
   return (
-    <>
-      <SearchParamsSync onUpdate={handleViewUpdate} />
-      <VirtualMangaGrid
-        fetchNextPage={fetchNextPage}
-        footer={footer}
-        hasNextPage={canAutoLoadMore}
-        header={header}
-        isFetchingNextPage={isFetchingNextPage}
-        itemGap={8}
-        items={items}
-        measurementKey={`${view}:${heavySignature}`}
-        onScrollElementChange={setNavigationAutoHideScrollElement}
-        renderItem={renderItem}
-        scrollRestorationKey={`library:public:${view}`}
-        view={view}
-      />
-    </>
+    <VirtualMangaGrid
+      fetchNextPage={fetchNextPage}
+      footer={footer}
+      hasNextPage={canAutoLoadMore}
+      header={header}
+      isFetchingNextPage={isFetchingNextPage}
+      itemGap={8}
+      items={items}
+      measurementKey={`${view}:${heavySignature}`}
+      onScrollElementChange={setNavigationAutoHideScrollElement}
+      renderItem={renderItem}
+      scrollRestorationKey={`library:public:${view}`}
+      view={view}
+    />
   )
 }
 

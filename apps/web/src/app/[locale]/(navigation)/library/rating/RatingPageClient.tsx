@@ -1,11 +1,12 @@
 'use client'
 
+import type { ReadonlyURLSearchParams } from 'next/navigation'
+
 import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
 import { Manga } from '@litomi/domain/manga/model'
-import { getViewFromSearchParams, View } from '@litomi/std'
+import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { Star } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
@@ -21,15 +22,11 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
+import { getRatingSortFromSearchParams, setRatingSortToSearchParams } from '../searchParams'
 import SelectableMangaCard from '../SelectableMangaCard'
 import NotFound from './NotFound'
 import Unauthorized from './Unauthorized'
 import useRatingInfiniteQuery from './useRatingInfiniteQuery'
-
-type Props = {
-  initialSort: RatingSort
-  initialView: View
-}
 
 const SORT_OPTIONS = [
   { value: RatingSort.UPDATED_DESC, labelKey: 'ratingUpdatedDesc' },
@@ -40,6 +37,13 @@ const SORT_OPTIONS = [
   { value: RatingSort.MANGA_ID_ASC, labelKey: 'mangaIdAsc' },
 ] as const
 
+type ContentProps = {
+  onSortChange: (sort: RatingSort) => void
+  onViewChange: (view: View) => void
+  sort: RatingSort
+  view: View
+}
+
 type MangaListProps = {
   isSelectionMode: boolean
   items: { mangaId: number; rating: number }[]
@@ -49,9 +53,74 @@ type MangaListProps = {
   view: View
 }
 
-export default function RatingPageClient({ initialSort, initialView }: Props) {
-  const [sort, setSort] = useState<RatingSort>(initialSort)
-  const [view, setView] = useState<View>(initialView)
+export default function RatingPageClient() {
+  const [sort, setSort] = useState<RatingSort>(RatingSort.UPDATED_DESC)
+  const [view, setView] = useState<View>(View.CARD)
+
+  function handleSearchParamsUpdate(searchParams: ReadonlyURLSearchParams) {
+    const nextSort = getRatingSortFromSearchParams(searchParams)
+    const nextView = getViewFromSearchParams(searchParams)
+
+    setSort(nextSort)
+    setView(nextView)
+    replaceURL(nextSort, nextView)
+  }
+
+  function handleSortChange(nextSort: RatingSort) {
+    setSort(nextSort)
+    replaceURL(nextSort, view)
+  }
+
+  function handleViewChange(nextView: View) {
+    setView(nextView)
+    replaceURL(sort, nextView)
+  }
+
+  function replaceURL(nextSort: RatingSort, nextView: View) {
+    const url = new URL(window.location.href)
+    setViewToSearchParams(url.searchParams, nextView)
+    setRatingSortToSearchParams(url.searchParams, nextSort)
+
+    const href = url.toString()
+    if (href !== window.location.href) {
+      window.history.replaceState(window.history.state, '', href)
+    }
+  }
+
+  return (
+    <>
+      <SearchParamsSync onUpdate={handleSearchParamsUpdate} />
+      <RatingContent onSortChange={handleSortChange} onViewChange={handleViewChange} sort={sort} view={view} />
+    </>
+  )
+}
+
+function MangaList({ showLoadingSkeleton, isSelectionMode, items, mangaMap, ratingIndexMap, view }: MangaListProps) {
+  return (
+    <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
+      {items.map(({ mangaId, rating }) => {
+        const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
+        const index = ratingIndexMap.get(mangaId) ?? 0
+
+        if (!isSelectionMode) {
+          return (
+            <div className="relative group overflow-hidden" key={mangaId}>
+              <div className="absolute top-0.5 left-0.5 right-0.5 z-10 flex justify-center p-2 rounded-t-xl bg-background/60 pointer-events-none">
+                <StarRating rating={rating} />
+              </div>
+              <MangaCard className="h-full" index={index} manga={manga} variant={view} />
+            </div>
+          )
+        }
+
+        return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
+      })}
+      {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
+    </div>
+  )
+}
+
+function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps) {
   const { exit, isSelectionMode } = useLibrarySelection()
   const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
@@ -93,17 +162,10 @@ export default function RatingPageClient({ initialSort, initialView }: Props) {
     return bRating - aRating
   })
 
-  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
-    setView(getViewFromSearchParams(searchParams))
-  }
-
   function handleSortChange(newSort: RatingSort) {
     if (newSort !== sort) {
       exit()
-      setSort(newSort)
-      const url = new URL(window.location.href)
-      url.searchParams.set('sort', String(newSort))
-      window.history.replaceState(window.history.state, '', url)
+      onSortChange(newSort)
     }
   }
 
@@ -117,7 +179,6 @@ export default function RatingPageClient({ initialSort, initialView }: Props) {
 
   return (
     <>
-      <SearchParamsSync onUpdate={handleViewUpdate} />
       <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         <select
@@ -131,7 +192,7 @@ export default function RatingPageClient({ initialSort, initialView }: Props) {
             </option>
           ))}
         </select>
-        <ViewToggle initialView={initialView} />
+        <ViewToggle onViewChange={onViewChange} view={view} />
       </div>
       {shouldGroupByRating && sortedGroups.length > 0 ? (
         <div className="grid gap-4">
@@ -168,31 +229,6 @@ export default function RatingPageClient({ initialSort, initialView }: Props) {
       {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
       {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
     </>
-  )
-}
-
-function MangaList({ showLoadingSkeleton, isSelectionMode, items, mangaMap, ratingIndexMap, view }: MangaListProps) {
-  return (
-    <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
-      {items.map(({ mangaId, rating }) => {
-        const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
-        const index = ratingIndexMap.get(mangaId) ?? 0
-
-        if (!isSelectionMode) {
-          return (
-            <div className="relative group overflow-hidden" key={mangaId}>
-              <div className="absolute top-0.5 left-0.5 right-0.5 z-10 flex justify-center p-2 rounded-t-xl bg-background/60 pointer-events-none">
-                <StarRating rating={rating} />
-              </div>
-              <MangaCard className="h-full" index={index} manga={manga} variant={view} />
-            </div>
-          )
-        }
-
-        return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
-      })}
-      {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
-    </div>
   )
 }
 
