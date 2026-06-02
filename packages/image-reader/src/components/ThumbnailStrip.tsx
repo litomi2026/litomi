@@ -22,6 +22,7 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
 }: Props<TPage>) {
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const pageIndex = useReaderStore((state) => state.pageIndex)
+  const readingDirection = useReaderStore((state) => state.readingDirection)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const messages = useReaderMessages()
   const { ref: firstImageRef, inView: isFirstImageInView } = useInView()
@@ -30,6 +31,13 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
   const activeSpreadIndex = readerLayout.spreadIndexByPageIndex[pageIndex] ?? 0
   const activePageIndexes = new Set(readerLayout.spreads[activeSpreadIndex]?.pageIndexes ?? [pageIndex])
   const activeThumbnailIndex = readerLayout.spreads[activeSpreadIndex]?.startPageIndex ?? pageIndex
+  const isRTL = readingDirection === 'rtl'
+  const isSingleThumbnail = pages.length <= 1
+  const isLeftEdgeInView = isSingleThumbnail || (isRTL ? isLastImageInView : isFirstImageInView)
+  const isRightEdgeInView = isSingleThumbnail || (isRTL ? isFirstImageInView : isLastImageInView)
+  const leftButtonLabel = isRTL ? messages.thumbnailNext : messages.thumbnailPrevious
+  const rightButtonLabel = isRTL ? messages.thumbnailPrevious : messages.thumbnailNext
+  const orderedPages = isRTL ? pages.toReversed() : pages
 
   function handleThumbnailClick(index: number) {
     navigateToPageIndex(index, {
@@ -67,39 +75,38 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
       return
     }
 
-    const thumbnailElements = container.querySelectorAll('button')
-    const activeThumbnail = thumbnailElements[activeThumbnailIndex]
+    const activeThumbnail = container.querySelector(`[data-page-index="${activeThumbnailIndex}"]`)
     if (!activeThumbnail) {
       return
     }
 
     activeThumbnail.scrollIntoView({ inline: 'center' })
-  }, [activeThumbnailIndex])
+  }, [activeThumbnailIndex, readingDirection])
 
   return (
     <div className="relative overflow-hidden flex justify-center">
       <button
-        aria-label={messages.thumbnailPrevious}
+        aria-label={leftButtonLabel}
         className={twMerge(
           'absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-r-lg bg-background/90 transition hover:bg-background',
           'disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70',
         )}
-        disabled={isFirstImageInView}
+        disabled={isLeftEdgeInView}
         onClick={scrollLeft}
-        title={messages.thumbnailPrevious}
+        title={leftButtonLabel}
         type="button"
       >
         <ChevronLeft className="size-5 stroke-3" />
       </button>
       <button
-        aria-label={messages.thumbnailNext}
+        aria-label={rightButtonLabel}
         className={twMerge(
           'absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-l-lg bg-background/90 transition hover:bg-background',
           'disabled:opacity-0 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70',
         )}
-        disabled={isLastImageInView}
+        disabled={isRightEdgeInView}
         onClick={scrollRight}
-        title={messages.thumbnailNext}
+        title={rightButtonLabel}
         type="button"
       >
         <ChevronRight className="size-5 stroke-3" />
@@ -109,7 +116,8 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
         onWheel={(e) => e.stopPropagation()}
         ref={scrollContainerRef}
       >
-        {pages.map((page, i) => {
+        {orderedPages.map((page, visualIndex) => {
+          const i = isRTL ? pages.length - 1 - visualIndex : visualIndex
           const isActive = activePageIndexes.has(i)
           const fetchPriority = i > activeThumbnailIndex - 3 && i <= activeThumbnailIndex + 3 ? 'high' : 'low'
 
@@ -121,6 +129,7 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
                 'relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition',
                 'aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70',
               )}
+              data-page-index={i}
               key={page.id}
               onClick={() => handleThumbnailClick(i)}
               ref={i === 0 ? firstImageRef : i === pages.length - 1 ? lastImageRef : undefined}
