@@ -16,9 +16,7 @@ export const postTable = pgTable(
   'post',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
-      .notNull(),
+    userId: bigint('user_id', { mode: 'number' }).references(() => userTable.id, { onDelete: 'set null' }),
     parentPostId: bigint('parent_post_id', { mode: 'number' }).references((): AnyPgColumn => postTable.id, {
       onDelete: 'set null',
     }),
