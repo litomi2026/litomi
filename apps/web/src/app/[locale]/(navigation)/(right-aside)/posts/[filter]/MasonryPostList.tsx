@@ -101,19 +101,19 @@ function useMasonryColumnCount() {
   const [columnCount, setColumnCount] = useState(1)
 
   useEffect(() => {
-    function compute() {
-      const width = window.innerWidth
-      if (width >= 1280) return 4 // xl
-      if (width >= 768) return 3 // md
-      if (width >= 640) return 2 // sm
-      return 1
+    const mediaQueries = [
+      { columns: 4, mediaQuery: window.matchMedia('(min-width: 1280px)') },
+      { columns: 3, mediaQuery: window.matchMedia('(min-width: 768px)') },
+      { columns: 2, mediaQuery: window.matchMedia('(min-width: 640px)') },
+    ] as const
+
+    function update() {
+      setColumnCount(mediaQueries.find(({ mediaQuery }) => mediaQuery.matches)?.columns ?? 1)
     }
 
-    const update = () => setColumnCount(compute())
-
     update()
-    window.addEventListener('resize', update, { passive: true })
-    return () => window.removeEventListener('resize', update)
+    mediaQueries.forEach(({ mediaQuery }) => mediaQuery.addEventListener('change', update))
+    return () => mediaQueries.forEach(({ mediaQuery }) => mediaQuery.removeEventListener('change', update))
   }, [])
 
   return columnCount
