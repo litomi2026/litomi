@@ -168,6 +168,19 @@ export default function ReaderControls<TPage extends ReaderPage>({
               {messages.scrollAxisButtons[scrollAxis]}
             </button>
           )}
+          {isPageMode && (
+            <button
+              className={CORE_BUTTON_CLASS_NAME}
+              onClick={() => {
+                const currentIndex = orientations.indexOf(orientation)
+                const nextIndex = (currentIndex + 1) % orientations.length
+                setOrientation(orientations[nextIndex])
+              }}
+              type="button"
+            >
+              {messages.viewerOrientationButtons[orientation]}
+            </button>
+          )}
           <button
             aria-pressed={isDoublePage}
             className={CORE_BUTTON_CLASS_NAME}
@@ -186,19 +199,6 @@ export default function ReaderControls<TPage extends ReaderPage>({
             <ArrowRight className="size-4" />
             {readingDirection === 'ltr' ? messages.readingDirectionRightShort : messages.readingDirectionLeftShort}
           </button>
-          {isPageMode && (
-            <button
-              className={CORE_BUTTON_CLASS_NAME}
-              onClick={() => {
-                const currentIndex = orientations.indexOf(orientation)
-                const nextIndex = (currentIndex + 1) % orientations.length
-                setOrientation(orientations[nextIndex])
-              }}
-              type="button"
-            >
-              {messages.viewerOrientationButtons[orientation]}
-            </button>
-          )}
           {!isHorizontalScrollMode && (
             <button
               className={CORE_BUTTON_CLASS_NAME}
