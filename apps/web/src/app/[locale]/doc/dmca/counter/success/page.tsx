@@ -5,7 +5,7 @@ import { Link } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
 
 const searchParamsSchema = z.object({
-  case: z.preprocess((v) => (Array.isArray(v) ? v[0] : v), z.string().uuid().optional()),
+  case: z.preprocess((v) => (Array.isArray(v) ? v[0] : v), z.uuid().optional()),
 })
 
 const DMCA_EMAIL = 'litomi2026@gmail.com'
