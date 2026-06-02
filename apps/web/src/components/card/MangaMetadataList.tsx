@@ -3,7 +3,7 @@ import MangaMetadataLink from './MangaMetadataLink'
 type Props = {
   filterType: string
   labeledValues: { value: string; label: string }[]
-  searchParams?: string
+  searchParams?: URLSearchParams
 }
 
 export default function MangaMetadataList({ filterType, labeledValues, searchParams }: Props) {

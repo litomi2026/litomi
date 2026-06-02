@@ -10,13 +10,13 @@ import NavigationWithMobileMenu from './NavigationWithMobileMenu'
 import { PostFilterParams, postFilterSchema } from './schema'
 
 export default async function Layout({ params, children }: LayoutProps<'/[locale]/posts/[filter]'>) {
-  const locale = await getLocaleFromParams(params)
   const validation = postFilterSchema.safeParse(await params)
 
   if (!validation.success) {
     notFound()
   }
 
+  const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'Community.posts' })
   const { filter } = validation.data
   const isrecommend = filter === PostFilterParams.RECOMMEND

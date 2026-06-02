@@ -7,7 +7,6 @@ import type { ReactNode } from 'react'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
-import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
@@ -43,15 +42,15 @@ type MangaItem = VirtualMangaGridItem & {
 type Props = {
   header?: ReactNode
   nativeGridSponsor?: NativeGridSponsor | null
+  searchParams: string
 }
 
 type SearchResultItem = LoadingItem | MangaItem | NativeGridSponsorItem
 
-export default function SearchResult({ header, nativeGridSponsor }: Props) {
+export default function SearchResult({ header, nativeGridSponsor, searchParams }: Props) {
   const t = useTranslations('Search')
-  const searchParams = useSearchParams()
-  const searchParamsString = searchParams.toString()
-  const view = getViewFromSearchParams(searchParams)
+  const params = new URLSearchParams(searchParams)
+  const view = getViewFromSearchParams(params)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { heavySignature, isVisible } = useMangaCensorship()
@@ -67,13 +66,13 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
     refetch,
     isRefetching,
     error,
-  } = useSearchQuery()
+  } = useSearchQuery(params)
 
   const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
   const visibleMangas = mangas.filter(isVisible)
-  const measurementKey = `${searchParamsString}:${heavySignature}`
+  const measurementKey = `${searchParams}:${heavySignature}`
   const scrollRestorationKey = `search-results:${measurementKey}`
-  const showRefreshButton = searchParams.get(SearchParam.SORT) === SearchSort.RANDOM
+  const showRefreshButton = params.get(SearchParam.SORT) === SearchSort.RANDOM
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
 
@@ -129,7 +128,7 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
           <MangaCard
             index={item.mangaIndex}
             manga={item.manga}
-            searchParams={searchParamsString}
+            searchParams={params}
             showSearchFromNextButton
             variant={view}
           />

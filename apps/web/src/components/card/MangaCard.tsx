@@ -27,7 +27,7 @@ type Props = {
   manga: Manga
   index?: number
   rank?: number
-  searchParams?: string
+  searchParams?: URLSearchParams
   className?: string
   showSearchFromNextButton?: boolean
   variant?: View
@@ -59,7 +59,7 @@ export default function MangaCard({
   manga,
   index = 0,
   rank,
-  searchParams = '',
+  searchParams,
   className = '',
   showSearchFromNextButton,
   variant = View.CARD,
@@ -67,9 +67,8 @@ export default function MangaCard({
   const { id, artists, characters, date, group, series, images, tags, title, type, count, languages, uploader } = manga
   const viewerLink = getViewerLink(id)
   const config = VARIANT_CONFIG[variant]
-  const parsedSearchParams = new URLSearchParams(searchParams)
-  const query = parsedSearchParams.get(SearchPageSearchParam.QUERY)
-  const isDefaultSearchSort = !parsedSearchParams.get(SearchPageSearchParam.SORT)
+  const query = searchParams?.get(SearchPageSearchParam.QUERY)
+  const isDefaultSearchSort = !searchParams?.get(SearchPageSearchParam.SORT)
   const t = useTranslations('Common.mangaCard.metadata')
 
   return (

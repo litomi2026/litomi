@@ -13,7 +13,7 @@ type MangaMetadataWithLink = {
 type Props = {
   filterType: string
   items: MangaMetadataWithLink[]
-  searchParams?: string
+  searchParams?: URLSearchParams
 }
 
 const MAX_LABEL_LENGTH = 8
