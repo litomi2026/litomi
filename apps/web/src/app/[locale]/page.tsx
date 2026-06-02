@@ -4,11 +4,13 @@ import LinkPending from '@/components/LinkPending'
 import LocaleSwitcher from '@/components/LocaleSwitcher'
 import SEOText from '@/components/SEOText'
 import { Link } from '@/i18n/navigation'
+import { getLocaleFromParams } from '@/i18n/server'
 
 import CTAButton from './CTAButton'
 
-export default async function Home() {
-  const t = await getTranslations('Home.ageGate')
+export default async function Home({ params }: PageProps<'/[locale]'>) {
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'Home.ageGate' })
   const linkClassName = 'border-2 rounded-lg w-60 py-2 font-semibold'
 
   return (

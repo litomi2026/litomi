@@ -7,8 +7,6 @@ import { generateLocalizedMetadata } from '@/lib/metadata'
 
 import RecommendMangaPageClient from './RecommendMangaPageClient'
 
-export const dynamic = 'force-static'
-
 export async function generateMetadata({ params }: PageProps<'/[locale]/recommend/manga'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'Metadata.explore.recommendManga' })

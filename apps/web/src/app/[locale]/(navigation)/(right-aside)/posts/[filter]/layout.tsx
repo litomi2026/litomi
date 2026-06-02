@@ -4,18 +4,20 @@ import { twMerge } from 'tailwind-merge'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { Link } from '@/i18n/navigation'
+import { getLocaleFromParams } from '@/i18n/server'
 
 import NavigationWithMobileMenu from './NavigationWithMobileMenu'
 import { PostFilterParams, postFilterSchema } from './schema'
 
 export default async function Layout({ params, children }: LayoutProps<'/[locale]/posts/[filter]'>) {
+  const locale = await getLocaleFromParams(params)
   const validation = postFilterSchema.safeParse(await params)
 
   if (!validation.success) {
     notFound()
   }
 
-  const t = await getTranslations('Community.posts')
+  const t = await getTranslations({ locale, namespace: 'Community.posts' })
   const { filter } = validation.data
   const isrecommend = filter === PostFilterParams.RECOMMEND
   const isFollowing = filter === PostFilterParams.FOLLOWING

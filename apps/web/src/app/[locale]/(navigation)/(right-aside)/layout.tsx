@@ -1,16 +1,19 @@
+import type { PublicLocale } from '@litomi/domain/locale'
+
 import { ChevronRight, Flame } from 'lucide-react'
-import { getLocale } from 'next-intl/server'
 import { Suspense } from 'react'
 
 import { MangaCardSkeleton } from '@/components/card/MangaCard'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { Link } from '@/i18n/navigation'
+import { getLocaleFromParams } from '@/i18n/server'
 
 import { MetricParam, PeriodParam } from '../(ranking)/common'
 import { getRankingData } from '../(ranking)/ranking/[metric]/[period]/query'
 import RankingList from '../(ranking)/ranking/[metric]/[period]/RankingList'
 
-export default function Layout({ children }: LayoutProps<'/[locale]'>) {
+export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
+  const locale = await getLocaleFromParams(params)
   const rankingHref = `/ranking/${MetricParam.VIEW}/${PeriodParam.DAY}`
 
   return (
@@ -37,7 +40,7 @@ export default function Layout({ children }: LayoutProps<'/[locale]'>) {
             </div>
           </div>
           <Suspense fallback={<DailyRankingFallback />}>
-            <DailyRanking />
+            <DailyRanking locale={locale} />
           </Suspense>
         </div>
       </aside>
@@ -46,8 +49,7 @@ export default function Layout({ children }: LayoutProps<'/[locale]'>) {
   )
 }
 
-async function DailyRanking() {
-  const locale = await getLocale()
+async function DailyRanking({ locale }: { locale: PublicLocale }) {
   const rankings = await getRankingData(MetricParam.VIEW, PeriodParam.DAY, locale)
 
   if (!rankings) {

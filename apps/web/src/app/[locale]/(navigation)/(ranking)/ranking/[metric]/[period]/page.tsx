@@ -16,6 +16,7 @@ import { getRankingData } from './query'
 import RankingList from './RankingList'
 
 export const revalidate = 21600 // 6 hours
+export const dynamicParams = false
 
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),

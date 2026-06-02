@@ -11,12 +11,12 @@ import TopNavigationActions from './TopNavigationActions'
 
 export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
   const locale = await getLocaleFromParams(params)
-  const t = await getTranslations('TopNavigation.footer')
+  const t = await getTranslations({ locale, namespace: 'TopNavigation.footer' })
   const shortName = APP_METADATA[locale].shortName
 
   return (
     <div className="flex flex-col flex-1 gap-2 px-2 pb-2">
-      <TopNavigationActions />
+      <TopNavigationActions locale={locale} />
       <main className="flex flex-col grow gap-2">{children}</main>
       <footer className="text-center grid gap-2 p-4 text-sm">
         <Link

@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
+import { getLocaleFromParams } from '@/i18n/server'
 
 import { metricInfo, MetricParam } from './common'
 import DonationLink from './DonationLink'
@@ -11,8 +12,9 @@ import PeriodNavigation from './PeriodNavigation'
 import RankingTitle from './RankingTitle'
 import RealtimeLink from './RealtimeLink'
 
-export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
-  const t = await getTranslations('RankingPage')
+export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'RankingPage' })
 
   return (
     <main className="flex flex-1 flex-col pt-safe">
