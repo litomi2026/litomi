@@ -1,6 +1,6 @@
 'use client'
 
-import { Bot, Clover, HeartHandshake, type LucideIcon, MoreHorizontal, ShieldCheck } from 'lucide-react'
+import { Bot, Clover, HeartHandshake, type LucideIcon, MoreHorizontal, ScanEye } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -32,12 +32,12 @@ const MORE_NAVIGATION_ITEMS = [
   {
     href: '/censor',
     labelKey: 'censor',
-    Icon: ShieldCheck,
+    Icon: ScanEye,
     selectedIconStyle: 'stroke',
   },
   {
-    href: '/donations',
-    labelKey: 'donations',
+    href: '/donation',
+    labelKey: 'donation',
     Icon: HeartHandshake,
     selectedIconStyle: 'stroke',
   },

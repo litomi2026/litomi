@@ -9,8 +9,8 @@ import {
   HeartHandshake,
   History,
   PiggyBank,
+  ScanEye,
   Settings,
-  ShieldCheck,
   Star,
   Tag,
   X,
@@ -182,17 +182,17 @@ export default function MobileNavigationMenu({ onClose }: Props) {
           <div className="mt-auto grid gap-1 border-t border-zinc-800/80 pt-3">
             <MobileMenuLink
               href="/censor"
-              icon={<ShieldCheck />}
+              icon={<ScanEye />}
               onClose={onClose}
               pathname={pathname}
               title={t('censor')}
             />
             <MobileMenuLink
-              href="/donations"
+              href="/donation"
               icon={<HeartHandshake />}
               onClose={onClose}
               pathname={pathname}
-              title={t('donations')}
+              title={t('donation')}
             />
           </div>
         </nav>

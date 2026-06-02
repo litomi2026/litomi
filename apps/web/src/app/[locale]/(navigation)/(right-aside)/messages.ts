@@ -35,7 +35,7 @@ export const messages = {
           title: '검열',
           description: '콘텐츠 표시와 차단 관련 설정을 관리하세요.',
         },
-        donations: {
+        donation: {
           title: '후원',
           description: '후원한 작품과 수신 대상을 확인하세요.',
         },
@@ -209,8 +209,8 @@ export const messages = {
           title: 'Censor',
           description: 'Manage content visibility and blocking settings.',
         },
-        donations: {
-          title: 'Donations',
+        donation: {
+          title: 'Donation',
           description: 'Review works you supported and their recipients.',
         },
       },
@@ -383,7 +383,7 @@ export const messages = {
           title: '検閲',
           description: 'コンテンツの表示とブロックに関する設定を管理します。',
         },
-        donations: {
+        donation: {
           title: '支援',
           description: '支援した作品と対象を確認します。',
         },
@@ -557,7 +557,7 @@ export const messages = {
           title: '屏蔽',
           description: '管理内容显示和屏蔽相关设置。',
         },
-        donations: {
+        donation: {
           title: '赞助',
           description: '查看你赞助过的作品和对象。',
         },

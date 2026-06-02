@@ -17,7 +17,7 @@ import { ProblemDetailsError } from '@/utils/api-request'
 import useDeleteDonationMutation from './useDeleteDonationMutation'
 import useMyDonationsInfiniteQuery from './useMyDonationsInfiniteQuery'
 
-export default function DonationsClient() {
+export default function DonationClient() {
   const locale = useLocale()
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useMyDonationsInfiniteQuery(true)
   const deleteMutation = useDeleteDonationMutation()

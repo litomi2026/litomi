@@ -2,24 +2,24 @@
 
 import useMeQuery from '@/query/useMeQuery'
 
-import DonationsClient from './DonationsClient'
+import DonationClient from './DonationClient'
 import Unauthorized from './Unauthorized'
 
-export default function DonationsAuthGate() {
+export default function DonationAuthGate() {
   const { data: me } = useMeQuery()
 
   if (me === undefined) {
-    return <DonationsLoading />
+    return <DonationLoading />
   }
 
   if (me === null) {
     return <Unauthorized />
   }
 
-  return <DonationsClient />
+  return <DonationClient />
 }
 
-function DonationsLoading() {
+function DonationLoading() {
   return (
     <div className="max-w-3xl w-full mx-auto grid gap-4 p-6">
       <div className="h-4 w-40 rounded-full bg-zinc-900 animate-fade-in-fast" />
