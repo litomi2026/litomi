@@ -1,4 +1,4 @@
-import { Bookmark, Bot, Clover, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
+import { Bookmark, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { twMerge } from 'tailwind-merge'
 
@@ -10,6 +10,7 @@ import SeasonalEffects from '@/components/seasonal/SeasonalEffects'
 import { Link } from '@/i18n/navigation'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
+import MoreNavigationPopover from './MoreNavigationPopover'
 import NotificationCount from './NotificationCount'
 import Profile from './Profile'
 import ProfileLink from './ProfileLink'
@@ -84,12 +85,7 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
           >
             {t('libo')}
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/chat" icon={<Bot />} selectedIconStyle="stroke">
-            {t('chat')}
-          </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/fortune" hrefMatch="/fortune" icon={<Clover />}>
-            {t('fortune')}
-          </SelectableLink>
+          <MoreNavigationPopover className="hidden sm:flex justify-center" />
           <ProfileLink className="hidden sm:block" />
         </nav>
         <Profile />
