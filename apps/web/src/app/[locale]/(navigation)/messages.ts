@@ -92,7 +92,7 @@ export const messages = {
     Navigation: {
       sidebar: {
         home: 'Home',
-        search: 'Search',
+        search: 'Explore',
         ranking: 'Popular',
         library: 'Library',
         bookmark: 'Bookmarks',
@@ -121,7 +121,7 @@ export const messages = {
         history: 'Reading history',
         rating: 'Ratings',
         fortune: 'Fortune',
-        settings: 'Settings',
+        settings: 'Settings and privacy',
         censor: 'Censor',
         donation: 'Donation',
       },

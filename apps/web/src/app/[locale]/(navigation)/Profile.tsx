@@ -57,7 +57,7 @@ export default function Profile() {
           <Settings className="w-5 transition" />
           <span className="min-w-0 hidden md:block">{t('settings')}</span>
         </Link>
-        <LogoutButton />
+        <LogoutButton username={name} />
       </div>
     </TooltipPopover>
   )
