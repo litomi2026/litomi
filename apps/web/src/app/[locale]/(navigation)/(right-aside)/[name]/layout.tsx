@@ -11,9 +11,12 @@ import UserProfile from './UserProfile'
 export default async function Layout({ params, children }: LayoutProps<'/[locale]/[name]'>) {
   const { name } = await params
   const t = await getTranslations('Profile.navigation')
-
   const username = getUsernameFromParam(name)
-  const publicLinks = [{ href: `/@${username}`, label: t('stories') }]
+
+  const publicLinks = [
+    { href: `/@${username}`, label: t('stories') },
+    { href: `/@${username}/reply`, label: t('replies') },
+  ]
 
   return (
     <main className="flex flex-col grow">

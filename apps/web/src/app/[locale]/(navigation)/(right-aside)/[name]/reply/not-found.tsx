@@ -1,15 +1,20 @@
+'use client'
+
 import { MessageSquareOff } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 export default function NotFound() {
+  const t = useTranslations('Profile.replies')
+
   return (
     <StatusState
-      description="아직 공개된 답글이 없거나 볼 수 없는 사용자예요"
+      description={t('notFoundDescription')}
       icon={<MessageSquareOff className="size-8" />}
-      title="답글을 찾을 수 없어요"
+      title={t('notFoundTitle')}
     >
-      <StatusActionLink href="/posts/recommend">이야기 목록으로 가기</StatusActionLink>
+      <StatusActionLink href="/posts/recommend">{t('notFoundAction')}</StatusActionLink>
     </StatusState>
   )
 }

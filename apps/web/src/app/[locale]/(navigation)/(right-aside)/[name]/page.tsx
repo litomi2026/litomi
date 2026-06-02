@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
+import NotFound from './not-found'
 import { getPublicUserProfile } from './profile'
 import UserPostList from './UserPostList'
 
@@ -55,6 +56,12 @@ export default async function Page({ params }: PageProps<'/[locale]/[name]'>) {
 
   if (!username) {
     return
+  }
+
+  const profile = await getPublicUserProfile(username)
+
+  if (!profile) {
+    return <NotFound />
   }
 
   return <UserPostList username={username} />
