@@ -3,4 +3,5 @@ export enum PostFilter {
   MANGA = '1',
   RECOMMEND = '2',
   USER = '3',
+  USER_REPLY = '4',
 }

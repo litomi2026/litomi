@@ -9,7 +9,13 @@ import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
-export default function usePostInfiniteQuery(filter: PostFilter, mangaId?: number, username?: string) {
+export type PostQuery = {
+  filter: PostFilter
+  mangaId?: number
+  username?: string
+}
+
+export default function usePostInfiniteQuery({ filter, mangaId, username }: PostQuery) {
   return useInfiniteQuery<GETV1PostResponse>({
     queryKey: QueryKeys.posts(filter, mangaId, username),
     queryFn: async ({ pageParam }) => {

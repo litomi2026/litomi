@@ -1,13 +1,11 @@
 import type { Metadata } from 'next'
 
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
-import { PostFilter } from '@litomi/domain/post/filter'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
-import { Book } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 
-import PostList from '@/app/[locale]/(navigation)/(right-aside)/posts/[filter]/MasonryPostList'
+import PostList from '@/app/[locale]/(navigation)/(right-aside)/posts/[filter]/PostList'
 import { getManga } from '@/app/[locale]/manga/[id]/common.server'
 import RatingInput from '@/app/[locale]/manga/[id]/RatingInput/RatingInput'
 import { mangaSchema } from '@/app/[locale]/manga/[id]/schema'
@@ -15,7 +13,6 @@ import BackButton from '@/components/BackButton'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import MangaReportButton from '@/components/report/MangaReportButton'
 import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
-import StatusState from '@/components/status/StatusState'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
@@ -85,17 +82,9 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]/d
           <RatingInput className="p-4 py-8" mangaId={id} />
         </div>
         <PostCreationForm className="flex p-4 border-b" mangaId={id} placeholder={t('postPlaceholder')} />
-        <PostList
-          filter={PostFilter.MANGA}
-          mangaId={id}
-          NotFound={<EmptyState description={t('emptyPostsDescription')} title={t('emptyPostsTitle')} />}
-        />
+        <PostList source={{ type: 'manga', mangaId: id }} />
       </div>
       <MobileNavigationSpacer />
     </main>
   )
-}
-
-function EmptyState({ description, title }: { description: string; title: string }) {
-  return <StatusState className="py-16" description={description} icon={<Book className="size-8" />} title={title} />
 }

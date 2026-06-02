@@ -6,8 +6,6 @@ import { Link } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import Header1 from './Header1'
-
 export async function generateMetadata({ params }: PageProps<'/[locale]/doc/terms'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'Metadata.doc.terms' })
@@ -30,8 +28,19 @@ export default async function Page() {
   return (
     <div className="p-4 md:p-8">
       <div className="max-w-prose mx-auto pb-safe px-safe">
-        <Header1 />
-
+        <header className="space-y-2">
+          <Link
+            className="inline-flex text-xs text-zinc-400 hover:text-zinc-200 underline underline-offset-4"
+            href="/new/1"
+            prefetch={false}
+          >
+            ← 돌아가기
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-100">이용약관</h1>
+            <p className="mt-1 text-sm text-zinc-400">리토미 서비스 이용에 관한 약관입니다.</p>
+          </div>
+        </header>
         <nav aria-label="목차" className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-950/30 p-4">
           <p className="text-sm font-semibold text-zinc-200">목차</p>
           <ol className="mt-2 space-y-1 text-sm text-zinc-300">

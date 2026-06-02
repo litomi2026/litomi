@@ -3,7 +3,7 @@ import { postLikeTable, postTable } from '@litomi/db/app/post'
 import { userFollowTable, userTable } from '@litomi/db/app/user'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { PostType } from '@litomi/domain/post/model'
-import { and, count, desc, eq, inArray, isNotNull, lt, or, SQL } from 'drizzle-orm'
+import { and, count, desc, eq, inArray, isNotNull, isNull, lt, or, SQL } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
 type DeletedReferredPost = {
@@ -83,6 +83,14 @@ export default async function selectPost({
 
   if (filter === PostFilter.MANGA) {
     conditions.push(isNotNull(postTable.mangaId))
+  }
+
+  if (filter === PostFilter.USER) {
+    conditions.push(isNull(postTable.parentPostId))
+  }
+
+  if (filter === PostFilter.USER_REPLY) {
+    conditions.push(isNotNull(postTable.parentPostId))
   }
 
   if (parentPostId) {
