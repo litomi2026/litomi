@@ -11,6 +11,7 @@ import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@
 import { userFollowTable, userSettingsTable, userTable } from '@litomi/db/app/user'
 import { redisClient } from '@litomi/db/redis'
 import { DeviceType } from '@litomi/domain/auth/model'
+import { DEFAULT_SEARCH_LANGUAGE } from '@litomi/domain/search/language'
 import { eq, sql } from 'drizzle-orm'
 
 import { getTestPasswordHash, TEST_LOGIN_PASSWORD } from './auth'
@@ -334,6 +335,7 @@ export async function seedUserSettings({ userId, ...overrides }: SeedUserSetting
       historySyncEnabled: overrides.historySyncEnabled ?? true,
       adultVerifiedAdVisible: overrides.adultVerifiedAdVisible ?? false,
       defaultCensorshipEnabled: overrides.defaultCensorshipEnabled ?? true,
+      searchLanguage: overrides.searchLanguage ?? DEFAULT_SEARCH_LANGUAGE,
       autoDeletionDay: overrides.autoDeletionDay ?? 90,
     })
     .returning()

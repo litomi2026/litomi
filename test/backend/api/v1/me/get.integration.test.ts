@@ -1,3 +1,4 @@
+import { DEFAULT_SEARCH_LANGUAGE } from '@litomi/domain/search/language'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import {
@@ -83,6 +84,7 @@ describe('GET /api/v1/me', () => {
         historySyncEnabled: false,
         adultVerifiedAdVisible: true,
         defaultCensorshipEnabled: false,
+        searchLanguage: DEFAULT_SEARCH_LANGUAGE,
         autoDeletionDay: 30,
       },
     })
@@ -112,6 +114,7 @@ describe('GET /api/v1/me', () => {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
         defaultCensorshipEnabled: true,
+        searchLanguage: DEFAULT_SEARCH_LANGUAGE,
         autoDeletionDay: 90,
       },
     })
@@ -144,6 +147,7 @@ describe('GET /api/v1/me', () => {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
         defaultCensorshipEnabled: true,
+        searchLanguage: DEFAULT_SEARCH_LANGUAGE,
         autoDeletionDay: 90,
       },
     })
@@ -176,6 +180,7 @@ describe('GET /api/v1/me', () => {
         historySyncEnabled: true,
         adultVerifiedAdVisible: false,
         defaultCensorshipEnabled: true,
+        searchLanguage: DEFAULT_SEARCH_LANGUAGE,
         autoDeletionDay: 90,
       },
     })
