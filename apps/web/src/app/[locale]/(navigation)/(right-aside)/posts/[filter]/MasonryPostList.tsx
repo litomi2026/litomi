@@ -2,17 +2,22 @@
 
 import type { Post } from '@litomi/contracts'
 
+import { Masonry, type RenderComponentProps, useInfiniteLoader } from 'masonic'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
-import { useInView } from 'react-intersection-observer'
+import { useCallback, useLayoutEffect, useState } from 'react'
 
 import PostCard, { PostSkeleton } from './PostCard'
+
+type MasonryLayoutConfig = {
+  columnCount: number
+  gutter: number
+}
 
 type Props = {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   loadNextPage: () => unknown
-  posts: readonly Post[]
+  posts: Post[]
   showMangaCover: boolean
 }
 
@@ -23,37 +28,50 @@ export default function MasonryPostList({
   posts,
   showMangaCover,
 }: Props) {
-  const masonryColumnCount = useMasonryColumnCount()
-  const masonryColumns = splitIntoMasonryColumns(posts, masonryColumnCount, showMangaCover)
+  const layoutConfig = useMasonryLayoutConfig()
   const t = useTranslations('Community.posts')
 
-  const { ref, inView } = useInView({
-    threshold: 0,
-    rootMargin: '100px',
-  })
-
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+  const loadMorePosts = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
       void loadNextPage()
     }
-  }, [inView, hasNextPage, isFetchingNextPage, loadNextPage])
+  }, [hasNextPage, isFetchingNextPage, loadNextPage])
+
+  const loadMoreOnRender = useInfiniteLoader(loadMorePosts, {
+    isItemLoaded: (index) => index < posts.length,
+    threshold: layoutConfig?.columnCount ?? 1,
+    totalItems: hasNextPage ? posts.length + 1 : posts.length,
+  })
+
+  if (!layoutConfig) {
+    return <MasonryPostListSkeleton showMangaCover={showMangaCover} />
+  }
 
   return (
     <div className="flex-1 p-2 md:p-3">
-      <div className="grid grid-cols-1 gap-x-2 sm:grid-cols-2 md:gap-x-3 md:grid-cols-3 xl:grid-cols-4" role="feed">
-        {masonryColumns.map((columnPosts, columnIndex) => (
-          <div className="flex flex-col gap-2 md:gap-3" key={columnIndex}>
-            {columnPosts.map((post) => (
-              <PostCard key={post.id} post={post} showMangaCover={showMangaCover} />
-            ))}
-            {isFetchingNextPage && <PostSkeleton showMangaCover={showMangaCover} />}
-          </div>
-        ))}
-      </div>
+      <Masonry
+        columnCount={layoutConfig.columnCount}
+        columnGutter={layoutConfig.gutter}
+        itemHeightEstimate={showMangaCover ? 440 : 160}
+        itemKey={getPostItemKey}
+        items={posts}
+        onRender={loadMoreOnRender}
+        overscanBy={1.5}
+        render={showMangaCover ? PostCardWithMangaCover : CompactPostCard}
+        role="list"
+        rowGutter={layoutConfig.gutter}
+        tabIndex={-1}
+      />
 
-      {hasNextPage && (
-        <output className="block py-4" ref={ref}>
-          {isFetchingNextPage && <span className="sr-only">{t('loading')}</span>}
+      {isFetchingNextPage && (
+        <div className="pt-2 md:pt-3">
+          <MasonryPostSkeletonGrid count={layoutConfig.columnCount} showMangaCover={showMangaCover} />
+        </div>
+      )}
+
+      {isFetchingNextPage && (
+        <output className="sr-only">
+          <span>{t('loading')}</span>
         </output>
       )}
 
@@ -67,48 +85,45 @@ export default function MasonryPostList({
 export function MasonryPostListSkeleton({ showMangaCover }: { showMangaCover: boolean }) {
   return (
     <div className="p-2 md:p-3">
-      <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-        {[...Array(6)].map((_, i) => (
-          <PostSkeleton key={i} showMangaCover={showMangaCover} />
-        ))}
-      </div>
+      <MasonryPostSkeletonGrid count={6} showMangaCover={showMangaCover} />
     </div>
   )
 }
 
-function splitIntoMasonryColumns(posts: readonly Post[], columnCount: number, showMangaCover: boolean) {
-  const columns: Post[][] = Array.from({ length: columnCount }, () => [])
-  const columnWeights = Array.from({ length: columnCount }, () => 0)
-
-  for (const post of posts) {
-    const postWeight = showMangaCover && post.mangaId ? 3.3 : 1
-
-    let targetColumn = 0
-    for (let i = 1; i < columnCount; i++) {
-      if (columnWeights[i]! < columnWeights[targetColumn]!) {
-        targetColumn = i
-      }
-    }
-
-    columns[targetColumn]!.push(post)
-    columnWeights[targetColumn]! += postWeight
-  }
-
-  return columns
+function CompactPostCard({ data }: RenderComponentProps<Post>) {
+  return <PostCard post={data} showMangaCover={false} />
 }
 
-function useMasonryColumnCount() {
-  const [columnCount, setColumnCount] = useState(1)
+function getPostItemKey(post: Post) {
+  return post.id
+}
 
-  useEffect(() => {
+function MasonryPostSkeletonGrid({ count, showMangaCover }: { count: number; showMangaCover: boolean }) {
+  return (
+    <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: count }, (_, i) => (
+        <PostSkeleton key={i} showMangaCover={showMangaCover} />
+      ))}
+    </div>
+  )
+}
+
+function PostCardWithMangaCover({ data }: RenderComponentProps<Post>) {
+  return <PostCard post={data} showMangaCover />
+}
+
+function useMasonryLayoutConfig() {
+  const [layoutConfig, setLayoutConfig] = useState<MasonryLayoutConfig | null>(null)
+
+  useLayoutEffect(() => {
     const mediaQueries = [
-      { columns: 4, mediaQuery: window.matchMedia('(min-width: 1280px)') },
-      { columns: 3, mediaQuery: window.matchMedia('(min-width: 768px)') },
-      { columns: 2, mediaQuery: window.matchMedia('(min-width: 640px)') },
+      { columnCount: 4, gutter: 12, mediaQuery: window.matchMedia('(min-width: 1280px)') },
+      { columnCount: 3, gutter: 12, mediaQuery: window.matchMedia('(min-width: 768px)') },
+      { columnCount: 2, gutter: 8, mediaQuery: window.matchMedia('(min-width: 640px)') },
     ] as const
 
     function update() {
-      setColumnCount(mediaQueries.find(({ mediaQuery }) => mediaQuery.matches)?.columns ?? 1)
+      setLayoutConfig(mediaQueries.find(({ mediaQuery }) => mediaQuery.matches) ?? { columnCount: 1, gutter: 8 })
     }
 
     update()
@@ -116,5 +131,5 @@ function useMasonryColumnCount() {
     return () => mediaQueries.forEach(({ mediaQuery }) => mediaQuery.removeEventListener('change', update))
   }, [])
 
-  return columnCount
+  return layoutConfig
 }
