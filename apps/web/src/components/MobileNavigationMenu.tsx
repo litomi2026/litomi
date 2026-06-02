@@ -1,6 +1,20 @@
 'use client'
 
-import { Bookmark, Bot, Clover, FileText, Flame, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
+import {
+  Bookmark,
+  Bot,
+  Clover,
+  FileText,
+  Flame,
+  HeartHandshake,
+  History,
+  PiggyBank,
+  ScanEye,
+  Settings,
+  Star,
+  Tag,
+  X,
+} from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ReactNode, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -117,14 +131,6 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             title={t('tag')}
           />
           <MobileMenuLink
-            href="/chat"
-            icon={<Bot />}
-            onClose={onClose}
-            pathname={pathname}
-            selectedIconStyle="stroke"
-            title={t('chat')}
-          />
-          <MobileMenuLink
             href="/libo"
             hrefMatch="/libo"
             icon={<PiggyBank />}
@@ -148,6 +154,22 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             pathname={pathname}
             selectedIconStyle="fill"
             title={t('rating')}
+          />
+          <MobileMenuLink href="/censor" icon={<ScanEye />} onClose={onClose} pathname={pathname} title={t('censor')} />
+          <MobileMenuLink
+            href="/donation"
+            icon={<HeartHandshake />}
+            onClose={onClose}
+            pathname={pathname}
+            title={t('donation')}
+          />
+          <MobileMenuLink
+            href="/chat"
+            icon={<Bot />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="stroke"
+            title={t('chat')}
           />
           <MobileMenuLink
             href="/fortune"

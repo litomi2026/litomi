@@ -2,33 +2,24 @@
 
 import useMeQuery from '@/query/useMeQuery'
 
-import DonationsClient from './DonationsClient'
-import Forbidden from './Forbidden'
+import DonationClient from './DonationClient'
 import Unauthorized from './Unauthorized'
 
-type Props = {
-  username: string
-}
-
-export default function DonationsAuthGate({ username }: Props) {
+export default function DonationAuthGate() {
   const { data: me } = useMeQuery()
 
   if (me === undefined) {
-    return <DonationsLoading />
+    return <DonationLoading />
   }
 
   if (me === null) {
     return <Unauthorized />
   }
 
-  if (me.name !== username) {
-    return <Forbidden loginUsername={me.name} />
-  }
-
-  return <DonationsClient />
+  return <DonationClient />
 }
 
-function DonationsLoading() {
+function DonationLoading() {
   return (
     <div className="max-w-3xl w-full mx-auto grid gap-4 p-6">
       <div className="h-4 w-40 rounded-full bg-zinc-900 animate-fade-in-fast" />

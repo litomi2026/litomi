@@ -5,7 +5,6 @@ import { twMerge } from 'tailwind-merge'
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
 
 import MyPageNavigationLink from './MyPageNavigationLink'
-import MyPagePrivateNavigation from './MyPagePrivateNavigation'
 import UserProfile from './UserProfile'
 
 export default async function Layout({ params, children }: LayoutProps<'/[locale]/[name]'>) {
@@ -32,7 +31,6 @@ export default async function Layout({ params, children }: LayoutProps<'/[locale
           {publicLinks.map(({ href, label }) => (
             <MyPageNavigationLink href={href} key={href} label={label} />
           ))}
-          <MyPagePrivateNavigation username={username} />
         </div>
       </nav>
       {children}

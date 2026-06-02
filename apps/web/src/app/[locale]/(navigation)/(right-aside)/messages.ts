@@ -35,6 +35,10 @@ export const messages = {
           title: '검열',
           description: '콘텐츠 표시와 차단 관련 설정을 관리하세요.',
         },
+        donation: {
+          title: '후원',
+          description: '후원한 작품과 수신 대상을 확인하세요.',
+        },
       },
     },
     Community: {
@@ -119,8 +123,6 @@ export const messages = {
         logout: '로그아웃',
         stories: '이야기',
         replies: '댓글',
-        censor: '검열',
-        donations: '후원',
         settings: '설정',
       },
       fallback: {
@@ -207,6 +209,10 @@ export const messages = {
           title: 'Censor',
           description: 'Manage content visibility and blocking settings.',
         },
+        donation: {
+          title: 'Donation',
+          description: 'Review works you supported and their recipients.',
+        },
       },
     },
     Community: {
@@ -291,8 +297,6 @@ export const messages = {
         logout: 'Log out',
         stories: 'Stories',
         replies: 'Replies',
-        censor: 'Censor',
-        donations: 'Donations',
         settings: 'Settings',
       },
       fallback: {
@@ -379,6 +383,10 @@ export const messages = {
           title: '検閲',
           description: 'コンテンツの表示とブロックに関する設定を管理します。',
         },
+        donation: {
+          title: '支援',
+          description: '支援した作品と対象を確認します。',
+        },
       },
     },
     Community: {
@@ -463,8 +471,6 @@ export const messages = {
         logout: 'ログアウト',
         stories: 'ストーリー',
         replies: '返信',
-        censor: '検閲',
-        donations: '支援',
         settings: '設定',
       },
       fallback: {
@@ -551,6 +557,10 @@ export const messages = {
           title: '屏蔽',
           description: '管理内容显示和屏蔽相关设置。',
         },
+        donation: {
+          title: '赞助',
+          description: '查看你赞助过的作品和对象。',
+        },
       },
     },
     Community: {
@@ -634,8 +644,6 @@ export const messages = {
         logout: '退出登录',
         stories: '动态',
         replies: '评论',
-        censor: '屏蔽',
-        donations: '赞助',
         settings: '设置',
       },
       fallback: {
