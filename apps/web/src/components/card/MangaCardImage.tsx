@@ -53,7 +53,7 @@ export default function MangaCardImage({ manga, mangaIndex, rank, className = ''
       {shouldShowPreviewImages ? (
         <MangaCardPreviewImages
           className={twMerge(
-            'flex overflow-x-auto snap-x snap-mandatory select-none scrollbar-hidden relative',
+            'flex overflow-x-auto overscroll-x-contain snap-x snap-mandatory select-none scrollbar-hidden relative',
             config.imageContainerClassName,
           )}
           href={href}
@@ -63,7 +63,7 @@ export default function MangaCardImage({ manga, mangaIndex, rank, className = ''
       ) : images.length > 0 ? (
         <Link
           className={twMerge(
-            'flex overflow-x-auto snap-x snap-mandatory select-none scrollbar-hidden relative',
+            'block select-none touch-pan-y relative',
             config.imageContainerClassName,
           )}
           href={href}
