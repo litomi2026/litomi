@@ -176,18 +176,16 @@ export default function ReaderControls<TPage extends ReaderPage>({
           >
             {messages.pageViewButtons[pageView]}
           </button>
-          {(isDoublePage || isHorizontalScrollMode) && (
-            <button
-              aria-label={messages.readingDirectionButtons[readingDirection]}
-              className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
-              onClick={toggleReadingDirection}
-              type="button"
-            >
-              {messages.readingDirectionLeftShort}
-              {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
-              {messages.readingDirectionRightShort}
-            </button>
-          )}
+          <button
+            aria-label={messages.readingDirectionButtons[readingDirection]}
+            className={twMerge(BOTTOM_BUTTON_CLASS_NAME, 'flex items-center justify-center gap-1')}
+            onClick={toggleReadingDirection}
+            type="button"
+          >
+            {messages.readingDirectionLeftShort}
+            {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
+            {messages.readingDirectionRightShort}
+          </button>
           {!isHorizontalScrollMode && (
             <button
               className={BOTTOM_BUTTON_CLASS_NAME}
