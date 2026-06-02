@@ -67,9 +67,7 @@ export default function MoreNavigationPopover({ className }: Props) {
   const popoverId = useId()
   const pathname = usePathname()
   const t = useTranslations('Navigation.sidebar')
-
   const hasActiveItem = MORE_NAVIGATION_ITEMS.some((item) => pathname === item.href)
-  const selectedIconClassName = hasActiveItem ? getSelectedIconClassName('stroke') : ''
 
   useLayoutEffect(() => {
     if (!isOpen) {
@@ -163,16 +161,10 @@ export default function MoreNavigationPopover({ className }: Props) {
             'group-active:scale-90 group-active:md:scale-95',
           )}
         >
-          <span
+          <MoreHorizontal
             aria-hidden
-            className={twMerge(
-              'inline-flex size-6 shrink-0 items-center justify-center text-foreground',
-              '[&_svg]:size-full [&_svg]:shrink-0',
-              selectedIconClassName,
-            )}
-          >
-            <MoreHorizontal />
-          </span>
+            className={twMerge('size-6 shrink-0 text-foreground', hasActiveItem && 'stroke-3')}
+          />
           <span className="hidden min-w-0 2xl:block">{t('more')}</span>
         </div>
       </button>
@@ -204,17 +196,4 @@ export default function MoreNavigationPopover({ className }: Props) {
       )}
     </div>
   )
-}
-
-function getSelectedIconClassName(selectedIconStyle: SelectedIconStyle) {
-  switch (selectedIconStyle) {
-    case 'fill':
-      return '[&_svg]:fill-current [&_[data-icon-variant=solid]]:opacity-100 [&_[data-icon-variant=outline]]:opacity-0'
-    case 'fill-soft':
-      return '[&_svg]:fill-current [&_svg]:[fill-opacity:0.3]'
-    case 'stroke':
-      return '[&_svg]:stroke-3'
-    default:
-      return ''
-  }
 }

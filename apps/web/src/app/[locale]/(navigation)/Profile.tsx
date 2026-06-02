@@ -101,7 +101,7 @@ function GuestProfileActions({ settingsLabel }: { settingsLabel: string }) {
         <Link
           aria-current={pathname === '/settings' ? 'page' : undefined}
           aria-label={settingsLabel}
-          className="order-1 p-3 flex items-center justify-center text-zinc-400 transition hover:text-foreground active:scale-90 aria-[current=page]:bg-zinc-900 aria-[current=page]:text-foreground aria-[current=page]:[&_svg]:fill-current aria-[current=page]:[&_svg]:[fill-opacity:0.3] 2xl:order-2"
+          className="order-1 p-3 flex items-center justify-center text-zinc-400 transition hover:text-foreground active:scale-90 aria-[current=page]:text-foreground aria-[current=page]:[&_svg]:fill-current aria-[current=page]:[&_svg]:[fill-opacity:0.3] 2xl:order-2"
           href="/settings"
           title={settingsLabel}
         >
