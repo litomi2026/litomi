@@ -22,7 +22,7 @@ export default function Unauthorized() {
           {t('unauthorized.signupPrompt')}{' '}
           <Link
             className="text-zinc-300 underline transition hover:text-zinc-100"
-            href={getAuthRedirectHref('/auth/signup', '/@/censor')}
+            href={getAuthRedirectHref('/auth/signup', '/censor')}
             prefetch={false}
           >
             {t('unauthorized.signupAction')}

@@ -3,14 +3,9 @@
 import useMeQuery from '@/query/useMeQuery'
 
 import DonationsClient from './DonationsClient'
-import Forbidden from './Forbidden'
 import Unauthorized from './Unauthorized'
 
-type Props = {
-  username: string
-}
-
-export default function DonationsAuthGate({ username }: Props) {
+export default function DonationsAuthGate() {
   const { data: me } = useMeQuery()
 
   if (me === undefined) {
@@ -19,10 +14,6 @@ export default function DonationsAuthGate({ username }: Props) {
 
   if (me === null) {
     return <Unauthorized />
-  }
-
-  if (me.name !== username) {
-    return <Forbidden loginUsername={me.name} />
   }
 
   return <DonationsClient />

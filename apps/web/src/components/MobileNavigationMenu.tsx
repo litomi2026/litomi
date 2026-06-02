@@ -1,6 +1,20 @@
 'use client'
 
-import { Bookmark, Bot, Clover, FileText, Flame, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
+import {
+  Bookmark,
+  Bot,
+  Clover,
+  FileText,
+  Flame,
+  HeartHandshake,
+  History,
+  PiggyBank,
+  Settings,
+  ShieldCheck,
+  Star,
+  Tag,
+  X,
+} from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ReactNode, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -165,6 +179,22 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             selectedIconStyle="fill-soft"
             title={t('settings')}
           />
+          <div className="mt-auto grid gap-1 border-t border-zinc-800/80 pt-3">
+            <MobileMenuLink
+              href="/censor"
+              icon={<ShieldCheck />}
+              onClose={onClose}
+              pathname={pathname}
+              title={t('censor')}
+            />
+            <MobileMenuLink
+              href="/donations"
+              icon={<HeartHandshake />}
+              onClose={onClose}
+              pathname={pathname}
+              title={t('donations')}
+            />
+          </div>
         </nav>
       </aside>
     </OverlayHost>

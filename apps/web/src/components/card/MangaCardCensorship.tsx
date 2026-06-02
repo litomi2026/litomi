@@ -11,7 +11,6 @@ import { useState } from 'react'
 
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import { Link } from '@/i18n/navigation'
-import useMeQuery from '@/query/useMeQuery'
 
 import type { ChildrenDayLocale } from './MangaCardCensorshipChildren'
 
@@ -41,10 +40,8 @@ export default function MangaCardCensorship({ manga }: Props) {
   const [isBlurDisabled, setIsBlurDisabled] = useState(false)
   const t = useTranslations('Common.mangaCard.censorship')
   const { getMatch } = useMangaCensorship()
-  const { data: me } = useMeQuery()
   const locale = useLocale()
 
-  const myName = me?.name ?? ''
   const childrenDay = getChildrenDayForLocale(locale)
   const isChildrenDay = checkChildrenDay(childrenDay)
   const { censoringReasons, highestCensorshipLevel } = getMatch(manga)
@@ -78,7 +75,7 @@ export default function MangaCardCensorship({ manga }: Props) {
       <Link
         aria-hidden={isBlurDisabled}
         className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center pointer-events-auto transition hover:underline aria-hidden:opacity-0 aria-hidden:pointer-events-none"
-        href={`/@${myName}/censor`}
+        href="/censor"
         prefetch={false}
       >
         {t('workCensored', { reasons: censoringReasons.join(', ') })}

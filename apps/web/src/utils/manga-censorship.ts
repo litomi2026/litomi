@@ -3,7 +3,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 
-import { DEFAULT_CENSORSHIP_VALUES } from '@/app/[locale]/(navigation)/(right-aside)/[name]/censor/constants'
+import { DEFAULT_CENSORSHIP_VALUES } from '@/app/[locale]/(navigation)/(right-aside)/censor/constants'
 
 export type MangaCensorshipMatch = {
   censoringReasons?: string[]

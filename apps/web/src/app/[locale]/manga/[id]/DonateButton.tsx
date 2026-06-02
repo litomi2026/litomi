@@ -111,7 +111,7 @@ export default function DonateButton({ manga, ...props }: Props) {
     donateMutation.mutate(payload, {
       onSuccess: () => {
         close()
-        const donationHref = me?.name ? `/@${me.name}/donations` : '/ranking/donation'
+        const donationHref = me?.name ? '/donations' : '/ranking/donation'
         const donationLabel = me?.name ? '내 후원 보기' : '후원 랭킹 보기'
         const toastId = `donation-success-${manga.id}-${Date.now()}`
 
