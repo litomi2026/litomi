@@ -131,14 +131,6 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             title={t('tag')}
           />
           <MobileMenuLink
-            href="/chat"
-            icon={<Bot />}
-            onClose={onClose}
-            pathname={pathname}
-            selectedIconStyle="stroke"
-            title={t('chat')}
-          />
-          <MobileMenuLink
             href="/libo"
             hrefMatch="/libo"
             icon={<PiggyBank />}
@@ -163,6 +155,22 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             selectedIconStyle="fill"
             title={t('rating')}
           />
+          <MobileMenuLink href="/censor" icon={<ScanEye />} onClose={onClose} pathname={pathname} title={t('censor')} />
+          <MobileMenuLink
+            href="/donation"
+            icon={<HeartHandshake />}
+            onClose={onClose}
+            pathname={pathname}
+            title={t('donation')}
+          />
+          <MobileMenuLink
+            href="/chat"
+            icon={<Bot />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="stroke"
+            title={t('chat')}
+          />
           <MobileMenuLink
             href="/fortune"
             hrefMatch="/fortune"
@@ -179,22 +187,6 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             selectedIconStyle="fill-soft"
             title={t('settings')}
           />
-          <div className="mt-auto grid gap-1 border-t border-zinc-800/80 pt-3">
-            <MobileMenuLink
-              href="/censor"
-              icon={<ScanEye />}
-              onClose={onClose}
-              pathname={pathname}
-              title={t('censor')}
-            />
-            <MobileMenuLink
-              href="/donation"
-              icon={<HeartHandshake />}
-              onClose={onClose}
-              pathname={pathname}
-              title={t('donation')}
-            />
-          </div>
         </nav>
       </aside>
     </OverlayHost>
