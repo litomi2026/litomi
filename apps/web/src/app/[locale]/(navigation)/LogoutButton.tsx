@@ -8,9 +8,14 @@ import { twMerge } from 'tailwind-merge'
 import { identify, track } from '@/lib/analytics/browser'
 import useLogoutMutation from '@/query/useLogoutMutation'
 
-export default function LogoutButton() {
+type Props = {
+  username: string
+}
+
+export default function LogoutButton({ username }: Props) {
   const { mutate: logout, isPending } = useLogoutMutation()
   const t = useTranslations('Profile.navigation')
+  const logoutLabel = t('logout', { name: username })
 
   function handleLogout() {
     logout(undefined, {
@@ -24,6 +29,7 @@ export default function LogoutButton() {
 
   return (
     <button
+      aria-label={logoutLabel}
       className={twMerge(
         'flex items-center gap-3 group rounded-full p-2 w-full text-red-500 text-sm font-semibold transition whitespace-nowrap',
         'hover:bg-red-500/20 active:scale-95',
@@ -34,7 +40,7 @@ export default function LogoutButton() {
       type="button"
     >
       <LogOut className="w-5 transition group-disabled:scale-100" />
-      <span className="min-w-0 hidden md:block">{t('logout')}</span>
+      <span className="min-w-0 hidden md:block">{logoutLabel}</span>
     </button>
   )
 }

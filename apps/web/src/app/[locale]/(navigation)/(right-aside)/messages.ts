@@ -181,8 +181,8 @@ export const messages = {
     Metadata: {
       community: {
         posts: {
-          title: 'Stories',
-          description: 'Read stories and recommendations from Litomi users.',
+          title: 'Posts',
+          description: 'Read posts and recommendations from Litomi users.',
         },
         notification: {
           title: 'Notifications',
@@ -192,8 +192,8 @@ export const messages = {
           deletedTitle: 'This post was deleted',
         },
         profile: {
-          indexTitle: 'Stories',
-          title: "{nickname} (@{name})'s Stories",
+          indexTitle: 'Posts',
+          title: "{nickname} (@{name})'s Posts",
           repliesIndexTitle: 'Replies',
           repliesTitle: "{nickname} (@{name})'s Replies",
           repliesDescription: 'Read replies this user has written, newest first.',
@@ -202,8 +202,8 @@ export const messages = {
           missingDescription: 'Could not find @{username}.',
         },
         settings: {
-          title: 'Settings',
-          description: 'Manage your account, security, notifications, language, and theme settings.',
+          title: 'Settings and privacy',
+          description: 'Manage your account, privacy, security, notifications, language, and theme settings.',
         },
         censor: {
           title: 'Censor',
@@ -234,7 +234,7 @@ export const messages = {
       posts: {
         recommend: 'Recommended',
         following: 'Following',
-        listTitle: 'Stories',
+        listTitle: 'Posts',
         creationPlaceholder: 'What is happening?',
         emptyFollowingTitle: 'No posts from people you follow',
         emptyFollowingDescription: 'Follow other users or check all posts',
@@ -255,9 +255,9 @@ export const messages = {
         replyPlaceholder: 'Post a reply',
         replyingTo: 'Replying to @{name}',
         parentPostsLabel: 'Parent posts',
-        notFoundTitle: 'Story not found',
-        notFoundDescription: 'This story may have been deleted or is no longer public',
-        notFoundAction: 'Go to stories',
+        notFoundTitle: 'Post not found',
+        notFoundDescription: 'This post may have been deleted or is no longer public',
+        notFoundAction: 'Go to posts',
         viewWork: 'View work',
         viewRelatedWork: 'View related work',
         comments: 'Comments',
@@ -293,11 +293,11 @@ export const messages = {
     },
     Profile: {
       navigation: {
-        myLitomi: 'My Litomi',
-        logout: 'Log out',
-        stories: 'Stories',
+        myLitomi: 'Profile',
+        logout: 'Log out @{name}',
+        stories: 'Posts',
         replies: 'Replies',
-        settings: 'Settings',
+        settings: 'Settings and privacy',
       },
       fallback: {
         missingUser: 'User not found',
@@ -319,17 +319,17 @@ export const messages = {
       },
       replies: {
         emptyOwnTitle: 'No replies yet',
-        emptyOwnDescription: 'Reply to a story to start a conversation',
+        emptyOwnDescription: 'Reply to a post to start a conversation',
         emptyOtherTitle: 'No public replies yet',
         emptyOtherDescription: 'Replies from this user will appear here',
         notFoundTitle: 'No replies found',
         notFoundDescription: 'This user has no public replies yet, or their replies are not available',
-        notFoundAction: 'Go to stories',
+        notFoundAction: 'Go to posts',
       },
       notFound: {
         title: 'User not found',
         description: 'The address may have changed, or this public profile could not be found',
-        action: 'Go to stories',
+        action: 'Go to posts',
       },
       edit: {
         action: 'Edit profile',
