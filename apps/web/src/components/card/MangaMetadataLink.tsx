@@ -6,7 +6,7 @@ type Props = {
   filterType: string
   i?: number
   label?: string
-  searchParams?: string
+  searchParams?: URLSearchParams
   value: string
 }
 

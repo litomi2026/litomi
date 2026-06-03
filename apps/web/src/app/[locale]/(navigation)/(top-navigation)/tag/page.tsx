@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 
 import { getTranslations } from 'next-intl/server'
+import { Suspense } from 'react'
 
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import TagPageClient from './TagPageClient'
+import TagPageClient from './page.client'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/tag'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
@@ -26,5 +27,9 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/tag'>): 
 }
 
 export default function Page() {
-  return <TagPageClient />
+  return (
+    <Suspense>
+      <TagPageClient />
+    </Suspense>
+  )
 }

@@ -9,7 +9,7 @@ import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelecti
 let fetchRoutes: FetchRoute[] = []
 let fetchController: ReturnType<typeof installMockFetch>
 
-const { default: HistoryPageClient } = await import('./HistoryPageClient')
+const { default: HistoryPageClient } = await import('./page.client')
 
 beforeEach(() => {
   fetchRoutes = []

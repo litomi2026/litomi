@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
 
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
-import { View } from '@litomi/std'
 import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { z } from 'zod'
 
-import { redirect } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
@@ -14,11 +11,6 @@ import LibraryItemsClient from './LibraryItemsClient'
 
 const schema = z.object({
   id: z.coerce.number().int().positive(),
-})
-
-const searchParamsSchema = z.object({
-  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
-  view: z.enum(View).default(View.CARD),
 })
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/library/[id]'>): Promise<Metadata> {
@@ -46,8 +38,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/library/
   }
 }
 
-export default async function LibraryDetailPage({ params, searchParams }: PageProps<'/[locale]/library/[id]'>) {
-  const locale = await getLocaleFromParams(params)
+export default async function LibraryDetailPage({ params }: PageProps<'/[locale]/library/[id]'>) {
   const validation = schema.safeParse(await params)
 
   if (!validation.success) {
@@ -55,13 +46,6 @@ export default async function LibraryDetailPage({ params, searchParams }: PagePr
   }
 
   const { id: libraryId } = validation.data
-  const searchValidation = searchParamsSchema.safeParse(await searchParams)
 
-  if (!searchValidation.success) {
-    return redirect({ href: `/library/${libraryId}`, locale })
-  }
-
-  const { sort, view } = searchValidation.data
-
-  return <LibraryItemsClient initialSort={sort} initialView={view} libraryId={libraryId} />
+  return <LibraryItemsClient libraryId={libraryId} />
 }

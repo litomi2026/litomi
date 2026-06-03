@@ -14,7 +14,7 @@ import TagOptionsSheet from './TagOptionsSheet'
 
 type Props = {
   className?: string
-  searchParams?: string
+  searchParams?: URLSearchParams
   tags: MangaTag[]
 }
 

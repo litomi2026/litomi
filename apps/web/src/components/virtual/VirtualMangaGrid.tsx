@@ -80,6 +80,10 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>(pro
   )
 }
 
+function createScrollRestorationKey(key: string) {
+  return typeof window === 'undefined' ? key : `${window.location.href}:${key}`
+}
+
 function measureVirtualMangaGridElement(element: HTMLElement): VirtualMangaGridSize {
   const rect = element.getBoundingClientRect()
   const width = Math.round(rect.width || element.clientWidth || window.innerWidth || 1)
@@ -102,12 +106,12 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   isFetchingNextPage,
   itemGap = 0,
   items,
-  measurementKey,
+  measurementKey = '',
   onScrollElementChange,
   overscanCount = DEFAULT_OVERSCAN_COUNT,
   preloadRowCount = DEFAULT_PRELOAD_ROW_COUNT,
   renderItem,
-  scrollRestorationKey,
+  scrollRestorationKey = '',
   scrollToOptions,
   size,
   view,
@@ -182,7 +186,7 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
   const { saveScrollSnapshot } = useVirtualScrollRestoration({
     anchors: scrollAnchors,
     list,
-    restorationKey: scrollRestorationKey,
+    restorationKey: createScrollRestorationKey(scrollRestorationKey),
   })
 
   const handleVisibleRowsRendered = useCallback(

@@ -6,9 +6,11 @@ import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
-import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import useCooldown from '@/hook/useCooldown'
 import { usePathname, useRouter } from '@/i18n/navigation'
+
+import { SearchHeaderSpacer } from './SearchHeaderSpacer'
 
 type Props = {
   error: Error & { digest?: string }

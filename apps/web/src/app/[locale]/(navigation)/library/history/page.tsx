@@ -5,7 +5,7 @@ import { getTranslations } from 'next-intl/server'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import HistoryPageClient from './HistoryPageClient'
+import HistoryPageClient from './page.client'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/library/history'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/library/
   }
 }
 
-export default function HistoryPage() {
+export default function Page() {
   return (
     <main className="flex-1 flex flex-col">
       <HistoryPageClient />

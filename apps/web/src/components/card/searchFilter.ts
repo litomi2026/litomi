@@ -1,22 +1,39 @@
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 
-export function getSearchFilter(filterPattern: string, searchParams = '') {
+type SearchFilter = {
+  href: string
+  isActive: boolean
+}
+
+export function getSearchFilter(filterPattern: string, searchParams?: URLSearchParams): SearchFilter {
   const params = new URLSearchParams(searchParams)
-  const query = params.get(SearchPageSearchParam.QUERY) ?? ''
-  const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const wordBoundaryRegex = new RegExp(`\\b${escapedPattern}\\b`)
-  const isActive = wordBoundaryRegex.test(query)
+  const currentQuery = params.get(SearchPageSearchParam.QUERY) ?? ''
+  const tokens = tokenizeSearchQuery(currentQuery)
+  const isActive = tokens.includes(filterPattern)
+  const toggled = isActive ? tokens.filter((token) => token !== filterPattern) : [...tokens, filterPattern]
+  const nextQuery = toggled.join(' ')
 
-  const newQuery = isActive
-    ? query.replace(wordBoundaryRegex, '').replace(/\s+/g, ' ').trim()
-    : query
-      ? `${query} ${filterPattern}`
-      : filterPattern
+  if (nextQuery) {
+    params.set(SearchPageSearchParam.QUERY, nextQuery)
+  } else {
+    params.delete(SearchPageSearchParam.QUERY)
+  }
 
-  params.set(SearchPageSearchParam.QUERY, newQuery)
+  const nextSearchParams = params.toString()
 
   return {
-    href: `/search?${params}`,
+    href: nextSearchParams ? `/search?${nextSearchParams}` : '/search',
     isActive,
   }
+}
+
+export function isSearchFilterActive(filterPattern: string, searchParams?: URLSearchParams) {
+  const currentQuery = searchParams?.get(SearchPageSearchParam.QUERY) ?? ''
+  const tokens = tokenizeSearchQuery(currentQuery)
+
+  return tokens.includes(filterPattern)
+}
+
+function tokenizeSearchQuery(query: string) {
+  return query.split(/\s+/).filter(Boolean)
 }

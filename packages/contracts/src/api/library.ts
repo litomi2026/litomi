@@ -8,7 +8,7 @@ import {
   RATING_PER_PAGE,
   READING_HISTORY_PER_PAGE,
 } from '@litomi/domain/library/policy'
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT, RatingSort } from '@litomi/domain/library/sort'
+import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort, RatingSort } from '@litomi/domain/library/sort'
 import { Locale } from '@litomi/domain/locale'
 import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { POINT_CONSTANTS } from '@litomi/domain/points/model'
@@ -130,7 +130,7 @@ export const getLibraryItemsQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
   locale: z.enum(Locale),
   scope: z.enum(['public', 'me']),
-  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+  sort: z.enum(LibraryItemSort).default(DEFAULT_LIBRARY_ITEM_SORT),
 })
 
 export type GETLibraryItemsQuery = z.infer<typeof getLibraryItemsQuerySchema>

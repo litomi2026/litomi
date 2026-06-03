@@ -20,7 +20,7 @@ type Props = {
 
 export default function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Props) {
   const [activeIndex, setActiveIndex] = useState(0)
-  const sliderRef = useRef<HTMLAnchorElement>(null)
+  const sliderRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('Common.mangaCard.preview')
 
   const { images = [] } = manga
@@ -56,23 +56,29 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
 
   return (
     <>
-      <Link className={className} href={href} prefetch={false} ref={sliderRef}>
-        <LinkPending
-          className="size-6"
-          wrapperClassName="flex items-center justify-center absolute inset-0 bg-background/80 animate-fade-in-fast"
-        />
+      <div className={className} ref={sliderRef}>
         {Array.from({ length: totalSlides }).map((_, imageIndex) => (
-          <MangaImage
-            fetchPriority={mangaIndex < 4 && imageIndex < 1 ? 'high' : undefined}
-            imageIndex={imageIndex}
+          <Link
+            className="relative block h-full w-full shrink-0 snap-start select-none"
+            href={href}
             key={imageIndex}
-            loading={imageIndex >= 1 ? 'lazy' : undefined}
-            mangaId={manga.id}
-            src={images[imageIndex]?.thumbnail?.url ?? images[imageIndex]?.original?.url}
-            variant="thumbnail"
-          />
+            prefetch={false}
+          >
+            <LinkPending
+              className="size-6"
+              wrapperClassName="flex items-center justify-center absolute inset-0 bg-background/80 animate-fade-in-fast"
+            />
+            <MangaImage
+              fetchPriority={mangaIndex < 4 && imageIndex < 1 ? 'high' : undefined}
+              imageIndex={imageIndex}
+              loading={imageIndex >= 1 ? 'lazy' : undefined}
+              mangaId={manga.id}
+              src={images[imageIndex]?.thumbnail?.url ?? images[imageIndex]?.original?.url}
+              variant="thumbnail"
+            />
+          </Link>
         ))}
-      </Link>
+      </div>
       <button
         aria-label={t('previous')}
         className="pointer-coarse:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"

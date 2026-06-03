@@ -1,5 +1,5 @@
 import { BOOKMARKS_PER_PAGE, MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/library/policy'
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
+import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
 import { Locale } from '@litomi/domain/locale'
 import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { z } from 'zod'
@@ -33,7 +33,7 @@ export const getV1BookmarkQuerySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).default(BOOKMARKS_PER_PAGE),
   locale: z.enum(Locale),
-  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+  sort: z.enum(LibraryItemSort).default(DEFAULT_LIBRARY_ITEM_SORT),
 })
 
 export type GETV1BookmarkQuery = z.infer<typeof getV1BookmarkQuerySchema>

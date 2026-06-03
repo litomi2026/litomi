@@ -1,6 +1,6 @@
 import type { SQL } from 'drizzle-orm'
 
-import { CollectionItemSort } from '@litomi/domain/library/sort'
+import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { PgDialect } from 'drizzle-orm/pg-core'
 
@@ -106,7 +106,7 @@ describe('selectBookmark', () => {
   })
 
   test('오래된순 정렬을 요청하면 ascending order를 사용한다', async () => {
-    await selectBookmark({ userId: 1, sort: CollectionItemSort.CREATED_ASC })
+    await selectBookmark({ userId: 1, sort: LibraryItemSort.CREATED_ASC })
 
     expect(queryState.orderByClauses).toHaveLength(2)
     expect(dialect.sqlToQuery(queryState.orderByClauses[0]).sql).toContain('"bookmark"."created_at" asc')

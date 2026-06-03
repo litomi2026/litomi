@@ -10,7 +10,7 @@ import { getSearchFilter } from './searchFilter'
 type Props = {
   className?: string
   language: string
-  searchParams?: string
+  searchParams?: URLSearchParams
 }
 
 // Language to emoji flag mapping

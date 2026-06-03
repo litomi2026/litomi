@@ -10,7 +10,7 @@ import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_API_ORIGIN } = env
 
-export async function fetchAllLibraryMangas({ cursor, locale }: { cursor: string | null; locale: Locale }) {
+export async function fetchPublicLibraryMangas({ cursor, locale }: { cursor: string | null; locale: Locale }) {
   const url = new URL('/api/v1/library/manga', NEXT_PUBLIC_API_ORIGIN)
   url.searchParams.set('locale', locale)
 
@@ -22,12 +22,12 @@ export async function fetchAllLibraryMangas({ cursor, locale }: { cursor: string
   return data
 }
 
-export default function useAllLibraryMangaInfiniteQuery() {
+export default function usePublicLibraryMangaInfiniteQuery() {
   const locale = useLocale()
 
   return useInfiniteQuery({
-    queryKey: QueryKeys.infiniteLibraryMangas(locale),
-    queryFn: ({ pageParam }) => fetchAllLibraryMangas({ cursor: pageParam, locale }),
+    queryKey: QueryKeys.infinitePublicLibraryMangas(locale),
+    queryFn: ({ pageParam }) => fetchPublicLibraryMangas({ cursor: pageParam, locale }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: '',
   })

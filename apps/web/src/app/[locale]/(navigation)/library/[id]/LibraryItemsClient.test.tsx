@@ -1,6 +1,6 @@
 import type { GETLibraryItemsResponse } from '@litomi/contracts'
 
-import { CollectionItemSort } from '@litomi/domain/library/sort'
+import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestNavigationWrapper } from '@test/utils/navigation'
@@ -74,7 +74,7 @@ describe('LibraryItemsClient', () => {
     const view = renderWithLibrarySelection(
       <LibraryItemsClient
         initialItems={basePage}
-        initialSort={CollectionItemSort.CREATED_DESC}
+        initialSort={LibraryItemSort.CREATED_DESC}
         initialView={View.CARD}
         isOwner
         library={{ id: 1, name: '테스트', isPublic: true }}
@@ -92,14 +92,14 @@ describe('LibraryItemsClient', () => {
       matcher: ({ url }) =>
         url.pathname === '/api/v1/library/1/item' &&
         url.searchParams.get('scope') === 'me' &&
-        url.searchParams.get('sort') === CollectionItemSort.MANGA_ID_ASC,
+        url.searchParams.get('sort') === LibraryItemSort.MANGA_ID_ASC,
       response: () => jsonResponse(basePage),
     })
 
     const view = renderWithLibrarySelection(
       <LibraryItemsClient
         initialItems={basePage}
-        initialSort={CollectionItemSort.CREATED_DESC}
+        initialSort={LibraryItemSort.CREATED_DESC}
         initialView={View.CARD}
         isOwner
         library={{ id: 1, name: '테스트', isPublic: true }}
@@ -107,11 +107,11 @@ describe('LibraryItemsClient', () => {
     )
 
     fireEvent.change(view.getByRole('combobox'), {
-      target: { value: CollectionItemSort.MANGA_ID_ASC },
+      target: { value: LibraryItemSort.MANGA_ID_ASC },
     })
 
     expect(view.container.querySelectorAll('article')).toHaveLength(1)
-    expect(window.location.search).toBe(`?sort=${CollectionItemSort.MANGA_ID_ASC}`)
+    expect(window.location.search).toBe(`?sort=${LibraryItemSort.MANGA_ID_ASC}`)
 
     await waitFor(() => {
       const requests = fetchController.calls.filter(({ url }) => url.pathname === '/api/v1/library/1/item')
@@ -121,14 +121,14 @@ describe('LibraryItemsClient', () => {
 
     const requests = fetchController.calls.filter(({ url }) => url.pathname === '/api/v1/library/1/item')
     expect(requests[0]?.url.searchParams.get('scope')).toBe('me')
-    expect(requests[0]?.url.searchParams.get('sort')).toBe(CollectionItemSort.MANGA_ID_ASC)
+    expect(requests[0]?.url.searchParams.get('sort')).toBe(LibraryItemSort.MANGA_ID_ASC)
   })
 
   test('공개 서재 방문자에게는 정렬 UI를 노출하지 않는다', () => {
     const view = renderWithLibrarySelection(
       <LibraryItemsClient
         initialItems={basePage}
-        initialSort={CollectionItemSort.CREATED_DESC}
+        initialSort={LibraryItemSort.CREATED_DESC}
         initialView={View.CARD}
         isOwner={false}
         library={{ id: 1, name: '테스트', isPublic: true }}

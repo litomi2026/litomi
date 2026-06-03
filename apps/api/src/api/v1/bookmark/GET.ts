@@ -1,7 +1,7 @@
 import { getV1BookmarkQuerySchema, type GETV1BookmarkResponse } from '@litomi/contracts'
 import { decodeBookmarkCursor } from '@litomi/db/cursor'
 import { selectBookmark } from '@litomi/db/query/bookmark'
-import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
+import { getNextLibraryItemCursor } from '@litomi/db/sql/library-item-sort'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
@@ -44,7 +44,7 @@ route.get('/', requireAuth, zProblemValidator('query', getV1BookmarkQuerySchema)
     const hasNextPage = bookmarkRows.length > limit
     const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows
     const lastBookmark = bookmarks[bookmarks.length - 1]
-    const nextCursor = hasNextPage ? getNextCollectionItemCursor(lastBookmark) : null
+    const nextCursor = hasNextPage ? getNextLibraryItemCursor(lastBookmark) : null
     const mangaIds = bookmarks.map(({ mangaId }) => mangaId)
     const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
 

@@ -1,19 +1,20 @@
 'use client'
 
-import { CollectionItemSort } from '@litomi/domain/library/sort'
-import { getViewFromSearchParams, View } from '@litomi/std'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
+
+import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
+import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { useTranslations } from 'next-intl'
-import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -22,10 +23,11 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
-import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
+import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
+import { getLibraryItemSortFromSearchParams, setLibraryItemSortToSearchParams } from '../searchParams'
 import SelectableMangaCard from '../SelectableMangaCard'
-import { COLLECTION_ITEM_SORT_OPTIONS } from '../sort-options'
+import { LIBRARY_ITEM_SORT_OPTIONS } from '../sort-options'
 import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkUploadButton from './BookmarkUploadButton'
 import NotFound from './NotFound'
@@ -41,18 +43,60 @@ type BookmarkGridItem =
       type: 'loading'
     })
 
-type Props = {
-  initialSort: CollectionItemSort
-  initialView: View
+type ContentProps = {
+  onSortChange: (sort: LibraryItemSort) => void
+  onViewChange: (view: View) => void
+  sort: LibraryItemSort
+  view: View
 }
 
-export default function BookmarkPageClient({ initialSort, initialView }: Props) {
-  const [sort, setSort] = useState<CollectionItemSort>(initialSort)
-  const [view, setView] = useState<View>(initialView)
+export default function BookmarkPageClient() {
+  const [sort, setSort] = useState<LibraryItemSort>(DEFAULT_LIBRARY_ITEM_SORT)
+  const [view, setView] = useState<View>(View.CARD)
+
+  function handleSearchParamsUpdate(searchParams: ReadonlyURLSearchParams) {
+    const nextSort = getLibraryItemSortFromSearchParams(searchParams)
+    const nextView = getViewFromSearchParams(searchParams)
+
+    setSort(nextSort)
+    setView(nextView)
+    replaceURL(nextSort, nextView)
+  }
+
+  function handleSortChange(nextSort: LibraryItemSort) {
+    setSort(nextSort)
+    replaceURL(nextSort, view)
+  }
+
+  function handleViewChange(nextView: View) {
+    setView(nextView)
+    replaceURL(sort, nextView)
+  }
+
+  function replaceURL(nextSort: LibraryItemSort, nextView: View) {
+    const url = new URL(window.location.href)
+    setViewToSearchParams(url.searchParams, nextView)
+    setLibraryItemSortToSearchParams(url.searchParams, nextSort)
+
+    const href = url.toString()
+    if (href !== window.location.href) {
+      window.history.replaceState(null, '', href)
+    }
+  }
+
+  return (
+    <>
+      <SearchParamsSync onUpdate={handleSearchParamsUpdate} />
+      <BookmarkContent onSortChange={handleSortChange} onViewChange={handleViewChange} sort={sort} view={view} />
+    </>
+  )
+}
+
+function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProps) {
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { exit, isSelectionMode } = useLibrarySelection()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
-  const { heavySignature, isVisible } = useMangaCensorship()
+  const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
   const sortT = useTranslations('Library.sort')
 
@@ -98,17 +142,14 @@ export default function BookmarkPageClient({ initialSort, initialView }: Props) 
   function handleSortChange(newSort: string) {
     if (newSort !== sort) {
       exit()
-      setSort(newSort as CollectionItemSort)
-      const url = new URL(window.location.href)
-      url.searchParams.set('sort', String(newSort))
-      window.history.replaceState(window.history.state, '', url)
+      onSortChange(newSort as LibraryItemSort)
       setScrollToOptions({ top: 0 })
     }
   }
 
   const header = (
     <>
-      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <LibraryHeaderSpacer />
       <JuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 pb-0">
         <div className="flex flex-wrap items-center gap-2">
@@ -117,13 +158,13 @@ export default function BookmarkPageClient({ initialSort, initialView }: Props) 
             onChange={(e) => handleSortChange(e.target.value)}
             value={sort}
           >
-            {COLLECTION_ITEM_SORT_OPTIONS.map((option) => (
+            {LIBRARY_ITEM_SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {sortT(option.labelKey)}
               </option>
             ))}
           </select>
-          <ViewToggle initialView={initialView} />
+          <ViewToggle onViewChange={onViewChange} view={view} />
         </div>
         {me && (
           <div className="ml-auto flex items-center gap-x-2">
@@ -134,10 +175,6 @@ export default function BookmarkPageClient({ initialSort, initialView }: Props) 
       </div>
     </>
   )
-
-  function handleViewUpdate(searchParams: ReadonlyURLSearchParams) {
-    setView(getViewFromSearchParams(searchParams))
-  }
 
   function renderItem(item: BookmarkGridItem, index: number) {
     if (item.type === 'loading') {
@@ -162,23 +199,19 @@ export default function BookmarkPageClient({ initialSort, initialView }: Props) 
   }
 
   return (
-    <>
-      <SearchParamsSync onUpdate={handleViewUpdate} />
-      <VirtualMangaGrid
-        fetchNextPage={fetchNextPage}
-        footer={footer}
-        hasNextPage={canAutoLoadMore}
-        header={header}
-        isFetchingNextPage={isFetchingNextPage}
-        itemGap={8}
-        items={items}
-        measurementKey={`${sort}:${view}:${heavySignature}`}
-        onScrollElementChange={setNavigationAutoHideScrollElement}
-        renderItem={renderItem}
-        scrollRestorationKey={`library:bookmark:${sort}:${view}`}
-        scrollToOptions={scrollToOptions}
-        view={view}
-      />
-    </>
+    <VirtualMangaGrid
+      fetchNextPage={fetchNextPage}
+      footer={footer}
+      hasNextPage={canAutoLoadMore}
+      header={header}
+      isFetchingNextPage={isFetchingNextPage}
+      itemGap={8}
+      items={items}
+      measurementKey={sort}
+      onScrollElementChange={setNavigationAutoHideScrollElement}
+      renderItem={renderItem}
+      scrollToOptions={scrollToOptions}
+      view={view}
+    />
   )
 }

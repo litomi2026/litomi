@@ -1,15 +1,15 @@
 import { ExternalLink } from 'lucide-react'
 
-import { getSearchFilter } from './searchFilter'
+import { isSearchFilterActive } from './searchFilter'
 
 type Props = {
   id: number
-  searchParams?: string
+  searchParams?: URLSearchParams
   viewerLink: string
 }
 
 export default function MangaIdLink({ id, searchParams, viewerLink }: Props) {
-  const { isActive } = getSearchFilter(`id:${id}`, searchParams)
+  const isActive = isSearchFilterActive(`id:${id}`, searchParams)
 
   return (
     <a

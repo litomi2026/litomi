@@ -1,12 +1,16 @@
 'use client'
 
+import type { ReadonlyURLSearchParams } from 'next/navigation'
+
 import { Locale } from '@litomi/domain/locale'
-import { View } from '@litomi/std'
+import { getViewFromSearchParams, View } from '@litomi/std'
 import { ChevronRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
+
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 
 import { SearchParam } from './constants'
 import KeywordLink from './KeywordLink'
@@ -15,11 +19,8 @@ import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 const ROTATION_INTERVAL = 5000
 const SCROLL_MOMENTUM_DELAY = 1000 // NOTE: 스크롤 모멘텀을 방지하기 위해 1초 대기
 
-type Props = {
-  view?: View
-}
-
-export default function TrendingKeywords({ view }: Props) {
+export default function TrendingKeywords() {
+  const [view, setView] = useState(View.CARD)
   const [currentIndex, setCurrentIndex] = useState(0)
   const isUserInteractingRef = useRef(false)
   const isProgrammaticScrollRef = useRef(false)
@@ -179,6 +180,10 @@ export default function TrendingKeywords({ view }: Props) {
     return `/search?${searchParams}`
   }
 
+  function handleSearchParamsUpdate(searchParams: ReadonlyURLSearchParams) {
+    setView(getViewFromSearchParams(searchParams))
+  }
+
   // NOTE: 인기 검색어 회전 시작 및 종료
   useEffect(() => {
     if (trendingKeywordCount > 1) {
@@ -195,6 +200,8 @@ export default function TrendingKeywords({ view }: Props) {
 
   return (
     <>
+      <SearchParamsSync onUpdate={handleSearchParamsUpdate} />
+
       {/* Mobile */}
       <div className="relative grid gap-2 sm:hidden">
         <div className="flex items-center justify-between text-zinc-500 text-xs">

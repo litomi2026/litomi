@@ -1,6 +1,6 @@
 import type { SQL } from 'drizzle-orm'
 
-import { CollectionItemSort } from '@litomi/domain/library/sort'
+import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { PgDialect } from 'drizzle-orm/pg-core'
 
@@ -74,7 +74,7 @@ describe('selectLibraryItem', () => {
     await selectLibraryItem({
       libraryId: 7,
       limit: 3,
-      sort: CollectionItemSort.CREATED_ASC,
+      sort: LibraryItemSort.CREATED_ASC,
       cursorMangaId: 42,
       cursorTime,
     })

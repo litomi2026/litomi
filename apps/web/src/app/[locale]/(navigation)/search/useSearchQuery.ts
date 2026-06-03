@@ -2,7 +2,6 @@ import type { Manga } from '@litomi/domain/manga/model'
 
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useSearchParams } from 'next/navigation'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
@@ -18,10 +17,9 @@ type GETProxyKSearchResponse = {
   nextCursor: string | null
 }
 
-export function useSearchQuery() {
-  const params = useSearchParams()
+export function useSearchQuery(searchParams: URLSearchParams) {
   const { data: me, isPending: isMePending } = useMeQuery()
-  const allowedParams = new URLSearchParams(whitelistParams(params, Object.values(SearchParam)))
+  const allowedParams = new URLSearchParams(whitelistParams(searchParams, Object.values(SearchParam)))
 
   if (!isMePending) {
     const condition = addLanguageFilterIfMissing(allowedParams.get(SearchParam.QUERY), readPreferredSearchLanguage(me))

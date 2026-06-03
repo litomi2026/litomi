@@ -8,8 +8,6 @@ import { generateLocalizedMetadata } from '@/lib/metadata'
 
 import NotificationPage from './NotificationPage'
 
-export const dynamic = 'force-static'
-
 export async function generateMetadata({ params }: PageProps<'/[locale]/notification'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'Metadata.community.notification' })

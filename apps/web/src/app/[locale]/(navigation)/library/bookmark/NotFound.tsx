@@ -7,7 +7,7 @@ import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
 import { Link } from '@/i18n/navigation'
 
-import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
+import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 import BookmarkImportButton from './BookmarkImportButton'
 import BookmarkUploadButton from './BookmarkUploadButton'
 
@@ -16,7 +16,7 @@ export default function NotFound() {
 
   return (
     <>
-      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <LibraryHeaderSpacer />
       <div className="flex-1 flex items-center justify-center">
         <StatusState
           description={t('empty.bookmarkDescription')}
