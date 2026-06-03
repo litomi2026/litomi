@@ -1,29 +1,25 @@
 'use client'
 
-import type { ComponentPropsWithoutRef, MouseEvent } from 'react'
+import type { ComponentPropsWithRef, MouseEvent } from 'react'
 
 import { Capacitor } from '@capacitor/core'
-import { forwardRef } from 'react'
 
 import { Link } from '@/i18n/navigation'
 
-type Props = ComponentPropsWithoutRef<typeof Link>
+type Props = ComponentPropsWithRef<typeof Link>
 
-const MangaThumbnailLink = forwardRef<HTMLAnchorElement, Props>(function MangaThumbnailLink(
-  { onClick, ...props },
-  ref,
-) {
+export default function MangaThumbnailLink({ onClick, ref, ...props }: Props) {
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     onClick?.(event)
 
-    if (event.defaultPrevented || Capacitor.getPlatform() !== 'ios') {
+    if (event.defaultPrevented) {
       return
     }
 
-    event.preventDefault()
+    if (Capacitor.getPlatform() === 'ios') {
+      event.preventDefault()
+    }
   }
 
   return <Link {...props} onClick={handleClick} ref={ref} />
-})
-
-export default MangaThumbnailLink
+}

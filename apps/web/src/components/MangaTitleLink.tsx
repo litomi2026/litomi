@@ -16,12 +16,10 @@ export default function MangaTitleLink({ children, className, href }: Props) {
   const router = useRouter()
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
-    if (Capacitor.getPlatform() !== 'ios') {
-      return
+    if (Capacitor.getPlatform() === 'ios') {
+      event.preventDefault()
+      router.push(href)
     }
-
-    event.preventDefault()
-    router.push(href)
   }
 
   return (
