@@ -10,9 +10,7 @@ export const config = {
   // DOCS: The matcher values need to be constants so they can be statically analyzed at build-time
   // https://clerk.com/blog/skip-nextjs-middleware-static-and-public-files
   matcher: [
-    {
-      source: '/((?:[a-z]{2}(?:-[A-Za-z0-9]+)*/)?@.*)',
-    },
+    { source: '/((?:[a-z]{2}(?:-[A-Za-z0-9]+)*/)?@.*)' },
     {
       source:
         '/((?!api(?:/|$)|oauth(?:/|$)|_next(?:/|$)|_vercel(?:/|$)|cdn-cgi(?:/|$)|\\.well-known(?:/|$)|image(?:/|$)|.*\\..*).*)',
