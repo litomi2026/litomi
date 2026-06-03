@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { getLocaleFromParams } from '@/i18n/server'
 
 import { metricInfo, MetricParam } from './common'

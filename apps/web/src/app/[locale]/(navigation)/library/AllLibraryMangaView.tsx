@@ -11,13 +11,13 @@ import { useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import StatusState from '@/components/status/StatusState'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -29,7 +29,7 @@ import { Link } from '@/i18n/navigation'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
-import { LIBRARY_HEADER_SPACER_CLASS_NAME } from './libraryHeaderLayout'
+import { LibraryHeaderSpacer } from './LibraryHeaderLayout'
 import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
 
 type AllLibraryMangaItem = LoadingItem | MangaItem | NativeGridSponsorItem
@@ -141,7 +141,7 @@ function AllLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Conte
 
   const header = (
     <>
-      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <LibraryHeaderSpacer />
       <JuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         <ViewToggle onViewChange={onViewChange} view={view} />
@@ -191,7 +191,7 @@ function AllLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Conte
   if (isInitialLoading) {
     return (
       <>
-        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <LibraryHeaderSpacer />
         <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
           {Array.from({ length: 6 }).map((_, i) => (
             <MangaCardSkeleton key={i} variant={view} />
@@ -204,7 +204,7 @@ function AllLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Conte
   if (libraryItems.length === 0) {
     return (
       <>
-        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <LibraryHeaderSpacer />
         <StatusState
           description={t('publicDescription')}
           icon={<Library className="size-8" />}

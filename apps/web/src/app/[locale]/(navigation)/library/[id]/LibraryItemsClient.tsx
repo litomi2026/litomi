@@ -10,11 +10,11 @@ import { useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -26,7 +26,7 @@ import { hasAdultAccess } from '@/utils/adult-verification'
 import { ProblemDetailsError } from '@/utils/api-request'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
-import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
+import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import { getLibraryItemSortFromSearchParams, setLibraryItemSortToSearchParams } from '../searchParams'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -198,7 +198,7 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
 
   const header = (
     <>
-      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <LibraryHeaderSpacer />
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         {isOwner && (
           <select
@@ -235,7 +235,7 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
   if (isAdultGateRequired) {
     return (
       <>
-        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <LibraryHeaderSpacer />
         <AdultVerificationGate description={t('empty.adultDescription')} title={t('empty.adultTitle')} />
       </>
     )
@@ -244,7 +244,7 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
   if (loadError) {
     return (
       <>
-        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <LibraryHeaderSpacer />
         <div className="flex-1 flex flex-col justify-center items-center">
           <p className="text-zinc-500">{t('empty.libraryLoadError')}</p>
         </div>
@@ -259,7 +259,7 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
   if (itemsData && libraryItems.length === 0) {
     return (
       <>
-        <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+        <LibraryHeaderSpacer />
         <div className="flex-1 flex flex-col justify-center items-center">
           <p className="text-zinc-500">{t('empty.libraryEmpty', { name: library?.name ?? t('common.library') })}</p>
         </div>

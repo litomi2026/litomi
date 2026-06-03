@@ -47,10 +47,14 @@ export default async function Layout({ params, children }: LayoutProps<'/[locale
           </Link>
         </div>
       </NavigationWithMobileMenu>
-      <div className="h-[calc(6.5rem+var(--safe-area-top))] sm:hidden" />
+      <PostsMobileHeaderSpacer />
       <h2 className="sr-only">{t('listTitle')}</h2>
       <PostCreationForm className="flex p-4 border-b" placeholder={t('creationPlaceholder')} />
       {children}
     </>
   )
+}
+
+function PostsMobileHeaderSpacer() {
+  return <div aria-hidden className="h-[calc(6.5rem+var(--safe-area-top))] sm:hidden" />
 }

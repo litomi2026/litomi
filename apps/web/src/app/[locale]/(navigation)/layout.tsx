@@ -12,6 +12,7 @@ import { getLocaleFromParams } from '@/i18n/server'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
 import MoreNavigationPopover from './MoreNavigationPopover'
+import { DesktopNavigationSpacer } from './NavigationSpacers'
 import NotificationCount from './NotificationCount'
 import Profile from './Profile'
 import ProfileLink from './ProfileLink'
@@ -92,7 +93,7 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
         </nav>
         <Profile />
       </AutoHideHeader>
-      <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
+      <DesktopNavigationSpacer />
       {children}
     </div>
   )

@@ -2,8 +2,8 @@ import { APP_METADATA } from '@litomi/domain/app/metadata'
 import { Download } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import ScrollButtons from '@/components/ScrollButtons'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { Link } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
 

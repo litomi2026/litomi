@@ -3,8 +3,8 @@ import type { PublicLocale } from '@litomi/domain/locale'
 import { ChevronRight, Flame } from 'lucide-react'
 import { Suspense } from 'react'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import { MangaCardSkeleton } from '@/components/card/MangaCard'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { Link } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
 

@@ -5,10 +5,10 @@ import { View } from '@litomi/std'
 import dayjs from 'dayjs'
 import { Compass, RefreshCw, Target } from 'lucide-react'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoginButton from '@/components/LoginButton'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
 import useMangaCensorship from '@/hook/useMangaCensorship'
@@ -53,10 +53,7 @@ export default function RecommendMangaPageClient() {
 
   if (!canAccess) {
     return (
-      <AdultVerificationGate
-        description="추천 작품을 보려면 익명 성인인증이 필요해요"
-        title="성인인증이 필요해요"
-      />
+      <AdultVerificationGate description="추천 작품을 보려면 익명 성인인증이 필요해요" title="성인인증이 필요해요" />
     )
   }
 

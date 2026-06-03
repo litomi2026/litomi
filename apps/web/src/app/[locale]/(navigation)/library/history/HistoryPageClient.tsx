@@ -13,7 +13,7 @@ import { isAdultVerified } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
-import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
+import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import NotFound from './NotFound'
@@ -52,7 +52,7 @@ export default function HistoryPageClient() {
 
   return (
     <>
-      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <LibraryHeaderSpacer />
       <div className="grid gap-4">
         {groupedHistory?.map(([dateGroup, items]) => (
           <div key={dateGroup}>

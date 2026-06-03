@@ -20,7 +20,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
-import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
+import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import { getRatingSortFromSearchParams, setRatingSortToSearchParams } from '../searchParams'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -179,7 +179,7 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
 
   return (
     <>
-      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <LibraryHeaderSpacer />
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         <select
           className="bg-zinc-900 text-base px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
