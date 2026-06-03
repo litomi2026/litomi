@@ -7,15 +7,10 @@ import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 
 import Censorships from './Censorships'
-import Forbidden from './Forbidden'
 import Loading from './loading'
 import Unauthorized from './Unauthorized'
 
-type Props = {
-  username: string
-}
-
-export default function CensorAuthGate({ username }: Props) {
+export default function CensorAuthGate() {
   const { data: me } = useMeQuery()
   const t = useTranslations('Censorship')
 
@@ -25,10 +20,6 @@ export default function CensorAuthGate({ username }: Props) {
 
   if (me === null) {
     return <Unauthorized />
-  }
-
-  if (username && me.name !== username) {
-    return <Forbidden loginUsername={me.name} />
   }
 
   if (!hasAdultAccess(me)) {

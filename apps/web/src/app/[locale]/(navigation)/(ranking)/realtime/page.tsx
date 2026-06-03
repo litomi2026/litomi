@@ -26,8 +26,9 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/realtime
   }
 }
 
-export default async function RealtimePage() {
-  const t = await getTranslations('RealtimeRanking')
+export default async function RealtimePage({ params }: PageProps<'/[locale]/realtime'>) {
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'RealtimeRanking' })
 
   return (
     <div className="grid gap-6 mx-auto max-w-screen-sm w-full p-4">

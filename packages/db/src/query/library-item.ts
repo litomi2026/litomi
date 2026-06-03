@@ -2,8 +2,8 @@ import type { SQL } from 'drizzle-orm'
 
 import { db } from '@litomi/db/app'
 import { libraryItemTable } from '@litomi/db/app/library'
-import { getCollectionItemCursorCondition, getCollectionItemOrderByClauses } from '@litomi/db/sql/collection-item-sort'
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
+import { getLibraryItemCursorCondition, getLibraryItemOrderByClauses } from '@litomi/db/sql/library-item-sort'
+import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -15,7 +15,7 @@ export type LibraryItemRow = {
 const baseParamsSchema = z.strictObject({
   libraryId: z.number().int().positive(),
   limit: z.number().int().positive().optional(),
-  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+  sort: z.enum(LibraryItemSort).default(DEFAULT_LIBRARY_ITEM_SORT),
 })
 
 const paramsSchema = z.union([
@@ -39,7 +39,7 @@ export async function selectLibraryItem(params: Params) {
       timestamp: validatedParams.cursorTime.getTime(),
     }
 
-    conditions.push(getCollectionItemCursorCondition(sort, cursor, libraryItemTable))
+    conditions.push(getLibraryItemCursorCondition(sort, cursor, libraryItemTable))
   }
 
   const query = db
@@ -49,7 +49,7 @@ export async function selectLibraryItem(params: Params) {
     })
     .from(libraryItemTable)
     .where(and(...conditions))
-    .orderBy(...getCollectionItemOrderByClauses(sort, libraryItemTable))
+    .orderBy(...getLibraryItemOrderByClauses(sort, libraryItemTable))
 
   if (limit) {
     return query.limit(limit)

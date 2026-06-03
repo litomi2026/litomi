@@ -107,7 +107,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
       )
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infinitePublicLibraryMangasBase })
 
       toast.success(t('success'))
       onOpenChange(false)

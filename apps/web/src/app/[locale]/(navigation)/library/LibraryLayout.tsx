@@ -10,7 +10,6 @@ import { isAdultVerified } from '@/utils/adult-verification'
 
 import useLocalReadingHistorySummaryQuery from './history/useLocalReadingHistorySummaryQuery'
 import LibraryHeader from './LibraryHeader'
-import { LIBRARY_HEADER_LAYOUT_CLASS_NAME } from './libraryHeaderLayout'
 import { LibrarySelectionProvider } from './librarySelection'
 import LibrarySidebar from './LibrarySidebar'
 import useLibraryListInfiniteQuery from './useLibraryListInfiniteQuery'
@@ -98,7 +97,7 @@ export default function LibraryLayout({ children }: Props) {
         userId={userId}
       />
       <div className="hidden sm:block sm:w-[67px] lg:w-52" />
-      <div className={`flex min-h-0 flex-col flex-1 ${LIBRARY_HEADER_LAYOUT_CLASS_NAME}`}>
+      <div className="flex min-h-0 flex-col flex-1 [--library-header-height:4rem] sm:[--library-header-height:4.5rem]">
         <LibrarySelectionProvider scopeKey={pathname}>
           <LibraryHeader
             historySource={canUseServerHistory ? 'server' : 'local'}

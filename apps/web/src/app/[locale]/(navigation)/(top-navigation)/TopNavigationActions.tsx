@@ -1,3 +1,5 @@
+import type { PublicLocale } from '@litomi/domain/locale'
+
 import { getTranslations } from 'next-intl/server'
 
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
@@ -9,8 +11,12 @@ import NordVPNPromotionLink from './NordVPNPromotionLink'
 import RandomMangaLink from './RandomMangaLink'
 import RecommendMangaLink from './RecommendMangaLink'
 
-export default async function TopNavigationActions() {
-  const t = await getTranslations('TopNavigation.actions')
+type Props = {
+  locale: PublicLocale
+}
+
+export default async function TopNavigationActions({ locale }: Props) {
+  const t = await getTranslations({ locale, namespace: 'TopNavigation.actions' })
 
   return (
     <AutoHideHeader className="sticky top-0 z-40 -mx-2 border-b-2 border-background bg-background/90 px-2 pt-[calc(0.5rem+var(--safe-area-top))] pb-2 backdrop-blur">

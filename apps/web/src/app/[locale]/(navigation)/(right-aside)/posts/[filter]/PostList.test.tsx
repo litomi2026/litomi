@@ -5,7 +5,7 @@ import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, waitFor } from '@testing-library/react'
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 
-import MasonryPostList from './MasonryPostList'
+import PostList from './PostList'
 
 let fetchRoutes: FetchRoute[] = []
 let fetchController: ReturnType<typeof installMockFetch>
@@ -24,7 +24,7 @@ afterAll(() => {
   mock.restore()
 })
 
-describe('MasonryPostList', () => {
+describe('PostList', () => {
   test('팔로잉 피드가 401을 반환하면 로그인 온보딩을 보여준다', async () => {
     fetchRoutes.push({
       matcher: ({ url }) => url.pathname === '/api/v1/post' && url.searchParams.get('filter') === PostFilter.FOLLOWING,
@@ -40,9 +40,7 @@ describe('MasonryPostList', () => {
         ),
     })
 
-    const view = renderWithTestQueryClient(
-      <MasonryPostList filter={PostFilter.FOLLOWING} NotFound={<div>empty</div>} showMangaCover={false} />,
-    )
+    const view = renderWithTestQueryClient(<PostList source={{ type: 'timeline', filter: PostFilter.FOLLOWING }} />)
 
     await waitFor(() => {
       expect(view.getByText('팔로잉 탭은 로그인이 필요해요')).toBeTruthy()
@@ -64,9 +62,7 @@ describe('MasonryPostList', () => {
         ),
     })
 
-    const view = renderWithTestQueryClient(
-      <MasonryPostList filter={PostFilter.RECOMMEND} NotFound={<div>empty</div>} showMangaCover={false} />,
-    )
+    const view = renderWithTestQueryClient(<PostList source={{ type: 'timeline', filter: PostFilter.RECOMMEND }} />)
 
     await waitFor(() => {
       expect(view.getByText('글을 불러올 수 없어요')).toBeTruthy()

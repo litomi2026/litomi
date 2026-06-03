@@ -1,4 +1,4 @@
-import { Bookmark, Bot, Clover, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
+import { Bookmark, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { twMerge } from 'tailwind-merge'
 
@@ -8,15 +8,19 @@ import IconHome from '@/components/icons/IconHome'
 import IconLogo from '@/components/icons/LogoLitomi'
 import SeasonalEffects from '@/components/seasonal/SeasonalEffects'
 import { Link } from '@/i18n/navigation'
+import { getLocaleFromParams } from '@/i18n/server'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
+import MoreNavigationPopover from './MoreNavigationPopover'
+import { DesktopNavigationSpacer } from './NavigationSpacers'
 import NotificationCount from './NotificationCount'
 import Profile from './Profile'
 import ProfileLink from './ProfileLink'
 import SelectableLink from './SelectableLink'
 
-export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
-  const t = await getTranslations('Navigation.sidebar')
+export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'Navigation.sidebar' })
 
   return (
     <div className="flex flex-col min-h-full mx-auto px-safe max-w-screen-2xl sm:flex-row">
@@ -84,17 +88,12 @@ export default async function Layout({ children }: LayoutProps<'/[locale]'>) {
           >
             {t('libo')}
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/chat" icon={<Bot />} selectedIconStyle="stroke">
-            {t('chat')}
-          </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/fortune" hrefMatch="/fortune" icon={<Clover />}>
-            {t('fortune')}
-          </SelectableLink>
           <ProfileLink className="hidden sm:block" />
+          <MoreNavigationPopover className="hidden sm:flex justify-center" />
         </nav>
         <Profile />
       </AutoHideHeader>
-      <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
+      <DesktopNavigationSpacer />
       {children}
     </div>
   )

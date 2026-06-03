@@ -3,10 +3,12 @@ export enum View {
   CARD = 'card',
 }
 
+export const VIEW_PARAM = 'view'
+
 type SearchParamsLike = Pick<URLSearchParams, 'get'>
 
 export function appendViewToPath(pathname: string, view: View) {
-  return view === View.IMAGE ? `${pathname}?view=${View.IMAGE}` : pathname
+  return view === View.IMAGE ? `${pathname}?${VIEW_PARAM}=${View.IMAGE}` : pathname
 }
 
 export function convertCamelCaseToKebabCase(str: string) {
@@ -18,15 +20,15 @@ export function getUsernameFromParam(username: string) {
 }
 
 export function getViewFromSearchParams(searchParams: SearchParamsLike) {
-  return searchParams.get('view') === View.IMAGE ? View.IMAGE : View.CARD
+  return searchParams.get(VIEW_PARAM) === View.IMAGE ? View.IMAGE : View.CARD
 }
 
 export function setViewToSearchParams(searchParams: URLSearchParams, view: View) {
   if (view === View.IMAGE) {
-    searchParams.set('view', View.IMAGE)
+    searchParams.set(VIEW_PARAM, View.IMAGE)
     return searchParams
   }
 
-  searchParams.delete('view')
+  searchParams.delete(VIEW_PARAM)
   return searchParams
 }

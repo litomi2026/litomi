@@ -3,8 +3,8 @@ import { db } from '@litomi/db/app'
 import { libraryTable } from '@litomi/db/app/library'
 import { decodeLibraryIdCursor } from '@litomi/db/cursor'
 import { selectLibraryItem } from '@litomi/db/query/library-item'
-import { getNextCollectionItemCursor } from '@litomi/db/sql/collection-item-sort'
-import { DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
+import { getNextLibraryItemCursor } from '@litomi/db/sql/library-item-sort'
+import { DEFAULT_LIBRARY_ITEM_SORT } from '@litomi/domain/library/sort'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, eq } from 'drizzle-orm'
@@ -71,7 +71,7 @@ routes.get(
       const fetchedItems = await selectLibraryItem({
         libraryId,
         limit: limit + 1,
-        sort: isPublicScope ? DEFAULT_COLLECTION_ITEM_SORT : sort,
+        sort: isPublicScope ? DEFAULT_LIBRARY_ITEM_SORT : sort,
         ...(cursorData && {
           cursorMangaId: cursorData.mangaId,
           cursorTime: new Date(cursorData.timestamp),
@@ -90,7 +90,7 @@ routes.get(
       }))
 
       const lastItem = items[items.length - 1]
-      const nextCursor = hasNextPage && lastItem ? getNextCollectionItemCursor(pageItems[pageItems.length - 1]) : null
+      const nextCursor = hasNextPage && lastItem ? getNextLibraryItemCursor(pageItems[pageItems.length - 1]) : null
       const result = { items, nextCursor }
       const cacheControl = isPublicScope ? sharedCacheControl : privateCacheControl
 

@@ -8,12 +8,25 @@ import ThumbnailStrip from '#reader/components/ThumbnailStrip'
 import ViewControlPanel from '#reader/components/ViewControlPanel'
 import { useReaderMessages } from '#reader/context'
 import { orientations, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-const BOTTOM_BUTTON_CLASS_NAME =
-  'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+const CONTROL_BUTTON_CLASS_NAME =
+  'rounded-full p-2 py-1 min-w-20 transition disabled:pointer-events-none disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+
+const CORE_BUTTON_CLASS_NAME = twMerge(
+  CONTROL_BUTTON_CLASS_NAME,
+  'bg-foreground text-background hover:bg-foreground/95 active:bg-foreground/85',
+)
+
+const SECONDARY_BUTTON_CLASS_NAME = twMerge(
+  CONTROL_BUTTON_CLASS_NAME,
+  'border border-foreground/10 bg-foreground/5 text-foreground backdrop-blur hover:border-foreground/15 hover:bg-foreground/10 active:bg-foreground/15',
+)
+
+const UTILITY_TEXT_BUTTON_CLASS_NAME =
+  'px-2 py-1 text-xs text-foreground transition active:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 
 type Props<TPage extends ReaderPage> = {
   isVisible: boolean
@@ -139,15 +152,25 @@ export default function ReaderControls<TPage extends ReaderPage>({
         >
           <button
             aria-pressed={isPageMode}
-            className={BOTTOM_BUTTON_CLASS_NAME}
+            className={CORE_BUTTON_CLASS_NAME}
             onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}
             type="button"
           >
             {messages.viewerModeButtons[viewerMode]}
           </button>
+          {isScrollMode && (
+            <button
+              aria-pressed={isHorizontalScrollMode}
+              className={CORE_BUTTON_CLASS_NAME}
+              onClick={() => setScrollAxis(isHorizontalScrollMode ? 'vertical' : 'horizontal')}
+              type="button"
+            >
+              {messages.scrollAxisButtons[scrollAxis]}
+            </button>
+          )}
           {isPageMode && (
             <button
-              className={BOTTOM_BUTTON_CLASS_NAME}
+              className={CORE_BUTTON_CLASS_NAME}
               onClick={() => {
                 const currentIndex = orientations.indexOf(orientation)
                 const nextIndex = (currentIndex + 1) % orientations.length
@@ -158,39 +181,27 @@ export default function ReaderControls<TPage extends ReaderPage>({
               {messages.viewerOrientationButtons[orientation]}
             </button>
           )}
-          {isScrollMode && (
-            <button
-              aria-pressed={isHorizontalScrollMode}
-              className={BOTTOM_BUTTON_CLASS_NAME}
-              onClick={() => setScrollAxis(isHorizontalScrollMode ? 'vertical' : 'horizontal')}
-              type="button"
-            >
-              {messages.scrollAxisButtons[scrollAxis]}
-            </button>
-          )}
           <button
             aria-pressed={isDoublePage}
-            className={BOTTOM_BUTTON_CLASS_NAME}
+            className={CORE_BUTTON_CLASS_NAME}
             onClick={() => setPageView(isDoublePage ? 'single' : 'double')}
             type="button"
           >
             {messages.pageViewButtons[pageView]}
           </button>
-          {(isDoublePage || isHorizontalScrollMode) && (
-            <button
-              aria-label={messages.readingDirectionButtons[readingDirection]}
-              className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
-              onClick={toggleReadingDirection}
-              type="button"
-            >
-              {messages.readingDirectionLeftShort}
-              {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
-              {messages.readingDirectionRightShort}
-            </button>
-          )}
+          <button
+            aria-label={messages.readingDirectionButtons[readingDirection]}
+            className={twMerge(CORE_BUTTON_CLASS_NAME, 'flex items-center justify-center gap-1')}
+            onClick={toggleReadingDirection}
+            type="button"
+          >
+            {readingDirection === 'ltr' ? messages.readingDirectionLeftShort : messages.readingDirectionRightShort}
+            <ArrowRight className="size-4" />
+            {readingDirection === 'ltr' ? messages.readingDirectionRightShort : messages.readingDirectionLeftShort}
+          </button>
           {!isHorizontalScrollMode && (
             <button
-              className={BOTTOM_BUTTON_CLASS_NAME}
+              className={CORE_BUTTON_CLASS_NAME}
               onClick={() =>
                 setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')
               }
@@ -203,7 +214,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
             <div className="relative" ref={viewControlRef}>
               <button
                 aria-expanded={isViewControlOpen}
-                className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
+                className={twMerge(SECONDARY_BUTTON_CLASS_NAME, 'flex items-center justify-center gap-1')}
                 onClick={() => setIsViewControlOpen((prev) => !prev)}
                 type="button"
               >
@@ -214,7 +225,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
           )}
           <button
             aria-expanded={isThumbnailStripOpen}
-            className={`${BOTTOM_BUTTON_CLASS_NAME} flex items-center justify-center gap-1`}
+            className={twMerge(SECONDARY_BUTTON_CLASS_NAME, 'flex items-center justify-center gap-1')}
             onClick={() => setIsThumbnailStripOpen((prev) => !prev)}
             title={messages.previewButton}
             type="button"
@@ -222,11 +233,11 @@ export default function ReaderControls<TPage extends ReaderPage>({
             {messages.previewButton}
           </button>
           <SlideshowButton
-            className={BOTTOM_BUTTON_CLASS_NAME}
+            className={SECONDARY_BUTTON_CLASS_NAME}
             maxPageIndex={maxPageIndex}
             readerLayout={readerLayout}
           />
-          <button className={BOTTOM_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
+          <button className={UTILITY_TEXT_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
             {messages.lowDataLabels[lowData]}
           </button>
         </div>

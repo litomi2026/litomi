@@ -1,7 +1,6 @@
 'use client'
 
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -14,11 +13,11 @@ const DELETE_MUTATION_KEY = ['notification', 'delete'] as const
 
 export default function useNotificationActions() {
   const queryClient = useQueryClient()
-  const searchParams = useSearchParams()
   const { cancelSelection, selectedIds } = useNotificationSelection()
 
   function handleMutationSuccess() {
     cancelSelection()
+    const searchParams = new URLSearchParams(window.location.search)
     queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
     queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
   }

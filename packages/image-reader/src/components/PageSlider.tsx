@@ -12,6 +12,7 @@ type Props<TPage extends ReaderPage> = {
 
 export default function PageSlider<TPage extends ReaderPage>({ maxPageIndex, readerLayout }: Props<TPage>) {
   const pageIndex = useReaderStore((state) => state.pageIndex)
+  const readingDirection = useReaderStore((state) => state.readingDirection)
   const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const messages = useReaderMessages()
 
@@ -31,6 +32,7 @@ export default function PageSlider<TPage extends ReaderPage>({ maxPageIndex, rea
           aria-label={messages.pageSliderLabel}
           aria-valuetext={messages.pageSliderValue(currentPageText, maxPage)}
           className="h-6"
+          isReversed={readingDirection === 'rtl'}
           max={maxPageIndex}
           onValueCommit={(value) => {
             navigateToPageIndex(value, {

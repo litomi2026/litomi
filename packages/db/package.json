@@ -31,7 +31,7 @@
     "./query/post": "./src/query/post.ts",
     "./query/user-settings": "./src/query/user-settings.ts",
     "./redis": "./src/redis.ts",
-    "./sql/collection-item-sort": "./src/sql/collection-item-sort.ts",
+    "./sql/library-item-sort": "./src/sql/library-item-sort.ts",
     "./sql/rating-sort": "./src/sql/rating-sort.ts"
   },
   "scripts": {

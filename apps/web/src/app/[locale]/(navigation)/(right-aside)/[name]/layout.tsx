@@ -5,15 +5,17 @@ import { twMerge } from 'tailwind-merge'
 import { TopStickySafeAreaSurface } from '@/components/SafeAreaSurface'
 
 import MyPageNavigationLink from './MyPageNavigationLink'
-import MyPagePrivateNavigation from './MyPagePrivateNavigation'
 import UserProfile from './UserProfile'
 
 export default async function Layout({ params, children }: LayoutProps<'/[locale]/[name]'>) {
   const { name } = await params
   const t = await getTranslations('Profile.navigation')
-
   const username = getUsernameFromParam(name)
-  const publicLinks = [{ href: `/@${username}`, label: t('stories') }]
+
+  const publicLinks = [
+    { href: `/@${username}`, label: t('stories') },
+    { href: `/@${username}/reply`, label: t('replies') },
+  ]
 
   return (
     <main className="flex flex-col grow">
@@ -29,7 +31,6 @@ export default async function Layout({ params, children }: LayoutProps<'/[locale
           {publicLinks.map(({ href, label }) => (
             <MyPageNavigationLink href={href} key={href} label={label} />
           ))}
-          <MyPagePrivateNavigation username={username} />
         </div>
       </nav>
       {children}

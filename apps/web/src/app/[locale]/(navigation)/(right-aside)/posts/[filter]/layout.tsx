@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { Link } from '@/i18n/navigation'
+import { getLocaleFromParams } from '@/i18n/server'
 
 import NavigationWithMobileMenu from './NavigationWithMobileMenu'
 import { PostFilterParams, postFilterSchema } from './schema'
@@ -15,7 +16,8 @@ export default async function Layout({ params, children }: LayoutProps<'/[locale
     notFound()
   }
 
-  const t = await getTranslations('Community.posts')
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'Community.posts' })
   const { filter } = validation.data
   const isrecommend = filter === PostFilterParams.RECOMMEND
   const isFollowing = filter === PostFilterParams.FOLLOWING
@@ -45,10 +47,14 @@ export default async function Layout({ params, children }: LayoutProps<'/[locale
           </Link>
         </div>
       </NavigationWithMobileMenu>
-      <div className="h-[calc(6.5rem+var(--safe-area-top))] sm:hidden" />
+      <PostsMobileHeaderSpacer />
       <h2 className="sr-only">{t('listTitle')}</h2>
       <PostCreationForm className="flex p-4 border-b" placeholder={t('creationPlaceholder')} />
       {children}
     </>
   )
+}
+
+function PostsMobileHeaderSpacer() {
+  return <div aria-hidden className="h-[calc(6.5rem+var(--safe-area-top))] sm:hidden" />
 }

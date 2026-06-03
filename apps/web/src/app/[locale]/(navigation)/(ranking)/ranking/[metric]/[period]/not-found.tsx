@@ -1,12 +1,14 @@
+'use client'
+
 import { Trophy } from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
+import { useTranslations } from 'next-intl'
 
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../../../common'
 
-export default async function NotFound() {
-  const t = await getTranslations('RankingPage.notFound')
+export default function NotFound() {
+  const t = useTranslations('RankingPage.notFound')
 
   return (
     <StatusState description={t('description')} icon={<Trophy className="size-8" />} title={t('title')}>

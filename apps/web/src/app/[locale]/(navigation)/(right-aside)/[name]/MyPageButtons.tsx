@@ -34,7 +34,7 @@ export default function MyPageButtons({ user }: Props) {
   return (
     <div className="flex items-center gap-2">
       <ProfileEditButton me={me} />
-      <LogoutButton />
+      <LogoutButton username={me.name} />
     </div>
   )
 }

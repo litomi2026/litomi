@@ -20,6 +20,9 @@ export const messages = {
         profile: {
           indexTitle: '이야기',
           title: '{nickname} (@{name}) 이야기',
+          repliesIndexTitle: '댓글',
+          repliesTitle: '{nickname} (@{name}) 댓글',
+          repliesDescription: '이 사용자가 작성한 댓글을 최신순으로 확인하세요.',
           missingTitle: '존재하지 않는 사용자',
           description: '팔로우 중 {followingCount}명 · 팔로워 {followerCount}명',
           missingDescription: '@{username} 사용자를 찾을 수 없어요.',
@@ -31,6 +34,10 @@ export const messages = {
         censor: {
           title: '검열',
           description: '콘텐츠 표시와 차단 관련 설정을 관리하세요.',
+        },
+        donation: {
+          title: '후원',
+          description: '후원한 작품과 수신 대상을 확인하세요.',
         },
       },
     },
@@ -115,8 +122,7 @@ export const messages = {
         myLitomi: '내 리토미',
         logout: '로그아웃',
         stories: '이야기',
-        censor: '검열',
-        donations: '후원',
+        replies: '댓글',
         settings: '설정',
       },
       fallback: {
@@ -132,8 +138,19 @@ export const messages = {
       },
       posts: {
         createPlaceholder: '첫 글을 작성해보세요!',
-        emptyTitle: '아직 작성한 글이 없어요',
-        emptyDescription: '생각을 공유하고 다른 사용자들과 소통해보세요',
+        emptyOwnTitle: '아직 작성한 글이 없어요',
+        emptyOwnDescription: '생각을 공유하고 다른 사용자들과 소통해보세요',
+        emptyOtherTitle: '아직 공개한 글이 없어요',
+        emptyOtherDescription: '이 사용자가 글을 작성하면 여기에 표시돼요',
+      },
+      replies: {
+        emptyOwnTitle: '아직 작성한 댓글이 없어요',
+        emptyOwnDescription: '다른 이야기에서 의견을 남겨보세요',
+        emptyOtherTitle: '아직 공개한 댓글이 없어요',
+        emptyOtherDescription: '이 사용자가 남긴 댓글이 있으면 여기에 표시돼요',
+        notFoundTitle: '댓글을 찾을 수 없어요',
+        notFoundDescription: '아직 공개된 댓글이 없거나 볼 수 없는 사용자예요',
+        notFoundAction: '이야기 목록으로 가기',
       },
       notFound: {
         title: '사용자를 찾을 수 없어요',
@@ -164,8 +181,8 @@ export const messages = {
     Metadata: {
       community: {
         posts: {
-          title: 'Stories',
-          description: 'Read stories and recommendations from Litomi users.',
+          title: 'Posts',
+          description: 'Read posts and recommendations from Litomi users.',
         },
         notification: {
           title: 'Notifications',
@@ -175,19 +192,26 @@ export const messages = {
           deletedTitle: 'This post was deleted',
         },
         profile: {
-          indexTitle: 'Stories',
-          title: "{nickname} (@{name})'s Stories",
+          indexTitle: 'Posts',
+          title: "{nickname} (@{name})'s Posts",
+          repliesIndexTitle: 'Replies',
+          repliesTitle: "{nickname} (@{name})'s Replies",
+          repliesDescription: 'Read replies this user has written, newest first.',
           missingTitle: 'User not found',
           description: 'Following {followingCount} · {followerCount} followers',
           missingDescription: 'Could not find @{username}.',
         },
         settings: {
-          title: 'Settings',
-          description: 'Manage your account, security, notifications, language, and theme settings.',
+          title: 'Settings and privacy',
+          description: 'Manage your account, privacy, security, notifications, language, and theme settings.',
         },
         censor: {
           title: 'Censor',
           description: 'Manage content visibility and blocking settings.',
+        },
+        donation: {
+          title: 'Donation',
+          description: 'Review works you supported and their recipients.',
         },
       },
     },
@@ -210,7 +234,7 @@ export const messages = {
       posts: {
         recommend: 'Recommended',
         following: 'Following',
-        listTitle: 'Stories',
+        listTitle: 'Posts',
         creationPlaceholder: 'What is happening?',
         emptyFollowingTitle: 'No posts from people you follow',
         emptyFollowingDescription: 'Follow other users or check all posts',
@@ -231,9 +255,9 @@ export const messages = {
         replyPlaceholder: 'Post a reply',
         replyingTo: 'Replying to @{name}',
         parentPostsLabel: 'Parent posts',
-        notFoundTitle: 'Story not found',
-        notFoundDescription: 'This story may have been deleted or is no longer public',
-        notFoundAction: 'Go to stories',
+        notFoundTitle: 'Post not found',
+        notFoundDescription: 'This post may have been deleted or is no longer public',
+        notFoundAction: 'Go to posts',
         viewWork: 'View work',
         viewRelatedWork: 'View related work',
         comments: 'Comments',
@@ -269,12 +293,11 @@ export const messages = {
     },
     Profile: {
       navigation: {
-        myLitomi: 'My Litomi',
-        logout: 'Log out',
-        stories: 'Stories',
-        censor: 'Censor',
-        donations: 'Donations',
-        settings: 'Settings',
+        myLitomi: 'Profile',
+        logout: 'Log out @{name}',
+        stories: 'Posts',
+        replies: 'Replies',
+        settings: 'Settings and privacy',
       },
       fallback: {
         missingUser: 'User not found',
@@ -289,13 +312,24 @@ export const messages = {
       },
       posts: {
         createPlaceholder: 'Write your first post',
-        emptyTitle: 'No posts yet',
-        emptyDescription: 'Share your thoughts and connect with other users',
+        emptyOwnTitle: 'No posts yet',
+        emptyOwnDescription: 'Share your thoughts and connect with other users',
+        emptyOtherTitle: 'No public posts yet',
+        emptyOtherDescription: 'Posts from this user will appear here',
+      },
+      replies: {
+        emptyOwnTitle: 'No replies yet',
+        emptyOwnDescription: 'Reply to a post to start a conversation',
+        emptyOtherTitle: 'No public replies yet',
+        emptyOtherDescription: 'Replies from this user will appear here',
+        notFoundTitle: 'No replies found',
+        notFoundDescription: 'This user has no public replies yet, or their replies are not available',
+        notFoundAction: 'Go to posts',
       },
       notFound: {
         title: 'User not found',
         description: 'The address may have changed, or this public profile could not be found',
-        action: 'Go to stories',
+        action: 'Go to posts',
       },
       edit: {
         action: 'Edit profile',
@@ -334,6 +368,9 @@ export const messages = {
         profile: {
           indexTitle: 'ストーリー',
           title: '{nickname} (@{name}) のストーリー',
+          repliesIndexTitle: '返信',
+          repliesTitle: '{nickname} (@{name}) の返信',
+          repliesDescription: 'このユーザーが書いた返信を新しい順に確認できます。',
           missingTitle: '存在しないユーザー',
           description: 'フォロー中 {followingCount}人 · フォロワー {followerCount}人',
           missingDescription: '@{username} ユーザーが見つかりません。',
@@ -345,6 +382,10 @@ export const messages = {
         censor: {
           title: '検閲',
           description: 'コンテンツの表示とブロックに関する設定を管理します。',
+        },
+        donation: {
+          title: '支援',
+          description: '支援した作品と対象を確認します。',
         },
       },
     },
@@ -429,8 +470,7 @@ export const messages = {
         myLitomi: 'マイリトミ',
         logout: 'ログアウト',
         stories: 'ストーリー',
-        censor: '検閲',
-        donations: '支援',
+        replies: '返信',
         settings: '設定',
       },
       fallback: {
@@ -446,8 +486,19 @@ export const messages = {
       },
       posts: {
         createPlaceholder: '最初の投稿を書いてみましょう',
-        emptyTitle: 'まだ投稿がありません',
-        emptyDescription: '考えを共有して他のユーザーと交流しましょう',
+        emptyOwnTitle: 'まだ投稿がありません',
+        emptyOwnDescription: '考えを共有して他のユーザーと交流しましょう',
+        emptyOtherTitle: '公開された投稿はまだありません',
+        emptyOtherDescription: 'このユーザーが投稿するとここに表示されます',
+      },
+      replies: {
+        emptyOwnTitle: 'まだ返信がありません',
+        emptyOwnDescription: 'ストーリーに返信して会話を始めましょう',
+        emptyOtherTitle: '公開された返信はまだありません',
+        emptyOtherDescription: 'このユーザーの返信があるとここに表示されます',
+        notFoundTitle: '返信が見つかりません',
+        notFoundDescription: 'まだ公開された返信がないか、表示できないユーザーです',
+        notFoundAction: 'ストーリー一覧へ',
       },
       notFound: {
         title: 'ユーザーが見つかりません',
@@ -491,6 +542,9 @@ export const messages = {
         profile: {
           indexTitle: '动态',
           title: '{nickname} (@{name}) 的动态',
+          repliesIndexTitle: '评论',
+          repliesTitle: '{nickname} (@{name}) 的评论',
+          repliesDescription: '按最新顺序查看该用户写过的评论。',
           missingTitle: '用户不存在',
           description: '正在关注 {followingCount} 人 · 关注者 {followerCount} 人',
           missingDescription: '找不到 @{username} 用户。',
@@ -502,6 +556,10 @@ export const messages = {
         censor: {
           title: '屏蔽',
           description: '管理内容显示和屏蔽相关设置。',
+        },
+        donation: {
+          title: '赞助',
+          description: '查看你赞助过的作品和对象。',
         },
       },
     },
@@ -585,8 +643,7 @@ export const messages = {
         myLitomi: '我的莉托米',
         logout: '退出登录',
         stories: '动态',
-        censor: '屏蔽',
-        donations: '赞助',
+        replies: '评论',
         settings: '设置',
       },
       fallback: {
@@ -602,8 +659,19 @@ export const messages = {
       },
       posts: {
         createPlaceholder: '写下第一篇动态吧',
-        emptyTitle: '还没有发布过动态',
-        emptyDescription: '分享想法，与其他用户交流',
+        emptyOwnTitle: '还没有发布过动态',
+        emptyOwnDescription: '分享想法，与其他用户交流',
+        emptyOtherTitle: '还没有公开动态',
+        emptyOtherDescription: '该用户发布动态后会显示在这里',
+      },
+      replies: {
+        emptyOwnTitle: '还没有写过评论',
+        emptyOwnDescription: '回复一篇动态，开始参与对话',
+        emptyOtherTitle: '还没有公开评论',
+        emptyOtherDescription: '该用户留下评论后会显示在这里',
+        notFoundTitle: '找不到评论',
+        notFoundDescription: '该用户还没有公开评论，或这些评论暂不可见',
+        notFoundAction: '前往动态列表',
       },
       notFound: {
         title: '找不到用户',

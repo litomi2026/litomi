@@ -18,7 +18,11 @@ export default async function Layout({ children }: LayoutProps<'/[locale]/post/[
         <button className="rounded-full border-2 border-zinc-600 px-4 py-1 text-sm font-bold mx-2">{t('reply')}</button>
       </div>
       {children}
-      <div aria-hidden className="h-dvh shrink-0" />
+      <PostDetailBottomSpacer />
     </>
   )
+}
+
+function PostDetailBottomSpacer() {
+  return <div aria-hidden className="h-dvh shrink-0" />
 }

@@ -7,14 +7,14 @@ import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
 import { Link } from '@/i18n/navigation'
 
-import { LIBRARY_HEADER_SPACER_CLASS_NAME } from '../libraryHeaderLayout'
+import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 
 export default function NotFound() {
   const t = useTranslations('Library')
 
   return (
     <>
-      <div aria-hidden className={LIBRARY_HEADER_SPACER_CLASS_NAME} />
+      <LibraryHeaderSpacer />
       <div className="flex-1 flex items-center justify-center">
         <StatusState
           description={t('empty.historyDescription')}

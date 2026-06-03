@@ -1,8 +1,9 @@
+import type { PublicLocale } from '@litomi/domain/locale'
 import type { Metadata } from 'next'
 
 import { formatNumber } from '@litomi/std'
 import { Heart } from 'lucide-react'
-import { getLocale, getTranslations } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
@@ -12,7 +13,7 @@ import { generateLocalizedMetadata } from '@/lib/metadata'
 
 import { getDonationRanking } from './query'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 21600 // 6 hours
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/ranking/donation'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
@@ -32,8 +33,9 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/ranking/
   }
 }
 
-export default async function Page() {
-  const t = await getTranslations('RankingDonationPage')
+export default async function Page({ params }: PageProps<'/[locale]/ranking/donation'>) {
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'RankingDonationPage' })
 
   return (
     <div className="p-2">
@@ -55,16 +57,15 @@ export default async function Page() {
               <th className="p-4 py-3 text-right text-sm font-medium text-zinc-400">{t('totalColumn')}</th>
             </tr>
           </thead>
-          <DonationRankingBody />
+          <DonationRankingBody locale={locale} />
         </table>
       </div>
     </div>
   )
 }
 
-async function DonationRankingBody() {
-  const locale = await getLocale()
-  const t = await getTranslations('RankingDonationPage')
+async function DonationRankingBody({ locale }: { locale: PublicLocale }) {
+  const t = await getTranslations({ locale, namespace: 'RankingDonationPage' })
   const items = await getDonationRanking(locale)
 
   return (

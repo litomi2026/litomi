@@ -1,17 +1,21 @@
+import type { PublicLocale } from '@litomi/domain/locale'
+
 import { ChevronRight, Flame } from 'lucide-react'
-import { getLocale } from 'next-intl/server'
 import { Suspense } from 'react'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import { MangaCardSkeleton } from '@/components/card/MangaCard'
-import { MobileNavigationSpacer } from '@/components/ScrollSpacers'
 import { Link } from '@/i18n/navigation'
+import { getLocaleFromParams } from '@/i18n/server'
 
 import { MetricParam, PeriodParam } from '../(ranking)/common'
 import { getRankingData } from '../(ranking)/ranking/[metric]/[period]/query'
 import RankingList from '../(ranking)/ranking/[metric]/[period]/RankingList'
 
-export default function Layout({ children }: LayoutProps<'/[locale]'>) {
-  const rankingHref = `/ranking/${MetricParam.VIEW}/${PeriodParam.DAY}`
+export const revalidate = 21600 // 6 hours
+
+export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
+  const locale = await getLocaleFromParams(params)
 
   return (
     <div className="grid min-h-full grow lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
@@ -28,7 +32,7 @@ export default function Layout({ children }: LayoutProps<'/[locale]'>) {
               </div>
               <Link
                 className="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-lg px-2 text-xs font-semibold text-zinc-400 transition hover:bg-zinc-900 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700/70"
-                href={rankingHref}
+                href={`/ranking/${MetricParam.VIEW}/${PeriodParam.DAY}`}
                 prefetch={false}
               >
                 전체
@@ -37,7 +41,7 @@ export default function Layout({ children }: LayoutProps<'/[locale]'>) {
             </div>
           </div>
           <Suspense fallback={<DailyRankingFallback />}>
-            <DailyRanking />
+            <DailyRanking locale={locale} />
           </Suspense>
         </div>
       </aside>
@@ -46,8 +50,7 @@ export default function Layout({ children }: LayoutProps<'/[locale]'>) {
   )
 }
 
-async function DailyRanking() {
-  const locale = await getLocale()
+async function DailyRanking({ locale }: { locale: PublicLocale }) {
   const rankings = await getRankingData(MetricParam.VIEW, PeriodParam.DAY, locale)
 
   if (!rankings) {

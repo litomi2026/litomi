@@ -46,13 +46,23 @@ export type GETV1PostResponse = z.infer<typeof getV1PostResponseSchema>
 
 export const postFilterSchema = z.enum(PostFilter)
 
-export const getV1PostQuerySchema = z.object({
+const getV1PostQueryBaseSchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(POST_PER_PAGE).default(POST_PER_PAGE),
   mangaId: z.coerce.number().int().positive().optional(),
-  filter: postFilterSchema.optional(),
-  username: z.string().min(1).max(32).optional(),
 })
+
+const getV1UserPostQuerySchema = getV1PostQueryBaseSchema.extend({
+  filter: z.enum([PostFilter.USER, PostFilter.USER_REPLY]),
+  username: z.string().min(1).max(32),
+})
+
+const getV1TimelinePostQuerySchema = getV1PostQueryBaseSchema.extend({
+  filter: z.enum([PostFilter.FOLLOWING, PostFilter.MANGA, PostFilter.RECOMMEND]).optional(),
+  username: z.never().optional(),
+})
+
+export const getV1PostQuerySchema = z.union([getV1UserPostQuerySchema, getV1TimelinePostQuerySchema])
 
 export type GETV1PostQuery = z.infer<typeof getV1PostQuerySchema>
 

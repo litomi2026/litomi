@@ -1,8 +1,8 @@
-import { CollectionItemSort } from '@litomi/domain/library/sort'
+import { LibraryItemSort } from '@litomi/domain/library/sort'
 
-export const COLLECTION_ITEM_SORT_OPTIONS = [
-  { value: CollectionItemSort.CREATED_DESC, labelKey: 'createdDesc' },
-  { value: CollectionItemSort.CREATED_ASC, labelKey: 'createdAsc' },
-  { value: CollectionItemSort.MANGA_ID_DESC, labelKey: 'mangaIdDesc' },
-  { value: CollectionItemSort.MANGA_ID_ASC, labelKey: 'mangaIdAsc' },
+export const LIBRARY_ITEM_SORT_OPTIONS = [
+  { value: LibraryItemSort.CREATED_DESC, labelKey: 'createdDesc' },
+  { value: LibraryItemSort.CREATED_ASC, labelKey: 'createdAsc' },
+  { value: LibraryItemSort.MANGA_ID_DESC, labelKey: 'mangaIdDesc' },
+  { value: LibraryItemSort.MANGA_ID_ASC, labelKey: 'mangaIdAsc' },
 ] as const

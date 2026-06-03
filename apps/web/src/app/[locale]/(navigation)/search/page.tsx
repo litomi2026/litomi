@@ -2,9 +2,7 @@ import type { Metadata } from 'next'
 
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
-import { getViewFromSearchParams } from '@litomi/std'
 import { getTranslations } from 'next-intl/server'
-import { Suspense } from 'react'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { getLocaleFromParams } from '@/i18n/server'
@@ -14,7 +12,7 @@ import { getSearchSEO } from '@/lib/searchSEO'
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import { SearchParam } from './constants'
 import { getLanguageFilter } from './searchLanguage'
-import SearchResult, { SearchResultLoading } from './SearchResult'
+import SearchResult from './SearchResult'
 import TrendingKeywords from './TrendingKeywords'
 
 export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/search'>): Promise<Metadata> {
@@ -44,16 +42,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<'/[lo
 
 export default async function Page({ searchParams }: PageProps<'/[locale]/search'>) {
   const t = await getTranslations('Search')
-  const resolvedSearchParams = await searchParams
-  const params = new URLSearchParams()
-
-  for (const [key, value] of Object.entries(resolvedSearchParams)) {
-    const normalizedValue = getSearchParamValue(value)
-
-    if (normalizedValue) {
-      params.set(key, normalizedValue)
-    }
-  }
+  const params = getURLSearchParams(await searchParams)
 
   const filters = {
     sort: params.get(SearchParam.SORT),
@@ -70,7 +59,6 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
     skip: params.get(SearchParam.SKIP),
   }
 
-  const view = getViewFromSearchParams(params)
   const hasActiveFilters = Boolean(Object.values(filters).some(Boolean))
   const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.SEARCH, params.get(SearchParam.QUERY))
 
@@ -85,21 +73,25 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
           <ActiveFilters filters={filters} />
         </div>
       ) : (
-        <TrendingKeywords view={view} />
+        <TrendingKeywords />
       )}
       <JuicyAdsBanner />
     </div>
   )
 
-  return (
-    <>
-      <Suspense fallback={<SearchResultLoading view={view} />}>
-        <SearchResult header={header} nativeGridSponsor={nativeGridSponsor} />
-      </Suspense>
-    </>
-  )
+  return <SearchResult header={header} nativeGridSponsor={nativeGridSponsor} searchParams={params.toString()} />
 }
 
-function getSearchParamValue(value: string | string[] | undefined) {
-  return Array.isArray(value) ? (value[0] ?? null) : (value ?? null)
+function getURLSearchParams(searchParams: Record<string, string | string[] | undefined>) {
+  const params = new URLSearchParams()
+
+  for (const [key, value] of Object.entries(searchParams)) {
+    const firstValue = Array.isArray(value) ? (value[0] ?? null) : (value ?? null)
+
+    if (firstValue) {
+      params.set(key, firstValue)
+    }
+  }
+
+  return params
 }

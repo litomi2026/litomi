@@ -2,194 +2,134 @@
 
 import type { Post } from '@litomi/contracts'
 
-import { PostFilter } from '@litomi/domain/post/filter'
-import { Frown, Repeat } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
-import { ReactNode, useEffect, useMemo, useState } from 'react'
-import { useInView } from 'react-intersection-observer'
+import { Masonry, type RenderComponentProps, useInfiniteLoader } from 'masonic'
+import { useTranslations } from 'next-intl'
+import { useCallback, useLayoutEffect, useState } from 'react'
 
-import CloudProviderStatus from '@/components/CloudProviderStatus'
-import RetryGuidance from '@/components/RetryGuidance'
-import { Link } from '@/i18n/navigation'
-import usePostInfiniteQuery from '@/query/usePostsQuery'
-import { ProblemDetailsError } from '@/utils/api-request'
-
-import FollowingUnauthorized from './FollowingUnauthorized'
 import PostCard, { PostSkeleton } from './PostCard'
 
-type Props = {
-  filter: PostFilter
-  mangaId?: number
-  username?: string
-  NotFound: ReactNode
-  showMangaCover?: boolean
+type MasonryLayoutConfig = {
+  columnCount: number
+  gutter: number
 }
 
-export default function MasonryPostList({ filter, mangaId, username, NotFound, showMangaCover }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } =
-    usePostInfiniteQuery(filter, mangaId, username)
+type Props = {
+  hasNextPage: boolean
+  isFetchingNextPage: boolean
+  loadNextPage: () => unknown
+  posts: Post[]
+  showMangaCover: boolean
+}
 
-  const allPosts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data])
-  const masonryColumnCount = useMasonryColumnCount()
+export default function MasonryPostList({
+  hasNextPage,
+  isFetchingNextPage,
+  loadNextPage,
+  posts,
+  showMangaCover,
+}: Props) {
+  const layoutConfig = useMasonryLayoutConfig()
   const t = useTranslations('Community.posts')
 
-  const masonryColumns = useMemo(
-    () => splitIntoMasonryColumns(allPosts, masonryColumnCount, (post) => estimatePostCardWeight(post, showMangaCover)),
-    [allPosts, masonryColumnCount, showMangaCover],
-  )
+  const loadMorePosts = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      void loadNextPage()
+    }
+  }, [hasNextPage, isFetchingNextPage, loadNextPage])
 
-  const { ref, inView } = useInView({
-    threshold: 0,
-    rootMargin: '100px',
+  const loadMoreOnRender = useInfiniteLoader(loadMorePosts, {
+    isItemLoaded: (index) => index < posts.length,
+    threshold: layoutConfig?.columnCount ?? 1,
+    totalItems: hasNextPage ? posts.length + 1 : posts.length,
   })
 
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
-
-  if (isLoading) {
-    return (
-      <div className="p-2 md:p-3">
-        <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {[...Array(6)].map((_, i) => (
-            <PostSkeleton key={i} showMangaCover={showMangaCover} />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (isError) {
-    if (filter === PostFilter.FOLLOWING && error instanceof ProblemDetailsError && error.status === 401) {
-      return <FollowingUnauthorized />
-    }
-
-    return <ErrorState error={error} retry={() => refetch()} />
-  }
-
-  if (allPosts.length === 0) {
-    return NotFound
+  if (!layoutConfig) {
+    return <MasonryPostListSkeleton showMangaCover={showMangaCover} />
   }
 
   return (
     <div className="flex-1 p-2 md:p-3">
-      <div className="grid grid-cols-1 gap-x-2 sm:grid-cols-2 md:gap-x-3 md:grid-cols-3 xl:grid-cols-4" role="feed">
-        {masonryColumns.map((columnPosts, columnIndex) => (
-          <div className="flex flex-col gap-2 md:gap-3" key={columnIndex}>
-            {columnPosts.map((post) => (
-              <PostCard key={post.id} post={post} showMangaCover={showMangaCover} />
-            ))}
-            {isFetchingNextPage && <PostSkeleton showMangaCover={showMangaCover} />}
-          </div>
-        ))}
-      </div>
+      <Masonry
+        columnCount={layoutConfig.columnCount}
+        columnGutter={layoutConfig.gutter}
+        itemHeightEstimate={showMangaCover ? 440 : 160}
+        itemKey={getPostItemKey}
+        items={posts}
+        onRender={loadMoreOnRender}
+        overscanBy={1.5}
+        render={showMangaCover ? PostCardWithMangaCover : CompactPostCard}
+        role="list"
+        rowGutter={layoutConfig.gutter}
+        tabIndex={-1}
+      />
 
-      {hasNextPage && (
-        <output className="block py-4" ref={ref}>
-          {isFetchingNextPage && <span className="sr-only">{t('loading')}</span>}
+      {isFetchingNextPage && (
+        <div className="pt-2 md:pt-3">
+          <MasonryPostSkeletonGrid count={layoutConfig.columnCount} showMangaCover={showMangaCover} />
+        </div>
+      )}
+
+      {isFetchingNextPage && (
+        <output className="sr-only">
+          <span>{t('loading')}</span>
         </output>
       )}
 
-      {!hasNextPage && allPosts.length > 0 && (
+      {!hasNextPage && posts.length > 0 && (
         <div className="py-8 text-center text-sm text-zinc-600 sm:py-12">{t('endReached')}</div>
       )}
     </div>
   )
 }
 
-function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
-  const locale = useLocale()
-  const t = useTranslations('Community.posts')
-  const commonT = useTranslations('Community.common')
-  const [hasSystemIssues, setHasSystemIssues] = useState(false)
-
+export function MasonryPostListSkeleton({ showMangaCover }: { showMangaCover: boolean }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center py-8 p-4">
-      <div aria-label="error icon" className="mb-4" role="img">
-        <Frown aria-hidden className="size-10 text-zinc-500" />
-      </div>
-      <h3 className="text-lg font-semibold text-zinc-200 mb-2">{t('loadErrorTitle')}</h3>
-
-      <CloudProviderStatus locale={locale} onStatusUpdate={setHasSystemIssues} />
-      <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
-
-      <button
-        className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition mt-4"
-        onClick={retry}
-      >
-        <Repeat className="size-4" />
-        <span>{commonT('retry')}</span>
-      </button>
-
-      <div className="mt-6 text-xs text-zinc-600">
-        {t('persistentProblemPrefix')}{' '}
-        <Link className="underline hover:text-zinc-400" href="/posts/all" prefetch={false}>
-          {t('browseOtherPosts')}
-        </Link>
-      </div>
+    <div className="p-2 md:p-3">
+      <MasonryPostSkeletonGrid count={6} showMangaCover={showMangaCover} />
     </div>
   )
 }
 
-function estimatePostCardWeight(post: Post, showMangaCover?: boolean) {
-  if (!showMangaCover) {
-    return 1
-  }
-
-  return post.mangaId ? 3.3 : 1
+function CompactPostCard({ data }: RenderComponentProps<Post>) {
+  return <PostCard post={data} showMangaCover={false} />
 }
 
-function splitIntoMasonryColumns<T>(items: readonly T[], columnCount: number, getItemWeight?: (item: T) => number) {
-  const safeColumnCount = Math.max(1, columnCount)
-  const columns: T[][] = Array.from({ length: safeColumnCount }, () => [])
-
-  if (!getItemWeight) {
-    items.forEach((item, index) => {
-      columns[index % safeColumnCount]?.push(item)
-    })
-
-    return columns
-  }
-
-  const columnWeights = Array.from({ length: safeColumnCount }, () => 0)
-
-  for (const item of items) {
-    const itemWeight = Math.max(0, getItemWeight(item))
-
-    let targetColumn = 0
-    for (let i = 1; i < safeColumnCount; i++) {
-      if (columnWeights[i]! < columnWeights[targetColumn]!) {
-        targetColumn = i
-      }
-    }
-
-    columns[targetColumn]!.push(item)
-    columnWeights[targetColumn]! += itemWeight
-  }
-
-  return columns
+function getPostItemKey(post: Post) {
+  return post.id
 }
 
-function useMasonryColumnCount() {
-  const [columnCount, setColumnCount] = useState(1)
+function MasonryPostSkeletonGrid({ count, showMangaCover }: { count: number; showMangaCover: boolean }) {
+  return (
+    <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: count }, (_, i) => (
+        <PostSkeleton key={i} showMangaCover={showMangaCover} />
+      ))}
+    </div>
+  )
+}
 
-  useEffect(() => {
-    function compute() {
-      const width = window.innerWidth
-      if (width >= 1280) return 4 // xl
-      if (width >= 768) return 3 // md
-      if (width >= 640) return 2 // sm
-      return 1
+function PostCardWithMangaCover({ data }: RenderComponentProps<Post>) {
+  return <PostCard post={data} showMangaCover />
+}
+
+function useMasonryLayoutConfig() {
+  const [layoutConfig, setLayoutConfig] = useState<MasonryLayoutConfig | null>(null)
+
+  useLayoutEffect(() => {
+    const mediaQueries = [
+      { columnCount: 4, gutter: 12, mediaQuery: window.matchMedia('(min-width: 1280px)') },
+      { columnCount: 3, gutter: 12, mediaQuery: window.matchMedia('(min-width: 768px)') },
+      { columnCount: 2, gutter: 8, mediaQuery: window.matchMedia('(min-width: 640px)') },
+    ] as const
+
+    function update() {
+      setLayoutConfig(mediaQueries.find(({ mediaQuery }) => mediaQuery.matches) ?? { columnCount: 1, gutter: 8 })
     }
-
-    const update = () => setColumnCount(compute())
 
     update()
-    window.addEventListener('resize', update, { passive: true })
-    return () => window.removeEventListener('resize', update)
+    mediaQueries.forEach(({ mediaQuery }) => mediaQuery.addEventListener('change', update))
+    return () => mediaQueries.forEach(({ mediaQuery }) => mediaQuery.removeEventListener('change', update))
   }, [])
 
-  return columnCount
+  return layoutConfig
 }

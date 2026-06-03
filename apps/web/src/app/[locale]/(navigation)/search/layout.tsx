@@ -2,11 +2,11 @@ import { getTranslations } from 'next-intl/server'
 import { twMerge } from 'tailwind-merge'
 
 import AutoHideHeader from '@/components/auto-hide/AutoHideHeader'
-import ViewToggle from '@/components/ViewToggle'
 
 import FilterButton from './FilterButton'
 import KeywordSubscriptionButton from './KeywordSubscriptionButton'
 import SearchForm from './SearchForm'
+import SearchViewToggle from './SearchViewToggle'
 
 export default async function Layout({ children }: LayoutProps<'/[locale]/search'>) {
   const t = await getTranslations('Search')
@@ -24,7 +24,7 @@ export default async function Layout({ children }: LayoutProps<'/[locale]/search
         <div className="flex items-center justify-center flex-wrap gap-2 whitespace-nowrap p-2 md:justify-end">
           <SearchForm className="grow w-full min-w-0 md:w-auto" />
           <KeywordSubscriptionButton />
-          <ViewToggle />
+          <SearchViewToggle />
           <FilterButton />
         </div>
       </AutoHideHeader>

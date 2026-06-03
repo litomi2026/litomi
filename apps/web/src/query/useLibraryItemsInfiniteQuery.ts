@@ -1,6 +1,6 @@
 import type { GETLibraryItemsResponse } from '@litomi/contracts'
 
-import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@litomi/domain/library/sort'
+import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
@@ -15,14 +15,14 @@ interface FetchLibraryItemsOptions {
   libraryId: number
   locale: string
   scope: 'me' | 'public'
-  sort: CollectionItemSort
+  sort: LibraryItemSort
 }
 
 interface Options {
   enabled?: boolean
   libraryId: number
   scope: 'me' | 'public'
-  sort?: CollectionItemSort
+  sort?: LibraryItemSort
 }
 
 export async function fetchLibraryItems({ libraryId, cursor, locale, scope, sort }: FetchLibraryItemsOptions) {
@@ -44,7 +44,7 @@ export default function useLibraryItemsInfiniteQuery({
   enabled = true,
   libraryId,
   scope,
-  sort = DEFAULT_COLLECTION_ITEM_SORT,
+  sort = DEFAULT_LIBRARY_ITEM_SORT,
 }: Options) {
   const locale = useLocale()
 

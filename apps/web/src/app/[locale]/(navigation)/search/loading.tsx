@@ -1,6 +1,8 @@
 import { Loader2 } from 'lucide-react'
 
-import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
+
+import { SearchHeaderSpacer } from './SearchHeaderSpacer'
 
 export default function Loading() {
   return (

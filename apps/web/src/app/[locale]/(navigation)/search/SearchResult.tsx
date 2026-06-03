@@ -2,21 +2,22 @@
 
 import type { Manga } from '@litomi/domain/manga/model'
 import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 import type { ReactNode } from 'react'
 
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
-import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import { useSearchQuery } from '@/app/[locale]/(navigation)/search/useSearchQuery'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
-import { MobileNavigationSpacer, SearchHeaderSpacer } from '@/components/ScrollSpacers'
+import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -26,9 +27,14 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 import { SearchParam, SearchSort } from './constants'
+import { SearchHeaderSpacer } from './SearchHeaderSpacer'
 
 const Error400 = dynamic(() => import('./Error400'))
 const SearchResultError = dynamic(() => import('./SearchResultError'))
+
+type ContentProps = Props & {
+  view: View
+}
 
 type LoadingItem = VirtualMangaGridItem & {
   type: 'loading'
@@ -43,18 +49,37 @@ type MangaItem = VirtualMangaGridItem & {
 type Props = {
   header?: ReactNode
   nativeGridSponsor?: NativeGridSponsor | null
+  searchParams: string
 }
 
 type SearchResultItem = LoadingItem | MangaItem | NativeGridSponsorItem
 
-export default function SearchResult({ header, nativeGridSponsor }: Props) {
+export default function SearchResult({ header, nativeGridSponsor, searchParams }: Props) {
+  const [view, setView] = useState(View.CARD)
+
+  function handleSearchParamsUpdate(searchParams: ReadonlyURLSearchParams) {
+    setView(getViewFromSearchParams(searchParams))
+  }
+
+  return (
+    <>
+      <SearchParamsSync onUpdate={handleSearchParamsUpdate} />
+      <SearchResultContent
+        header={header}
+        nativeGridSponsor={nativeGridSponsor}
+        searchParams={searchParams}
+        view={view}
+      />
+    </>
+  )
+}
+
+function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: ContentProps) {
   const t = useTranslations('Search')
-  const searchParams = useSearchParams()
-  const searchParamsString = searchParams.toString()
-  const view = getViewFromSearchParams(searchParams)
+  const params = new URLSearchParams(searchParams)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
-  const { heavySignature, isVisible } = useMangaCensorship()
+  const { isVisible } = useMangaCensorship()
 
   const {
     data,
@@ -67,13 +92,11 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
     refetch,
     isRefetching,
     error,
-  } = useSearchQuery()
+  } = useSearchQuery(params)
 
   const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
   const visibleMangas = mangas.filter(isVisible)
-  const measurementKey = `${searchParamsString}:${heavySignature}`
-  const scrollRestorationKey = `search-results:${measurementKey}`
-  const showRefreshButton = searchParams.get(SearchParam.SORT) === SearchSort.RANDOM
+  const showRefreshButton = params.get(SearchParam.SORT) === SearchSort.RANDOM
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
 
@@ -129,7 +152,7 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
           <MangaCard
             index={item.mangaIndex}
             manga={item.manga}
-            searchParams={searchParamsString}
+            searchParams={params}
             showSearchFromNextButton
             variant={view}
           />
@@ -140,7 +163,11 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
   }
 
   if (isLoading) {
-    return <SearchResultLoading view={view} />
+    return (
+      <SearchSpacer>
+        <SearchResultLoading view={view} />
+      </SearchSpacer>
+    )
   }
 
   if (error) {
@@ -180,25 +207,22 @@ export default function SearchResult({ header, nativeGridSponsor }: Props) {
       isFetchingNextPage={isFetchingNextPage}
       itemGap={8}
       items={items}
-      measurementKey={measurementKey}
+      measurementKey={searchParams}
       onScrollElementChange={setNavigationAutoHideScrollElement}
       renderItem={renderItem}
-      scrollRestorationKey={scrollRestorationKey}
       scrollToOptions={scrollToOptions}
       view={view}
     />
   )
 }
 
-export function SearchResultLoading({ view }: { view: View }) {
+function SearchResultLoading({ view }: { view: View }) {
   return (
-    <SearchSpacer>
-      <div className={`p-2 grid ${MANGA_GRID_COLUMN[view]} gap-2 grow`}>
-        {Array.from({ length: view === View.IMAGE ? 12 : 6 }).map((_, i) => (
-          <MangaCardSkeleton key={i} variant={view} />
-        ))}
-      </div>
-    </SearchSpacer>
+    <div className={`p-2 grid ${MANGA_GRID_COLUMN[view]} gap-2 grow`}>
+      {Array.from({ length: view === View.IMAGE ? 12 : 6 }).map((_, i) => (
+        <MangaCardSkeleton key={i} variant={view} />
+      ))}
+    </div>
   )
 }
 
