@@ -1,23 +1,29 @@
+'use client'
+
 import { LockKeyhole } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import LoginButton from '@/components/LoginButton'
 import StatusState from '@/components/status/StatusState'
 import { Link } from '@/i18n/navigation'
 
 export default function Unauthorized() {
+  const t = useTranslations('Community.notification')
+  const commonT = useTranslations('Community.common')
+
   return (
     <StatusState
-      description="로그인하면 키워드 알림과 새 소식을 한 곳에서 확인할 수 있어요"
+      description={t('auth.description')}
       icon={<LockKeyhole className="size-8" />}
       intent="auth"
-      title="알림은 로그인이 필요해요"
+      title={t('auth.title')}
     >
       <div className="flex w-full flex-col items-center gap-3">
-        <LoginButton>로그인하기</LoginButton>
+        <LoginButton>{commonT('login')}</LoginButton>
         <p className="text-sm text-zinc-500">
-          처음이신가요?{' '}
+          {commonT('signupPrompt')}{' '}
           <Link className="text-zinc-300 underline transition hover:text-zinc-100" href="/auth/signup" prefetch={false}>
-            회원가입
+            {commonT('signup')}
           </Link>
         </p>
       </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -12,6 +13,7 @@ const MARK_AS_READ_MUTATION_KEY = ['notification', 'mark-as-read'] as const
 const DELETE_MUTATION_KEY = ['notification', 'delete'] as const
 
 export default function useNotificationActions() {
+  const t = useTranslations('Community.notification')
   const queryClient = useQueryClient()
   const { cancelSelection, selectedIds } = useNotificationSelection()
 
@@ -32,7 +34,7 @@ export default function useNotificationActions() {
     mutationFn: deleteNotifications,
     mutationKey: DELETE_MUTATION_KEY,
     onSuccess: () => {
-      toast.success('알림을 삭제했어요')
+      toast.success(t('actions.deletedToast'))
       handleMutationSuccess()
     },
   })

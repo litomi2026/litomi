@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 interface Options<T> {
   batchDelay: number
@@ -11,7 +11,7 @@ export default function useBatcher<T>({ batchDelay, onBatchStart }: Options<T>) 
   const pendingRef = useRef(new Set<T>())
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const flushBatch = useCallback(() => {
+  function flushBatch() {
     if (pendingRef.current.size === 0) {
       return
     }
@@ -20,23 +20,20 @@ export default function useBatcher<T>({ batchDelay, onBatchStart }: Options<T>) 
     pendingRef.current.clear()
 
     onBatchStart(ids)
-  }, [onBatchStart])
+  }
 
-  const addToQueue = useCallback(
-    (id: T) => {
-      pendingRef.current.add(id)
+  function addToQueue(id: T) {
+    pendingRef.current.add(id)
 
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-      }
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+    }
 
-      timerRef.current = setTimeout(() => {
-        flushBatch()
-        timerRef.current = null
-      }, batchDelay)
-    },
-    [batchDelay, flushBatch],
-  )
+    timerRef.current = setTimeout(() => {
+      flushBatch()
+      timerRef.current = null
+    }, batchDelay)
+  }
 
   useEffect(() => {
     const pendingSet = pendingRef.current
