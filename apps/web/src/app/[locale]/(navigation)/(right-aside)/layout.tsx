@@ -12,9 +12,10 @@ import { MetricParam, PeriodParam } from '../(ranking)/common'
 import { getRankingData } from '../(ranking)/ranking/[metric]/[period]/query'
 import RankingList from '../(ranking)/ranking/[metric]/[period]/RankingList'
 
+export const revalidate = 21600 // 6 hours
+
 export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
   const locale = await getLocaleFromParams(params)
-  const rankingHref = `/ranking/${MetricParam.VIEW}/${PeriodParam.DAY}`
 
   return (
     <div className="grid min-h-full grow lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
@@ -31,7 +32,7 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
               </div>
               <Link
                 className="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-lg px-2 text-xs font-semibold text-zinc-400 transition hover:bg-zinc-900 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700/70"
-                href={rankingHref}
+                href={`/ranking/${MetricParam.VIEW}/${PeriodParam.DAY}`}
                 prefetch={false}
               >
                 전체
