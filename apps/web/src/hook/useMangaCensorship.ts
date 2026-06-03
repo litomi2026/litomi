@@ -11,7 +11,7 @@ export default function useMangaCensorship() {
   const { data: censorshipsMap } = useCensorshipsMapQuery()
 
   const heavySignature = getHeavyCensorshipSignature(censorshipsMap)
-  const defaultCensorshipEnabled = me?.settings.defaultCensorshipEnabled
+  const defaultCensorshipEnabled = me?.settings.defaultCensorshipEnabled ?? true
 
   function getMatch(manga: Manga) {
     return getMatchedCensorships({ manga, censorshipsMap, defaultCensorshipEnabled })
