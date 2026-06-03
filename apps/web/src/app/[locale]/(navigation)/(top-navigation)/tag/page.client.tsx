@@ -1,9 +1,8 @@
 'use client'
 
-import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { formatNumber } from '@litomi/std'
 import { Loader2 } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 
 import PageNavigation from '@/components/PageNavigation'
@@ -12,13 +11,6 @@ import { Link } from '@/i18n/navigation'
 import { CategoryParam, useTagQuery } from './hook'
 
 const CATEGORY_PARAMS: CategoryParam[] = ['female', 'male', 'mixed', 'other']
-
-const CATEGORY_LABELS: Record<CategoryParam, string> = {
-  female: '여',
-  male: '남',
-  mixed: '혼합',
-  other: '기타',
-}
 
 const TAG_COLORS: Record<CategoryParam, string> = {
   female: 'bg-red-900/50 hover:bg-red-800/70',
@@ -36,16 +28,19 @@ const TAB_COLORS: Record<CategoryParam, string> = {
 
 export default function TagPageClient() {
   const locale = useLocale()
+  const t = useTranslations('Tag')
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('category')
   const category = isValidCategory(categoryParam) ? categoryParam : 'female'
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1)
   const { data, isLoading, isError, isFetching } = useTagQuery({ category, page })
 
+  const rangeStart = data ? (data.pagination.total === 0 ? 0 : (page - 1) * data.pagination.limit + 1) : 0
+  const rangeEnd = data ? Math.min(page * data.pagination.limit, data.pagination.total) : 0
+
   return (
     <div className="flex flex-col grow gap-6 p-4">
-      {/* 카테고리 탭 */}
-      <nav className="flex gap-1 justify-center">
+      <nav aria-label={t('categories.label')} className="flex gap-1 justify-center">
         {CATEGORY_PARAMS.map((cat) => (
           <Link
             aria-current={cat === category}
@@ -54,33 +49,29 @@ export default function TagPageClient() {
             key={cat}
             prefetch={false}
           >
-            {CATEGORY_LABELS[cat]}
+            {t(`categories.${cat}`)}
           </Link>
         ))}
       </nav>
 
-      {/* 태그 개수 정보 */}
       {data && (
         <p className="text-center text-sm text-zinc-400 tabular-nums">
-          {formatNumber(data.pagination.total, locale)}개 중{' '}
-          {((page - 1) * data.pagination.limit + 1).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}-
-          {Math.min(page * data.pagination.limit, data.pagination.total).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
+          {t('pagination.range', {
+            end: formatNumber(rangeEnd, locale),
+            start: formatNumber(rangeStart, locale),
+            total: formatNumber(data.pagination.total, locale),
+          })}
         </p>
       )}
 
-      {/* 초기 로딩 상태 */}
       {isLoading && !data && (
         <div className="flex justify-center items-center py-20">
-          <Loader2 className="size-8 text-zinc-400 animate-spin" />
+          <Loader2 aria-label={t('loading')} className="size-8 text-zinc-400 animate-spin" />
         </div>
       )}
 
-      {/* 에러 상태 */}
-      {isError && !data && (
-        <div className="flex justify-center items-center py-20 text-zinc-400">태그를 불러오는 데 실패했어요</div>
-      )}
+      {isError && !data && <div className="flex justify-center items-center py-20 text-zinc-400">{t('error')}</div>}
 
-      {/* 태그 목록 */}
       {data && (
         <ul
           aria-busy={isFetching}
@@ -102,7 +93,6 @@ export default function TagPageClient() {
         </ul>
       )}
 
-      {/* 페이지네이션 */}
       {data && (
         <PageNavigation
           className="mt-auto py-4"
