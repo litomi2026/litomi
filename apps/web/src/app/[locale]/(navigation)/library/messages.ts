@@ -149,7 +149,6 @@ export const messages = {
         libraryNotFoundAction: '서재로 돌아가기',
         libraryLoadError: '서재를 불러오지 못했어요',
         libraryEmpty: '{name}가 비어 있어요',
-        adultTitle: '성인인증이 필요해요',
         adultDescription: '비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.',
         bookmarkTitle: '북마크가 비어 있어요',
         bookmarkDescription: '좋아하는 작품을 저장하면 여기에서 다시 볼 수 있어요',
@@ -442,7 +441,6 @@ export const messages = {
         libraryNotFoundAction: 'Back to library',
         libraryLoadError: 'Could not load the library',
         libraryEmpty: '{name} is empty',
-        adultTitle: 'Adult verification required',
         adultDescription:
           'Anonymous adult verification is required to view private libraries.\nOr switch the library to public.',
         bookmarkTitle: 'Bookmarks are empty',
@@ -737,7 +735,6 @@ export const messages = {
         libraryNotFoundAction: 'ライブラリへ戻る',
         libraryLoadError: 'ライブラリを読み込めませんでした',
         libraryEmpty: '{name} は空です',
-        adultTitle: '成人認証が必要です',
         adultDescription:
           '非公開ライブラリを見るには匿名成人認証が必要です。\nまたはライブラリを公開に切り替えてください。',
         bookmarkTitle: 'ブックマークは空です',
@@ -1032,7 +1029,6 @@ export const messages = {
         libraryNotFoundAction: '返回书库',
         libraryLoadError: '无法加载书库',
         libraryEmpty: '{name} 是空的',
-        adultTitle: '需要成人认证',
         adultDescription: '查看私密书库需要完成匿名成人认证。\n或者请将书库切换为公开。',
         bookmarkTitle: '书签为空',
         bookmarkDescription: '保存喜欢的作品后，可以在这里再次查看',

@@ -4,6 +4,7 @@ import { MAX_MANGA_RECOMMENDATION_PER_PAGE } from '@litomi/domain/manga-recommen
 import { View } from '@litomi/std'
 import dayjs from 'dayjs'
 import { Compass, RefreshCw, Target } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
@@ -23,6 +24,7 @@ import useMangaRecommendationQuery from './useMangaRecommendationQuery'
 
 export default function RecommendMangaPageClient() {
   const { heavySignature, isVisible } = useMangaCensorship()
+  const t = useTranslations('RecommendManga')
   const { data: me } = useMeQuery()
   const canAccess = hasAdultAccess(me)
 
@@ -52,9 +54,7 @@ export default function RecommendMangaPageClient() {
   }
 
   if (!canAccess) {
-    return (
-      <AdultVerificationGate description="추천 작품을 보려면 익명 성인인증이 필요해요" title="성인인증이 필요해요" />
-    )
+    return <AdultVerificationGate description={t('adultGateDescription')} />
   }
 
   if (isPending) {

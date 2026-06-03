@@ -11,6 +11,7 @@ import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
+import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -18,7 +19,7 @@ const route = new Hono<Env>()
 
 route.get('/', requireAuth, zProblemValidator('query', getV1RatingsQuerySchema), async (c) => {
   const userId = c.get('userId')!
-  const { cursor, limit, sort } = c.req.valid('query')
+  const { cursor, limit, locale, sort } = c.req.valid('query')
   const decodedCursor = cursor ? decodeRatingCursor(cursor) : null
 
   if (cursor && !decodedCursor) {
@@ -58,11 +59,14 @@ route.get('/', requireAuth, zProblemValidator('query', getV1RatingsQuerySchema),
     const items = hasNextPage ? rows.slice(0, limit) : rows
     const lastItem = items[items.length - 1]
     const nextCursor = hasNextPage && lastItem ? getNextRatingCursor(sort, lastItem) : null
+    const mangaIds = items.map(({ mangaId }) => mangaId)
+    const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
 
     return c.json<GETV1RatingsResponse>(
       {
         items: items.map((row) => ({
           mangaId: row.mangaId,
+          manga: catalogMangaMap.get(row.mangaId),
           rating: row.rating,
           createdAt: row.createdAt.getTime(),
           updatedAt: row.updatedAt.getTime(),

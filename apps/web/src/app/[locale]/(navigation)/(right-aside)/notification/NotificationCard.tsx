@@ -4,8 +4,8 @@ import { NotificationType } from '@litomi/domain/notification/model'
 import { NotificationData } from '@litomi/domain/notification/model'
 import { formatDistanceToNow } from '@litomi/std'
 import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
-import { useLocale } from 'next-intl'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
@@ -43,16 +43,21 @@ export default function NotificationCard({
   selectionMode = false,
 }: NotificationCardProps) {
   const locale = useLocale()
-  const parsedData = useMemo(
-    () => (notification.data ? (JSON.parse(notification.data) as NotificationData) : null),
-    [notification.data],
-  )
+  const t = useTranslations('Community.notification')
+  const parsedData = notification.data ? (JSON.parse(notification.data) as NotificationData) : null
 
   const mangaViewerURL = parsedData?.url
   const isUnread = !notification.read
   const [hasBeenViewed, setHasBeenViewed] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const skipAutoMarkingAsRead = !autoMarkAsRead || notification.read || hasBeenViewed
+
+  const markAsReadAfterView = useEffectEvent(() => {
+    if (!notification.read && onMarkAsRead) {
+      onMarkAsRead(notification.id)
+      setHasBeenViewed(true)
+    }
+  })
 
   const { ref: cardRef, inView } = useInView({
     threshold: 0.7,
@@ -98,10 +103,7 @@ export default function NotificationCard({
       }
 
       timerRef.current = setTimeout(() => {
-        if (!notification.read && onMarkAsRead) {
-          onMarkAsRead(notification.id)
-          setHasBeenViewed(true)
-        }
+        markAsReadAfterView()
         timerRef.current = null
       }, AUTO_MARK_AS_READ_DELAY)
     } else {
@@ -117,7 +119,7 @@ export default function NotificationCard({
         timerRef.current = null
       }
     }
-  }, [inView, notification.id, notification.read, onMarkAsRead, skipAutoMarkingAsRead])
+  }, [inView, notification.id, skipAutoMarkingAsRead])
 
   return (
     <Link
@@ -151,7 +153,7 @@ export default function NotificationCard({
                 e.preventDefault()
                 onMarkAsRead(notification.id)
               }}
-              title="읽음 표시"
+              title={t('actions.markAsRead')}
             >
               <Eye className="size-3.5 shrink-0 text-zinc-400" />
             </button>
@@ -163,7 +165,7 @@ export default function NotificationCard({
                 e.preventDefault()
                 onDelete(notification.id)
               }}
-              title="삭제"
+              title={t('actions.delete')}
             >
               <Trash2 className="size-3.5 shrink-0 text-zinc-400" />
             </button>
@@ -197,7 +199,9 @@ export default function NotificationCard({
           <div>
             <p className="font-medium text-sm text-zinc-400 line-clamp-2">{notification.body}</p>
             {parsedData && parsedData.artists && parsedData.artists.length > 0 && (
-              <p className="text-xs text-zinc-400 line-clamp-1 mt-1">작가: {parsedData.artists.join(', ')}</p>
+              <p className="text-xs text-zinc-400 line-clamp-1 mt-1">
+                {t('card.artists', { artists: parsedData.artists.join(', ') })}
+              </p>
             )}
           </div>
           {parsedData && parsedData.mangaId && parsedData.previewImageURL && (

@@ -41,6 +41,12 @@ export const messages = {
         },
       },
     },
+    RightAside: {
+      dailyRanking: {
+        title: '일간 조회 순위',
+        viewAll: '전체',
+      },
+    },
     Community: {
       common: {
         login: '로그인하기',
@@ -56,6 +62,57 @@ export const messages = {
         retry: '다시 시도',
         delete: '삭제',
         cancel: '취소',
+      },
+      notification: {
+        layout: {
+          title: '알림',
+          settingsTitle: '알림 설정',
+          description: '새로운 작품과 업데이트 소식을 확인하세요',
+        },
+        filters: {
+          all: '전체',
+          unread: '읽지 않음',
+          newManga: '신규',
+        },
+        actions: {
+          markAllAsRead: '모두 읽음',
+          markSelectedAsRead: '읽음',
+          markAsRead: '읽음 표시',
+          markAsReadShort: '읽음',
+          deleteSelected: '삭제',
+          delete: '삭제',
+          cancel: '취소',
+          selectionMode: '선택 모드',
+          deletedToast: '알림을 삭제했어요',
+        },
+        auth: {
+          title: '알림은 로그인이 필요해요',
+          description: '로그인하면 키워드 알림과 새 소식을 한 곳에서 확인할 수 있어요',
+        },
+        adultGate: {
+          description: '알림을 확인하려면 익명 성인인증이 필요해요',
+        },
+        empty: {
+          newMangaTitle: '신규 작품 알림이 없어요',
+          newMangaDescription: '새로운 작품이 추가되면 알려드릴게요',
+          unreadTitle: '모든 알림을 확인했어요',
+          unreadDescription: '새로운 알림이 도착하면 여기에 표시돼요',
+          defaultTitle: '아직 알림이 없어요',
+          defaultDescription: '신규 작품과 새로운 소식을 알려드릴게요',
+          retentionNotice: '(알림은 30일 동안 보관돼요)',
+          enablePush: '푸시 알림 켜기',
+          keywordSettings: '키워드 알림 설정',
+        },
+        groups: {
+          today: '오늘',
+          yesterday: '어제',
+          thisWeek: '이번 주',
+          older: '이전',
+        },
+        card: {
+          artists: '작가: {artists}',
+        },
+        loading: '알림을 불러오는 중',
       },
       posts: {
         recommend: '추천',
@@ -215,6 +272,12 @@ export const messages = {
         },
       },
     },
+    RightAside: {
+      dailyRanking: {
+        title: 'Daily Views Ranking',
+        viewAll: 'All',
+      },
+    },
     Community: {
       common: {
         login: 'Log in',
@@ -230,6 +293,57 @@ export const messages = {
         retry: 'Try again',
         delete: 'Delete',
         cancel: 'Cancel',
+      },
+      notification: {
+        layout: {
+          title: 'Notifications',
+          settingsTitle: 'Notification settings',
+          description: 'Check new works and update news.',
+        },
+        filters: {
+          all: 'All',
+          unread: 'Unread',
+          newManga: 'New',
+        },
+        actions: {
+          markAllAsRead: 'Mark all read',
+          markSelectedAsRead: 'Read',
+          markAsRead: 'Mark as read',
+          markAsReadShort: 'Read',
+          deleteSelected: 'Delete',
+          delete: 'Delete',
+          cancel: 'Cancel',
+          selectionMode: 'Selection mode',
+          deletedToast: 'Notification deleted',
+        },
+        auth: {
+          title: 'Log in to view notifications',
+          description: 'Log in to see keyword alerts and updates in one place.',
+        },
+        adultGate: {
+          description: 'Anonymous adult verification is required to view notifications.',
+        },
+        empty: {
+          newMangaTitle: 'No new work notifications',
+          newMangaDescription: 'We will let you know when new works are added.',
+          unreadTitle: 'You are all caught up',
+          unreadDescription: 'New notifications will appear here.',
+          defaultTitle: 'No notifications yet',
+          defaultDescription: 'We will let you know about new works and updates.',
+          retentionNotice: '(Notifications are kept for 30 days)',
+          enablePush: 'Turn on push notifications',
+          keywordSettings: 'Keyword alert settings',
+        },
+        groups: {
+          today: 'Today',
+          yesterday: 'Yesterday',
+          thisWeek: 'This week',
+          older: 'Older',
+        },
+        card: {
+          artists: 'Artists: {artists}',
+        },
+        loading: 'Loading notifications',
       },
       posts: {
         recommend: 'Recommended',
@@ -389,6 +503,12 @@ export const messages = {
         },
       },
     },
+    RightAside: {
+      dailyRanking: {
+        title: '日間閲覧ランキング',
+        viewAll: 'すべて',
+      },
+    },
     Community: {
       common: {
         login: 'ログイン',
@@ -404,6 +524,57 @@ export const messages = {
         retry: '再試行',
         delete: '削除',
         cancel: 'キャンセル',
+      },
+      notification: {
+        layout: {
+          title: '通知',
+          settingsTitle: '通知設定',
+          description: '新着作品とアップデートのお知らせを確認しましょう',
+        },
+        filters: {
+          all: 'すべて',
+          unread: '未読',
+          newManga: '新着',
+        },
+        actions: {
+          markAllAsRead: 'すべて既読',
+          markSelectedAsRead: '既読',
+          markAsRead: '既読にする',
+          markAsReadShort: '既読',
+          deleteSelected: '削除',
+          delete: '削除',
+          cancel: 'キャンセル',
+          selectionMode: '選択モード',
+          deletedToast: '通知を削除しました',
+        },
+        auth: {
+          title: '通知を見るにはログインが必要です',
+          description: 'ログインすると、キーワード通知と新着情報をまとめて確認できます',
+        },
+        adultGate: {
+          description: '通知を確認するには匿名成人認証が必要です',
+        },
+        empty: {
+          newMangaTitle: '新着作品の通知はありません',
+          newMangaDescription: '新しい作品が追加されたらお知らせします',
+          unreadTitle: 'すべての通知を確認しました',
+          unreadDescription: '新しい通知が届くとここに表示されます',
+          defaultTitle: 'まだ通知はありません',
+          defaultDescription: '新着作品と新しいお知らせをお届けします',
+          retentionNotice: '(通知は30日間保存されます)',
+          enablePush: 'プッシュ通知をオンにする',
+          keywordSettings: 'キーワード通知設定',
+        },
+        groups: {
+          today: '今日',
+          yesterday: '昨日',
+          thisWeek: '今週',
+          older: '以前',
+        },
+        card: {
+          artists: '作家: {artists}',
+        },
+        loading: '通知を読み込み中',
       },
       posts: {
         recommend: 'おすすめ',
@@ -563,6 +734,12 @@ export const messages = {
         },
       },
     },
+    RightAside: {
+      dailyRanking: {
+        title: '每日浏览排行',
+        viewAll: '全部',
+      },
+    },
     Community: {
       common: {
         login: '登录',
@@ -578,6 +755,57 @@ export const messages = {
         retry: '重试',
         delete: '删除',
         cancel: '取消',
+      },
+      notification: {
+        layout: {
+          title: '通知',
+          settingsTitle: '通知设置',
+          description: '查看新作品和更新消息。',
+        },
+        filters: {
+          all: '全部',
+          unread: '未读',
+          newManga: '新作',
+        },
+        actions: {
+          markAllAsRead: '全部已读',
+          markSelectedAsRead: '已读',
+          markAsRead: '标为已读',
+          markAsReadShort: '已读',
+          deleteSelected: '删除',
+          delete: '删除',
+          cancel: '取消',
+          selectionMode: '选择模式',
+          deletedToast: '通知已删除',
+        },
+        auth: {
+          title: '通知需要登录',
+          description: '登录后即可在这里查看关键词通知和新消息。',
+        },
+        adultGate: {
+          description: '查看通知需要匿名成人认证。',
+        },
+        empty: {
+          newMangaTitle: '暂无新作品通知',
+          newMangaDescription: '有新作品添加时我们会通知你。',
+          unreadTitle: '所有通知都已查看',
+          unreadDescription: '新的通知会显示在这里。',
+          defaultTitle: '还没有通知',
+          defaultDescription: '我们会在这里通知你新作品和新消息。',
+          retentionNotice: '（通知会保留 30 天）',
+          enablePush: '开启推送通知',
+          keywordSettings: '关键词通知设置',
+        },
+        groups: {
+          today: '今天',
+          yesterday: '昨天',
+          thisWeek: '本周',
+          older: '更早',
+        },
+        card: {
+          artists: '作者：{artists}',
+        },
+        loading: '正在加载通知',
       },
       posts: {
         recommend: '推荐',

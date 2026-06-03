@@ -12,6 +12,7 @@ import type { Env } from '@/app'
 import { requireAdult } from '@/middleware/require-adult'
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
+import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -24,7 +25,7 @@ libraryHistoryRoutes.get(
   zProblemValidator('query', getV1ReadingHistoryQuerySchema),
   async (c) => {
     const userId = c.get('userId')!
-    const { cursor, limit } = c.req.valid('query')
+    const { cursor, limit, locale } = c.req.valid('query')
     const decodedCursor = cursor ? decodeReadingHistoryCursor(cursor) : null
 
     if (cursor && !decodedCursor) {
@@ -74,12 +75,15 @@ libraryHistoryRoutes.get(
       const hasNextPage = rows.length > limit
       const items = hasNextPage ? rows.slice(0, limit) : rows
       const lastItem = items[items.length - 1]
+      const mangaIds = items.map(({ mangaId }) => mangaId)
+      const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
 
       const result = {
         items: items.map((row) => ({
           mangaId: row.mangaId,
           lastPage: row.lastPage,
           updatedAt: row.updatedAt.getTime(),
+          manga: catalogMangaMap.get(row.mangaId),
         })),
         nextCursor: hasNextPage ? encodeReadingHistoryCursor(lastItem.updatedAt.getTime(), lastItem.mangaId) : null,
       }

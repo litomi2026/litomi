@@ -56,6 +56,23 @@ export const messages = {
         youthProtection: '청소년보호정책',
       },
     },
+    Tag: {
+      categories: {
+        label: '태그 카테고리',
+        female: '여',
+        male: '남',
+        mixed: '혼합',
+        other: '기타',
+      },
+      pagination: {
+        range: '{total}개 중 {start}-{end}',
+      },
+      loading: '태그 불러오는 중',
+      error: '태그를 불러오는 데 실패했어요',
+    },
+    RecommendManga: {
+      adultGateDescription: '추천 작품을 보려면 익명 성인인증이 필요해요',
+    },
   },
   [Locale.EN]: {
     Metadata: {
@@ -109,6 +126,23 @@ export const messages = {
         dmca: 'Copyright/DMCA',
         youthProtection: 'Youth Protection Policy',
       },
+    },
+    Tag: {
+      categories: {
+        label: 'Tag categories',
+        female: 'Female',
+        male: 'Male',
+        mixed: 'Mixed',
+        other: 'Other',
+      },
+      pagination: {
+        range: 'Showing {start}-{end} of {total} tags',
+      },
+      loading: 'Loading tags',
+      error: 'Failed to load tags',
+    },
+    RecommendManga: {
+      adultGateDescription: 'Anonymous adult verification is required to view recommended works.',
     },
   },
   [Locale.JA]: {
@@ -164,6 +198,23 @@ export const messages = {
         youthProtection: '青少年保護ポリシー',
       },
     },
+    Tag: {
+      categories: {
+        label: 'タグカテゴリー',
+        female: '女性',
+        male: '男性',
+        mixed: '混合',
+        other: 'その他',
+      },
+      pagination: {
+        range: '{total}件中 {start}-{end}',
+      },
+      loading: 'タグを読み込み中',
+      error: 'タグの読み込みに失敗しました',
+    },
+    RecommendManga: {
+      adultGateDescription: 'おすすめ作品を見るには匿名成人認証が必要です',
+    },
   },
   [Locale.ZH_CN]: {
     Metadata: {
@@ -217,6 +268,23 @@ export const messages = {
         dmca: '版权/DMCA',
         youthProtection: '青少年保护政策',
       },
+    },
+    Tag: {
+      categories: {
+        label: '标签分类',
+        female: '女性',
+        male: '男性',
+        mixed: '混合',
+        other: '其他',
+      },
+      pagination: {
+        range: '共 {total} 个标签，显示 {start}-{end}',
+      },
+      loading: '正在加载标签',
+      error: '标签加载失败',
+    },
+    RecommendManga: {
+      adultGateDescription: '查看推荐作品需要匿名成人认证。',
     },
   },
 } satisfies LocalizedMessages

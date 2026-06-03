@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { ReactNode, useRef, useState } from 'react'
 
 interface Props {
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export default function SwipeableWrapper({ notification, onDelete, onMarkAsRead, enabled, children }: Props) {
+  const t = useTranslations('Community.notification')
   const [swipeX, setSwipeX] = useState(0)
   const [isSwiping, setIsSwiping] = useState(false)
   const startX = useRef(0)
@@ -66,12 +68,12 @@ export default function SwipeableWrapper({ notification, onDelete, onMarkAsRead,
       <div className="absolute inset-0 flex items-center justify-between px-4">
         <div className={`flex items-center gap-2 transition ${swipeX > 40 ? 'opacity-100' : 'opacity-0'}`}>
           <div className="p-2 rounded-lg bg-green-600/20">
-            <span className="text-xs font-medium text-green-400">읽음</span>
+            <span className="text-xs font-medium text-green-400">{t('actions.markAsReadShort')}</span>
           </div>
         </div>
         <div className={`flex items-center gap-2 transition ${swipeX < -40 ? 'opacity-100' : 'opacity-0'}`}>
           <div className="p-2 rounded-lg bg-red-600/20">
-            <span className="text-xs font-medium text-red-400">삭제</span>
+            <span className="text-xs font-medium text-red-400">{t('actions.delete')}</span>
           </div>
         </div>
       </div>
