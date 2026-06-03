@@ -22,6 +22,8 @@ import { groupHistoryByDate } from './utils'
 
 export default function HistoryPageClient() {
   const { data: me } = useMeQuery()
+  const { isVisible } = useMangaCensorship()
+  const { isSelectionMode } = useLibrarySelection()
   const t = useTranslations('Library.history.group')
   const source = isAdultVerified(me) ? 'server' : 'local'
 
@@ -37,9 +39,10 @@ export default function HistoryPageClient() {
     fetchNextPage,
   })
 
-  const { isVisible } = useMangaCensorship()
-  const { isSelectionMode } = useLibrarySelection()
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: historyItems.map((item) => item.mangaId) })
+  const { mangaMap } = useMangaListCachedQuery({
+    mangaIds: historyItems.map((item) => item.mangaId),
+    catalogMangas: historyItems.map(({ manga }) => manga),
+  })
 
   const showLoadingSkeleton = (!data && (me === undefined || isLoading)) || isFetchingNextPage
   const visibleHistoryItems = historyItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))

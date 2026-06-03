@@ -131,7 +131,11 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
     useRatingInfiniteQuery({ enabled: Boolean(me), sort })
 
   const ratingItems = data?.pages?.flatMap((page) => page.items) ?? []
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
+
+  const { mangaMap } = useMangaListCachedQuery({
+    mangaIds: ratingItems.map((item) => item.mangaId),
+    catalogMangas: ratingItems.map(({ manga }) => manga),
+  })
 
   const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError

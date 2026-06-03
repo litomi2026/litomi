@@ -143,6 +143,7 @@ export const getV1ReadingHistoryQuerySchema = z.object({
     .positive()
     .max(POINT_CONSTANTS.HISTORY_MAX_EXPANSION)
     .default(READING_HISTORY_PER_PAGE),
+  locale: z.enum(Locale),
 })
 
 export type GETV1ReadingHistoryQuery = z.infer<typeof getV1ReadingHistoryQuerySchema>
@@ -151,6 +152,7 @@ export const readingHistoryItemSchema = z.object({
   mangaId: z.number(),
   lastPage: z.number(),
   updatedAt: z.number(),
+  manga: catalogMangaSchema.optional(),
 })
 
 export type ReadingHistoryItem = z.infer<typeof readingHistoryItemSchema>
@@ -281,6 +283,7 @@ export type GETV1LibraryMangaQuery = z.infer<typeof getV1LibraryMangaQuerySchema
 export const ratingItemSchema = z.object({
   createdAt: z.number(),
   mangaId: z.number(),
+  manga: catalogMangaSchema.optional(),
   rating: z.number(),
   updatedAt: z.number(),
 })
@@ -297,6 +300,7 @@ export type GETV1RatingsResponse = z.infer<typeof getV1RatingsResponseSchema>
 export const getV1RatingsQuerySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(RATING_PER_PAGE).default(RATING_PER_PAGE),
+  locale: z.enum(Locale),
   sort: z.enum(RatingSort).default(RatingSort.UPDATED_DESC),
 })
 

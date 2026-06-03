@@ -3,6 +3,7 @@ import type { GETV1RatingsResponse } from '@litomi/contracts'
 import { RatingSort } from '@litomi/domain/library/sort'
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
@@ -14,8 +15,8 @@ type Options = {
   sort?: RatingSort
 }
 
-export async function fetchRatingsPaginated(cursor: string, sort: RatingSort) {
-  const searchParams = new URLSearchParams()
+export async function fetchRatingsPaginated(cursor: string, sort: RatingSort, locale: string) {
+  const searchParams = new URLSearchParams({ locale })
 
   if (cursor) {
     searchParams.set('cursor', cursor)
@@ -32,9 +33,11 @@ export async function fetchRatingsPaginated(cursor: string, sort: RatingSort) {
 }
 
 export default function useRatingInfiniteQuery({ enabled = true, sort = RatingSort.UPDATED_DESC }: Options = {}) {
+  const locale = useLocale()
+
   return useInfiniteQuery({
-    queryKey: QueryKeys.infiniteRatings(sort),
-    queryFn: ({ pageParam }) => fetchRatingsPaginated(pageParam, sort),
+    queryKey: QueryKeys.infiniteRatings(sort, locale),
+    queryFn: ({ pageParam }) => fetchRatingsPaginated(pageParam, sort, locale),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: '',
     enabled,
