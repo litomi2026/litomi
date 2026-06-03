@@ -19,7 +19,10 @@ export type VirtualMangaGridProps<TItem extends VirtualMangaGridItem> = {
   isFetchingNextPage?: boolean
   itemGap?: number
   items: readonly TItem[]
-  measurementKey?: number | string
+  /**
+   * Grid 인스턴스가 유지된 상태에서 행 높이 측정값을 다시 계산해야 하는 조건만 포함해요.
+   */
+  measurementKey?: string
   onScrollElementChange?: (element: HTMLElement | null) => void
   overscanCount?: number
   preloadRowCount?: number

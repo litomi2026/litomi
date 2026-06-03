@@ -79,7 +79,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
   const params = new URLSearchParams(searchParams)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
-  const { heavySignature, isVisible } = useMangaCensorship()
+  const { isVisible } = useMangaCensorship()
 
   const {
     data,
@@ -96,7 +96,6 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
 
   const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
   const visibleMangas = mangas.filter(isVisible)
-  const measurementKey = `${searchParams}:${heavySignature}`
   const showRefreshButton = params.get(SearchParam.SORT) === SearchSort.RANDOM
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
@@ -208,7 +207,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
       isFetchingNextPage={isFetchingNextPage}
       itemGap={8}
       items={items}
-      measurementKey={measurementKey}
+      measurementKey={searchParams}
       onScrollElementChange={setNavigationAutoHideScrollElement}
       renderItem={renderItem}
       scrollToOptions={scrollToOptions}
