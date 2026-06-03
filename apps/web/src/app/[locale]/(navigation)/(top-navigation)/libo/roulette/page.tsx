@@ -5,7 +5,7 @@ import { getTranslations } from 'next-intl/server'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import RoulettePageClient from './roulette-page-client'
+import RoulettePageClient from './page.client'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/libo/roulette'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
@@ -25,6 +25,6 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/libo/rou
   }
 }
 
-export default function RoulettePage() {
+export default function Page() {
   return <RoulettePageClient />
 }

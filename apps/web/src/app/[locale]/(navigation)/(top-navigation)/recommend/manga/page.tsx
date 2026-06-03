@@ -5,7 +5,7 @@ import { getTranslations } from 'next-intl/server'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import RecommendMangaPageClient from './RecommendMangaPageClient'
+import RecommendMangaPageClient from './page.client'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/recommend/manga'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)

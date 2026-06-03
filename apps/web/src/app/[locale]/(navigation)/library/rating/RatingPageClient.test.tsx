@@ -31,7 +31,7 @@ mock.module('../SelectableMangaCard', () => ({
 let fetchRoutes: FetchRoute[] = []
 let fetchController: ReturnType<typeof installMockFetch>
 
-const { default: RatingPageClient } = await import('./RatingPageClient')
+const { default: RatingPageClient } = await import('./page.client')
 
 beforeEach(() => {
   fetchRoutes = [

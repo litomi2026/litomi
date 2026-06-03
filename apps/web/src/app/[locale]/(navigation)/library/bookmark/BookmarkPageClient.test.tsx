@@ -23,7 +23,7 @@ const basePage: GETV1BookmarkResponse = {
   nextCursor: null,
 }
 
-const { default: BookmarkPageClient } = await import('./BookmarkPageClient')
+const { default: BookmarkPageClient } = await import('./page.client')
 
 beforeEach(() => {
   fetchRoutes = [

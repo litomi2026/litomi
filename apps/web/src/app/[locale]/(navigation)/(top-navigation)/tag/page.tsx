@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import TagPageClient from './TagPageClient'
+import TagPageClient from './page.client'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/tag'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
