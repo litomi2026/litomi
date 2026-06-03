@@ -30,7 +30,7 @@ export default function useBulkCopyToLibraryAction({ libraries }: Options): Bulk
       toast.success(t('copy.success', { count: copiedCount, extra: extraMessage }))
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infinitePublicLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(toLibraryId) })
       exit()
     },

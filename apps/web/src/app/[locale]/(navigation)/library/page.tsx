@@ -7,7 +7,7 @@ import { getTranslations } from 'next-intl/server'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import AllLibraryMangaView from './AllLibraryMangaView'
+import PublicLibraryMangaView from './PublicLibraryMangaView'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/library'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
@@ -30,5 +30,5 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/library'
 export default function LibraryPage() {
   const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.LIBRARY_HOME)
 
-  return <AllLibraryMangaView nativeGridSponsor={nativeGridSponsor} />
+  return <PublicLibraryMangaView nativeGridSponsor={nativeGridSponsor} />
 }

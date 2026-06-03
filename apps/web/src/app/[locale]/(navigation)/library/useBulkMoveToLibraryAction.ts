@@ -31,7 +31,7 @@ export default function useBulkMoveToLibraryAction({ currentLibraryId, libraries
       toast.success(t('move.success', { count: movedCount, extra: extraMessage }))
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infinitePublicLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(fromLibraryId) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(toLibraryId) })
       exit()

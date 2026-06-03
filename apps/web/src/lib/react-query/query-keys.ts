@@ -20,9 +20,9 @@ export const QueryKeys = {
   notifications: (searchParams: URLSearchParams) => ['me', 'notifications', Object.fromEntries(searchParams)],
   libraries: ['me', 'libraries'],
   infiniteLibraryListBase: ['library', 'list', 'infinite'],
-  infiniteLibraryMangasBase: ['library', 'manga', 'infinite'],
-  infiniteLibraryMangas: (locale: string, userId?: number) => [
-    ...QueryKeys.infiniteLibraryMangasBase,
+  infinitePublicLibraryMangasBase: ['library', 'manga', 'infinite'],
+  infinitePublicLibraryMangas: (locale: string, userId?: number) => [
+    ...QueryKeys.infinitePublicLibraryMangasBase,
     userId ?? 'guest',
     locale,
   ],
