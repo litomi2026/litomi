@@ -15,7 +15,6 @@ const configDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = join(configDir, '../..')
 const commitSHA = process.env.COMMIT_SHA
 const sentryDeployEnv = process.env.NEXT_PUBLIC_APP_ENV
-const appEnv = nextBuildEnv.NEXT_PUBLIC_APP_ENV
 const apiOrigin = nextBuildEnv.NEXT_PUBLIC_API_ORIGIN
 const imageProxyOrigin = nextBuildEnv.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN
 
@@ -27,6 +26,8 @@ const cspHeader = `
   img-src 'self' blob: data: https:;
   object-src 'none';
   connect-src 'self' https:;
+  base-uri 'self';
+  form-action 'self';
   frame-src 'self' https:;
   frame-ancestors 'none';
   ${isProduction ? 'upgrade-insecure-requests;' : ''}
@@ -44,12 +45,14 @@ const cacheControlHeaders = {
 const bbatonCallbackCspHeader = `
   default-src 'none';
   script-src 'self' 'unsafe-inline';
+  script-src-attr 'none';
   style-src 'self' 'unsafe-inline';
-  img-src 'self' data:;
   font-src 'self';
   connect-src 'self' ${apiOrigin};
-  manifest-src 'self';
-  ${appEnv !== 'local' ? 'upgrade-insecure-requests;' : ''}
+  base-uri 'none';
+  form-action 'none';
+  frame-ancestors 'none';
+  ${isProduction ? 'upgrade-insecure-requests;' : ''}
 `
 
 const serviceWorkerCspHeader = `
