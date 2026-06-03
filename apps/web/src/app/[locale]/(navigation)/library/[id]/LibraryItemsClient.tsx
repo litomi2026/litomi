@@ -84,7 +84,7 @@ export default function LibraryItemsClient({ libraryId }: Props) {
 
     const href = url.toString()
     if (href !== window.location.href) {
-      window.history.replaceState(window.history.state, '', href)
+      window.history.replaceState(null, '', href)
     }
   }
 

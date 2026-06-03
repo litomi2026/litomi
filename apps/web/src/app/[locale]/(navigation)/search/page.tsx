@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
-import { getViewFromSearchParams } from '@litomi/std'
 import { getTranslations } from 'next-intl/server'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
@@ -68,7 +67,6 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
     skip: params.get(SearchParam.SKIP),
   }
 
-  const view = getViewFromSearchParams(params)
   const hasActiveFilters = Boolean(Object.values(filters).some(Boolean))
   const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.SEARCH, params.get(SearchParam.QUERY))
 
@@ -83,7 +81,7 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
           <ActiveFilters filters={filters} />
         </div>
       ) : (
-        <TrendingKeywords view={view} />
+        <TrendingKeywords />
       )}
       <JuicyAdsBanner />
     </div>

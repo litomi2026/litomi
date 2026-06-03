@@ -80,7 +80,7 @@ export default function BookmarkPageClient() {
 
     const href = url.toString()
     if (href !== window.location.href) {
-      window.history.replaceState(window.history.state, '', href)
+      window.history.replaceState(null, '', href)
     }
   }
 
