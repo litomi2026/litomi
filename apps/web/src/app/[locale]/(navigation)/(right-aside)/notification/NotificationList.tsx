@@ -2,6 +2,7 @@
 
 import { NotificationFilter } from '@litomi/domain/notification/filter'
 import { Book, Check, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
@@ -33,11 +34,14 @@ interface Notification {
   userId: number
 }
 
+type NotificationDateGroup = 'older' | 'thisWeek' | 'today' | 'yesterday'
+
 export default function NotificationList() {
-  const { data: me } = useMeQuery()
-  const searchParams = useSearchParams()
-  const { selectedIds, selectionMode, toggleSelection } = useNotificationSelection()
   const { deleteNotification, isActionPending, markNowAsRead } = useNotificationActions()
+  const { selectedIds, selectionMode, toggleSelection } = useNotificationSelection()
+  const t = useTranslations('Community.notification')
+  const searchParams = useSearchParams()
+  const { data: me } = useMeQuery()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useNotificationInfiniteQuery()
@@ -66,12 +70,7 @@ export default function NotificationList() {
   }
 
   if (!hasAdultAccess(me)) {
-    return (
-      <AdultVerificationGate
-        description="알림을 확인하려면 익명 성인인증이 필요해요"
-        title="성인인증이 필요해요"
-      />
-    )
+    return <AdultVerificationGate description={t('adultGate.description')} />
   }
 
   if (isLoading) {
@@ -88,10 +87,10 @@ export default function NotificationList() {
       aria-disabled={isActionPending}
       className="grid gap-6 p-3 transition aria-disabled:opacity-70 aria-disabled:pointer-events-none sm:p-4"
     >
-      {Object.entries(groupedNotifications).map(([dateGroup, groupNotifications]) => (
-        <div key={dateGroup}>
+      {groupedNotifications.map(({ key, notifications: groupNotifications }) => (
+        <div key={key}>
           <h2 className="mb-3 text-sm font-medium text-zinc-400 bg-background py-1">
-            {dateGroup}
+            {t(`groups.${key}`)}
             <span className="ml-2 text-xs text-zinc-600">({groupNotifications.length})</span>
           </h2>
           <div className="grid gap-2 sm:gap-3">
@@ -131,7 +130,8 @@ export default function NotificationList() {
 function EmptyState() {
   const searchParams = useSearchParams()
   const filter = searchParams.get(SearchParams.FILTER) as NotificationFilter | null
-  const content = getEmptyContent(filter)
+  const t = useTranslations('Community.notification')
+  const content = getEmptyContent(filter, t)
   const showKeywordSetting = content.showKeywordSetting
 
   return (
@@ -139,10 +139,10 @@ function EmptyState() {
       {showKeywordSetting && (
         <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
           <StatusActionLink className="max-w-none" href="/settings#push">
-            푸시 알림 켜기
+            {t('empty.enablePush')}
           </StatusActionLink>
           <StatusActionLink className="max-w-none" href="/settings#keyword" variant="secondary">
-            키워드 알림 설정
+            {t('empty.keywordSettings')}
           </StatusActionLink>
         </div>
       )}
@@ -150,29 +150,32 @@ function EmptyState() {
   )
 }
 
-function getEmptyContent(filter: NotificationFilter | null) {
+function getEmptyContent(
+  filter: NotificationFilter | null,
+  t: ReturnType<typeof useTranslations<'Community.notification'>>,
+) {
   switch (filter) {
     case NotificationFilter.NEW_MANGA:
       return {
         icon: <Book className="size-8" />,
-        title: '신규 작품 알림이 없어요',
-        description: '새로운 작품이 추가되면 알려드릴게요',
+        title: t('empty.newMangaTitle'),
+        description: t('empty.newMangaDescription'),
       }
     case NotificationFilter.UNREAD:
       return {
         icon: <Check className="size-8" />,
-        title: '모든 알림을 확인했어요',
-        description: '새로운 알림이 도착하면 여기에 표시돼요',
+        title: t('empty.unreadTitle'),
+        description: t('empty.unreadDescription'),
       }
     default:
       return {
         icon: <IconBell className="size-8" />,
-        title: '아직 알림이 없어요',
+        title: t('empty.defaultTitle'),
         description: (
           <>
-            신규 작품과 새로운 소식을 알려드릴게요
+            {t('empty.defaultDescription')}
             <br />
-            <span className="text-xs text-zinc-500">(알림은 30일 동안 보관돼요)</span>
+            <span className="text-xs text-zinc-500">{t('empty.retentionNotice')}</span>
           </>
         ),
         showKeywordSetting: true,
@@ -180,8 +183,10 @@ function getEmptyContent(filter: NotificationFilter | null) {
   }
 }
 
+const NOTIFICATION_DATE_GROUPS: NotificationDateGroup[] = ['today', 'yesterday', 'thisWeek', 'older']
+
 function groupNotificationsByDate(notifications: Notification[]) {
-  const groups: { [key: string]: Notification[] } = {}
+  const groups: Partial<Record<NotificationDateGroup, Notification[]>> = {}
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const yesterday = new Date(today)
@@ -191,31 +196,35 @@ function groupNotificationsByDate(notifications: Notification[]) {
 
   for (const notification of notifications) {
     const date = typeof notification.createdAt === 'string' ? new Date(notification.createdAt) : notification.createdAt
-    let groupKey: string
+    let groupKey: NotificationDateGroup
 
     if (date >= today) {
-      groupKey = '오늘'
+      groupKey = 'today'
     } else if (date >= yesterday) {
-      groupKey = '어제'
+      groupKey = 'yesterday'
     } else if (date >= weekAgo) {
-      groupKey = '이번 주'
+      groupKey = 'thisWeek'
     } else {
-      groupKey = '이전'
+      groupKey = 'older'
     }
 
-    if (!groups[groupKey]) {
-      groups[groupKey] = []
-    }
-    groups[groupKey].push(notification)
+    const groupNotifications = groups[groupKey] ?? []
+    groupNotifications.push(notification)
+    groups[groupKey] = groupNotifications
   }
 
-  return groups
+  return NOTIFICATION_DATE_GROUPS.flatMap((key) => {
+    const notifications = groups[key]
+    return notifications ? [{ key, notifications }] : []
+  })
 }
 
 function NotificationLoading() {
+  const t = useTranslations('Community.notification')
+
   return (
     <div className="flex-1 flex items-center justify-center animate-fade-in [animation-delay:0.3s] [animation-fill-mode:both]">
-      <Loader2 className="size-10 shrink-0 text-zinc-600 animate-spin sm:size-12" />
+      <Loader2 aria-label={t('loading')} className="size-10 shrink-0 text-zinc-600 animate-spin sm:size-12" />
     </div>
   )
 }

@@ -41,6 +41,12 @@ export const messages = {
         },
       },
     },
+    RightAside: {
+      dailyRanking: {
+        title: '일간 조회 순위',
+        viewAll: '전체',
+      },
+    },
     Community: {
       common: {
         login: '로그인하기',
@@ -264,6 +270,12 @@ export const messages = {
           title: 'Donation',
           description: 'Review works you supported and their recipients.',
         },
+      },
+    },
+    RightAside: {
+      dailyRanking: {
+        title: 'Daily Views Ranking',
+        viewAll: 'All',
       },
     },
     Community: {
@@ -491,6 +503,12 @@ export const messages = {
         },
       },
     },
+    RightAside: {
+      dailyRanking: {
+        title: '日間閲覧ランキング',
+        viewAll: 'すべて',
+      },
+    },
     Community: {
       common: {
         login: 'ログイン',
@@ -714,6 +732,12 @@ export const messages = {
           title: '赞助',
           description: '查看你赞助过的作品和对象。',
         },
+      },
+    },
+    RightAside: {
+      dailyRanking: {
+        title: '每日浏览排行',
+        viewAll: '全部',
       },
     },
     Community: {
