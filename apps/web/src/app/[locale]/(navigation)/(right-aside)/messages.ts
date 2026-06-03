@@ -84,9 +84,7 @@ export const messages = {
           description: '로그인하면 키워드 알림과 새 소식을 한 곳에서 확인할 수 있어요',
         },
         adultGate: {
-          title: '성인인증이 필요해요',
           description: '알림을 확인하려면 익명 성인인증이 필요해요',
-          action: '익명으로 성인인증하기',
         },
         empty: {
           newMangaTitle: '신규 작품 알림이 없어요',
@@ -311,9 +309,7 @@ export const messages = {
           description: 'Log in to see keyword alerts and updates in one place.',
         },
         adultGate: {
-          title: 'Adult verification is required',
           description: 'Anonymous adult verification is required to view notifications.',
-          action: 'Verify anonymously',
         },
         empty: {
           newMangaTitle: 'No new work notifications',
@@ -538,9 +534,7 @@ export const messages = {
           description: 'ログインすると、キーワード通知と新着情報をまとめて確認できます',
         },
         adultGate: {
-          title: '成人認証が必要です',
           description: '通知を確認するには匿名成人認証が必要です',
-          action: '匿名で成人認証する',
         },
         empty: {
           newMangaTitle: '新着作品の通知はありません',
@@ -765,9 +759,7 @@ export const messages = {
           description: '登录后即可在这里查看关键词通知和新消息。',
         },
         adultGate: {
-          title: '需要成人认证',
           description: '查看通知需要匿名成人认证。',
-          action: '匿名成人认证',
         },
         empty: {
           newMangaTitle: '暂无新作品通知',

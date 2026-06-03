@@ -28,6 +28,11 @@ export const messages = {
         },
       },
     },
+    Libo: {
+      history: {
+        adultGateDescription: '거래 내역을 보려면 익명 성인인증이 필요해요',
+      },
+    },
   },
   [Locale.EN]: {
     Metadata: {
@@ -52,6 +57,11 @@ export const messages = {
           title: 'Ad Revenue Stats',
           description: 'Check ad revenue and Libo-related statistics.',
         },
+      },
+    },
+    Libo: {
+      history: {
+        adultGateDescription: 'Anonymous adult verification is required to view transaction history.',
       },
     },
   },
@@ -80,6 +90,11 @@ export const messages = {
         },
       },
     },
+    Libo: {
+      history: {
+        adultGateDescription: '取引履歴を見るには匿名成人認証が必要です',
+      },
+    },
   },
   [Locale.ZH_CN]: {
     Metadata: {
@@ -104,6 +119,11 @@ export const messages = {
           title: '广告收益统计',
           description: '查看广告收益和 Libo 相关统计。',
         },
+      },
+    },
+    Libo: {
+      history: {
+        adultGateDescription: '查看交易记录需要匿名成人认证。',
       },
     },
   },

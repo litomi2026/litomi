@@ -23,12 +23,7 @@ export default function CensorAuthGate() {
   }
 
   if (!hasAdultAccess(me)) {
-    return (
-      <AdultVerificationGate
-        description={t('list.adultGateDescription')}
-        title={t('list.adultGateTitle')}
-      />
-    )
+    return <AdultVerificationGate description={t('list.adultGateDescription')} />
   }
 
   return <Censorships />

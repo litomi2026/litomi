@@ -19,7 +19,7 @@ export const messages = {
         loginRequired: '로그인이 필요해요',
         loginAction: '로그인',
         adultVerificationRequired: '성인인증이 필요해요',
-        anonymousAdultVerificationAction: '익명 성인인증',
+        anonymousAdultVerificationAction: '익명으로 성인인증하기',
       },
       manga: {
         loadError: '작품을 불러올 수 없어요',
@@ -206,7 +206,7 @@ export const messages = {
         loginRequired: 'Log in to continue',
         loginAction: 'Log in',
         adultVerificationRequired: 'Adult verification is required',
-        anonymousAdultVerificationAction: 'Anonymous verification',
+        anonymousAdultVerificationAction: 'Verify anonymously',
       },
       manga: {
         loadError: 'Could not load works',
@@ -394,7 +394,7 @@ export const messages = {
         loginRequired: 'ログインが必要です',
         loginAction: 'ログイン',
         adultVerificationRequired: '成人認証が必要です',
-        anonymousAdultVerificationAction: '匿名成人認証',
+        anonymousAdultVerificationAction: '匿名で成人認証する',
       },
       manga: {
         loadError: '作品を読み込めません',
@@ -580,7 +580,7 @@ export const messages = {
         loginRequired: '需要登录',
         loginAction: '登录',
         adultVerificationRequired: '需要成人认证',
-        anonymousAdultVerificationAction: '匿名成人认证',
+        anonymousAdultVerificationAction: '匿名进行成人认证',
       },
       manga: {
         loadError: '无法加载作品',

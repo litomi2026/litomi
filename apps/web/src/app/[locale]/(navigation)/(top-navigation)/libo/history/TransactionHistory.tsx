@@ -3,7 +3,7 @@
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { formatDistanceToNow, formatNumber } from '@litomi/std'
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import useMeQuery from '@/query/useMeQuery'
@@ -19,7 +19,9 @@ type TransactionErrorInfo = {
 
 export default function TransactionHistory() {
   const locale = useLocale()
+  const t = useTranslations('Libo.history')
   const { data: me, isPending: isMePending } = useMeQuery()
+
   const isLoggedIn = Boolean(me)
   const isAuthReady = !isMePending
   const canAccess = hasAdultAccess(me)
@@ -51,12 +53,7 @@ export default function TransactionHistory() {
   }
 
   if (isAuthReady && isLoggedIn && !canAccess) {
-    return (
-      <AdultVerificationGate
-        description="거래 내역을 보려면 익명 성인인증이 필요해요"
-        title="성인인증이 필요해요"
-      />
-    )
+    return <AdultVerificationGate description={t('adultGateDescription')} />
   }
 
   return (
@@ -87,7 +84,10 @@ export default function TransactionHistory() {
                 <p className="text-sm text-zinc-300 truncate">
                   {tx.description || (tx.type === 'earn' ? '리보 적립' : '리보 사용')}
                 </p>
-                <p className="text-xs text-zinc-500" title={new Date(tx.createdAt).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}>
+                <p
+                  className="text-xs text-zinc-500"
+                  title={new Date(tx.createdAt).toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
+                >
                   {formatDistanceToNow(new Date(tx.createdAt), locale)}
                 </p>
               </div>
@@ -100,7 +100,10 @@ export default function TransactionHistory() {
                   {tx.type === 'earn' ? '+' : ''}
                   {tx.amount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])} 리보
                 </p>
-                <p className="text-xs text-zinc-500" title={tx.balanceAfter.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}>
+                <p
+                  className="text-xs text-zinc-500"
+                  title={tx.balanceAfter.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
+                >
                   잔액 {formatNumber(tx.balanceAfter, locale)} 리보
                 </p>
               </div>

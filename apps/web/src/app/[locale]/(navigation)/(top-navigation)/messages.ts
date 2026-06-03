@@ -70,6 +70,9 @@ export const messages = {
       loading: '태그 불러오는 중',
       error: '태그를 불러오는 데 실패했어요',
     },
+    RecommendManga: {
+      adultGateDescription: '추천 작품을 보려면 익명 성인인증이 필요해요',
+    },
   },
   [Locale.EN]: {
     Metadata: {
@@ -137,6 +140,9 @@ export const messages = {
       },
       loading: 'Loading tags',
       error: 'Failed to load tags',
+    },
+    RecommendManga: {
+      adultGateDescription: 'Anonymous adult verification is required to view recommended works.',
     },
   },
   [Locale.JA]: {
@@ -206,6 +212,9 @@ export const messages = {
       loading: 'タグを読み込み中',
       error: 'タグの読み込みに失敗しました',
     },
+    RecommendManga: {
+      adultGateDescription: 'おすすめ作品を見るには匿名成人認証が必要です',
+    },
   },
   [Locale.ZH_CN]: {
     Metadata: {
@@ -273,6 +282,9 @@ export const messages = {
       },
       loading: '正在加载标签',
       error: '标签加载失败',
+    },
+    RecommendManga: {
+      adultGateDescription: '查看推荐作品需要匿名成人认证。',
     },
   },
 } satisfies LocalizedMessages

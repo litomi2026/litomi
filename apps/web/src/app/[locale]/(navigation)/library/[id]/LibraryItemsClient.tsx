@@ -236,7 +236,7 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
     return (
       <>
         <LibraryHeaderSpacer />
-        <AdultVerificationGate description={t('empty.adultDescription')} title={t('empty.adultTitle')} />
+        <AdultVerificationGate description={t('empty.adultDescription')} />
       </>
     )
   }
