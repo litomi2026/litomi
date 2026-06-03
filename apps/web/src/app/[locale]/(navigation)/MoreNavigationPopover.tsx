@@ -180,14 +180,7 @@ export default function MoreNavigationPopover({ className }: Props) {
             style={position}
           >
             {MORE_NAVIGATION_ITEMS.map(({ href, labelKey, Icon, selectedIconStyle }) => (
-              <SelectableLink
-                href={href}
-                icon={<Icon />}
-                key={href}
-                onClick={() => setIsOpen(false)}
-                prefetch={false}
-                selectedIconStyle={selectedIconStyle}
-              >
+              <SelectableLink href={href} icon={<Icon />} key={href} selectedIconStyle={selectedIconStyle}>
                 {t(labelKey)}
               </SelectableLink>
             ))}
