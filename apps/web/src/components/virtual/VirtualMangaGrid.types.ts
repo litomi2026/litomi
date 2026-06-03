@@ -19,12 +19,12 @@ export type VirtualMangaGridProps<TItem extends VirtualMangaGridItem> = {
   isFetchingNextPage?: boolean
   itemGap?: number
   items: readonly TItem[]
-  measurementKey: number | string
+  measurementKey?: number | string
   onScrollElementChange?: (element: HTMLElement | null) => void
   overscanCount?: number
   preloadRowCount?: number
   renderItem: (item: TItem, index: number) => ReactNode
-  scrollRestorationKey: string
+  scrollRestorationKey?: string
   scrollToOptions?: ScrollToOptions
   view: View
 }

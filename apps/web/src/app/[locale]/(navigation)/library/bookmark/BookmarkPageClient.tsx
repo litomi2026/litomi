@@ -96,7 +96,7 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { exit, isSelectionMode } = useLibrarySelection()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
-  const { heavySignature, isVisible } = useMangaCensorship()
+  const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
   const sortT = useTranslations('Library.sort')
 
@@ -207,10 +207,9 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
       isFetchingNextPage={isFetchingNextPage}
       itemGap={8}
       items={items}
-      measurementKey={`${sort}:${view}:${heavySignature}`}
+      measurementKey={sort}
       onScrollElementChange={setNavigationAutoHideScrollElement}
       renderItem={renderItem}
-      scrollRestorationKey={`library:bookmark:${sort}:${view}`}
       scrollToOptions={scrollToOptions}
       view={view}
     />

@@ -42,15 +42,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<'/[lo
 
 export default async function Page({ searchParams }: PageProps<'/[locale]/search'>) {
   const t = await getTranslations('Search')
-  const params = new URLSearchParams()
-
-  for (const [key, value] of Object.entries(await searchParams)) {
-    const normalizedValue = getSearchParamValue(value)
-
-    if (normalizedValue) {
-      params.set(key, normalizedValue)
-    }
-  }
+  const params = getURLSearchParams(await searchParams)
 
   const filters = {
     sort: params.get(SearchParam.SORT),
@@ -90,6 +82,16 @@ export default async function Page({ searchParams }: PageProps<'/[locale]/search
   return <SearchResult header={header} nativeGridSponsor={nativeGridSponsor} searchParams={params.toString()} />
 }
 
-function getSearchParamValue(value: string | string[] | undefined) {
-  return Array.isArray(value) ? (value[0] ?? null) : (value ?? null)
+function getURLSearchParams(searchParams: Record<string, string | string[] | undefined>) {
+  const params = new URLSearchParams()
+
+  for (const [key, value] of Object.entries(searchParams)) {
+    const firstValue = Array.isArray(value) ? (value[0] ?? null) : (value ?? null)
+
+    if (firstValue) {
+      params.set(key, firstValue)
+    }
+  }
+
+  return params
 }

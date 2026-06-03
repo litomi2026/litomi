@@ -114,7 +114,7 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { data: me } = useMeQuery()
   const { exit, isSelectionMode } = useLibrarySelection()
-  const { heavySignature, isVisible } = useMangaCensorship()
+  const { isVisible } = useMangaCensorship()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const userId = me?.id
   const t = useTranslations('Library')
@@ -276,10 +276,9 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
       isFetchingNextPage={isFetchingNextPage}
       itemGap={8}
       items={items}
-      measurementKey={`${libraryId}:${effectiveSort}:${view}:${heavySignature}`}
+      measurementKey={`${libraryId}:${effectiveSort}`}
       onScrollElementChange={setNavigationAutoHideScrollElement}
       renderItem={renderItem}
-      scrollRestorationKey={`library:${libraryId}:${scope}:${effectiveSort}:${view}`}
       scrollToOptions={scrollToOptions}
       view={view}
     />

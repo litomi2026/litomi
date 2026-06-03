@@ -100,7 +100,7 @@ export default function AllLibraryMangaView({ nativeGridSponsor }: Props) {
 
 function AllLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: ContentProps) {
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
-  const { heavySignature, isVisible } = useMangaCensorship()
+  const { isVisible } = useMangaCensorship()
   const t = useTranslations('Library.empty')
 
   const {
@@ -223,10 +223,8 @@ function AllLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Conte
       isFetchingNextPage={isFetchingNextPage}
       itemGap={8}
       items={items}
-      measurementKey={`${view}:${heavySignature}`}
       onScrollElementChange={setNavigationAutoHideScrollElement}
       renderItem={renderItem}
-      scrollRestorationKey={`library:public:${view}`}
       view={view}
     />
   )
