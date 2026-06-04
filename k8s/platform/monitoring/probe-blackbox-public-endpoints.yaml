@@ -15,5 +15,5 @@ spec:
   targets:
     staticConfig:
       static:
-        - https://litomi.in
-        - https://api.litomi.in/health
+        - https://litomi.in/health
+        - https://litomi.in/api/health

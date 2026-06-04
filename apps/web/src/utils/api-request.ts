@@ -190,10 +190,6 @@ function shouldRefreshAuthCookies(request: Request): boolean {
     return false
   }
 
-  if (request.credentials === 'include') {
-    return true
-  }
-
   if (request.credentials === 'same-origin') {
     return new URL(request.url).origin === window.location.origin
   }

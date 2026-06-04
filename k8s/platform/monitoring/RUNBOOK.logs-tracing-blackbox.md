@@ -30,8 +30,8 @@ cd litomi
   - `Tempo` (`uid: tempo`, `tracesToLogsV2` 설정)
 - `blackbox exporter` Deployment/Service
 - Prometheus Operator `Probe`로 외부 엔드포인트 검사
-  - `https://litomi.in`
-  - `https://api.litomi.in/health`
+  - `https://litomi.in/health`
+  - `https://litomi.in/api/health`
 - 관측 파이프라인 기본 알림룰
   - `LokiTargetsMissing`
   - `FluentBitTargetsMissing`

@@ -28,14 +28,14 @@ spec:
                 name: litomi-api-secret
           startupProbe:
             httpGet:
-              path: /api/health
+              path: /health
               port: 3000
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 12
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /health
               port: 3000
             initialDelaySeconds: 0
             periodSeconds: 5
@@ -43,7 +43,7 @@ spec:
             failureThreshold: 2
           livenessProbe:
             httpGet:
-              path: /api/health
+              path: /health
               port: 3000
             initialDelaySeconds: 0
             periodSeconds: 10
