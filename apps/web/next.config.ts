@@ -25,7 +25,6 @@ const cspHeader = `
   worker-src 'self' blob:;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
-  font-src 'self' data:;
   media-src 'self' blob: data: https:;
   object-src 'none';
   connect-src 'self' https:;
