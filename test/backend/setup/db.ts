@@ -9,7 +9,7 @@ import { userExpansionTable } from '@litomi/db/app/points'
 import { postTable } from '@litomi/db/app/post'
 import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { userFollowTable, userSettingsTable, userTable } from '@litomi/db/app/user'
-import { redisClient } from '@litomi/db/redis'
+import { redis } from '@litomi/db/redis'
 import { DeviceType } from '@litomi/domain/auth/model'
 import { DEFAULT_SEARCH_LANGUAGE } from '@litomi/domain/search/language'
 import { eq, sql } from 'drizzle-orm'
@@ -81,7 +81,7 @@ export async function assertBackendDatabaseReady() {
 
 export async function assertBackendRedisReady() {
   try {
-    await redisClient.ping()
+    await redis.ping()
   } catch (error) {
     throw new Error(`Backend integration Redis is not ready. Start docker compose. ${formatError(error)}`)
   }
@@ -152,7 +152,7 @@ export async function resetBackendDatabase() {
 }
 
 export async function resetBackendRedis() {
-  await redisClient.flushdb()
+  await redis.flushdb()
 }
 
 export async function seedAdultVerification({ userId, ...overrides }: SeedAdultVerificationInput) {

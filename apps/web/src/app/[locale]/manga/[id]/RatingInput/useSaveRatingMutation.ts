@@ -23,14 +23,13 @@ export function useSaveRatingMutation() {
       const url = new URL(`/api/v1/manga/${mangaId}/rating`, NEXT_PUBLIC_API_ORIGIN)
 
       if (rating === 0) {
-        await fetchAPIData<void>(url, { method: 'DELETE', credentials: 'include' })
+        await fetchAPIData<void>(url, { method: 'DELETE' })
         return null
       }
 
       const { data } = await fetchAPIData<PUTV1MangaIdRatingResponse>(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ rating }),
       })
 

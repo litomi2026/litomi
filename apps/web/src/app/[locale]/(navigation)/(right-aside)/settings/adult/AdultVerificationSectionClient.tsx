@@ -62,7 +62,6 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
       const { data } = await fetchAPIData<POSTV1BBatonAttemptResponse>(url, {
         method: 'POST',
-        credentials: 'include',
       })
 
       const { authorizeUrl } = data

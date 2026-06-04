@@ -34,7 +34,7 @@ export default function NotificationCount() {
 
 async function fetchUnreadCount() {
   const url = new URL('/api/v1/notification/unread-count', NEXT_PUBLIC_API_ORIGIN)
-  const { data } = await fetchAPIData<GETUnreadCountResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETUnreadCountResponse>(url)
   return data
 }
 

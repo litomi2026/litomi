@@ -1,3 +1,5 @@
+import { closeRedis, pingRedis } from '@litomi/db/redis'
+
 import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 
 import { shutdownAnalyticsClient } from './api/v1/analytics/realtime'
@@ -14,13 +16,15 @@ const server = Bun.serve({
   port: Number(process.env.PORT ?? 3002),
 })
 
-markProbeStartupComplete()
-
 registerShutdownHandler('probe', () => markProbeDraining())
 registerShutdownHandler('http-server', () => server.stop())
 registerShutdownHandler('trending-keywords', () => trendingKeywordsService.flushSearchBatch())
+registerShutdownHandler('redis', () => closeRedis())
 registerShutdownHandler('google-analytics', () => shutdownAnalyticsClient())
 registerShutdownHandler('opentelemetry', () => shutdownBackendOtel())
 registerShutdownSignals()
+
+await pingRedis()
+markProbeStartupComplete()
 
 console.info(`litomi api listening on http://${server.hostname}:${server.port}`)

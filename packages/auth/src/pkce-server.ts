@@ -1,4 +1,4 @@
-import { redisClient } from '@litomi/db/redis'
+import { getdelRedisJson, setRedisJson } from '@litomi/db/redis'
 import { sec } from '@litomi/std'
 import crypto from 'crypto'
 
@@ -21,7 +21,7 @@ export async function initiatePKCEChallenge(userId: number, codeChallenge: strin
 
   try {
     const key = getPKCEChallengeKey(authorizationCode)
-    await redisClient.set(key, challenge, { ex: sec('3 minutes') })
+    await setRedisJson(key, challenge, { ex: sec('3 minutes') })
   } catch (error) {
     console.error('initiatePKCEChallenge:', error)
     throw new Error('Service temporarily unavailable')
@@ -37,7 +37,7 @@ export async function verifyPKCEChallenge(
 ): Promise<{ valid: false; reason: string } | { valid: true; userId: number }> {
   try {
     const key = getPKCEChallengeKey(authorizationCode)
-    const authChallenge = await redisClient.getdel<AuthChallenge>(key)
+    const authChallenge = await getdelRedisJson<AuthChallenge>(key)
 
     if (!authChallenge) {
       return { valid: false, reason: 'session_not_found' }

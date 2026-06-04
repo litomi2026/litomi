@@ -42,10 +42,11 @@ scrape_configs:
       - targets:
           # Litomi self-host apps (Cloudflare Tunnel → localhost:80 → Traefik)
           - https://stg.litomi.in/
-          - https://api-stg.litomi.in/
+          - https://stg.litomi.in/health
+          - https://stg.litomi.in/api/health
 
           # Operations
-          - https://coolify.litomi.in/api/health
+          - https://coolify.litomi.in/health
           - https://grafana.litomi.in/
     relabel_configs:
       - source_labels: [__address__]

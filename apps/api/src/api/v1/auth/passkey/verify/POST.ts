@@ -6,7 +6,6 @@ import { postV1AuthPasskeyVerifyRequestSchema, type POSTV1AuthPasskeyVerifyRespo
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { ChallengeType } from '@litomi/domain/auth/model'
-import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
 import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
@@ -45,7 +44,7 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
 
   try {
     const authenticationAttemptId = getCookie(c, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
-    deleteCookie(c, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT, { domain: COOKIE_DOMAIN })
+    deleteCookie(c, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT, { path: '/' })
 
     if (!authenticationAttemptId) {
       return problemResponse(c, {

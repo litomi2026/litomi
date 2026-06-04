@@ -21,7 +21,6 @@ export default function BBatonCallbackPage() {
 
       await fetchAPIData<void>(url, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, state }),
       })

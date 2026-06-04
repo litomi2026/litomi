@@ -42,8 +42,8 @@ const STATUS_ENDPOINTS = {
   aiven: 'https://status.aiven.io/api/v2/status.json',
   supabase: 'https://status.supabase.com/api/v2/status.json',
   vercel: 'https://www.vercel-status.com/api/v2/status.json',
-  api: new URL('/health', env.NEXT_PUBLIC_API_ORIGIN).toString(),
-  litomi: '/api/health',
+  api: new URL('/api/health', env.NEXT_PUBLIC_API_ORIGIN).toString(),
+  litomi: '/health',
 }
 
 const STATUS_COLORS: Record<ServiceStatus, string> = {
@@ -94,11 +94,7 @@ export default function CloudProviderStatus({ locale, onStatusUpdate }: CloudPro
             .then((res) => res.json() as Promise<StatusPageResponse>)
             .catch(() => null),
           fetch(STATUS_ENDPOINTS.api, { cache: 'no-store' })
-            .then(async (res) => {
-              if (!res.ok) return 'critical' as ServiceStatus
-              const data = await res.json()
-              return (data.status === 'ok' ? 'none' : 'major') as ServiceStatus
-            })
+            .then((res) => (res.ok ? 'none' : 'critical') as ServiceStatus)
             .catch(() => 'critical' as ServiceStatus),
           fetch(STATUS_ENDPOINTS.litomi, { cache: 'no-store' })
             .then((res) => (res.ok ? 'none' : 'critical') as ServiceStatus)

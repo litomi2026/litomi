@@ -14,7 +14,6 @@ export async function exportUserData(body: POSTV1MeExportBody) {
   const { data } = await fetchAPIData<POSTV1MeExportResponse>(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(body),
   })
 

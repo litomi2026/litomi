@@ -29,7 +29,6 @@ export function useBookmarkImport() {
       const { data } = await fetchAPIData<POSTV1BookmarkImportResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ mode, bookmarks }),
       })
 

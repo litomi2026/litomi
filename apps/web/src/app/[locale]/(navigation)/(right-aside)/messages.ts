@@ -27,10 +27,6 @@ export const messages = {
           description: '팔로우 중 {followingCount}명 · 팔로워 {followerCount}명',
           missingDescription: '@{username} 사용자를 찾을 수 없어요.',
         },
-        settings: {
-          title: '설정',
-          description: '계정, 보안, 알림, 언어, 테마 설정을 관리하세요.',
-        },
         censor: {
           title: '검열',
           description: '콘텐츠 표시와 차단 관련 설정을 관리하세요.',
@@ -257,10 +253,6 @@ export const messages = {
           missingTitle: 'User not found',
           description: 'Following {followingCount} · {followerCount} followers',
           missingDescription: 'Could not find @{username}.',
-        },
-        settings: {
-          title: 'Settings and privacy',
-          description: 'Manage your account, privacy, security, notifications, language, and theme settings.',
         },
         censor: {
           title: 'Censor',
@@ -489,10 +481,6 @@ export const messages = {
           description: 'フォロー中 {followingCount}人 · フォロワー {followerCount}人',
           missingDescription: '@{username} ユーザーが見つかりません。',
         },
-        settings: {
-          title: '設定',
-          description: 'アカウント、セキュリティ、通知、言語、テーマ設定を管理します。',
-        },
         censor: {
           title: '検閲',
           description: 'コンテンツの表示とブロックに関する設定を管理します。',
@@ -719,10 +707,6 @@ export const messages = {
           missingTitle: '用户不存在',
           description: '正在关注 {followingCount} 人 · 关注者 {followerCount} 人',
           missingDescription: '找不到 @{username} 用户。',
-        },
-        settings: {
-          title: '设置',
-          description: '管理账号、安全、通知、语言和主题设置。',
         },
         censor: {
           title: '屏蔽',

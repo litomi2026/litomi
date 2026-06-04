@@ -52,9 +52,9 @@ export async function GET(request: Request) {
         },
         browser: {
           public: true,
-          maxAge: sec('5 minutes'),
-          sMaxAge: sec('30 minutes'),
-          swr: sec('5 minutes'),
+          maxAge: sec('10 minutes'),
+          sMaxAge: sec('40 minutes'),
+          swr: sec('10 minutes'),
         },
       }),
     )

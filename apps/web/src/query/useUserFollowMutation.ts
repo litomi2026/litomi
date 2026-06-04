@@ -51,7 +51,6 @@ export async function toggleUserFollowing(targetUserId: number, following: boole
 
   const { data } = await fetchAPIData<SetUserFollowResponse>(url, {
     method: following ? 'PUT' : 'DELETE',
-    credentials: 'include',
   })
 
   return data

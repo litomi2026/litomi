@@ -21,7 +21,6 @@ export async function importReadingHistory(request: POSTV1LibraryHistoryImportBo
 
   const { data } = await fetchAPIData<POSTV1LibraryHistoryImportResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
   })
@@ -34,7 +33,6 @@ export async function login(request: POSTV1AuthLoginRequest) {
 
   const { data } = await fetchAPIData<POSTV1AuthLoginResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
   })
@@ -47,7 +45,6 @@ export async function requestPasskeyAuthenticationOptions() {
 
   const { data } = await fetchAPIData<POSTV1AuthPasskeyOptionsResponse>(url, {
     method: 'POST',
-    credentials: 'include',
   })
 
   return data
@@ -58,7 +55,6 @@ export async function verifyPasskeyAuthentication(request: POSTV1AuthPasskeyVeri
 
   const { data } = await fetchAPIData<POSTV1AuthPasskeyVerifyResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
   })
@@ -71,7 +67,6 @@ export async function verifyTwoFactorLogin(request: POSTV1AuthLogin2FARequest) {
 
   const { data } = await fetchAPIData<POSTV1AuthLogin2FAResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
   })

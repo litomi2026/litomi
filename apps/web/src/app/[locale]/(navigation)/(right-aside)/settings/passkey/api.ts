@@ -18,7 +18,6 @@ export async function deletePasskey(id: number) {
 
   const { data } = await fetchAPIData<DELETEV1MePasskeyResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -29,7 +28,6 @@ export async function requestPasskeyRegistrationOptions() {
 
   const { data } = await fetchAPIData<POSTV1MePasskeyOptionsResponse>(url, {
     method: 'POST',
-    credentials: 'include',
   })
 
   return data
@@ -40,7 +38,6 @@ export async function updatePasskeyName(id: number, request: PATCHV1MePasskeyBod
 
   const { data } = await fetchAPIData<PATCHV1MePasskeyResponse>(url, {
     method: 'PATCH',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
   })
@@ -53,7 +50,6 @@ export async function verifyPasskeyRegistration(request: POSTV1MePasskeyVerifyBo
 
   const { data } = await fetchAPIData<POSTV1MePasskeyVerifyResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
   })

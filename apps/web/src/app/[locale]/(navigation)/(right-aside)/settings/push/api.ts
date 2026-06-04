@@ -21,7 +21,6 @@ export async function createPushSubscription(body: POSTV1MePushSubscriptionBody)
 
   const { data } = await fetchAPIData<POSTV1MePushSubscriptionResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -34,7 +33,6 @@ export async function deletePushSubscription(id: number) {
 
   const { data } = await fetchAPIData<DELETEV1MePushSubscriptionIdResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -45,7 +43,6 @@ export async function deletePushSubscriptionByEndpoint(body: DELETEV1MePushSubsc
 
   const { data } = await fetchAPIData<DELETEV1MePushSubscriptionResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -58,7 +55,6 @@ export async function sendTestPushNotification(body: POSTV1MePushTestBody) {
 
   const { data } = await fetchAPIData<POSTV1MePushTestResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -71,7 +67,6 @@ export async function updatePushSettings(body: PATCHV1MePushSettingsBody) {
 
   const { data } = await fetchAPIData<PATCHV1MePushSettingsResponse>(url, {
     method: 'PATCH',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

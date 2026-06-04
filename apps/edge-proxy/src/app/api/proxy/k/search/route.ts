@@ -213,7 +213,7 @@ async function postSearchKeyword(keyword: string, signal?: AbortSignal) {
   const body: POSTSearchTrendingBody = { keywords: [keyword] }
 
   try {
-    return await fetch(`${NEXT_PUBLIC_API_ORIGIN}/api/v1/search/trending`, {
+    return await fetch(new URL('/api/v1/search/trending', NEXT_PUBLIC_API_ORIGIN), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

@@ -11,7 +11,6 @@ export async function revokeAllPersistentSessions() {
 
   const { data } = await fetchAPIData<DELETEV1MeSessionResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -22,7 +21,6 @@ export async function revokeOtherPersistentSessions() {
 
   const { data } = await fetchAPIData<DELETEV1MeSessionResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -33,7 +31,6 @@ export async function revokePersistentSession(familyId: string) {
 
   const { data } = await fetchAPIData<DELETEV1MeSessionResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data

@@ -1,5 +1,4 @@
 import { JWTType, signJWT } from '@litomi/auth/jwt'
-import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'
 
@@ -16,7 +15,6 @@ export function getTrustedBrowserCookieConfig(token: string) {
     key: CookieKey.TRUSTED_BROWSER_TOKEN,
     value: token,
     options: {
-      domain: COOKIE_DOMAIN,
       httpOnly: true,
       maxAge: sec(`${TRUSTED_BROWSER_EXPIRY_DAYS} days`),
       path: '/',

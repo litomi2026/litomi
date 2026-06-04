@@ -53,9 +53,11 @@ bootstrap 변경을 강제로 반영하려면 아래 옵션을 사용해요.
 ### 5) 접속 확인
 
 - **stg web**: `https://stg.litomi.in`
-- **stg api**: `https://api-stg.litomi.in/health`
+- **stg web health**: `https://stg.litomi.in/health`
+- **stg api health**: `https://stg.litomi.in/api/health`
 - **prod web**: `https://litomi.in`
-- **prod api**: `https://api.litomi.in/health`
+- **prod web health**: `https://litomi.in/health`
+- **prod api health**: `https://litomi.in/api/health`
 - **Argo CD**: `https://argocd.litomi.in`
 - **Grafana**: `https://grafana.litomi.in`
 
@@ -197,9 +199,11 @@ open http://127.0.0.1:9093/#/alerts
 sudo kubectl -n kube-system port-forward svc/traefik 8080:80
 
 curl -I -H 'Host: stg.litomi.in' http://127.0.0.1:8080/
-curl -I -H 'Host: api-stg.litomi.in' http://127.0.0.1:8080/health
+curl -I -H 'Host: stg.litomi.in' http://127.0.0.1:8080/health
+curl -I -H 'Host: stg.litomi.in' http://127.0.0.1:8080/api/health
 curl -I -H 'Host: litomi.in' http://127.0.0.1:8080/
-curl -I -H 'Host: api.litomi.in' http://127.0.0.1:8080/health
+curl -I -H 'Host: litomi.in' http://127.0.0.1:8080/health
+curl -I -H 'Host: litomi.in' http://127.0.0.1:8080/api/health
 curl -I -H 'Host: argocd.litomi.in' http://127.0.0.1:8080/
 ```
 

@@ -30,7 +30,7 @@ export const env = createEnv({
     JWT_SECRET_ACCESS_TOKEN: z.string().default('123'),
     JWT_SECRET_REFRESH_TOKEN: z.string().default('456'),
     JWT_SECRET_TRUSTED_DEVICE: z.string().default('789'),
-    REDIS_URL: z.url().default('redis://redis:6380'),
+    REDIS_URL: z.url().default('redis://localhost:6380'),
 
     TOTP_ENCRYPTION_KEY: z
       .string()
@@ -38,8 +38,6 @@ export const env = createEnv({
       .default('1111111111111111111111111111111111111111111111111111111111111111'),
 
     TURNSTILE_SECRET_KEY: z.string().default('1x0000000000000000000000000000000AA'),
-    UPSTASH_KV_REST_API_URL: z.url().default('http://localhost:8079'),
-    UPSTASH_KV_REST_API_TOKEN: z.string().default('local_dev_token'),
     VAPID_PUBLIC_KEY: z.string().default(DEFAULT_VAPID_PUBLIC_KEY),
     VAPID_PRIVATE_KEY: z.string().default('pL4WSwlV1gHQUYZOOq7N1oEq0Gbj-_dWnRwph1-Ju0k'),
   },

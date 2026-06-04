@@ -11,7 +11,6 @@ export async function deleteRatings(body: DELETEV1LibraryRatingBody) {
 
   const { data } = await fetchAPIData<DELETEV1LibraryRatingResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

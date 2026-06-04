@@ -17,7 +17,7 @@ export function usePointsQuery({ enabled = true }: QueryOptions = {}) {
     queryKey: QueryKeys.points,
     queryFn: async () => {
       const url = new URL('/api/v1/points', NEXT_PUBLIC_API_ORIGIN)
-      const { data } = await fetchAPIData<GETV1PointsResponse>(url, { credentials: 'include' })
+      const { data } = await fetchAPIData<GETV1PointsResponse>(url)
       return data
     },
     enabled,

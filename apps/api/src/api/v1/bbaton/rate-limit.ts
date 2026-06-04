@@ -1,4 +1,4 @@
-import { redisClient } from '@litomi/db/redis'
+import { redis } from '@litomi/db/redis'
 import { sec } from '@litomi/std'
 
 type Action = 'attempt' | 'complete'
@@ -14,11 +14,11 @@ type Result = { allowed: false; retryAfterSeconds: number } | { allowed: true }
 
 export async function checkBBatonRateLimit(action: Action, userId: number): Promise<Result> {
   const key = `rate-limit:bbaton:${action}:${userId}`
-  const rawCount = await redisClient.incr(key)
+  const rawCount = await redis.incr(key)
   const count = typeof rawCount === 'number' ? rawCount : Number(rawCount)
 
   if (count === 1) {
-    await redisClient.expire(key, WINDOW_SECONDS)
+    await redis.expire(key, WINDOW_SECONDS)
   }
 
   const limit = LIMITS[action]
@@ -26,7 +26,7 @@ export async function checkBBatonRateLimit(action: Action, userId: number): Prom
     return { allowed: true }
   }
 
-  const rawTTL = await redisClient.ttl(key).catch(() => null)
+  const rawTTL = await redis.ttl(key).catch(() => null)
   const ttl = typeof rawTTL === 'number' ? rawTTL : rawTTL == null ? null : Number(rawTTL)
 
   return {

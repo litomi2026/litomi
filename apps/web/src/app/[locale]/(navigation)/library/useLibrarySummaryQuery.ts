@@ -16,7 +16,7 @@ type Options = {
 
 export async function fetchLibrarySummary() {
   const url = new URL('/api/v1/library/summary', NEXT_PUBLIC_API_ORIGIN)
-  const { data } = await fetchAPIData<GETV1LibrarySummaryResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1LibrarySummaryResponse>(url)
   return data
 }
 

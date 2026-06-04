@@ -12,7 +12,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchBookmarkIds() {
   const url = new URL('/api/v1/bookmark/id', NEXT_PUBLIC_API_ORIGIN)
-  const { data } = await fetchAPIData<GETV1BookmarkIdResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1BookmarkIdResponse>(url)
   return data
 }
 

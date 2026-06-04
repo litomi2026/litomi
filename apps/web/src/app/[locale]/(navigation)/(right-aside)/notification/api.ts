@@ -17,7 +17,6 @@ export async function deleteNotifications(body: DELETEV1NotificationBody) {
 
   const { data } = await fetchAPIData<DELETEV1NotificationResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -30,7 +29,6 @@ export async function markAllNotificationsAsRead() {
 
   const { data } = await fetchAPIData<PATCHV1NotificationReadAllResponse>(url, {
     method: 'PATCH',
-    credentials: 'include',
   })
 
   return data
@@ -41,7 +39,6 @@ export async function markNotificationsAsRead(body: PATCHV1NotificationReadBody)
 
   const { data } = await fetchAPIData<PATCHV1NotificationReadResponse>(url, {
     method: 'PATCH',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

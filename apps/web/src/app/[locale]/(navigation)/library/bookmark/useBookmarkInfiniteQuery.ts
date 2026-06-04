@@ -30,7 +30,7 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Librar
   const url = new URL('/api/v1/bookmark', NEXT_PUBLIC_API_ORIGIN)
   url.search = params.toString()
 
-  const { data } = await fetchAPIData<GETV1BookmarkResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1BookmarkResponse>(url)
   return data
 }
 

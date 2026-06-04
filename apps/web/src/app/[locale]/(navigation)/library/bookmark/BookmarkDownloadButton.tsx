@@ -21,7 +21,7 @@ export default function BookmarkDownloadButton() {
   const exportMutation = useMutation({
     mutationFn: async () => {
       const url = new URL('/api/v1/bookmark/export', NEXT_PUBLIC_API_ORIGIN)
-      const { data } = await fetchAPIData<GETV1BookmarkExportResponse>(url, { credentials: 'include' })
+      const { data } = await fetchAPIData<GETV1BookmarkExportResponse>(url)
       return data.bookmarks
     },
 

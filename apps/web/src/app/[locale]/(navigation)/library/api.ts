@@ -23,7 +23,6 @@ export async function addMangaToLibraries(body: POSTV1LibraryItemAddBody) {
 
   const { data } = await fetchAPIData<POSTV1LibraryItemAddResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -36,7 +35,6 @@ export async function bulkCopyToLibrary(body: POSTV1LibraryItemCopyBody) {
 
   const { data } = await fetchAPIData<POSTV1LibraryItemCopyResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -49,7 +47,6 @@ export async function bulkMoveToLibrary(body: POSTV1LibraryItemMoveBody) {
 
   const { data } = await fetchAPIData<POSTV1LibraryItemMoveResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -62,7 +59,6 @@ export async function bulkRemoveFromLibrary(body: DELETEV1LibraryItemBody) {
 
   const { data } = await fetchAPIData<DELETEV1LibraryItemResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -75,7 +71,6 @@ export async function deleteLibrary(libraryId: number) {
 
   const { data } = await fetchAPIData<DELETEV1LibraryIdResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -86,7 +81,6 @@ export async function updateLibrary(libraryId: number, body: PATCHV1LibraryIdBod
 
   const { data } = await fetchAPIData<PATCHV1LibraryIdResponse>(url, {
     method: 'PATCH',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

@@ -27,7 +27,6 @@ export function usePointsTokenQuery({ adSlotId, enabled }: Options) {
       const { data } = await fetchAPIData<POSTV1PointTokenResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ adSlotId }),
       })
 

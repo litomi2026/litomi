@@ -1,5 +1,4 @@
 import { postV1PointTurnstileRequestSchema, type POSTV1PointTurnstileResponse } from '@litomi/contracts'
-import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
@@ -41,7 +40,6 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTurnstileReque
   const signedCookie = await signPointsTurnstileToken(userId)
 
   setCookie(c, CookieKey.POINTS_TURNSTILE, signedCookie, {
-    domain: COOKIE_DOMAIN,
     httpOnly: true,
     maxAge: POINTS_TURNSTILE_TTL_SECONDS,
     path: '/api/v1/points',

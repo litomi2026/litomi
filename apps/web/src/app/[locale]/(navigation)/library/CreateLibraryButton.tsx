@@ -382,7 +382,6 @@ async function createLibraryApi(payload: CreateLibraryPayload): Promise<POSTV1Li
   const url = new URL('/api/v1/library', NEXT_PUBLIC_API_ORIGIN)
   const { data } = await fetchAPIData<POSTV1LibraryResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })

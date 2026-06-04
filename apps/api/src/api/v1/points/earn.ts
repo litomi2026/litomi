@@ -2,7 +2,6 @@ import { postV1PointEarnRequestSchema, type POSTV1PointEarnResponse } from '@lit
 import { db } from '@litomi/db/app'
 import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
-import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
 import { problemCode } from '@litomi/http/problem-details'
 import { and, eq, gt, sql } from 'drizzle-orm'
@@ -39,7 +38,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
   const verified = await verifyPointsTurnstileToken(turnstileCookie)
 
   if (!verified || verified.userId !== userId) {
-    deleteCookie(c, CookieKey.POINTS_TURNSTILE, { domain: COOKIE_DOMAIN, path: '/api/v1/points' })
+    deleteCookie(c, CookieKey.POINTS_TURNSTILE, { path: '/api/v1/points' })
     return problemResponse(c, {
       status: 403,
       code: problemCode.TURNSTILE_REQUIRED,

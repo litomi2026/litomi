@@ -12,7 +12,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 export async function fetchMyDonations(searchParams: URLSearchParams) {
   const url = new URL('/api/v1/points/donations/me', NEXT_PUBLIC_API_ORIGIN)
   url.search = searchParams.toString()
-  const { data } = await fetchAPIData<GETV1PointsDonationsMeResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1PointsDonationsMeResponse>(url)
   return data
 }
 

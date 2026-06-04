@@ -67,13 +67,14 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/settings
 
 export default async function SettingsPage() {
   const userId = await getUserIdFromCookie()
+  const t = await getTranslations('Settings')
 
   const languageSelector = (
     <CollapsibleSection
-      description="앱 화면에서 사용할 언어를 선택하세요"
+      description={t('sections.uiLanguage.description')}
       icon={<Languages className="size-5 shrink-0 text-brand" />}
       id="ui-language"
-      title="화면 언어"
+      title={t('sections.uiLanguage.title')}
     >
       <LanguageSettings />
     </CollapsibleSection>
@@ -81,10 +82,10 @@ export default async function SettingsPage() {
 
   const guestSearchLanguageSelector = (
     <CollapsibleSection
-      description="새 검색어에 기본으로 추가할 작품 언어를 선택하세요"
+      description={t('sections.searchLanguage.description')}
       icon={<Search className="size-5 shrink-0 text-brand" />}
       id="search-language"
-      title="검색 언어"
+      title={t('sections.searchLanguage.title')}
     >
       <SearchLanguageSettings isAuthenticated={false} />
     </CollapsibleSection>
@@ -92,10 +93,10 @@ export default async function SettingsPage() {
 
   const themeSelector = (
     <CollapsibleSection
-      description="원하는 색상 테마를 선택하세요"
+      description={t('sections.theme.description')}
       icon={<Palette className="size-5 shrink-0 text-brand" />}
       id="theme"
-      title="테마"
+      title={t('sections.theme.title')}
     >
       <ErrorBoundary fallback={InternalServerError}>
         <Suspense fallback={<LoadingFallback />}>

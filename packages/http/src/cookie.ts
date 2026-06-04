@@ -1,11 +1,9 @@
 export enum CookieKey {
-  ACCESS_TOKEN = 'at',
-  AUTH_HINT = 'ah',
+  ACCESS_TOKEN = '__Host-at',
+  AUTH_HINT = '__Host-ah',
   LOCALE = 'locale',
-  PASSKEY_AUTHENTICATION_ATTEMPT = 'pkai',
-  POINTS_TURNSTILE = 'pt',
-  REFRESH_TOKEN = 'rt',
-  TRUSTED_BROWSER_TOKEN = 'tbt',
+  PASSKEY_AUTHENTICATION_ATTEMPT = '__Host-pkai',
+  POINTS_TURNSTILE = '__Secure-pt',
+  REFRESH_TOKEN = '__Host-rt',
+  TRUSTED_BROWSER_TOKEN = '__Host-tbt',
 }
-
-export const COOKIE_DOMAIN = process.env.NODE_ENV === 'production' ? '.litomi.in' : 'localhost'

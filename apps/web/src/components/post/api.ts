@@ -19,7 +19,6 @@ export async function createPost(body: POSTV1PostBody) {
 
   const { data } = await fetchAPIData<POSTV1PostResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -32,7 +31,6 @@ export async function deletePost(postId: number) {
 
   const { data } = await fetchAPIData<DELETEV1PostIdResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -43,7 +41,6 @@ export async function toggleLikingPost(postId: number, liked: boolean) {
 
   const { data } = await fetchAPIData<SetPostLikeResponse>(url, {
     method: liked ? 'PUT' : 'DELETE',
-    credentials: 'include',
   })
 
   return data

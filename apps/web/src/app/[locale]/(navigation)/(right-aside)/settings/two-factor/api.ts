@@ -21,7 +21,6 @@ export async function disableTwoFactor(body: DELETEV1MeTwoFactorBody) {
 
   const { data } = await fetchAPIData<DELETEV1MeTwoFactorResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -34,7 +33,6 @@ export async function regenerateTwoFactorBackupCodes(body: POSTV1MeTwoFactorBack
 
   const { data } = await fetchAPIData<POSTV1MeTwoFactorBackupCodesResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -47,7 +45,6 @@ export async function requestTwoFactorSetup() {
 
   const { data } = await fetchAPIData<POSTV1MeTwoFactorSetupResponse>(url, {
     method: 'POST',
-    credentials: 'include',
   })
 
   return data
@@ -58,7 +55,6 @@ export async function revokeAllTrustedBrowsers() {
 
   const { data } = await fetchAPIData<DELETEV1MeTrustedBrowserAllResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -69,7 +65,6 @@ export async function revokeTrustedBrowser(id: number) {
 
   const { data } = await fetchAPIData<DELETEV1MeTrustedBrowserResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -80,7 +75,6 @@ export async function verifyTwoFactorSetup(body: POSTV1MeTwoFactorVerifyBody) {
 
   const { data } = await fetchAPIData<POSTV1MeTwoFactorVerifyResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

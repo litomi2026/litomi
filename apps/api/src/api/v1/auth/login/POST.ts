@@ -1,7 +1,6 @@
 import { initiatePKCEChallenge } from '@litomi/auth/pkce-server'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { postV1AuthLoginRequestSchema, type POSTV1AuthLoginResponse } from '@litomi/contracts'
-import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
@@ -77,7 +76,6 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
 
       if (!browserExists && trustedBrowserToken) {
         deleteCookie(c, CookieKey.TRUSTED_BROWSER_TOKEN, {
-          domain: COOKIE_DOMAIN,
           path: '/',
         })
       }

@@ -21,7 +21,7 @@ export function useAdsterraStatsQuery({ startDate, finishDate, enabled = true }:
       const params = new URLSearchParams({ start_date: startDate, finish_date: finishDate })
       const url = new URL('/api/v1/adsterra/stats', NEXT_PUBLIC_API_ORIGIN)
       url.search = params.toString()
-      const { data } = await fetchAPIData<GETV1AdsterraStatsResponse>(url, { credentials: 'include' })
+      const { data } = await fetchAPIData<GETV1AdsterraStatsResponse>(url)
       return data
     },
     enabled,

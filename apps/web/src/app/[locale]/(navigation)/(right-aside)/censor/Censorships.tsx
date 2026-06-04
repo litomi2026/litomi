@@ -49,7 +49,6 @@ export default function Censorships() {
 
       const { data } = await fetchAPIData<DELETEV1CensorshipDeleteResponse>(url, {
         method: 'DELETE',
-        credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ ids }),
       })

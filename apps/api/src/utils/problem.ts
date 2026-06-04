@@ -6,6 +6,8 @@ import {
   problemCode,
 } from '@litomi/http/problem-details'
 
+import { noStoreCacheControl } from './cache-control'
+
 export type ProblemResponseOptions = CreateProblemDetailsResponseOptions
 
 export function authRequiredProblemResponse(
@@ -25,6 +27,10 @@ export function problemResponse(c: Context, options: ProblemResponseOptions): Re
 
   for (const [key, value] of new Headers(options.headers)) {
     headers.set(key, value)
+  }
+
+  if (!headers.has('Cache-Control')) {
+    headers.set('Cache-Control', noStoreCacheControl)
   }
 
   return createProblemDetailsResponse(c.req.raw, { ...options, headers })
