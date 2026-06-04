@@ -3,6 +3,7 @@ import { PUBLIC_LOCALES, type PublicLocale } from '@litomi/domain/locale'
 import { messages as rankingMessages } from '@/app/[locale]/(navigation)/(ranking)/messages'
 import { messages as censorMessages } from '@/app/[locale]/(navigation)/(right-aside)/censor/messages'
 import { messages as rightAsideMessages } from '@/app/[locale]/(navigation)/(right-aside)/messages'
+import { messages as settingsMessages } from '@/app/[locale]/(navigation)/(right-aside)/settings/messages'
 import { messages as liboMessages } from '@/app/[locale]/(navigation)/(top-navigation)/libo/messages'
 import { messages as topNavigationMessages } from '@/app/[locale]/(navigation)/(top-navigation)/messages'
 import { messages as libraryMessages } from '@/app/[locale]/(navigation)/library/messages'
@@ -26,6 +27,7 @@ const messageModules = [
   navigationMessages,
   rankingMessages,
   rightAsideMessages,
+  settingsMessages,
   censorMessages,
   topNavigationMessages,
   liboMessages,

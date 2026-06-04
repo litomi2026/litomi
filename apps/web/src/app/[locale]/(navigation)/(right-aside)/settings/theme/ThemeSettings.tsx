@@ -1,6 +1,7 @@
 'use client'
 
 import { Check, Moon, Palette, Sparkles, Sun } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import { Theme, useThemeStore } from '@/store/theme'
@@ -8,36 +9,33 @@ import { Theme, useThemeStore } from '@/store/theme'
 const THEMES = [
   {
     value: Theme.LIGHT,
-    label: '라이트',
-    description: '밝고 깔끔한 화이트 테마',
+    messageKey: 'light',
     Icon: Sun,
   },
   {
     value: Theme.DARK,
-    label: '다크',
-    description: '눈이 편안한 다크 테마',
+    messageKey: 'dark',
     Icon: Moon,
   },
   {
     value: Theme.NEON,
-    label: '네온',
-    description: '생동감 넘치는 사이버펑크 테마',
+    messageKey: 'neon',
     Icon: Sparkles,
   },
   {
     value: Theme.RETRO,
-    label: '레트로',
-    description: '따뜻한 빈티지 감성 테마',
+    messageKey: 'retro',
     Icon: Palette,
   },
 ] as const
 
 export default function ThemeSettings() {
   const { theme, setTheme } = useThemeStore()
+  const t = useTranslations('Settings.theme')
 
   return (
     <div className="grid gap-2">
-      {THEMES.map(({ value, label, description, Icon }) => {
+      {THEMES.map(({ value, messageKey, Icon }) => {
         const isSelected = theme === value
 
         return (
@@ -58,8 +56,8 @@ export default function ThemeSettings() {
               <Icon className="size-5 text-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-medium">{label}</div>
-              <div className="text-sm text-zinc-400">{description}</div>
+              <div className="font-medium">{t(`options.${messageKey}.label`)}</div>
+              <div className="text-sm text-zinc-400">{t(`options.${messageKey}.description`)}</div>
             </div>
             {isSelected && <Check className="size-5 text-brand shrink-0" />}
           </button>

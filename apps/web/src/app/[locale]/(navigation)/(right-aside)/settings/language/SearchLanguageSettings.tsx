@@ -1,10 +1,8 @@
 'use client'
 
-import type { PublicLocale } from '@litomi/domain/locale'
-
 import { SEARCH_LANGUAGE_ALL } from '@litomi/domain/search/language'
 import { Loader2 } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -25,13 +23,6 @@ type Props =
       initialSearchLanguage: string
     }
 
-const ALL_LANGUAGE_LABELS = {
-  en: 'All languages',
-  ja: 'すべての言語',
-  ko: '모든 언어',
-  'zh-CN': '所有语言',
-} satisfies Record<PublicLocale, string>
-
 export default function SearchLanguageSettings({ initialSearchLanguage, isAuthenticated }: Props) {
   const [{ savedLanguage, selectedLanguage }, setLanguageState] = useState(() => {
     const language = isAuthenticated ? initialSearchLanguage : readStoredSearchLanguage()
@@ -40,10 +31,10 @@ export default function SearchLanguageSettings({ initialSearchLanguage, isAuthen
 
   const patchMySettingsMutation = usePatchMySettingsMutation()
   const languageOptions = useSearchLanguageOptions()
-  const locale = useLocale()
+  const t = useTranslations('Settings.searchLanguage')
 
   const isSaveDisabled = selectedLanguage === savedLanguage || patchMySettingsMutation.isPending
-  const options = [{ value: SEARCH_LANGUAGE_ALL, label: ALL_LANGUAGE_LABELS[locale] }, ...languageOptions]
+  const options = [{ value: SEARCH_LANGUAGE_ALL, label: t('allLanguages') }, ...languageOptions]
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -55,25 +46,22 @@ export default function SearchLanguageSettings({ initialSearchLanguage, isAuthen
     }
 
     setLanguageState({ savedLanguage: selectedLanguage, selectedLanguage })
-    toast.success('검색 언어 설정이 반영됐어요')
+    toast.success(t('savedToast'))
   }
 
   return (
     <form className="grid gap-3" onSubmit={handleSubmit}>
       <div className="grid gap-1">
         <label className="text-sm font-medium text-zinc-300" htmlFor="search-language">
-          항상 검색할 작품 언어
+          <CustomSelect
+            id="search-language"
+            onChange={(value) => setLanguageState((current) => ({ ...current, selectedLanguage: value }))}
+            options={options}
+            value={selectedLanguage}
+          />
         </label>
-        <CustomSelect
-          id="search-language"
-          onChange={(value) => setLanguageState((current) => ({ ...current, selectedLanguage: value }))}
-          options={options}
-          value={selectedLanguage}
-        />
         <p className="text-xs text-zinc-500">
-          {selectedLanguage === SEARCH_LANGUAGE_ALL
-            ? '새 검색은 언어 조건 없이 시작돼요'
-            : '새 검색에 언어 조건이 없으면 검색어에 이 언어가 추가돼요'}
+          {selectedLanguage === SEARCH_LANGUAGE_ALL ? t('allSelectedHelp') : t('selectedHelp')}
         </p>
       </div>
       <button
@@ -89,7 +77,7 @@ export default function SearchLanguageSettings({ initialSearchLanguage, isAuthen
         {patchMySettingsMutation.isPending && (
           <Loader2 className="size-4 shrink-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin" />
         )}
-        저장
+        {t('save')}
       </button>
     </form>
   )
