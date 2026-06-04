@@ -14,9 +14,7 @@ projects:
             envVars:
               - key: VAPID_PRIVATE_KEY
                 sync: false
-              - key: UPSTASH_KV_REST_API_URL
-                sync: false
-              - key: UPSTASH_KV_REST_API_TOKEN
+              - key: REDIS_URL
                 sync: false
               - key: TURNSTILE_SECRET_KEY
                 sync: false
@@ -89,9 +87,7 @@ projects:
             envVars:
               - key: VAPID_PRIVATE_KEY
                 sync: false
-              - key: UPSTASH_KV_REST_API_URL
-                sync: false
-              - key: UPSTASH_KV_REST_API_TOKEN
+              - key: REDIS_URL
                 sync: false
               - key: TURNSTILE_SECRET_KEY
                 sync: false

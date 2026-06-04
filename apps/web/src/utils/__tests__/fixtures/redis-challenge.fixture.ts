@@ -2,21 +2,19 @@ import '@test/setup.base'
 import { ChallengeType } from '@litomi/domain/auth/model'
 import { afterAll, afterEach, describe, expect, it, mock } from 'bun:test'
 
-const getdelMock = mock(async (): Promise<unknown | null> => null)
-const setMock = mock(async (): Promise<'OK'> => 'OK')
+const getdelRedisJsonMock = mock(async (): Promise<unknown | null> => null)
+const setRedisJsonMock = mock(async (): Promise<void> => undefined)
 
 mock.module('@litomi/db/redis', () => ({
-  redisClient: {
-    getdel: getdelMock,
-    set: setMock,
-  },
+  getdelRedisJson: getdelRedisJsonMock,
+  setRedisJson: setRedisJsonMock,
 }))
 
 const { getAndDeleteChallenge, storeChallenge } = await import('@litomi/auth/redis-challenge')
 
 afterEach(() => {
-  getdelMock.mockClear()
-  setMock.mockClear()
+  getdelRedisJsonMock.mockClear()
+  setRedisJsonMock.mockClear()
 })
 
 afterAll(() => {
@@ -32,7 +30,7 @@ describe('redis-challenge', () => {
 
     await storeChallenge('attempt-1', ChallengeType.AUTHENTICATION, challenge)
 
-    const [key, storedChallenge, options] = setMock.mock.calls[0] as unknown as [
+    const [key, storedChallenge, options] = setRedisJsonMock.mock.calls[0] as unknown as [
       string,
       typeof challenge,
       { ex: number },
@@ -44,7 +42,7 @@ describe('redis-challenge', () => {
   })
 
   it('returns string challenges as-is', async () => {
-    getdelMock.mockResolvedValueOnce('registration-challenge')
+    getdelRedisJsonMock.mockResolvedValueOnce('registration-challenge')
 
     const challenge = await getAndDeleteChallenge('attempt-1', ChallengeType.REGISTRATION)
 
@@ -52,7 +50,7 @@ describe('redis-challenge', () => {
   })
 
   it('returns object challenges as-is', async () => {
-    getdelMock.mockResolvedValueOnce({
+    getdelRedisJsonMock.mockResolvedValueOnce({
       challenge: 'passkey-challenge',
       turnstileRequired: false,
     })

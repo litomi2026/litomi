@@ -29,8 +29,7 @@ process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ??=
 process.env.VAPID_PUBLIC_KEY ??= process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
 process.env.TOTP_ENCRYPTION_KEY ??= '0'.repeat(64)
 process.env.TURNSTILE_SECRET_KEY ??= 'test-turnstile-secret'
-process.env.UPSTASH_KV_REST_API_TOKEN ??= 'local_dev_token'
-process.env.UPSTASH_KV_REST_API_URL ??= 'http://localhost:8079'
+process.env.REDIS_URL ??= 'redis://localhost:6380'
 process.env.VAPID_PRIVATE_KEY ??= 'pL4WSwlV1gHQUYZOOq7N1oEq0Gbj-_dWnRwph1-Ju0k'
 
 mock.module('server-only', () => ({}))
