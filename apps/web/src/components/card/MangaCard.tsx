@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 
+import MangaTitleLink from '../MangaTitleLink'
 import BookmarkButton, { BookmarkButtonError } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
 import MangaCardDate from './MangaCardDate'
@@ -84,16 +85,15 @@ export default function MangaCard({
         <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2">
           <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap [&_dt]:font-semibold">
             <div className="flex items-start gap-1.5">
-              <a
+              <MangaTitleLink
                 className="flex-1 hover:underline focus:underline visited:text-zinc-500"
                 href={viewerLink}
-                target="_blank"
               >
                 <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 wrap-break-word break-all">
                   <MangaTitle query={query} title={title} />
                   <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
                 </h4>
-              </a>
+              </MangaTitleLink>
               {languages && languages.length > 0 && (
                 <MangaLanguageLink key={languages[0].value} language={languages[0].value} searchParams={searchParams} />
               )}

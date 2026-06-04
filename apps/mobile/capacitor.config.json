@@ -3,9 +3,15 @@
   "appName": "리토미",
   "webDir": "web",
   "appendUserAgent": "LitomiCapacitorApp",
+  "backgroundColor": "#120d12",
+  "loggingBehavior": "debug",
+  "ios": {
+    "backgroundColor": "#120d12"
+  },
   "server": {
     "url": "https://litomi.in",
-    "cleartext": false
+    "cleartext": false,
+    "errorPath": "offline.html"
   },
   "plugins": {
     "SystemBars": {
