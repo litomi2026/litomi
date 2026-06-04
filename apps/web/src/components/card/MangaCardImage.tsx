@@ -3,13 +3,12 @@ import { getViewerLink } from '@litomi/domain/utils/manga'
 import { View } from '@litomi/std'
 import { twMerge } from 'tailwind-merge'
 
-import { Link } from '@/i18n/navigation'
-
 import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'
 import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardPreviewImages from './MangaCardPreviewImages'
 import MangaCardRankBadge from './MangaCardRankBadge'
+import MangaThumbnailLink from './MangaThumbnailLink'
 import MangaTorrentBadge from './MangaTorrentBadge'
 
 type Props = {
@@ -61,7 +60,7 @@ export default function MangaCardImage({ manga, mangaIndex, rank, className = ''
           mangaIndex={mangaIndex}
         />
       ) : images.length > 0 ? (
-        <Link
+        <MangaThumbnailLink
           className={twMerge(
             'block select-none touch-pan-y relative',
             config.imageContainerClassName,
@@ -79,7 +78,7 @@ export default function MangaCardImage({ manga, mangaIndex, rank, className = ''
             src={images[0]?.thumbnail?.url ?? images[0]?.original?.url}
             variant="thumbnail"
           />
-        </Link>
+        </MangaThumbnailLink>
       ) : null}
       <MangaCardCensorship manga={manga} />
       {rank && rank > 0 && <MangaCardRankBadge className={config.rankBadgeClassName} rank={rank} />}

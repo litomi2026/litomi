@@ -10,7 +10,7 @@ const mobileDir = path.resolve(__dirname, '..')
 
 const packageJson = readJson(path.join(mobileDir, 'package.json'))
 const capacitorConfig = readJson(path.join(mobileDir, 'capacitor.config.json'))
-const iosConfig = readJson(path.join(mobileDir, 'ios.config.json'))
+const iosConfig = readJson(path.join(mobileDir, 'distribution', 'ios.altstore.config.json'))
 
 const versionName = String(packageJson.version ?? '').trim()
 const versionParts = versionName.split('.').map((value) => Number.parseInt(value, 10))

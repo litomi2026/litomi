@@ -15,7 +15,7 @@
 주요 관리 파일은 아래 정도만 보면 됩니다.
 
 - `capacitor.config.json`
-- `ios.config.json`
+- `distribution/ios.altstore.config.json`
 - `ios.source.json`
 - `package.json`
 - `web/index.html`

@@ -5,11 +5,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 
-import { Link } from '@/i18n/navigation'
 import { MAX_THUMBNAIL_IMAGES } from '@/ui-policy'
 
 import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'
+import MangaThumbnailLink from './MangaThumbnailLink'
 
 type Props = {
   className?: string
@@ -58,7 +58,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
     <>
       <div className={className} ref={sliderRef}>
         {Array.from({ length: totalSlides }).map((_, imageIndex) => (
-          <Link
+          <MangaThumbnailLink
             className="relative block h-full w-full shrink-0 snap-start select-none"
             href={href}
             key={imageIndex}
@@ -76,7 +76,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
               src={images[imageIndex]?.thumbnail?.url ?? images[imageIndex]?.original?.url}
               variant="thumbnail"
             />
-          </Link>
+          </MangaThumbnailLink>
         ))}
       </div>
       <button
