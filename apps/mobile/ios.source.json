@@ -5,7 +5,9 @@
   "iconURL": "https://litomi.in/web-app-manifest-512x512.png",
   "website": "https://litomi.in",
   "tintColor": "#101418",
-  "featuredApps": ["in.litomi.app"],
+  "featuredApps": [
+    "in.litomi.app"
+  ],
   "apps": [
     {
       "name": "Litomi",
@@ -20,10 +22,10 @@
         {
           "version": "1.0.0",
           "buildVersion": "1000000",
-          "date": "2026-05-25",
+          "date": "2026-06-04",
           "localizedDescription": "Latest iOS sideload build for AltStore Classic and SideStore.",
           "downloadURL": "https://github.com/litomi2026/litomi/releases/download/mobile-ios-altstore-v1.0.0/litomi-ios-altstore.ipa",
-          "size": 2475544,
+          "size": 2476550,
           "minOSVersion": "16.6"
         }
       ],
