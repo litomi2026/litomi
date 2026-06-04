@@ -75,10 +75,7 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
         (await touchTrustedBrowserLastUsedAt(trustedBrowser.userId, trustedBrowser.browserId, lastUsedAt))
 
       if (!browserExists && trustedBrowserToken) {
-        deleteCookie(c, CookieKey.TRUSTED_BROWSER_TOKEN, {
-          path: '/',
-          secure: true,
-        })
+        deleteCookie(c, CookieKey.TRUSTED_BROWSER_TOKEN, { path: '/', secure: true })
       }
 
       if (!browserExists) {
