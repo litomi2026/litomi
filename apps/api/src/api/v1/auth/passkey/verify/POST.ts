@@ -44,7 +44,7 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
 
   try {
     const authenticationAttemptId = getCookie(c, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)
-    deleteCookie(c, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT, { path: '/' })
+    deleteCookie(c, CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT, { path: '/', secure: true })
 
     if (!authenticationAttemptId) {
       return problemResponse(c, {

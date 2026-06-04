@@ -31,7 +31,7 @@ route.get('/', requireAuth, async (c) => {
   const verified = await verifyPointsTurnstileToken(cookieValue)
 
   if (!verified || verified.userId !== userId) {
-    deleteCookie(c, CookieKey.POINTS_TURNSTILE, { path: '/api/v1/points' })
+    deleteCookie(c, CookieKey.POINTS_TURNSTILE, { path: '/api/v1/points', secure: true })
     return problemResponse(c, {
       status: 403,
       code: problemCode.TURNSTILE_REQUIRED,
