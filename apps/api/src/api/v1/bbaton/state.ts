@@ -1,4 +1,4 @@
-import { redisClient } from '@litomi/db/redis'
+import { getdelRedisJson, setRedisJson } from '@litomi/db/redis'
 
 import { BBATON_ATTEMPT_TTL_SECONDS } from './utils'
 
@@ -7,11 +7,11 @@ type BBatonOAuthAttempt = {
 }
 
 export async function consumeBBatonOAuthAttempt(state: string): Promise<BBatonOAuthAttempt | null> {
-  return await redisClient.getdel<BBatonOAuthAttempt>(getBBatonOAuthAttemptKey(state))
+  return await getdelRedisJson<BBatonOAuthAttempt>(getBBatonOAuthAttemptKey(state))
 }
 
 export async function storeBBatonOAuthAttempt(state: string, attempt: BBatonOAuthAttempt): Promise<void> {
-  await redisClient.set(getBBatonOAuthAttemptKey(state), attempt, { ex: BBATON_ATTEMPT_TTL_SECONDS })
+  await setRedisJson(getBBatonOAuthAttemptKey(state), attempt, { ex: BBATON_ATTEMPT_TTL_SECONDS })
 }
 
 function getBBatonOAuthAttemptKey(state: string): string {

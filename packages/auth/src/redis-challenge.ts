@@ -1,5 +1,5 @@
 import { PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
-import { redisClient } from '@litomi/db/redis'
+import { getdelRedisJson, setRedisJson } from '@litomi/db/redis'
 import { ChallengeType } from '@litomi/domain/auth/model'
 import { sec } from '@litomi/std'
 
@@ -12,7 +12,7 @@ export async function getAndDeleteChallenge<T = string>(
 ): Promise<T | null> {
   try {
     const key = getChallengeKey(identifier, type)
-    return await redisClient.getdel<T>(key)
+    return await getdelRedisJson<T>(key)
   } catch (error) {
     console.error('getAndDeleteChallenge:', error)
     return null
@@ -29,7 +29,7 @@ export async function storeChallenge(
 ): Promise<void> {
   try {
     const key = getChallengeKey(identifier, type)
-    await redisClient.set(key, challenge, { ex: sec('3 minutes') })
+    await setRedisJson(key, challenge, { ex: sec('3 minutes') })
   } catch (error) {
     console.error('storeChallenge:', error)
     throw new Error('Service temporarily unavailable')

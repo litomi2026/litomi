@@ -1,4 +1,4 @@
-import { redisClient } from '@litomi/db/redis'
+import { redis } from '@litomi/db/redis'
 import { sec } from '@litomi/std'
 import ms from 'ms'
 
@@ -35,12 +35,15 @@ class TrendingKeywordsService {
     const dailyKey = `${this.DAILY_KEY}:${dayWindow}`
 
     try {
-      const pipeline = redisClient.pipeline()
+      const pipeline = redis.pipeline()
 
       for (const { keyword, count } of this.searchBatch.values()) {
         pipeline.zincrby(hourlyKey, count, keyword)
         pipeline.zincrby(dailyKey, count, keyword)
       }
+
+      pipeline.expire(hourlyKey, this.HOURLY_WINDOW * (this.HOURLY_AGGREGATION_WINDOW + 1))
+      pipeline.expire(dailyKey, this.DAILY_WINDOW * 2)
 
       await pipeline.exec()
     } catch (error) {
@@ -60,7 +63,7 @@ class TrendingKeywordsService {
     const dailyKey = `${this.DAILY_KEY}:${currentDay}`
 
     try {
-      const trending = await redisClient.zrange<string[]>(dailyKey, limit * -1, -1, { rev: true, withScores: true })
+      const trending = await redis.zrange(dailyKey, limit * -1, -1, 'REV', 'WITHSCORES')
       const results: TrendingKeyword[] = []
 
       for (let i = 0; i < trending.length; i += 2) {
@@ -82,16 +85,17 @@ class TrendingKeywordsService {
     const aggregateKey = `${this.TRENDING_KEY}:aggregate:${hourWindow}`
 
     try {
-      const exists = await redisClient.exists(aggregateKey)
+      const exists = await redis.exists(aggregateKey)
 
       if (!exists) {
         const aggregations = Array.from({ length: this.HOURLY_AGGREGATION_WINDOW })
         const keys = aggregations.map((_, i) => `${this.HOURLY_KEY}:${hourWindow - i}`)
         const weights = aggregations.map((_, i) => 1 / (i + 1))
-        await redisClient.zunionstore(aggregateKey, keys.length, keys, { weights })
+        await redis.zunionstore(aggregateKey, keys.length, ...keys, 'WEIGHTS', ...weights)
+        await redis.expire(aggregateKey, this.HOURLY_WINDOW)
       }
 
-      const trending = await redisClient.zrange<string[]>(aggregateKey, limit * -1, -1, { rev: true, withScores: true })
+      const trending = await redis.zrange(aggregateKey, limit * -1, -1, 'REV', 'WITHSCORES')
       const results: TrendingKeyword[] = []
 
       for (let i = 0; i < trending.length; i += 2) {
