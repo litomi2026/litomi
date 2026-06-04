@@ -1,14 +1,8 @@
-import { type Context, Hono } from 'hono'
+import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
-import { resolveCORSOrigin } from '../utils/cors-origin'
 import { getProbeStateSnapshot } from './state'
-
-type HealthResponse = {
-  status: 'ok'
-  timestamp: Date
-}
 
 type ReadyResponse =
   | {
@@ -32,6 +26,7 @@ type StartupResponse =
     }
 
 const probeRoutes = new Hono<Env>()
+const noStoreHeaders = { 'Cache-Control': 'no-store' } as const
 
 probeRoutes.get('/startup', (c) => {
   const { startupComplete } = getProbeStateSnapshot()
@@ -42,7 +37,7 @@ probeRoutes.get('/startup', (c) => {
       timestamp: new Date(),
     }
 
-    return jsonProbeResponse(c, response, 503)
+    return c.json<StartupResponse>(response, { status: 503, headers: noStoreHeaders })
   }
 
   const response: StartupResponse = {
@@ -50,16 +45,21 @@ probeRoutes.get('/startup', (c) => {
     timestamp: new Date(),
   }
 
-  return jsonProbeResponse(c, response, 200)
+  return c.json<StartupResponse>(response, { status: 200, headers: noStoreHeaders })
 })
 
-probeRoutes.get('/health', (c) => {
-  const response: HealthResponse = {
-    status: 'ok',
-    timestamp: new Date(),
-  }
+probeRoutes.get('/health', () => {
+  return new Response(null, {
+    status: 204,
+    headers: noStoreHeaders,
+  })
+})
 
-  return jsonProbeResponse(c, response, 200, { allowCORS: true })
+probeRoutes.get('/api/health', () => {
+  return new Response(null, {
+    status: 204,
+    headers: noStoreHeaders,
+  })
 })
 
 probeRoutes.get('/ready', (c) => {
@@ -73,7 +73,7 @@ probeRoutes.get('/ready', (c) => {
       timestamp,
     }
 
-    return jsonProbeResponse(c, response, 503)
+    return c.json<ReadyResponse>(response, { status: 503, headers: noStoreHeaders })
   }
 
   if (draining) {
@@ -83,7 +83,7 @@ probeRoutes.get('/ready', (c) => {
       timestamp,
     }
 
-    return jsonProbeResponse(c, response, 503)
+    return c.json<ReadyResponse>(response, { status: 503, headers: noStoreHeaders })
   }
 
   const response: ReadyResponse = {
@@ -91,30 +91,7 @@ probeRoutes.get('/ready', (c) => {
     timestamp,
   }
 
-  return jsonProbeResponse(c, response, 200)
+  return c.json<ReadyResponse>(response, { status: 200, headers: noStoreHeaders })
 })
 
 export default probeRoutes
-
-function jsonProbeResponse<T extends object>(
-  c: Context<Env>,
-  body: T,
-  status: 200 | 503,
-  options?: { allowCORS?: boolean },
-) {
-  const headers: Record<string, string> = {
-    'Cache-Control': 'no-store',
-  }
-
-  if (options?.allowCORS) {
-    const allowedOrigin = resolveCORSOrigin(c.req.header('Origin'))
-
-    if (allowedOrigin) {
-      headers['Access-Control-Allow-Credentials'] = 'true'
-      headers['Access-Control-Allow-Origin'] = allowedOrigin
-      headers.Vary = 'Origin'
-    }
-  }
-
-  return c.json<T>(body, { status, headers })
-}

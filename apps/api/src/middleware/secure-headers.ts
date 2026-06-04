@@ -25,6 +25,5 @@ export function getDefaultSecureHeadersOptions(): NonNullable<Parameters<typeof 
       usb: [],
     },
     strictTransportSecurity: `max-age=${sec('2 years')}; includeSubDomains; preload`,
-    xFrameOptions: 'DENY',
   }
 }

@@ -1,10 +1,8 @@
 import { httpInstrumentationMiddleware } from '@hono/otel'
-import { sec } from '@litomi/std'
 import { Hono } from 'hono'
 import { getConnInfo } from 'hono/bun'
 import { compress } from 'hono/compress'
 import { contextStorage } from 'hono/context-storage'
-import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { etag } from 'hono/etag'
 import { ipRestriction } from 'hono/ip-restriction'
@@ -18,7 +16,7 @@ import imageRoutes from './i'
 import { auth } from './middleware/auth'
 import { getDefaultSecureHeadersOptions } from './middleware/secure-headers'
 import probeRoutes from './probe'
-import { resolveCORSOrigin } from './utils/cors-origin'
+import { isAllowedRequestOrigin } from './utils/request-origin'
 
 export type Env = {
   Variables: {
@@ -41,17 +39,8 @@ app.use(timing())
 app.route('/', probeRoutes)
 app.use(compress())
 app.use(contextStorage())
-app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchSite: csrfSecFetchSite }))
+app.use(csrf({ origin: isAllowedRequestOrigin, secFetchSite: csrfSecFetchSite }))
 app.use('*', auth)
-
-app.use(
-  '*',
-  cors({
-    origin: (origin) => resolveCORSOrigin(origin),
-    exposeHeaders: ['Retry-After'],
-    maxAge: sec('5 minutes'),
-  }),
-)
 
 // NOTE: /api 미들웨어
 app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))

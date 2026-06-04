@@ -21,9 +21,12 @@ const imageProxyOrigin = nextBuildEnv.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https:;
+  script-src-attr 'none';
   worker-src 'self' blob:;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
+  font-src 'self' data:;
+  media-src 'self' blob: data: https:;
   object-src 'none';
   connect-src 'self' https:;
   base-uri 'self';
@@ -66,12 +69,17 @@ const nextConfig: NextConfig = {
       source: '/(.*)',
       headers: [
         { key: 'X-Content-Type-Options', value: 'nosniff' },
-        { key: 'X-Frame-Options', value: 'DENY' },
+        { key: 'Referrer-Policy', value: 'same-origin' },
         {
           key: 'Strict-Transport-Security',
           value: `max-age=${sec('2 years')}; includeSubDomains; preload`,
         },
         { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+        { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+        {
+          key: 'Permissions-Policy',
+          value: 'camera=(), microphone=(), payment=(), usb=()',
+        },
         {
           key: 'Content-Security-Policy',
           value: isProduction ? cspHeader.replace(/\s{2,}/g, ' ').trim() : '',
@@ -94,7 +102,6 @@ const nextConfig: NextConfig = {
       source: '/sw.js',
       headers: [
         cacheControlHeaders,
-        { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
         {
           key: 'Content-Security-Policy',
           value: serviceWorkerCspHeader.replace(/\s{2,}/g, ' ').trim(),
