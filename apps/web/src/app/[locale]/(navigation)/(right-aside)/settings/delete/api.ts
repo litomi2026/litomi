@@ -11,7 +11,6 @@ export async function deleteMyAccount(body: DELETEV1MeBody) {
 
   const { data } = await fetchAPIData<DELETEV1MeResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

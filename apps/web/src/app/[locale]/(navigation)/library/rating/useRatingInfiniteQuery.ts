@@ -28,7 +28,7 @@ export async function fetchRatingsPaginated(cursor: string, sort: RatingSort, lo
 
   const url = new URL('/api/v1/library/rating', NEXT_PUBLIC_API_ORIGIN)
   url.search = searchParams.toString()
-  const { data } = await fetchAPIData<GETV1RatingsResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1RatingsResponse>(url)
   return data
 }
 

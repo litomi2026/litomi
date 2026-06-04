@@ -47,7 +47,6 @@ app.use(
   '*',
   cors({
     origin: (origin) => resolveCORSOrigin(origin),
-    credentials: true,
     exposeHeaders: ['Retry-After'],
     maxAge: sec('5 minutes'),
   }),

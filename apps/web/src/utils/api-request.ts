@@ -169,7 +169,6 @@ async function refreshAuthCookies(): Promise<boolean> {
   if (!authRefreshPromise) {
     authRefreshPromise = fetch(new URL('/api/v1/auth/refresh', NEXT_PUBLIC_API_ORIGIN), {
       method: 'POST',
-      credentials: 'include',
       cache: 'no-store',
     })
       .then((response) => response.ok)

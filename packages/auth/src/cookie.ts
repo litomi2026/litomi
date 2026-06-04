@@ -1,6 +1,5 @@
 import type { JWTPayload } from 'jose'
 
-import { COOKIE_DOMAIN } from '@litomi/http/cookie'
 import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'
 import { cookies } from 'next/headers'
@@ -39,7 +38,6 @@ export async function getAccessTokenCookieConfig({ userId, adult }: AccessTokenC
     key: CookieKey.ACCESS_TOKEN,
     value: cookieValue,
     options: {
-      domain: COOKIE_DOMAIN,
       httpOnly: true,
       path: '/',
       sameSite: 'strict',
@@ -56,7 +54,6 @@ export function getAuthCookieClearConfigs(): AuthCookieConfig[] {
       key: CookieKey.ACCESS_TOKEN,
       value: '',
       options: {
-        domain: COOKIE_DOMAIN,
         httpOnly: true,
         maxAge: 0,
         expires,
@@ -69,7 +66,6 @@ export function getAuthCookieClearConfigs(): AuthCookieConfig[] {
       key: CookieKey.REFRESH_TOKEN,
       value: '',
       options: {
-        domain: COOKIE_DOMAIN,
         httpOnly: true,
         maxAge: 0,
         expires,
@@ -82,7 +78,6 @@ export function getAuthCookieClearConfigs(): AuthCookieConfig[] {
       key: CookieKey.AUTH_HINT,
       value: '',
       options: {
-        domain: COOKIE_DOMAIN,
         httpOnly: false,
         maxAge: 0,
         expires,
@@ -99,7 +94,6 @@ export function getAuthHintCookieConfig({ maxAgeSeconds }: { maxAgeSeconds?: num
     key: CookieKey.AUTH_HINT,
     value: '1',
     options: {
-      domain: COOKIE_DOMAIN,
       httpOnly: false,
       path: '/',
       sameSite: 'strict',
@@ -114,7 +108,6 @@ export function getPasskeyAuthenticationAttemptCookieConfig(attemptId: string) {
     key: CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT,
     value: attemptId,
     options: {
-      domain: COOKIE_DOMAIN,
       httpOnly: true,
       maxAge: sec('3 minutes'),
       path: '/',
@@ -129,7 +122,6 @@ export function getRefreshSessionCookieConfig({ token, maxAgeSeconds }: { token:
     key: CookieKey.REFRESH_TOKEN,
     value: token,
     options: {
-      domain: COOKIE_DOMAIN,
       httpOnly: true,
       maxAge: maxAgeSeconds,
       path: '/',

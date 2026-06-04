@@ -32,7 +32,6 @@ export default function useMangaReadingHistory(mangaId: number) {
       const url = new URL(`/api/v1/manga/${mangaId}/history`, NEXT_PUBLIC_API_ORIGIN)
 
       const { data } = await fetchAPIData<GETV1MangaIdHistoryResponse | undefined>(url, {
-        credentials: 'include',
       })
 
       return data ?? null

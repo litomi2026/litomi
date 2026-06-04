@@ -73,7 +73,6 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
 
       const { data } = await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ items }),
       })

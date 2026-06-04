@@ -16,7 +16,6 @@ export async function addBookmarks(body: POSTV1BookmarkBody) {
 
   const { data } = await fetchAPIData<POSTV1BookmarkResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
@@ -29,7 +28,6 @@ export async function deleteBookmarks(body: DELETEV1BookmarkBody) {
 
   const { data } = await fetchAPIData<DELETEV1BookmarkResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

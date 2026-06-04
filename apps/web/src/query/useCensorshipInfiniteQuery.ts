@@ -24,7 +24,7 @@ export async function fetchPaginatedCensorships({ pageParam }: Params) {
 
   const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
   url.search = params.toString()
-  const { data } = await fetchAPIData<GETV1CensorshipResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1CensorshipResponse>(url)
   return data
 }
 

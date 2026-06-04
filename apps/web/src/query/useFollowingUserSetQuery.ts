@@ -15,7 +15,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchFollowingUserIds() {
   const url = new URL('/api/v1/me/following', NEXT_PUBLIC_API_ORIGIN)
-  const { data } = await fetchAPIData<GETV1MeFollowingResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1MeFollowingResponse>(url)
   return data
 }
 

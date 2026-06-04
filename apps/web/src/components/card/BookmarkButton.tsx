@@ -46,14 +46,12 @@ export default function BookmarkButton({ manga, className }: Props) {
       if (!shouldBookmark) {
         await fetchAPIData(url, {
           method: 'DELETE',
-          credentials: 'include',
         })
         return
       }
 
       await fetchAPIData<PUTV1BookmarkIdResponse>(url, {
         method: 'PUT',
-        credentials: 'include',
       })
     },
 

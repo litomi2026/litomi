@@ -38,7 +38,6 @@ export default function usePatchMyProfileMutation({ onError, onSuccess }: Params
 
       const { data } = await fetchAPIData<PATCHV1MeResponse>(url, {
         method: 'PATCH',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })

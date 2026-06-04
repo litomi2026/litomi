@@ -13,7 +13,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchLikedPostIds() {
   const url = new URL('/api/v1/post/liked', NEXT_PUBLIC_API_ORIGIN)
-  const { data } = await fetchAPIData<GETV1PostLikedResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1PostLikedResponse>(url)
   return data
 }
 

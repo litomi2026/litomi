@@ -20,7 +20,6 @@ export async function createNotificationCriteria(body: POSTV1NotificationCriteri
   const { data } = await fetchAPIData<POSTV1NotificationCriteriaResponse>(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(body),
   })
 
@@ -32,7 +31,6 @@ export async function deleteNotificationCriteria(id: number) {
 
   const { data } = await fetchAPIData<DELETEV1NotificationCriteriaIdResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
   })
 
   return data
@@ -44,7 +42,6 @@ export async function updateNotificationCriteria(id: number, body: PATCHV1Notifi
   const { data } = await fetchAPIData<PATCHV1NotificationCriteriaIdResponse>(url, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(body),
   })
 

@@ -26,7 +26,7 @@ export default function useDeleteDonationMutation() {
   return useMutation<void, ProblemDetailsError, Variables, MutationContext>({
     mutationFn: async ({ donationId }) => {
       const url = new URL(`/api/v1/points/donations/${donationId}`, NEXT_PUBLIC_API_ORIGIN)
-      await fetchAPIData<void>(url, { method: 'DELETE', credentials: 'include' })
+      await fetchAPIData<void>(url, { method: 'DELETE' })
     },
     onMutate: async ({ donationId }) => {
       await queryClient.cancelQueries({ queryKey: myDonationsQueryKey })

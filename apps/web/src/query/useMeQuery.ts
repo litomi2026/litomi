@@ -14,7 +14,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchMe() {
   const url = new URL('/api/v1/me', NEXT_PUBLIC_API_ORIGIN)
-  const { data } = await fetchAPIData<GETV1MeResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1MeResponse>(url)
   return data
 }
 

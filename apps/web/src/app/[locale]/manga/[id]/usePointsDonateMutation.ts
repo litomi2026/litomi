@@ -17,7 +17,6 @@ export default function usePointsDonateMutation() {
       const { data } = await fetchAPIData<POSTV1PointsDonationCreateResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ totalAmount, recipients }),
       })
       return data

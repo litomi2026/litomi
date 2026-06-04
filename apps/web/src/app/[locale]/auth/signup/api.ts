@@ -11,7 +11,6 @@ export async function signup(request: POSTV1AuthSignupRequest) {
 
   const { data } = await fetchAPIData<POSTV1AuthSignupResponse>(url, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
   })

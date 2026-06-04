@@ -16,12 +16,7 @@ export default function useLogoutMutation() {
   return useMutation<POSTV1AuthLogoutResponse, ProblemDetailsError>({
     mutationFn: async () => {
       const url = new URL('/api/v1/auth/logout', NEXT_PUBLIC_API_ORIGIN)
-
-      const { data } = await fetchAPIData<POSTV1AuthLogoutResponse>(url, {
-        method: 'POST',
-        credentials: 'include',
-      })
-
+      const { data } = await fetchAPIData<POSTV1AuthLogoutResponse>(url, { method: 'POST' })
       return data
     },
     onSuccess: () => {

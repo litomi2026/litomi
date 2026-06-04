@@ -48,7 +48,6 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
 
       const { data } = await fetchAPIData<POSTV1MangaIdReportResponse>(url, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })

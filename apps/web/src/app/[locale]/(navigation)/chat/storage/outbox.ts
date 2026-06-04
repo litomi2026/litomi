@@ -196,7 +196,6 @@ async function processAppendMessages(
 
     await fetchAPIData<{ ok: true }>(url, {
       method: 'POST',
-      credentials: 'include',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ messages: item.payload.messages }),
     })
@@ -217,7 +216,6 @@ async function processCreateSession(
 
     const { data } = await fetchAPIData<{ id: number }>(url, {
       method: 'POST',
-      credentials: 'include',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(item.payload),
     })

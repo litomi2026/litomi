@@ -41,7 +41,6 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
 
       const { data } = await fetchAPIData<PATCHV1CensorshipUpdateResponse>(url, {
         method: 'PATCH',
-        credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ items }),
       })

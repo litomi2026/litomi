@@ -19,7 +19,6 @@ export function useRouletteSpinMutation() {
       const { data } = await fetchAPIData<POSTV1RouletteSpinResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ bet }),
       })
       return data

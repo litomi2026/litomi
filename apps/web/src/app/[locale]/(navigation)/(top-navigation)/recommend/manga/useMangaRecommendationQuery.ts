@@ -41,6 +41,6 @@ async function fetchMangaRecommendations(limit: number, locale: string) {
   url.searchParams.set('limit', String(limit))
   url.searchParams.set('locale', locale)
 
-  const { data } = await fetchAPIData<GETV1MangaRecommendationResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETV1MangaRecommendationResponse>(url)
   return data
 }

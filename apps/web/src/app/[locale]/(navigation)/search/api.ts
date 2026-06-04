@@ -14,7 +14,6 @@ export async function createNotificationCriteria(body: POSTV1NotificationCriteri
   const { data } = await fetchAPIData<POSTV1NotificationCriteriaResponse>(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify(body),
   })
 

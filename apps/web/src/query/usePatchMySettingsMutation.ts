@@ -25,7 +25,6 @@ export default function usePatchMySettingsMutation() {
 
       await fetchAPIData<void>(url, {
         method: 'PATCH',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })

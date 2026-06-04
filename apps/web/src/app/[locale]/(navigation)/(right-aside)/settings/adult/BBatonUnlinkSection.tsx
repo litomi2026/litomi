@@ -30,7 +30,6 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
 
       const { data } = await fetchAPIData<POSTV1BBatonUnlinkResponse>(url, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password, ...(token ? { token } : {}) }),
       })

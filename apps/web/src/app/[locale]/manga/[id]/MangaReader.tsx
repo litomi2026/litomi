@@ -88,7 +88,6 @@ export default function MangaReader({ manga }: Props) {
 
     await fetchAPIData<void>(url, {
       method: 'POST',
-      credentials: 'include',
       keepalive: options?.keepalive,
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),

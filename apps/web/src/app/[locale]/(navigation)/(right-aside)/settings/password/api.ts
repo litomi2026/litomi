@@ -11,7 +11,6 @@ export async function changeMyPassword(body: PATCHV1MePasswordBody) {
 
   const { data } = await fetchAPIData<PATCHV1MePasswordResponse>(url, {
     method: 'PATCH',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

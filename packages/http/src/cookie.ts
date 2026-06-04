@@ -7,5 +7,3 @@ export enum CookieKey {
   REFRESH_TOKEN = 'rt',
   TRUSTED_BROWSER_TOKEN = 'tbt',
 }
-
-export const COOKIE_DOMAIN = process.env.NODE_ENV === 'production' ? '.litomi.in' : 'localhost'

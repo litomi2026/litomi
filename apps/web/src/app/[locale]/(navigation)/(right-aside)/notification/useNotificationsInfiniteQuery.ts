@@ -14,7 +14,7 @@ const { NEXT_PUBLIC_API_ORIGIN } = env
 export async function fetchNotifications(searchParams: URLSearchParams) {
   const url = new URL('/api/v1/notification', NEXT_PUBLIC_API_ORIGIN)
   url.search = searchParams.toString()
-  const { data } = await fetchAPIData<GETNotificationResponse>(url, { credentials: 'include' })
+  const { data } = await fetchAPIData<GETNotificationResponse>(url)
   return data
 }
 

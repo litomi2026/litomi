@@ -20,7 +20,6 @@ export function useSpendPointsMutation() {
       const { data } = await fetchAPIData<POSTV1PointSpendResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ type, itemId }),
       })
 

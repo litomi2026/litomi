@@ -17,7 +17,7 @@ export function useExpansionQuery({ enabled = true }: QueryOptions = {}) {
     queryKey: QueryKeys.pointsExpansion,
     queryFn: async () => {
       const url = new URL('/api/v1/points/expansion', NEXT_PUBLIC_API_ORIGIN)
-      const { data } = await fetchAPIData<GETV1PointExpansionResponse>(url, { credentials: 'include' })
+      const { data } = await fetchAPIData<GETV1PointExpansionResponse>(url)
       return data
     },
     enabled,

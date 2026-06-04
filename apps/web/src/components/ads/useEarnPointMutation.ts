@@ -20,7 +20,6 @@ export function useEarnPointMutation() {
       const { data } = await fetchAPIData<POSTV1PointEarnResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ token }),
       })
 

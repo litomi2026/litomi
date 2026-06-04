@@ -11,7 +11,6 @@ export async function deleteReadingHistory(body: DELETEV1ReadingHistoryBody) {
 
   const { data } = await fetchAPIData<DELETEV1ReadingHistoryResponse>(url, {
     method: 'DELETE',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

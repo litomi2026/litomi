@@ -51,7 +51,7 @@ const downloadThrottle = pThrottle({
 })
 
 const runThrottledDownloadAttempt = downloadThrottle((url: string, signal: AbortSignal) =>
-  fetch(url, { credentials: 'include', signal }),
+  fetch(url, { signal }),
 )
 
 type FileSystemFileHandle = {

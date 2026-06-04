@@ -57,7 +57,6 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
       if (isCensored && existingCensorship) {
         await fetchAPIData<DELETEV1CensorshipDeleteResponse>(url, {
           method: 'DELETE',
-          credentials: 'include',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ ids: [existingCensorship.id] }),
         })
@@ -66,7 +65,6 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
 
       await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ items: [{ key: censorshipKey, value, level: CensorshipLevel.LIGHT }] }),
       })
