@@ -8,16 +8,6 @@ spec:
     - host: stg.litomi.in
       http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: litomi-web
-                port:
-                  number: 3000
-    - host: api-stg.litomi.in
-      http:
-        paths:
           - path: /api
             pathType: Prefix
             backend:
@@ -25,13 +15,13 @@ spec:
                 name: litomi-api
                 port:
                   number: 3002
-          - path: /health
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: litomi-api
+                name: litomi-web
                 port:
-                  number: 3002
+                  number: 3000
     - host: img-stg.litomi.in
       http:
         paths:

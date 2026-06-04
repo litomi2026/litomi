@@ -68,7 +68,7 @@ async function fetchAccessibleLibraryMeta({ libraryId, userId }: FetchAccessible
 async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
   const url = new URL(`/api/v1/library/${libraryId}`, NEXT_PUBLIC_API_ORIGIN)
   url.searchParams.set('scope', scope)
-  const credentials = scope === 'me' ? 'include' : 'omit'
+  const credentials = scope === 'me' ? 'same-origin' : 'omit'
 
   try {
     const { data } = await fetchAPIData<GETV1LibraryResponse>(url, { credentials })

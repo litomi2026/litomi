@@ -10,6 +10,7 @@ export function getDefaultSecureHeadersOptions(): NonNullable<Parameters<typeof 
       frameAncestors: ["'none'"],
       objectSrc: ["'none'"],
     },
+    crossOriginResourcePolicy: 'same-origin',
     permissionsPolicy: {
       accelerometer: [],
       autoplay: [],

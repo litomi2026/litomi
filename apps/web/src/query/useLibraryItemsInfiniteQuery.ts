@@ -35,7 +35,7 @@ export async function fetchLibraryItems({ libraryId, cursor, locale, scope, sort
     url.searchParams.set('cursor', cursor)
   }
 
-  const credentials = scope === 'me' ? 'include' : 'omit'
+  const credentials = scope === 'me' ? 'same-origin' : 'omit'
   const { data } = await fetchAPIData<GETLibraryItemsResponse>(url, { credentials })
   return data
 }

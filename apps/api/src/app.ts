@@ -30,6 +30,7 @@ export type Env = {
 
 const app = new Hono<Env>()
 const etagMiddleware = etag()
+const csrfSecFetchSite = process.env.NODE_ENV === 'production' ? 'same-origin' : 'same-site'
 
 // NOTE: 공통 미들웨어
 app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-api' }))
@@ -40,7 +41,7 @@ app.use(timing())
 app.route('/', probeRoutes)
 app.use(compress())
 app.use(contextStorage())
-app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchSite: 'same-site' }))
+app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchSite: csrfSecFetchSite }))
 app.use('*', auth)
 
 app.use(
