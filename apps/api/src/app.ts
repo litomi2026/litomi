@@ -18,9 +18,7 @@ import imageRoutes from './i'
 import { auth } from './middleware/auth'
 import { getDefaultSecureHeadersOptions } from './middleware/secure-headers'
 import probeRoutes from './probe'
-import { isAllowedRequestOrigin } from './utils/request-origin'
-
-const { APP_ORIGIN } = env
+import { APP_ORIGIN, isAllowedRequestOrigin } from './utils/request-origin'
 
 export type Env = {
   Variables: {
