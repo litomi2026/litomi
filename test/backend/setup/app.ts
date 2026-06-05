@@ -1,3 +1,5 @@
+import { CookieKey } from '@litomi/http/cookie'
+
 import backendApp from '@/app'
 
 type BackendRequestOptions = {
@@ -13,7 +15,7 @@ const REQUEST_IP_ADDRESS = '127.0.0.1'
 
 export function getSetCookieNames(response: Response) {
   return getSetCookieStrings(response)
-    .map((cookie) => cookie.split(';', 1)[0]?.split('=', 1)[0]?.trim())
+    .map((cookie) => normalizeSetCookieName(cookie.split(';', 1)[0]?.split('=', 1)[0]?.trim()))
     .filter((name): name is string => Boolean(name))
 }
 
@@ -62,4 +64,34 @@ export async function requestBackend({ path, method = 'GET', headers, cookies, j
       }
     },
   })
+}
+
+export function resolveSetCookieName(name: string) {
+  switch (name) {
+    case 'ah':
+      return CookieKey.AUTH_HINT
+    case 'at':
+      return CookieKey.ACCESS_TOKEN
+    case 'rt':
+      return CookieKey.REFRESH_TOKEN
+    case 'tbt':
+      return CookieKey.TRUSTED_BROWSER_TOKEN
+    default:
+      return name
+  }
+}
+
+function normalizeSetCookieName(name: string | undefined) {
+  switch (name) {
+    case CookieKey.ACCESS_TOKEN:
+      return 'at'
+    case CookieKey.AUTH_HINT:
+      return 'ah'
+    case CookieKey.REFRESH_TOKEN:
+      return 'rt'
+    case CookieKey.TRUSTED_BROWSER_TOKEN:
+      return 'tbt'
+    default:
+      return name
+  }
 }

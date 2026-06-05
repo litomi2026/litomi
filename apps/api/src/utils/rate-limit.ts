@@ -134,17 +134,21 @@ export class RedisRateLimiter {
   async reset(identifier: string): Promise<void> {
     const key = createRedisRateLimitKey(this.scope, identifier)
 
-    await redis.del(key).catch((error) => {
+    try {
+      await redis.del(key)
+    } catch (error) {
       console.error('RedisRateLimiter.reset:', this.scope, error)
-    })
+    }
   }
 
   async reward(identifier: string, count = 1): Promise<void> {
     const key = createRedisRateLimitKey(this.scope, identifier)
 
-    await redis.eval(RATE_LIMIT_REWARD_SCRIPT, 1, key, String(count)).catch((error) => {
+    try {
+      await redis.eval(RATE_LIMIT_REWARD_SCRIPT, 1, key, String(count))
+    } catch (error) {
       console.error('RedisRateLimiter.reward:', this.scope, error)
-    })
+    }
   }
 }
 

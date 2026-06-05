@@ -15,7 +15,7 @@ import { generateSync } from 'otplib'
 
 import { createMeAuthContext, createMeSessionAuthContext } from './fixtures'
 
-installBackendIntegrationHooks()
+installBackendIntegrationHooks({ redis: true })
 
 describe('DELETE /api/v1/me', () => {
   test('인증 정보가 없으면 401을 반환한다', async () => {
@@ -197,7 +197,7 @@ describe('DELETE /api/v1/me', () => {
     await expectProblemResponse(response, {
       status: 429,
       code: 'too-many-requests',
-      detail: '너무 많은 계정 삭제 시도가 있었어요. 15분 후에 다시 시도해 주세요.',
+      detail: '요청이 너무 많아요. 잠시 후 다시 시도해 주세요.',
       instance: '/api/v1/me',
     })
     expect(response.headers.get('Retry-After')).toBeTruthy()
