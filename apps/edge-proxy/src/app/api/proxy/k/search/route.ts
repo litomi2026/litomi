@@ -2,11 +2,9 @@ import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@lit
 import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/crawler/sources/policy'
 import { Locale } from '@litomi/domain/locale'
 import { BLACKLISTED_MANGA_IDS } from '@litomi/domain/manga/policy'
-import { env } from '@litomi/env/client'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
-import { chance, sec } from '@litomi/std'
-import { waitUntil } from '@vercel/functions'
+import { sec } from '@litomi/std'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { handleRouteError } from '@/util/proxy-route'
@@ -16,13 +14,8 @@ import type { GETProxyKSearchResponse } from './types'
 import { GETProxyKSearchSchema } from './schema'
 import { convertToKHentaiKey, filterMangasByMinusPrefix } from './utils'
 
-type POSTSearchTrendingBody = {
-  keywords: string[]
-}
-
 export const runtime = 'edge'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
 const JAPANESE_LANGUAGE_DEFAULT_CATEGORIES = encodeCategories('doujinshi,manga,artist_cg,image_set')
 
 export async function GET(request: Request) {
@@ -108,27 +101,6 @@ export async function GET(request: Request) {
     const hasManga = searchedMangas.length > 0
     let nextCursor = null
 
-    const hasOtherFilters =
-      sort ||
-      minView ||
-      maxView ||
-      minPage ||
-      maxPage ||
-      minRating ||
-      maxRating ||
-      from ||
-      to ||
-      nextId ||
-      nextViews ||
-      nextViewsId ||
-      skip
-
-    if (query && !hasOtherFilters && hasManga) {
-      if (chance(0.2)) {
-        waitUntil(postSearchKeyword(query, requestSignal))
-      }
-    }
-
     if (hasManga) {
       const lastManga = searchedMangas[searchedMangas.length - 1]
       if (sort === 'popular') {
@@ -207,24 +179,6 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       swr: sec('10 minutes'),
     },
   })
-}
-
-async function postSearchKeyword(keyword: string, signal?: AbortSignal) {
-  const body: POSTSearchTrendingBody = { keywords: [keyword] }
-
-  try {
-    return await fetch(new URL('/api/v1/search/trending', NEXT_PUBLIC_API_ORIGIN), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal,
-    })
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      return
-    }
-    console.error('trackSearchKeyword error:', error instanceof Error ? error.message : String(error))
-  }
 }
 
 function rewriteJapaneseLanguageQuery(query: string | undefined) {

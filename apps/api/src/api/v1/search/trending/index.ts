@@ -3,11 +3,11 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import trendingGetRoutes from './GET'
-import trendingPostRoutes from './POST'
+import trendingViewRoutes from './view'
 
 const trendingRoutes = new Hono<Env>()
 
 trendingRoutes.route('/', trendingGetRoutes)
-trendingRoutes.route('/', trendingPostRoutes)
+trendingRoutes.route('/view', trendingViewRoutes)
 
 export default trendingRoutes

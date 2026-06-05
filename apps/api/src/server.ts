@@ -1,7 +1,5 @@
 import { closeRedis, pingRedis } from '@litomi/db/redis'
 
-import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
-
 import { shutdownAnalyticsClient } from './api/v1/analytics/realtime'
 import app from './app'
 import { initBackendOtel, shutdownBackendOtel } from './otel'
@@ -18,7 +16,6 @@ const server = Bun.serve({
 
 registerShutdownHandler('probe', () => markProbeDraining())
 registerShutdownHandler('http-server', () => server.stop())
-registerShutdownHandler('trending-keywords', () => trendingKeywordsService.flushSearchBatch())
 registerShutdownHandler('redis', () => closeRedis())
 registerShutdownHandler('google-analytics', () => shutdownAnalyticsClient())
 registerShutdownHandler('opentelemetry', () => shutdownBackendOtel())
