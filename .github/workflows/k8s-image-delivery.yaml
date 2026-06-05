@@ -2,7 +2,7 @@ name: Kubernetes Image Delivery
 
 on:
   push:
-    branches: [main, stage]
+    branches: [main]
     # Skip k8s-only changes to avoid rebuilding images for manifest-only commits.
     paths-ignore:
       - 'k8s/**'
@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 concurrency:
   group: kubernetes-image-delivery-${{ github.ref }}
@@ -19,12 +18,15 @@ concurrency:
 jobs:
   build-and-publish-web-image:
     name: Build and publish web image
-    if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
+    if: ${{ github.ref_name == 'main' }}
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
     outputs:
-      digest: ${{ steps.resolve_published_web_digest.outputs.digest }}
+      digest: ${{ steps.build_web_image.outputs.digest }}
     env:
-      OVERLAY_DIR: ${{ github.ref_name == 'main' && 'k8s/apps/litomi/overlays/prod' || github.ref_name == 'stage' && 'k8s/apps/litomi/overlays/stg' || '' }}
+      OVERLAY_DIR: k8s/apps/litomi/overlays/prod
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
     steps:
       - name: Checkout repository
@@ -108,6 +110,7 @@ jobs:
           images: ${{ env.IMAGE_WEB }}
           tags: |
             type=raw,value=${{ github.sha }}
+            type=raw,value=latest
             type=ref,event=branch
 
       - name: Set up Docker Buildx
@@ -120,9 +123,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and publish web image for production
-        id: build_web_production
-        if: ${{ github.ref_name == 'main' }}
+      - name: Build and publish web image
+        id: build_web_image
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -143,52 +145,14 @@ jobs:
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
           tags: ${{ steps.metadata_web.outputs.tags }}
           labels: ${{ steps.metadata_web.outputs.labels }}
-
-      - name: Build and publish web image for staging
-        id: build_web_staging
-        if: ${{ github.ref_name == 'stage' }}
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: apps/web/Dockerfile
-          platforms: linux/arm64
-          push: true
-          build-args: |
-            CI=true
-            COMMIT_SHA=${{ github.sha }}
-            ${{ steps.load_public_env.outputs.build_args }}
-          secrets: |
-            APP_POSTGRES_URL=${{ secrets.APP_POSTGRES_URL }}
-            "APP_POSTGRES_CERTIFICATE=${{ secrets.APP_POSTGRES_CERTIFICATE }}"
-            CATALOG_POSTGRES_URL=${{ secrets.CATALOG_POSTGRES_URL }}
-            "CATALOG_POSTGRES_CERTIFICATE=${{ secrets.CATALOG_POSTGRES_CERTIFICATE }}"
-            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-            SENTRY_ORG=${{ secrets.SENTRY_ORG }}
-            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT_WEB }}
-          tags: ${{ steps.metadata_web.outputs.tags }}
-          labels: ${{ steps.metadata_web.outputs.labels }}
-
-      - name: Resolve published web image digest
-        id: resolve_published_web_digest
-        shell: bash
-        env:
-          PRODUCTION_DIGEST: ${{ steps.build_web_production.outputs.digest }}
-          STAGING_DIGEST: ${{ steps.build_web_staging.outputs.digest }}
-        run: |
-          set -euo pipefail
-
-          digest="${PRODUCTION_DIGEST:-${STAGING_DIGEST:-}}"
-          if [ -z "$digest" ]; then
-            echo "Failed to resolve web image digest" >&2
-            exit 1
-          fi
-
-          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
 
   build-and-publish-api-image:
     name: Build and publish api image
-    if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
+    if: ${{ github.ref_name == 'main' }}
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
     outputs:
       digest: ${{ steps.build_api_image.outputs.digest }}
     env:
@@ -204,6 +168,7 @@ jobs:
           images: ${{ env.IMAGE_API }}
           tags: |
             type=raw,value=${{ github.sha }}
+            type=raw,value=latest
             type=ref,event=branch
 
       - name: Set up Docker Buildx
@@ -237,6 +202,9 @@ jobs:
     name: Build and publish cataloger image
     if: ${{ github.ref_name == 'main' }}
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
     outputs:
       digest: ${{ steps.build_cataloger_image.outputs.digest }}
     env:
@@ -252,6 +220,7 @@ jobs:
           images: ${{ env.IMAGE_CATALOGER }}
           tags: |
             type=raw,value=${{ github.sha }}
+            type=raw,value=latest
             type=ref,event=branch
 
       - name: Set up Docker Buildx
@@ -279,6 +248,9 @@ jobs:
     name: Build and publish recommender image
     if: ${{ github.ref_name == 'main' }}
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
     outputs:
       digest: ${{ steps.build_recommender_image.outputs.digest }}
     env:
@@ -294,6 +266,7 @@ jobs:
           images: ${{ env.IMAGE_RECOMMENDER }}
           tags: |
             type=raw,value=${{ github.sha }}
+            type=raw,value=latest
             type=ref,event=branch
 
       - name: Set up Docker Buildx
@@ -317,94 +290,9 @@ jobs:
           tags: ${{ steps.metadata_recommender.outputs.tags }}
           labels: ${{ steps.metadata_recommender.outputs.labels }}
 
-  update-staging-image-digests:
-    name: Update staging image digests
-    if: ${{ github.ref_name == 'stage' && github.event_name != 'pull_request' }}
-    needs:
-      - build-and-publish-web-image
-      - build-and-publish-api-image
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    env:
-      OVERLAY_FILE: k8s/apps/litomi/overlays/stg/kustomization.yaml
-      IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
-      IMAGE_API_DIGEST: ${{ needs.build-and-publish-api-image.outputs.digest }}
-    steps:
-      - name: Checkout staging branch
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          ref: stage
-
-      - name: Update staging image digests
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
-
-          path = Path(os.environ["OVERLAY_FILE"])
-          lines = path.read_text().splitlines(keepends=True)
-
-          replacements = {
-              "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
-              "litomi-api": os.environ["IMAGE_API_DIGEST"],
-          }
-
-          def update_image_digest(image_name: str, digest: str) -> None:
-              start = next((index for index, line in enumerate(lines) if line.strip() == f"- name: {image_name}"), None)
-              if start is None:
-                  raise SystemExit(f"Failed to find image entry for {image_name} in {path}")
-
-              end = next(
-                  (index for index in range(start + 1, len(lines)) if lines[index].strip().startswith("- name: ")),
-                  len(lines),
-              )
-
-              for index in range(start + 1, end):
-                  if lines[index].lstrip().startswith(("digest:", "newTag:")):
-                      lines[index] = f"    digest: {digest}\n"
-                      return
-
-              insert_at = next(
-                  (index + 1 for index in range(start + 1, end) if lines[index].lstrip().startswith("newName:")),
-                  None,
-              )
-              if insert_at is None:
-                  raise SystemExit(f"Failed to find newName for {image_name} in {path}")
-
-              lines.insert(insert_at, f"    digest: {digest}\n")
-
-          for name, digest in replacements.items():
-              if not digest:
-                  raise SystemExit(f"Missing digest for {name}")
-              update_image_digest(name, digest)
-
-          path.write_text("".join(lines))
-          PY
-
-      - name: Commit staging image digest updates
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if git diff --quiet -- "$OVERLAY_FILE"; then
-            echo "Staging image digests are already up to date"
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$OVERLAY_FILE"
-          git commit -m "chore(k8s): bump staging image digests"
-          git push origin HEAD:stage
-
-  propose-production-image-digests:
-    name: Propose production image digests
-    if: ${{ github.ref_name == 'main' && github.event_name != 'pull_request' }}
+  propose-ops-production-image-digests:
+    name: Propose ops production image digests
+    if: ${{ github.ref_name == 'main' }}
     needs:
       - build-and-publish-web-image
       - build-and-publish-api-image
@@ -412,26 +300,38 @@ jobs:
       - build-and-publish-recommender-image
     runs-on: ubuntu-24.04
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
     env:
-      OVERLAY_FILE: k8s/apps/litomi/overlays/prod/kustomization.yaml
+      OPS_REPOSITORY: ${{ github.repository_owner }}/litomi-ops
+      OPS_PATH: litomi-ops
+      OPS_WEB_OVERLAY_FILE: k8s/workload/litomi/prod/web/kustomization.yaml
+      OPS_API_OVERLAY_FILE: k8s/workload/litomi/prod/api/kustomization.yaml
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
       IMAGE_API: ghcr.io/${{ github.repository_owner }}/litomi-api
-      IMAGE_CATALOGER: ghcr.io/${{ github.repository_owner }}/litomi-cataloger
-      IMAGE_RECOMMENDER: ghcr.io/${{ github.repository_owner }}/litomi-recommender
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
       IMAGE_API_DIGEST: ${{ needs.build-and-publish-api-image.outputs.digest }}
-      IMAGE_CATALOGER_DIGEST: ${{ needs.build-and-publish-cataloger-image.outputs.digest }}
-      IMAGE_RECOMMENDER_DIGEST: ${{ needs.build-and-publish-recommender-image.outputs.digest }}
     steps:
-      - name: Checkout main branch
+      - name: Generate litomi-ops GitHub App token
+        id: ops_app_token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.OPS_REPO_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPS_REPO_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: litomi-ops
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Checkout litomi-ops main branch
         uses: actions/checkout@v6
         with:
+          repository: ${{ env.OPS_REPOSITORY }}
+          token: ${{ steps.ops_app_token.outputs.token }}
+          path: ${{ env.OPS_PATH }}
           fetch-depth: 0
           ref: main
 
-      - name: Update production image digests
+      - name: Update litomi-ops production image digests
         shell: bash
         run: |
           set -euo pipefail
@@ -440,21 +340,16 @@ jobs:
           import os
           from pathlib import Path
 
-          path = Path(os.environ["OVERLAY_FILE"])
-          lines = path.read_text().splitlines(keepends=True)
+          def update_image_digest(path: Path, image_name: str, digest: str) -> None:
+              if not digest.startswith("sha256:"):
+                  raise SystemExit(f"Invalid digest for {image_name}: {digest}")
 
-          replacements = {
-              "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
-              "litomi-api": os.environ["IMAGE_API_DIGEST"],
-              "litomi-cataloger": os.environ["IMAGE_CATALOGER_DIGEST"],
-              "litomi-recommender": os.environ["IMAGE_RECOMMENDER_DIGEST"],
-          }
-
-          def update_image_digest(image_name: str, digest: str) -> None:
+              lines = path.read_text().splitlines(keepends=True)
               start = next((index for index, line in enumerate(lines) if line.strip() == f"- name: {image_name}"), None)
               if start is None:
                   raise SystemExit(f"Failed to find image entry for {image_name} in {path}")
 
+              child_indent = lines[start].split("-", 1)[0] + "  "
               end = next(
                   (index for index in range(start + 1, len(lines)) if lines[index].strip().startswith("- name: ")),
                   len(lines),
@@ -462,42 +357,56 @@ jobs:
 
               for index in range(start + 1, end):
                   if lines[index].lstrip().startswith(("digest:", "newTag:")):
-                      lines[index] = f"    digest: {digest}\n"
+                      lines[index] = f"{child_indent}digest: {digest}\n"
+                      path.write_text("".join(lines))
                       return
 
               insert_at = next(
                   (index + 1 for index in range(start + 1, end) if lines[index].lstrip().startswith("newName:")),
-                  None,
+                  start + 1,
               )
-              if insert_at is None:
-                  raise SystemExit(f"Failed to find newName for {image_name} in {path}")
 
-              lines.insert(insert_at, f"    digest: {digest}\n")
+              lines.insert(insert_at, f"{child_indent}digest: {digest}\n")
+              path.write_text("".join(lines))
 
-          for name, digest in replacements.items():
+          ops_path = Path(os.environ["OPS_PATH"])
+          updates = [
+              (
+                  Path(os.environ["OPS_WEB_OVERLAY_FILE"]),
+                  os.environ["IMAGE_WEB"],
+                  os.environ["IMAGE_WEB_DIGEST"],
+              ),
+              (
+                  Path(os.environ["OPS_API_OVERLAY_FILE"]),
+                  os.environ["IMAGE_API"],
+                  os.environ["IMAGE_API_DIGEST"],
+              ),
+          ]
+
+          for relative_path, image_name, digest in updates:
               if not digest:
-                  raise SystemExit(f"Missing digest for {name}")
-              update_image_digest(name, digest)
-
-          path.write_text("".join(lines))
+                  raise SystemExit(f"Missing digest for {image_name}")
+              update_image_digest(ops_path / relative_path, image_name, digest)
           PY
 
-      - name: Create or update production promotion PR
+      - name: Create or update litomi-ops production promotion PR
         id: create_production_pr
         uses: peter-evans/create-pull-request@v8
         with:
-          add-paths: ${{ env.OVERLAY_FILE }}
-          branch: codex/production-image-digests
+          token: ${{ steps.ops_app_token.outputs.token }}
+          path: ${{ env.OPS_PATH }}
+          add-paths: |
+            ${{ env.OPS_WEB_OVERLAY_FILE }}
+            ${{ env.OPS_API_OVERLAY_FILE }}
+          branch: codex/litomi-production-image-digests
           delete-branch: true
-          commit-message: 'chore(k8s): propose production image digests'
+          commit-message: 'chore(k8s): promote litomi image digests'
           title: 'chore(k8s): promote production image digests'
           body: |
-            This PR updates the production overlay to the latest immutable image digests built from `main`.
+            This PR updates litomi production manifests to the latest immutable image digests built from `litomi` `main`.
 
             - Web: `${{ env.IMAGE_WEB }}@${{ env.IMAGE_WEB_DIGEST }}`
             - API: `${{ env.IMAGE_API }}@${{ env.IMAGE_API_DIGEST }}`
-            - Cataloger: `${{ env.IMAGE_CATALOGER }}@${{ env.IMAGE_CATALOGER_DIGEST }}`
-            - Recommender: `${{ env.IMAGE_RECOMMENDER }}@${{ env.IMAGE_RECOMMENDER_DIGEST }}`
             - Source commit: `${{ github.sha }}`
             - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           base: main
