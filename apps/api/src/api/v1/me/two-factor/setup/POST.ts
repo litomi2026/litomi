@@ -4,7 +4,6 @@ import { encryptTOTPSecret, generateQRCode, TOTP_CONFIG } from '@litomi/auth/two
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
-import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { eq, isNotNull } from 'drizzle-orm'
 import { Hono } from 'hono'
 import ms from 'ms'
@@ -12,11 +11,12 @@ import { generateSecret, generateURI } from 'otplib'
 
 import type { Env } from '@/app'
 
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
+import { RedisRateLimiter, RedisRateLimitPresets } from '@/utils/rate-limit'
 
-const twoFactorSetupLimiter = new RateLimiter({
-  ...RateLimitPresets.strict(),
-  keyPrefix: 'rl:two-factor-setup:',
+const twoFactorSetupLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'me-two-factor-setup:user',
 })
 
 const route = new Hono<Env>()
@@ -26,14 +26,7 @@ route.post('/', async (c) => {
   const { allowed, retryAfter } = await twoFactorSetupLimiter.check(String(userId))
 
   if (!allowed) {
-    const seconds = retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(seconds / 60))
-
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 2단계 인증 설정 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
-      headers: { 'Retry-After': String(seconds) },
-    })
+    return tooManyRequestsProblemResponse(c, retryAfter)
   }
 
   try {

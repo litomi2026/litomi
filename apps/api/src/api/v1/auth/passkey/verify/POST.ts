@@ -1,4 +1,5 @@
-import { authenticationLimiter, type PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
+import type { PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
+
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey/server'
 import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
@@ -7,7 +8,6 @@ import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { ChallengeType } from '@litomi/domain/auth/model'
 import { CookieKey } from '@litomi/http/cookie'
-import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
@@ -20,26 +20,20 @@ import type { Env } from '@/app'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/api/v1/auth/query'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import { applyAuthCookie } from '@/utils/cookie'
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const verifyAuthenticationLimiter = new RateLimiter(RateLimitPresets.strict())
+import { passkeyAuthOptionLimiter, passkeyAuthVerifyLimiter } from '../rate-limit'
+
 const route = new Hono<Env>()
 
 route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema), async (c) => {
   const remoteIP = getRequestIP(c.req.raw.headers)
   const { authentication, remember, turnstileToken } = c.req.valid('json')
-  const { allowed, retryAfter } = await verifyAuthenticationLimiter.check(authentication.id)
+  const { allowed, retryAfter } = await passkeyAuthVerifyLimiter.check(authentication.id)
 
   if (!allowed) {
-    const seconds = retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(seconds / 60))
-
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`,
-      headers: { 'Retry-After': String(seconds) },
-    })
+    return tooManyRequestsProblemResponse(c, retryAfter)
   }
 
   try {
@@ -172,8 +166,8 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     applyAuthCookie(c, cookieConfigs)
 
     await Promise.allSettled([
-      authenticationLimiter.reward(remoteIP),
-      verifyAuthenticationLimiter.reward(authentication.id),
+      passkeyAuthOptionLimiter.reward(remoteIP),
+      passkeyAuthVerifyLimiter.reward(authentication.id),
     ])
 
     return c.json<POSTV1AuthPasskeyVerifyResponse>(user)

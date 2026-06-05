@@ -2,18 +2,18 @@ import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { deleteV1MeTwoFactorBodySchema, type DELETEV1MeTwoFactorResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
-import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
+import { RedisRateLimiter, RedisRateLimitPresets } from '@/utils/rate-limit'
 import { zProblemValidator } from '@/utils/validator'
 
-const twoFactorDisableLimiter = new RateLimiter({
-  ...RateLimitPresets.strict(),
-  keyPrefix: 'rl:two-factor-disable:',
+const twoFactorDisableLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'me-two-factor-disable:user',
 })
 
 const route = new Hono<Env>()
@@ -24,14 +24,7 @@ route.delete('/', zProblemValidator('json', deleteV1MeTwoFactorBodySchema), asyn
   const { allowed, retryAfter } = await twoFactorDisableLimiter.check(String(userId))
 
   if (!allowed) {
-    const seconds = retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(seconds / 60))
-
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
-      headers: { 'Retry-After': String(seconds) },
-    })
+    return tooManyRequestsProblemResponse(c, retryAfter)
   }
 
   try {

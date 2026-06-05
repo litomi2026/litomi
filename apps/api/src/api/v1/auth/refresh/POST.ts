@@ -1,7 +1,6 @@
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { refreshSession } from '@litomi/auth/session/persistent-session'
 import { CookieKey } from '@litomi/http/cookie'
-import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import { Hono } from 'hono'
 import { getCookie } from 'hono/cookie'
@@ -10,11 +9,12 @@ import type { Env } from '@/app'
 
 import { noStoreCacheControl } from '@/utils/cache-control'
 import { applyAuthCookie } from '@/utils/cookie'
-import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
+import { authRequiredProblemResponse, problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
+import { RedisRateLimiter, RedisRateLimitPresets } from '@/utils/rate-limit'
 
-const refreshIpLimiter = new RateLimiter({
-  ...RateLimitPresets.strict(),
-  keyPrefix: 'auth-refresh:ip:',
+const refreshIpLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'auth-refresh:ip',
 })
 
 const route = new Hono<Env>()
@@ -24,17 +24,7 @@ route.post('/', async (c) => {
   const limitResult = await refreshIpLimiter.check(remoteIP)
 
   if (!limitResult.allowed) {
-    const retryAfter = limitResult.retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(retryAfter / 60))
-
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
-      headers: {
-        'Cache-Control': noStoreCacheControl,
-        'Retry-After': String(retryAfter),
-      },
-    })
+    return tooManyRequestsProblemResponse(c, limitResult.retryAfter)
   }
 
   const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)

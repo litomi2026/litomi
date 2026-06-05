@@ -5,11 +5,23 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
+import { RedisRateLimiter } from '@/utils/rate-limit'
 
-import { checkBBatonRateLimit } from './rate-limit'
 import { storeBBatonOAuthAttempt } from './state'
-import { BBATON_ATTEMPT_TTL_SECONDS, buildAuthorizeUrl, createBBatonState } from './utils'
+import {
+  BBATON_ATTEMPT_TTL_SECONDS,
+  BBATON_RATE_LIMIT,
+  BBATON_RATE_LIMIT_WINDOW_SECONDS,
+  buildAuthorizeUrl,
+  createBBatonState,
+} from './utils'
+
+const bbatonAttemptLimiter = new RedisRateLimiter({
+  scope: 'bbaton:attempt',
+  limit: BBATON_RATE_LIMIT,
+  windowSeconds: BBATON_RATE_LIMIT_WINDOW_SECONDS,
+})
 
 const route = new Hono<Env>()
 
@@ -17,14 +29,10 @@ route.post('/', requireAuth, async (c) => {
   const userId = c.get('userId')!
 
   try {
-    const rateLimit = await checkBBatonRateLimit('attempt', userId)
+    const rateLimit = await bbatonAttemptLimiter.check(String(userId))
 
     if (!rateLimit.allowed) {
-      const minutes = Math.max(1, Math.ceil(rateLimit.retryAfterSeconds / 60))
-      return problemResponse(c, {
-        status: 429,
-        detail: `너무 많은 인증 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
-      })
+      return tooManyRequestsProblemResponse(c, rateLimit.retryAfter)
     }
 
     const state = createBBatonState()

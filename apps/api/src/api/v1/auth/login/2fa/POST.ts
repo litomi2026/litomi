@@ -13,7 +13,7 @@ import type { Env } from '@/app'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/api/v1/auth/query'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import { applyAuthCookie } from '@/utils/cookie'
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 import { ensureAllowed, twoFactorIpLimiter, twoFactorUserLimiter } from '../shared'
@@ -59,16 +59,12 @@ route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), asyn
   const userAgent = getRequestUserAgent(c.req.raw.headers)
 
   const limitResult = await ensureAllowed([
-    twoFactorIpLimiter.check(remoteIP),
-    twoFactorUserLimiter.check(String(userId)),
+    { limiter: twoFactorIpLimiter, identifier: remoteIP },
+    { limiter: twoFactorUserLimiter, identifier: String(userId) },
   ])
 
   if (!limitResult.allowed) {
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 인증 시도가 있었어요. ${limitResult.minutes}분 후에 다시 시도해 주세요.`,
-      headers: { 'Retry-After': String(limitResult.retryAfter) },
-    })
+    return tooManyRequestsProblemResponse(c, limitResult.retryAfter)
   }
 
   try {

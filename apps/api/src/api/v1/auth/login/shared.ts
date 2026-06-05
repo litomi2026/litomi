@@ -1,26 +1,38 @@
-import { RateLimiter, RateLimitPresets, type RateLimitResult } from '@litomi/http/rate-limit'
+import type { RedisRateLimitCheck, RedisRateLimitResult } from '@/utils/rate-limit'
+
+import { checkRedisRateLimits, RedisRateLimiter, RedisRateLimitPresets } from '@/utils/rate-limit'
 
 export const DUMMY_PASSWORD_HASH = '$2b$10$dummyhashfortimingatackprevention'
 
-export const loginIpLimiter = new RateLimiter(RateLimitPresets.strict())
-export const loginIdLimiter = new RateLimiter(RateLimitPresets.strict())
-export const twoFactorIpLimiter = new RateLimiter(RateLimitPresets.strict())
-export const twoFactorUserLimiter = new RateLimiter(RateLimitPresets.strict())
+export const loginIpLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'auth-login:ip',
+})
 
-export async function ensureAllowed(limitChecks: Promise<RateLimitResult>[]) {
-  const results = await Promise.all(limitChecks)
-  const blocked = results.filter((result) => !result.allowed)
+export const loginIdLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'auth-login:id',
+})
 
-  if (blocked.length === 0) {
+export const twoFactorIpLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'auth-login-2fa:ip',
+})
+
+export const twoFactorUserLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'auth-login-2fa:user',
+})
+
+export async function ensureAllowed(limitChecks: RedisRateLimitCheck[]) {
+  const result: RedisRateLimitResult = await checkRedisRateLimits(limitChecks)
+
+  if (result.allowed) {
     return { allowed: true as const }
   }
 
-  const retryAfter = Math.max(...blocked.map((result) => result.retryAfter ?? 60))
-  const minutes = Math.max(1, Math.ceil(retryAfter / 60))
-
   return {
     allowed: false as const,
-    retryAfter,
-    minutes,
+    retryAfter: result.retryAfter,
   }
 }

@@ -3,18 +3,18 @@ import { generateBackupCodes } from '@litomi/auth/two-factor-backup-code'
 import { postV1MeTwoFactorBackupCodesBodySchema, type POSTV1MeTwoFactorBackupCodesResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
-import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
+import { RedisRateLimiter, RedisRateLimitPresets } from '@/utils/rate-limit'
 import { zProblemValidator } from '@/utils/validator'
 
-const twoFactorBackupCodesLimiter = new RateLimiter({
-  ...RateLimitPresets.strict(),
-  keyPrefix: 'rl:two-factor-backup-codes:',
+const twoFactorBackupCodesLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'me-two-factor-backup-codes:user',
 })
 
 const route = new Hono<Env>()
@@ -25,14 +25,7 @@ route.post('/', zProblemValidator('json', postV1MeTwoFactorBackupCodesBodySchema
   const { allowed, retryAfter } = await twoFactorBackupCodesLimiter.check(String(userId))
 
   if (!allowed) {
-    const seconds = retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(seconds / 60))
-
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 복구 코드 재생성 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
-      headers: { 'Retry-After': String(seconds) },
-    })
+    return tooManyRequestsProblemResponse(c, retryAfter)
   }
 
   try {

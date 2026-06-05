@@ -1,7 +1,6 @@
 import type { POSTV1AuthPasskeyOptionsResponse } from '@litomi/contracts'
 
 import { getPasskeyAuthenticationAttemptCookieConfig } from '@litomi/auth/cookie'
-import { authenticationLimiter } from '@litomi/auth/passkey-authentication-attempt'
 import { WEBAUTHN_RP_ID } from '@litomi/auth/passkey/server'
 import { storeChallenge } from '@litomi/auth/redis-challenge'
 import { ChallengeType } from '@litomi/domain/auth/model'
@@ -12,23 +11,18 @@ import { setCookie } from 'hono/cookie'
 
 import type { Env } from '@/app'
 
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
+
+import { passkeyAuthOptionLimiter } from '../rate-limit'
 
 const route = new Hono<Env>()
 
 route.post('/', async (c) => {
   const remoteIP = getRequestIP(c.req.raw.headers)
-  const { allowed, retryAfter, limit, remaining } = await authenticationLimiter.check(remoteIP)
+  const { allowed, retryAfter, limit, remaining } = await passkeyAuthOptionLimiter.check(remoteIP)
 
   if (!allowed) {
-    const seconds = retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(seconds / 60))
-
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`,
-      headers: { 'Retry-After': String(retryAfter) },
-    })
+    return tooManyRequestsProblemResponse(c, retryAfter)
   }
 
   try {

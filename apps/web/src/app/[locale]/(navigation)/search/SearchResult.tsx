@@ -28,6 +28,7 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 import { SearchParam, SearchSort } from './constants'
 import { SearchHeaderSpacer } from './SearchHeaderSpacer'
+import useTrackSearchTrendingView from './useTrackSearchTrendingView'
 
 const Error400 = dynamic(() => import('./Error400'))
 const SearchResultError = dynamic(() => import('./SearchResultError'))
@@ -99,6 +100,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
   const showRefreshButton = params.get(SearchParam.SORT) === SearchSort.RANDOM
   const canAutoLoadMore = !showRefreshButton && Boolean(hasNextPage) && !isFetchNextPageError
   const showRetry = mangas.length > 0 && (isFetchNextPageError || isRefetchError)
+  const hasSearchResults = mangas.length > 0
 
   const mangaItems = visibleMangas.map((manga, mangaIndex) => ({
     key: `manga-${manga.id}`,
@@ -161,6 +163,11 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
         return <NativeGridSponsorCard sponsor={item.sponsor} variant={view} />
     }
   }
+
+  useTrackSearchTrendingView({
+    enabled: !isLoading && !error && hasSearchResults,
+    query: params.get(SearchParam.QUERY),
+  })
 
   if (isLoading) {
     return (
