@@ -6,6 +6,8 @@ const { APP_ORIGIN } = commonEnv
 const { BBATON_CLIENT_ID } = env
 
 export const BBATON_ATTEMPT_TTL_SECONDS = sec('10 minutes')
+export const BBATON_RATE_LIMIT = 20
+export const BBATON_RATE_LIMIT_WINDOW_SECONDS = sec('15 minutes')
 
 export function buildAuthorizeUrl(state: string): string {
   const redirectURI = getBBatonRedirectURI()

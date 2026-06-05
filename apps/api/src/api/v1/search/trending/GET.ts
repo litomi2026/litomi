@@ -172,7 +172,7 @@ trendingRoutes.get('/', zProblemValidator('query', getTrendingKeywordsQuerySchem
     },
     [TrendingType.HOURLY]: {
       keywords: await trendingKeywordsService.getTrendingHourly(limit),
-      cacheMaxAge: sec('1 hour'),
+      cacheMaxAge: sec('2 minutes'),
     },
     [TrendingType.WEEKLY]: {
       // keywords: await trendingKeywordsService.getTrendingHistorical(7, limit),

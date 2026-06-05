@@ -8,7 +8,6 @@ import {
   MAX_LIBRARY_ICON_LENGTH,
   MAX_LIBRARY_NAME_LENGTH,
 } from '@litomi/domain/library/policy'
-import { env } from '@litomi/env/client'
 import { normalizeString } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -24,8 +23,6 @@ import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
 
 import { getRandomLibraryColor } from './libraryColorInput'
 import { getRandomLibraryIcon, preloadLibraryEmojiList, validateLibraryIcon } from './libraryIconInput'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type CreateLibraryPayload = {
   name: string
@@ -379,11 +376,13 @@ export default function CreateLibraryButton({ className = '' }: Props) {
 }
 
 async function createLibraryApi(payload: CreateLibraryPayload): Promise<POSTV1LibraryResponse> {
-  const url = new URL('/api/v1/library', NEXT_PUBLIC_API_ORIGIN)
+  const url = '/api/v1/library'
+
   const { data } = await fetchAPIData<POSTV1LibraryResponse>(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
+
   return data
 }

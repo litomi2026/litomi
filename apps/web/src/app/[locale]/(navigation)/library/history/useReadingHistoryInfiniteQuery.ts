@@ -1,16 +1,13 @@
 import type { GETV1ReadingHistoryResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 import { getLocalReadingHistoryArray } from '@/utils/reading-history-index'
 
 import type { ReadingHistorySource } from './common'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Options = {
   enabled?: boolean
@@ -45,8 +42,7 @@ async function fetchReadingHistoryPaginated(cursor: string | null, locale: strin
     params.set('cursor', cursor)
   }
 
-  const url = new URL('/api/v1/library/history', NEXT_PUBLIC_API_ORIGIN)
-  url.search = params.toString()
+  const url = withQuery('/api/v1/library/history', params)
 
   const { data } = await fetchAPIData<GETV1ReadingHistoryResponse>(url)
   return data

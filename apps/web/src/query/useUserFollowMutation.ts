@@ -6,7 +6,6 @@ import type {
   PUTV1UserIdFollowResponse,
 } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 
 import type { ProblemDetailsError } from '@/utils/api-request'
@@ -22,8 +21,6 @@ import { showLoginRequiredToast } from '@/lib/toast'
 import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Context = {
   followingPostListsSnapshot: PostListSnapshot
@@ -47,7 +44,7 @@ type Variables = {
 }
 
 export async function toggleUserFollowing(targetUserId: number, following: boolean) {
-  const url = new URL(`/api/v1/user/${targetUserId}/follow`, NEXT_PUBLIC_API_ORIGIN)
+  const url = `/api/v1/user/${targetUserId}/follow`
 
   const { data } = await fetchAPIData<SetUserFollowResponse>(url, {
     method: following ? 'PUT' : 'DELETE',

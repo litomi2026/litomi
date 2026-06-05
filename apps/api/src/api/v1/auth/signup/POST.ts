@@ -1,7 +1,6 @@
 import { PASSWORD_HASH_COST } from '@litomi/auth/password'
 import { postV1AuthSignupRequestSchema, type POSTV1AuthSignupResponse } from '@litomi/contracts'
 import { generateRandomNickname, generateRandomProfileImage } from '@litomi/domain/utils/nickname'
-import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { hash } from 'bcryptjs'
@@ -12,10 +11,15 @@ import type { Env } from '@/app'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import { createUser } from '@/api/v1/auth/signup/query'
 import { applyAuthCookie } from '@/utils/cookie'
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
+import { RedisRateLimiter, RedisRateLimitPresets } from '@/utils/rate-limit'
 import { zProblemValidator } from '@/utils/validator'
 
-const signupLimiter = new RateLimiter(RateLimitPresets.strict())
+const signupLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'auth-signup:ip',
+})
+
 const route = new Hono<Env>()
 
 route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async (c) => {
@@ -41,14 +45,7 @@ route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async 
   const { allowed, retryAfter } = await signupLimiter.check(remoteIP)
 
   if (!allowed) {
-    const seconds = retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(seconds / 60))
-
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많이 시도했어요. ${minutes}분 후에 다시 시도해 주세요.`,
-      headers: { 'Retry-After': String(seconds) },
-    })
+    return tooManyRequestsProblemResponse(c, retryAfter)
   }
 
   const passwordHash = await hash(password, PASSWORD_HASH_COST)

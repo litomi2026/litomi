@@ -1,7 +1,6 @@
 'use client'
 
 import { DEFAULT_LOCALE, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
-import { env } from '@litomi/env/client'
 import ms from 'ms'
 import { useEffect, useState } from 'react'
 
@@ -42,7 +41,7 @@ const STATUS_ENDPOINTS = {
   aiven: 'https://status.aiven.io/api/v2/status.json',
   supabase: 'https://status.supabase.com/api/v2/status.json',
   vercel: 'https://www.vercel-status.com/api/v2/status.json',
-  api: new URL('/api/health', env.NEXT_PUBLIC_API_ORIGIN).toString(),
+  api: '/api/health',
   litomi: '/health',
 }
 

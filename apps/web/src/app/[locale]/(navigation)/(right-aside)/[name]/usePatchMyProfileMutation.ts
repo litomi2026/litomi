@@ -2,15 +2,12 @@
 
 import type { GETV1MeResponse, PATCHV1MeBody, PATCHV1MeResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import type { ProblemDetailsError } from '@/utils/api-request'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type MutationContext = {
   previousMe?: GETV1MeResponse | null
@@ -34,9 +31,7 @@ export default function usePatchMyProfileMutation({ onError, onSuccess }: Params
 
   return useMutation<PATCHV1MeResponse, ProblemDetailsError, PATCHV1MeBody, MutationContext>({
     mutationFn: async (body) => {
-      const url = new URL('/api/v1/me', NEXT_PUBLIC_API_ORIGIN)
-
-      const { data } = await fetchAPIData<PATCHV1MeResponse>(url, {
+      const { data } = await fetchAPIData<PATCHV1MeResponse>('/api/v1/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

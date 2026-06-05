@@ -3,7 +3,6 @@
 import type { POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
-import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Info, Loader2, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -19,8 +18,6 @@ import { fetchAPIData } from '@/utils/api-request'
 import { CENSORSHIP_CATEGORIES, DEFAULT_CENSORSHIP_VALUES } from './constants'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
-
 export default function CensorshipCreationBar() {
   const t = useTranslations('Censorship')
   const [showHelp, setShowHelp] = useState(false)
@@ -35,7 +32,7 @@ export default function CensorshipCreationBar() {
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
-      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+      const url = '/api/v1/censorship'
 
       const { data } = await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',

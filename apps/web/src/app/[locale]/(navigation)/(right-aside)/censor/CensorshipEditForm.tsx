@@ -1,7 +1,6 @@
 import type { PATCHV1CensorshipUpdateResponse } from '@litomi/contracts'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
-import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -13,8 +12,6 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
 import { CENSORSHIP_LEVELS } from './constants'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Props = {
   censorship: {
@@ -37,7 +34,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
 
   const updateMutation = useMutation({
     mutationFn: async (items: { id: number; key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
-      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+      const url = '/api/v1/censorship'
 
       const { data } = await fetchAPIData<PATCHV1CensorshipUpdateResponse>(url, {
         method: 'PATCH',

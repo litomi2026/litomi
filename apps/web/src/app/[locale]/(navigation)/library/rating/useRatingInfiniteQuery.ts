@@ -1,14 +1,11 @@
 import type { GETV1RatingsResponse } from '@litomi/contracts'
 
 import { RatingSort } from '@litomi/domain/library/sort'
-import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 type Options = {
   enabled?: boolean
@@ -26,8 +23,7 @@ export async function fetchRatingsPaginated(cursor: string, sort: RatingSort, lo
     searchParams.set('sort', sort)
   }
 
-  const url = new URL('/api/v1/library/rating', NEXT_PUBLIC_API_ORIGIN)
-  url.search = searchParams.toString()
+  const url = withQuery('/api/v1/library/rating', searchParams)
   const { data } = await fetchAPIData<GETV1RatingsResponse>(url)
   return data
 }

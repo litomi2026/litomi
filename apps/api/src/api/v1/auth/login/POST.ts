@@ -13,7 +13,7 @@ import type { Env } from '@/app'
 import { readAdultFlag, touchUserLoginAt } from '@/api/v1/auth/query'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import { applyAuthCookie } from '@/utils/cookie'
-import { problemResponse } from '@/utils/problem'
+import { problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 import { hasActiveTwoFactor, readLoginUserByLoginId, touchTrustedBrowserLastUsedAt } from './query'
@@ -41,14 +41,13 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
     })
   }
 
-  const limitResult = await ensureAllowed([loginIpLimiter.check(remoteIP), loginIdLimiter.check(loginId)])
+  const limitResult = await ensureAllowed([
+    { limiter: loginIpLimiter, identifier: remoteIP },
+    { limiter: loginIdLimiter, identifier: loginId },
+  ])
 
   if (!limitResult.allowed) {
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 로그인 시도가 있었어요. ${limitResult.minutes}분 후에 다시 시도해 주세요.`,
-      headers: { 'Retry-After': String(limitResult.retryAfter) },
-    })
+    return tooManyRequestsProblemResponse(c, limitResult.retryAfter)
   }
 
   try {
@@ -75,10 +74,7 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
         (await touchTrustedBrowserLastUsedAt(trustedBrowser.userId, trustedBrowser.browserId, lastUsedAt))
 
       if (!browserExists && trustedBrowserToken) {
-        deleteCookie(c, CookieKey.TRUSTED_BROWSER_TOKEN, {
-          path: '/',
-          secure: true,
-        })
+        deleteCookie(c, CookieKey.TRUSTED_BROWSER_TOKEN, { path: '/', secure: true })
       }
 
       if (!browserExists) {

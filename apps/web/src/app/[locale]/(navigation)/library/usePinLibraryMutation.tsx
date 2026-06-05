@@ -1,6 +1,5 @@
 import type { GETV1LibraryListResponse, LibraryListItem } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -8,8 +7,6 @@ import { toast } from 'sonner'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function usePinLibraryMutation() {
   const queryClient = useQueryClient()
@@ -23,7 +20,7 @@ export default function usePinLibraryMutation() {
     { previous?: InfiniteData<GETV1LibraryListResponse> }
   >({
     mutationFn: async ({ libraryId, action }) => {
-      const url = new URL(`/api/v1/library/${libraryId}/pin`, NEXT_PUBLIC_API_ORIGIN)
+      const url = `/api/v1/library/${libraryId}/pin`
       const method = action === 'pin' ? 'POST' : 'DELETE'
       const { data } = await fetchAPIData(url, { method })
       return data

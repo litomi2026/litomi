@@ -3,15 +3,12 @@
 import type { GETV1MangaRecommendationResponse } from '@litomi/contracts'
 
 import { MANGA_RECOMMENDATION_PER_PAGE } from '@litomi/domain/manga-recommendation/policy'
-import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 type Options = {
   enabled: boolean
@@ -37,9 +34,7 @@ export default function useMangaRecommendationQuery({
 }
 
 async function fetchMangaRecommendations(limit: number, locale: string) {
-  const url = new URL('/api/v1/manga/recommendation', NEXT_PUBLIC_API_ORIGIN)
-  url.searchParams.set('limit', String(limit))
-  url.searchParams.set('locale', locale)
+  const url = withQuery('/api/v1/manga/recommendation', new URLSearchParams({ limit: String(limit), locale }))
 
   const { data } = await fetchAPIData<GETV1MangaRecommendationResponse>(url)
   return data

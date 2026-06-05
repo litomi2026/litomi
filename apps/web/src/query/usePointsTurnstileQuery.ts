@@ -1,17 +1,14 @@
 import type { GETV1PointTurnstileResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
-
 export async function fetchPointsTurnstile() {
   try {
-    const url = new URL('/api/v1/points/turnstile', NEXT_PUBLIC_API_ORIGIN)
+    const url = '/api/v1/points/turnstile'
     const { data } = await fetchAPIData<GETV1PointTurnstileResponse>(url)
     return data
   } catch (error) {

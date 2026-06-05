@@ -1,4 +1,5 @@
 import { Locale } from '@litomi/domain/locale'
+import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { z } from 'zod'
 
 export enum TrendingType {
@@ -44,15 +45,12 @@ export const getTrendingKeywordsResponseSchema = z.object({
 
 export type GETTrendingKeywordsResponse = z.infer<typeof getTrendingKeywordsResponseSchema>
 
-export const postV1SearchTrendingBodySchema = z.object({
-  keywords: z.array(z.string().min(1).max(100)).min(1).max(10),
+export const postV1SearchTrendingViewBodySchema = z.object({
+  query: z.string().trim().min(1).max(MAX_SEARCH_QUERY_LENGTH),
 })
 
-export type POSTV1SearchTrendingBody = z.infer<typeof postV1SearchTrendingBodySchema>
+export type POSTV1SearchTrendingViewBody = z.infer<typeof postV1SearchTrendingViewBodySchema>
 
-export const postV1SearchTrendingResponseSchema = z.object({
-  success: z.boolean(),
-  tracked: z.number(),
-})
+export const postV1SearchTrendingViewResponseSchema = z.void()
 
-export type POSTV1SearchTrendingResponse = z.infer<typeof postV1SearchTrendingResponseSchema>
+export type POSTV1SearchTrendingViewResponse = z.infer<typeof postV1SearchTrendingViewResponseSchema>

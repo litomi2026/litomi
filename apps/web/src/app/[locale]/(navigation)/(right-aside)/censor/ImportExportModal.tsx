@@ -3,7 +3,6 @@
 import type { CensorshipItem, POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
-import { env } from '@litomi/env/client'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Download, Upload } from 'lucide-react'
@@ -15,8 +14,6 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 import { downloadBlob } from '@/utils/download'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 const PLACEHOLDER_JSON = `[
   {
@@ -69,7 +66,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
-      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+      const url = '/api/v1/censorship'
 
       const { data } = await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',

@@ -1,4 +1,3 @@
-import { env } from '@litomi/env/client'
 import { CookieKey } from '@litomi/http/cookie'
 import {
   isProblemDetails,
@@ -9,7 +8,7 @@ import {
 } from '@litomi/http/problem-details'
 import Cookies from 'js-cookie'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const AUTH_REFRESH_PATH = '/api/v1/auth/refresh'
 
 export class HTTPResponseError extends Error {
   readonly name = 'HTTPResponseError'
@@ -104,6 +103,11 @@ export function isAuthenticationRequiredError(error: unknown): boolean {
   )
 }
 
+export function withQuery(path: string, searchParams?: URLSearchParams): string {
+  const query = searchParams?.toString()
+  return query ? `${path}?${query}` : path
+}
+
 async function createResponseError(response: Response): Promise<HTTPResponseError | ProblemDetailsError> {
   const problem = await readProblemDetails(response)
 
@@ -136,9 +140,8 @@ function getRetryAfterSeconds(response?: Response): number | undefined {
 
 function isAuthRefreshRequest(request: Request): boolean {
   const requestURL = new URL(request.url)
-  const refreshURL = new URL('/api/v1/auth/refresh', NEXT_PUBLIC_API_ORIGIN)
 
-  return requestURL.origin === refreshURL.origin && requestURL.pathname === refreshURL.pathname
+  return requestURL.origin === window.location.origin && requestURL.pathname === AUTH_REFRESH_PATH
 }
 
 async function readProblemDetails(response: Response): Promise<ProblemDetails | null> {
@@ -167,7 +170,7 @@ async function readResponseData<T>(response: Response): Promise<T> {
 
 async function refreshAuthCookies(): Promise<boolean> {
   if (!authRefreshPromise) {
-    authRefreshPromise = fetch(new URL('/api/v1/auth/refresh', NEXT_PUBLIC_API_ORIGIN), {
+    authRefreshPromise = fetch(AUTH_REFRESH_PATH, {
       method: 'POST',
       cache: 'no-store',
     })

@@ -35,3 +35,13 @@ export function problemResponse(c: Context, options: ProblemResponseOptions): Re
 
   return createProblemDetailsResponse(c.req.raw, { ...options, headers })
 }
+
+export function tooManyRequestsProblemResponse(c: Context, retryAfterSeconds = 60): Response {
+  const retryAfter = Number.isFinite(retryAfterSeconds) ? Math.max(1, Math.ceil(retryAfterSeconds)) : 60
+
+  return problemResponse(c, {
+    status: 429,
+    detail: '요청이 너무 많아요. 잠시 후 다시 시도해 주세요.',
+    headers: { 'Retry-After': String(retryAfter) },
+  })
+}

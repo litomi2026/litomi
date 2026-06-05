@@ -1,23 +1,20 @@
 import type { GETV1LibraryMangaResponse } from '@litomi/contracts'
 
 import { Locale } from '@litomi/domain/locale'
-import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 export async function fetchPublicLibraryMangas({ cursor, locale }: { cursor: string | null; locale: Locale }) {
-  const url = new URL('/api/v1/library/manga', NEXT_PUBLIC_API_ORIGIN)
-  url.searchParams.set('locale', locale)
+  const searchParams = new URLSearchParams({ locale })
 
   if (cursor) {
-    url.searchParams.set('cursor', cursor)
+    searchParams.set('cursor', cursor)
   }
 
+  const url = withQuery('/api/v1/library/manga', searchParams)
   const { data } = await fetchAPIData<GETV1LibraryMangaResponse>(url)
   return data
 }

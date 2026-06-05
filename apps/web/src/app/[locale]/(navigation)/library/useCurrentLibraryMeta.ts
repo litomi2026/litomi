@@ -2,14 +2,11 @@
 
 import type { GETV1LibraryResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
+import { fetchAPIData, ProblemDetailsError, withQuery } from '@/utils/api-request'
 
 type FetchAccessibleLibraryMetaOptions = {
   libraryId: number
@@ -66,8 +63,7 @@ async function fetchAccessibleLibraryMeta({ libraryId, userId }: FetchAccessible
 }
 
 async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
-  const url = new URL(`/api/v1/library/${libraryId}`, NEXT_PUBLIC_API_ORIGIN)
-  url.searchParams.set('scope', scope)
+  const url = withQuery(`/api/v1/library/${libraryId}`, new URLSearchParams({ scope }))
   const credentials = scope === 'me' ? 'same-origin' : 'omit'
 
   try {

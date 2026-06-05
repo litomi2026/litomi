@@ -3,7 +3,6 @@
 import type { POSTV1MangaIdHistoryBody } from '@litomi/contracts'
 
 import { type Manga } from '@litomi/domain/manga/model'
-import { env } from '@litomi/env/client'
 import Reader, {
   type ReaderNotice,
   type ReaderPageRenderContext,
@@ -35,8 +34,6 @@ import { createMangaReaderPages, type MangaReaderPage } from './mangaReaderPages
 import ShareButton from './ShareButton'
 import useMangaReadingHistory from './useMangaReadingHistory'
 import { getResponsivePictureSources } from './util'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Props = {
   manga: Manga
@@ -80,7 +77,7 @@ export default function MangaReader({ manga }: Props) {
   }
 
   async function handleReadingProgressSave(progress: ReadingProgress, options?: ReadingProgressSaveOptions) {
-    const url = new URL(`/api/v1/manga/${manga.id}/history`, NEXT_PUBLIC_API_ORIGIN)
+    const url = `/api/v1/manga/${manga.id}/history`
 
     const body: POSTV1MangaIdHistoryBody = {
       lastPage: progress.readablePageNumber,

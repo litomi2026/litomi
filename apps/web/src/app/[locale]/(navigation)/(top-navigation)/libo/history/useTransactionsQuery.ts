@@ -1,21 +1,17 @@
 import type { GETV1PointTransactionResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 type QueryOptions = {
   enabled?: boolean
 }
 
 export async function fetchTransactions(searchParams: URLSearchParams) {
-  const url = new URL('/api/v1/points/transactions', NEXT_PUBLIC_API_ORIGIN)
-  url.search = searchParams.toString()
+  const url = withQuery('/api/v1/points/transactions', searchParams)
   const { data } = await fetchAPIData<GETV1PointTransactionResponse>(url)
   return data
 }

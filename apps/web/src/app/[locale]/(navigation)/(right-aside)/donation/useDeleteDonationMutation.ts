@@ -1,14 +1,11 @@
 import type { GETV1PointsDonationsMeResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type MutationContext = {
   previous?: InfiniteData<GETV1PointsDonationsMeResponse>
@@ -25,7 +22,7 @@ export default function useDeleteDonationMutation() {
 
   return useMutation<void, ProblemDetailsError, Variables, MutationContext>({
     mutationFn: async ({ donationId }) => {
-      const url = new URL(`/api/v1/points/donations/${donationId}`, NEXT_PUBLIC_API_ORIGIN)
+      const url = `/api/v1/points/donations/${donationId}`
       await fetchAPIData<void>(url, { method: 'DELETE' })
     },
     onMutate: async ({ donationId }) => {

@@ -2,14 +2,11 @@
 
 import type { GETTrendingKeywordsResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 type Params = {
   locale: string
@@ -18,8 +15,7 @@ type Params = {
 export async function fetchTrendingKeywords({ locale }: Params) {
   const params = new URLSearchParams({ locale })
 
-  const url = new URL('/api/v1/search/trending', NEXT_PUBLIC_API_ORIGIN)
-  url.search = params.toString()
+  const url = withQuery('/api/v1/search/trending', params)
   const { data } = await fetchAPIData<GETTrendingKeywordsResponse>(url)
   return data
 }

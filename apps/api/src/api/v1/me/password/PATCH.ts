@@ -5,7 +5,6 @@ import { patchV1MePasswordBodySchema, type PATCHV1MePasswordResponse } from '@li
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
-import { RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { compare, hash } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -13,14 +12,15 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import { applyAuthCookie } from '@/utils/cookie'
-import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
+import { authRequiredProblemResponse, problemResponse, tooManyRequestsProblemResponse } from '@/utils/problem'
+import { RedisRateLimiter, RedisRateLimitPresets } from '@/utils/rate-limit'
 import { zProblemValidator } from '@/utils/validator'
 
 import { revokeAllSessionsByUserId } from '../session/query'
 
-const passwordChangeLimiter = new RateLimiter({
-  ...RateLimitPresets.strict(),
-  keyPrefix: 'rl:change-password:',
+const passwordChangeLimiter = new RedisRateLimiter({
+  ...RedisRateLimitPresets.strict(),
+  scope: 'me-password:user',
 })
 
 const route = new Hono<Env>()
@@ -31,14 +31,7 @@ route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (
   const { allowed, retryAfter } = await passwordChangeLimiter.check(String(userId))
 
   if (!allowed) {
-    const seconds = retryAfter ?? 60
-    const minutes = Math.max(1, Math.ceil(seconds / 60))
-
-    return problemResponse(c, {
-      status: 429,
-      detail: `너무 많은 비밀번호 변경 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
-      headers: { 'Retry-After': String(seconds) },
-    })
+    return tooManyRequestsProblemResponse(c, retryAfter)
   }
 
   if (currentPassword === newPassword) {

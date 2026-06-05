@@ -3,18 +3,15 @@
 import type { GETSearchSuggestionsResponse } from '@litomi/contracts'
 
 import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/search/policy'
-import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
 import { CENSORSHIP_CATEGORIES, CENSORSHIP_KEY_MESSAGE_PATHS, DEFAULT_CENSORSHIP_VALUES } from './constants'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Options = {
   query: string
@@ -33,8 +30,7 @@ type Props = {
 
 export async function fetchCensorshipSuggestions({ query, locale }: Params) {
   const params = new URLSearchParams({ locale, query })
-  const url = new URL('/api/v1/search/suggestions', NEXT_PUBLIC_API_ORIGIN)
-  url.search = params.toString()
+  const url = withQuery('/api/v1/search/suggestions', params)
   const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
   return data
 }

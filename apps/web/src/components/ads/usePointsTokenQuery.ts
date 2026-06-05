@@ -2,14 +2,11 @@
 
 import type { POSTV1PointTokenResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { shouldRetryError } from '@/lib/react-query/QueryProvider'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Options = {
   adSlotId: string
@@ -22,7 +19,7 @@ export function usePointsTokenQuery({ adSlotId, enabled }: Options) {
     enabled,
     staleTime: Infinity,
     queryFn: async () => {
-      const url = new URL('/api/v1/points/token', NEXT_PUBLIC_API_ORIGIN)
+      const url = '/api/v1/points/token'
 
       const { data } = await fetchAPIData<POSTV1PointTokenResponse>(url, {
         method: 'POST',

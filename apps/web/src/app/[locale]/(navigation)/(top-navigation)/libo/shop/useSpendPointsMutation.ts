@@ -2,20 +2,17 @@
 
 import type { POSTV1PointSpendRequest, POSTV1PointSpendResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export function useSpendPointsMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<POSTV1PointSpendResponse, ProblemDetailsError, POSTV1PointSpendRequest>({
     mutationFn: async ({ type, itemId }) => {
-      const url = new URL('/api/v1/points/spend', NEXT_PUBLIC_API_ORIGIN)
+      const url = '/api/v1/points/spend'
 
       const { data } = await fetchAPIData<POSTV1PointSpendResponse>(url, {
         method: 'POST',

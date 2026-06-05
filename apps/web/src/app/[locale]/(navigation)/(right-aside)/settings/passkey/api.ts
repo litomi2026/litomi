@@ -7,14 +7,10 @@ import type {
   POSTV1MePasskeyVerifyResponse,
 } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
-
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
-
 export async function deletePasskey(id: number) {
-  const url = new URL(`/api/v1/me/passkey/${id}`, NEXT_PUBLIC_API_ORIGIN)
+  const url = `/api/v1/me/passkey/${id}`
 
   const { data } = await fetchAPIData<DELETEV1MePasskeyResponse>(url, {
     method: 'DELETE',
@@ -24,7 +20,7 @@ export async function deletePasskey(id: number) {
 }
 
 export async function requestPasskeyRegistrationOptions() {
-  const url = new URL('/api/v1/me/passkey/options', NEXT_PUBLIC_API_ORIGIN)
+  const url = '/api/v1/me/passkey/options'
 
   const { data } = await fetchAPIData<POSTV1MePasskeyOptionsResponse>(url, {
     method: 'POST',
@@ -34,7 +30,7 @@ export async function requestPasskeyRegistrationOptions() {
 }
 
 export async function updatePasskeyName(id: number, request: PATCHV1MePasskeyBody) {
-  const url = new URL(`/api/v1/me/passkey/${id}`, NEXT_PUBLIC_API_ORIGIN)
+  const url = `/api/v1/me/passkey/${id}`
 
   const { data } = await fetchAPIData<PATCHV1MePasskeyResponse>(url, {
     method: 'PATCH',
@@ -46,7 +42,7 @@ export async function updatePasskeyName(id: number, request: PATCHV1MePasskeyBod
 }
 
 export async function verifyPasskeyRegistration(request: POSTV1MePasskeyVerifyBody) {
-  const url = new URL('/api/v1/me/passkey/verify', NEXT_PUBLIC_API_ORIGIN)
+  const url = '/api/v1/me/passkey/verify'
 
   const { data } = await fetchAPIData<POSTV1MePasskeyVerifyResponse>(url, {
     method: 'POST',

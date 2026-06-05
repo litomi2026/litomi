@@ -4,7 +4,6 @@ import type { GETV1AnalyticsRealtimeResponse } from '@litomi/contracts'
 
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/ranking/policy'
-import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import { ExternalLink, Loader2, Users } from 'lucide-react'
 import ms from 'ms'
@@ -15,8 +14,6 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
 import { useRealtimeStore } from './store'
-
-const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function RealtimeRanking() {
   const isLive = useRealtimeStore((store) => store.isLive)
@@ -125,7 +122,7 @@ export default function RealtimeRanking() {
 }
 
 async function fetchRealtimeAnalytics(): Promise<GETV1AnalyticsRealtimeResponse> {
-  const url = new URL('/api/v1/analytics/realtime', NEXT_PUBLIC_API_ORIGIN)
+  const url = '/api/v1/analytics/realtime'
   const { data } = await fetchAPIData<GETV1AnalyticsRealtimeResponse>(url)
   return data
 }

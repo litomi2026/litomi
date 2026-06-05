@@ -10,7 +10,6 @@ export function getDefaultSecureHeadersOptions(): NonNullable<Parameters<typeof 
       frameAncestors: ["'none'"],
       objectSrc: ["'none'"],
     },
-    crossOriginResourcePolicy: 'same-origin',
     permissionsPolicy: {
       accelerometer: [],
       autoplay: [],
@@ -25,5 +24,10 @@ export function getDefaultSecureHeadersOptions(): NonNullable<Parameters<typeof 
       usb: [],
     },
     strictTransportSecurity: `max-age=${sec('2 years')}; includeSubDomains; preload`,
+    xDnsPrefetchControl: false,
+    xDownloadOptions: false,
+    xFrameOptions: false,
+    xPermittedCrossDomainPolicies: false,
+    xXssProtection: false,
   }
 }
