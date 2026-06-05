@@ -103,7 +103,7 @@ export function isAuthenticationRequiredError(error: unknown): boolean {
   )
 }
 
-export function withSearchParams(path: string, searchParams?: URLSearchParams): string {
+export function withQuery(path: string, searchParams?: URLSearchParams): string {
   const query = searchParams?.toString()
   return query ? `${path}?${query}` : path
 }

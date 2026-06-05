@@ -4,7 +4,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 import { getLocalReadingHistoryArray } from '@/utils/reading-history-index'
 
 import type { ReadingHistorySource } from './common'
@@ -42,7 +42,7 @@ async function fetchReadingHistoryPaginated(cursor: string | null, locale: strin
     params.set('cursor', cursor)
   }
 
-  const url = apiPath('/api/v1/library/history', params)
+  const url = withQuery('/api/v1/library/history', params)
 
   const { data } = await fetchAPIData<GETV1ReadingHistoryResponse>(url)
   return data

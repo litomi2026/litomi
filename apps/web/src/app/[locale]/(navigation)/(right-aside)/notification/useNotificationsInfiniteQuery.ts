@@ -6,10 +6,10 @@ import { useSearchParams } from 'next/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 export async function fetchNotifications(searchParams: URLSearchParams) {
-  const url = apiPath('/api/v1/notification', searchParams)
+  const url = withQuery('/api/v1/notification', searchParams)
   const { data } = await fetchAPIData<GETNotificationResponse>(url)
   return data
 }

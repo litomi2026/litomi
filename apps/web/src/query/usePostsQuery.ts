@@ -4,7 +4,7 @@ import { PostFilter } from '@litomi/domain/post/filter'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 export type PostQuery = {
   filter: PostFilter
@@ -29,7 +29,7 @@ export default function usePostInfiniteQuery({ filter, mangaId, username }: Post
         searchParams.set('username', username)
       }
 
-      const url = apiPath('/api/v1/post', searchParams)
+      const url = withQuery('/api/v1/post', searchParams)
       const { data } = await fetchAPIData<GETV1PostResponse>(url)
       return data
     },

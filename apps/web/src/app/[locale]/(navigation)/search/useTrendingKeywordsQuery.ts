@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 type Params = {
   locale: string
@@ -15,7 +15,7 @@ type Params = {
 export async function fetchTrendingKeywords({ locale }: Params) {
   const params = new URLSearchParams({ locale })
 
-  const url = apiPath('/api/v1/search/trending', params)
+  const url = withQuery('/api/v1/search/trending', params)
   const { data } = await fetchAPIData<GETTrendingKeywordsResponse>(url)
   return data
 }

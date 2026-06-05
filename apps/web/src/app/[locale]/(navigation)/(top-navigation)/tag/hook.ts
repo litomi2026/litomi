@@ -6,7 +6,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 export type CategoryParam = 'female' | 'male' | 'mixed' | 'other'
 
@@ -32,7 +32,7 @@ async function fetchTags(category: CategoryParam, page: number, locale: string) 
     page: String(page),
   })
 
-  const url = apiPath('/api/v1/tag', searchParams)
+  const url = withQuery('/api/v1/tag', searchParams)
 
   const { data } = await fetchAPIData<GETV1TagResponse>(url)
   return data

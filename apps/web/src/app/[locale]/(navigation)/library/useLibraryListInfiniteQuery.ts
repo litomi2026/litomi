@@ -3,7 +3,7 @@ import type { GETV1LibraryListResponse } from '@litomi/contracts'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 interface Options {
   enabled?: boolean
@@ -18,7 +18,7 @@ export async function fetchLibraryList({ cursor, userId }: { cursor: string | nu
     params.set('cursor', cursor)
   }
 
-  const url = apiPath('/api/v1/library', params)
+  const url = withQuery('/api/v1/library', params)
   const { data } = await fetchAPIData<GETV1LibraryListResponse>(url)
   return data
 }

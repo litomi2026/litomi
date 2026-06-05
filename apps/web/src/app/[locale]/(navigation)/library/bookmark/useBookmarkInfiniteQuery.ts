@@ -6,7 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 type Options = {
   enabled?: boolean
@@ -24,7 +24,7 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Librar
     params.set('sort', sort)
   }
 
-  const url = apiPath('/api/v1/bookmark', params)
+  const url = withQuery('/api/v1/bookmark', params)
 
   const { data } = await fetchAPIData<GETV1BookmarkResponse>(url)
   return data

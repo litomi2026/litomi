@@ -8,7 +8,7 @@ import ms from 'ms'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 type Options = {
   enabled: boolean
@@ -34,7 +34,7 @@ export default function useMangaRecommendationQuery({
 }
 
 async function fetchMangaRecommendations(limit: number, locale: string) {
-  const url = apiPath('/api/v1/manga/recommendation', new URLSearchParams({ limit: String(limit), locale }))
+  const url = withQuery('/api/v1/manga/recommendation', new URLSearchParams({ limit: String(limit), locale }))
 
   const { data } = await fetchAPIData<GETV1MangaRecommendationResponse>(url)
   return data

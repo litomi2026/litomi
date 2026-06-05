@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 type Options = {
   enabled?: boolean
@@ -14,7 +14,7 @@ export async function fetchLibraries() {
   const params = new URLSearchParams()
   params.set('scope', 'me')
 
-  const url = apiPath('/api/v1/library', params)
+  const url = withQuery('/api/v1/library', params)
   const { data } = await fetchAPIData<GETV1LibraryListResponse>(url)
   return data.libraries
 }

@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { apiPath, fetchAPIData } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 interface FetchLibraryItemsOptions {
   cursor: string | null
@@ -29,7 +29,7 @@ export async function fetchLibraryItems({ libraryId, cursor, locale, scope, sort
     searchParams.set('cursor', cursor)
   }
 
-  const url = apiPath(`/api/v1/library/${libraryId}/item`, searchParams)
+  const url = withQuery(`/api/v1/library/${libraryId}/item`, searchParams)
   const credentials = scope === 'me' ? 'same-origin' : 'omit'
   const { data } = await fetchAPIData<GETLibraryItemsResponse>(url, { credentials })
   return data
