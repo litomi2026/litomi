@@ -158,8 +158,8 @@ export const messages = {
           description: '新しく追加された作品を新着順で確認しましょう。',
         },
         random: {
-          title: 'ランダム',
-          description: 'ランダムにおすすめされる作品を見てみましょう。',
+          title: 'おまかせ',
+          description: 'おまかせで選ばれた作品を見てみましょう。',
         },
         recommendManga: {
           title: 'おすすめ作品',
@@ -173,12 +173,12 @@ export const messages = {
     },
     TopNavigation: {
       actions: {
-        label: 'クイック移動',
+        label: '主な移動先',
         menu: 'メニューを開く',
         recommend: 'おすすめ',
         new: '新着',
-        random: 'ランダム',
-        liveCam: 'ライブセックスカム',
+        random: 'おまかせ',
+        liveCam: '成人向け生配信',
         randomRefresh: {
           loadingTitle: '読み込み中...',
           cooldownTitle: '少し待ってからお試しください',
@@ -189,18 +189,18 @@ export const messages = {
         },
       },
       footer: {
-        installApp: 'アプリをインストール',
+        installApp: 'アプリで使う',
         terms: '利用規約',
-        privacy: 'プライバシーポリシー',
-        ageRestriction: '年齢制限ルール',
-        notice2257: '2257 通知',
+        privacy: '個人情報保護方針',
+        ageRestriction: '年齢制限規定',
+        notice2257: '2257 告知',
         dmca: '著作権/DMCA',
-        youthProtection: '青少年保護ポリシー',
+        youthProtection: '青少年保護方針',
       },
     },
     Tag: {
       categories: {
-        label: 'タグカテゴリー',
+        label: 'タグ分類',
         female: '女性',
         male: '男性',
         mixed: '混合',
