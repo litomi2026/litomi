@@ -2,7 +2,6 @@
 
 import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Flag } from 'lucide-react'
@@ -14,8 +13,6 @@ import { twMerge } from 'tailwind-merge'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { Link } from '@/i18n/navigation'
 import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 const MangaReportReason = {
   DEEPFAKE: 'DEEPFAKE',
@@ -44,7 +41,7 @@ export default function MangaReportButton({ mangaId, className = '', labelClassN
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
-      const url = new URL(`/api/v1/manga/${mangaId}/report`, NEXT_PUBLIC_APP_ORIGIN)
+      const url = `/api/v1/manga/${mangaId}/report`
 
       const { data } = await fetchAPIData<POSTV1MangaIdReportResponse>(url, {
         method: 'POST',

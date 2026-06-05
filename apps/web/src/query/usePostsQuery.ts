@@ -1,13 +1,10 @@
 import type { GETV1PostResponse } from '@litomi/contracts'
 
 import { PostFilter } from '@litomi/domain/post/filter'
-import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
+import { apiPath, fetchAPIData } from '@/utils/api-request'
 
 export type PostQuery = {
   filter: PostFilter
@@ -32,8 +29,7 @@ export default function usePostInfiniteQuery({ filter, mangaId, username }: Post
         searchParams.set('username', username)
       }
 
-      const url = new URL('/api/v1/post', NEXT_PUBLIC_APP_ORIGIN)
-      url.search = searchParams.toString()
+      const url = apiPath('/api/v1/post', searchParams)
       const { data } = await fetchAPIData<GETV1PostResponse>(url)
       return data
     },

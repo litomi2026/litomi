@@ -40,10 +40,6 @@ type EnqueueSessionOptions = {
   modelId: string
 }
 
-type FlushOptions = {
-  backendUrl: string
-}
-
 type ProcessResult = 'continue' | 'pause'
 
 export async function enqueueAppendMessages(options: EnqueueMessagesOptions) {
@@ -80,7 +76,7 @@ export async function enqueueCreateSession(options: EnqueueSessionOptions) {
   await upsertOutboxItem(item)
 }
 
-export async function flushOutbox({ backendUrl }: FlushOptions) {
+export async function flushOutbox() {
   const nowMs = Date.now()
   const items = (await getAllOutboxItems())
     .filter((i) => i.status === 'pending' && i.nextAttemptAtMs <= nowMs)
@@ -88,7 +84,7 @@ export async function flushOutbox({ backendUrl }: FlushOptions) {
 
   for (const item of items) {
     // NOTE: 한 번에 하나씩 처리(순서/자원 관리)
-    const result = await processItem(item, { backendUrl })
+    const result = await processItem(item)
     if (result === 'pause') {
       return { paused: true }
     }
@@ -97,8 +93,8 @@ export async function flushOutbox({ backendUrl }: FlushOptions) {
   return { paused: false }
 }
 
-export function useOutboxAutoFlush(options: { backendUrl: string; onUnauthorized?: () => void }) {
-  const { backendUrl, onUnauthorized } = options
+export function useOutboxAutoFlush(options: { onUnauthorized?: () => void }) {
+  const { onUnauthorized } = options
   const isFlushingRef = useRef(false)
 
   const flush = useCallback(async () => {
@@ -108,14 +104,14 @@ export function useOutboxAutoFlush(options: { backendUrl: string; onUnauthorized
 
     isFlushingRef.current = true
     try {
-      const result = await flushOutbox({ backendUrl })
+      const result = await flushOutbox()
       if (result.paused) {
         onUnauthorized?.()
       }
     } finally {
       isFlushingRef.current = false
     }
-  }, [backendUrl, onUnauthorized])
+  }, [onUnauthorized])
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -181,10 +177,7 @@ async function markFailed(item: OutboxItem, message: string) {
   })
 }
 
-async function processAppendMessages(
-  item: Extract<OutboxItem, { kind: 'appendMessages' }>,
-  { backendUrl }: FlushOptions,
-) {
+async function processAppendMessages(item: Extract<OutboxItem, { kind: 'appendMessages' }>) {
   const map = await getSessionMap(item.payload.clientSessionId)
   if (!map) {
     // 세션이 먼저 만들어져야 해서 대기
@@ -192,7 +185,7 @@ async function processAppendMessages(
   }
 
   try {
-    const url = new URL(`/api/v1/character-chat/sessions/${map.serverSessionId}/messages`, backendUrl)
+    const url = `/api/v1/character-chat/sessions/${map.serverSessionId}/messages`
 
     await fetchAPIData<{ ok: true }>(url, {
       method: 'POST',
@@ -207,12 +200,9 @@ async function processAppendMessages(
   }
 }
 
-async function processCreateSession(
-  item: Extract<OutboxItem, { kind: 'createSession' }>,
-  { backendUrl }: FlushOptions,
-) {
+async function processCreateSession(item: Extract<OutboxItem, { kind: 'createSession' }>) {
   try {
-    const url = new URL('/api/v1/character-chat/sessions', backendUrl)
+    const url = '/api/v1/character-chat/sessions'
 
     const { data } = await fetchAPIData<{ id: number }>(url, {
       method: 'POST',
@@ -233,12 +223,12 @@ async function processCreateSession(
   }
 }
 
-async function processItem(item: OutboxItem, { backendUrl }: FlushOptions): Promise<ProcessResult> {
+async function processItem(item: OutboxItem): Promise<ProcessResult> {
   if (item.kind === 'createSession') {
-    return await processCreateSession(item, { backendUrl })
+    return await processCreateSession(item)
   }
 
-  return await processAppendMessages(item, { backendUrl })
+  return await processAppendMessages(item)
 }
 
 async function reschedule(item: OutboxItem, error: ProblemDetailsError | null) {

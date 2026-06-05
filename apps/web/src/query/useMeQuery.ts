@@ -1,6 +1,5 @@
 import type { GETV1MeResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { CookieKey } from '@litomi/http/cookie'
 import { useQuery } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
@@ -10,10 +9,8 @@ import { useEffect, useState } from 'react'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_APP_ORIGIN } = env
-
 export async function fetchMe() {
-  const url = new URL('/api/v1/me', NEXT_PUBLIC_APP_ORIGIN)
+  const url = '/api/v1/me'
   const { data } = await fetchAPIData<GETV1MeResponse>(url)
   return data
 }

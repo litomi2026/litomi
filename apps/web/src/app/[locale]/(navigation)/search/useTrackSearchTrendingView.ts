@@ -1,12 +1,9 @@
 'use client'
-
-import { env } from '@litomi/env/client'
 import { useEffect, useRef } from 'react'
 
 import { SessionStorageKeyMap } from '@/storage'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_APP_ORIGIN } = env
 const TRACKING_COOLDOWN_MS = 10 * 60 * 1000
 
 type Params = {
@@ -63,7 +60,7 @@ function markTracked(storageKey: string) {
 
 async function postSearchTrendingView(query: string): Promise<boolean> {
   try {
-    await fetchAPIData<void>(new URL('/api/v1/search/trending/view', NEXT_PUBLIC_APP_ORIGIN), {
+    await fetchAPIData<void>('/api/v1/search/trending/view', {
       method: 'POST',
       keepalive: true,
       headers: { 'Content-Type': 'application/json' },

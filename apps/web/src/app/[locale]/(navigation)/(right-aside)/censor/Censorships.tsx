@@ -3,7 +3,6 @@
 import type { DELETEV1CensorshipDeleteResponse } from '@litomi/contracts'
 
 import { CensorshipKey } from '@litomi/domain/censorship/model'
-import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Filter, Loader2, MoreHorizontal, Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -26,8 +25,6 @@ import CensorshipStats from './CensorshipStats'
 import { CENSORSHIP_KEY_MESSAGE_PATHS, CENSORSHIP_KEYS } from './constants'
 import DefaultCensorshipInfo from './DefaultCensorshipInfo'
 
-const { NEXT_PUBLIC_APP_ORIGIN } = env
-
 const ImportExportModal = dynamic(() => import('./ImportExportModal'))
 
 export default function Censorships() {
@@ -45,7 +42,7 @@ export default function Censorships() {
 
   const deleteMutation = useMutation({
     mutationFn: async (ids: number[]) => {
-      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_APP_ORIGIN)
+      const url = '/api/v1/censorship'
 
       const { data } = await fetchAPIData<DELETEV1CensorshipDeleteResponse>(url, {
         method: 'DELETE',

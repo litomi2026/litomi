@@ -2,20 +2,17 @@
 
 import type { POSTV1PointEarnResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export function useEarnPointMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<POSTV1PointEarnResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
-      const url = new URL('/api/v1/points/earn', NEXT_PUBLIC_APP_ORIGIN)
+      const url = '/api/v1/points/earn'
 
       const { data } = await fetchAPIData<POSTV1PointEarnResponse>(url, {
         method: 'POST',

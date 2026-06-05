@@ -2,14 +2,11 @@
 
 import type { GETV1TagResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
+import { apiPath, fetchAPIData } from '@/utils/api-request'
 
 export type CategoryParam = 'female' | 'male' | 'mixed' | 'other'
 
@@ -35,8 +32,7 @@ async function fetchTags(category: CategoryParam, page: number, locale: string) 
     page: String(page),
   })
 
-  const url = new URL('/api/v1/tag', NEXT_PUBLIC_APP_ORIGIN)
-  url.search = searchParams.toString()
+  const url = apiPath('/api/v1/tag', searchParams)
 
   const { data } = await fetchAPIData<GETV1TagResponse>(url)
   return data

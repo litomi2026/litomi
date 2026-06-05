@@ -1,12 +1,9 @@
 import type { GETV1LibraryListResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
+import { apiPath, fetchAPIData } from '@/utils/api-request'
 
 interface Options {
   enabled?: boolean
@@ -21,8 +18,7 @@ export async function fetchLibraryList({ cursor, userId }: { cursor: string | nu
     params.set('cursor', cursor)
   }
 
-  const url = new URL('/api/v1/library', NEXT_PUBLIC_APP_ORIGIN)
-  url.search = params.toString()
+  const url = apiPath('/api/v1/library', params)
   const { data } = await fetchAPIData<GETV1LibraryListResponse>(url)
   return data
 }

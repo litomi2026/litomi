@@ -2,14 +2,11 @@ import type { GETV1BookmarkResponse } from '@litomi/contracts'
 
 import { BOOKMARKS_PER_PAGE } from '@litomi/domain/library/policy'
 import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
-import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
+import { apiPath, fetchAPIData } from '@/utils/api-request'
 
 type Options = {
   enabled?: boolean
@@ -27,8 +24,7 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Librar
     params.set('sort', sort)
   }
 
-  const url = new URL('/api/v1/bookmark', NEXT_PUBLIC_APP_ORIGIN)
-  url.search = params.toString()
+  const url = apiPath('/api/v1/bookmark', params)
 
   const { data } = await fetchAPIData<GETV1BookmarkResponse>(url)
   return data

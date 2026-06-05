@@ -2,14 +2,11 @@ import type { GETSearchSuggestionsResponse } from '@litomi/contracts'
 
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { queryBlacklist } from '@litomi/domain/search/suggestion'
-import { env } from '@litomi/env/client'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData } from '@/utils/api-request'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
+import { apiPath, fetchAPIData } from '@/utils/api-request'
 
 type Params = {
   limit?: number
@@ -29,8 +26,7 @@ export async function fetchSearchSuggestions({ limit, query, locale }: Params) {
     searchParams.set('limit', limit.toString())
   }
 
-  const url = new URL('/api/v1/search/suggestions', NEXT_PUBLIC_APP_ORIGIN)
-  url.search = searchParams.toString()
+  const url = apiPath('/api/v1/search/suggestions', searchParams)
   const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
   return data
 }

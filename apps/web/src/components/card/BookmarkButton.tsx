@@ -2,7 +2,6 @@
 
 import type { GETV1BookmarkIdResponse, PUTV1BookmarkIdResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -20,8 +19,6 @@ import useBookmarkQuery from '@/query/useBookmarkQuery'
 import { fetchAPIData } from '@/utils/api-request'
 
 import { useLibraryModal } from './LibraryModal'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Props = {
   manga: { id: number }
@@ -41,7 +38,7 @@ export default function BookmarkButton({ manga, className }: Props) {
 
   const saveMutation = useMutation<void, unknown, { mangaId: number; shouldBookmark: boolean }>({
     mutationFn: async ({ mangaId, shouldBookmark }) => {
-      const url = new URL(`/api/v1/bookmark/${mangaId}`, NEXT_PUBLIC_APP_ORIGIN)
+      const url = `/api/v1/bookmark/${mangaId}`
 
       if (!shouldBookmark) {
         await fetchAPIData(url, {

@@ -1,6 +1,5 @@
 import type { POSTV1BookmarkImportResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
@@ -9,8 +8,6 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'
-
-const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export function useBookmarkImport() {
   const [importMode, setImportMode] = useState<ImportMode>('merge')
@@ -24,7 +21,7 @@ export function useBookmarkImport() {
     { mode: ImportMode; bookmarks: BookmarkExportData['bookmarks'] }
   >({
     mutationFn: async ({ mode, bookmarks }) => {
-      const url = new URL('/api/v1/bookmark/import', NEXT_PUBLIC_APP_ORIGIN)
+      const url = '/api/v1/bookmark/import'
 
       const { data } = await fetchAPIData<POSTV1BookmarkImportResponse>(url, {
         method: 'POST',

@@ -3,7 +3,6 @@
 import type { GETV1MeResponse, POSTV1PointTurnstileResponse } from '@litomi/contracts'
 
 import { POINT_CONSTANTS } from '@litomi/domain/points/model'
-import { env } from '@litomi/env/client'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { HelpCircle, MousePointerClick, ShieldCheck } from 'lucide-react'
@@ -26,8 +25,6 @@ import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 import { runWhenDocumentVisible } from './util'
 
-const { NEXT_PUBLIC_APP_ORIGIN } = env
-
 export default function RewardedAdSection() {
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
@@ -40,7 +37,7 @@ export default function RewardedAdSection() {
 
   const verifyTurnstile = useMutation<POSTV1PointTurnstileResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
-      const url = new URL('/api/v1/points/turnstile', NEXT_PUBLIC_APP_ORIGIN)
+      const url = '/api/v1/points/turnstile'
 
       const { data } = await fetchAPIData<POSTV1PointTurnstileResponse>(url, {
         method: 'POST',

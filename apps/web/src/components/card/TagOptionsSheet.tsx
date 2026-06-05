@@ -3,7 +3,6 @@
 import type { DELETEV1CensorshipDeleteResponse, POSTV1CensorshipCreateResponse } from '@litomi/contracts'
 
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
-import { env } from '@litomi/env/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Copy, EyeOff, Loader2, Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -33,8 +32,6 @@ const TAG_CATEGORY_TO_CENSORSHIP_KEY: Record<string, CensorshipKey> = {
   other: CensorshipKey.TAG_CATEGORY_OTHER,
 }
 
-const { NEXT_PUBLIC_APP_ORIGIN } = env
-
 export default function TagOptionsSheet({ isOpen, onClose, category, value, label }: Props) {
   const { canAccess, guardAdultAccess, me } = useAdultAccessGuard()
   const { data: censorshipsMap } = useCensorshipsMapQuery()
@@ -52,7 +49,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
 
   const toggleCensorshipMutation = useMutation({
     mutationFn: async () => {
-      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_APP_ORIGIN)
+      const url = '/api/v1/censorship'
 
       if (isCensored && existingCensorship) {
         await fetchAPIData<DELETEV1CensorshipDeleteResponse>(url, {

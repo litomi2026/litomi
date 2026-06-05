@@ -2,7 +2,6 @@
 
 import type { GETV1MeFollowingResponse } from '@litomi/contracts'
 
-import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 
@@ -11,10 +10,8 @@ import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
 
-const { NEXT_PUBLIC_APP_ORIGIN } = env
-
 export async function fetchFollowingUserIds() {
-  const url = new URL('/api/v1/me/following', NEXT_PUBLIC_APP_ORIGIN)
+  const url = '/api/v1/me/following'
   const { data } = await fetchAPIData<GETV1MeFollowingResponse>(url)
   return data
 }
