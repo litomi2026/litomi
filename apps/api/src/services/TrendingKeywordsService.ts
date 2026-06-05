@@ -1,6 +1,5 @@
 import { redis } from '@litomi/db/redis'
 import { sec } from '@litomi/std'
-import ms from 'ms'
 
 export interface TrendingKeyword {
   keyword: string
@@ -8,55 +7,14 @@ export interface TrendingKeyword {
   searchCount?: number
 }
 
-/**
- * Trending keywords service with both Redis and Postgres operations
- */
 class TrendingKeywordsService {
-  protected readonly BATCH_INTERVAL = ms('1 minute')
-  protected readonly BATCH_SIZE = 100
-  protected batchTimer: NodeJS.Timeout | null = null
+  protected readonly AGGREGATE_CACHE_WINDOW = sec('1 minute')
   protected readonly DAILY_KEY = 'trending:daily'
   protected readonly DAILY_WINDOW = sec('24 hours')
   protected readonly HOURLY_AGGREGATION_WINDOW = 5
   protected readonly HOURLY_KEY = 'trending:hourly'
   protected readonly HOURLY_WINDOW = sec('1 hour')
-  protected searchBatch: Map<string, { keyword: string; count: number }> = new Map()
   protected readonly TRENDING_KEY = 'trending:keywords'
-
-  async flushSearchBatch(): Promise<void> {
-    if (this.searchBatch.size === 0) {
-      return
-    }
-
-    const timestamp = Date.now()
-    const hourWindow = Math.floor(timestamp / 1000 / this.HOURLY_WINDOW)
-    const dayWindow = Math.floor(timestamp / 1000 / this.DAILY_WINDOW)
-    const hourlyKey = `${this.HOURLY_KEY}:${hourWindow}`
-    const dailyKey = `${this.DAILY_KEY}:${dayWindow}`
-
-    try {
-      const pipeline = redis.pipeline()
-
-      for (const { keyword, count } of this.searchBatch.values()) {
-        pipeline.zincrby(hourlyKey, count, keyword)
-        pipeline.zincrby(dailyKey, count, keyword)
-      }
-
-      pipeline.expire(hourlyKey, this.HOURLY_WINDOW * (this.HOURLY_AGGREGATION_WINDOW + 1))
-      pipeline.expire(dailyKey, this.DAILY_WINDOW * 2)
-
-      await pipeline.exec()
-    } catch (error) {
-      console.error('flushSearchBatch:', error)
-    } finally {
-      this.searchBatch.clear()
-
-      if (this.batchTimer) {
-        clearTimeout(this.batchTimer)
-        this.batchTimer = null
-      }
-    }
-  }
 
   async getTrendingDaily(limit = 20): Promise<TrendingKeyword[]> {
     const currentDay = Math.floor(Date.now() / 1000 / this.DAILY_WINDOW)
@@ -82,7 +40,7 @@ class TrendingKeywordsService {
 
   async getTrendingHourly(limit = 10): Promise<TrendingKeyword[]> {
     const hourWindow = Math.floor(Date.now() / 1000 / this.HOURLY_WINDOW)
-    const aggregateKey = `${this.TRENDING_KEY}:aggregate:${hourWindow}`
+    const aggregateKey = this.getHourlyAggregateKey(hourWindow)
 
     try {
       const exists = await redis.exists(aggregateKey)
@@ -92,7 +50,7 @@ class TrendingKeywordsService {
         const keys = aggregations.map((_, i) => `${this.HOURLY_KEY}:${hourWindow - i}`)
         const weights = aggregations.map((_, i) => 1 / (i + 1))
         await redis.zunionstore(aggregateKey, keys.length, ...keys, 'WEIGHTS', ...weights)
-        await redis.expire(aggregateKey, this.HOURLY_WINDOW)
+        await redis.expire(aggregateKey, this.AGGREGATE_CACHE_WINDOW)
       }
 
       const trending = await redis.zrange(aggregateKey, limit * -1, -1, 'REV', 'WITHSCORES')
@@ -113,26 +71,34 @@ class TrendingKeywordsService {
   }
 
   async trackSearch(keyword: string): Promise<void> {
-    if (!keyword) {
+    const normalizedKeyword = this.normalizeKeyword(keyword)
+    if (!normalizedKeyword) {
       return
     }
 
-    const normalizedKeyword = this.normalizeKeyword(keyword)
-    const existing = this.searchBatch.get(normalizedKeyword)
+    const timestamp = Date.now()
+    const hourWindow = Math.floor(timestamp / 1000 / this.HOURLY_WINDOW)
+    const dayWindow = Math.floor(timestamp / 1000 / this.DAILY_WINDOW)
+    const hourlyKey = `${this.HOURLY_KEY}:${hourWindow}`
+    const dailyKey = `${this.DAILY_KEY}:${dayWindow}`
 
-    if (existing) {
-      existing.count++
-    } else {
-      this.searchBatch.set(normalizedKeyword, { keyword: normalizedKeyword, count: 1 })
-    }
+    try {
+      const pipeline = redis.pipeline()
 
-    if (!this.batchTimer) {
-      this.batchTimer = setTimeout(() => this.flushSearchBatch(), this.BATCH_INTERVAL)
-    }
+      pipeline.zincrby(hourlyKey, 1, normalizedKeyword)
+      pipeline.zincrby(dailyKey, 1, normalizedKeyword)
+      pipeline.expire(hourlyKey, this.HOURLY_WINDOW * (this.HOURLY_AGGREGATION_WINDOW + 1))
+      pipeline.expire(dailyKey, this.DAILY_WINDOW * 2)
+      pipeline.del(this.getHourlyAggregateKey(hourWindow))
 
-    if (this.searchBatch.size >= this.BATCH_SIZE) {
-      await this.flushSearchBatch()
+      await pipeline.exec()
+    } catch (error) {
+      console.error('trackSearch:', error)
     }
+  }
+
+  protected getHourlyAggregateKey(hourWindow: number): string {
+    return `${this.TRENDING_KEY}:aggregate:v2:${hourWindow}`
   }
 
   protected normalizeKeyword(keyword: string): string {
@@ -157,5 +123,4 @@ class TrendingKeywordsService {
   }
 }
 
-// Singleton instance
 export const trendingKeywordsService = new TrendingKeywordsService()

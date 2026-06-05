@@ -19,6 +19,7 @@ export enum SearchParamKey {
 
 export enum SessionStorageKey {
   READING_HISTORY = 'rh',
+  SEARCH_TRENDING_VIEW = 'search-trending-view',
 }
 
 export type UserSettingsBroadcastMessage = {
@@ -28,4 +29,5 @@ export type UserSettingsBroadcastMessage = {
 
 export const SessionStorageKeyMap = {
   readingHistory: () => `${SessionStorageKey.READING_HISTORY}:v1`,
+  searchTrendingView: (query: string) => `${SessionStorageKey.SEARCH_TRENDING_VIEW}:v1:${encodeURIComponent(query)}`,
 } as const
