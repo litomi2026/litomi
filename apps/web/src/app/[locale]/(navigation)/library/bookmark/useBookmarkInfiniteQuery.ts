@@ -9,7 +9,7 @@ import { useLocale } from 'next-intl'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Options = {
   enabled?: boolean
@@ -27,7 +27,7 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Librar
     params.set('sort', sort)
   }
 
-  const url = new URL('/api/v1/bookmark', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/bookmark', NEXT_PUBLIC_APP_ORIGIN)
   url.search = params.toString()
 
   const { data } = await fetchAPIData<GETV1BookmarkResponse>(url)

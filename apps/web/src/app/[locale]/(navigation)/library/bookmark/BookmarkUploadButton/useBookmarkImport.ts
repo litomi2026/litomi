@@ -10,7 +10,7 @@ import { fetchAPIData } from '@/utils/api-request'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export function useBookmarkImport() {
   const [importMode, setImportMode] = useState<ImportMode>('merge')
@@ -24,7 +24,7 @@ export function useBookmarkImport() {
     { mode: ImportMode; bookmarks: BookmarkExportData['bookmarks'] }
   >({
     mutationFn: async ({ mode, bookmarks }) => {
-      const url = new URL('/api/v1/bookmark/import', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/bookmark/import', NEXT_PUBLIC_APP_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1BookmarkImportResponse>(url, {
         method: 'POST',

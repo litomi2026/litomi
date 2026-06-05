@@ -13,7 +13,7 @@ import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Props = {
   isTwoFactorEnabled: boolean
@@ -26,7 +26,7 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
 
   const unlinkMutation = useMutation<POSTV1BBatonUnlinkResponse, unknown, { password: string; token?: string }>({
     mutationFn: async ({ password, token }) => {
-      const url = new URL('/api/v1/bbaton/unlink', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/bbaton/unlink', NEXT_PUBLIC_APP_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1BBatonUnlinkResponse>(url, {
         method: 'POST',

@@ -10,7 +10,7 @@ import { getLocalReadingHistoryArray } from '@/utils/reading-history-index'
 
 import type { ReadingHistorySource } from './common'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Options = {
   enabled?: boolean
@@ -45,7 +45,7 @@ async function fetchReadingHistoryPaginated(cursor: string | null, locale: strin
     params.set('cursor', cursor)
   }
 
-  const url = new URL('/api/v1/library/history', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/library/history', NEXT_PUBLIC_APP_ORIGIN)
   url.search = params.toString()
 
   const { data } = await fetchAPIData<GETV1ReadingHistoryResponse>(url)

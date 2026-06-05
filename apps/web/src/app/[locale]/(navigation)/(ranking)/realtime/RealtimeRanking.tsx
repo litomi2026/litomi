@@ -16,7 +16,7 @@ import { fetchAPIData } from '@/utils/api-request'
 
 import { useRealtimeStore } from './store'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export default function RealtimeRanking() {
   const isLive = useRealtimeStore((store) => store.isLive)
@@ -125,7 +125,7 @@ export default function RealtimeRanking() {
 }
 
 async function fetchRealtimeAnalytics(): Promise<GETV1AnalyticsRealtimeResponse> {
-  const url = new URL('/api/v1/analytics/realtime', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/analytics/realtime', NEXT_PUBLIC_APP_ORIGIN)
   const { data } = await fetchAPIData<GETV1AnalyticsRealtimeResponse>(url)
   return data
 }

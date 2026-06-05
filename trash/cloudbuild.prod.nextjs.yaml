@@ -32,8 +32,6 @@ steps:
       - '--build-arg'
       - 'ENABLE_CACHE_HANDLER=$_ENABLE_CACHE_HANDLER'
       - '--build-arg'
-      - 'NEXT_PUBLIC_API_ORIGIN=$_NEXT_PUBLIC_API_ORIGIN'
-      - '--build-arg'
       - 'NEXT_PUBLIC_APP_ORIGIN=$_NEXT_PUBLIC_APP_ORIGIN'
       - '--build-arg'
       - 'NEXT_PUBLIC_IMAGE_PROXY_ORIGIN=$_NEXT_PUBLIC_IMAGE_PROXY_ORIGIN'
@@ -104,7 +102,6 @@ substitutions:
   _AR_HOSTNAME: asia-east1-docker.pkg.dev
   _TRIGGER_ID: 3ca1aece-28a5-4cfb-bc1a-6c97498914b8
   _AR_REPOSITORY: cloud-run-source-deploy
-  _NEXT_PUBLIC_API_ORIGIN: ''
   _NEXT_PUBLIC_APP_ORIGIN: ''
   _NEXT_PUBLIC_IMAGE_PROXY_ORIGIN: ''
   _NEXT_PUBLIC_EDGE_PROXY_ORIGIN: ''

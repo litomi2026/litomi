@@ -9,7 +9,7 @@ import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Params = {
   pageParam?: string
@@ -22,7 +22,7 @@ export async function fetchPaginatedCensorships({ pageParam }: Params) {
     params.set('cursor', pageParam)
   }
 
-  const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/censorship', NEXT_PUBLIC_APP_ORIGIN)
   url.search = params.toString()
   const { data } = await fetchAPIData<GETV1CensorshipResponse>(url)
   return data

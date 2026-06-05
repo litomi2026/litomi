@@ -21,7 +21,7 @@ import { fetchAPIData, ProblemDetailsError, UserVisibleError } from '@/utils/api
 import AdultVerificationHelp from './AdultVerificationHelp'
 import BBatonUnlinkSection from './BBatonUnlinkSection'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Props = {
   initialVerification?: {
@@ -58,7 +58,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
   const verifyMutation = useMutation<POSTV1BBatonAttemptResponse, unknown, void>({
     mutationFn: async () => {
-      const url = new URL('/api/v1/bbaton/attempt', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/bbaton/attempt', NEXT_PUBLIC_APP_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1BBatonAttemptResponse>(url, {
         method: 'POST',

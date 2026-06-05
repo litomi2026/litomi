@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { LocalStorageKey } from '@/storage'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type CallbackState = { type: 'error'; message: string } | { type: 'loading' } | { type: 'success' }
 
@@ -17,7 +17,7 @@ export default function BBatonCallbackPage() {
 
   const completeMutation = useMutation<void, unknown, { code: string; state: string }>({
     mutationFn: async ({ code, state }) => {
-      const url = new URL('/api/v1/bbaton/complete', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/bbaton/complete', NEXT_PUBLIC_APP_ORIGIN)
 
       await fetchAPIData<void>(url, {
         method: 'POST',

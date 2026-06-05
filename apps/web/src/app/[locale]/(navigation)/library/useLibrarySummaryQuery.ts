@@ -8,14 +8,14 @@ import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Options = {
   userId?: number
 }
 
 export async function fetchLibrarySummary() {
-  const url = new URL('/api/v1/library/summary', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/library/summary', NEXT_PUBLIC_APP_ORIGIN)
   const { data } = await fetchAPIData<GETV1LibrarySummaryResponse>(url)
   return data
 }

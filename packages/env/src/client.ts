@@ -2,7 +2,6 @@ import { DEFAULT_VAPID_PUBLIC_KEY } from './shared'
 
 export const env = {
   NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV ?? 'local',
-  NEXT_PUBLIC_API_ORIGIN: process.env.NEXT_PUBLIC_API_ORIGIN ?? 'http://localhost:3002',
   NEXT_PUBLIC_APP_ORIGIN: process.env.NEXT_PUBLIC_APP_ORIGIN ?? 'http://localhost:3000',
   NEXT_PUBLIC_COMMIT_SHA: process.env.NEXT_PUBLIC_COMMIT_SHA ?? '',
   NEXT_PUBLIC_EDGE_PROXY_ORIGIN: process.env.NEXT_PUBLIC_EDGE_PROXY_ORIGIN ?? 'http://localhost:3001',

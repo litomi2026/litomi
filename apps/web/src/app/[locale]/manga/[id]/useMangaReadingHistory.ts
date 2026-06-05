@@ -11,7 +11,7 @@ import { isAdultVerified } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 import { getLocalReadingHistory } from '@/utils/reading-history-index'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export default function useMangaReadingHistory(mangaId: number) {
   const { data: me } = useMeQuery()
@@ -29,7 +29,7 @@ export default function useMangaReadingHistory(mangaId: number) {
         return null
       }
 
-      const url = new URL(`/api/v1/manga/${mangaId}/history`, NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL(`/api/v1/manga/${mangaId}/history`, NEXT_PUBLIC_APP_ORIGIN)
 
       const { data } = await fetchAPIData<GETV1MangaIdHistoryResponse | undefined>(url, {
       })

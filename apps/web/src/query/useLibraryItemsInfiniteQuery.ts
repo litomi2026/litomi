@@ -8,7 +8,7 @@ import { useLocale } from 'next-intl'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 interface FetchLibraryItemsOptions {
   cursor: string | null
@@ -26,7 +26,7 @@ interface Options {
 }
 
 export async function fetchLibraryItems({ libraryId, cursor, locale, scope, sort }: FetchLibraryItemsOptions) {
-  const url = new URL(`/api/v1/library/${libraryId}/item`, NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL(`/api/v1/library/${libraryId}/item`, NEXT_PUBLIC_APP_ORIGIN)
   url.searchParams.set('locale', locale)
   url.searchParams.set('scope', scope)
   url.searchParams.set('sort', sort)

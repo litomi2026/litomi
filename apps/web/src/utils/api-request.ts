@@ -9,7 +9,7 @@ import {
 } from '@litomi/http/problem-details'
 import Cookies from 'js-cookie'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export class HTTPResponseError extends Error {
   readonly name = 'HTTPResponseError'
@@ -136,7 +136,7 @@ function getRetryAfterSeconds(response?: Response): number | undefined {
 
 function isAuthRefreshRequest(request: Request): boolean {
   const requestURL = new URL(request.url)
-  const refreshURL = new URL('/api/v1/auth/refresh', NEXT_PUBLIC_API_ORIGIN)
+  const refreshURL = new URL('/api/v1/auth/refresh', NEXT_PUBLIC_APP_ORIGIN)
 
   return requestURL.origin === refreshURL.origin && requestURL.pathname === refreshURL.pathname
 }
@@ -167,7 +167,7 @@ async function readResponseData<T>(response: Response): Promise<T> {
 
 async function refreshAuthCookies(): Promise<boolean> {
   if (!authRefreshPromise) {
-    authRefreshPromise = fetch(new URL('/api/v1/auth/refresh', NEXT_PUBLIC_API_ORIGIN), {
+    authRefreshPromise = fetch(new URL('/api/v1/auth/refresh', NEXT_PUBLIC_APP_ORIGIN), {
       method: 'POST',
       cache: 'no-store',
     })

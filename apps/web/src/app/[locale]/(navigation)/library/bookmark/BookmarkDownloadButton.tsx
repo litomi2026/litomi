@@ -13,14 +13,14 @@ import { twMerge } from 'tailwind-merge'
 import { fetchAPIData } from '@/utils/api-request'
 import { downloadBlob } from '@/utils/download'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export default function BookmarkDownloadButton() {
   const t = useTranslations('Library.bookmark')
 
   const exportMutation = useMutation({
     mutationFn: async () => {
-      const url = new URL('/api/v1/bookmark/export', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/bookmark/export', NEXT_PUBLIC_APP_ORIGIN)
       const { data } = await fetchAPIData<GETV1BookmarkExportResponse>(url)
       return data.bookmarks
     },

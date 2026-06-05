@@ -7,14 +7,14 @@ import { useLocale } from 'next-intl'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type QueryOptions = {
   enabled?: boolean
 }
 
 export async function fetchTransactions(searchParams: URLSearchParams) {
-  const url = new URL('/api/v1/points/transactions', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/points/transactions', NEXT_PUBLIC_APP_ORIGIN)
   url.search = searchParams.toString()
   const { data } = await fetchAPIData<GETV1PointTransactionResponse>(url)
   return data

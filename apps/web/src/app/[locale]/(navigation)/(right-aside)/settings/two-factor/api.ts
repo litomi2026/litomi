@@ -14,10 +14,10 @@ import { env } from '@litomi/env/client'
 
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export async function disableTwoFactor(body: DELETEV1MeTwoFactorBody) {
-  const url = new URL('/api/v1/me/two-factor', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/me/two-factor', NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<DELETEV1MeTwoFactorResponse>(url, {
     method: 'DELETE',
@@ -29,7 +29,7 @@ export async function disableTwoFactor(body: DELETEV1MeTwoFactorBody) {
 }
 
 export async function regenerateTwoFactorBackupCodes(body: POSTV1MeTwoFactorBackupCodesBody) {
-  const url = new URL('/api/v1/me/two-factor/backup-codes', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/me/two-factor/backup-codes', NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1MeTwoFactorBackupCodesResponse>(url, {
     method: 'POST',
@@ -41,7 +41,7 @@ export async function regenerateTwoFactorBackupCodes(body: POSTV1MeTwoFactorBack
 }
 
 export async function requestTwoFactorSetup() {
-  const url = new URL('/api/v1/me/two-factor/setup', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/me/two-factor/setup', NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1MeTwoFactorSetupResponse>(url, {
     method: 'POST',
@@ -51,7 +51,7 @@ export async function requestTwoFactorSetup() {
 }
 
 export async function revokeAllTrustedBrowsers() {
-  const url = new URL('/api/v1/me/trusted-browser/all', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/me/trusted-browser/all', NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<DELETEV1MeTrustedBrowserAllResponse>(url, {
     method: 'DELETE',
@@ -61,7 +61,7 @@ export async function revokeAllTrustedBrowsers() {
 }
 
 export async function revokeTrustedBrowser(id: number) {
-  const url = new URL(`/api/v1/me/trusted-browser/${id}`, NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL(`/api/v1/me/trusted-browser/${id}`, NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<DELETEV1MeTrustedBrowserResponse>(url, {
     method: 'DELETE',
@@ -71,7 +71,7 @@ export async function revokeTrustedBrowser(id: number) {
 }
 
 export async function verifyTwoFactorSetup(body: POSTV1MeTwoFactorVerifyBody) {
-  const url = new URL('/api/v1/me/two-factor/verify', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/me/two-factor/verify', NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1MeTwoFactorVerifyResponse>(url, {
     method: 'POST',

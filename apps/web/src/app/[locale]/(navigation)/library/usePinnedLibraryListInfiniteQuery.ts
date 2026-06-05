@@ -6,7 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 interface Options {
   enabled?: boolean
@@ -20,7 +20,7 @@ export async function fetchPinnedLibraryList({ cursor }: { cursor: string | null
     params.set('cursor', cursor)
   }
 
-  const url = new URL('/api/v1/library', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/library', NEXT_PUBLIC_APP_ORIGIN)
   url.search = params.toString()
   const { data } = await fetchAPIData<GETV1LibraryListResponse>(url)
   return data

@@ -9,11 +9,11 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export async function fetchUserRating(mangaId: number) {
   try {
-    const url = new URL(`/api/v1/manga/${mangaId}/rating`, NEXT_PUBLIC_API_ORIGIN)
+    const url = new URL(`/api/v1/manga/${mangaId}/rating`, NEXT_PUBLIC_APP_ORIGIN)
     const { data } = await fetchAPIData<GETV1MangaIdRatingResponse>(url)
     return data
   } catch (error) {

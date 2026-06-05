@@ -15,8 +15,8 @@ const configDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = join(configDir, '../..')
 const commitSHA = process.env.COMMIT_SHA
 const sentryDeployEnv = process.env.NEXT_PUBLIC_APP_ENV
-const apiOrigin = nextBuildEnv.NEXT_PUBLIC_API_ORIGIN
 const imageProxyOrigin = nextBuildEnv.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN
+const localApiOrigin = nextBuildEnv.API_ORIGIN.replace(/\/$/, '')
 
 const cspHeader = `
   default-src 'self';
@@ -50,7 +50,7 @@ const bbatonCallbackCspHeader = `
   script-src-attr 'none';
   style-src 'self' 'unsafe-inline';
   font-src 'self';
-  connect-src 'self' ${apiOrigin};
+  connect-src 'self';
   base-uri 'none';
   form-action 'none';
   frame-ancestors 'none';
@@ -108,6 +108,17 @@ const nextConfig: NextConfig = {
       ],
     },
   ],
+  rewrites: async () =>
+    isProduction
+      ? []
+      : {
+          beforeFiles: [
+            {
+              source: '/api/:path*',
+              destination: `${localApiOrigin}/api/:path*`,
+            },
+          ],
+        },
   poweredByHeader: false,
   reactCompiler: true,
   outputFileTracingRoot: repoRoot,

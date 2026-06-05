@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Variables = {
   mangaId: number
@@ -20,7 +20,7 @@ export function useSaveRatingMutation() {
 
   return useMutation<GETV1MangaIdRatingResponse, unknown, Variables>({
     mutationFn: async ({ mangaId, rating }) => {
-      const url = new URL(`/api/v1/manga/${mangaId}/rating`, NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL(`/api/v1/manga/${mangaId}/rating`, NEXT_PUBLIC_APP_ORIGIN)
 
       if (rating === 0) {
         await fetchAPIData<void>(url, { method: 'DELETE' })

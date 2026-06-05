@@ -14,7 +14,7 @@ import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
 import { CENSORSHIP_CATEGORIES, CENSORSHIP_KEY_MESSAGE_PATHS, DEFAULT_CENSORSHIP_VALUES } from './constants'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Options = {
   query: string
@@ -33,7 +33,7 @@ type Props = {
 
 export async function fetchCensorshipSuggestions({ query, locale }: Params) {
   const params = new URLSearchParams({ locale, query })
-  const url = new URL('/api/v1/search/suggestions', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/search/suggestions', NEXT_PUBLIC_APP_ORIGIN)
   url.search = params.toString()
   const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
   return data

@@ -21,7 +21,7 @@ import { fetchAPIData } from '@/utils/api-request'
 
 import { useLibraryModal } from './LibraryModal'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Props = {
   manga: { id: number }
@@ -41,7 +41,7 @@ export default function BookmarkButton({ manga, className }: Props) {
 
   const saveMutation = useMutation<void, unknown, { mangaId: number; shouldBookmark: boolean }>({
     mutationFn: async ({ mangaId, shouldBookmark }) => {
-      const url = new URL(`/api/v1/bookmark/${mangaId}`, NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL(`/api/v1/bookmark/${mangaId}`, NEXT_PUBLIC_APP_ORIGIN)
 
       if (!shouldBookmark) {
         await fetchAPIData(url, {

@@ -16,7 +16,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 import { downloadBlob } from '@/utils/download'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 const PLACEHOLDER_JSON = `[
   {
@@ -69,7 +69,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Props)
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
-      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_APP_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1CensorshipCreateResponse>(url, {
         method: 'POST',

@@ -12,7 +12,7 @@ type Props = {
 const inputClass =
   'w-full rounded-xl border border-zinc-800 bg-zinc-950/60 p-3 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-700'
 const textareaClass = `${inputClass} min-h-28 resize-y`
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export default function DmcaCounterFormClient({ dmcaEmail }: Props) {
   const locale = useLocale()
@@ -20,7 +20,7 @@ export default function DmcaCounterFormClient({ dmcaEmail }: Props) {
   const formRef = useRef<HTMLFormElement | null>(null)
   const [template, setTemplate] = useState<string>('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const formActionURL = new URL('/api/v1/dmca/counter', NEXT_PUBLIC_API_ORIGIN)
+  const formActionURL = new URL('/api/v1/dmca/counter', NEXT_PUBLIC_APP_ORIGIN)
   formActionURL.searchParams.set('locale', locale)
   const formAction = formActionURL.toString()
 

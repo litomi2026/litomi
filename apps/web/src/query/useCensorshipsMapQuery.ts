@@ -10,11 +10,11 @@ import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export async function fetchCensorshipsMap() {
   const params = new URLSearchParams({ limit: MAX_CENSORSHIPS_PER_USER.toString() })
-  const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/censorship', NEXT_PUBLIC_APP_ORIGIN)
   url.search = params.toString()
   const { data } = await fetchAPIData<GETV1CensorshipResponse>(url)
   const lookup = new Map<string, CensorshipItem>()

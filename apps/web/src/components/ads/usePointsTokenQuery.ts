@@ -9,7 +9,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { shouldRetryError } from '@/lib/react-query/QueryProvider'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Options = {
   adSlotId: string
@@ -22,7 +22,7 @@ export function usePointsTokenQuery({ adSlotId, enabled }: Options) {
     enabled,
     staleTime: Infinity,
     queryFn: async () => {
-      const url = new URL('/api/v1/points/token', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/points/token', NEXT_PUBLIC_APP_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1PointTokenResponse>(url, {
         method: 'POST',

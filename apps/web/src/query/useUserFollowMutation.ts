@@ -23,7 +23,7 @@ import { fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Context = {
   followingPostListsSnapshot: PostListSnapshot
@@ -47,7 +47,7 @@ type Variables = {
 }
 
 export async function toggleUserFollowing(targetUserId: number, following: boolean) {
-  const url = new URL(`/api/v1/user/${targetUserId}/follow`, NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL(`/api/v1/user/${targetUserId}/follow`, NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<SetUserFollowResponse>(url, {
     method: following ? 'PUT' : 'DELETE',

@@ -8,14 +8,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export default function useLogoutMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<POSTV1AuthLogoutResponse, ProblemDetailsError>({
     mutationFn: async () => {
-      const url = new URL('/api/v1/auth/logout', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/auth/logout', NEXT_PUBLIC_APP_ORIGIN)
       const { data } = await fetchAPIData<POSTV1AuthLogoutResponse>(url, { method: 'POST' })
       return data
     },

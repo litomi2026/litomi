@@ -42,7 +42,7 @@ const STATUS_ENDPOINTS = {
   aiven: 'https://status.aiven.io/api/v2/status.json',
   supabase: 'https://status.supabase.com/api/v2/status.json',
   vercel: 'https://www.vercel-status.com/api/v2/status.json',
-  api: new URL('/api/health', env.NEXT_PUBLIC_API_ORIGIN).toString(),
+  api: new URL('/api/health', env.NEXT_PUBLIC_APP_ORIGIN).toString(),
   litomi: '/health',
 }
 

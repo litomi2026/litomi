@@ -4,10 +4,10 @@ import { env } from '@litomi/env/client'
 
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export async function changeMyPassword(body: PATCHV1MePasswordBody) {
-  const url = new URL('/api/v1/me/password', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/me/password', NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<PATCHV1MePasswordResponse>(url, {
     method: 'PATCH',

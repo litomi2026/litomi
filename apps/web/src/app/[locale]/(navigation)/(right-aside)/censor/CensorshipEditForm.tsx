@@ -14,7 +14,7 @@ import { fetchAPIData } from '@/utils/api-request'
 
 import { CENSORSHIP_LEVELS } from './constants'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Props = {
   censorship: {
@@ -37,7 +37,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Prop
 
   const updateMutation = useMutation({
     mutationFn: async (items: { id: number; key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
-      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/censorship', NEXT_PUBLIC_APP_ORIGIN)
 
       const { data } = await fetchAPIData<PATCHV1CensorshipUpdateResponse>(url, {
         method: 'PATCH',

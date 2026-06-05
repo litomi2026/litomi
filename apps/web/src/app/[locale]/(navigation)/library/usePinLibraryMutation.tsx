@@ -9,7 +9,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export default function usePinLibraryMutation() {
   const queryClient = useQueryClient()
@@ -23,7 +23,7 @@ export default function usePinLibraryMutation() {
     { previous?: InfiniteData<GETV1LibraryListResponse> }
   >({
     mutationFn: async ({ libraryId, action }) => {
-      const url = new URL(`/api/v1/library/${libraryId}/pin`, NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL(`/api/v1/library/${libraryId}/pin`, NEXT_PUBLIC_APP_ORIGIN)
       const method = action === 'pin' ? 'POST' : 'DELETE'
       const { data } = await fetchAPIData(url, { method })
       return data

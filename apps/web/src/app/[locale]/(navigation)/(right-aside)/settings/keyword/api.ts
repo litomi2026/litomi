@@ -12,10 +12,10 @@ import { env } from '@litomi/env/client'
 
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export async function createNotificationCriteria(body: POSTV1NotificationCriteriaBody) {
-  const url = new URL('/api/v1/notification/criteria', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/notification/criteria', NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<POSTV1NotificationCriteriaResponse>(url, {
     method: 'POST',
@@ -27,7 +27,7 @@ export async function createNotificationCriteria(body: POSTV1NotificationCriteri
 }
 
 export async function deleteNotificationCriteria(id: number) {
-  const url = new URL(`/api/v1/notification/criteria/${id}`, NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL(`/api/v1/notification/criteria/${id}`, NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<DELETEV1NotificationCriteriaIdResponse>(url, {
     method: 'DELETE',
@@ -37,7 +37,7 @@ export async function deleteNotificationCriteria(id: number) {
 }
 
 export async function updateNotificationCriteria(id: number, body: PATCHV1NotificationCriteriaIdBody) {
-  const url = new URL(`/api/v1/notification/criteria/${id}`, NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL(`/api/v1/notification/criteria/${id}`, NEXT_PUBLIC_APP_ORIGIN)
 
   const { data } = await fetchAPIData<PATCHV1NotificationCriteriaIdResponse>(url, {
     method: 'PATCH',

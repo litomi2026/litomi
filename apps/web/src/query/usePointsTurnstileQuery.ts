@@ -7,11 +7,11 @@ import ms from 'ms'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export async function fetchPointsTurnstile() {
   try {
-    const url = new URL('/api/v1/points/turnstile', NEXT_PUBLIC_API_ORIGIN)
+    const url = new URL('/api/v1/points/turnstile', NEXT_PUBLIC_APP_ORIGIN)
     const { data } = await fetchAPIData<GETV1PointTurnstileResponse>(url)
     return data
   } catch (error) {

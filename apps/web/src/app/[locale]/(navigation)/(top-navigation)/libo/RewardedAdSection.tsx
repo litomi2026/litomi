@@ -26,7 +26,7 @@ import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
 import { runWhenDocumentVisible } from './util'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export default function RewardedAdSection() {
   const queryClient = useQueryClient()
@@ -40,7 +40,7 @@ export default function RewardedAdSection() {
 
   const verifyTurnstile = useMutation<POSTV1PointTurnstileResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
-      const url = new URL('/api/v1/points/turnstile', NEXT_PUBLIC_API_ORIGIN)
+      const url = new URL('/api/v1/points/turnstile', NEXT_PUBLIC_APP_ORIGIN)
 
       const { data } = await fetchAPIData<POSTV1PointTurnstileResponse>(url, {
         method: 'POST',

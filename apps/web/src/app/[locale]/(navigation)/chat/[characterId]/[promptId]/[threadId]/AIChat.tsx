@@ -16,7 +16,7 @@ import { useWebLLMRuntime } from './hook/useWebLLMRuntime'
 
 type InstallStateKind = 'error' | 'installed' | 'installing' | 'not-installed' | 'unknown'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Props = {
   character: CharacterDefinition
@@ -33,7 +33,7 @@ export default function AIChat({ character, prompt, threadId }: Props) {
   const chatInputDisabled = chatInputDisabledReason !== null
 
   const outbox = useOutboxAutoFlush({
-    backendUrl: NEXT_PUBLIC_API_ORIGIN,
+    backendUrl: NEXT_PUBLIC_APP_ORIGIN,
     onUnauthorized: () => toast.warning('로그인 정보가 만료됐어요'),
   })
 

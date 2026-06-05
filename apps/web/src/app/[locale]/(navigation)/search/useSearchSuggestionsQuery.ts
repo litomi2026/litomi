@@ -9,7 +9,7 @@ import { useLocale } from 'next-intl'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Params = {
   limit?: number
@@ -29,7 +29,7 @@ export async function fetchSearchSuggestions({ limit, query, locale }: Params) {
     searchParams.set('limit', limit.toString())
   }
 
-  const url = new URL('/api/v1/search/suggestions', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/search/suggestions', NEXT_PUBLIC_APP_ORIGIN)
   url.search = searchParams.toString()
   const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
   return data

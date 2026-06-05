@@ -36,7 +36,7 @@ import ShareButton from './ShareButton'
 import useMangaReadingHistory from './useMangaReadingHistory'
 import { getResponsivePictureSources } from './util'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Props = {
   manga: Manga
@@ -80,7 +80,7 @@ export default function MangaReader({ manga }: Props) {
   }
 
   async function handleReadingProgressSave(progress: ReadingProgress, options?: ReadingProgressSaveOptions) {
-    const url = new URL(`/api/v1/manga/${manga.id}/history`, NEXT_PUBLIC_API_ORIGIN)
+    const url = new URL(`/api/v1/manga/${manga.id}/history`, NEXT_PUBLIC_APP_ORIGIN)
 
     const body: POSTV1MangaIdHistoryBody = {
       lastPage: progress.readablePageNumber,

@@ -25,7 +25,7 @@ import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
 import { getRandomLibraryColor } from './libraryColorInput'
 import { getRandomLibraryIcon, preloadLibraryEmojiList, validateLibraryIcon } from './libraryIconInput'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type CreateLibraryPayload = {
   name: string
@@ -379,7 +379,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
 }
 
 async function createLibraryApi(payload: CreateLibraryPayload): Promise<POSTV1LibraryResponse> {
-  const url = new URL('/api/v1/library', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/library', NEXT_PUBLIC_APP_ORIGIN)
   const { data } = await fetchAPIData<POSTV1LibraryResponse>(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

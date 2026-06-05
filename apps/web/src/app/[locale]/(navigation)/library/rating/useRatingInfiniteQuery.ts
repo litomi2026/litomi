@@ -8,7 +8,7 @@ import { useLocale } from 'next-intl'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type Options = {
   enabled?: boolean
@@ -26,7 +26,7 @@ export async function fetchRatingsPaginated(cursor: string, sort: RatingSort, lo
     searchParams.set('sort', sort)
   }
 
-  const url = new URL('/api/v1/library/rating', NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL('/api/v1/library/rating', NEXT_PUBLIC_APP_ORIGIN)
   url.search = searchParams.toString()
   const { data } = await fetchAPIData<GETV1RatingsResponse>(url)
   return data

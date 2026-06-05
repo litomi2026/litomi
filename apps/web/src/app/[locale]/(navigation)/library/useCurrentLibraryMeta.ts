@@ -9,7 +9,7 @@ import { useParams } from 'next/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
 
-const { NEXT_PUBLIC_API_ORIGIN } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 type FetchAccessibleLibraryMetaOptions = {
   libraryId: number
@@ -66,7 +66,7 @@ async function fetchAccessibleLibraryMeta({ libraryId, userId }: FetchAccessible
 }
 
 async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
-  const url = new URL(`/api/v1/library/${libraryId}`, NEXT_PUBLIC_API_ORIGIN)
+  const url = new URL(`/api/v1/library/${libraryId}`, NEXT_PUBLIC_APP_ORIGIN)
   url.searchParams.set('scope', scope)
   const credentials = scope === 'me' ? 'same-origin' : 'omit'
 
