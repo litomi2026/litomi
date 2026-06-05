@@ -12,10 +12,10 @@ type AnalyticsObject = {
 type AnalyticsPrimitive = boolean | number | string | null
 type AnalyticsValue = AnalyticsPrimitive | Date | readonly (AnalyticsObject | AnalyticsPrimitive)[]
 
-const { NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_GTM_SCRIPT_URL } = env
+const { NEXT_PUBLIC_GTM_ID } = env
 
 export function identify(userId: number | string | null) {
-  if (!isGoogleTagManagerEnabled()) {
+  if (!NEXT_PUBLIC_GTM_ID) {
     return
   }
 
@@ -26,7 +26,7 @@ export function identify(userId: number | string | null) {
 }
 
 export function track(eventName: string, params?: AnalyticsParams) {
-  if (!isGoogleTagManagerEnabled()) {
+  if (!NEXT_PUBLIC_GTM_ID) {
     return
   }
 
@@ -34,10 +34,6 @@ export function track(eventName: string, params?: AnalyticsParams) {
     event: eventName,
     ...normalizeParams(params),
   })
-}
-
-function isGoogleTagManagerEnabled() {
-  return Boolean(NEXT_PUBLIC_GTM_ID || NEXT_PUBLIC_GTM_SCRIPT_URL)
 }
 
 function normalizeParams(params?: AnalyticsParams): Record<string, unknown> | undefined {
