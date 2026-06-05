@@ -5,12 +5,13 @@ import {
   getRefreshSessionCookieConfig,
 } from '@litomi/auth/cookie'
 import { issuePersistentSession } from '@litomi/auth/session/persistent-session'
+import { CookieKey } from '@litomi/http/cookie'
 import { hash } from 'bcryptjs'
 import { expect } from 'bun:test'
 
 import { getTrustedBrowserCookieConfig, signTrustedBrowserToken } from '@/api/v1/auth/login/2fa/util'
 
-import { getSetCookieStrings } from './app'
+import { getSetCookieStrings, resolveSetCookieName } from './app'
 
 export const TEST_LOGIN_PASSWORD = 'Password123'
 
@@ -71,30 +72,33 @@ export async function createTrustedBrowserCookies({ browserId, fingerprint, user
 }
 
 export function expectAuthCookiesCleared(response: Response) {
-  for (const name of ['at', 'rt', 'ah']) {
+  for (const name of [CookieKey.ACCESS_TOKEN, CookieKey.REFRESH_TOKEN, CookieKey.AUTH_HINT]) {
     expectCookieCleared(response, name)
   }
 }
 
 export function expectCookieCleared(response: Response, name: string) {
+  const cookieName = resolveSetCookieName(name)
   const cookie = getSetCookieStrings(response).find(
-    (value) => value.startsWith(`${name}=`) && value.includes('Max-Age=0'),
+    (value) => value.startsWith(`${cookieName}=`) && value.includes('Max-Age=0'),
   )
 
   expect(cookie).toBeDefined()
-  expect(cookie).toContain(`${name}=;`)
+  expect(cookie).toContain(`${cookieName}=;`)
   expect(cookie).toContain('Max-Age=0')
 }
 
 export function expectPersistentCookie(response: Response, name: string) {
-  const cookie = getSetCookieStrings(response).find((value) => value.startsWith(`${name}=`))
+  const cookieName = resolveSetCookieName(name)
+  const cookie = getSetCookieStrings(response).find((value) => value.startsWith(`${cookieName}=`))
 
   expect(cookie).toBeDefined()
   expect(cookie).toContain('Max-Age=')
 }
 
 export function expectSessionCookie(response: Response, name: string) {
-  const cookie = getSetCookieStrings(response).find((value) => value.startsWith(`${name}=`))
+  const cookieName = resolveSetCookieName(name)
+  const cookie = getSetCookieStrings(response).find((value) => value.startsWith(`${cookieName}=`))
 
   expect(cookie).toBeDefined()
   expect(cookie).not.toContain('Max-Age=')

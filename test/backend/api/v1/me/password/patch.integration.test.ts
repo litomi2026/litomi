@@ -1,3 +1,4 @@
+import { CookieKey } from '@litomi/http/cookie'
 import { getInvalidParams } from '@litomi/http/problem-details'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
@@ -21,7 +22,7 @@ import { generateSync } from 'otplib'
 
 import { createMeSessionAuthContext } from '../fixtures'
 
-installBackendIntegrationHooks()
+installBackendIntegrationHooks({ redis: true })
 
 const PASSWORD_PATH = '/api/v1/me/password'
 const NEXT_PASSWORD = 'NewPassword123'
@@ -30,7 +31,7 @@ const VERIFICATION_FAILED_DETAIL = '현재 인증 정보를 확인해 주세요'
 function expectAuthCookiesNotCleared(response: Response) {
   const clearedCookies = getSetCookieStrings(response).filter((cookie) => cookie.includes('Max-Age=0'))
 
-  for (const name of ['at', 'rt', 'ah']) {
+  for (const name of [CookieKey.ACCESS_TOKEN, CookieKey.REFRESH_TOKEN, CookieKey.AUTH_HINT]) {
     expect(clearedCookies.some((cookie) => cookie.startsWith(`${name}=`))).toBe(false)
   }
 }
@@ -286,13 +287,13 @@ describe('PATCH /api/v1/me/password', () => {
       json: { currentPassword: 'WrongPass123', newPassword: NEXT_PASSWORD },
     })
 
-    const problem = await expectProblemResponse(response, {
+    await expectProblemResponse(response, {
       status: 429,
       code: 'too-many-requests',
+      detail: '요청이 너무 많아요. 잠시 후 다시 시도해 주세요.',
       instance: PASSWORD_PATH,
     })
 
-    expect(problem.detail).toContain('너무 많은 비밀번호 변경 시도가 있었어요.')
     expect(Number.parseInt(response.headers.get('Retry-After') ?? '0', 10)).toBeGreaterThan(0)
     expectAuthCookiesNotCleared(response)
     await expectCredentialStatePreserved({

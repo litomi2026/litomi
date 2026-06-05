@@ -1,3 +1,4 @@
+import { CookieKey } from '@litomi/http/cookie'
 import { getSetCookieNames, getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import {
   readSessionFamiliesForUser,
@@ -226,8 +227,12 @@ describe('POST /api/v1/auth/login/2fa', () => {
       expect(cookieNames).toEqual(expect.arrayContaining(['at', 'ah', 'tbt']))
       expect(cookieNames).not.toContain('rt')
 
-      const trustedBrowserCookie = getSetCookieStrings(response).find((value) => value.startsWith('tbt='))
-      const trustedBrowserToken = trustedBrowserCookie?.split(';', 1)[0]?.slice('tbt='.length)
+      const trustedBrowserCookie = getSetCookieStrings(response).find((value) =>
+        value.startsWith(`${CookieKey.TRUSTED_BROWSER_TOKEN}=`),
+      )
+      const trustedBrowserToken = trustedBrowserCookie
+        ?.split(';', 1)[0]
+        ?.slice(`${CookieKey.TRUSTED_BROWSER_TOKEN}=`.length)
 
       expect(trustedBrowserToken).toBeTruthy()
 
