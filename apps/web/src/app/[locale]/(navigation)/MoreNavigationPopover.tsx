@@ -56,7 +56,7 @@ const MORE_NAVIGATION_ITEMS = [
 ] satisfies NavigationItem[]
 
 const POPOVER_GAP = 8
-const POPOVER_LEFT_OFFSET = 8
+const POPOVER_LEFT_OFFSET = 6
 
 export default function MoreNavigationPopover({ className }: Props) {
   const [isOpen, setIsOpen] = useState(false)
