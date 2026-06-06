@@ -67,7 +67,7 @@ export default function DefaultCensorshipInfo() {
           <span>{t('defaultInfo.tagSummary')}</span>
         </summary>
         <div className="px-4 pb-4 text-sm text-zinc-400 sm:px-5">
-          <ul className="grid gap-2 sm:grid-cols-2">
+          <ul className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
             {defaultCensorshipValueGroups.map(({ messagePath, values }) => (
               <li className="rounded-lg border border-zinc-800 bg-zinc-950/35 px-3 py-2" key={messagePath}>
                 <span className="font-medium text-zinc-300">{t(messagePath)}</span>

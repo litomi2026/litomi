@@ -27,9 +27,9 @@ export const messages = {
         },
         blindTags: {
           bestiality: '수간',
-          guro: '고어',
+          guro: '잔인',
           bl: 'BL',
-          scat: '스캇',
+          scat: '배변',
         },
       },
       card: {
@@ -109,7 +109,7 @@ export const messages = {
       defaultInfo: {
         enabledStatus: '기본 흐림 처리가 켜져 있어요',
         disabledStatus: '기본 흐림 처리가 꺼져 있어요',
-        description: '직접 추가한 검열 규칙과 개별 태그 해제 설정은 그대로 유지돼요',
+        description: '수간, 잔인, BL, 배설 관련 기본 태그를 흐리게 처리해요.',
         enableSuccessToast: '기본 흐림 처리를 다시 켰어요',
         disableSuccessToast: '기본 흐림 처리를 껐어요',
         enableAction: '기본 흐림 처리 켜기',
@@ -248,7 +248,7 @@ export const messages = {
       defaultInfo: {
         enabledStatus: 'Default blur is on',
         disabledStatus: 'Default blur is off',
-        description: 'Your custom censorship rules and individual tag overrides are kept as-is.',
+        description: 'Default bestiality, snuff, BL, and scat-related tags are blurred.',
         enableSuccessToast: 'Default blur turned back on',
         disableSuccessToast: 'Default blur turned off',
         enableAction: 'Turn on default blur',
@@ -385,7 +385,7 @@ export const messages = {
       defaultInfo: {
         enabledStatus: 'デフォルトぼかしがオンです',
         disabledStatus: 'デフォルトぼかしがオフです',
-        description: '自分で追加した検閲ルールと個別タグ解除設定はそのまま維持されます',
+        description: '獣姦、殺害、BL、スカトロ関連のデフォルトタグをぼかします。',
         enableSuccessToast: 'デフォルトぼかしを再度オンにしました',
         disableSuccessToast: 'デフォルトぼかしをオフにしました',
         enableAction: 'デフォルトぼかしをオン',
@@ -522,7 +522,7 @@ export const messages = {
       defaultInfo: {
         enabledStatus: '默认模糊已开启',
         disabledStatus: '默认模糊已关闭',
-        description: '你手动添加的屏蔽规则和单独标签解除设置会保持不变',
+        description: '默认模糊兽交、杀害、BL、排泄相关标签。',
         enableSuccessToast: '已重新开启默认模糊',
         disableSuccessToast: '已关闭默认模糊',
         enableAction: '开启默认模糊',
