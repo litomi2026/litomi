@@ -109,7 +109,7 @@ export const messages = {
       defaultInfo: {
         enabledStatus: '기본 흐림 처리가 켜져 있어요',
         disabledStatus: '기본 흐림 처리가 꺼져 있어요',
-        description: '수간, 잔인, BL, 배설 관련 기본 태그를 흐리게 처리해요.',
+        description: '수간, 잔인, BL, 배설 관련 작품을 흐리게 처리해요.',
         enableSuccessToast: '기본 흐림 처리를 다시 켰어요',
         disableSuccessToast: '기본 흐림 처리를 껐어요',
         enableAction: '기본 흐림 처리 켜기',
