@@ -31,6 +31,7 @@ export default function PostCard({ post, showMangaCover }: Props) {
   const authorNickname = author?.nickname
   const content = post.content ?? ''
   const hasInternalURL = checkInternalURL(content)
+  const isReply = post.parentPostId !== null
 
   const socialStats = [
     { Icon: MessageCircle, label: postT('comments'), value: post.commentCount },
@@ -71,6 +72,7 @@ export default function PostCard({ post, showMangaCover }: Props) {
         {hasInternalURL ? (
           <div className="p-3">
             <p className="min-w-0 whitespace-pre-wrap break-all text-sm leading-relaxed line-clamp-4 text-zinc-100">
+              {isReply && <ReplyMarker label={postT('replies')} />}
               {renderTextWithLinks(content)}
             </p>
             <Link
@@ -84,6 +86,7 @@ export default function PostCard({ post, showMangaCover }: Props) {
         ) : (
           <Link className="block p-3" href={getPostDetailHref(post.id)} prefetch={false}>
             <p className="min-w-0 whitespace-pre-wrap break-all text-sm leading-relaxed line-clamp-4 text-zinc-100">
+              {isReply && <ReplyMarker label={postT('replies')} />}
               {content || <span className="text-zinc-400">{commonT('deletedPost')}</span>}
             </p>
           </Link>
@@ -206,6 +209,22 @@ function renderURL(url: string, key: string) {
   }
 
   return url
+}
+
+function ReplyMarker({ label }: { label: string }) {
+  return (
+    <>
+      <span className="sr-only">{label}: </span>
+      <svg
+        aria-hidden
+        className="mr-1 inline-block size-[0.82em] align-[-0.04em] text-zinc-600"
+        fill="none"
+        viewBox="0 0 12 12"
+      >
+        <path d="M3.5 2.5v4.25A2.25 2.25 0 0 0 5.75 9H10" stroke="currentColor" strokeLinecap="round" />
+      </svg>
+    </>
+  )
 }
 
 function safeParseURL(url: string): URL | null {
