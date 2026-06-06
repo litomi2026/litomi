@@ -134,8 +134,7 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       },
       browser: {
         public: true,
-        maxAge: 5,
-        swr: 5,
+        maxAge: 3,
       },
     })
   }
