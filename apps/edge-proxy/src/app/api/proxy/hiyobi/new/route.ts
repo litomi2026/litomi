@@ -21,25 +21,23 @@ export async function GET(request: Request) {
   const validation = GETProxyHiyobiNewSchema.safeParse(searchParams)
 
   if (!validation.success) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 400,
       code: 'bad-request',
       detail: '잘못된 요청이에요',
       headers: createProxyHeaders(),
     })
-    return response
   }
 
   const { page } = validation.data
 
   if (request.signal?.aborted) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 499,
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
       headers: createProxyHeaders(),
     })
-    return response
   }
 
   try {
@@ -48,12 +46,12 @@ export async function GET(request: Request) {
     const headers = createProxyHeaders(
       createCacheControlHeaders({
         vercel: {
-          maxAge: sec('3 hours'),
+          public: true,
+          maxAge: sec('4 hours'),
         },
         browser: {
           public: true,
-          maxAge: sec('10 minutes'),
-          sMaxAge: sec('40 minutes'),
+          maxAge: 3,
           swr: sec('10 minutes'),
         },
       }),

@@ -145,7 +145,12 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
     return createCacheControlHeaders({
       vercel: {
         public: true,
-        maxAge: sec('180 days'),
+        maxAge: sec('90 days'),
+        swr,
+      },
+      cloudflare: {
+        public: true,
+        maxAge: sec('90 days'),
         swr,
       },
       browser: {

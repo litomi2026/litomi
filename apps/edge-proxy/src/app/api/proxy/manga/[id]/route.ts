@@ -41,15 +41,23 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id } = validation.data
 
   if (BLACKLISTED_MANGA_IDS.includes(id)) {
+    const swr = sec('10 minutes')
+
     const forbiddenHeaders = createCacheControlHeaders({
       vercel: {
+        public: true,
         maxAge: sec('90 days'),
+        swr,
+      },
+      cloudflare: {
+        public: true,
+        maxAge: sec('90 days'),
+        swr,
       },
       browser: {
         public: true,
-        maxAge: 3,
-        sMaxAge: sec('30 days'),
-        swr: sec('10 minutes'),
+        maxAge: sec('10 minutes'),
+        swr,
       },
     })
 
@@ -99,37 +107,67 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const manga = await fetchMangaFromMultiSources({ id, locale: Locale.KO, signal: request.signal })
 
     if (!manga) {
-      const isPermanentlyMissing = id <= LAST_VERIFIED_MANGA_ID
+      if (id <= LAST_VERIFIED_MANGA_ID) {
+        const swr = sec('10 minutes')
 
-      const notFoundHeaders = createCacheControlHeaders({
+        const headers = createCacheControlHeaders({
+          vercel: {
+            public: true,
+            maxAge: sec('90 days'),
+            swr,
+          },
+          cloudflare: {
+            public: true,
+            sMaxAge: sec('90 days'),
+            swr,
+          },
+          browser: {
+            public: true,
+            maxAge: 3,
+            swr,
+          },
+        })
+
+        return createProblemDetailsResponse(request, {
+          status: 410,
+          code: 'not-found',
+          detail: '요청하신 작품을 찾을 수 없어요',
+          headers: createProxyHeaders(headers),
+        })
+      }
+
+      const headers = createCacheControlHeaders({
         vercel: {
-          maxAge: isPermanentlyMissing ? sec('90 days') : sec('10 minutes'),
+          public: true,
+          maxAge: sec('1 hour'),
+        },
+        cloudflare: {
+          public: true,
+          sMaxAge: sec('10 minutes'),
         },
         browser: {
           public: true,
           maxAge: 3,
-          sMaxAge: isPermanentlyMissing ? sec('30 days') : sec('1 hour'),
-          swr: sec('10 minutes'),
         },
       })
 
       return createProblemDetailsResponse(request, {
-        status: isPermanentlyMissing ? 410 : 404,
+        status: 404,
         code: 'not-found',
         detail: '요청하신 작품을 찾을 수 없어요',
-        headers: createProxyHeaders(notFoundHeaders),
+        headers: createProxyHeaders(headers),
       })
     }
 
     if ('isError' in manga) {
       const errorHeaders = createCacheControlHeaders({
         vercel: {
-          maxAge: 3,
+          public: true,
+          maxAge: 10,
         },
         browser: {
           public: true,
           maxAge: 3,
-          sMaxAge: 10,
         },
       })
 
