@@ -17,6 +17,8 @@ import { GETProxyMangaIdSchema } from './schema'
 export const runtime = 'edge'
 
 const BOT_ID_ALLOWED_FRONTEND_HOSTS = ['litomi.in', 'stg.litomi.in']
+const BROWSER_CACHE_MAX_AGE = 3
+const VERCEL_CACHE_RATIO = 0.7
 
 type Params = {
   id: string
@@ -139,20 +141,28 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       return Response.json(mangaWithoutIsError, { headers })
     }
 
-    // NOTE: 첫번쨰 이미지만 확인함
+    // NOTE: 모든 이미지 TTL이 동일해서 첫 번째 이미지만 확인함
     const firstImageURL = manga.images?.[0]?.original?.url ?? manga.images?.[0]?.thumbnail?.url ?? ''
     const optimalCacheDuration = calculateOptimalCacheDuration([firstImageURL])
-    const swr = Math.floor(optimalCacheDuration * 0.01)
+    const cacheBudget = Math.max(0, optimalCacheDuration - BROWSER_CACHE_MAX_AGE)
+    const vercelCacheWindow = Math.floor(cacheBudget * VERCEL_CACHE_RATIO)
+    const cloudflareCacheWindow = cacheBudget - vercelCacheWindow
+    const swr = Math.min(sec('10 minutes'), Math.floor(cacheBudget * 0.005))
 
     const successHeaders = createCacheControlHeaders({
       vercel: {
-        maxAge: 3,
+        public: true,
+        maxAge: vercelCacheWindow - swr,
+        swr,
+      },
+      cloudflare: {
+        public: true,
+        maxAge: cloudflareCacheWindow - swr,
+        swr,
       },
       browser: {
         public: true,
-        maxAge: 3,
-        sMaxAge: optimalCacheDuration - swr,
-        swr,
+        maxAge: BROWSER_CACHE_MAX_AGE,
       },
     })
 

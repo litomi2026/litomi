@@ -1,3 +1,4 @@
+import { CookieKey } from '@litomi/http/cookie'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { createTrustedBrowserCookies, expectCookieCleared } from '@test/backend/setup/auth'
 import {
@@ -274,7 +275,7 @@ describe('POST /api/v1/auth/login', () => {
       const response = await requestBackend({
         path: '/api/v1/auth/login',
         method: 'POST',
-        cookies: 'tbt=definitely-not-a-jwt',
+        cookies: `${CookieKey.TRUSTED_BROWSER_TOKEN}=definitely-not-a-jwt`,
         headers: buildAuthHeaders({ ip: '203.0.113.22' }),
         json: request.payload,
       })
