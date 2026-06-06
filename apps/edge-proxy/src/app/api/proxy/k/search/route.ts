@@ -25,13 +25,12 @@ export async function GET(request: Request) {
   const validation = GETProxyKSearchSchema.safeParse(searchParams)
 
   if (!validation.success) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 400,
       code: 'bad-request',
       detail: '잘못된 요청이에요',
       headers: createProxyHeaders(),
     })
-    return response
   }
 
   const {
@@ -85,13 +84,12 @@ export async function GET(request: Request) {
   }
 
   if (requestSignal?.aborted) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 499,
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
       headers: createProxyHeaders(),
     })
-    return response
   }
 
   try {
@@ -130,26 +128,29 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   if (sort === 'random') {
     return createCacheControlHeaders({
       vercel: {
-        maxAge: sec('10 seconds'),
-      },
-      browser: {
         public: true,
-        maxAge: sec('20 seconds'),
-        sMaxAge: sec('30 seconds'),
-      },
-    })
-  }
-
-  if (nextId) {
-    return createCacheControlHeaders({
-      vercel: {
-        maxAge: sec('90 days'),
+        maxAge: 20,
+        swr: 5,
       },
       browser: {
         public: true,
         maxAge: 3,
-        sMaxAge: sec('30 days'),
-        swr: sec('10 minutes'),
+      },
+    })
+  }
+
+  const swr = sec('10 minutes')
+
+  if (nextId) {
+    return createCacheControlHeaders({
+      vercel: {
+        public: true,
+        maxAge: sec('180 days'),
+        swr,
+      },
+      browser: {
+        public: true,
+        maxAge: 3,
       },
     })
   }
@@ -157,26 +158,26 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   if (nextViews) {
     return createCacheControlHeaders({
       vercel: {
-        maxAge: sec('1 hour'),
+        public: true,
+        maxAge: sec('1 day'),
+        swr,
       },
       browser: {
         public: true,
         maxAge: 3,
-        sMaxAge: sec('1 day'),
-        swr: sec('10 minutes'),
       },
     })
   }
 
   return createCacheControlHeaders({
     vercel: {
-      maxAge: sec('10 minutes'),
+      public: true,
+      maxAge: sec('1 hour'),
+      swr,
     },
     browser: {
       public: true,
       maxAge: 3,
-      sMaxAge: sec('1 hour'),
-      swr: sec('10 minutes'),
     },
   })
 }
