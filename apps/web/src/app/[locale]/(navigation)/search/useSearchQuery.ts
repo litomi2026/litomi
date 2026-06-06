@@ -7,6 +7,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchAPIData } from '@/utils/api-request'
 
+import { createCanonicalSearchParams } from './canonicalSearchParams'
 import { SearchParam, SearchSort } from './constants'
 import { addLanguageFilterIfMissing, readPreferredSearchLanguage } from './searchLanguage'
 
@@ -49,7 +50,7 @@ export function useSearchQuery(searchParams: URLSearchParams) {
       }
 
       const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
-      url.search = pagedParams.toString()
+      url.search = createCanonicalSearchParams(pagedParams).toString()
       const { data } = await fetchAPIData<GETProxyKSearchResponse>(url)
       return data
     },
