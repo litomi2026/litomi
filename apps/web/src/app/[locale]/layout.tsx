@@ -27,7 +27,7 @@ import QueryProvider from '@/lib/react-query/QueryProvider'
 
 import NewYearToastNudge from './nye/NewYearToastNudge'
 
-const { NEXT_PUBLIC_APP_ORIGIN, NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_GTM_SCRIPT_URL } = env
+const { NEXT_PUBLIC_APP_ORIGIN, NEXT_PUBLIC_GTM_ID } = env
 
 const PretendardVariable = localFont({
   src: '../../fonts/PretendardVariable.400-700.3713.woff2',
@@ -130,9 +130,7 @@ export default async function RootLayout({ children, params }: Props) {
         </NextIntlClientProvider>
         <ServiceWorkerRegistrar />
         <HiyobiPing />
-        {(NEXT_PUBLIC_GTM_ID || NEXT_PUBLIC_GTM_SCRIPT_URL) && (
-          <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} gtmScriptUrl={NEXT_PUBLIC_GTM_SCRIPT_URL} />
-        )}
+        {NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} />}
         <p className="h-0 overflow-hidden tracking-widest invisible">
           <SEOText />
         </p>

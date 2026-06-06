@@ -1,7 +1,7 @@
 import 'server-only'
 import type { NativeGridSponsor, NativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 
-import { getRandomDecimal } from '@litomi/std'
+import { getElementBySecureFisherYates } from '@litomi/std'
 
 import nativeGridSponsorsJSON from './native-grid.json'
 
@@ -127,6 +127,5 @@ function pickHighestPrioritySponsor(sponsors: NativeGridSponsorConfig[]) {
     }
   }
 
-  const randomIndex = Math.floor(getRandomDecimal() * highestPrioritySponsors.length)
-  return highestPrioritySponsors[randomIndex]
+  return getElementBySecureFisherYates(highestPrioritySponsors)
 }

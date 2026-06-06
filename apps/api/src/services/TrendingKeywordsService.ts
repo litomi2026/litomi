@@ -21,7 +21,7 @@ class TrendingKeywordsService {
     const dailyKey = `${this.DAILY_KEY}:${currentDay}`
 
     try {
-      const trending = await redis.zrange(dailyKey, limit * -1, -1, 'REV', 'WITHSCORES')
+      const trending = await redis.zrange(dailyKey, 0, limit - 1, 'REV', 'WITHSCORES')
       const results: TrendingKeyword[] = []
 
       for (let i = 0; i < trending.length; i += 2) {
@@ -53,7 +53,7 @@ class TrendingKeywordsService {
         await redis.expire(aggregateKey, this.AGGREGATE_CACHE_WINDOW)
       }
 
-      const trending = await redis.zrange(aggregateKey, limit * -1, -1, 'REV', 'WITHSCORES')
+      const trending = await redis.zrange(aggregateKey, 0, limit - 1, 'REV', 'WITHSCORES')
       const results: TrendingKeyword[] = []
 
       for (let i = 0; i < trending.length; i += 2) {

@@ -188,12 +188,20 @@ trendingRoutes.get('/', zProblemValidator('query', getTrendingKeywordsQuerySchem
     updatedAt: new Date(),
   }
 
-  const cacheControl = createCacheControl({
-    public: true,
-    maxAge: 3,
-    sMaxAge: cacheMaxAge,
-    swr: Math.floor(cacheMaxAge / 2),
-  })
+  const cacheControl =
+    response.keywords.length > 0
+      ? createCacheControl({
+          public: true,
+          maxAge: 3,
+          sMaxAge: cacheMaxAge,
+          swr: Math.floor(cacheMaxAge / 2),
+        })
+      : createCacheControl({
+          public: true,
+          maxAge: 1,
+          sMaxAge: 10,
+          swr: 0,
+        })
 
   return c.json<GETTrendingKeywordsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
