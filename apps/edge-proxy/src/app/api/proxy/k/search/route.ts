@@ -25,13 +25,12 @@ export async function GET(request: Request) {
   const validation = GETProxyKSearchSchema.safeParse(searchParams)
 
   if (!validation.success) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 400,
       code: 'bad-request',
       detail: '잘못된 요청이에요',
       headers: createProxyHeaders(),
     })
-    return response
   }
 
   const {
@@ -85,13 +84,12 @@ export async function GET(request: Request) {
   }
 
   if (requestSignal?.aborted) {
-    const response = createProblemDetailsResponse(request, {
+    return createProblemDetailsResponse(request, {
       status: 499,
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
       headers: createProxyHeaders(),
     })
-    return response
   }
 
   try {
@@ -148,7 +146,7 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
     return createCacheControlHeaders({
       vercel: {
         public: true,
-        maxAge: sec('90 days'),
+        maxAge: sec('180 days'),
         swr,
       },
       browser: {
@@ -162,7 +160,7 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
     return createCacheControlHeaders({
       vercel: {
         public: true,
-        maxAge: sec('1 hour'),
+        maxAge: sec('1 day'),
         swr,
       },
       browser: {
