@@ -13,7 +13,7 @@ import { MetricParam, PeriodParam } from '../(ranking)/common'
 import { getRankingData } from '../(ranking)/ranking/[metric]/[period]/query'
 import RankingList from '../(ranking)/ranking/[metric]/[period]/RankingList'
 
-export const revalidate = 21600 // 6 hours
+export const revalidate = 43200 // 12 hours
 
 export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
   const locale = await getLocaleFromParams(params)
