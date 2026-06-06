@@ -1,5 +1,3 @@
-import type { PublicLocale } from '@litomi/domain/locale'
-
 import { APP_METADATA } from '@litomi/domain/app/metadata'
 import { Home, Search, SearchX } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
@@ -28,7 +26,7 @@ const shelfItems = [
 ]
 
 export default async function NotFound() {
-  const locale = (await getLocale()) as PublicLocale
+  const locale = await getLocale()
   const t = await getTranslations('NotFound')
 
   const shortName = APP_METADATA[locale].shortName
