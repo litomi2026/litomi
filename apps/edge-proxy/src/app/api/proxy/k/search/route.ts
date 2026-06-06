@@ -130,26 +130,33 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   if (sort === 'random') {
     return createCacheControlHeaders({
       vercel: {
-        maxAge: sec('10 seconds'),
+        maxAge: 20,
+        swr: 5,
+      },
+      cloudflare: {
+        public: true,
+        maxAge: 10,
+        swr: 5,
       },
       browser: {
         public: true,
-        maxAge: sec('20 seconds'),
-        sMaxAge: sec('30 seconds'),
+        maxAge: 5,
+        swr: 5,
       },
     })
   }
+
+  const swr = sec('10 minutes')
 
   if (nextId) {
     return createCacheControlHeaders({
       vercel: {
         maxAge: sec('90 days'),
+        swr,
       },
       browser: {
         public: true,
         maxAge: 3,
-        sMaxAge: sec('30 days'),
-        swr: sec('10 minutes'),
       },
     })
   }
@@ -158,25 +165,23 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
     return createCacheControlHeaders({
       vercel: {
         maxAge: sec('1 hour'),
+        swr,
       },
       browser: {
         public: true,
         maxAge: 3,
-        sMaxAge: sec('1 day'),
-        swr: sec('10 minutes'),
       },
     })
   }
 
   return createCacheControlHeaders({
     vercel: {
-      maxAge: sec('10 minutes'),
+      maxAge: sec('1 hour'),
+      swr,
     },
     browser: {
       public: true,
       maxAge: 3,
-      sMaxAge: sec('1 hour'),
-      swr: sec('10 minutes'),
     },
   })
 }
