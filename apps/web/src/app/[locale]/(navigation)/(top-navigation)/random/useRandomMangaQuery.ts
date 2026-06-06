@@ -3,6 +3,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
+import { createCanonicalSearchParams } from '@/app/[locale]/(navigation)/search/canonicalSearchParams'
 import { SearchParam, SearchSort } from '@/app/[locale]/(navigation)/search/constants'
 import {
   addLanguageFilterIfMissing,
@@ -42,8 +43,7 @@ export function useRandomMangaQuery() {
 
 async function fetchRandomManga(params: URLSearchParams) {
   const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
-  url.search = params.toString()
-
+  url.search = createCanonicalSearchParams(params).toString()
   const { data } = await fetchAPIData<ProxyRandomResponse>(url)
   return data
 }
