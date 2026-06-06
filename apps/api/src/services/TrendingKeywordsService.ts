@@ -107,19 +107,25 @@ class TrendingKeywordsService {
       .split(/\s+/)
       .filter((part) => part.length > 0)
 
-    const categorizedTags: string[] = []
+    const includedCategorizedTags: string[] = []
+    const excludedCategorizedTags: string[] = []
     const normalText: string[] = []
 
     for (const part of parts) {
       if (part.includes(':')) {
-        categorizedTags.push(part)
+        if (part.startsWith('-')) {
+          excludedCategorizedTags.push(part)
+        } else {
+          includedCategorizedTags.push(part)
+        }
       } else {
         normalText.push(part)
       }
     }
 
-    categorizedTags.sort((a, b) => a.localeCompare(b))
-    return [...normalText, ...categorizedTags].join(' ')
+    includedCategorizedTags.sort((a, b) => a.localeCompare(b))
+    excludedCategorizedTags.sort((a, b) => a.localeCompare(b))
+    return [...normalText, ...includedCategorizedTags, ...excludedCategorizedTags].join(' ')
   }
 }
 
