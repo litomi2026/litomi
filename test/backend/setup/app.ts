@@ -1,6 +1,6 @@
-import { CookieKey } from '@litomi/http/cookie'
+import './redis'
 
-import backendApp from '@/app'
+import { CookieKey } from '@litomi/http/cookie'
 
 type BackendRequestOptions = {
   cookies?: string | readonly string[]
@@ -12,6 +12,8 @@ type BackendRequestOptions = {
 
 const REQUEST_IP_PORT = 3002
 const REQUEST_IP_ADDRESS = '127.0.0.1'
+
+let backendAppPromise: Promise<typeof import('@/app').default> | null = null
 
 export function getSetCookieNames(response: Response) {
   return getSetCookieStrings(response)
@@ -31,6 +33,7 @@ export function getSetCookieStrings(response: Response): string[] {
 }
 
 export async function requestBackend({ path, method = 'GET', headers, cookies, json }: BackendRequestOptions) {
+  const backendApp = await getBackendApp()
   const requestHeaders = new Headers(headers)
 
   if (!requestHeaders.has('Origin')) {
@@ -79,6 +82,11 @@ export function resolveSetCookieName(name: string) {
     default:
       return name
   }
+}
+
+async function getBackendApp() {
+  backendAppPromise ??= import('@/app').then((module) => module.default)
+  return await backendAppPromise
 }
 
 function normalizeSetCookieName(name: string | undefined) {

@@ -7,7 +7,7 @@ import { describe, expect, test } from 'bun:test'
 import { buildAuthHeaders, installAuthIntegrationHooks } from '../fixtures'
 import { buildSignupRequest, installSignupTurnstileGuard } from './fixtures'
 
-installAuthIntegrationHooks()
+installAuthIntegrationHooks({ redis: true })
 
 describe('POST /api/v1/auth/signup', () => {
   test('성공하면 201과 인증 쿠키를 반환한다', async () => {

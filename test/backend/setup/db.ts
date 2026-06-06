@@ -1,3 +1,5 @@
+import './redis'
+
 import { encryptTOTPSecret } from '@litomi/auth/two-factor'
 import { generateBackupCodes } from '@litomi/auth/two-factor-backup-code'
 import { db } from '@litomi/db/app'
@@ -9,12 +11,12 @@ import { userExpansionTable } from '@litomi/db/app/points'
 import { postTable } from '@litomi/db/app/post'
 import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { userFollowTable, userSettingsTable, userTable } from '@litomi/db/app/user'
-import { connectRedis, pingRedis, redis } from '@litomi/db/redis'
 import { DeviceType } from '@litomi/domain/auth/model'
 import { DEFAULT_SEARCH_LANGUAGE } from '@litomi/domain/search/language'
 import { eq, sql } from 'drizzle-orm'
 
 import { getTestPasswordHash, TEST_LOGIN_PASSWORD } from './auth'
+import { connectRedis, pingRedis, redis } from './redis'
 
 let uniqueUserSequence = 0
 let uniquePasskeyCredentialSequence = 0

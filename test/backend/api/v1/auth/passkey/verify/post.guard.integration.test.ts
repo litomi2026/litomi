@@ -1,4 +1,4 @@
-import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
+import '@test/backend/setup/redis'
 import { ChallengeType } from '@litomi/domain/auth/model'
 import { CookieKey } from '@litomi/http/cookie'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
@@ -18,6 +18,8 @@ import { buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
 import { buildPasskeyAuthentication, installPasskeyTurnstileGuard, issuePasskeyAttempt } from '../fixtures'
 
 type VerifyAuthenticationResult = Awaited<ReturnType<typeof SimpleWebAuthnServer.verifyAuthenticationResponse>>
+
+const { getAndDeleteChallenge } = await import('@litomi/auth/redis-challenge')
 
 installAuthIntegrationHooks({ redis: true })
 
