@@ -18,7 +18,6 @@ export const runtime = 'edge'
 
 const BOT_ID_ALLOWED_FRONTEND_HOSTS = ['litomi.in', 'stg.litomi.in']
 const BROWSER_CACHE_MAX_AGE = 3
-const CLOUDFLARE_CACHE_RATIO = 0.3
 const VERCEL_CACHE_RATIO = 0.7
 
 type Params = {
