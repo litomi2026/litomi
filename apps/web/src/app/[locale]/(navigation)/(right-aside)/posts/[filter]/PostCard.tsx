@@ -46,7 +46,7 @@ export default function PostCard({ post, showMangaCover }: Props) {
       <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-foreground">
         {(authorNickname ?? commonT('deletedUserShort')).slice(0, 2)}
       </Squircle>
-      <div className="ml-1 min-w-0 flex-1 truncate" title={authorNickname}>
+      <div className="ml-1 min-w-0 flex-1 truncate">
         {authorNickname ?? <span className="text-zinc-400">{commonT('deletedUser')}</span>}
       </div>
       <div
@@ -94,7 +94,12 @@ export default function PostCard({ post, showMangaCover }: Props) {
 
         <div className={`flex items-center gap-2 pr-3 ${hasSocialStats ? 'pb-2' : 'pb-3'} text-xs text-zinc-400`}>
           {author ? (
-            <Link className="flex min-w-0 flex-1 items-center gap-1 pl-3" href={`/@${author.name}`} prefetch={false}>
+            <Link
+              className="flex min-w-0 flex-1 items-center gap-1 pl-3"
+              href={`/@${author.name}`}
+              prefetch={false}
+              title={`@${author.name}`}
+            >
               {authorMeta}
             </Link>
           ) : (
