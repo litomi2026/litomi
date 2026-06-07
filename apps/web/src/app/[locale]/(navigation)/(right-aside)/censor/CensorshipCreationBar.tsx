@@ -16,6 +16,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
 import { CENSORSHIP_CATEGORIES, DEFAULT_CENSORSHIP_VALUES } from './constants'
+import { getDefaultCensorshipInputValue } from './format'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
 
 export default function CensorshipCreationBar() {
@@ -237,7 +238,7 @@ export default function CensorshipCreationBar() {
             <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">
               {t('creationBar.prefixBadge')}
             </span>
-          ) : DEFAULT_CENSORSHIP_VALUES.some((item) => item.value === value) ? (
+          ) : DEFAULT_CENSORSHIP_VALUES.some((item) => getDefaultCensorshipInputValue(item) === value) ? (
             <span className="text-xs text-orange-500 mt-0.5">{t('creationBar.defaultTagBadge')}</span>
           ) : null
         }

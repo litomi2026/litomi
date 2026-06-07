@@ -8,6 +8,7 @@ import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import usePatchMySettingsMutation from '@/query/usePatchMySettingsMutation'
 
 import { DEFAULT_CENSORSHIP_VALUES } from './constants'
+import { getDefaultCensorshipInputValue } from './format'
 
 export default function DefaultCensorshipInfo() {
   const t = useTranslations('Censorship')
@@ -85,9 +86,9 @@ function groupDefaultCensorshipValues() {
   return DEFAULT_CENSORSHIP_VALUES.reduce<{ messagePath: string; values: string[] }[]>((groups, item) => {
     const group = groups.find(({ messagePath }) => messagePath === item.messagePath)
     if (group) {
-      group.values.push(item.value)
+      group.values.push(getDefaultCensorshipInputValue(item))
     } else {
-      groups.push({ messagePath: item.messagePath, values: [item.value] })
+      groups.push({ messagePath: item.messagePath, values: [getDefaultCensorshipInputValue(item)] })
     }
     return groups
   }, [])

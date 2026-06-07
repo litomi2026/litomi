@@ -11,7 +11,12 @@ import { fetchAPIData, withQuery } from '@/utils/api-request'
 
 import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
-import { CENSORSHIP_CATEGORIES, CENSORSHIP_KEY_MESSAGE_PATHS, DEFAULT_CENSORSHIP_VALUES } from './constants'
+import {
+  CENSORSHIP_CATEGORIES,
+  CENSORSHIP_KEY_MESSAGE_PATHS,
+  DEFAULT_CENSORSHIP_VALUES,
+} from './constants'
+import { getDefaultCensorshipInputValue } from './format'
 
 type Options = {
   query: string
@@ -47,9 +52,9 @@ export default function useCensorshipSuggestionsQuery({ query }: Props) {
     }),
   )
 
-  const blindTagSuggestions = DEFAULT_CENSORSHIP_VALUES.map(({ value, messagePath }) => ({
-    value,
-    label: t(messagePath),
+  const blindTagSuggestions = DEFAULT_CENSORSHIP_VALUES.map((item) => ({
+    value: getDefaultCensorshipInputValue(item),
+    label: t(item.messagePath),
   }))
 
   const suggestionsQuery = useQuery({
