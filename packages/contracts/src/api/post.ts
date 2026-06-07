@@ -1,8 +1,10 @@
+import { Locale } from '@litomi/domain/locale'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { PostType } from '@litomi/domain/post/model'
 import { MAX_POST_CONTENT_LENGTH, POST_PER_PAGE } from '@litomi/domain/post/policy'
 import { z } from 'zod'
 
+import { catalogMangaSchema } from '../catalog/manga'
 import { referredPostSchema } from '../post/referred-post'
 
 export const postIdParamSchema = z.object({
@@ -25,6 +27,7 @@ export const postSchema = z.object({
     })
     .nullable(),
   mangaId: z.number().nullable(),
+  manga: catalogMangaSchema.optional(),
   parentPostId: z.number().nullable(),
   likeCount: z.number(),
   commentCount: z.number(),
@@ -49,6 +52,7 @@ export const postFilterSchema = z.enum(PostFilter)
 const getV1PostQueryBaseSchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(POST_PER_PAGE).default(POST_PER_PAGE),
+  locale: z.enum(Locale).default(Locale.KO),
   mangaId: z.coerce.number().int().positive().optional(),
 })
 

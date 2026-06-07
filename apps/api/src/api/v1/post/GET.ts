@@ -11,13 +11,14 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import { privateCacheControl } from '@/utils/cache-control'
+import { getCatalogMangaMap } from '@/utils/catalog-manga'
 import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
 route.get('/', zProblemValidator('query', getV1PostQuerySchema), async (c) => {
-  const { cursor, limit, mangaId, filter, username } = c.req.valid('query')
+  const { cursor, limit, locale, mangaId, filter, username } = c.req.valid('query')
   const decodedCursor = cursor ? decodePostCursor(cursor) : null
   const currentUserId = c.get('userId')
 
@@ -41,11 +42,28 @@ route.get('/', zProblemValidator('query', getV1PostQuerySchema), async (c) => {
 
   const hasNextPage = postRows.length > limit
   const posts = hasNextPage ? postRows.slice(0, limit) : postRows
+  const mangaIds: number[] = []
+
+  for (const post of posts) {
+    if (post.mangaId) {
+      mangaIds.push(post.mangaId)
+    }
+  }
+
+  const catalogMangaMap = mangaIds.length > 0 ? await getCatalogMangaMap(mangaIds, locale) : new Map()
   const lastPost = posts[posts.length - 1]
   const nextCursor = hasNextPage && lastPost ? encodePostCursor(lastPost.createdAt.getTime(), lastPost.id) : null
   const cacheControl = getPostListCacheControl({ cursor, filter })
 
-  return c.json<GETV1PostResponse>({ posts, nextCursor }, { headers: { 'Cache-Control': cacheControl } })
+  const result = {
+    posts: posts.map((post) => ({
+      ...post,
+      manga: post.mangaId ? catalogMangaMap.get(post.mangaId) : undefined,
+    })),
+    nextCursor,
+  }
+
+  return c.json<GETV1PostResponse>(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

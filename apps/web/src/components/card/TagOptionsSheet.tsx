@@ -47,6 +47,13 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
   const isCensored = Boolean(existingCensorship)
   const fullTag = `${category}:${value}`
 
+  const title = (
+    <>
+      <span>{label}</span>
+      <span className="text-xs"> ({fullTag})</span>
+    </>
+  )
+
   const toggleCensorshipMutation = useMutation({
     mutationFn: async () => {
       const url = '/api/v1/censorship'
@@ -102,7 +109,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
   }
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title={label}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} title={title}>
       <BottomSheetItem onClick={handleCopy}>
         <Copy className="size-5 text-zinc-400" />
         <span>{t('copy')}</span>

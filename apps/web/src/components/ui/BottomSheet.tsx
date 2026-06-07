@@ -14,7 +14,7 @@ type Props = {
   isOpen: boolean
   onClose: () => void
   children: ReactNode
-  title?: string
+  title?: ReactNode
 }
 
 const DISMISS_THRESHOLD_PX = 100

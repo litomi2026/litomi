@@ -61,13 +61,8 @@ export default function PostCard({ post, showMangaCover }: Props) {
   return (
     <article className="relative w-full rounded-2xl border-2 bg-zinc-900 transition hover:bg-zinc-800/70 hover:border-zinc-700/70">
       {showMangaCover && post.mangaId && (
-        <div className="overflow-hidden rounded-t-2xl border-b-2 border-zinc-800">
-          <Link className="block" href={`/manga/${post.mangaId}`} prefetch={false}>
-            <PostMangaCard mangaId={post.mangaId} variant="cover" />
-          </Link>
-        </div>
+        <PostMangaCard catalogManga={post.manga} mangaId={post.mangaId} variant="cover" />
       )}
-
       <div className="flex min-w-0 flex-col">
         {hasInternalURL ? (
           <div className="p-3">

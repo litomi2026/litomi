@@ -2,6 +2,7 @@ import type { GETV1PostResponse } from '@litomi/contracts'
 
 import { PostFilter } from '@litomi/domain/post/filter'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, withQuery } from '@/utils/api-request'
@@ -13,10 +14,12 @@ export type PostQuery = {
 }
 
 export default function usePostInfiniteQuery({ filter, mangaId, username }: PostQuery) {
+  const locale = useLocale()
+
   return useInfiniteQuery<GETV1PostResponse>({
-    queryKey: QueryKeys.posts(filter, mangaId, username),
+    queryKey: QueryKeys.posts(filter, mangaId, username, locale),
     queryFn: async ({ pageParam }) => {
-      const searchParams = new URLSearchParams({ filter })
+      const searchParams = new URLSearchParams({ filter, locale })
       const cursor = typeof pageParam === 'string' ? pageParam : ''
 
       if (cursor) {

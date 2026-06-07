@@ -41,113 +41,71 @@ export function getMatchedCensorships({ manga, censorshipsMap, defaultCensorship
   let highest = CensorshipLevel.LIGHT
   const matchedLabels: string[] = []
 
-  for (const tag of tags ?? []) {
-    const tagKey = `${CensorshipKey.TAG}:${tag.value}`
-    const tagMatches = censorshipsMap?.get(tagKey)
+  function applyMatch(key: CensorshipKey, value: string, label: string) {
+    const lookupKey = `${key}:${value}`
+    const userMatch = censorshipsMap?.get(lookupKey)
+    const defaultMatch = DEFAULT_CENSORSHIP_VALUES.find((item) => item.key === key && item.value === value)
 
-    if (DEFAULT_CENSORSHIP_VALUES.some((item) => item.value === tag.value)) {
-      if (tagMatches?.level === CensorshipLevel.NONE) {
-        continue
+    if (defaultMatch) {
+      if (userMatch?.level === CensorshipLevel.NONE) {
+        return
       }
 
-      if (tagMatches) {
-        matchedLabels.push(getTagDisplayLabel(tag.label))
-        highest = Math.max(highest, tagMatches.level)
+      if (userMatch) {
+        matchedLabels.push(label)
+        highest = Math.max(highest, userMatch.level)
       } else if (defaultCensorshipEnabled) {
-        matchedLabels.push(getTagDisplayLabel(tag.label))
+        matchedLabels.push(label)
         highest = Math.max(highest, CensorshipLevel.LIGHT)
       }
-    } else {
-      if (tagMatches && tagMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(getTagDisplayLabel(tag.label))
-        highest = Math.max(highest, tagMatches.level)
-      }
+      return
+    }
+
+    if (userMatch && userMatch.level !== CensorshipLevel.NONE) {
+      matchedLabels.push(label)
+      highest = Math.max(highest, userMatch.level)
     }
   }
 
-  if (!censorshipsMap) {
-    return createCensorshipMatch(matchedLabels, highest)
+  for (const tag of tags ?? []) {
+    applyMatch(CensorshipKey.TAG, tag.value, getTagDisplayLabel(tag.label))
   }
 
   // 개별 태그: male, female, mixed, other
   for (const tag of tags ?? []) {
     const tagKey = mapTagCategoryToCensorshipKey(tag.category)
-    const tagMatches = censorshipsMap.get(`${tagKey}:${tag.value}`)
 
-    if (tagMatches && tagMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(getTagDisplayLabel(tag.label))
-      highest = Math.max(highest, tagMatches.level)
+    if (tagKey) {
+      applyMatch(tagKey, tag.value, getTagDisplayLabel(tag.label))
     }
   }
 
   for (const artist of artists ?? []) {
-    const artistKey = `${CensorshipKey.ARTIST}:${artist.value}`
-    const artistMatches = censorshipsMap.get(artistKey)
-
-    if (artistMatches && artistMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(artist.label)
-      highest = Math.max(highest, artistMatches.level)
-    }
+    applyMatch(CensorshipKey.ARTIST, artist.value, artist.label)
   }
 
   for (const character of characters ?? []) {
-    const characterKey = `${CensorshipKey.CHARACTER}:${character.value}`
-    const characterMatches = censorshipsMap.get(characterKey)
-
-    if (characterMatches && characterMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(character.label)
-      highest = Math.max(highest, characterMatches.level)
-    }
+    applyMatch(CensorshipKey.CHARACTER, character.value, character.label)
   }
 
   for (const g of group ?? []) {
-    const groupKey = `${CensorshipKey.GROUP}:${g.value}`
-    const groupMatches = censorshipsMap.get(groupKey)
-
-    if (groupMatches && groupMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(g.label)
-      highest = Math.max(highest, groupMatches.level)
-    }
+    applyMatch(CensorshipKey.GROUP, g.value, g.label)
   }
 
   for (const s of series ?? []) {
-    const seriesKey = `${CensorshipKey.SERIES}:${s.value}`
-    const seriesMatches = censorshipsMap.get(seriesKey)
-
-    if (seriesMatches && seriesMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(s.label)
-      highest = Math.max(highest, seriesMatches.level)
-    }
+    applyMatch(CensorshipKey.SERIES, s.value, s.label)
   }
 
   for (const language of languages ?? []) {
-    const languageKey = `${CensorshipKey.LANGUAGE}:${language.value}`
-    const languageMatches = censorshipsMap.get(languageKey)
-
-    if (languageMatches && languageMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(language.label)
-      highest = Math.max(highest, languageMatches.level)
-    }
+    applyMatch(CensorshipKey.LANGUAGE, language.value, language.label)
   }
 
   if (uploader) {
-    const uploaderKey = `${CensorshipKey.UPLOADER}:${uploader}`
-    const uploaderMatches = censorshipsMap.get(uploaderKey)
-
-    if (uploaderMatches && uploaderMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(uploader)
-      highest = Math.max(highest, uploaderMatches.level)
-    }
+    applyMatch(CensorshipKey.UPLOADER, uploader, uploader)
   }
 
   if (type) {
-    const typeKey = `${CensorshipKey.TYPE}:${type.value}`
-    const typeMatches = censorshipsMap.get(typeKey)
-
-    if (typeMatches && typeMatches.level !== CensorshipLevel.NONE) {
-      matchedLabels.push(type.label)
-      highest = Math.max(highest, typeMatches.level)
-    }
+    applyMatch(CensorshipKey.TYPE, type.value, type.label)
   }
 
   return createCensorshipMatch(matchedLabels, highest)
@@ -168,7 +126,7 @@ function getTagDisplayLabel(label: string) {
   return label.split(':')[1] ?? label
 }
 
-function mapTagCategoryToCensorshipKey(category: string) {
+function mapTagCategoryToCensorshipKey(category: string): CensorshipKey | null {
   switch (category) {
     case 'female':
       return CensorshipKey.TAG_CATEGORY_FEMALE
@@ -179,6 +137,6 @@ function mapTagCategoryToCensorshipKey(category: string) {
     case 'other':
       return CensorshipKey.TAG_CATEGORY_OTHER
     default:
-      return ''
+      return null
   }
 }

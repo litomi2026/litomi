@@ -65,15 +65,7 @@ export default async function Post({ post }: Props) {
       <p className="min-w-0 whitespace-pre-wrap break-all text-lg">{post.content}</p>
       {post.imageURLs && <PostImages className="w-full overflow-hidden border" urls={post.imageURLs} />}
       {referredPost && <ReferredPostCard referredPost={referredPost} />}
-      {post.mangaId && (
-        <Link
-          className="flex gap-3 rounded-lg border-2 border-zinc-700 bg-zinc-800/50 p-3 transition hover:bg-zinc-800 hover:border-zinc-600"
-          href={`/manga/${post.mangaId}`}
-          prefetch={false}
-        >
-          <PostMangaCard mangaId={post.mangaId} />
-        </Link>
-      )}
+      {post.mangaId && <PostMangaCard catalogManga={post.manga} mangaId={post.mangaId} />}
       <div className="flex items-center gap-1 text-sm text-zinc-500">
         <span>{createdAtLabel}</span>
       </div>

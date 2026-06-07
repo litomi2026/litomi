@@ -1,4 +1,4 @@
-import type { Post } from '@litomi/contracts'
+import type { PublicLocale } from '@litomi/domain/locale'
 
 import { db } from '@litomi/db/app'
 import { postTable } from '@litomi/db/app/post'
@@ -9,6 +9,8 @@ import { sql } from 'drizzle-orm'
 import { cache } from 'react'
 import { z } from 'zod'
 
+import { getCatalogMangaMap } from '@/utils/catalog-manga.server'
+
 export const postParamsSchema = z.object({
   id: z.coerce.number().int().positive(),
 })
@@ -16,8 +18,8 @@ export const postParamsSchema = z.object({
 export const POST_DETAIL_COMMENTS_PREVIEW_LIMIT = 20
 export const POST_DETAIL_PARENT_CHAIN_LIMIT = 5
 
-export const getPost = cache(async (id: number) => {
-  const [post] = await selectPost({ postId: id })
+export const getPost = cache(async (id: number, locale: PublicLocale) => {
+  const [post] = await withCatalogMangas(await selectPost({ postId: id }), locale)
   return post ?? null
 })
 
@@ -25,8 +27,8 @@ export async function getPostComment(postId: number) {
   return selectPostComment({ parentPostId: postId, limit: POST_DETAIL_COMMENTS_PREVIEW_LIMIT })
 }
 
-export async function getPostConversation(id: number): Promise<{ parentPosts: Post[]; post: Post } | null> {
-  const post = await getPost(id)
+export async function getPostConversation(id: number, locale: PublicLocale) {
+  const post = await getPost(id, locale)
 
   if (!post) {
     return null
@@ -37,7 +39,7 @@ export async function getPostConversation(id: number): Promise<{ parentPosts: Po
   }
 
   const parentPostIds = await selectPostAncestorIds(id)
-  const parentPostRows = await selectPost({ postIds: parentPostIds })
+  const parentPostRows = await withCatalogMangas(await selectPost({ postIds: parentPostIds }), locale)
   const parentPostById = new Map(parentPostRows.map((parentPost) => [parentPost.id, parentPost]))
 
   return {
@@ -77,4 +79,21 @@ async function selectPostAncestorIds(postId: number) {
   `)
 
   return rows.map((row) => Number(row.id))
+}
+
+async function withCatalogMangas<T extends { mangaId: number | null }>(posts: T[], locale: PublicLocale) {
+  const mangaIds: number[] = []
+
+  for (const post of posts) {
+    if (post.mangaId) {
+      mangaIds.push(post.mangaId)
+    }
+  }
+
+  const catalogMangaMap = mangaIds.length > 0 ? await getCatalogMangaMap(mangaIds, locale) : new Map()
+
+  return posts.map((post) => ({
+    ...post,
+    manga: post.mangaId ? catalogMangaMap.get(post.mangaId) : undefined,
+  }))
 }
