@@ -3,6 +3,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
 
+import { waitForOriginProtectionClearance } from '@/lib/origin-protection/clearance'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
@@ -22,6 +23,7 @@ export function useNewMangaQuery({ page }: QueryOptions) {
 async function fetchNewManga(page: number) {
   const url = new URL('/api/proxy/hiyobi/new', NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN)
   url.searchParams.set('page', String(page))
-  const { data } = await fetchAPIData<Manga[]>(url, { credentials: 'omit' })
+  await waitForOriginProtectionClearance()
+  const { data } = await fetchAPIData<Manga[]>(url, { credentials: 'include' })
   return data
 }

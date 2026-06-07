@@ -3,6 +3,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import { waitForOriginProtectionClearance } from '@/lib/origin-protection/clearance'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchAPIData } from '@/utils/api-request'
@@ -51,7 +52,8 @@ export function useSearchQuery(searchParams: URLSearchParams) {
 
       const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
       url.search = createCanonicalSearchParams(pagedParams).toString()
-      const { data } = await fetchAPIData<GETProxyKSearchResponse>(url, { credentials: 'omit' })
+      await waitForOriginProtectionClearance()
+      const { data } = await fetchAPIData<GETProxyKSearchResponse>(url, { credentials: 'include' })
       return data
     },
     enabled: !isMePending,

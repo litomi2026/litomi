@@ -8,6 +8,7 @@ import ms from 'ms'
 import pLimit from 'p-limit'
 import pThrottle from 'p-throttle'
 
+import { waitForOriginProtectionClearance } from '@/lib/origin-protection/clearance'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 import { createLoadingManga } from '@/utils/manga-placeholder'
@@ -101,8 +102,10 @@ export default function useMangaListCachedQuery({
         throw new InactiveQueuedMangaRequestError()
       }
 
+      await waitForOriginProtectionClearance()
+
       const url = new URL(`/api/proxy/manga/${id}`, NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
-      const { data, response } = await fetchAPIData<Manga>(url, { credentials: 'omit' })
+      const { data, response } = await fetchAPIData<Manga>(url, { credentials: 'include' })
 
       if (isDegradedResponse(response.headers)) {
         scheduleErrorCacheCleanup(queryKey)

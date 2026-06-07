@@ -17,6 +17,7 @@ import pointsRoutes from './points'
 import postRoutes from './post'
 import searchRoutes from './search'
 import tagRoutes from './tag'
+import turnstileRoutes from './turnstile'
 import userRoutes from './user'
 
 const v1Routes = new Hono<Env>()
@@ -36,6 +37,7 @@ v1Routes.route('/points', pointsRoutes)
 v1Routes.route('/post', postRoutes)
 v1Routes.route('/search', searchRoutes)
 v1Routes.route('/tag', tagRoutes)
+v1Routes.route('/turnstile', turnstileRoutes)
 v1Routes.route('/user', userRoutes)
 
 export default v1Routes
