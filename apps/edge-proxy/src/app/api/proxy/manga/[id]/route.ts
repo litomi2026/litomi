@@ -118,7 +118,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
           },
           cloudflare: {
             public: true,
-            sMaxAge: sec('90 days'),
+            maxAge: sec('90 days'),
             swr,
           },
           browser: {
@@ -143,7 +143,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         },
         cloudflare: {
           public: true,
-          sMaxAge: sec('10 minutes'),
+          maxAge: sec('10 minutes'),
         },
         browser: {
           public: true,

@@ -49,6 +49,10 @@ export async function GET(request: Request) {
           public: true,
           maxAge: sec('4 hours'),
         },
+        cloudflare: {
+          public: true,
+          maxAge: sec('10 minutes'),
+        },
         browser: {
           public: true,
           maxAge: 3,
