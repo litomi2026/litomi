@@ -51,7 +51,7 @@ export default function Profile() {
       </Link>
       <div className="grid gap-1 p-4 -ml-2 min-w-40 mb-2 rounded-2xl border-2 border-zinc-700 transition bg-zinc-900">
         <Link
-          className="group flex items-center gap-3 rounded-full p-2 text-sm font-semibold text-zinc-200 transition hover:bg-zinc-800 active:scale-95 sm:px-3 sm:py-2"
+          className="group flex items-center gap-3 rounded-full p-2 text-sm font-semibold text-zinc-200 transition hover:bg-zinc-800 active:scale-95 sm:px-3 sm:py-2 md:active:scale-95"
           href="/settings"
         >
           <Settings className="w-5 transition" />
@@ -90,7 +90,7 @@ function GuestProfileActions({ settingsLabel }: { settingsLabel: string }) {
       </div>
       <div className="hidden w-full sm:grid 2xl:flex 2xl:items-center">
         <Link
-          className="group order-2 p-5 flex items-center justify-center text-zinc-400 transition hover:text-foreground active:scale-90 2xl:order-1 2xl:flex-1 2xl:justify-start 2xl:gap-5"
+          className="group order-2 p-5 flex items-center justify-center text-zinc-400 transition hover:text-foreground active:scale-90 md:active:scale-95 2xl:order-1 2xl:flex-1 2xl:justify-start 2xl:gap-5"
           href={loginHref}
         >
           <LinkPending className="shrink-0 text-foreground">
@@ -101,7 +101,7 @@ function GuestProfileActions({ settingsLabel }: { settingsLabel: string }) {
         <Link
           aria-current={pathname === '/settings' ? 'page' : undefined}
           aria-label={settingsLabel}
-          className="order-1 p-3 flex items-center justify-center text-zinc-400 transition hover:text-foreground active:scale-90 aria-[current=page]:text-foreground aria-[current=page]:[&_svg]:fill-current aria-[current=page]:[&_svg]:[fill-opacity:0.3] 2xl:order-2"
+          className="order-1 p-3 flex items-center justify-center text-zinc-400 transition hover:text-foreground active:scale-90 md:active:scale-95 aria-[current=page]:text-foreground aria-[current=page]:[&_svg]:fill-current aria-[current=page]:[&_svg]:[fill-opacity:0.3] 2xl:order-2"
           href="/settings"
           title={settingsLabel}
         >

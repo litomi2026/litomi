@@ -33,7 +33,7 @@ export default function LogoutButton({ username }: Props) {
       className={twMerge(
         'flex items-center gap-3 group rounded-full p-2 w-full text-red-500 text-sm font-semibold transition whitespace-nowrap',
         'hover:bg-red-500/20 active:scale-95',
-        'disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400 sm:px-3 sm:py-2',
+        'disabled:hover:bg-inherit disabled:text-zinc-400 sm:px-3 sm:py-2',
       )}
       disabled={isPending}
       onClick={handleLogout}

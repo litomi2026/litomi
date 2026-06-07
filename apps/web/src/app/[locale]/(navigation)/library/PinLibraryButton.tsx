@@ -45,7 +45,7 @@ export default function PinLibraryButton({ className = '', libraryId, library }:
   return (
     <button
       className={twMerge(
-        'relative hover:bg-zinc-800 rounded-lg p-2 disabled:opacity-50 active:scale-90 transition duration-300',
+        'relative hover:bg-zinc-800 rounded-lg p-2 disabled:opacity-50 active:scale-90 transition',
         className,
       )}
       disabled={isPending}
@@ -53,13 +53,7 @@ export default function PinLibraryButton({ className = '', libraryId, library }:
       title={isPinned ? t('unpin') : t('pin')}
       type="button"
     >
-      <Pin
-        className={twMerge(
-          'size-5 transition duration-300',
-          isAnimating ? 'scale-110' : '',
-          isPinned ? 'fill-current' : '',
-        )}
-      />
+      <Pin className={twMerge('size-5 transition', isAnimating && 'scale-110', isPinned && 'fill-current')} />
     </button>
   )
 }
