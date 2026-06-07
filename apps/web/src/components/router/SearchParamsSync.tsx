@@ -1,7 +1,7 @@
 'use client'
 
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useEffectEvent } from 'react'
 
 type Props = {
   onUpdate: (searchParams: ReadonlyURLSearchParams) => void
@@ -17,10 +17,11 @@ export default function SearchParamsSync({ onUpdate }: Props) {
 
 function SearchParamsSyncInner({ onUpdate }: Props) {
   const searchParams = useSearchParams()
+  const update = useEffectEvent((nextSearchParams: ReadonlyURLSearchParams) => onUpdate(nextSearchParams))
 
   useEffect(() => {
-    onUpdate(searchParams)
-  }, [onUpdate, searchParams])
+    update(searchParams)
+  }, [searchParams])
 
   return null
 }
