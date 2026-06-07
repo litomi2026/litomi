@@ -1,5 +1,7 @@
 'use client'
 
+import type { Manga } from '@litomi/domain/manga/model'
+
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -13,6 +15,7 @@ import { Link } from '@/i18n/navigation'
 
 type Props = {
   mangaId: number
+  catalogManga?: Manga
   variant?: 'cover' | 'inline'
   className?: string
   imageClassName?: string
@@ -30,10 +33,20 @@ const VARIANT_CONFIG = {
   },
 } as const
 
-export default function PostMangaCard({ mangaId, variant = 'inline', className = '', imageClassName = '' }: Props) {
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: [mangaId] })
+export default function PostMangaCard({
+  mangaId,
+  catalogManga,
+  variant = 'inline',
+  className = '',
+  imageClassName = '',
+}: Props) {
   const { getMatch } = useMangaCensorship()
   const t = useTranslations('Community.post')
+
+  const { mangaMap } = useMangaListCachedQuery({
+    catalogMangas: [catalogManga],
+    mangaIds: [mangaId],
+  })
 
   const manga = mangaMap.get(mangaId)
   const config = VARIANT_CONFIG[variant]

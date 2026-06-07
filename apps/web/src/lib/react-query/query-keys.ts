@@ -70,7 +70,11 @@ export const QueryKeys = {
   censorshipSuggestions: (query: string, locale: string) => ['censorship', 'suggestions', locale, query],
   postsBase: ['posts'],
   followingPosts: ['posts', PostFilter.FOLLOWING],
-  posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
+  posts: (filter: PostFilter, mangaId?: number, username?: string, locale?: string) => [
+    'posts',
+    filter,
+    { mangaId, username, locale },
+  ],
   realtimeAnalytics: ['realtime-analytics'],
   trendingKeywords: (locale: string) => ['trending-keywords', locale],
   tag: (category: string, page: number, locale: string) => ['tag', category, page, locale],

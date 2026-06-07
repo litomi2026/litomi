@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/post/[id
   }
 
   const { id } = validation.data
-  const post = await getPost(id)
+  const post = await getPost(id, locale)
 
   if (!post) {
     notFound()
@@ -40,7 +40,8 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/post/[id
 }
 
 export default async function Page({ params }: PageProps<'/[locale]/post/[id]'>) {
-  const t = await getTranslations('Community.post')
+  const locale = await getLocaleFromParams(params)
+  const t = await getTranslations({ locale, namespace: 'Community.post' })
   const validation = postParamsSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -48,7 +49,7 @@ export default async function Page({ params }: PageProps<'/[locale]/post/[id]'>)
   }
 
   const { id } = validation.data
-  const [conversation, comments] = await Promise.all([getPostConversation(id), getPostComment(id)])
+  const [conversation, comments] = await Promise.all([getPostConversation(id, locale), getPostComment(id)])
 
   if (!conversation) {
     notFound()
