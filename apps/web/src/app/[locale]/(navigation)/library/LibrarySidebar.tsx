@@ -93,7 +93,7 @@ export default function LibrarySidebar({
           onClick={onClick}
           title={t('sidebar.publicLibraries')}
         />
-        <div className="h-px bg-zinc-800 my-1" />
+        <LibrarySidebarSectionDivider label={t('sidebar.sections.activity')} />
         <LibrarySidebarLink
           description={
             historyCount !== undefined
@@ -130,94 +130,107 @@ export default function LibrarySidebar({
           onClick={onClick}
           title={t('sidebar.rating')}
         />
-        {(libraries.length > 0 || showLibrariesSkeleton) && <div className="h-px bg-zinc-800 my-1" />}
         {showLibrariesSkeleton ? (
-          <LibrarySidebarSkeleton length={6} />
+          <>
+            <LibrarySidebarSectionDivider label={t('sidebar.sections.libraryList')} />
+            <LibrarySidebarSkeleton length={6} />
+          </>
         ) : (
           <>
-            {ownerLibraries.map((library) => (
-              <LibrarySidebarLink
-                badge={
-                  !library.isPublic ? (
-                    <Lock className="size-3 text-zinc-500 shrink-0" />
-                  ) : library.userId !== userId ? (
-                    <Globe className="size-3 text-zinc-500 shrink-0" />
-                  ) : null
-                }
-                description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
-                href={`/library/${library.id}`}
-                icon={
-                  <>
-                    <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
-                    <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
-                      {library.name.slice(0, 1)}
-                    </span>
-                  </>
-                }
-                iconBackground={library.color || 'rgb(113 113 122)'}
-                key={library.id}
-                onClick={onClick}
-                showActiveIndicator
-                title={library.name}
-              />
-            ))}
-            {ownerLibraries.length > 0 && pinnedLibraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
-            {pinnedLibraries.map((library) => (
-              <LibrarySidebarLink
-                badge={
-                  !library.isPublic ? (
-                    <Lock className="size-3 text-zinc-500 shrink-0" />
-                  ) : library.userId !== userId ? (
-                    <Globe className="size-3 text-zinc-500 shrink-0" />
-                  ) : null
-                }
-                className={!library.isPublic ? 'opacity-50' : ''}
-                description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
-                href={`/library/${library.id}`}
-                icon={
-                  <>
-                    <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
-                    <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
-                      {library.name.slice(0, 1)}
-                    </span>
-                  </>
-                }
-                iconBackground={library.color || 'rgb(113 113 122)'}
-                key={library.id}
-                onClick={onClick}
-                showActiveIndicator
-                title={library.name}
-              />
-            ))}
-            {(ownerLibraries.length > 0 || pinnedLibraries.length > 0) && publicLibraries.length > 0 && (
-              <div className="h-px bg-zinc-800 my-1" />
+            {ownerLibraries.length > 0 && (
+              <>
+                <LibrarySidebarSectionDivider label={t('sidebar.sections.myLibraries')} />
+                {ownerLibraries.map((library) => (
+                  <LibrarySidebarLink
+                    badge={
+                      !library.isPublic ? (
+                        <Lock className="size-3 text-zinc-500 shrink-0" />
+                      ) : library.userId !== userId ? (
+                        <Globe className="size-3 text-zinc-500 shrink-0" />
+                      ) : null
+                    }
+                    description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
+                    href={`/library/${library.id}`}
+                    icon={
+                      <>
+                        <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
+                        <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
+                          {library.name.slice(0, 1)}
+                        </span>
+                      </>
+                    }
+                    iconBackground={library.color || 'rgb(113 113 122)'}
+                    key={library.id}
+                    onClick={onClick}
+                    showActiveIndicator
+                    title={library.name}
+                  />
+                ))}
+              </>
             )}
-            {publicLibraries.map((library) => (
-              <LibrarySidebarLink
-                badge={
-                  !library.isPublic ? (
-                    <Lock className="size-3 text-zinc-500 shrink-0" />
-                  ) : library.userId !== userId ? (
-                    <Globe className="size-3 text-zinc-500 shrink-0" />
-                  ) : null
-                }
-                description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
-                href={`/library/${library.id}`}
-                icon={
-                  <>
-                    <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
-                    <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
-                      {library.name.slice(0, 1)}
-                    </span>
-                  </>
-                }
-                iconBackground={library.color || 'rgb(113 113 122)'}
-                key={library.id}
-                onClick={onClick}
-                showActiveIndicator
-                title={library.name}
-              />
-            ))}
+            {pinnedLibraries.length > 0 && (
+              <>
+                <LibrarySidebarSectionDivider label={t('sidebar.sections.pinned')} />
+                {pinnedLibraries.map((library) => (
+                  <LibrarySidebarLink
+                    badge={
+                      !library.isPublic ? (
+                        <Lock className="size-3 text-zinc-500 shrink-0" />
+                      ) : library.userId !== userId ? (
+                        <Globe className="size-3 text-zinc-500 shrink-0" />
+                      ) : null
+                    }
+                    className={!library.isPublic ? 'opacity-50' : ''}
+                    description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
+                    href={`/library/${library.id}`}
+                    icon={
+                      <>
+                        <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
+                        <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
+                          {library.name.slice(0, 1)}
+                        </span>
+                      </>
+                    }
+                    iconBackground={library.color || 'rgb(113 113 122)'}
+                    key={library.id}
+                    onClick={onClick}
+                    showActiveIndicator
+                    title={library.name}
+                  />
+                ))}
+              </>
+            )}
+            {publicLibraries.length > 0 && (
+              <>
+                <LibrarySidebarSectionDivider label={t('sidebar.sections.browse')} />
+                {publicLibraries.map((library) => (
+                  <LibrarySidebarLink
+                    badge={
+                      !library.isPublic ? (
+                        <Lock className="size-3 text-zinc-500 shrink-0" />
+                      ) : library.userId !== userId ? (
+                        <Globe className="size-3 text-zinc-500 shrink-0" />
+                      ) : null
+                    }
+                    description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
+                    href={`/library/${library.id}`}
+                    icon={
+                      <>
+                        <span className="text-sm sm:hidden lg:inline">{library.icon || DEFAULT_LIBRARY_ICON}</span>
+                        <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
+                          {library.name.slice(0, 1)}
+                        </span>
+                      </>
+                    }
+                    iconBackground={library.color || 'rgb(113 113 122)'}
+                    key={library.id}
+                    onClick={onClick}
+                    showActiveIndicator
+                    title={library.name}
+                  />
+                ))}
+              </>
+            )}
           </>
         )}
         {pagination?.isFetchingNextPage && (
@@ -237,6 +250,16 @@ export default function LibrarySidebar({
         )}
       </div>
     </aside>
+  )
+}
+
+function LibrarySidebarSectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-2 px-2 py-1 sm:px-0 lg:px-3">
+      <div className="h-px flex-1 bg-zinc-800" />
+      <span className="shrink-0 text-[11px] font-medium leading-none text-zinc-500 sm:hidden lg:inline">{label}</span>
+      <div className="h-px flex-1 bg-zinc-800 sm:hidden lg:block" />
+    </div>
   )
 }
 

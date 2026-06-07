@@ -69,6 +69,13 @@ export const messages = {
         bookmark: '북마크',
         rating: '평가',
         loading: '...',
+        sections: {
+          activity: '내 활동',
+          libraryList: '서재 목록',
+          myLibraries: '내 서재',
+          pinned: '고정',
+          browse: '둘러보기',
+        },
       },
       sort: {
         createdDesc: '최근 추가순',
@@ -361,6 +368,13 @@ export const messages = {
         bookmark: 'Bookmarks',
         rating: 'Ratings',
         loading: '...',
+        sections: {
+          activity: 'My activity',
+          libraryList: 'Library list',
+          myLibraries: 'My libraries',
+          pinned: 'Pinned',
+          browse: 'Browse',
+        },
       },
       sort: {
         createdDesc: 'Recently added',
@@ -655,6 +669,13 @@ export const messages = {
         bookmark: 'ブックマーク',
         rating: '評価',
         loading: '...',
+        sections: {
+          activity: '自分の記録',
+          libraryList: 'ライブラリ一覧',
+          myLibraries: '自分のライブラリ',
+          pinned: '固定',
+          browse: '探す',
+        },
       },
       sort: {
         createdDesc: '最近追加順',
@@ -949,6 +970,13 @@ export const messages = {
         bookmark: '书签',
         rating: '评分',
         loading: '...',
+        sections: {
+          activity: '我的记录',
+          libraryList: '书库列表',
+          myLibraries: '我的书库',
+          pinned: '已固定',
+          browse: '发现',
+        },
       },
       sort: {
         createdDesc: '最近添加',
