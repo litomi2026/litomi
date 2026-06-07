@@ -4,6 +4,7 @@ import type { CensorshipItem } from '@litomi/contracts'
 
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { useTranslations } from 'next-intl'
+import { twMerge } from 'tailwind-merge'
 
 import { CENSORSHIP_LEVELS } from './constants'
 
@@ -24,20 +25,18 @@ export default function CensorshipStats({ censorships }: Props) {
 
   return (
     <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-      <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 px-3 py-2">
+      <div className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2">
         <dt className="text-xs font-medium text-zinc-500">{t('stats.ruleCount', { count: censorships.length })}</dt>
         <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">{censorships.length}</dd>
       </div>
-      {CENSORSHIP_LEVELS.map(({ level, messagePath }) => {
-        const count = levelCount[level]
-
-        return (
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 px-3 py-2" key={level}>
-            <dt className="text-xs font-medium text-zinc-500">{t(messagePath)}</dt>
-            <dd className={`mt-1 text-lg font-semibold tabular-nums ${getLevelTextClassName(level)}`}>{count}</dd>
-          </div>
-        )
-      })}
+      {CENSORSHIP_LEVELS.map(({ level, messagePath }) => (
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2" key={level}>
+          <dt className="text-xs font-medium text-zinc-500">{t(messagePath)}</dt>
+          <dd className={twMerge('text-lg font-semibold tabular-nums', getLevelTextClassName(level))}>
+            {levelCount[level]}
+          </dd>
+        </div>
+      ))}
     </dl>
   )
 }
@@ -51,6 +50,4 @@ function getLevelTextClassName(level: CensorshipLevel) {
     case CensorshipLevel.NONE:
       return 'text-green-400'
   }
-
-  return 'text-zinc-100'
 }

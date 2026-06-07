@@ -132,6 +132,10 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
         maxAge: 20,
         swr: 5,
       },
+      cloudflare: {
+        public: true,
+        maxAge: 5,
+      },
       browser: {
         public: true,
         maxAge: 3,
@@ -156,6 +160,7 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       browser: {
         public: true,
         maxAge: 3,
+        swr: sec('10 minutes'),
       },
     })
   }
@@ -167,9 +172,14 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
         maxAge: sec('1 day'),
         swr,
       },
+      cloudflare: {
+        public: true,
+        maxAge: sec('10 minutes'),
+      },
       browser: {
         public: true,
         maxAge: 3,
+        swr: sec('10 minutes'),
       },
     })
   }
@@ -180,9 +190,14 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       maxAge: sec('1 hour'),
       swr,
     },
+    cloudflare: {
+      public: true,
+      maxAge: sec('10 minutes'),
+    },
     browser: {
       public: true,
       maxAge: 3,
+      swr: sec('10 minutes'),
     },
   })
 }

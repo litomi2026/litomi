@@ -64,7 +64,7 @@ export default function MasonryPostList({
       />
 
       {isFetchingNextPage && (
-        <div className="pt-2 md:pt-3">
+        <div className="md:pt-3">
           <MasonryPostSkeletonGrid count={layoutConfig.columnCount} showMangaCover={showMangaCover} />
         </div>
       )}

@@ -47,6 +47,7 @@ export const CENSORSHIP_CATEGORIES = [
 export const DEFAULT_CENSORSHIP_VALUES = [
   { value: 'bestiality', messagePath: 'common.blindTags.bestiality' },
   { value: 'guro', messagePath: 'common.blindTags.guro' },
+  { value: 'snuff', messagePath: 'common.blindTags.guro' },
   { value: 'yaoi', messagePath: 'common.blindTags.bl' },
   { value: 'males_only', messagePath: 'common.blindTags.bl' },
   { value: 'scat', messagePath: 'common.blindTags.scat' },

@@ -248,7 +248,7 @@ export default function CensorshipCreationBar() {
       />
       {showHelp ? (
         <div className={`overflow-hidden`}>
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950/45 p-3 text-sm space-y-2">
+          <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-3 text-sm space-y-2">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-medium text-zinc-300">{t('creationBar.helpTitle')}</h3>
               <button
