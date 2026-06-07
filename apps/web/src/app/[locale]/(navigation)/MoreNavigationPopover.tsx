@@ -172,7 +172,7 @@ export default function MoreNavigationPopover({ className }: Props) {
         <OverlayHost>
           <div
             className={twMerge(
-              'pointer-events-auto fixed z-60 grid gap-1 rounded-2xl border-2 border-zinc-800 bg-zinc-950/95 p-2 shadow-xl shadow-black/30 transition',
+              'pointer-events-auto fixed z-60 grid gap-1 rounded-2xl border-2 border-zinc-800 bg-zinc-900 p-2 shadow-xl shadow-black/30 transition',
               'max-h-80 overflow-y-auto',
             )}
             id={popoverId}
