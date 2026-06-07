@@ -30,6 +30,7 @@ export const messages = {
           guro: '잔인',
           bl: 'BL',
           scat: '배변',
+          oldLady: '늙은 여자',
         },
       },
       card: {
@@ -167,6 +168,7 @@ export const messages = {
           guro: 'Gore',
           bl: 'BL',
           scat: 'Scat',
+          oldLady: 'Old lady',
         },
       },
       card: {
@@ -306,6 +308,7 @@ export const messages = {
           guro: 'グロ',
           bl: 'BL',
           scat: 'スカトロ',
+          oldLady: 'ババア',
         },
       },
       card: {
@@ -443,6 +446,7 @@ export const messages = {
           guro: '猎奇',
           bl: 'BL',
           scat: '排泄',
+          oldLady: '老太婆',
         },
       },
       card: {

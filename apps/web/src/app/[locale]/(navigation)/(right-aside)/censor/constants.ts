@@ -52,6 +52,7 @@ export const DEFAULT_CENSORSHIP_VALUES = [
   { value: 'males_only', messagePath: 'common.blindTags.bl' },
   { value: 'scat', messagePath: 'common.blindTags.scat' },
   { value: 'coprophagia', messagePath: 'common.blindTags.scat' },
+  { value: 'old_lady', messagePath: 'common.blindTags.oldLady' },
 ] as const
 
 export const CENSORSHIP_LEVELS = [
