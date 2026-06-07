@@ -33,7 +33,6 @@ async function fetchTags(category: CategoryParam, page: number, locale: string) 
   })
 
   const url = withQuery('/api/v1/tag', searchParams)
-
-  const { data } = await fetchAPIData<GETV1TagResponse>(url)
+  const { data } = await fetchAPIData<GETV1TagResponse>(url, { credentials: 'omit' })
   return data
 }

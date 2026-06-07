@@ -36,7 +36,7 @@ type Props = {
 export async function fetchCensorshipSuggestions({ query, locale }: Params) {
   const params = new URLSearchParams({ locale, query })
   const url = withQuery('/api/v1/search/suggestions', params)
-  const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
+  const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url, { credentials: 'omit' })
   return data
 }
 

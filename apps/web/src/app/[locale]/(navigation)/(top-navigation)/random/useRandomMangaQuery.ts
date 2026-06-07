@@ -44,6 +44,6 @@ export function useRandomMangaQuery() {
 async function fetchRandomManga(params: URLSearchParams) {
   const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
   url.search = createCanonicalSearchParams(params).toString()
-  const { data } = await fetchAPIData<ProxyRandomResponse>(url)
+  const { data } = await fetchAPIData<ProxyRandomResponse>(url, { credentials: 'omit' })
   return data
 }

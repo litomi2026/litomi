@@ -16,7 +16,7 @@ export async function fetchTrendingKeywords({ locale }: Params) {
   const params = new URLSearchParams({ locale })
 
   const url = withQuery('/api/v1/search/trending', params)
-  const { data } = await fetchAPIData<GETTrendingKeywordsResponse>(url)
+  const { data } = await fetchAPIData<GETTrendingKeywordsResponse>(url, { credentials: 'omit' })
   return data
 }
 

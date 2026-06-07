@@ -51,7 +51,7 @@ export function useSearchQuery(searchParams: URLSearchParams) {
 
       const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
       url.search = createCanonicalSearchParams(pagedParams).toString()
-      const { data } = await fetchAPIData<GETProxyKSearchResponse>(url)
+      const { data } = await fetchAPIData<GETProxyKSearchResponse>(url, { credentials: 'omit' })
       return data
     },
     enabled: !isMePending,

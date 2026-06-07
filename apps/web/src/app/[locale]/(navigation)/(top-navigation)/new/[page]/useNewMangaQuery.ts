@@ -22,6 +22,6 @@ export function useNewMangaQuery({ page }: QueryOptions) {
 async function fetchNewManga(page: number) {
   const url = new URL('/api/proxy/hiyobi/new', NEXT_PUBLIC_EDGE_PROXY_NEW_ORIGIN)
   url.searchParams.set('page', String(page))
-  const { data } = await fetchAPIData<Manga[]>(url)
+  const { data } = await fetchAPIData<Manga[]>(url, { credentials: 'omit' })
   return data
 }
