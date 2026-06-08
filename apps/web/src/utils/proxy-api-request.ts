@@ -1,12 +1,12 @@
-import { reportOriginProtectionFetchError, waitForOriginProtectionClearance } from '@/lib/origin-protection/clearance'
+import { clearanceGate } from '@/lib/cloudflare/clearance'
 import { fetchAPIData } from '@/utils/api-request'
 
 export async function fetchProxyAPIData<T>(input: string | Request | URL, init?: RequestInit) {
   try {
-    await waitForOriginProtectionClearance()
+    await clearanceGate.wait()
     return await fetchAPIData<T>(input, { ...init, credentials: 'include' })
   } catch (error) {
-    reportOriginProtectionFetchError(error)
+    clearanceGate.reportFetchError(error)
     throw error
   }
 }

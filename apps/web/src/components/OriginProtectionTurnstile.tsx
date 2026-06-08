@@ -7,11 +7,7 @@ import { Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import {
-  markOriginProtectionClearanceReady,
-  releaseOriginProtectionClearanceWait,
-  VERIFICATION_REQUIRED_EVENT,
-} from '@/lib/origin-protection/clearance'
+import { clearanceGate, VERIFICATION_REQUIRED_EVENT } from '@/lib/cloudflare/clearance'
 import { fetchAPIData } from '@/utils/api-request'
 
 const { NEXT_PUBLIC_TURNSTILE_SITE_KEY } = env
@@ -42,11 +38,11 @@ export default function OriginProtectionTurnstile() {
       headers: { 'Content-Type': 'application/json' },
     })
       .then(() => {
-        markOriginProtectionClearanceReady()
+        clearanceGate.markReady()
         setVerificationRequired(false)
       })
       .catch(() => {
-        releaseOriginProtectionClearanceWait()
+        clearanceGate.releaseWait()
       })
   }
 
@@ -91,7 +87,7 @@ export default function OriginProtectionTurnstile() {
           verificationRequired ? 'flex min-h-[89px] items-center justify-center px-2 py-2' : 'h-[89px] opacity-0',
         )}
         key={verificationRequired ? 'required' : 'background'}
-        onError={releaseOriginProtectionClearanceWait}
+        onError={clearanceGate.releaseWait}
         onSuccess={handleSuccess}
         options={{
           action: TURNSTILE_ORIGIN_PROTECTION_ACTION,
