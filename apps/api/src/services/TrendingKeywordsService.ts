@@ -96,6 +96,17 @@ class TrendingKeywordsService {
     return `${this.TRENDING_KEY}:aggregate:v2:${hourWindow}`
   }
 
+  protected isLanguageCondition(part: string): boolean {
+    const token = part.replace(/^-+/, '')
+    const colonIndex = token.indexOf(':')
+
+    if (colonIndex <= 0) {
+      return false
+    }
+
+    return token.slice(0, colonIndex).toLowerCase() === 'language'
+  }
+
   protected normalizeKeyword(keyword: string): string {
     const parts = keyword
       .trim()
@@ -108,6 +119,10 @@ class TrendingKeywordsService {
 
     for (const part of parts) {
       if (part.includes(':')) {
+        if (this.isLanguageCondition(part)) {
+          continue
+        }
+
         if (part.startsWith('-')) {
           excludedCategorizedTags.push(part)
         } else {
