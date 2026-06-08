@@ -1,8 +1,4 @@
-import {
-  postV1TurnstileClearanceRequestSchema,
-  type POSTV1TurnstileClearanceResponse,
-  TURNSTILE_ORIGIN_PROTECTION_ACTION,
-} from '@litomi/contracts'
+import { postV1TurnstileClearanceRequestSchema, TURNSTILE_ORIGIN_PROTECTION_ACTION } from '@litomi/contracts'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { Hono } from 'hono'
@@ -38,7 +34,7 @@ route.post('/', zProblemValidator('json', postV1TurnstileClearanceRequestSchema)
     })
   }
 
-  return c.json<POSTV1TurnstileClearanceResponse>({ verified: true })
+  return c.body(null, 204)
 })
 
 export default route

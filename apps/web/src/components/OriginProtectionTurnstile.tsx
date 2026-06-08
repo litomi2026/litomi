@@ -1,6 +1,6 @@
 'use client'
 
-import { type POSTV1TurnstileClearanceResponse, TURNSTILE_ORIGIN_PROTECTION_ACTION } from '@litomi/contracts'
+import { TURNSTILE_ORIGIN_PROTECTION_ACTION } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
@@ -36,7 +36,7 @@ export default function OriginProtectionTurnstile() {
       return
     }
 
-    void fetchAPIData<POSTV1TurnstileClearanceResponse>('/api/v1/turnstile/clearance', {
+    void fetchAPIData<void>('/api/v1/turnstile/clearance', {
       method: 'POST',
       body: JSON.stringify({ token }),
       headers: { 'Content-Type': 'application/json' },

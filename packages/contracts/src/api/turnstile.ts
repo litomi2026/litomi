@@ -7,9 +7,3 @@ export const postV1TurnstileClearanceRequestSchema = z.object({
 })
 
 export type POSTV1TurnstileClearanceRequest = z.infer<typeof postV1TurnstileClearanceRequestSchema>
-
-export const postV1TurnstileClearanceResponseSchema = z.object({
-  verified: z.literal(true),
-})
-
-export type POSTV1TurnstileClearanceResponse = z.infer<typeof postV1TurnstileClearanceResponseSchema>
