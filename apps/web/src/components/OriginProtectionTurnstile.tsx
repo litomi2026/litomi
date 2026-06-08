@@ -46,10 +46,6 @@ export default function OriginProtectionTurnstile() {
       })
   }
 
-  function handleRetry() {
-    turnstileRef.current?.reset()
-  }
-
   return (
     <div
       aria-atomic="true"
@@ -72,7 +68,7 @@ export default function OriginProtectionTurnstile() {
           </div>
           <button
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-zinc-600 px-2.5 text-xs font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-700 focus-visible:ring-2 active:border-zinc-600 active:bg-zinc-800 focus-visible:ring-brand/60 focus-visible:outline-none"
-            onClick={handleRetry}
+            onClick={() => turnstileRef.current?.reset()}
             title="보안 확인 다시 시도"
             type="button"
           >
@@ -86,12 +82,12 @@ export default function OriginProtectionTurnstile() {
           'relative z-10 overflow-auto',
           verificationRequired ? 'flex min-h-[89px] items-center justify-center px-2 py-2' : 'h-[89px] opacity-0',
         )}
-        key={verificationRequired ? 'required' : 'background'}
+        onBeforeInteractive={() => setVerificationRequired(true)}
         onError={clearanceGate.releaseWait}
         onSuccess={handleSuccess}
         options={{
           action: TURNSTILE_ORIGIN_PROTECTION_ACTION,
-          appearance: verificationRequired ? 'always' : 'interaction-only',
+          appearance: 'interaction-only',
           responseField: false,
         }}
         ref={turnstileRef}

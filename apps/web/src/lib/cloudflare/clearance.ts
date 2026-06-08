@@ -15,11 +15,11 @@ class ClearanceGate {
   }
 
   releaseWait = () => {
-    this.gate.resolve()
-
     if (this.state === 'verification-required') {
-      this.gate = createDeferred()
+      return
     }
+
+    this.gate.resolve()
   }
 
   reportFetchError = (error: unknown) => {
