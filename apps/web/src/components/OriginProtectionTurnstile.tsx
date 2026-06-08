@@ -13,7 +13,7 @@ import { fetchAPIData } from '@/utils/api-request'
 const { NEXT_PUBLIC_TURNSTILE_SITE_KEY } = env
 
 export default function OriginProtectionTurnstile() {
-  const [verificationRequired, setVerificationRequired] = useState(true)
+  const [verificationRequired, setVerificationRequired] = useState(false)
   const turnstileRef = useRef<TurnstileInstance>(null)
 
   useEffect(() => {
