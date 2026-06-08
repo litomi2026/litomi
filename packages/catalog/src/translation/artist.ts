@@ -8,7 +8,7 @@ import artistTranslationJSON from './artist.json'
 import { translateCategory } from './category'
 import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
 
-const ARTIST_TRANSLATION: TranslationMap = artistTranslationJSON
+const ARTIST_TRANSLATION = artistTranslationJSON as TranslationMap
 
 /**
  * Get all artists with their translations as value/label pairs for search suggestions

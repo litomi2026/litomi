@@ -7,11 +7,11 @@ import neoJSON from './neo.json'
 import shiyeonJSON from './shiyeon.json'
 import yumiJSON from './yumi.json'
 
-const typedArisJSON = arisJSON satisfies CharacterJsonDefinition
-const typedAruJSON = aruJSON satisfies CharacterJsonDefinition
-const typedYumiJSON = yumiJSON satisfies CharacterJsonDefinition
-const typedShiyeonJSON = shiyeonJSON satisfies CharacterJsonDefinition
-const typedNeoJSON = neoJSON satisfies CharacterJsonDefinition
+const typedArisJSON = arisJSON as CharacterJsonDefinition
+const typedAruJSON = aruJSON as CharacterJsonDefinition
+const typedYumiJSON = yumiJSON as CharacterJsonDefinition
+const typedShiyeonJSON = shiyeonJSON as CharacterJsonDefinition
+const typedNeoJSON = neoJSON as CharacterJsonDefinition
 
 export const CHARACTERS = [
   buildCharacter(typedArisJSON),

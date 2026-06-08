@@ -4,11 +4,11 @@ import { getAllCharactersWithLabels } from '@litomi/catalog/translation/characte
 import { getAllGroupsWithLabels } from '@litomi/catalog/translation/group'
 import { getAllLanguagesWithLabels, translateLanguage } from '@litomi/catalog/translation/language'
 import { getAllSeriesWithLabels } from '@litomi/catalog/translation/series'
-import tagCategoryTranslations from '@litomi/catalog/translation/tag-category.json'
-import tagMixedTranslations from '@litomi/catalog/translation/tag-mixed.json'
-import tagOtherTranslations from '@litomi/catalog/translation/tag-other.json'
-import tagSingleSexTranslations from '@litomi/catalog/translation/tag-single-sex.json'
-import tagUnisexTranslations from '@litomi/catalog/translation/tag-unisex.json'
+import tagCategoryTranslationsJSON from '@litomi/catalog/translation/tag-category.json'
+import tagMixedTranslationsJSON from '@litomi/catalog/translation/tag-mixed.json'
+import tagOtherTranslationsJSON from '@litomi/catalog/translation/tag-other.json'
+import tagSingleSexTranslationsJSON from '@litomi/catalog/translation/tag-single-sex.json'
+import tagUnisexTranslationsJSON from '@litomi/catalog/translation/tag-unisex.json'
 import { getAllTypesWithLabels } from '@litomi/catalog/translation/type'
 import { Locale } from '@litomi/domain/locale'
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@litomi/domain/search/query-key-alias'
@@ -17,6 +17,16 @@ import SuggestionTrie, { SuggestionItem } from './trie'
 
 export const suggestionTrie = new SuggestionTrie()
 
+type CategoryTranslation = {
+  en: string
+  ko?: string
+  ja?: string
+  'zh-CN'?: string
+  'zh-TW'?: string
+}
+
+type CategoryTranslationMap = Record<string, CategoryTranslation>
+
 type Translation = {
   en?: string | string[]
   ko?: string | string[]
@@ -24,6 +34,13 @@ type Translation = {
   'zh-CN'?: string | string[]
   'zh-TW'?: string | string[]
 }
+type TranslationMap = Record<string, Translation>
+
+const tagCategoryTranslations = tagCategoryTranslationsJSON as CategoryTranslationMap
+const tagMixedTranslations = tagMixedTranslationsJSON as TranslationMap
+const tagOtherTranslations = tagOtherTranslationsJSON as TranslationMap
+const tagSingleSexTranslations = tagSingleSexTranslationsJSON as TranslationMap
+const tagUnisexTranslations = tagUnisexTranslationsJSON as TranslationMap
 
 function getFirstTranslation<T>(translations: T): T extends string[] ? T[number] : T {
   return (Array.isArray(translations) ? translations[0] : translations) as T extends string[] ? T[number] : T

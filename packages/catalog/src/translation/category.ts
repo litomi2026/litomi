@@ -2,9 +2,9 @@ import 'server-only'
 import type { Locale } from '@litomi/domain/locale'
 
 import categoryJSON from './category.json'
-import { getTranslationValue, type TranslationEntry } from './common'
+import { getTranslationValue, type TranslationMap } from './common'
 
-const CATEGORY_TRANSLATION: Record<string, TranslationEntry | undefined> = categoryJSON
+const CATEGORY_TRANSLATION = categoryJSON as TranslationMap
 
 export function translateCategory(category: string, locale: Locale): string {
   const translation = CATEGORY_TRANSLATION[category]

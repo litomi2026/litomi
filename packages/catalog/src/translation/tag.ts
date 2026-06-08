@@ -13,11 +13,11 @@ import tagUnisexTranslations from './tag-unisex.json'
 
 type TagTranslationEntry = TranslationEntry<string | string[]>
 
-const TAG_CATEGORY_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagCategoryJSON
-const TAG_MIXED_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagMixedJSON
-const TAG_OTHER_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagOtherJSON
-const TAG_SINGLE_SEX_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagSingleSexJSON
-const TAG_UNISEX_TRANSLATION: Record<string, TagTranslationEntry | undefined> = tagUnisexTranslations
+const TAG_CATEGORY_TRANSLATION = tagCategoryJSON as Record<string, TagTranslationEntry | undefined>
+const TAG_MIXED_TRANSLATION = tagMixedJSON as Record<string, TagTranslationEntry | undefined>
+const TAG_OTHER_TRANSLATION = tagOtherJSON as Record<string, TagTranslationEntry | undefined>
+const TAG_SINGLE_SEX_TRANSLATION = tagSingleSexJSON as Record<string, TagTranslationEntry | undefined>
+const TAG_UNISEX_TRANSLATION = tagUnisexTranslations as Record<string, TagTranslationEntry | undefined>
 
 export function translateTag(categoryFallback: string, value: string, locale: Locale): MangaTag {
   const normalizedValue = normalizeValue(value)

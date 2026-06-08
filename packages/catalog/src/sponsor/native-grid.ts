@@ -16,7 +16,7 @@ type NativeGridSponsorConfig = Omit<NativeGridSponsor, 'placementId'> & {
 }
 
 const TARGETABLE_TAG_CATEGORIES = new Set(['female', 'male', 'mixed', 'other', 'tag'])
-const NATIVE_GRID_SPONSORS: NativeGridSponsorConfig[] = nativeGridSponsorsJSON
+const NATIVE_GRID_SPONSORS = nativeGridSponsorsJSON as NativeGridSponsorConfig[]
 
 export function getNativeGridSponsor(
   placementId: NativeGridSponsorPlacement,

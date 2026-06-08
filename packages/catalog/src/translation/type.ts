@@ -7,7 +7,7 @@ import { translateCategory } from './category'
 import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
 import typeTranslationJSON from './type.json'
 
-const TYPE_TRANSLATION: TranslationMap = typeTranslationJSON
+const TYPE_TRANSLATION = typeTranslationJSON as TranslationMap
 
 export function getAllTypesWithLabels() {
   return Object.entries(TYPE_TRANSLATION).map(([key, translations]) => ({
