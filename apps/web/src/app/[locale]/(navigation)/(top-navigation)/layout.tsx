@@ -3,7 +3,6 @@ import { Download } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
-import ScrollButtons from '@/components/ScrollButtons'
 import { Link } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
 
@@ -54,7 +53,6 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
         </div>
       </footer>
       <MobileNavigationSpacer />
-      <ScrollButtons />
     </div>
   )
 }
