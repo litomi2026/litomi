@@ -22,16 +22,7 @@ class TrendingKeywordsService {
 
     try {
       const trending = await redis.zrange(dailyKey, 0, limit - 1, 'REV', 'WITHSCORES')
-      const results: TrendingKeyword[] = []
-
-      for (let i = 0; i < trending.length; i += 2) {
-        results.push({
-          keyword: trending[i],
-          score: Number(trending[i + 1]),
-        })
-      }
-
-      return results
+      return this.createTrendingKeywords(trending)
     } catch (error) {
       console.error('getTrendingDaily:', error)
       return []
@@ -54,16 +45,7 @@ class TrendingKeywordsService {
       }
 
       const trending = await redis.zrange(aggregateKey, 0, limit - 1, 'REV', 'WITHSCORES')
-      const results: TrendingKeyword[] = []
-
-      for (let i = 0; i < trending.length; i += 2) {
-        results.push({
-          keyword: trending[i],
-          score: Number(trending[i + 1]),
-        })
-      }
-
-      return results
+      return this.createTrendingKeywords(trending)
     } catch (error) {
       console.error('getTrendingRealtime:', error)
       return []
@@ -95,6 +77,19 @@ class TrendingKeywordsService {
     } catch (error) {
       console.error('trackSearch:', error)
     }
+  }
+
+  protected createTrendingKeywords(trending: string[]): TrendingKeyword[] {
+    const results: TrendingKeyword[] = []
+
+    for (let i = 0; i < trending.length; i += 2) {
+      results.push({
+        keyword: trending[i],
+        score: Number(trending[i + 1]),
+      })
+    }
+
+    return results
   }
 
   protected getHourlyAggregateKey(hourWindow: number): string {
