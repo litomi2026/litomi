@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { bulkCopyToLibrary } from '@/app/[locale]/(navigation)/library/api'
 import MangaImportModal from '@/components/card/MangaImportModal'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { useImportMangaModalStore } from './store'
 

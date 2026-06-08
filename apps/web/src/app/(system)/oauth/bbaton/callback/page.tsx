@@ -3,7 +3,8 @@ import { useMutation } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 
 import { LocalStorageKey } from '@/storage'
-import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 type CallbackState = { type: 'error'; message: string } | { type: 'loading' } | { type: 'success' }
 

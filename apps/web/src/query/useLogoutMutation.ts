@@ -4,8 +4,10 @@ import type { POSTV1AuthLogoutResponse } from '@litomi/contracts'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import type { ProblemDetailsError } from '@/utils/fetch-response'
+
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
 
 export default function useLogoutMutation() {
   const queryClient = useQueryClient()

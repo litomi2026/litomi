@@ -23,7 +23,7 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'

@@ -2,7 +2,7 @@ import type { ProblemDetails } from '@litomi/http/problem-details'
 
 import { getInvalidParams } from '@litomi/http/problem-details'
 
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 type SignupFormFieldName = 'cf-turnstile-response' | 'login-id' | 'nickname' | 'password-confirm' | 'password'
 type SignupPasswordFieldName = 'password-confirm' | 'password'

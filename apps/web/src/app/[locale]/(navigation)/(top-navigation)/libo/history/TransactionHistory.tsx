@@ -8,7 +8,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { useTransactionsQuery } from './useTransactionsQuery'
 

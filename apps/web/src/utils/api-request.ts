@@ -1,61 +1,10 @@
 import { CookieKey } from '@litomi/http/cookie'
-import {
-  isProblemDetails,
-  isProblemDetailsContentType,
-  isProblemType,
-  problemCode,
-  type ProblemDetails,
-} from '@litomi/http/problem-details'
+import { isProblemType, problemCode } from '@litomi/http/problem-details'
 import Cookies from 'js-cookie'
 
+import { fetchResponseData, ProblemDetailsError } from '@/utils/fetch-response'
+
 const AUTH_REFRESH_PATH = '/api/v1/auth/refresh'
-
-export class HTTPResponseError extends Error {
-  readonly name = 'HTTPResponseError'
-
-  get isRetryable(): boolean {
-    return this.status === 408 || this.status === 429 || this.status >= 500
-  }
-
-  get retryAfterSeconds(): number | undefined {
-    return getRetryAfterSeconds(this.response)
-  }
-
-  get status(): number {
-    return this.response.status
-  }
-
-  constructor(public readonly response: Response) {
-    super(response.statusText ? `HTTP ${response.status} ${response.statusText}` : `HTTP ${response.status}`)
-  }
-}
-
-export class ProblemDetailsError extends Error {
-  readonly name = 'ProblemDetailsError'
-
-  get isRetryable(): boolean {
-    return this.status === 408 || this.status === 429 || this.status >= 500
-  }
-
-  get retryAfterSeconds(): number | undefined {
-    return getRetryAfterSeconds(this.response)
-  }
-
-  get status(): number {
-    return this.problem.status
-  }
-
-  get type(): string {
-    return this.problem.type
-  }
-
-  constructor(
-    public readonly problem: ProblemDetails,
-    public readonly response?: Response,
-  ) {
-    super(problem.detail ?? problem.title)
-  }
-}
 
 export class UserVisibleError extends Error {
   readonly name = 'UserVisibleError'
@@ -68,30 +17,15 @@ export async function fetchAPIData<T>(
   init?: RequestInit,
 ): Promise<{ data: T; response: Response }> {
   const request = new Request(input, init)
-  const response = await fetch(request.clone())
 
-  if (!response.ok) {
-    const error = await createResponseError(response)
-
+  try {
+    return await fetchResponseData<T>(request.clone())
+  } catch (error) {
     if (isAuthenticationRequiredError(error) && shouldRefreshAuthCookies(request) && (await refreshAuthCookies())) {
-      const retryResponse = await fetch(request.clone())
-
-      if (!retryResponse.ok) {
-        throw await createResponseError(retryResponse)
-      }
-
-      return {
-        data: await readResponseData<T>(retryResponse),
-        response: retryResponse,
-      }
+      return await fetchResponseData<T>(request.clone())
     }
 
     throw error
-  }
-
-  return {
-    data: await readResponseData<T>(response),
-    response,
   }
 }
 
@@ -108,64 +42,10 @@ export function withQuery(path: string, searchParams?: URLSearchParams): string 
   return query ? `${path}?${query}` : path
 }
 
-async function createResponseError(response: Response): Promise<HTTPResponseError | ProblemDetailsError> {
-  const problem = await readProblemDetails(response)
-
-  if (problem) {
-    return new ProblemDetailsError(problem, response)
-  }
-
-  return new HTTPResponseError(response)
-}
-
-function getRetryAfterSeconds(response?: Response): number | undefined {
-  const value = response?.headers?.get('Retry-After')
-  if (!value) {
-    return undefined
-  }
-
-  const seconds = Number(value)
-  if (Number.isFinite(seconds) && seconds > 0) {
-    return seconds
-  }
-
-  const timeMs = Date.parse(value)
-  if (!Number.isFinite(timeMs)) {
-    return undefined
-  }
-
-  const diffSeconds = Math.ceil((timeMs - Date.now()) / 1000)
-  return diffSeconds > 0 ? diffSeconds : undefined
-}
-
 function isAuthRefreshRequest(request: Request): boolean {
   const requestURL = new URL(request.url)
 
   return requestURL.origin === window.location.origin && requestURL.pathname === AUTH_REFRESH_PATH
-}
-
-async function readProblemDetails(response: Response): Promise<ProblemDetails | null> {
-  if (!isProblemDetailsContentType(response.headers.get('Content-Type'))) {
-    return null
-  }
-
-  const body: unknown = await response.json().catch(() => null)
-  return isProblemDetails(body) ? body : null
-}
-
-async function readResponseData<T>(response: Response): Promise<T> {
-  if (response.status === 204 || response.headers.get('Content-Length') === '0') {
-    return undefined as T
-  }
-
-  const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? ''
-
-  if (contentType.includes('json')) {
-    return (await response.json()) as T
-  }
-
-  const text = await response.text()
-  return (text || undefined) as T
 }
 
 async function refreshAuthCookies(): Promise<boolean> {

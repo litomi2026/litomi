@@ -5,9 +5,11 @@ import type { GETV1MeResponse, PATCHV1MeSettingsBody } from '@litomi/contracts'
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import type { ProblemDetailsError } from '@/utils/fetch-response'
+
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { BroadcastChannelKey, type UserSettingsBroadcastMessage } from '@/storage'
-import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
+import { BroadcastChannelKey, UserSettingsBroadcastMessage } from '@/storage'
+import { fetchAPIData } from '@/utils/api-request'
 
 type MutationContext = {
   previousMe?: GETV1MeResponse | null

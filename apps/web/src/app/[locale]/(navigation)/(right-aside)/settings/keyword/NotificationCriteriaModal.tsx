@@ -17,7 +17,7 @@ import { useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ProblemDetailsError } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { useRouter } from '@/i18n/navigation'

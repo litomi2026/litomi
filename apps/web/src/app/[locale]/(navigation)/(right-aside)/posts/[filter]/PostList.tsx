@@ -13,7 +13,7 @@ import RetryGuidance from '@/components/RetryGuidance'
 import StatusState from '@/components/status/StatusState'
 import { Link } from '@/i18n/navigation'
 import usePostInfiniteQuery from '@/query/usePostsQuery'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import FollowingUnauthorized from './FollowingUnauthorized'
 import MasonryPostList, { MasonryPostListSkeleton } from './MasonryPostList'

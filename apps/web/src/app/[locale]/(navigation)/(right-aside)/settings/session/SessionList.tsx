@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { revokeAllPersistentSessions, revokeOtherPersistentSessions, revokePersistentSession } from './api'
 

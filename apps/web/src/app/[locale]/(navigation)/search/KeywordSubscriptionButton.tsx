@@ -13,7 +13,7 @@ import IconBell from '@/components/icons/IconBell'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { useRouter } from '@/i18n/navigation'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { createNotificationCriteria } from './api'
 import { SearchParam } from './constants'

@@ -3,9 +3,10 @@
 import ms from 'ms'
 import { useCallback, useEffect, useRef } from 'react'
 
-import type { ProblemDetailsError } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
-import { fetchAPIData, ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
+import { ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/fetch-response'
 
 import {
   deleteOutboxItem,

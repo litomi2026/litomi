@@ -11,7 +11,7 @@ import { useLocale } from 'next-intl'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ProblemDetailsError } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import IconBell from '@/components/icons/IconBell'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'

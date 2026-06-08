@@ -11,6 +11,7 @@ import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
 import type { AdClickResult } from '@/components/ads/types'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'
 import AdsterraNativeBanner from '@/components/ads/adsterra/AdsterraNativeBanner'
@@ -21,7 +22,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { isAdultVerificationRequiredProblem } from '@/lib/react-query/QueryProvider'
 import useMeQuery from '@/query/useMeQuery'
 import usePointsTurnstileQuery from '@/query/usePointsTurnstileQuery'
-import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
 
 import { runWhenDocumentVisible } from './util'
 
