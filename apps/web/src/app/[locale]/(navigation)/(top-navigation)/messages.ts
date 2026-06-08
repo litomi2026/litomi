@@ -46,6 +46,10 @@ export const messages = {
           refresh: '갱신',
         },
       },
+      scrollButtons: {
+        top: '맨 위로 가기',
+        bottom: '맨 아래로 가기',
+      },
       footer: {
         installApp: '앱 설치/다운로드',
         terms: '이용약관',
@@ -116,6 +120,10 @@ export const messages = {
           seconds: '{seconds}s',
           refresh: 'Refresh',
         },
+      },
+      scrollButtons: {
+        top: 'Go to top',
+        bottom: 'Go to bottom',
       },
       footer: {
         installApp: 'Install app',
@@ -188,6 +196,10 @@ export const messages = {
           refresh: '更新',
         },
       },
+      scrollButtons: {
+        top: 'ページ上部へ移動',
+        bottom: 'ページ下部へ移動',
+      },
       footer: {
         installApp: 'アプリで使う',
         terms: '利用規約',
@@ -258,6 +270,10 @@ export const messages = {
           seconds: '{seconds}秒',
           refresh: '刷新',
         },
+      },
+      scrollButtons: {
+        top: '滚动到顶部',
+        bottom: '滚动到底部',
       },
       footer: {
         installApp: '安装应用',

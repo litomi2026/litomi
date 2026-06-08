@@ -3,6 +3,7 @@
 import type { MouseEvent } from 'react'
 
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 const PADDING = 30
@@ -20,6 +21,8 @@ export default function ScrollButtons() {
     canScrollDown: false,
     canScrollUp: false,
   })
+
+  const t = useTranslations('TopNavigation.scrollButtons')
 
   useEffect(() => {
     let frameId = 0
@@ -76,7 +79,7 @@ export default function ScrollButtons() {
           className={BUTTON_CLASS_NAME}
           disabled={!scrollState.canScrollUp}
           onClick={scrollToTop}
-          title="맨 위로 가기"
+          title={t('top')}
           type="button"
         >
           <ChevronUp className="size-5 transition group-hover/button:-translate-y-0.5" />
@@ -86,7 +89,7 @@ export default function ScrollButtons() {
           className={BUTTON_CLASS_NAME}
           disabled={!scrollState.canScrollDown}
           onClick={scrollToBottom}
-          title="맨 아래로 가기"
+          title={t('bottom')}
           type="button"
         >
           <ChevronDown className="size-5 transition group-hover/button:translate-y-0.5" />
