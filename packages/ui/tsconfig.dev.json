@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "#ui/*": ["src/*"]
-    }
+    },
+    "types": ["json", "node", "react", "react-dom"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "scripts/**/*.ts"],
   "exclude": ["node_modules", "dist"]

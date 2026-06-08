@@ -11,7 +11,8 @@
       "#ui/*": ["src/*"]
     },
     "rootDir": "./src",
-    "sourceMap": true
+    "sourceMap": true,
+    "types": ["json", "node", "react", "react-dom"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist"]
