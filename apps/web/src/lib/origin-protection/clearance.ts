@@ -1,19 +1,42 @@
+import { HTTPResponseError } from '@/utils/api-request'
+
 const CLEARANCE_WAIT_TIMEOUT_MS = 3000
+export const VERIFICATION_REQUIRED_EVENT = 'litomi:verification-required'
 
 let clearanceReady = false
-let resolveClearance: () => void = () => {}
-
-const clearancePromise = new Promise<void>((resolve) => {
-  resolveClearance = resolve
-})
+let verificationRequired = false
+let clearanceWait = createClearanceWait()
 
 export function markOriginProtectionClearanceReady() {
   clearanceReady = true
-  resolveClearance()
+  verificationRequired = false
+  clearanceWait.resolve()
 }
 
 export function releaseOriginProtectionClearanceWait() {
-  resolveClearance()
+  clearanceWait.resolve()
+
+  if (verificationRequired && !clearanceReady) {
+    clearanceWait = createClearanceWait()
+  }
+}
+
+export function reportOriginProtectionFetchError(error: unknown) {
+  if (!isOriginProtectionFetchError(error)) {
+    return
+  }
+
+  clearanceReady = false
+
+  if (verificationRequired) {
+    return
+  }
+
+  verificationRequired = true
+  clearanceWait = createClearanceWait()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(VERIFICATION_REQUIRED_EVENT))
+  }
 }
 
 export async function waitForOriginProtectionClearance() {
@@ -21,12 +44,32 @@ export async function waitForOriginProtectionClearance() {
     return
   }
 
+  if (verificationRequired) {
+    await clearanceWait.promise
+    return
+  }
+
   const timeout = new Promise<void>((resolve) => {
-    setTimeout(() => {
-      releaseOriginProtectionClearanceWait()
-      resolve()
-    }, CLEARANCE_WAIT_TIMEOUT_MS)
+    setTimeout(resolve, CLEARANCE_WAIT_TIMEOUT_MS)
   })
 
-  await Promise.race([clearancePromise, timeout])
+  await Promise.race([clearanceWait.promise, timeout])
+}
+
+function createClearanceWait() {
+  let resolve: () => void = () => {}
+
+  const promise = new Promise<void>((promiseResolve) => {
+    resolve = promiseResolve
+  })
+
+  return { promise, resolve }
+}
+
+function isOriginProtectionFetchError(error: unknown) {
+  return (
+    error instanceof TypeError ||
+    (error instanceof HTTPResponseError &&
+      (error.status === 403 || error.response.headers.get('cf-mitigated') === 'challenge'))
+  )
 }
