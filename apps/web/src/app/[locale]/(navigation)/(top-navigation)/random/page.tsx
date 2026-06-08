@@ -4,6 +4,7 @@ import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 import { getTranslations } from 'next-intl/server'
 
+import ScrollButtons from '@/components/ScrollButtons'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
@@ -30,5 +31,10 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/random'>
 export default function Page() {
   const nativeGridSponsor = getNativeGridSponsor(nativeGridSponsorPlacement.RANDOM)
 
-  return <RandomMangaList nativeGridSponsor={nativeGridSponsor} />
+  return (
+    <>
+      <RandomMangaList nativeGridSponsor={nativeGridSponsor} />
+      <ScrollButtons />
+    </>
+  )
 }

@@ -15,6 +15,7 @@ import AdultVerificationGate from '@/components/AdultVerificationGate'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
+import ScrollButtons from '@/components/ScrollButtons'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -111,14 +112,15 @@ function isAdultVerificationRequiredError(error: unknown): boolean {
 }
 
 function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view }: ContentProps) {
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
-  const { data: me } = useMeQuery()
+  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { exit, isSelectionMode } = useLibrarySelection()
   const { isVisible } = useMangaCensorship()
-  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
-  const userId = me?.id
+  const { data: me } = useMeQuery()
   const t = useTranslations('Library')
   const sortT = useTranslations('Library.sort')
+  const userId = me?.id
 
   const {
     data: library,
@@ -232,6 +234,11 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
     return <SelectableMangaCard index={index} manga={manga} variant={view} />
   }
 
+  function handleScrollElementChange(element: HTMLElement | null) {
+    setScrollElement(element)
+    setNavigationAutoHideScrollElement(element)
+  }
+
   if (isAdultGateRequired) {
     return (
       <>
@@ -268,19 +275,22 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
   }
 
   return (
-    <VirtualMangaGrid
-      fetchNextPage={fetchNextPage}
-      footer={footer}
-      hasNextPage={canAutoLoadMore}
-      header={header}
-      isFetchingNextPage={isFetchingNextPage}
-      itemGap={8}
-      items={items}
-      measurementKey={`${libraryId}:${effectiveSort}`}
-      onScrollElementChange={setNavigationAutoHideScrollElement}
-      renderItem={renderItem}
-      scrollToOptions={scrollToOptions}
-      view={view}
-    />
+    <>
+      <VirtualMangaGrid
+        fetchNextPage={fetchNextPage}
+        footer={footer}
+        hasNextPage={canAutoLoadMore}
+        header={header}
+        isFetchingNextPage={isFetchingNextPage}
+        itemGap={8}
+        items={items}
+        measurementKey={`${libraryId}:${effectiveSort}`}
+        onScrollElementChange={handleScrollElementChange}
+        renderItem={renderItem}
+        scrollToOptions={scrollToOptions}
+        view={view}
+      />
+      <ScrollButtons scrollElement={scrollElement} />
+    </>
   )
 }

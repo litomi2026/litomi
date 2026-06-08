@@ -1,11 +1,14 @@
 'use client'
+import ms from 'ms'
 import { useEffect, useRef } from 'react'
 
 import { SessionStorageKeyMap } from '@/storage'
 import { fetchAPIData } from '@/utils/api-request'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 
-const TRACKING_COOLDOWN_MS = 10 * 60 * 1000
+import { removeLanguageConditions } from './searchLanguage'
+
+const TRACKING_COOLDOWN_MS = ms('10 minutes')
 
 type Params = {
   enabled: boolean
@@ -13,33 +16,33 @@ type Params = {
 }
 
 export default function useTrackSearchTrendingView({ enabled, query }: Params) {
-  const trimmedQuery = query?.trim() ?? ''
+  const trackableQuery = normalizeTrackableQuery(query)
   const trackedQueryRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (!enabled || !trimmedQuery || document.visibilityState !== 'visible') {
+    if (!enabled || !trackableQuery || document.visibilityState !== 'visible') {
       return
     }
 
-    if (trackedQueryRef.current === trimmedQuery) {
+    if (trackedQueryRef.current === trackableQuery) {
       return
     }
 
-    const storageKey = SessionStorageKeyMap.searchTrendingView(trimmedQuery)
+    const storageKey = SessionStorageKeyMap.searchTrendingView(trackableQuery)
     if (isRecentlyTracked(storageKey)) {
       return
     }
 
-    trackedQueryRef.current = trimmedQuery
+    trackedQueryRef.current = trackableQuery
     markTracked(storageKey)
 
-    void postSearchTrendingView(trimmedQuery).then((ok) => {
+    void postSearchTrendingView(trackableQuery).then((ok) => {
       if (!ok) {
         trackedQueryRef.current = null
         unmarkTracked(storageKey)
       }
     })
-  }, [enabled, trimmedQuery])
+  }, [enabled, trackableQuery])
 }
 
 function isRecentlyTracked(storageKey: string): boolean {
@@ -57,6 +60,10 @@ function markTracked(storageKey: string) {
   } catch {
     // Ignore storage failures. The view can still be sent once for this render.
   }
+}
+
+function normalizeTrackableQuery(query: string | null) {
+  return removeLanguageConditions(query)?.replace(/\s+/g, ' ') ?? ''
 }
 
 async function postSearchTrendingView(query: string): Promise<boolean> {

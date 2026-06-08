@@ -18,6 +18,7 @@ import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navig
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
+import ScrollButtons from '@/components/ScrollButtons'
 import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -78,6 +79,7 @@ export default function SearchResult({ header, nativeGridSponsor, searchParams }
 function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: ContentProps) {
   const t = useTranslations('Search')
   const params = new URLSearchParams(searchParams)
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { isVisible } = useMangaCensorship()
@@ -169,6 +171,11 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
     query: params.get(SearchParam.QUERY),
   })
 
+  function handleScrollElementChange(element: HTMLElement | null) {
+    setScrollElement(element)
+    setNavigationAutoHideScrollElement(element)
+  }
+
   if (isLoading) {
     return (
       <SearchSpacer>
@@ -206,20 +213,23 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
   }
 
   return (
-    <VirtualMangaGrid
-      fetchNextPage={fetchNextPage}
-      footer={footer}
-      hasNextPage={canAutoLoadMore}
-      header={headerWithSpacer}
-      isFetchingNextPage={isFetchingNextPage}
-      itemGap={8}
-      items={items}
-      measurementKey={searchParams}
-      onScrollElementChange={setNavigationAutoHideScrollElement}
-      renderItem={renderItem}
-      scrollToOptions={scrollToOptions}
-      view={view}
-    />
+    <>
+      <VirtualMangaGrid
+        fetchNextPage={fetchNextPage}
+        footer={footer}
+        hasNextPage={canAutoLoadMore}
+        header={headerWithSpacer}
+        isFetchingNextPage={isFetchingNextPage}
+        itemGap={8}
+        items={items}
+        measurementKey={searchParams}
+        onScrollElementChange={handleScrollElementChange}
+        renderItem={renderItem}
+        scrollToOptions={scrollToOptions}
+        view={view}
+      />
+      <ScrollButtons scrollElement={scrollElement} />
+    </>
   )
 }
 

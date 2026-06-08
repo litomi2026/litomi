@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { getTranslations } from 'next-intl/server'
 
+import ScrollButtons from '@/components/ScrollButtons'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
@@ -26,5 +27,10 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/recommen
 }
 
 export default async function Page() {
-  return <RecommendMangaPageClient />
+  return (
+    <>
+      <RecommendMangaPageClient />
+      <ScrollButtons />
+    </>
+  )
 }

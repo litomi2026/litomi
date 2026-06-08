@@ -18,6 +18,7 @@ import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navig
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
+import ScrollButtons from '@/components/ScrollButtons'
 import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import StatusState from '@/components/status/StatusState'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -117,6 +118,7 @@ function mergeUniquePublicLibraryMangaItems(pages?: { items: PublicLibraryManga[
 }
 
 function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: ContentProps) {
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { isVisible } = useMangaCensorship()
   const t = useTranslations('Library.empty')
@@ -206,6 +208,11 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
     )
   }
 
+  function handleScrollElementChange(element: HTMLElement | null) {
+    setScrollElement(element)
+    setNavigationAutoHideScrollElement(element)
+  }
+
   if (isInitialLoading) {
     return (
       <>
@@ -233,17 +240,20 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
   }
 
   return (
-    <VirtualMangaGrid
-      fetchNextPage={fetchNextPage}
-      footer={footer}
-      hasNextPage={canAutoLoadMore}
-      header={header}
-      isFetchingNextPage={isFetchingNextPage}
-      itemGap={8}
-      items={items}
-      onScrollElementChange={setNavigationAutoHideScrollElement}
-      renderItem={renderItem}
-      view={view}
-    />
+    <>
+      <VirtualMangaGrid
+        fetchNextPage={fetchNextPage}
+        footer={footer}
+        hasNextPage={canAutoLoadMore}
+        header={header}
+        isFetchingNextPage={isFetchingNextPage}
+        itemGap={8}
+        items={items}
+        onScrollElementChange={handleScrollElementChange}
+        renderItem={renderItem}
+        view={view}
+      />
+      <ScrollButtons scrollElement={scrollElement} />
+    </>
   )
 }

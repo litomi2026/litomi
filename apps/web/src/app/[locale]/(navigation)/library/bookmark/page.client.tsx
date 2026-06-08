@@ -15,6 +15,7 @@ import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
+import ScrollButtons from '@/components/ScrollButtons'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -93,6 +94,7 @@ export default function BookmarkPageClient() {
 }
 
 function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProps) {
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { exit, isSelectionMode } = useLibrarySelection()
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
@@ -190,6 +192,11 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
     return <SelectableMangaCard index={index} manga={manga} variant={view} />
   }
 
+  function handleScrollElementChange(element: HTMLElement | null) {
+    setScrollElement(element)
+    setNavigationAutoHideScrollElement(element)
+  }
+
   if (me === null) {
     return <Unauthorized />
   }
@@ -199,19 +206,22 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
   }
 
   return (
-    <VirtualMangaGrid
-      fetchNextPage={fetchNextPage}
-      footer={footer}
-      hasNextPage={canAutoLoadMore}
-      header={header}
-      isFetchingNextPage={isFetchingNextPage}
-      itemGap={8}
-      items={items}
-      measurementKey={sort}
-      onScrollElementChange={setNavigationAutoHideScrollElement}
-      renderItem={renderItem}
-      scrollToOptions={scrollToOptions}
-      view={view}
-    />
+    <>
+      <VirtualMangaGrid
+        fetchNextPage={fetchNextPage}
+        footer={footer}
+        hasNextPage={canAutoLoadMore}
+        header={header}
+        isFetchingNextPage={isFetchingNextPage}
+        itemGap={8}
+        items={items}
+        measurementKey={sort}
+        onScrollElementChange={handleScrollElementChange}
+        renderItem={renderItem}
+        scrollToOptions={scrollToOptions}
+        view={view}
+      />
+      <ScrollButtons scrollElement={scrollElement} />
+    </>
   )
 }

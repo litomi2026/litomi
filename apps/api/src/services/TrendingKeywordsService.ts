@@ -22,16 +22,7 @@ class TrendingKeywordsService {
 
     try {
       const trending = await redis.zrange(dailyKey, 0, limit - 1, 'REV', 'WITHSCORES')
-      const results: TrendingKeyword[] = []
-
-      for (let i = 0; i < trending.length; i += 2) {
-        results.push({
-          keyword: trending[i],
-          score: Number(trending[i + 1]),
-        })
-      }
-
-      return results
+      return this.createTrendingKeywords(trending)
     } catch (error) {
       console.error('getTrendingDaily:', error)
       return []
@@ -54,16 +45,7 @@ class TrendingKeywordsService {
       }
 
       const trending = await redis.zrange(aggregateKey, 0, limit - 1, 'REV', 'WITHSCORES')
-      const results: TrendingKeyword[] = []
-
-      for (let i = 0; i < trending.length; i += 2) {
-        results.push({
-          keyword: trending[i],
-          score: Number(trending[i + 1]),
-        })
-      }
-
-      return results
+      return this.createTrendingKeywords(trending)
     } catch (error) {
       console.error('getTrendingRealtime:', error)
       return []
@@ -97,8 +79,32 @@ class TrendingKeywordsService {
     }
   }
 
+  protected createTrendingKeywords(trending: string[]): TrendingKeyword[] {
+    const results: TrendingKeyword[] = []
+
+    for (let i = 0; i < trending.length; i += 2) {
+      results.push({
+        keyword: trending[i],
+        score: Number(trending[i + 1]),
+      })
+    }
+
+    return results
+  }
+
   protected getHourlyAggregateKey(hourWindow: number): string {
     return `${this.TRENDING_KEY}:aggregate:v2:${hourWindow}`
+  }
+
+  protected isLanguageCondition(part: string): boolean {
+    const token = part.replace(/^-+/, '')
+    const colonIndex = token.indexOf(':')
+
+    if (colonIndex <= 0) {
+      return false
+    }
+
+    return token.slice(0, colonIndex).toLowerCase() === 'language'
   }
 
   protected normalizeKeyword(keyword: string): string {
@@ -113,6 +119,10 @@ class TrendingKeywordsService {
 
     for (const part of parts) {
       if (part.includes(':')) {
+        if (this.isLanguageCondition(part)) {
+          continue
+        }
+
         if (part.startsWith('-')) {
           excludedCategorizedTags.push(part)
         } else {

@@ -18,11 +18,11 @@ const PAGED_READER_VIEW_WINDOW_SIZE = 6
 
 const imageFitContentStyle: Record<ImageFit, string> = {
   width:
-    'flex justify-center items-center [&_li]:w-fit [&_li]:max-w-full [&_li]:h-full [&_picture]:contents [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
+    'flex justify-center items-center [&_li]:items-center [&_li]:justify-center [&_li]:w-full [&_li]:h-full [&_picture]:contents [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto',
   height:
     '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
   contain:
-    'p-safe [&_li]:items-center [&_li]:mx-auto [&_picture]:contents [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-[calc(100dvh-var(--safe-area-top)-var(--safe-area-bottom))]',
+    'p-safe [&_li]:items-center [&_li]:justify-center [&_li]:w-full [&_li]:h-full [&_picture]:contents [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto [&_img]:max-h-[calc(100dvh-var(--safe-area-top)-var(--safe-area-bottom))]',
 }
 
 type ItemProps<TPage extends ReaderPage> = {

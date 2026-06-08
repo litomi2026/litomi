@@ -6,6 +6,7 @@ import { LocalStorageKey } from '@/storage'
 const PREFIX = 'language:'
 const LANGUAGE_FILTER_QUERY_PATTERN = new RegExp(String.raw`(?:^|\s)${PREFIX}([^\s]*)`, 'i')
 const LANGUAGE_FILTER_TOKEN_PATTERN = new RegExp(String.raw`(?:^|\s)${PREFIX}[^\s]*`, 'gi')
+const LANGUAGE_CONDITION_TOKEN_PATTERN = new RegExp(String.raw`(?:^|\s)-?${PREFIX}[^\s]*`, 'gi')
 
 type MeWithSearchLanguage = {
   settings: {
@@ -48,6 +49,10 @@ export function readStoredSearchLanguage() {
   } catch {
     return DEFAULT_SEARCH_LANGUAGE
   }
+}
+
+export function removeLanguageConditions(query: string | null | undefined) {
+  return query?.replace(LANGUAGE_CONDITION_TOKEN_PATTERN, '').trim()
 }
 
 export function removeLanguageFilter(query: string | null | undefined) {
