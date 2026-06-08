@@ -1,4 +1,5 @@
 'use client'
+import ms from 'ms'
 import { useEffect, useRef } from 'react'
 
 import { SessionStorageKeyMap } from '@/storage'
@@ -7,7 +8,7 @@ import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { removeLanguageConditions } from './searchLanguage'
 
-const TRACKING_COOLDOWN_MS = 10 * 60 * 1000
+const TRACKING_COOLDOWN_MS = ms('10 minutes')
 
 type Params = {
   enabled: boolean
@@ -62,7 +63,7 @@ function markTracked(storageKey: string) {
 }
 
 function normalizeTrackableQuery(query: string | null) {
-  return removeLanguageConditions(query)?.split(/\s+/).filter(Boolean).join(' ') ?? ''
+  return removeLanguageConditions(query)?.replace(/\s+/g, ' ') ?? ''
 }
 
 async function postSearchTrendingView(query: string): Promise<boolean> {
