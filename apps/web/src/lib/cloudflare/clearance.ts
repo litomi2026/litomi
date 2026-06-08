@@ -1,46 +1,78 @@
-import { HTTPResponseError } from '@/utils/api-request'
+import { HTTPResponseError } from '@/utils/fetch-response'
 
 const CLEARANCE_WAIT_TIMEOUT_MS = 3000
 export const VERIFICATION_REQUIRED_EVENT = 'litomi:verification-required'
 
-type ClearanceState = 'prechecking' | 'ready' | 'verification-required'
+export type OriginProtectionClearanceFailureReason =
+  | 'client-error'
+  | 'expired'
+  | 'missing-token'
+  | 'script-load-error'
+  | 'siteverify-failed'
+  | 'timeout'
+  | 'unsupported'
+
+type ClearanceState = 'failed' | 'prechecking' | 'ready' | 'verification-required'
 
 class ClearanceGate {
   private gate = createDeferred()
   private state: ClearanceState = 'prechecking'
+
+  isReady = () => this.state === 'ready'
+
+  markFailed = (reason: OriginProtectionClearanceFailureReason) => {
+    if (this.state === 'ready') {
+      return
+    }
+
+    const verificationRequired = this.state === 'verification-required'
+    this.state = 'failed'
+
+    if (verificationRequired) {
+      this.gate.reject(new Error(`Origin protection clearance failed: ${reason}`))
+      return
+    }
+
+    this.gate.resolve()
+  }
 
   markReady = () => {
     this.state = 'ready'
     this.gate.resolve()
   }
 
-  releaseWait = () => {
-    if (this.state === 'verification-required') {
-      return
-    }
-
-    this.gate.resolve()
-  }
-
   reportFetchError = (error: unknown) => {
     if (!isOriginProtectionFetchError(error)) {
-      return
+      return false
     }
 
     if (this.state === 'verification-required') {
-      return
+      return true
     }
 
-    this.state = 'verification-required'
-    this.gate = createDeferred()
+    this.startVerification()
 
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event(VERIFICATION_REQUIRED_EVENT))
     }
+
+    return true
+  }
+
+  startVerification = () => {
+    if (this.state === 'ready' || this.state === 'verification-required') {
+      return
+    }
+
+    if (this.state === 'failed') {
+      this.gate = createDeferred()
+    }
+
+    this.state = 'verification-required'
   }
 
   wait = async () => {
-    if (this.state === 'ready' || typeof window === 'undefined') {
+    if (this.state === 'failed' || this.state === 'ready' || typeof window === 'undefined') {
       return
     }
 
@@ -50,19 +82,27 @@ class ClearanceGate {
     }
 
     await Promise.race([this.gate.promise, timeout(CLEARANCE_WAIT_TIMEOUT_MS)])
+
+    if ((this.state as ClearanceState) === 'verification-required') {
+      await this.gate.promise
+    }
   }
 }
 
 export const clearanceGate = new ClearanceGate()
 
 function createDeferred() {
-  let resolve: () => void = () => {}
+  let reject: (error: Error) => void = () => undefined
+  let resolve: () => void = () => undefined
 
-  const promise = new Promise<void>((promiseResolve) => {
+  const promise = new Promise<void>((promiseResolve, promiseReject) => {
     resolve = promiseResolve
+    reject = promiseReject
   })
 
-  return { promise, resolve }
+  void promise.catch(() => undefined)
+
+  return { promise, reject, resolve }
 }
 
 function isOriginProtectionFetchError(error: unknown) {
