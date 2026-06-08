@@ -2,7 +2,8 @@
 import { useEffect, useRef } from 'react'
 
 import { SessionStorageKeyMap } from '@/storage'
-import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 const TRACKING_COOLDOWN_MS = 10 * 60 * 1000
 

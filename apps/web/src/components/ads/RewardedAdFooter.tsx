@@ -1,4 +1,4 @@
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 type Props = {
   rewardEnabled: boolean

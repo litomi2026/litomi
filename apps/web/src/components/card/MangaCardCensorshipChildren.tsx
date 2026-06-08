@@ -1,6 +1,13 @@
-import childrenDay from './children-day.json'
+import childrenDayJSON from './children-day.json'
 
-export type ChildrenDayLocale = keyof typeof childrenDay.children_day_title
+export type ChildrenDayLocale = 'en' | 'ja' | 'ko' | 'zh-CN' | 'zh-TW'
+
+type ChildrenDayMessages = {
+  children_day_description: Record<ChildrenDayLocale, string>
+  children_day_title: Record<ChildrenDayLocale, string>
+}
+
+const childrenDay = childrenDayJSON as ChildrenDayMessages
 
 type Props = {
   locale: ChildrenDayLocale

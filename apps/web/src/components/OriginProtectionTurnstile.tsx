@@ -7,18 +7,25 @@ import { Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { clearanceGate, VERIFICATION_REQUIRED_EVENT } from '@/lib/cloudflare/clearance'
-import { fetchAPIData } from '@/utils/api-request'
+import {
+  clearanceGate,
+  type OriginProtectionClearanceFailureReason,
+  VERIFICATION_REQUIRED_EVENT,
+} from '@/lib/cloudflare/clearance'
+import { fetchResponseData } from '@/utils/fetch-response'
 
 const { NEXT_PUBLIC_TURNSTILE_SITE_KEY } = env
 
+type VerificationState = 'checking' | 'failed' | 'hidden'
+
 export default function OriginProtectionTurnstile() {
-  const [verificationRequired, setVerificationRequired] = useState(false)
+  const [verificationState, setVerificationState] = useState<VerificationState>('hidden')
   const turnstileRef = useRef<TurnstileInstance>(null)
+  const verificationRequired = verificationState !== 'hidden'
 
   useEffect(() => {
     function showVerificationPrompt() {
-      setVerificationRequired(true)
+      setVerificationState('checking')
     }
 
     window.addEventListener(VERIFICATION_REQUIRED_EVENT, showVerificationPrompt)
@@ -27,23 +34,47 @@ export default function OriginProtectionTurnstile() {
     }
   }, [])
 
-  function handleSuccess(token: string) {
+  async function handleSuccess(token: string) {
     if (!token) {
+      reportTurnstileFailure('missing-token')
       return
     }
 
-    void fetchAPIData<void>('/api/v1/turnstile/clearance', {
-      method: 'POST',
-      body: JSON.stringify({ token }),
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then(() => {
-        clearanceGate.markReady()
-        setVerificationRequired(false)
+    try {
+      await fetchResponseData<void>('/api/v1/turnstile/clearance', {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+        headers: { 'Content-Type': 'application/json' },
       })
-      .catch(() => {
-        clearanceGate.releaseWait()
-      })
+
+      clearanceGate.markReady()
+      setVerificationState('hidden')
+    } catch (error) {
+      clearanceGate.markFailed('siteverify-failed')
+      setVerificationState('failed')
+      console.warn('turnstile-siteverify', error)
+    }
+  }
+
+  function handleBeforeInteractive() {
+    clearanceGate.startVerification()
+    setVerificationState('checking')
+  }
+
+  function handleRetry() {
+    clearanceGate.startVerification()
+    setVerificationState('checking')
+    turnstileRef.current?.reset()
+  }
+
+  function reportTurnstileFailure(reason: OriginProtectionClearanceFailureReason, errorCode?: string) {
+    if (clearanceGate.isReady()) {
+      return
+    }
+
+    clearanceGate.markFailed(reason)
+    setVerificationState('failed')
+    console.warn('reportTurnstileFailure', errorCode)
   }
 
   return (
@@ -63,12 +94,16 @@ export default function OriginProtectionTurnstile() {
             <ShieldCheck className="size-4" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm leading-5 font-semibold">보안 확인이 필요해요</p>
-            <p className="mt-0.5 text-xs leading-5 text-zinc-400">사람인지 확인하고 있어요</p>
+            <p className="text-sm leading-5 font-semibold">
+              {verificationState === 'failed' ? '보안 확인에 실패했어요' : '보안 확인이 필요해요'}
+            </p>
+            <p className="mt-0.5 text-xs leading-5 text-zinc-400">
+              {verificationState === 'failed' ? '네트워크를 확인한 뒤 다시 시도해 주세요' : '사람인지 확인하고 있어요'}
+            </p>
           </div>
           <button
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-zinc-600 px-2.5 text-xs font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-700 focus-visible:ring-2 active:border-zinc-600 active:bg-zinc-800 focus-visible:ring-brand/60 focus-visible:outline-none"
-            onClick={() => turnstileRef.current?.reset()}
+            onClick={handleRetry}
             title="보안 확인 다시 시도"
             type="button"
           >
@@ -82,18 +117,26 @@ export default function OriginProtectionTurnstile() {
           'relative z-10 overflow-auto',
           verificationRequired ? 'flex min-h-[89px] items-center justify-center px-2 py-2' : 'h-[89px] opacity-0',
         )}
-        onBeforeInteractive={() => setVerificationRequired(true)}
-        onError={clearanceGate.releaseWait}
+        onBeforeInteractive={handleBeforeInteractive}
+        onError={(errorCode) => reportTurnstileFailure('client-error', errorCode)}
+        onExpire={() => reportTurnstileFailure('expired')}
         onSuccess={handleSuccess}
+        onTimeout={() => reportTurnstileFailure('timeout')}
+        onUnsupported={() => reportTurnstileFailure('unsupported')}
         options={{
           action: TURNSTILE_ORIGIN_PROTECTION_ACTION,
           appearance: 'interaction-only',
           responseField: false,
         }}
         ref={turnstileRef}
+        scriptOptions={{
+          onError: () => reportTurnstileFailure('script-load-error'),
+        }}
         siteKey={NEXT_PUBLIC_TURNSTILE_SITE_KEY}
       />
-      {verificationRequired && <Loader2 className="absolute bottom-9 left-1/2 -translate-x-1/2 animate-spin z-0" />}
+      {verificationState === 'checking' && (
+        <Loader2 className="absolute bottom-9 left-1/2 -translate-x-1/2 animate-spin z-0" />
+      )}
     </div>
   )
 }

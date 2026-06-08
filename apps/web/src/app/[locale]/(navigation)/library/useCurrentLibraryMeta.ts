@@ -6,7 +6,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, ProblemDetailsError, withQuery } from '@/utils/api-request'
+import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 type FetchAccessibleLibraryMetaOptions = {
   libraryId: number

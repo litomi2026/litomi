@@ -6,7 +6,7 @@ import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { getTranslationValue, type TranslationMap } from './common'
 import languageTranslationJSON from './language.json'
 
-const LANGUAGE_TRANSLATION: TranslationMap = languageTranslationJSON
+const LANGUAGE_TRANSLATION = languageTranslationJSON as TranslationMap
 
 export function getAllLanguagesWithLabels(locale: Locale) {
   return Object.entries(LANGUAGE_TRANSLATION).map(([key, translations]) => ({

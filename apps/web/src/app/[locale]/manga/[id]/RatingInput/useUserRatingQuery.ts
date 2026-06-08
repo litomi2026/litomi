@@ -6,7 +6,8 @@ import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 export async function fetchUserRating(mangaId: number) {
   try {

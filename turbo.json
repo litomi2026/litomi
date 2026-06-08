@@ -94,11 +94,13 @@
       "persistent": true
     },
     "type": {
-      "dependsOn": ["^type"],
       "outputs": []
     },
     "@litomi/web#type": {
-      "dependsOn": ["^build", "^type"],
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "//#type:root": {
       "outputs": []
     },
     "lint": {

@@ -8,7 +8,7 @@ import { Loader2, Shield } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import type { PasskeySignalData } from './common'
 

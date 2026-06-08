@@ -10,12 +10,9 @@ import { toast } from 'sonner'
 import MyInfoSync from '@/components/MyInfoSync'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import {
-  HTTPResponseError,
-  isAuthenticationRequiredError,
-  ProblemDetailsError,
-  UserVisibleError,
-} from '@/utils/api-request'
+import { isAuthenticationRequiredError, UserVisibleError } from '@/utils/api-request'
+import { HTTPResponseError } from '@/utils/fetch-response'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { handleUnauthorizedError } from './auth-state'
 

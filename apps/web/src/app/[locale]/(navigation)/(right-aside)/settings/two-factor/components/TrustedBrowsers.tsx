@@ -10,7 +10,7 @@ import { useLocale } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import type { TrustedBrowser } from '../types'
 

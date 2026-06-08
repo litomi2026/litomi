@@ -14,7 +14,7 @@ import { twMerge } from 'tailwind-merge'
 import { usePointsQuery } from '@/app/[locale]/(navigation)/(top-navigation)/libo/usePointsQuery'
 import { useRouter } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import usePointsDonateMutation from './usePointsDonateMutation'
 

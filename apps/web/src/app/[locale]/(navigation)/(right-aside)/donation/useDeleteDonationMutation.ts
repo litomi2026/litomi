@@ -4,8 +4,10 @@ import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-
 import { useLocale } from 'next-intl'
 import { toast } from 'sonner'
 
+import type { ProblemDetailsError } from '@/utils/fetch-response'
+
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, type ProblemDetailsError } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
 
 type MutationContext = {
   previous?: InfiniteData<GETV1PointsDonationsMeResponse>

@@ -8,7 +8,7 @@ import { translateCategory } from './category'
 import characterTranslationJSON from './character.json'
 import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
 
-const CHARACTER_TRANSLATION: TranslationMap = characterTranslationJSON
+const CHARACTER_TRANSLATION = characterTranslationJSON as TranslationMap
 
 /**
  * Get all characters with their translations as value/label pairs for search suggestions

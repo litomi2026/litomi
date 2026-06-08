@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import { Link } from '@/i18n/navigation'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 type Props = {
   error: unknown

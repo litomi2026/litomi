@@ -8,7 +8,7 @@ import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
 
 import { useLatestRef } from '@/hook/useLatestRef'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import type { AdClickResult } from './types'
 

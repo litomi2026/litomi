@@ -7,7 +7,7 @@ import { translateCategory } from './category'
 import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
 import groupTranslationJSON from './group.json'
 
-const GROUP_TRANSLATION: TranslationMap = groupTranslationJSON
+const GROUP_TRANSLATION = groupTranslationJSON as TranslationMap
 
 /**
  * Get all groups with their translations as value/label pairs for search suggestions

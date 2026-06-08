@@ -10,7 +10,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@test/*": ["../../test/*"]
-    }
+    },
+    "types": ["json", "node", "react", "react-dom"]
   },
   "include": ["next-env.d.ts", "*.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
   "exclude": ["node_modules", ".next", "src/**/__tests__/**", "src/**/*.test.ts", "src/**/*.test.tsx"]

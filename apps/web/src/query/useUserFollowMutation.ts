@@ -8,7 +8,7 @@ import type {
 
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 
-import type { ProblemDetailsError } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import {
   type PostListSnapshot,

@@ -2,6 +2,13 @@ import type { CharacterDefinition, CharacterPromptDefinition, LlmParams } from '
 
 import commonJSON from './common.json'
 
+type CommonCharacterJsonDefinition = {
+  commonSystemPromptAtEndBlocks: string[][]
+  commonSystemPromptBlocks: string[][]
+}
+
+const common = commonJSON as CommonCharacterJsonDefinition
+
 export type CharacterJsonDefinition = CharacterJsonDefinitionExpanded | CharacterJsonDefinitionLegacy
 
 export type CharacterPromptJsonDefinition = {
@@ -63,9 +70,9 @@ export function buildCharacter(json: CharacterJsonDefinition): CharacterDefiniti
 
 function buildPrompt(prompt: CharacterPromptJsonDefinition): CharacterPromptDefinition {
   const systemPrompt = [
-    joinBlocks(commonJSON.commonSystemPromptBlocks),
+    joinBlocks(common.commonSystemPromptBlocks),
     joinBlocks(prompt.systemPromptBlocks),
-    joinBlocks(commonJSON.commonSystemPromptAtEndBlocks),
+    joinBlocks(common.commonSystemPromptAtEndBlocks),
   ]
     .filter((s) => s.trim().length > 0)
     .join('\n\n')

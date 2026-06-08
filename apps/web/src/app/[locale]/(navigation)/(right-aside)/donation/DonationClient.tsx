@@ -12,7 +12,7 @@ import { twMerge } from 'tailwind-merge'
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import StatusState from '@/components/status/StatusState'
 import { Link } from '@/i18n/navigation'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import useDeleteDonationMutation from './useDeleteDonationMutation'
 import useMyDonationsInfiniteQuery from './useMyDonationsInfiniteQuery'

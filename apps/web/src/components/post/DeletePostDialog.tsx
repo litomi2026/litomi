@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { deletePost } from './api'
 import { type PostListSnapshot, removePostFromPostLists, restorePostLists, snapshotPostLists } from './cache'

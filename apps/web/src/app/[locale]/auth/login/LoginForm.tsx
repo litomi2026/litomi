@@ -14,7 +14,7 @@ import { MouseEvent, SubmitEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { ProblemDetailsError } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import IconLogo from '@/components/icons/LogoLitomi'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'

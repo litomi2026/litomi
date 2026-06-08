@@ -8,7 +8,8 @@ import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'
 

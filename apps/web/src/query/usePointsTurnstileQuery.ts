@@ -4,7 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, ProblemDetailsError } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
+import { ProblemDetailsError } from '@/utils/fetch-response'
 
 export async function fetchPointsTurnstile() {
   try {
