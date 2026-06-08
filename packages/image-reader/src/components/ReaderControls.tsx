@@ -25,9 +25,6 @@ const SECONDARY_BUTTON_CLASS_NAME = twMerge(
   'border border-foreground/10 bg-foreground/5 text-foreground backdrop-blur hover:border-foreground/15 hover:bg-foreground/10 active:bg-foreground/15',
 )
 
-const UTILITY_TEXT_BUTTON_CLASS_NAME =
-  'px-2 py-1 text-xs text-foreground transition active:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
-
 type Props<TPage extends ReaderPage> = {
   isVisible: boolean
   onRequestClose: () => void
@@ -237,7 +234,7 @@ export default function ReaderControls<TPage extends ReaderPage>({
             maxPageIndex={maxPageIndex}
             readerLayout={readerLayout}
           />
-          <button className={UTILITY_TEXT_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
+          <button className={SECONDARY_BUTTON_CLASS_NAME} onClick={cycleLowData} type="button">
             {messages.lowDataLabels[lowData]}
           </button>
         </div>
