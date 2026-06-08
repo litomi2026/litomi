@@ -17,6 +17,7 @@ COPY packages ./packages
 RUN bun install --filter=@litomi/recommender --ignore-scripts --production --silent --frozen-lockfile
 
 COPY tsconfig.json tsconfig.base.json turbo.json ./
+COPY types ./types
 COPY apps/recommender ./apps/recommender
 
 RUN bun build --compile \

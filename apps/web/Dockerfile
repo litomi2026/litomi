@@ -5,6 +5,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY package.json bun.lock turbo.json tsconfig.json tsconfig.base.json ./
+COPY types ./types
 COPY apps/api/package.json ./apps/api/package.json
 COPY apps/cataloger/package.json ./apps/cataloger/package.json
 COPY apps/web/package.json ./apps/web/package.json
