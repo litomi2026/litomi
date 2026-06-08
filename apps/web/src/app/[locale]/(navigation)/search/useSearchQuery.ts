@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
-import { fetchAPIData } from '@/utils/api-request'
+import { fetchProxyAPIData } from '@/utils/proxy-api-request'
 
 import { createCanonicalSearchParams } from './canonicalSearchParams'
 import { SearchParam, SearchSort } from './constants'
@@ -51,7 +51,8 @@ export function useSearchQuery(searchParams: URLSearchParams) {
 
       const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
       url.search = createCanonicalSearchParams(pagedParams).toString()
-      const { data } = await fetchAPIData<GETProxyKSearchResponse>(url)
+
+      const { data } = await fetchProxyAPIData<GETProxyKSearchResponse>(url)
       return data
     },
     enabled: !isMePending,

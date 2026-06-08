@@ -17,6 +17,7 @@ import LibraryModal from '@/components/card/LibraryModal'
 import MangaTorrentModal from '@/components/card/MangaTorrentModal'
 import HiyobiPing from '@/components/HiyobiPing'
 import { MangaDetailModal } from '@/components/MangaDetailModal'
+import OriginProtectionTurnstile from '@/components/OriginProtectionTurnstile'
 import SEOText from '@/components/SEOText'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import ThemeProvider from '@/components/ThemeProvider'
@@ -129,6 +130,7 @@ export default async function RootLayout({ children, params }: Props) {
           <NewYearToastNudge />
         </NextIntlClientProvider>
         <ServiceWorkerRegistrar />
+        <OriginProtectionTurnstile />
         <HiyobiPing />
         {NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} />}
         <p className="h-0 overflow-hidden tracking-widest invisible">

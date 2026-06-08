@@ -123,6 +123,6 @@ export default function RealtimeRanking() {
 
 async function fetchRealtimeAnalytics(): Promise<GETV1AnalyticsRealtimeResponse> {
   const url = '/api/v1/analytics/realtime'
-  const { data } = await fetchAPIData<GETV1AnalyticsRealtimeResponse>(url)
+  const { data } = await fetchAPIData<GETV1AnalyticsRealtimeResponse>(url, { credentials: 'omit' })
   return data
 }

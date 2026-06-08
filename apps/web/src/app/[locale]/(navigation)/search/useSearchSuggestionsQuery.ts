@@ -27,7 +27,7 @@ export async function fetchSearchSuggestions({ limit, query, locale }: Params) {
   }
 
   const url = withQuery('/api/v1/search/suggestions', searchParams)
-  const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url)
+  const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url, { credentials: 'omit' })
   return data
 }
 

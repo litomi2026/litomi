@@ -19,7 +19,8 @@ export async function fetchLibraryList({ cursor, userId }: { cursor: string | nu
   }
 
   const url = withQuery('/api/v1/library', params)
-  const { data } = await fetchAPIData<GETV1LibraryListResponse>(url)
+  const credentials = userId ? 'same-origin' : 'omit'
+  const { data } = await fetchAPIData<GETV1LibraryListResponse>(url, { credentials })
   return data
 }
 
