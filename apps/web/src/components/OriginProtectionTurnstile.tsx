@@ -36,7 +36,12 @@ export default function OriginProtectionTurnstile() {
   }, [])
 
   async function handleSuccess(token: string) {
-    if (clearanceGate.isReady() || siteverifyInFlightRef.current) {
+    if (clearanceGate.isReady()) {
+      setVerificationState('hidden')
+      return
+    }
+
+    if (siteverifyInFlightRef.current) {
       return
     }
 
@@ -45,6 +50,7 @@ export default function OriginProtectionTurnstile() {
       return
     }
 
+    setVerificationState('hidden')
     siteverifyInFlightRef.current = true
 
     try {
