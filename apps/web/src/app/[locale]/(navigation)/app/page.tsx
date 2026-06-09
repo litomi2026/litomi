@@ -40,38 +40,9 @@ type ActionLinkProps = {
   variant: 'primary' | 'secondary'
 }
 
-type FaqItem = {
-  content: ReactNode
-  id: string
-}
-
-type GuideStepConfig = {
-  content: ReactNode
-  step: string
-  title: string
-}
-
 type GuideStepProps = {
   children: ReactNode
   step: string
-  title: string
-}
-
-type InstallAction = {
-  external?: boolean
-  href: string
-  id: string
-  label: string
-  variant: 'primary' | 'secondary'
-}
-
-type InstallMethodOption = {
-  actionHint?: ReactNode
-  actions: InstallAction[]
-  description?: ReactNode
-  faqItems: FaqItem[]
-  id: string
-  steps: GuideStepConfig[]
   title: string
 }
 
@@ -86,158 +57,6 @@ export default async function AppInstallPage({ params }: PageProps<'/[locale]/ap
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'AppInstall' })
   const testFlightUrl = env.NEXT_PUBLIC_IOS_TESTFLIGHT_URL
-
-  const iosInstallOptions: InstallMethodOption[] = [
-    {
-      id: 'altstore',
-      title: t('ios.altStore.title'),
-      description: t('ios.altStore.description'),
-      actions: [
-        {
-          href: IOS_SOURCE_URL,
-          id: 'source-json',
-          label: t('ios.actions.sourceJson'),
-          variant: 'primary',
-        },
-      ],
-      steps: [
-        {
-          step: '1',
-          title: t('ios.altStore.steps.install.title'),
-          content: t.rich('ios.altStore.steps.install.content', {
-            altServer: (chunks: ReactNode) => (
-              <a
-                className="font-medium text-zinc-200 underline"
-                href="https://altstore.io"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {chunks}
-              </a>
-            ),
-            app: emphasis,
-            developerMode: emphasis,
-            trust: emphasis,
-          }),
-        },
-        {
-          step: '2',
-          title: t('ios.altStore.steps.addSource.title'),
-          content: t.rich('ios.altStore.steps.addSource.content', {
-            addSource: emphasis,
-            sourceJson: emphasis,
-            sources: emphasis,
-          }),
-        },
-        {
-          step: '3',
-          title: t('ios.altStore.steps.installApp.title'),
-          content: t('ios.altStore.steps.installApp.content'),
-        },
-        {
-          step: '4',
-          title: t('ios.altStore.steps.refresh.title'),
-          content: t.rich('ios.altStore.steps.refresh.content', {
-            altServer: emphasis,
-            myApps: emphasis,
-            refreshAll: emphasis,
-          }),
-        },
-      ],
-      faqItems: [
-        {
-          id: 'altstore-refresh',
-          content: t('ios.altStore.faq.refresh'),
-        },
-        {
-          id: 'altstore-app-limit',
-          content: t('ios.altStore.faq.appLimit'),
-        },
-      ],
-    },
-    {
-      id: 'sidestore',
-      title: t('ios.sideStore.title'),
-      description: t.rich('ios.sideStore.description', {
-        localDevVPN: emphasis,
-      }),
-      actions: [
-        {
-          external: false,
-          href: IOS_SIDESTORE_ADD_SOURCE_URL,
-          id: 'direct-add',
-          label: t('ios.actions.sideStoreDirect'),
-          variant: 'primary',
-        },
-        {
-          href: IOS_SOURCE_URL,
-          id: 'source-json',
-          label: t('ios.actions.sourceJson'),
-          variant: 'secondary',
-        },
-      ],
-      actionHint: t.rich('ios.sideStore.actionHint', {
-        directButton: emphasis,
-      }),
-      steps: [
-        {
-          step: '1',
-          title: t('ios.sideStore.steps.install.title'),
-          content: t.rich('ios.sideStore.steps.install.content', {
-            localDevVPN: emphasis,
-            pairingFile: emphasis,
-            sideStore: (chunks: ReactNode) => (
-              <a
-                className="font-medium text-zinc-200 underline"
-                href={IOS_SIDESTORE_SETUP_GUIDE_URL}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {chunks}
-              </a>
-            ),
-          }),
-        },
-        {
-          step: '2',
-          title: t('ios.sideStore.steps.addSource.title'),
-          content: t.rich('ios.sideStore.steps.addSource.content', {
-            directButton: emphasis,
-            sourceJson: emphasis,
-            sources: emphasis,
-          }),
-        },
-        {
-          step: '3',
-          title: t('ios.sideStore.steps.installApp.title'),
-          content: t('ios.sideStore.steps.installApp.content'),
-        },
-        {
-          step: '4',
-          title: t('ios.sideStore.steps.refresh.title'),
-          content: t.rich('ios.sideStore.steps.refresh.content', {
-            localDevVPN: emphasis,
-            myApps: emphasis,
-            refreshAll: emphasis,
-          }),
-        },
-      ],
-      faqItems: [
-        {
-          id: 'sidestore-refresh',
-          content: t('ios.sideStore.faq.refresh'),
-        },
-        {
-          id: 'sidestore-app-limit',
-          content: t('ios.sideStore.faq.appLimit'),
-        },
-      ],
-    },
-  ]
-
-  function emphasis(chunks: ReactNode) {
-    return <span className="font-medium text-zinc-200">{chunks}</span>
-  }
 
   return (
     <div className="p-safe mx-auto max-w-3xl px-4 py-6 sm:px-8 sm:py-12">
@@ -265,7 +84,7 @@ export default async function AppInstallPage({ params }: PageProps<'/[locale]/ap
                 </ActionLink>
                 <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4 text-sm leading-6 text-zinc-400">
                   {t.rich('android.unknownSourcesNote', {
-                    setting: emphasis,
+                    setting: renderEmphasis,
                   })}
                 </div>
               </div>
@@ -287,38 +106,115 @@ export default async function AppInstallPage({ params }: PageProps<'/[locale]/ap
                 </div>
               </OptionCard>
             )}
-            {iosInstallOptions.map((option) => (
-              <OptionCard description={option.description} key={option.id} title={option.title}>
-                <div className="mt-2 grid w-full gap-4 overflow-hidden">
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    {option.actions.map((action) => (
-                      <ActionLink
-                        external={action.external}
-                        externalLabel={t('common.externalSrOnly')}
-                        href={action.href}
-                        key={action.id}
-                        variant={action.variant}
-                      >
-                        {action.label}
-                      </ActionLink>
-                    ))}
-                  </div>
-                  {option.actionHint && (
-                    <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4 text-sm leading-6 text-zinc-400">
-                      {option.actionHint}
-                    </div>
-                  )}
-                  <ol className="grid gap-4 p-1">
-                    {option.steps.map((step) => (
-                      <GuideStep key={step.step} step={step.step} title={step.title}>
-                        {step.content}
-                      </GuideStep>
-                    ))}
-                  </ol>
-                  <FaqPanel items={option.faqItems} title={t('common.faqTitle')} />
+            <OptionCard description={t('ios.altStore.description')} title={t('ios.altStore.title')}>
+              <div className="mt-2 grid w-full gap-4 overflow-hidden">
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <ActionLink externalLabel={t('common.externalSrOnly')} href={IOS_SOURCE_URL} variant="primary">
+                    {t('ios.actions.sourceJson')}
+                  </ActionLink>
                 </div>
-              </OptionCard>
-            ))}
+                <ol className="grid gap-4 p-1">
+                  <GuideStep step="1" title={t('ios.altStore.steps.install.title')}>
+                    {t.rich('ios.altStore.steps.install.content', {
+                      altServer: renderAltServerLink,
+                      app: renderEmphasis,
+                      developerMode: renderEmphasis,
+                      trust: renderEmphasis,
+                    })}
+                  </GuideStep>
+                  <GuideStep step="2" title={t('ios.altStore.steps.addSource.title')}>
+                    {t.rich('ios.altStore.steps.addSource.content', {
+                      addSource: renderEmphasis,
+                      sourceJson: renderEmphasis,
+                      sources: renderEmphasis,
+                    })}
+                  </GuideStep>
+                  <GuideStep step="3" title={t('ios.altStore.steps.installApp.title')}>
+                    {t('ios.altStore.steps.installApp.content')}
+                  </GuideStep>
+                  <GuideStep step="4" title={t('ios.altStore.steps.refresh.title')}>
+                    {t.rich('ios.altStore.steps.refresh.content', {
+                      altServer: renderEmphasis,
+                      myApps: renderEmphasis,
+                      refreshAll: renderEmphasis,
+                    })}
+                  </GuideStep>
+                </ol>
+                <FaqPanel title={t('common.faqTitle')}>
+                  <li className="flex items-start gap-3">
+                    <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
+                    <span>{t('ios.altStore.faq.refresh')}</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
+                    <span>{t('ios.altStore.faq.appLimit')}</span>
+                  </li>
+                </FaqPanel>
+              </div>
+            </OptionCard>
+            <OptionCard
+              description={t.rich('ios.sideStore.description', {
+                localDevVPN: renderEmphasis,
+              })}
+              title={t('ios.sideStore.title')}
+            >
+              <div className="mt-2 grid w-full gap-4 overflow-hidden">
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <ActionLink
+                    external={false}
+                    externalLabel={t('common.externalSrOnly')}
+                    href={IOS_SIDESTORE_ADD_SOURCE_URL}
+                    variant="primary"
+                  >
+                    {t('ios.actions.sideStoreDirect')}
+                  </ActionLink>
+                  <ActionLink externalLabel={t('common.externalSrOnly')} href={IOS_SOURCE_URL} variant="secondary">
+                    {t('ios.actions.sourceJson')}
+                  </ActionLink>
+                </div>
+                <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4 text-sm leading-6 text-zinc-400">
+                  {t.rich('ios.sideStore.actionHint', {
+                    directButton: renderEmphasis,
+                  })}
+                </div>
+                <ol className="grid gap-4 p-1">
+                  <GuideStep step="1" title={t('ios.sideStore.steps.install.title')}>
+                    {t.rich('ios.sideStore.steps.install.content', {
+                      localDevVPN: renderEmphasis,
+                      pairingFile: renderEmphasis,
+                      sideStore: renderSideStoreLink,
+                    })}
+                  </GuideStep>
+                  <GuideStep step="2" title={t('ios.sideStore.steps.addSource.title')}>
+                    {t.rich('ios.sideStore.steps.addSource.content', {
+                      directButton: renderEmphasis,
+                      sourceJson: renderEmphasis,
+                      sources: renderEmphasis,
+                    })}
+                  </GuideStep>
+                  <GuideStep step="3" title={t('ios.sideStore.steps.installApp.title')}>
+                    {t('ios.sideStore.steps.installApp.content')}
+                  </GuideStep>
+                  <GuideStep step="4" title={t('ios.sideStore.steps.refresh.title')}>
+                    {t.rich('ios.sideStore.steps.refresh.content', {
+                      localDevVPN: renderEmphasis,
+                      myApps: renderEmphasis,
+                      refreshAll: renderEmphasis,
+                    })}
+                  </GuideStep>
+                </ol>
+                <FaqPanel title={t('common.faqTitle')}>
+                  <li className="flex items-start gap-3">
+                    <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
+                    <span>{t('ios.sideStore.faq.refresh')}</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
+                    <span>{t('ios.sideStore.faq.appLimit')}</span>
+                  </li>
+                </FaqPanel>
+              </div>
+            </OptionCard>
           </div>
         </section>
       </div>
@@ -346,18 +242,11 @@ function ActionLink({ children, external = true, externalLabel, href, variant }:
   )
 }
 
-function FaqPanel({ items, title }: { items: FaqItem[]; title: string }) {
+function FaqPanel({ children, title }: { children: ReactNode; title: string }) {
   return (
     <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4">
       <p className="text-sm font-semibold text-zinc-100">{title}</p>
-      <ul className="mt-3 grid gap-2 text-sm leading-6 text-zinc-400">
-        {items.map((item) => (
-          <li className="flex items-start gap-3" key={item.id}>
-            <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
-            <span>{item.content}</span>
-          </li>
-        ))}
-      </ul>
+      <ul className="mt-3 grid gap-2 text-sm leading-6 text-zinc-400">{children}</ul>
     </div>
   )
 }
@@ -397,5 +286,35 @@ function OptionCard({ badge, children, description, title }: OptionCardProps) {
       {description && <p className="mt-3 text-sm leading-7 text-zinc-400 sm:mt-4">{description}</p>}
       <div className="mt-auto pt-3 sm:pt-4">{children}</div>
     </div>
+  )
+}
+
+function renderAltServerLink(chunks: ReactNode) {
+  return (
+    <a
+      className="font-medium text-zinc-200 underline"
+      href="https://altstore.io"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {chunks}
+    </a>
+  )
+}
+
+function renderEmphasis(chunks: ReactNode) {
+  return <span className="font-medium text-zinc-200">{chunks}</span>
+}
+
+function renderSideStoreLink(chunks: ReactNode) {
+  return (
+    <a
+      className="font-medium text-zinc-200 underline"
+      href={IOS_SIDESTORE_SETUP_GUIDE_URL}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {chunks}
+    </a>
   )
 }
