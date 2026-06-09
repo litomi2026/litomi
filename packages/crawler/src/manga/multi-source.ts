@@ -37,12 +37,8 @@ export async function fetchMangaFromMultiSources({ id, locale, signal }: MangaFe
       return manga
     },
 
-    // 2. hitomi (한국어 작품만 이미지 지원, 나머지 작품은 이미지 없음)
-    async () => {
-      const manga = await hitomiClient.fetchManga({ id, locale, signal })
-      const hasKorean = manga?.languages?.some((l) => l.value === 'korean')
-      return hasKorean ? manga : null
-    },
+    // 2. hitomi
+    () => hitomiClient.fetchManga({ id, locale, signal }),
 
     // 3. kHentai
     () => kHentaiClient.fetchManga({ id, locale, signal }),
