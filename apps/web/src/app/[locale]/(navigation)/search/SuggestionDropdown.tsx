@@ -6,7 +6,6 @@ import { twMerge } from 'tailwind-merge'
 export type SuggestionItem = {
   value: string
   label: string
-  action?: ReactNode
   icon?: ReactNode
 }
 
@@ -69,45 +68,41 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
             <Loader2 className="size-5 text-zinc-400 animate-spin" />
           </div>
         )}
-        <div
+        <ul
           aria-busy={isFetching}
-          className="transition aria-busy:opacity-60 text-sm font-medium"
+          className="list-none p-0 transition aria-busy:opacity-60 text-sm font-medium"
           id={id}
           role="listbox"
         >
           {items.map((item, index) => (
-            <div className="flex w-full items-stretch" key={`${item.value}-${index}`}>
-              <button
-                aria-selected={selectedIndex === index}
-                className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto p-4 py-2.5 text-left transition hover:bg-zinc-800/70 aria-selected:bg-zinc-800 scrollbar-hidden"
-                id={`${id}-option-${index}`}
-                onClick={() => onSelect(item, index)}
-                role="option"
-                tabIndex={-1}
-                type="button"
-              >
-                {item.icon}
-                {item.value.endsWith(':') ? (
-                  <>
-                    <span>{renderHighlightedText(item.value, searchTerm)}</span>
-                    <span className="text-zinc-400 text-xs font-normal">{item.label}</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{renderHighlightedText(item.value, searchTerm)}</span>
-                    {item.label !== item.value && (
-                      <span className="text-zinc-400 text-xs font-normal">
-                        {renderHighlightedText(item.label, searchTerm)}
-                      </span>
-                    )}
-                  </>
-                )}
-                {renderRightContent?.(item, index)}
-              </button>
-              {item.action}
-            </div>
+            <li
+              aria-selected={selectedIndex === index}
+              className="flex min-w-0 cursor-pointer items-center gap-1.5 overflow-x-auto p-4 py-2.5 text-left transition hover:bg-zinc-800/70 aria-selected:bg-zinc-800 scrollbar-hidden"
+              id={`${id}-option-${index}`}
+              key={`${item.value}-${index}`}
+              onClick={() => onSelect(item, index)}
+              role="option"
+            >
+              {item.icon}
+              {item.value.endsWith(':') ? (
+                <>
+                  <span>{renderHighlightedText(item.value, searchTerm)}</span>
+                  <span className="text-zinc-400 text-xs font-normal">{item.label}</span>
+                </>
+              ) : (
+                <>
+                  <span>{renderHighlightedText(item.value, searchTerm)}</span>
+                  {item.label !== item.value && (
+                    <span className="text-zinc-400 text-xs font-normal">
+                      {renderHighlightedText(item.label, searchTerm)}
+                    </span>
+                  )}
+                </>
+              )}
+              {renderRightContent?.(item, index)}
+            </li>
           ))}
-        </div>
+        </ul>
         {items.length === 0 && searchTerm && !isLoading && (
           <div className="text-center py-4 text-zinc-500 text-sm">{t('noResults')}</div>
         )}

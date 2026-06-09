@@ -47,16 +47,6 @@ export default function SearchForm({ className = '' }: Props) {
   const dropdownEntries = [
     ...(keyword === ''
       ? recentSearches.map((search) => ({
-          action: (
-            <button
-              aria-label={t('deleteRecent', { query: search.query })}
-              className="transition p-3 text-zinc-500 hover:bg-zinc-800/70 hover:text-red-400"
-              onClick={() => handleRemoveRecentSearch(search.query)}
-              type="button"
-            >
-              <XIcon className="size-3" />
-            </button>
-          ),
           icon: <Clock className="size-3 shrink-0 text-zinc-500" />,
           label: search.query,
           source: 'recent' as const,
