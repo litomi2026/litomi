@@ -5,6 +5,9 @@ import type { MouseEvent } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
+
+import { useNavigationAutoHideState } from './auto-hide/navigationAutoHide'
 
 const PADDING = 30
 
@@ -26,6 +29,7 @@ export default function ScrollButtons(props: Props = {}) {
     canScrollUp: false,
   })
 
+  const isNavigationHidden = useNavigationAutoHideState()
   const t = useTranslations('TopNavigation.scrollButtons')
   const usesElementScroll = 'scrollElement' in props
   const scrollElement = props.scrollElement ?? null
@@ -98,7 +102,14 @@ export default function ScrollButtons(props: Props = {}) {
   }
 
   return (
-    <div className="fixed right-[calc(1rem+var(--safe-area-right))] bottom-[calc(5rem+var(--safe-area-bottom))] z-50 text-foreground sm:right-[calc(1.5rem+var(--safe-area-right))] sm:bottom-[calc(1.5rem+var(--safe-area-bottom))] 2xl:hidden">
+    <div
+      className={twMerge(
+        'fixed right-[calc(1rem+var(--safe-area-right))] bottom-[calc(5rem+var(--safe-area-bottom))] z-50 text-foreground transition',
+        'sm:right-[calc(1.5rem+var(--safe-area-right))] sm:bottom-[calc(1.5rem+var(--safe-area-bottom))]',
+        'data-[auto-hide=true]:pointer-events-none data-[auto-hide=true]:translate-y-1 data-[auto-hide=true]:opacity-0',
+      )}
+      data-auto-hide={isNavigationHidden}
+    >
       <div className="flex flex-col rounded-full border border-zinc-700 bg-zinc-900/95 p-1 backdrop-blur-xs">
         <button
           className={BUTTON_CLASS_NAME}
