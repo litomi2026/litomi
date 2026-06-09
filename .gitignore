@@ -383,3 +383,4 @@ data/model/
 *.crt
 
 .turbo/
+.playwright-mcp/

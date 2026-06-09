@@ -2,6 +2,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 
 import { env } from '@litomi/env/client'
 import { useQuery } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
 
 import { createCanonicalSearchParams } from '@/app/[locale]/(navigation)/search/canonicalSearchParams'
 import { SearchParam, SearchSort } from '@/app/[locale]/(navigation)/search/constants'
@@ -20,6 +21,7 @@ type ProxyRandomResponse = {
 }
 
 export function useRandomMangaQuery() {
+  const locale = useLocale()
   const { data: me, isPending: isMePending } = useMeQuery()
   const params = new URLSearchParams()
   params.set(SearchParam.SORT, SearchSort.RANDOM)
@@ -33,17 +35,19 @@ export function useRandomMangaQuery() {
   }
 
   const randomManga = useQuery({
-    queryKey: QueryKeys.proxyKRandom(params),
-    queryFn: () => fetchRandomManga(params),
+    queryKey: QueryKeys.proxyKRandom(params, locale),
+    queryFn: () => fetchRandomManga(params, locale),
     enabled: !isMePending,
   })
 
   return { ...randomManga, isLoading: isMePending || randomManga.isLoading }
 }
 
-async function fetchRandomManga(params: URLSearchParams) {
+async function fetchRandomManga(params: URLSearchParams, locale: string) {
   const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
-  url.search = createCanonicalSearchParams(params).toString()
+  const requestParams = new URLSearchParams(params)
+  requestParams.set('locale', locale)
+  url.search = createCanonicalSearchParams(requestParams).toString()
 
   const { data } = await fetchProxyAPIData<ProxyRandomResponse>(url)
   return data

@@ -45,7 +45,7 @@ export async function fetchMangaFromMultiSources({ id, locale, signal }: MangaFe
 
     // 4. hentaiPaw
     async () => {
-      const manga = await hentaiPawClient.fetchManga({ id, revalidate, signal })
+      const manga = await hentaiPawClient.fetchManga({ id, locale, revalidate, signal })
       if (!manga) {
         return null
       }

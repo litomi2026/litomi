@@ -1,5 +1,5 @@
 import { fetchMangaFromMultiSources } from '@litomi/crawler/manga/multi-source'
-import { Locale } from '@litomi/domain/locale'
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/manga/policy'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
@@ -25,8 +25,11 @@ type Params = {
 }
 
 export async function GET(request: Request, { params }: RouteProps<Params>) {
+  const url = new URL(request.url)
+
   const validation = GETProxyMangaIdSchema.safeParse({
     id: (await params).id,
+    ...Object.fromEntries(url.searchParams),
   })
 
   if (!validation.success) {
@@ -38,7 +41,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     })
   }
 
-  const { id } = validation.data
+  const { id, locale } = validation.data
 
   if (BLACKLISTED_MANGA_IDS.includes(id)) {
     const swr = sec('10 minutes')
@@ -104,7 +107,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     //   })
     // }
 
-    const manga = await fetchMangaFromMultiSources({ id, locale: Locale.KO, signal: request.signal })
+    const manga = await fetchMangaFromMultiSources({ id, locale, signal: request.signal })
 
     if (!manga) {
       if (id <= LAST_VERIFIED_MANGA_ID) {
@@ -172,6 +175,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       })
 
       const headers = createProxyHeaders(errorHeaders)
+      headers.set('Content-Language', LOCALE_LANGUAGE_TAGS[locale])
       headers.set(DEGRADED_HEADER, '1')
       headers.set(DEGRADED_REASON_HEADER, 'IMAGES_ONLY')
 
@@ -205,6 +209,8 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     })
 
     const headers = createProxyHeaders(successHeaders)
+    headers.set('Content-Language', LOCALE_LANGUAGE_TAGS[locale])
+
     return Response.json(manga, { headers })
   } catch (error) {
     return withProxyHeaders(handleRouteError(error, request))

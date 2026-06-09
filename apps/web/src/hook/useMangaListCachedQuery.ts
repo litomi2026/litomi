@@ -5,6 +5,7 @@ import { env } from '@litomi/env/client'
 import { isDegradedResponse } from '@litomi/http/degraded-response'
 import { QueryKey, useQueries, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
+import { useLocale } from 'next-intl'
 import pLimit from 'p-limit'
 import pThrottle from 'p-throttle'
 
@@ -72,9 +73,11 @@ export default function useMangaListCachedQuery({
   staleTime = DEFAULT_STALE_TIME,
   gcTime = DEFAULT_GC_TIME,
 }: Options) {
+  const locale = useLocale()
+  const queryClient = useQueryClient()
+
   const uniqueMangaIds = Array.from(new Set(mangaIds))
   const catalogMangaMap = new Map<number, Manga>()
-  const queryClient = useQueryClient()
 
   for (const manga of catalogMangas) {
     if (!manga) {
@@ -91,7 +94,7 @@ export default function useMangaListCachedQuery({
   }
 
   async function fetchManga(id: number) {
-    const queryKey = QueryKeys.manga(id)
+    const queryKey = QueryKeys.manga(id, locale)
 
     async function runQuery() {
       const query = queryClient.getQueryCache().find({ queryKey, exact: true })
@@ -102,6 +105,7 @@ export default function useMangaListCachedQuery({
       }
 
       const url = new URL(`/api/proxy/manga/${id}`, NEXT_PUBLIC_EDGE_PROXY_ORIGIN)
+      url.searchParams.set('locale', locale)
       const { data, response } = await fetchProxyAPIData<Manga>(url)
 
       if (isDegradedResponse(response.headers)) {
@@ -130,7 +134,7 @@ export default function useMangaListCachedQuery({
 
   const queries = useQueries({
     queries: uniqueMangaIds.map((id) => ({
-      queryKey: QueryKeys.manga(id),
+      queryKey: QueryKeys.manga(id, locale),
       queryFn: () => fetchManga(id),
       staleTime,
       gcTime,

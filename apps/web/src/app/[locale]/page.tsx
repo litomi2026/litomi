@@ -44,7 +44,7 @@ export default async function Home({ params }: PageProps<'/[locale]'>) {
             wrapperClassName="absolute inset-0 flex items-center justify-center rounded-md bg-background/50 animate-fade-in-fast"
           />
         </Link>
-        <Link className={`${linkClassName} rounded`} href="/deterrence" prefetch={false}>
+        <Link className={`${linkClassName} rounded`} href="/deterrence">
           {t('leaveAction')}
         </Link>
         <CTAButton className={linkClassName} />

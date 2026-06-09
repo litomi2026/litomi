@@ -40,7 +40,7 @@ type Props = {
 }
 
 const TOP_BUTTON_CLASS_NAME =
-  'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70'
+  'inline-flex h-10 min-w-10 items-center justify-center rounded-full px-2 transition hover:bg-zinc-800/80 active:bg-zinc-900/80 active:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70'
 
 export default function MangaReader({ manga }: Props) {
   const [isMangaIdJumpOpen, setIsMangaIdJumpOpen] = useState(false)
@@ -140,13 +140,13 @@ export default function MangaReader({ manga }: Props) {
             <BackButton className={TOP_BUTTON_CLASS_NAME} fallbackUrl="/" />
             <FullscreenButton className={TOP_BUTTON_CLASS_NAME} />
           </div>
-          <MangaDetailButton className={`${TOP_BUTTON_CLASS_NAME} min-w-0 hover:underline`} manga={manga} />
+          <MangaDetailButton className={twMerge(TOP_BUTTON_CLASS_NAME, 'min-w-0 hover:underline')} manga={manga} />
           <div className="flex items-center">
             <MangaIdJumpForm className="hidden w-30 md:flex" currentMangaId={manga.id} />
             <button
               aria-controls="mobile-manga-id-jump"
               aria-expanded={isMangaIdJumpOpen}
-              className={`${TOP_BUTTON_CLASS_NAME} md:hidden`}
+              className={twMerge(TOP_BUTTON_CLASS_NAME, 'md:hidden')}
               onClick={() => setIsMangaIdJumpOpen((prev) => !prev)}
               title={t('jumpToManga')}
               type="button"
