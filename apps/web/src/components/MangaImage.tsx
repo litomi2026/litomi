@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 const FALLBACK_IMAGE_URL = '/image/fallback.svg'
+const LITOMI_PROXY_FIRST_HOST_SUFFIXES = ['gold-usergeneratedcontent.net'] as const
 
 export type MangaImagePictures = {
   media?: string
@@ -144,8 +145,9 @@ function resolveImageURLs({
 }): string[] {
   const page = imageIndex + 1
   const resolvedSources: string[] = []
+  const shouldProxySourceURL = Boolean(mangaId && src && shouldUseLitomiProxyFirst(src))
 
-  if (src) {
+  if (src && !shouldProxySourceURL) {
     resolvedSources.push(src)
   }
 
@@ -154,26 +156,27 @@ function resolveImageURLs({
     return resolvedSources
   }
 
-  const thirdPartyURLs = createThirdPartyMangaImageURLs({
-    mangaId,
-    page,
-    variant,
-  })
+  const litomiProxyURL = src
+    ? createLitomiProxyMangaImageURL({
+        mangaId,
+        page,
+        variant,
+        sourceURL: src,
+      })
+    : undefined
 
-  const litomiURL = createLitomiProxyMangaImageURL({
-    mangaId,
-    page,
-    variant,
-  })
+  const thirdPartyURLs = createThirdPartyMangaImageURLs({ mangaId, page, variant })
+  const litomiURL = createLitomiProxyMangaImageURL({ mangaId, page, variant })
 
-  const litomiProxyURL = createLitomiProxyMangaImageURL({
-    mangaId,
-    page,
-    variant,
-    sourceURL: src,
-  })
+  if (litomiProxyURL && shouldProxySourceURL) {
+    resolvedSources.push(litomiProxyURL)
+  }
 
-  resolvedSources.push(...thirdPartyURLs, litomiURL, litomiProxyURL)
+  resolvedSources.push(...thirdPartyURLs, litomiURL)
+
+  if (litomiProxyURL && !shouldProxySourceURL) {
+    resolvedSources.push(litomiProxyURL)
+  }
 
   if (variant === 'thumbnail') {
     const originalFallbackSourceURLs = createThirdPartyMangaImageURLs({
@@ -188,4 +191,16 @@ function resolveImageURLs({
   resolvedSources.push(FALLBACK_IMAGE_URL)
 
   return Array.from(new Set(resolvedSources.filter(Boolean)))
+}
+
+function shouldUseLitomiProxyFirst(sourceURL: string): boolean {
+  try {
+    const hostname = new URL(sourceURL).hostname.toLowerCase()
+
+    return LITOMI_PROXY_FIRST_HOST_SUFFIXES.some(
+      (hostSuffix) => hostname === hostSuffix || hostname.endsWith(`.${hostSuffix}`),
+    )
+  } catch {
+    return false
+  }
 }
