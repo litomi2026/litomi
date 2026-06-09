@@ -55,7 +55,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
     <div
       aria-hidden={!showSuggestions}
       className={twMerge(
-        'absolute z-20 mt-1 w-full overflow-hidden rounded-[1.25rem] border border-zinc-800 bg-zinc-900/98 shadow-xl transition',
+        'absolute z-20 mt-1 w-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/97 shadow backdrop-blur-xs transition',
         'aria-hidden:opacity-0 aria-hidden:pointer-events-none',
         className,
       )}

@@ -40,18 +40,14 @@ export default function useRecentSearches() {
     })
   }
 
-  function removeRecentSearch(query: string) {
-    setRecentSearches((prev) => {
-      const updated = prev.filter((search) => search.query !== query)
+  function clearRecentSearches() {
+    setRecentSearches([])
 
-      try {
-        localStorage.setItem(LocalStorageKey.RECENT_SEARCHES, JSON.stringify(updated))
-      } catch (error) {
-        console.error('removeRecentSearch:', error)
-      }
-
-      return updated
-    })
+    try {
+      localStorage.setItem(LocalStorageKey.RECENT_SEARCHES, JSON.stringify([]))
+    } catch (error) {
+      console.error('clearRecentSearches:', error)
+    }
   }
 
   function setAutoSaveEnabled(enabled: boolean) {
@@ -103,7 +99,7 @@ export default function useRecentSearches() {
     recentSearches,
     isAutoSaveEnabled,
     saveRecentSearch,
-    removeRecentSearch,
+    clearRecentSearches,
     setAutoSaveEnabled,
   }
 }

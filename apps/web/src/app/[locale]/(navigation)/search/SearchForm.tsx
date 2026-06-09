@@ -2,7 +2,7 @@
 
 import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { Toggle } from '@litomi/ui'
-import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
+import { Clock, Loader2, Trash2, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { SubmitEvent, useEffect, useRef, useState, useTransition } from 'react'
@@ -37,7 +37,7 @@ export default function SearchForm({ className = '' }: Props) {
   const [isSearching, startSearching] = useTransition()
   const currentWordInfo = getWordAtCursor(keyword, cursorPosition)
 
-  const { recentSearches, isAutoSaveEnabled, saveRecentSearch, removeRecentSearch, setAutoSaveEnabled } =
+  const { recentSearches, isAutoSaveEnabled, saveRecentSearch, clearRecentSearches, setAutoSaveEnabled } =
     useRecentSearches()
 
   const { searchSuggestions, isLoading, isFetching } = useSearchSuggestions({
@@ -67,8 +67,8 @@ export default function SearchForm({ className = '' }: Props) {
     listboxId: SEARCH_SUGGESTIONS_ID,
   })
 
-  function handleRemoveRecentSearch(query: string) {
-    removeRecentSearch(query)
+  function handleClearRecentSearches() {
+    clearRecentSearches()
     resetSelection()
     inputRef.current?.focus()
   }
@@ -352,20 +352,37 @@ export default function SearchForm({ className = '' }: Props) {
         header={
           keyword === '' && (
             <div className="border-b border-zinc-800">
-              <div className="flex items-center justify-between px-4 py-2">
+              <div className="flex items-center justify-between px-4 py-1">
                 <div className="flex items-center gap-2 text-xs text-zinc-400">
                   <Clock className="size-3" />
                   <span>{t('recentSearches')}</span>
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <span className="text-xs text-zinc-500">{t('autoSave')}</span>
-                  <Toggle
-                    aria-label={t('autoSaveLabel')}
-                    checked={isAutoSaveEnabled}
-                    className="w-10 peer-checked:bg-brand/80"
-                    onToggle={setAutoSaveEnabled}
-                  />
-                </label>
+                <div className="flex items-center gap-1.5">
+                  {recentSearches.length > 0 && (
+                    <button
+                      aria-label={t('clearRecentSearches')}
+                      className={twMerge(
+                        '-my-1 flex size-8 shrink-0 items-center justify-center rounded-md text-zinc-500 transition',
+                        'hover:text-red-300 active:text-red-200',
+                        'focus:outline-none focus:ring-2 focus:ring-zinc-700 focus:ring-inset',
+                      )}
+                      onClick={handleClearRecentSearches}
+                      title={t('clearRecentSearches')}
+                      type="button"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  )}
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <span className="text-xs text-zinc-500">{t('autoSave')}</span>
+                    <Toggle
+                      aria-label={t('autoSaveLabel')}
+                      checked={isAutoSaveEnabled}
+                      className="w-10 peer-checked:bg-brand/80"
+                      onToggle={setAutoSaveEnabled}
+                    />
+                  </label>
+                </div>
               </div>
               {recentSearches.length === 0 && (
                 <div className="p-2.5 text-center text-sm text-zinc-500">
