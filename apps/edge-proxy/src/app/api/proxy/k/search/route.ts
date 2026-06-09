@@ -1,6 +1,6 @@
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@litomi/crawler/sources/k-hentai'
 import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/crawler/sources/policy'
-import { Locale } from '@litomi/domain/locale'
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { BLACKLISTED_MANGA_IDS } from '@litomi/domain/manga/policy'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
@@ -34,6 +34,7 @@ export async function GET(request: Request) {
   }
 
   const {
+    locale,
     query,
     sort,
     'min-view': minView,
@@ -95,7 +96,7 @@ export async function GET(request: Request) {
   try {
     const revalidate = params.nextId ? sec('30 days') : 0
     const options = { next: { revalidate }, signal: requestSignal }
-    const searchedMangas = await kHentaiClient.searchMangas(params, Locale.KO, options)
+    const searchedMangas = await kHentaiClient.searchMangas(params, locale, options)
     const hasManga = searchedMangas.length > 0
     let nextCursor = null
 
@@ -116,6 +117,8 @@ export async function GET(request: Request) {
     }
 
     const headers = createProxyHeaders(getCacheControlHeader(params))
+    headers.set('Content-Language', LOCALE_LANGUAGE_TAGS[locale])
+
     return Response.json(response, { headers })
   } catch (error) {
     return withProxyHeaders(handleRouteError(error, request))

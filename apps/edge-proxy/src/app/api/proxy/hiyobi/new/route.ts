@@ -1,17 +1,19 @@
 import { hiyobiClient } from '@litomi/crawler/sources/hiyobi'
 import { TOTAL_HIYOBI_PAGES } from '@litomi/crawler/sources/policy'
-import { Locale } from '@litomi/domain/locale'
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std'
 import z from 'zod'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
+import { proxyLocaleSchema } from '@/util/locale'
 import { handleRouteError } from '@/util/proxy-route'
 
 export const runtime = 'edge'
 
 const GETProxyHiyobiNewSchema = z.object({
+  locale: proxyLocaleSchema,
   page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
 })
 
@@ -29,7 +31,7 @@ export async function GET(request: Request) {
     })
   }
 
-  const { page } = validation.data
+  const { locale, page } = validation.data
 
   if (request.signal?.aborted) {
     return createProblemDetailsResponse(request, {
@@ -41,25 +43,26 @@ export async function GET(request: Request) {
   }
 
   try {
-    const mangas = await hiyobiClient.fetchMangas({ page, locale: Locale.KO, signal: request.signal })
+    const mangas = await hiyobiClient.fetchMangas({ page, locale, signal: request.signal })
 
-    const headers = createProxyHeaders(
-      createCacheControlHeaders({
-        vercel: {
-          public: true,
-          maxAge: sec('4 hours'),
-        },
-        cloudflare: {
-          public: true,
-          maxAge: sec('10 minutes'),
-        },
-        browser: {
-          public: true,
-          maxAge: 3,
-          swr: sec('10 minutes'),
-        },
-      }),
-    )
+    const cacheControlHeader = createCacheControlHeaders({
+      vercel: {
+        public: true,
+        maxAge: sec('4 hours'),
+      },
+      cloudflare: {
+        public: true,
+        maxAge: sec('10 minutes'),
+      },
+      browser: {
+        public: true,
+        maxAge: 3,
+        swr: sec('10 minutes'),
+      },
+    })
+
+    const headers = createProxyHeaders(cacheControlHeader)
+    headers.set('Content-Language', LOCALE_LANGUAGE_TAGS[locale])
 
     return Response.json(mangas, { headers })
   } catch (error) {
