@@ -236,6 +236,7 @@ export default function CensorshipCreationBar() {
         id={CENSORSHIP_SUGGESTIONS_ID}
         isFetching={isFetching}
         isLoading={isLoading}
+        items={suggestions}
         onSelect={handleSelectSuggestion}
         renderRightContent={({ value }) =>
           value.endsWith(':') ? (
@@ -249,7 +250,6 @@ export default function CensorshipCreationBar() {
         searchTerm={debouncedWord}
         selectedIndex={selectedIndex}
         showSuggestions={showSuggestions}
-        suggestions={suggestions}
       />
       {showHelp ? (
         <div className={`overflow-hidden`}>

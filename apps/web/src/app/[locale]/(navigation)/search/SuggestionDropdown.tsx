@@ -15,13 +15,13 @@ type Props<T extends SuggestionItem = SuggestionItem> = {
   header?: ReactNode
   id: string
   showSuggestions: boolean
-  suggestions: T[]
+  items: T[]
   selectedIndex: number
   isLoading?: boolean
   isFetching?: boolean
   searchTerm?: string
-  onSelect: (suggestion: T) => void
-  renderRightContent?: (suggestion: T) => ReactNode
+  onSelect: (item: T, index: number) => void
+  renderRightContent?: (item: T, index: number) => ReactNode
   dropdownRef?: RefObject<HTMLDivElement | null>
 }
 
@@ -30,7 +30,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
   header,
   id,
   className,
-  suggestions,
+  items,
   selectedIndex,
   isLoading,
   isFetching,
@@ -64,7 +64,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
     >
       <div className="max-h-64 overflow-y-auto relative">
         {header}
-        {isLoading && suggestions.length === 0 && (
+        {isLoading && items.length === 0 && (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="size-5 text-zinc-400 animate-spin" />
           </div>
@@ -75,44 +75,44 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
           id={id}
           role="listbox"
         >
-          {suggestions.map((suggestion, index) => (
-            <div className="flex w-full items-stretch" key={`${suggestion.value}-${index}`}>
+          {items.map((item, index) => (
+            <div className="flex w-full items-stretch" key={`${item.value}-${index}`}>
               <button
                 aria-selected={selectedIndex === index}
                 className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto p-4 py-2.5 text-left transition hover:bg-zinc-800/70 aria-selected:bg-zinc-800 scrollbar-hidden"
                 id={`${id}-option-${index}`}
-                onClick={() => onSelect(suggestion)}
+                onClick={() => onSelect(item, index)}
                 role="option"
                 tabIndex={-1}
                 type="button"
               >
-                {suggestion.icon}
-                {suggestion.value.endsWith(':') ? (
+                {item.icon}
+                {item.value.endsWith(':') ? (
                   <>
-                    <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                    <span className="text-zinc-400 text-xs font-normal">{suggestion.label}</span>
+                    <span>{renderHighlightedText(item.value, searchTerm)}</span>
+                    <span className="text-zinc-400 text-xs font-normal">{item.label}</span>
                   </>
                 ) : (
                   <>
-                    <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                    {suggestion.label !== suggestion.value && (
+                    <span>{renderHighlightedText(item.value, searchTerm)}</span>
+                    {item.label !== item.value && (
                       <span className="text-zinc-400 text-xs font-normal">
-                        {renderHighlightedText(suggestion.label, searchTerm)}
+                        {renderHighlightedText(item.label, searchTerm)}
                       </span>
                     )}
                   </>
                 )}
-                {renderRightContent?.(suggestion)}
+                {renderRightContent?.(item, index)}
               </button>
-              {suggestion.action}
+              {item.action}
             </div>
           ))}
         </div>
-        {suggestions.length === 0 && searchTerm && !isLoading && (
+        {items.length === 0 && searchTerm && !isLoading && (
           <div className="text-center py-4 text-zinc-500 text-sm">{t('noResults')}</div>
         )}
       </div>
-      {suggestions.length > 1 && (
+      {items.length > 1 && (
         <div className="sticky bottom-0 border-t border-zinc-800 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-500 backdrop-blur-sm">
           <div className="flex flex-wrap gap-x-3 gap-y-1">
             <span className="whitespace-nowrap">

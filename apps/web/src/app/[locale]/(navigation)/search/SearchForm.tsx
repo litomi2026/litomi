@@ -12,7 +12,7 @@ import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { usePathname, useRouter } from '@/i18n/navigation'
 
 import { SearchParam } from './constants'
-import SuggestionDropdown, { type SuggestionItem } from './SuggestionDropdown'
+import SuggestionDropdown from './SuggestionDropdown'
 import useRecentSearches from './useRecentSearches'
 import useSearchSuggestions from './useSearchSuggestions'
 import useSuggestionSelection from './useSuggestionSelection'
@@ -23,10 +23,6 @@ type Props = {
 }
 
 const SEARCH_SUGGESTIONS_ID = 'search-suggestions'
-
-type SearchDropdownItem = SuggestionItem & {
-  kind: 'recent' | 'suggestion'
-}
 
 export default function SearchForm({ className = '' }: Props) {
   const [keyword, setKeyword] = useState('')
@@ -48,7 +44,7 @@ export default function SearchForm({ className = '' }: Props) {
     keyword: currentWordInfo.word.replace(/^-/, ''),
   })
 
-  const dropdownSuggestions: SearchDropdownItem[] = [
+  const dropdownEntries = [
     ...(keyword === ''
       ? recentSearches.map((search) => ({
           action: (
@@ -62,20 +58,22 @@ export default function SearchForm({ className = '' }: Props) {
             </button>
           ),
           icon: <Clock className="size-3 shrink-0 text-zinc-500" />,
-          kind: 'recent' as const,
           label: search.query,
+          source: 'recent' as const,
           value: search.query,
         }))
       : []),
     ...searchSuggestions.map((suggestion) => ({
       ...suggestion,
-      kind: 'suggestion' as const,
+      source: 'suggestion' as const,
     })),
   ]
 
+  type SearchDropdownEntry = (typeof dropdownEntries)[number]
+
   const { activeDescendantId, navigateSelection, resetSelection, selectedIndex } = useSuggestionSelection({
     isOpen: showSuggestions,
-    itemCount: dropdownSuggestions.length,
+    itemCount: dropdownEntries.length,
     listboxId: SEARCH_SUGGESTIONS_ID,
   })
 
@@ -85,14 +83,13 @@ export default function SearchForm({ className = '' }: Props) {
     inputRef.current?.focus()
   }
 
-  function selectDropdownItem(suggestion: SearchDropdownItem) {
-    const newKeyword =
-      suggestion.kind === 'recent'
-        ? suggestion.value
-        : keyword.slice(0, currentWordInfo.start) + suggestion.value + keyword.slice(currentWordInfo.end)
+  function selectDropdownEntry({ source, value }: SearchDropdownEntry) {
+    const isRecent = source === 'recent'
+    const newCursorPosition = isRecent ? value.length : currentWordInfo.start + value.length
 
-    const newCursorPosition =
-      suggestion.kind === 'recent' ? suggestion.value.length : currentWordInfo.start + suggestion.value.length
+    const newKeyword = isRecent
+      ? value
+      : keyword.slice(0, currentWordInfo.start) + value + keyword.slice(currentWordInfo.end)
 
     setKeyword(newKeyword)
     setCursorPosition(newCursorPosition)
@@ -107,8 +104,8 @@ export default function SearchForm({ className = '' }: Props) {
     }, 0)
   }
 
-  function renderSuggestionRightContent({ kind, value }: SearchDropdownItem) {
-    if (kind !== 'suggestion' || !value.endsWith(':')) {
+  function renderSuggestionRightContent({ source, value }: SearchDropdownEntry) {
+    if (source === 'recent' || !value.endsWith(':')) {
       return null
     }
 
@@ -162,7 +159,7 @@ export default function SearchForm({ className = '' }: Props) {
       return
     }
 
-    if (!showSuggestions || dropdownSuggestions.length === 0) {
+    if (!showSuggestions || dropdownEntries.length === 0) {
       return
     }
 
@@ -176,9 +173,9 @@ export default function SearchForm({ className = '' }: Props) {
         navigateSelection('up')
         break
       case 'Enter':
-        if (selectedIndex >= 0 && selectedIndex < dropdownSuggestions.length) {
+        if (selectedIndex >= 0 && selectedIndex < dropdownEntries.length) {
           e.preventDefault()
-          selectDropdownItem(dropdownSuggestions[selectedIndex])
+          selectDropdownEntry(dropdownEntries[selectedIndex])
         }
         break
       case 'Escape':
@@ -391,12 +388,12 @@ export default function SearchForm({ className = '' }: Props) {
         id={SEARCH_SUGGESTIONS_ID}
         isFetching={isFetching}
         isLoading={isLoading}
-        onSelect={selectDropdownItem}
+        items={dropdownEntries}
+        onSelect={selectDropdownEntry}
         renderRightContent={renderSuggestionRightContent}
         searchTerm={currentWordInfo.word}
         selectedIndex={selectedIndex}
         showSuggestions={showSuggestions}
-        suggestions={dropdownSuggestions}
       />
     </div>
   )
