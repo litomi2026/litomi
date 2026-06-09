@@ -1,4 +1,5 @@
 import { APP_METADATA } from '@litomi/domain/app/metadata'
+import { Locale, type PublicLocale } from '@litomi/domain/locale'
 import { Download } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 
@@ -8,10 +9,18 @@ import { getLocaleFromParams } from '@/i18n/server'
 
 import TopNavigationActions from './TopNavigationActions'
 
+const PORN_DUDE_URL_BY_LOCALE = {
+  [Locale.KO]: 'https://theporndude.com/ko',
+  [Locale.EN]: 'https://theporndude.com/',
+  [Locale.JA]: 'https://theporndude.com/ja',
+  [Locale.ZH_CN]: 'https://theporndude.com/zh',
+} satisfies Record<PublicLocale, string>
+
 export default async function Layout({ children, params }: LayoutProps<'/[locale]'>) {
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'TopNavigation.footer' })
   const shortName = APP_METADATA[locale].shortName
+  const pornDudeUrl = PORN_DUDE_URL_BY_LOCALE[locale]
 
   return (
     <div className="flex flex-col flex-1 gap-2 px-2 pb-2">
@@ -52,12 +61,7 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
           </Link>
         </div>
         <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
-          <a
-            className="hover:underline"
-            href="https://theporndude.com/ko"
-            rel="nofollow sponsored noopener"
-            target="_blank"
-          >
+          <a className="hover:underline" href={pornDudeUrl} rel="nofollow sponsored noopener" target="_blank">
             ThePornDude
           </a>
         </div>
