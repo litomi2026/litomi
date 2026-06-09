@@ -339,6 +339,7 @@ export default function SignupForm() {
 
         <TurnstileWidget
           hasToken={hasTurnstileToken}
+          id="signup-turnstile"
           onTokenChange={handleTurnstileTokenChange}
           options={{ action: 'signup' }}
           turnstileRef={turnstileRef}

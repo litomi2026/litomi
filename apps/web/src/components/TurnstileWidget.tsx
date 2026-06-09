@@ -11,12 +11,13 @@ const { NEXT_PUBLIC_TURNSTILE_SITE_KEY } = env
 interface Props {
   className?: string
   hasToken?: boolean
+  id: string
   onTokenChange: (token: string) => void
   options: Parameters<typeof Turnstile>[0]['options']
   turnstileRef: Ref<TurnstileInstance | undefined>
 }
 
-export default function TurnstileWidget({ className = '', hasToken, onTokenChange, turnstileRef, options }: Props) {
+export default function TurnstileWidget({ className = '', hasToken, id, onTokenChange, turnstileRef, options }: Props) {
   return (
     <div className="h-[65px] flex items-center justify-center relative overflow-hidden">
       {!hasToken && (
@@ -24,6 +25,7 @@ export default function TurnstileWidget({ className = '', hasToken, onTokenChang
       )}
       <Turnstile
         className={`h-[65px] relative z-10 overflow-x-auto overflow-y-hidden scrollbar-hidden ${className}`}
+        id={id}
         onError={() => {
           toast.error('Cloudflare 보안 검증에 실패했어요')
           onTokenChange('')

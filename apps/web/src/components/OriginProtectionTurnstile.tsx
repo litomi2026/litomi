@@ -126,6 +126,7 @@ export default function OriginProtectionTurnstile() {
           'relative z-10 overflow-auto',
           verificationRequired ? 'flex min-h-[89px] items-center justify-center px-2 py-2' : 'h-[89px] opacity-0',
         )}
+        id="origin-protection-turnstile"
         onBeforeInteractive={handleBeforeInteractive}
         onError={(errorCode) => reportTurnstileFailure('client-error', errorCode)}
         onExpire={() => reportTurnstileFailure('expired')}
@@ -138,9 +139,6 @@ export default function OriginProtectionTurnstile() {
           responseField: false,
         }}
         ref={turnstileRef}
-        scriptOptions={{
-          onError: () => reportTurnstileFailure('script-load-error'),
-        }}
         siteKey={NEXT_PUBLIC_TURNSTILE_SITE_KEY}
       />
       {verificationState === 'checking' && (

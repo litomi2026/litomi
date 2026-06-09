@@ -7,7 +7,6 @@ export type OriginProtectionClearanceFailureReason =
   | 'client-error'
   | 'expired'
   | 'missing-token'
-  | 'script-load-error'
   | 'siteverify-failed'
   | 'timeout'
   | 'unsupported'
