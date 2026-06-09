@@ -49,6 +49,7 @@ const REFERER_BY_HOST_SUFFIX: ReadonlyArray<{ hostSuffix: string; referer: strin
   { hostSuffix: 'k-hentai.org', referer: 'https://k-hentai.org/' },
   { hostSuffix: 'harpi.in', referer: 'https://harpi.in/' },
   { hostSuffix: 'soujpa.in', referer: 'https://harpi.in/' },
+  { hostSuffix: 'gold-usergeneratedcontent.net', referer: 'https://hitomi.la/' },
 ]
 
 const FORWARDED_HEADERS = ['Content-Type', 'Content-Length', 'Last-Modified', 'ETag'] as const

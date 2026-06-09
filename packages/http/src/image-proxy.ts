@@ -13,6 +13,7 @@ const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'zrocdn.xyz',
   'hiromi.b-cdn.net',
   'nhentai.net',
+  'gold-usergeneratedcontent.net',
 ] as const
 
 const IMAGE_PROXY_ROUTE_EXTENSION = '.webp'

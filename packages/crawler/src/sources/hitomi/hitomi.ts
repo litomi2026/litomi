@@ -89,9 +89,7 @@ class HitomiClient {
     const groupValues = groups?.map(({ group }) => group)
     const seriesValues = parodys?.map(({ parody }) => parody)
     const languageValues = languages?.map(({ name }) => name) ?? [language]
-
-    // NOTE: hitomi 사이트 이미지는 referer 헤더가 없으면 못 보기에, harpi에서 이미지 URL을 가져오도록 해요.
-    const imageURLs = Array.from({ length: files.length }, (_, i) => `https://soujpa.in/start/${id}/${id}_${i}.avif`)
+    const imageURLs = await Promise.all(files.map((file) => this.getImageURL(id, file)))
 
     return {
       id: mangaId,
@@ -154,7 +152,19 @@ class HitomiClient {
   }
 
   private async getImageURL(galleryId: string, file: HitomiFile) {
-    return await urlFromUrlFromHash(Number(galleryId), file, 'webp')
+    return await urlFromUrlFromHash(Number(galleryId), file, this.getPreferredImageFormat(file))
+  }
+
+  private getPreferredImageFormat(file: HitomiFile): 'avif' | 'webp' | undefined {
+    if (file.haswebp === 1) {
+      return 'webp'
+    }
+
+    if (file.hasavif === 1) {
+      return 'avif'
+    }
+
+    return undefined
   }
 
   private getTagCategory(tag: Tag): string {
