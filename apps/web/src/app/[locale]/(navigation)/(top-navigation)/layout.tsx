@@ -51,6 +51,16 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
             {t('youthProtection')}
           </Link>
         </div>
+        <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
+          <a
+            className="hover:underline"
+            href="https://theporndude.com/ko"
+            rel="nofollow sponsored noopener"
+            target="_blank"
+          >
+            ThePornDude
+          </a>
+        </div>
       </footer>
       <MobileNavigationSpacer />
     </div>

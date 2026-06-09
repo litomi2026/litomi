@@ -15,7 +15,7 @@ import { MetricParam, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
 import RankingList from './RankingList'
 
-export const revalidate = 21600 // 6 hours
+export const revalidate = 43200 // 12 hours
 export const dynamicParams = false
 
 const mangasRankingSchema = z.object({

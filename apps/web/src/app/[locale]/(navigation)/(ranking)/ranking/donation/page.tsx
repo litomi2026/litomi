@@ -13,7 +13,7 @@ import { generateLocalizedMetadata } from '@/lib/metadata'
 
 import { getDonationRanking } from './query'
 
-export const revalidate = 21600 // 6 hours
+export const revalidate = 43200 // 12 hours
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/ranking/donation'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
