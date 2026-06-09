@@ -20,6 +20,13 @@ type HentaiPawSlide = {
 
 type MangaFetchParams = {
   id: number
+  locale: Locale
+  revalidate?: number
+  signal?: AbortSignal
+}
+
+type MangaImagesFetchParams = {
+  id: number
   revalidate?: number
   signal?: AbortSignal
 }
@@ -55,12 +62,12 @@ class HentaiPawClient {
     this.client = new ProxyClient(HENTAIPAW_CONFIG)
   }
 
-  async fetchManga({ id, revalidate, signal }: MangaFetchParams): Promise<Manga | null> {
+  async fetchManga({ id, locale, revalidate, signal }: MangaFetchParams): Promise<Manga | null> {
     const html = await this.client.fetch<string>(`/articles/${id}`, { next: { revalidate }, signal }, true)
-    return this.parseMangaFromHTML(html, id)
+    return this.parseMangaFromHTML(html, id, locale)
   }
 
-  async fetchMangaImages({ id, revalidate, signal }: MangaFetchParams): Promise<string[] | null> {
+  async fetchMangaImages({ id, revalidate, signal }: MangaImagesFetchParams): Promise<string[] | null> {
     const html = await this.client.fetch<string>(`/viewer?articleId=${id}`, { next: { revalidate }, signal }, true)
     return this.extractImageURLsFromHTML(html)
   }
@@ -96,7 +103,7 @@ class HentaiPawClient {
     return matches ? Array.from(new Set(matches)) : null
   }
 
-  private parseMangaFromHTML(html: string, id: number): Manga | null {
+  private parseMangaFromHTML(html: string, id: number, locale: Locale): Manga | null {
     const root = parse(html)
     const articleDetails = root.querySelector('#article-details')
 
@@ -181,8 +188,6 @@ class HentaiPawClient {
     } else {
       pageCount = 1
     }
-
-    const locale = Locale.KO
 
     return {
       id,

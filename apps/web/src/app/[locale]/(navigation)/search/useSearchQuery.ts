@@ -2,6 +2,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 
 import { env } from '@litomi/env/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
@@ -19,6 +20,7 @@ type GETProxyKSearchResponse = {
 }
 
 export function useSearchQuery(searchParams: URLSearchParams) {
+  const locale = useLocale()
   const { data: me, isPending: isMePending } = useMeQuery()
   const allowedParams = new URLSearchParams(whitelistParams(searchParams, Object.values(SearchParam)))
 
@@ -33,9 +35,10 @@ export function useSearchQuery(searchParams: URLSearchParams) {
   }
 
   const mangaSearch = useInfiniteQuery<GETProxyKSearchResponse, Error>({
-    queryKey: QueryKeys.search(allowedParams),
+    queryKey: QueryKeys.search(allowedParams, locale),
     queryFn: async ({ pageParam: cursor }) => {
       const pagedParams = new URLSearchParams(allowedParams)
+      pagedParams.set('locale', locale)
 
       if (cursor) {
         const cursorValue = cursor.toString()

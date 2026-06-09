@@ -1,3 +1,5 @@
+import type { PublicLocale } from '@litomi/domain/locale'
+
 import { LibraryItemSort, RatingSort } from '@litomi/domain/library/sort'
 import { PostFilter } from '@litomi/domain/post/filter'
 
@@ -57,7 +59,7 @@ export const QueryKeys = {
   myDonations: (locale: string) => [...QueryKeys.myDonationsBase, locale],
 
   adsterraStats: (startDate: string, finishDate: string) => ['adsterra', 'stats', startDate, finishDate],
-  manga: (id: number) => ['manga', id],
+  manga: (id: number, locale: PublicLocale) => ['manga', id, locale],
   mangaRecommendations: (userId: number, limit: number, locale: string) => [
     'me',
     'manga-recommendations',
@@ -65,7 +67,7 @@ export const QueryKeys = {
     limit,
     locale,
   ],
-  search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
+  search: (searchParams: URLSearchParams, locale: PublicLocale) => ['search', locale, Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string, limit?: number) => ['search', 'suggestions', locale, query, limit],
   censorshipSuggestions: (query: string, locale: string) => ['censorship', 'suggestions', locale, query],
   postsBase: ['posts'],
@@ -83,6 +85,10 @@ export const QueryKeys = {
   webtoonSeries: (provider: string, domain: string, path: string) => ['webtoon', 'series', provider, domain, path],
 
   proxyKRandomBase: ['proxy', 'k', 'random'],
-  proxyKRandom: (searchParams: URLSearchParams) => ['proxy', 'k', 'random', Object.fromEntries(searchParams)],
-  proxyHiyobiNew: (page: number) => ['proxy', 'hiyobi', 'new', page],
+  proxyKRandom: (searchParams: URLSearchParams, locale: PublicLocale) => [
+    ...QueryKeys.proxyKRandomBase,
+    locale,
+    Object.fromEntries(searchParams),
+  ],
+  proxyHiyobiNew: (page: number, locale: PublicLocale) => ['proxy', 'hiyobi', 'new', page, locale],
 }
