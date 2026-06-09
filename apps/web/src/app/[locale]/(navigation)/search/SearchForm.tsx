@@ -21,12 +21,20 @@ type Props = {
   className?: string
 }
 
+const INITIAL_SELECTED_INDEX = -1
+const SEARCH_SUGGESTIONS_ID = 'search-suggestions'
+
+type SearchDropdownItem = SuggestionItem & {
+  kind: 'recent' | 'suggestion'
+}
+
 export default function SearchForm({ className = '' }: Props) {
   const [keyword, setKeyword] = useState('')
   const [cursorPosition, setCursorPosition] = useState(0)
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
   const suggestionsRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const beforeDeletedCharacter = useRef('')
   const router = useRouter()
   const pathname = usePathname()
@@ -37,19 +45,57 @@ export default function SearchForm({ className = '' }: Props) {
   const { recentSearches, isAutoSaveEnabled, saveRecentSearch, removeRecentSearch, setAutoSaveEnabled } =
     useRecentSearches()
 
-  const { selectedIndex, searchSuggestions, resetSelection, navigateSelection, isLoading, isFetching } =
-    useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/, '') })
+  const { searchSuggestions, isLoading, isFetching } = useSearchSuggestions({
+    keyword: currentWordInfo.word.replace(/^-/, ''),
+  })
 
-  function selectSuggestion(suggestion: SuggestionItem) {
-    const before = keyword.slice(0, currentWordInfo.start)
-    const after = keyword.slice(currentWordInfo.end)
-    const newKeyword = before + suggestion.value + after
-    const newCursorPosition = currentWordInfo.start + suggestion.value.length
+  const dropdownSuggestions: SearchDropdownItem[] = [
+    ...(keyword === ''
+      ? recentSearches.map((search) => ({
+          action: (
+            <button
+              aria-label={t('deleteRecent', { query: search.query })}
+              className="transition p-3 text-zinc-500 hover:bg-zinc-800/70 hover:text-red-400"
+              onClick={() => {
+                removeRecentSearch(search.query)
+                setSelectedIndex(INITIAL_SELECTED_INDEX)
+                inputRef.current?.focus()
+              }}
+              type="button"
+            >
+              <XIcon className="size-3" />
+            </button>
+          ),
+          icon: <Clock className="size-3 shrink-0 text-zinc-500" />,
+          kind: 'recent' as const,
+          label: search.query,
+          value: search.query,
+        }))
+      : []),
+    ...searchSuggestions.map((suggestion) => ({
+      ...suggestion,
+      kind: 'suggestion' as const,
+    })),
+  ]
+
+  const activeSuggestionId =
+    showSuggestions && selectedIndex >= 0 && selectedIndex < dropdownSuggestions.length
+      ? `${SEARCH_SUGGESTIONS_ID}-option-${selectedIndex}`
+      : undefined
+
+  function selectDropdownItem(suggestion: SearchDropdownItem) {
+    const newKeyword =
+      suggestion.kind === 'recent'
+        ? suggestion.value
+        : keyword.slice(0, currentWordInfo.start) + suggestion.value + keyword.slice(currentWordInfo.end)
+
+    const newCursorPosition =
+      suggestion.kind === 'recent' ? suggestion.value.length : currentWordInfo.start + suggestion.value.length
 
     setKeyword(newKeyword)
     setCursorPosition(newCursorPosition)
     setShowSuggestions(false)
-    resetSelection()
+    setSelectedIndex(INITIAL_SELECTED_INDEX)
     inputRef.current?.focus()
 
     setTimeout(() => {
@@ -57,6 +103,30 @@ export default function SearchForm({ className = '' }: Props) {
         inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPosition
       }
     }, 0)
+  }
+
+  function navigateSelection(direction: 'down' | 'up') {
+    const itemCount = dropdownSuggestions.length
+
+    if (itemCount === 0) {
+      return
+    }
+
+    setSelectedIndex((prev) => {
+      if (direction === 'down') {
+        return prev < itemCount - 1 ? prev + 1 : 0
+      }
+
+      return prev > 0 ? prev - 1 : itemCount - 1
+    })
+  }
+
+  function renderSuggestionRightContent({ kind, value }: SearchDropdownItem) {
+    if (kind !== 'suggestion' || !value.endsWith(':')) {
+      return null
+    }
+
+    return <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-300">{t('prefix')}</span>
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -106,7 +176,7 @@ export default function SearchForm({ className = '' }: Props) {
       return
     }
 
-    if (!showSuggestions || searchSuggestions.length === 0) {
+    if (!showSuggestions || dropdownSuggestions.length === 0) {
       return
     }
 
@@ -120,14 +190,14 @@ export default function SearchForm({ className = '' }: Props) {
         navigateSelection('up')
         break
       case 'Enter':
-        if (selectedIndex >= 0) {
+        if (selectedIndex >= 0 && selectedIndex < dropdownSuggestions.length) {
           e.preventDefault()
-          selectSuggestion(searchSuggestions[selectedIndex])
+          selectDropdownItem(dropdownSuggestions[selectedIndex])
         }
         break
       case 'Escape':
         setShowSuggestions(false)
-        resetSelection()
+        setSelectedIndex(INITIAL_SELECTED_INDEX)
         break
     }
   }
@@ -139,7 +209,7 @@ export default function SearchForm({ className = '' }: Props) {
     setKeyword(value)
     setCursorPosition(position)
     setShowSuggestions(true)
-    resetSelection()
+    setSelectedIndex(INITIAL_SELECTED_INDEX)
   }
 
   function handleSelect(e: React.SyntheticEvent<HTMLInputElement>) {
@@ -149,7 +219,7 @@ export default function SearchForm({ className = '' }: Props) {
 
   function handleFocus() {
     setShowSuggestions(true)
-    resetSelection()
+    setSelectedIndex(INITIAL_SELECTED_INDEX)
 
     if (inputRef.current) {
       setCursorPosition(inputRef.current.selectionStart || 0)
@@ -159,7 +229,7 @@ export default function SearchForm({ className = '' }: Props) {
   function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
     if (!suggestionsRef.current?.contains(e.relatedTarget)) {
       setTimeout(() => {
-        resetSelection()
+        setSelectedIndex(INITIAL_SELECTED_INDEX)
       }, 300)
     }
   }
@@ -167,7 +237,7 @@ export default function SearchForm({ className = '' }: Props) {
   function handleClear() {
     setKeyword('')
     setCursorPosition(0)
-    resetSelection()
+    setSelectedIndex(INITIAL_SELECTED_INDEX)
     beforeDeletedCharacter.current = ''
     inputRef.current?.focus()
   }
@@ -249,8 +319,10 @@ export default function SearchForm({ className = '' }: Props) {
       >
         <div className="relative flex-1">
           <input
+            aria-activedescendant={activeSuggestionId}
             aria-autocomplete="list"
-            aria-controls="search-suggestions"
+            aria-controls={SEARCH_SUGGESTIONS_ID}
+            aria-expanded={showSuggestions}
             autoCapitalize="off"
             autoComplete="off"
             className={twMerge(
@@ -267,6 +339,7 @@ export default function SearchForm({ className = '' }: Props) {
             onSelect={handleSelect}
             placeholder={t('placeholder')}
             ref={inputRef}
+            role="combobox"
             type="search"
             value={keyword}
           />
@@ -326,47 +399,18 @@ export default function SearchForm({ className = '' }: Props) {
                   {isAutoSaveEnabled ? t('emptyRecentEnabled') : t('emptyRecentDisabled')}
                 </div>
               )}
-              {recentSearches.map((search) => (
-                <div className="w-full flex items-center hover:bg-zinc-800/70 transition group" key={search.timestamp}>
-                  <button
-                    className="flex-1 p-4 py-2.5 text-left text-sm truncate"
-                    onClick={() => {
-                      setKeyword(search.query)
-                      setCursorPosition(search.query.length)
-                      inputRef.current?.focus()
-                    }}
-                    type="button"
-                  >
-                    {search.query}
-                  </button>
-                  <button
-                    aria-label={t('deleteRecent', { query: search.query })}
-                    className="transition p-3 text-zinc-500 hover:text-red-400"
-                    onClick={() => {
-                      removeRecentSearch(search.query)
-                      inputRef.current?.focus()
-                    }}
-                    type="button"
-                  >
-                    <XIcon className="size-3" />
-                  </button>
-                </div>
-              ))}
             </div>
           )
         }
+        id={SEARCH_SUGGESTIONS_ID}
         isFetching={isFetching}
         isLoading={isLoading}
-        onSelect={selectSuggestion}
-        renderRightContent={({ value }) =>
-          value.endsWith(':') && (
-            <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-300">{t('prefix')}</span>
-          )
-        }
+        onSelect={selectDropdownItem}
+        renderRightContent={renderSuggestionRightContent}
         searchTerm={currentWordInfo.word}
         selectedIndex={selectedIndex}
         showSuggestions={showSuggestions}
-        suggestions={searchSuggestions}
+        suggestions={dropdownSuggestions}
       />
     </div>
   )

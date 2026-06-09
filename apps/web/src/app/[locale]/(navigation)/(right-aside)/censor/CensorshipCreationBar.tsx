@@ -19,6 +19,8 @@ import { CENSORSHIP_CATEGORIES, DEFAULT_CENSORSHIP_VALUES } from './constants'
 import { getDefaultCensorshipInputValue } from './format'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
 
+const CENSORSHIP_SUGGESTIONS_ID = 'censorship-suggestions'
+
 export default function CensorshipCreationBar() {
   const t = useTranslations('Censorship')
   const [showHelp, setShowHelp] = useState(false)
@@ -69,6 +71,11 @@ export default function CensorshipCreationBar() {
     inputValue,
     cursorPosition,
   })
+
+  const activeSuggestionId =
+    showSuggestions && selectedIndex >= 0 && selectedIndex < suggestions.length
+      ? `${CENSORSHIP_SUGGESTIONS_ID}-option-${selectedIndex}`
+      : undefined
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -191,6 +198,10 @@ export default function CensorshipCreationBar() {
     <div className="space-y-2 relative">
       <form className="relative" onSubmit={handleSubmit} ref={formRef}>
         <input
+          aria-activedescendant={activeSuggestionId}
+          aria-autocomplete="list"
+          aria-controls={CENSORSHIP_SUGGESTIONS_ID}
+          aria-expanded={showSuggestions}
           autoCapitalize="off"
           autoComplete="off"
           className={twMerge(
@@ -206,6 +217,7 @@ export default function CensorshipCreationBar() {
           onSelect={updateCursorPosition}
           placeholder={t('creationBar.inputPlaceholder')}
           ref={inputRef}
+          role="combobox"
           type="text"
           value={inputValue}
         />
@@ -230,6 +242,7 @@ export default function CensorshipCreationBar() {
       </form>
       <SuggestionDropdown
         dropdownRef={suggestionsRef}
+        id={CENSORSHIP_SUGGESTIONS_ID}
         isFetching={isFetching}
         isLoading={isLoading}
         onSelect={handleSelectSuggestion}

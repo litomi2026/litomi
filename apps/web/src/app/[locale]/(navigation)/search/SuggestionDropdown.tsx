@@ -6,12 +6,14 @@ import { twMerge } from 'tailwind-merge'
 export type SuggestionItem = {
   value: string
   label: string
+  action?: ReactNode
   icon?: ReactNode
 }
 
 type Props<T extends SuggestionItem = SuggestionItem> = {
   className?: string
   header?: ReactNode
+  id: string
   showSuggestions: boolean
   suggestions: T[]
   selectedIndex: number
@@ -26,6 +28,7 @@ type Props<T extends SuggestionItem = SuggestionItem> = {
 export default function SuggestionDropdown<T extends SuggestionItem = SuggestionItem>({
   showSuggestions,
   header,
+  id,
   className,
   suggestions,
   selectedIndex,
@@ -41,7 +44,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
   // NOTE: 선택된 항목이 화면에 보이도록 자동으로 스크롤함
   useEffect(() => {
     if (selectedIndex >= 0 && dropdownRef?.current) {
-      const selectedElement = dropdownRef.current.querySelector(`[data-index="${selectedIndex}"]`) as HTMLElement
+      const selectedElement = dropdownRef.current.querySelector('[role="option"][aria-selected="true"]') as HTMLElement
 
       if (selectedElement) {
         selectedElement.scrollIntoView({ block: 'nearest' })
@@ -66,34 +69,43 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
             <Loader2 className="size-5 text-zinc-400 animate-spin" />
           </div>
         )}
-        <div aria-busy={isFetching} className="transition aria-busy:opacity-60 text-sm font-medium">
+        <div
+          aria-busy={isFetching}
+          className="transition aria-busy:opacity-60 text-sm font-medium"
+          id={id}
+          role="listbox"
+        >
           {suggestions.map((suggestion, index) => (
-            <button
-              aria-current={selectedIndex === index}
-              className="flex w-full items-center gap-1.5 overflow-x-auto p-4 py-2.5 text-left transition hover:bg-zinc-800/70 aria-current:bg-zinc-800 scrollbar-hidden"
-              data-index={index}
-              key={suggestion.value}
-              onClick={() => onSelect(suggestion)}
-              type="button"
-            >
-              {suggestion.icon}
-              {suggestion.value.endsWith(':') ? (
-                <>
-                  <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                  <span className="text-zinc-400 text-xs font-normal">{suggestion.label}</span>
-                </>
-              ) : (
-                <>
-                  <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                  {suggestion.label !== suggestion.value && (
-                    <span className="text-zinc-400 text-xs font-normal">
-                      {renderHighlightedText(suggestion.label, searchTerm)}
-                    </span>
-                  )}
-                </>
-              )}
-              {renderRightContent?.(suggestion)}
-            </button>
+            <div className="flex w-full items-stretch" key={`${suggestion.value}-${index}`}>
+              <button
+                aria-selected={selectedIndex === index}
+                className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto p-4 py-2.5 text-left transition hover:bg-zinc-800/70 aria-selected:bg-zinc-800 scrollbar-hidden"
+                id={`${id}-option-${index}`}
+                onClick={() => onSelect(suggestion)}
+                role="option"
+                tabIndex={-1}
+                type="button"
+              >
+                {suggestion.icon}
+                {suggestion.value.endsWith(':') ? (
+                  <>
+                    <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
+                    <span className="text-zinc-400 text-xs font-normal">{suggestion.label}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
+                    {suggestion.label !== suggestion.value && (
+                      <span className="text-zinc-400 text-xs font-normal">
+                        {renderHighlightedText(suggestion.label, searchTerm)}
+                      </span>
+                    )}
+                  </>
+                )}
+                {renderRightContent?.(suggestion)}
+              </button>
+              {suggestion.action}
+            </div>
           ))}
         </div>
         {suggestions.length === 0 && searchTerm && !isLoading && (
