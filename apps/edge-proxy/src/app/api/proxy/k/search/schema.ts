@@ -1,14 +1,13 @@
 import 'server-only'
+import { PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { z } from 'zod'
-
-import { proxyLocaleSchema } from '@/util/locale'
 
 import { Sort } from './types'
 
 export const GETProxyKSearchSchema = z
   .object({
-    locale: proxyLocaleSchema,
+    locale: z.enum(PUBLIC_LOCALES),
     query: z.string().trim().max(MAX_SEARCH_QUERY_LENGTH).optional(),
     sort: z.enum(Sort).optional(),
     'min-rating': z.coerce.number().int().min(0).max(500).optional(),
