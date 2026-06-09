@@ -21,6 +21,7 @@ type VerificationState = 'checking' | 'failed' | 'hidden'
 export default function OriginProtectionTurnstile() {
   const [verificationState, setVerificationState] = useState<VerificationState>('hidden')
   const turnstileRef = useRef<TurnstileInstance>(null)
+  const siteverifyInFlightRef = useRef(false)
   const verificationRequired = verificationState !== 'hidden'
 
   useEffect(() => {
@@ -35,10 +36,16 @@ export default function OriginProtectionTurnstile() {
   }, [])
 
   async function handleSuccess(token: string) {
+    if (clearanceGate.isReady() || siteverifyInFlightRef.current) {
+      return
+    }
+
     if (!token) {
       reportTurnstileFailure('missing-token')
       return
     }
+
+    siteverifyInFlightRef.current = true
 
     try {
       await fetchResponseData<void>('/api/v1/turnstile/clearance', {
@@ -53,6 +60,8 @@ export default function OriginProtectionTurnstile() {
       clearanceGate.markFailed('siteverify-failed')
       setVerificationState('failed')
       console.warn('turnstile-siteverify', error)
+    } finally {
+      siteverifyInFlightRef.current = false
     }
   }
 
