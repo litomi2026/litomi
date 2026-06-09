@@ -23,7 +23,7 @@ export const messages = {
         autoSaveLabel: '최근 검색 자동 저장',
         emptyRecentEnabled: '최근 검색어가 여기에 표시돼요',
         emptyRecentDisabled: '자동 저장이 꺼져 있어요',
-        deleteRecent: '{query} 삭제',
+        clearRecentSearches: '최근 검색어 모두 지우기',
         prefix: '접두사',
       },
       subscription: {
@@ -191,7 +191,7 @@ export const messages = {
         autoSaveLabel: 'Auto-save recent searches',
         emptyRecentEnabled: 'Recent searches will appear here',
         emptyRecentDisabled: 'Auto-save is off',
-        deleteRecent: 'Delete {query}',
+        clearRecentSearches: 'Clear all recent searches',
         prefix: 'Prefix',
       },
       subscription: {
@@ -359,7 +359,7 @@ export const messages = {
         autoSaveLabel: '最近の検索を自動保存',
         emptyRecentEnabled: '最近の検索がここに表示されます',
         emptyRecentDisabled: '自動保存はオフです',
-        deleteRecent: '{query} を削除',
+        clearRecentSearches: '最近の検索をすべて消去',
         prefix: '接頭辞',
       },
       subscription: {
@@ -527,7 +527,7 @@ export const messages = {
         autoSaveLabel: '自动保存最近搜索',
         emptyRecentEnabled: '最近搜索会显示在这里',
         emptyRecentDisabled: '自动保存已关闭',
-        deleteRecent: '删除 {query}',
+        clearRecentSearches: '清除所有最近搜索',
         prefix: '前缀',
       },
       subscription: {

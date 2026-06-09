@@ -208,6 +208,7 @@ export default function RewardedAdSection() {
             </div>
           </div>
           <TurnstileWidget
+            id="points-earn-turnstile"
             onTokenChange={handleTurnstileTokenChange}
             options={{ action: 'points-earn' }}
             turnstileRef={turnstileRef}

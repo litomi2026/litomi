@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import SuggestionDropdown from '@/app/[locale]/(navigation)/search/SuggestionDropdown'
+import useSuggestionSelection from '@/app/[locale]/(navigation)/search/useSuggestionSelection'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
@@ -18,6 +19,8 @@ import { fetchAPIData } from '@/utils/api-request'
 import { CENSORSHIP_CATEGORIES, DEFAULT_CENSORSHIP_VALUES } from './constants'
 import { getDefaultCensorshipInputValue } from './format'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
+
+const CENSORSHIP_SUGGESTIONS_ID = 'censorship-suggestions'
 
 export default function CensorshipCreationBar() {
   const t = useTranslations('Censorship')
@@ -55,19 +58,14 @@ export default function CensorshipCreationBar() {
     },
   })
 
-  const {
-    suggestions,
-    selectedIndex,
-    resetSelection,
-    navigateSelection,
-    selectSuggestion,
-    currentWord,
-    debouncedWord,
-    isLoading,
-    isFetching,
-  } = useCensorshipSuggestions({
-    inputValue,
-    cursorPosition,
+  const { suggestions, selectSuggestion, currentWord, debouncedWord, isLoading, isFetching } = useCensorshipSuggestions(
+    { inputValue, cursorPosition },
+  )
+
+  const { activeDescendantId, navigateSelection, resetSelection, selectedIndex } = useSuggestionSelection({
+    isOpen: showSuggestions,
+    itemCount: suggestions.length,
+    listboxId: CENSORSHIP_SUGGESTIONS_ID,
   })
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -168,7 +166,7 @@ export default function CensorshipCreationBar() {
         break
       case 'Enter':
         e.preventDefault()
-        if (selectedIndex >= 0) {
+        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
           handleSelectSuggestion(suggestions[selectedIndex])
         } else {
           formRef.current?.requestSubmit()
@@ -179,7 +177,7 @@ export default function CensorshipCreationBar() {
         resetSelection()
         break
       case 'Tab':
-        if (selectedIndex >= 0) {
+        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
           e.preventDefault()
           handleSelectSuggestion(suggestions[selectedIndex])
         }
@@ -191,6 +189,10 @@ export default function CensorshipCreationBar() {
     <div className="space-y-2 relative">
       <form className="relative" onSubmit={handleSubmit} ref={formRef}>
         <input
+          aria-activedescendant={activeDescendantId}
+          aria-autocomplete="list"
+          aria-controls={CENSORSHIP_SUGGESTIONS_ID}
+          aria-expanded={showSuggestions}
           autoCapitalize="off"
           autoComplete="off"
           className={twMerge(
@@ -206,6 +208,7 @@ export default function CensorshipCreationBar() {
           onSelect={updateCursorPosition}
           placeholder={t('creationBar.inputPlaceholder')}
           ref={inputRef}
+          role="combobox"
           type="text"
           value={inputValue}
         />
@@ -230,8 +233,10 @@ export default function CensorshipCreationBar() {
       </form>
       <SuggestionDropdown
         dropdownRef={suggestionsRef}
+        id={CENSORSHIP_SUGGESTIONS_ID}
         isFetching={isFetching}
         isLoading={isLoading}
+        items={suggestions}
         onSelect={handleSelectSuggestion}
         renderRightContent={({ value }) =>
           value.endsWith(':') ? (
@@ -245,7 +250,6 @@ export default function CensorshipCreationBar() {
         searchTerm={debouncedWord}
         selectedIndex={selectedIndex}
         showSuggestions={showSuggestions}
-        suggestions={suggestions}
       />
       {showHelp ? (
         <div className={`overflow-hidden`}>

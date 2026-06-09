@@ -391,6 +391,7 @@ export default function LoginForm() {
 
             <TurnstileWidget
               hasToken={hasTurnstileToken}
+              id="login-turnstile"
               onTokenChange={(token) => setHasTurnstileToken(Boolean(token))}
               options={{ action: 'login' }}
               turnstileRef={turnstileRef}

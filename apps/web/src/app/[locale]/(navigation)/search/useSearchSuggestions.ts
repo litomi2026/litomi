@@ -1,6 +1,5 @@
 import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
 
 import useDebouncedValue from '@/hook/useDebouncedValue'
 
@@ -8,7 +7,6 @@ import { SEARCH_SUGGESTIONS } from './constants'
 import useSearchSuggestionsQuery from './useSearchSuggestionsQuery'
 
 const DEBOUNCE_MS = 300
-const INITIAL_SELECTED_INDEX = -1
 
 type Props = {
   keyword: string
@@ -16,7 +14,6 @@ type Props = {
 
 export default function useSearchSuggestions({ keyword }: Props) {
   const t = useTranslations('Search.suggestions')
-  const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
 
   const debouncedKeyword = useDebouncedValue({
     value: keyword,
@@ -29,8 +26,6 @@ export default function useSearchSuggestions({ keyword }: Props) {
     value,
     label: t(`labels.${value}`),
   }))
-
-  const searchSuggestions = getSearchSuggestions()
 
   function getSearchSuggestions() {
     if (keyword.length >= MIN_SUGGESTION_QUERY_LENGTH) {
@@ -50,25 +45,8 @@ export default function useSearchSuggestions({ keyword }: Props) {
     return staticSuggestions
   }
 
-  function resetSelection() {
-    setSelectedIndex(INITIAL_SELECTED_INDEX)
-  }
-
-  function navigateSelection(direction: 'down' | 'up') {
-    if (direction === 'down') {
-      setSelectedIndex((prev) => (prev < searchSuggestions.length - 1 ? prev + 1 : 0))
-    } else {
-      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : searchSuggestions.length - 1))
-    }
-  }
-
   return {
-    selectedIndex,
-    setSelectedIndex,
-    searchSuggestions,
-    showHeader: keyword === '',
-    resetSelection,
-    navigateSelection,
+    searchSuggestions: getSearchSuggestions(),
     isLoading,
     isFetching,
   }

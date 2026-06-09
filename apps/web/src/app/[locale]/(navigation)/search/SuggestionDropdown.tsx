@@ -12,22 +12,24 @@ export type SuggestionItem = {
 type Props<T extends SuggestionItem = SuggestionItem> = {
   className?: string
   header?: ReactNode
+  id: string
   showSuggestions: boolean
-  suggestions: T[]
+  items: T[]
   selectedIndex: number
   isLoading?: boolean
   isFetching?: boolean
   searchTerm?: string
-  onSelect: (suggestion: T) => void
-  renderRightContent?: (suggestion: T) => ReactNode
+  onSelect: (item: T, index: number) => void
+  renderRightContent?: (item: T, index: number) => ReactNode
   dropdownRef?: RefObject<HTMLDivElement | null>
 }
 
 export default function SuggestionDropdown<T extends SuggestionItem = SuggestionItem>({
   showSuggestions,
   header,
+  id,
   className,
-  suggestions,
+  items,
   selectedIndex,
   isLoading,
   isFetching,
@@ -41,7 +43,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
   // NOTE: 선택된 항목이 화면에 보이도록 자동으로 스크롤함
   useEffect(() => {
     if (selectedIndex >= 0 && dropdownRef?.current) {
-      const selectedElement = dropdownRef.current.querySelector(`[data-index="${selectedIndex}"]`) as HTMLElement
+      const selectedElement = dropdownRef.current.querySelector('[role="option"][aria-selected="true"]') as HTMLElement
 
       if (selectedElement) {
         selectedElement.scrollIntoView({ block: 'nearest' })
@@ -53,7 +55,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
     <div
       aria-hidden={!showSuggestions}
       className={twMerge(
-        'absolute z-20 mt-1 w-full overflow-hidden rounded-[1.25rem] border border-zinc-800 bg-zinc-900/98 shadow-xl transition',
+        'absolute z-20 mt-1 w-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/97 shadow backdrop-blur-xs transition',
         'aria-hidden:opacity-0 aria-hidden:pointer-events-none',
         className,
       )}
@@ -61,46 +63,51 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
     >
       <div className="max-h-64 overflow-y-auto relative">
         {header}
-        {isLoading && suggestions.length === 0 && (
+        {isLoading && items.length === 0 && (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="size-5 text-zinc-400 animate-spin" />
           </div>
         )}
-        <div aria-busy={isFetching} className="transition aria-busy:opacity-60 text-sm font-medium">
-          {suggestions.map((suggestion, index) => (
-            <button
-              aria-current={selectedIndex === index}
-              className="flex w-full items-center gap-1.5 overflow-x-auto p-4 py-2.5 text-left transition hover:bg-zinc-800/70 aria-current:bg-zinc-800 scrollbar-hidden"
-              data-index={index}
-              key={suggestion.value}
-              onClick={() => onSelect(suggestion)}
-              type="button"
+        <ul
+          aria-busy={isFetching}
+          className="list-none p-0 transition aria-busy:opacity-60 text-sm font-medium"
+          id={id}
+          role="listbox"
+        >
+          {items.map((item, index) => (
+            <li
+              aria-selected={selectedIndex === index}
+              className="flex min-w-0 cursor-pointer items-center gap-1.5 overflow-x-auto p-4 py-2.5 text-left transition hover:bg-zinc-800/70 aria-selected:bg-zinc-800 scrollbar-hidden"
+              id={`${id}-option-${index}`}
+              key={`${item.value}-${index}`}
+              onClick={() => onSelect(item, index)}
+              role="option"
             >
-              {suggestion.icon}
-              {suggestion.value.endsWith(':') ? (
+              {item.icon}
+              {item.value.endsWith(':') ? (
                 <>
-                  <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                  <span className="text-zinc-400 text-xs font-normal">{suggestion.label}</span>
+                  <span>{renderHighlightedText(item.value, searchTerm)}</span>
+                  <span className="text-zinc-400 text-xs font-normal">{item.label}</span>
                 </>
               ) : (
                 <>
-                  <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                  {suggestion.label !== suggestion.value && (
+                  <span>{renderHighlightedText(item.value, searchTerm)}</span>
+                  {item.label !== item.value && (
                     <span className="text-zinc-400 text-xs font-normal">
-                      {renderHighlightedText(suggestion.label, searchTerm)}
+                      {renderHighlightedText(item.label, searchTerm)}
                     </span>
                   )}
                 </>
               )}
-              {renderRightContent?.(suggestion)}
-            </button>
+              {renderRightContent?.(item, index)}
+            </li>
           ))}
-        </div>
-        {suggestions.length === 0 && searchTerm && !isLoading && (
+        </ul>
+        {items.length === 0 && searchTerm && !isLoading && (
           <div className="text-center py-4 text-zinc-500 text-sm">{t('noResults')}</div>
         )}
       </div>
-      {suggestions.length > 1 && (
+      {items.length > 1 && (
         <div className="sticky bottom-0 border-t border-zinc-800 bg-zinc-900/95 px-3 py-2 text-xs text-zinc-500 backdrop-blur-sm">
           <div className="flex flex-wrap gap-x-3 gap-y-1">
             <span className="whitespace-nowrap">

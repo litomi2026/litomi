@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-
 import useDebouncedValue from '@/hook/useDebouncedValue'
 import { SUGGESTION_DEBOUNCE_MS } from '@/ui-policy'
 
@@ -12,15 +10,12 @@ export type CensorshipSuggestion = {
   label: string
 }
 
-const INITIAL_SELECTED_INDEX = -1
-
 type Props = {
   inputValue: string
   cursorPosition: number
 }
 
 export default function useCensorshipSuggestions({ inputValue, cursorPosition }: Props) {
-  const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
   const currentWord = getCurrentWord(inputValue, cursorPosition)
 
   const debouncedWord = useDebouncedValue({
@@ -29,22 +24,6 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
   })
 
   const { data: suggestions, isLoading, isFetching } = useCensorshipSuggestionsQuery({ query: debouncedWord })
-
-  function navigateSelection(direction: 'down' | 'up') {
-    const len = suggestions.length
-
-    if (len === 0) {
-      return
-    }
-
-    setSelectedIndex((prev) => {
-      if (direction === 'down') {
-        return prev === len - 1 ? 0 : prev + 1
-      } else {
-        return prev <= 0 ? len - 1 : prev - 1
-      }
-    })
-  }
 
   function selectSuggestion(suggestion: CensorshipSuggestion): string {
     const before = inputValue.slice(0, currentWord.start)
@@ -55,9 +34,6 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
 
   return {
     suggestions,
-    selectedIndex,
-    resetSelection: () => setSelectedIndex(INITIAL_SELECTED_INDEX),
-    navigateSelection,
     selectSuggestion,
     currentWord,
     debouncedWord,

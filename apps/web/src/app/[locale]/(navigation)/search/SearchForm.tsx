@@ -2,7 +2,7 @@
 
 import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { Toggle } from '@litomi/ui'
-import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
+import { Clock, Loader2, Trash2, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { SubmitEvent, useEffect, useRef, useState, useTransition } from 'react'
@@ -12,21 +12,24 @@ import SearchParamsSync from '@/components/router/SearchParamsSync'
 import { usePathname, useRouter } from '@/i18n/navigation'
 
 import { SearchParam } from './constants'
-import SuggestionDropdown, { type SuggestionItem } from './SuggestionDropdown'
+import SuggestionDropdown from './SuggestionDropdown'
 import useRecentSearches from './useRecentSearches'
 import useSearchSuggestions from './useSearchSuggestions'
+import useSuggestionSelection from './useSuggestionSelection'
 import { getWordAtCursor, translateKoreanToEnglish } from './utils'
 
 type Props = {
   className?: string
 }
 
+const SEARCH_SUGGESTIONS_ID = 'search-suggestions'
+
 export default function SearchForm({ className = '' }: Props) {
   const [keyword, setKeyword] = useState('')
   const [cursorPosition, setCursorPosition] = useState(0)
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const beforeDeletedCharacter = useRef('')
   const router = useRouter()
   const pathname = usePathname()
@@ -34,17 +37,49 @@ export default function SearchForm({ className = '' }: Props) {
   const [isSearching, startSearching] = useTransition()
   const currentWordInfo = getWordAtCursor(keyword, cursorPosition)
 
-  const { recentSearches, isAutoSaveEnabled, saveRecentSearch, removeRecentSearch, setAutoSaveEnabled } =
+  const { recentSearches, isAutoSaveEnabled, saveRecentSearch, clearRecentSearches, setAutoSaveEnabled } =
     useRecentSearches()
 
-  const { selectedIndex, searchSuggestions, resetSelection, navigateSelection, isLoading, isFetching } =
-    useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/, '') })
+  const { searchSuggestions, isLoading, isFetching } = useSearchSuggestions({
+    keyword: currentWordInfo.word.replace(/^-/, ''),
+  })
 
-  function selectSuggestion(suggestion: SuggestionItem) {
-    const before = keyword.slice(0, currentWordInfo.start)
-    const after = keyword.slice(currentWordInfo.end)
-    const newKeyword = before + suggestion.value + after
-    const newCursorPosition = currentWordInfo.start + suggestion.value.length
+  const dropdownEntries = [
+    ...(keyword === ''
+      ? recentSearches.map((search) => ({
+          icon: <Clock className="size-3 shrink-0 text-zinc-500" />,
+          label: search.query,
+          source: 'recent' as const,
+          value: search.query,
+        }))
+      : []),
+    ...searchSuggestions.map((suggestion) => ({
+      ...suggestion,
+      source: 'suggestion' as const,
+    })),
+  ]
+
+  type SearchDropdownEntry = (typeof dropdownEntries)[number]
+
+  const { activeDescendantId, navigateSelection, resetSelection, selectedIndex } = useSuggestionSelection({
+    isOpen: showSuggestions,
+    itemCount: dropdownEntries.length,
+    listboxId: SEARCH_SUGGESTIONS_ID,
+  })
+
+  function handleClearRecentSearches() {
+    clearRecentSearches()
+    resetSelection()
+    inputRef.current?.focus()
+  }
+
+  function selectDropdownEntry({ source, value }: SearchDropdownEntry) {
+    const isRecent = source === 'recent'
+    const newCursorPosition = isRecent ? value.length : currentWordInfo.start + value.length
+
+    const newKeyword = isRecent
+      ? value
+      : keyword.slice(0, currentWordInfo.start) + value + keyword.slice(currentWordInfo.end)
 
     setKeyword(newKeyword)
     setCursorPosition(newCursorPosition)
@@ -57,6 +92,14 @@ export default function SearchForm({ className = '' }: Props) {
         inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPosition
       }
     }, 0)
+  }
+
+  function renderSuggestionRightContent({ source, value }: SearchDropdownEntry) {
+    if (source === 'recent' || !value.endsWith(':')) {
+      return null
+    }
+
+    return <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-300">{t('prefix')}</span>
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -106,7 +149,7 @@ export default function SearchForm({ className = '' }: Props) {
       return
     }
 
-    if (!showSuggestions || searchSuggestions.length === 0) {
+    if (!showSuggestions || dropdownEntries.length === 0) {
       return
     }
 
@@ -120,9 +163,9 @@ export default function SearchForm({ className = '' }: Props) {
         navigateSelection('up')
         break
       case 'Enter':
-        if (selectedIndex >= 0) {
+        if (selectedIndex >= 0 && selectedIndex < dropdownEntries.length) {
           e.preventDefault()
-          selectSuggestion(searchSuggestions[selectedIndex])
+          selectDropdownEntry(dropdownEntries[selectedIndex])
         }
         break
       case 'Escape':
@@ -249,8 +292,10 @@ export default function SearchForm({ className = '' }: Props) {
       >
         <div className="relative flex-1">
           <input
+            aria-activedescendant={activeDescendantId}
             aria-autocomplete="list"
-            aria-controls="search-suggestions"
+            aria-controls={SEARCH_SUGGESTIONS_ID}
+            aria-expanded={showSuggestions}
             autoCapitalize="off"
             autoComplete="off"
             className={twMerge(
@@ -267,6 +312,7 @@ export default function SearchForm({ className = '' }: Props) {
             onSelect={handleSelect}
             placeholder={t('placeholder')}
             ref={inputRef}
+            role="combobox"
             type="search"
             value={keyword}
           />
@@ -306,67 +352,55 @@ export default function SearchForm({ className = '' }: Props) {
         header={
           keyword === '' && (
             <div className="border-b border-zinc-800">
-              <div className="flex items-center justify-between px-4 py-2">
+              <div className="flex items-center justify-between px-4 py-1">
                 <div className="flex items-center gap-2 text-xs text-zinc-400">
                   <Clock className="size-3" />
                   <span>{t('recentSearches')}</span>
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <span className="text-xs text-zinc-500">{t('autoSave')}</span>
-                  <Toggle
-                    aria-label={t('autoSaveLabel')}
-                    checked={isAutoSaveEnabled}
-                    className="w-10 peer-checked:bg-brand/80"
-                    onToggle={setAutoSaveEnabled}
-                  />
-                </label>
+                <div className="flex items-center gap-1.5">
+                  {recentSearches.length > 0 && (
+                    <button
+                      aria-label={t('clearRecentSearches')}
+                      className={twMerge(
+                        '-my-1 flex size-8 shrink-0 items-center justify-center rounded-md text-zinc-500 transition',
+                        'hover:text-red-300 active:text-red-200',
+                        'focus:outline-none focus:ring-2 focus:ring-zinc-700 focus:ring-inset',
+                      )}
+                      onClick={handleClearRecentSearches}
+                      title={t('clearRecentSearches')}
+                      type="button"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  )}
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <span className="text-xs text-zinc-500">{t('autoSave')}</span>
+                    <Toggle
+                      aria-label={t('autoSaveLabel')}
+                      checked={isAutoSaveEnabled}
+                      className="w-10 peer-checked:bg-brand/80"
+                      onToggle={setAutoSaveEnabled}
+                    />
+                  </label>
+                </div>
               </div>
               {recentSearches.length === 0 && (
                 <div className="p-2.5 text-center text-sm text-zinc-500">
                   {isAutoSaveEnabled ? t('emptyRecentEnabled') : t('emptyRecentDisabled')}
                 </div>
               )}
-              {recentSearches.map((search) => (
-                <div className="w-full flex items-center hover:bg-zinc-800/70 transition group" key={search.timestamp}>
-                  <button
-                    className="flex-1 p-4 py-2.5 text-left text-sm truncate"
-                    onClick={() => {
-                      setKeyword(search.query)
-                      setCursorPosition(search.query.length)
-                      inputRef.current?.focus()
-                    }}
-                    type="button"
-                  >
-                    {search.query}
-                  </button>
-                  <button
-                    aria-label={t('deleteRecent', { query: search.query })}
-                    className="transition p-3 text-zinc-500 hover:text-red-400"
-                    onClick={() => {
-                      removeRecentSearch(search.query)
-                      inputRef.current?.focus()
-                    }}
-                    type="button"
-                  >
-                    <XIcon className="size-3" />
-                  </button>
-                </div>
-              ))}
             </div>
           )
         }
+        id={SEARCH_SUGGESTIONS_ID}
         isFetching={isFetching}
         isLoading={isLoading}
-        onSelect={selectSuggestion}
-        renderRightContent={({ value }) =>
-          value.endsWith(':') && (
-            <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-300">{t('prefix')}</span>
-          )
-        }
+        items={dropdownEntries}
+        onSelect={selectDropdownEntry}
+        renderRightContent={renderSuggestionRightContent}
         searchTerm={currentWordInfo.word}
         selectedIndex={selectedIndex}
         showSuggestions={showSuggestions}
-        suggestions={searchSuggestions}
       />
     </div>
   )
