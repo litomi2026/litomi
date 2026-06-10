@@ -44,7 +44,7 @@ export default function MasonryPostList({
   })
 
   if (!layoutConfig) {
-    return <MasonryPostListSkeleton showMangaCover={showMangaCover} />
+    return <MasonryPostSkeletonGrid count={6} showMangaCover={showMangaCover} />
   }
 
   return (
@@ -64,9 +64,7 @@ export default function MasonryPostList({
       />
 
       {isFetchingNextPage && (
-        <div className="md:pt-3">
-          <MasonryPostSkeletonGrid count={layoutConfig.columnCount} showMangaCover={showMangaCover} />
-        </div>
+        <MasonryPostSkeletonGrid count={layoutConfig.columnCount} showMangaCover={showMangaCover} />
       )}
 
       {isFetchingNextPage && (
@@ -82,10 +80,12 @@ export default function MasonryPostList({
   )
 }
 
-export function MasonryPostListSkeleton({ showMangaCover }: { showMangaCover: boolean }) {
+export function MasonryPostSkeletonGrid({ count, showMangaCover }: { count: number; showMangaCover: boolean }) {
   return (
-    <div className="p-2 md:p-3">
-      <MasonryPostSkeletonGrid count={6} showMangaCover={showMangaCover} />
+    <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: count }, (_, i) => (
+        <PostSkeleton key={i} showMangaCover={showMangaCover} />
+      ))}
     </div>
   )
 }
@@ -96,16 +96,6 @@ function CompactPostCard({ data }: RenderComponentProps<Post>) {
 
 function getPostItemKey(post: Post) {
   return post.id
-}
-
-function MasonryPostSkeletonGrid({ count, showMangaCover }: { count: number; showMangaCover: boolean }) {
-  return (
-    <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-      {Array.from({ length: count }, (_, i) => (
-        <PostSkeleton key={i} showMangaCover={showMangaCover} />
-      ))}
-    </div>
-  )
 }
 
 function PostCardWithMangaCover({ data }: RenderComponentProps<Post>) {

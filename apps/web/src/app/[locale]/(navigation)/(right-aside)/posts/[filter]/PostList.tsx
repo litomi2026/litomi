@@ -16,7 +16,7 @@ import usePostInfiniteQuery from '@/query/usePostsQuery'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import FollowingUnauthorized from './FollowingUnauthorized'
-import MasonryPostList, { MasonryPostListSkeleton } from './MasonryPostList'
+import MasonryPostList, { MasonryPostSkeletonGrid } from './MasonryPostList'
 
 type PostListSource =
   | { type: 'manga'; mangaId: number }
@@ -38,7 +38,11 @@ export default function PostList({ source }: Props) {
   const showMangaCover = shouldShowMangaCover(source)
 
   if (isLoading) {
-    return <MasonryPostListSkeleton showMangaCover={showMangaCover} />
+    return (
+      <div className="p-2 md:p-3">
+        <MasonryPostSkeletonGrid count={6} showMangaCover={showMangaCover} />
+      </div>
+    )
   }
 
   if (isError) {

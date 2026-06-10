@@ -18,7 +18,6 @@ export default function RecommendMangaLink() {
       aria-current={isRecommendPage}
       className={`${topNavigationActionClassName} aria-current:bg-brand aria-current:text-background aria-current:font-semibold aria-current:pointer-events-none`}
       href="/recommend/manga"
-      prefetch={false}
     >
       <LinkPending className="size-5">
         <Compass className="size-5" />

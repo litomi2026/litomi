@@ -8,7 +8,7 @@ import { useLocale } from 'next-intl'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData, withQuery } from '@/utils/api-request'
 
-export type CategoryParam = 'female' | 'male' | 'mixed' | 'other'
+import type { CategoryParam } from './categories'
 
 type Params = {
   category: CategoryParam

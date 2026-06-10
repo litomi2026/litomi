@@ -70,7 +70,13 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
           >
             {t('posts')}
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/tag" icon={<Tag />} selectedIconStyle="fill-soft">
+          <SelectableLink
+            className="hidden sm:block"
+            href="/tag/female"
+            hrefMatch="/tag"
+            icon={<Tag />}
+            selectedIconStyle="fill-soft"
+          >
             {t('tag')}
           </SelectableLink>
           <div className="relative">
