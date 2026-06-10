@@ -52,7 +52,7 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
   })
 
   return (
-    <section className="mx-auto flex w-full max-w-6xl flex-col gap-5">
+    <section className="mx-auto flex w-full h-full max-w-6xl flex-col gap-5">
       <div className="grid gap-3 rounded-lg bg-zinc-950/50 sm:grid-cols-[1fr_auto] sm:items-center">
         <label className="relative block">
           <Search
@@ -60,7 +60,7 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
             className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-500"
           />
           <input
-            className="h-11 w-full rounded-md border border-zinc-800 bg-zinc-950 pl-10 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-zinc-600"
+            className="h-11 w-full rounded-md border border-zinc-800 bg-zinc-950 pl-10 pr-3 text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-zinc-600"
             onChange={(event) => setQuery(event.target.value)}
             placeholder={t('dictionary.searchPlaceholder')}
             type="search"
@@ -69,7 +69,6 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
         </label>
 
         <div className="flex items-center gap-2 text-sm text-zinc-400">
-          <BookOpen aria-hidden className="size-4 text-zinc-500" />
           <span className="tabular-nums">
             {t('dictionary.resultCount', {
               count: formatNumber(filteredEntries.length, locale),
@@ -85,7 +84,7 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
       >
         <Link
           aria-current={type ? undefined : 'page'}
-          className="rounded-md px-4 py-2 text-center text-sm font-medium text-zinc-400 transition hover:text-zinc-100 aria-current:bg-zinc-800 aria-current:text-zinc-100"
+          className="rounded-md px-3 py-1 text-center text-sm font-medium text-zinc-400 transition hover:text-zinc-100 aria-current:bg-zinc-800 aria-current:text-zinc-100"
           href="/tag/dictionary"
           prefetch={false}
         >
@@ -93,7 +92,7 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
         </Link>
         <Link
           aria-current={type ? 'page' : undefined}
-          className="rounded-md px-4 py-2 text-center text-sm font-medium text-zinc-400 transition hover:text-zinc-100 aria-current:bg-zinc-800 aria-current:text-zinc-100"
+          className="rounded-md px-3 py-1 text-center text-sm font-medium text-zinc-400 transition hover:text-zinc-100 aria-current:bg-zinc-800 aria-current:text-zinc-100"
           href={`/tag/dictionary/${activeType}`}
           prefetch={false}
         >
@@ -119,7 +118,7 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
       )}
 
       {filteredEntries.length === 0 ? (
-        <div className="flex items-center justify-center rounded-lg border border-dashed border-zinc-800 py-16 text-sm text-zinc-500">
+        <div className="flex items-center justify-center flex-1 rounded-lg border border-dashed border-zinc-800 p-4 text-sm text-zinc-500">
           {t('dictionary.empty')}
         </div>
       ) : type ? (
