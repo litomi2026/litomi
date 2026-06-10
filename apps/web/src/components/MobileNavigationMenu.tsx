@@ -229,7 +229,6 @@ function MobileMenuLink({
       )}
       href={href}
       onClick={() => isSamePath && onClose()}
-      prefetch={false}
     >
       <LinkPending className={iconClassName}>
         <span
