@@ -13,13 +13,9 @@ export function getDictionaryCategoryStats(entries: readonly DictionaryEntryWith
   const counts = new Map<TagDictionaryTypeKey, number>()
 
   for (const entry of entries) {
-    const category = getDictionaryPrimaryType(entry)
+    const category = entry.tagTypes[0]
     counts.set(category, (counts.get(category) ?? 0) + 1)
   }
 
   return Array.from(counts, ([category, count]) => ({ category, count })).sort((a, b) => b.count - a.count)
-}
-
-export function getDictionaryPrimaryType(entry: DictionaryEntryWithTypes) {
-  return entry.tagTypes[0]
 }

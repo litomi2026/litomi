@@ -6,16 +6,17 @@ import { notFound } from 'next/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import { TAG_DICTIONARY_TYPE_KEYS, type TagDictionaryTypeKey } from '../../data/tag-dictionary'
+import { TAG_DICTIONARY_TYPE_KEYS } from '../../data/tag-dictionary'
 import TagDictionary from '../dictionary'
-import { getDictionaryCategoryStats, getDictionaryPrimaryType } from '../dictionary-utils'
+import { getDictionaryCategoryStats } from '../dictionary-utils'
 import { getLocalizedTagDictionary } from '../get-localized-dictionary'
 
 export const dynamicParams = false
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/tag/dictionary/[type]'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
-  const type = getDictionaryTypeParam((await params).type)
+  const { type: typeParam } = await params
+  const type = TAG_DICTIONARY_TYPE_KEYS.find((typeKey) => typeKey === typeParam)
 
   if (!type) {
     notFound()
@@ -44,7 +45,8 @@ export function generateStaticParams() {
 
 export default async function Page({ params }: PageProps<'/[locale]/tag/dictionary/[type]'>) {
   const locale = await getLocaleFromParams(params)
-  const type = getDictionaryTypeParam((await params).type)
+  const { type: typeParam } = await params
+  const type = TAG_DICTIONARY_TYPE_KEYS.find((typeKey) => typeKey === typeParam)
 
   if (!type) {
     notFound()
@@ -52,13 +54,9 @@ export default async function Page({ params }: PageProps<'/[locale]/tag/dictiona
 
   const entries = getLocalizedTagDictionary(locale)
   const categoryStats = getDictionaryCategoryStats(entries)
-  const typeEntries = entries.filter((entry) => getDictionaryPrimaryType(entry) === type)
+  const typeEntries = entries.filter((entry) => entry.tagTypes[0] === type)
 
   return (
     <TagDictionary categoryStats={categoryStats} entries={typeEntries} totalEntryCount={entries.length} type={type} />
   )
-}
-
-function getDictionaryTypeParam(value: string): TagDictionaryTypeKey | undefined {
-  return TAG_DICTIONARY_TYPE_KEYS.find((type) => type === value)
 }

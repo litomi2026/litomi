@@ -3924,5 +3924,3 @@ export const TAG_DICTIONARY = [
 ] as const satisfies readonly TagDictionaryEntryShape[]
 
 export type TagDictionaryEntry = (typeof TAG_DICTIONARY)[number]
-
-export type TagDictionaryEntryKey = TagDictionaryEntry['key']

@@ -9,10 +9,10 @@ import { useDeferredValue, useState } from 'react'
 import { Link } from '@/i18n/navigation'
 
 import type { TagDictionaryTypeKey } from '../data/tag-dictionary'
+import type { DictionaryCategoryStat } from './dictionary-utils'
 import type { LocalizedTagDictionaryEntry } from './types'
 
 import { TAG_CATEGORY_PARAMS } from '../categories'
-import { type DictionaryCategoryStat, getDictionaryPrimaryType } from './dictionary-utils'
 
 type DictionaryEntryGridProps = {
   categoryStats: readonly DictionaryCategoryStat[]
@@ -150,7 +150,7 @@ function DictionaryEntryGrid({ categoryStats, entries, t }: DictionaryEntryGridP
                 <p className="mt-1 text-xs text-zinc-500">{getDictionaryTypeText(entry, t)}</p>
               </div>
               <span className={`rounded-full border px-2 py-1 text-xs ${getDictionaryTone(entry, categoryStats)}`}>
-                {t(`dictionary.typeLabels.${getDictionaryPrimaryType(entry)}`)}
+                {t(`dictionary.typeLabels.${entry.tagTypes[0]}`)}
               </span>
             </div>
 
@@ -202,7 +202,7 @@ function getDictionarySearchText(entry: LocalizedTagDictionaryEntry, t: TagTrans
 }
 
 function getDictionaryTone(entry: LocalizedTagDictionaryEntry, categoryStats: readonly DictionaryCategoryStat[]) {
-  const category = getDictionaryPrimaryType(entry)
+  const category = entry.tagTypes[0]
   const index = categoryStats.findIndex((item) => item.category === category)
   return DICTIONARY_CATEGORY_TONE[index % DICTIONARY_CATEGORY_TONE.length]
 }
