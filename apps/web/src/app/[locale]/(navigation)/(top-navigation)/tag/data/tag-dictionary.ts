@@ -1,20 +1,23 @@
-export type TagDictionaryTypeKey =
-  | 'activity'
-  | 'animal'
-  | 'attribute'
-  | 'change'
-  | 'contextual'
-  | 'costume'
-  | 'creature'
-  | 'format'
-  | 'galleryWide'
-  | 'highPresence'
-  | 'location'
-  | 'lowPresence'
-  | 'reclass'
-  | 'technical'
-  | 'tool'
-  | 'visual'
+export const TAG_DICTIONARY_TYPE_KEYS = [
+  'activity',
+  'animal',
+  'attribute',
+  'change',
+  'contextual',
+  'costume',
+  'creature',
+  'format',
+  'galleryWide',
+  'highPresence',
+  'location',
+  'lowPresence',
+  'reclass',
+  'technical',
+  'tool',
+  'visual',
+] as const
+
+export type TagDictionaryTypeKey = (typeof TAG_DICTIONARY_TYPE_KEYS)[number]
 
 type TagDictionaryEntryShape = {
   key: string
