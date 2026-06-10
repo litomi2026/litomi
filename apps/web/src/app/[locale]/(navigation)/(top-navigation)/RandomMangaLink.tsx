@@ -25,11 +25,7 @@ export default function RandomMangaLink({ timer }: Props) {
 
   if (!isRandomPage) {
     return (
-      <Link
-        className={twMerge('hover:bg-zinc-900 active:bg-background', topNavigationActionClassName)}
-        href="/random"
-        prefetch={false}
-      >
+      <Link className={twMerge('hover:bg-zinc-900 active:bg-background', topNavigationActionClassName)} href="/random">
         <Dices className="size-5" />
         <span className="min-w-9 text-center hidden sm:inline">{t('random')}</span>
       </Link>
