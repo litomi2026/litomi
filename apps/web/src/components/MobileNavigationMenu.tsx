@@ -122,7 +122,7 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             title={t('posts')}
           />
           <MobileMenuLink
-            href="/tag"
+            href="/tag/female"
             hrefMatch="/tag"
             icon={<Tag />}
             onClose={onClose}
