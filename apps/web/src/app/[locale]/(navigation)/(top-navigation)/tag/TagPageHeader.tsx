@@ -1,6 +1,7 @@
 import type { PublicLocale } from '@litomi/domain/locale'
 import type { ComponentProps } from 'react'
 
+import { BookOpen, Tag } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 
 import { Link } from '@/i18n/navigation'
@@ -15,29 +16,29 @@ type TagView = 'dictionary' | 'tags'
 
 export default async function TagPageHeader({ activeView, locale, tagsHref = '/tag/female' }: Props) {
   const t = await getTranslations({ locale, namespace: 'Tag' })
+  const viewLinkClassName =
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-3.5 text-sm font-semibold text-zinc-400 transition hover:bg-zinc-800/70 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 aria-current:bg-foreground aria-current:text-background'
 
   return (
-    <header className="mx-auto flex w-full max-w-6xl flex-col gap-4">
-      <div className="flex flex-col gap-1 sr-only">
-        <h1 className="text-2xl font-semibold text-zinc-100">{t('title')}</h1>
-        <p className="text-sm leading-6 text-zinc-400">{t('description')}</p>
+    <header className="mx-auto flex w-full max-w-6xl flex-col gap-4 pb-1 md:flex-row md:items-end md:justify-between">
+      <div className="grid max-w-2xl gap-2">
+        <h1 className="text-3xl font-bold leading-tight tracking-normal text-foreground md:text-4xl">{t('title')}</h1>
+        <p className="max-w-xl text-sm leading-6 text-zinc-400 md:text-base">{t('description')}</p>
       </div>
       <nav
         aria-label={t('views.label')}
-        className="grid grid-cols-2 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950/60 p-1 sm:flex sm:w-fit"
+        className="grid grid-cols-2 overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-950/70 p-1 shadow-lg shadow-black/10 md:w-fit"
       >
-        <Link
-          aria-current={activeView === 'tags' ? 'page' : undefined}
-          className="rounded-md px-4 py-2 text-center text-sm font-medium text-zinc-400 transition hover:text-zinc-100 aria-current:bg-zinc-800 aria-current:text-zinc-100"
-          href={tagsHref}
-        >
+        <Link aria-current={activeView === 'tags' ? 'page' : undefined} className={viewLinkClassName} href={tagsHref}>
+          <Tag aria-hidden className="size-4" />
           {t('views.tags')}
         </Link>
         <Link
           aria-current={activeView === 'dictionary' ? 'page' : undefined}
-          className="rounded-md px-4 py-2 text-center text-sm font-medium text-zinc-400 transition hover:text-zinc-100 aria-current:bg-zinc-800 aria-current:text-zinc-100"
+          className={viewLinkClassName}
           href="/tag/dictionary"
         >
+          <BookOpen aria-hidden className="size-4" />
           {t('views.dictionary')}
         </Link>
       </nav>

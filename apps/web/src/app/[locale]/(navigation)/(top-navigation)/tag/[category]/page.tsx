@@ -7,14 +7,15 @@ import { Suspense } from 'react'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
-import { getTagCategoryParam, TAG_CATEGORY_PARAMS } from '../categories'
-import TagCategoryPageClient from '../category-page.client'
+import { TAG_CATEGORY_PARAMS } from '../categories'
+import TagCategoryPageClient from './page.client'
 
 export const dynamicParams = false
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/tag/[category]'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
-  const category = getTagCategoryParam((await params).category)
+  const { category: categoryParam } = await params
+  const category = TAG_CATEGORY_PARAMS.find((item) => item === categoryParam)
 
   if (!category) {
     notFound()
@@ -42,7 +43,8 @@ export function generateStaticParams() {
 }
 
 export default async function Page({ params }: PageProps<'/[locale]/tag/[category]'>) {
-  const category = getTagCategoryParam((await params).category)
+  const { category: categoryParam } = await params
+  const category = TAG_CATEGORY_PARAMS.find((item) => item === categoryParam)
 
   if (!category) {
     notFound()

@@ -2,12 +2,13 @@ import { notFound } from 'next/navigation'
 
 import { getLocaleFromParams } from '@/i18n/server'
 
-import { getTagCategoryParam } from '../categories'
+import { TAG_CATEGORY_PARAMS } from '../categories'
 import TagPageHeader from '../TagPageHeader'
 
 export default async function Layout({ children, params }: LayoutProps<'/[locale]/tag/[category]'>) {
   const locale = await getLocaleFromParams(params)
-  const category = getTagCategoryParam((await params).category)
+  const { category: categoryParam } = await params
+  const category = TAG_CATEGORY_PARAMS.find((item) => item === categoryParam)
 
   if (!category) {
     notFound()
