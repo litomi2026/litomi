@@ -20,6 +20,14 @@ export const messages = {
         loginAction: '로그인',
         adultVerificationRequired: '성인인증이 필요해요',
         anonymousAdultVerificationAction: '익명으로 성인인증하기',
+        originProtection: {
+          requiredTitle: '보안 확인이 필요해요',
+          checkingDescription: '사람인지 확인하고 있어요',
+          failedTitle: '보안 확인에 실패했어요',
+          failedDescription: '네트워크를 확인한 뒤 다시 시도해 주세요',
+          retryTitle: '보안 확인 다시 시도',
+          retryAction: '재시도',
+        },
       },
       manga: {
         loadError: '작품을 불러올 수 없어요',
@@ -207,6 +215,14 @@ export const messages = {
         loginAction: 'Log in',
         adultVerificationRequired: 'Adult verification is required',
         anonymousAdultVerificationAction: 'Verify anonymously',
+        originProtection: {
+          requiredTitle: 'Security check required',
+          checkingDescription: 'Checking that you are human',
+          failedTitle: 'Security check failed',
+          failedDescription: 'Check your network and try again',
+          retryTitle: 'Retry security check',
+          retryAction: 'Retry',
+        },
       },
       manga: {
         loadError: 'Could not load works',
@@ -395,6 +411,14 @@ export const messages = {
         loginAction: 'ログイン',
         adultVerificationRequired: '成人認証が必要です',
         anonymousAdultVerificationAction: '匿名で成人認証する',
+        originProtection: {
+          requiredTitle: 'セキュリティ確認が必要です',
+          checkingDescription: '人間であることを確認しています',
+          failedTitle: 'セキュリティ確認に失敗しました',
+          failedDescription: 'ネットワークを確認してから再試行してください',
+          retryTitle: 'セキュリティ確認を再試行',
+          retryAction: '再試行',
+        },
       },
       manga: {
         loadError: '作品を読み込めません',
@@ -581,6 +605,14 @@ export const messages = {
         loginAction: '登录',
         adultVerificationRequired: '需要成人认证',
         anonymousAdultVerificationAction: '匿名进行成人认证',
+        originProtection: {
+          requiredTitle: '需要安全验证',
+          checkingDescription: '正在确认你是真人',
+          failedTitle: '安全验证失败',
+          failedDescription: '请检查网络后重试',
+          retryTitle: '重试安全验证',
+          retryAction: '重试',
+        },
       },
       manga: {
         loadError: '无法加载作品',

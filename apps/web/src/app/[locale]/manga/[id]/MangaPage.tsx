@@ -4,7 +4,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
@@ -17,7 +17,6 @@ import MangaReader from './MangaReader'
 import usePageMetadata from './usePageMetadata'
 
 const NotFound = dynamic(() => import('./not-found'))
-const AD_UNLOCK_DELAY_MS = 300
 
 type Props = {
   id: number
@@ -30,7 +29,6 @@ export default function MangaPage({ id, initialManga }: Props) {
   const unlockT = useTranslations('MangaViewer.unlock')
   const metadataT = useTranslations('MangaViewer.metadata')
   const [hasClickedAd, setHasClickedAd] = useState(false)
-  const unlockTimeoutRef = useRef<number>(null)
   const { data: me } = useMeQuery()
   const isWaitingForAdClick = !me && !hasClickedAd
   const mangaIds = isWaitingForAdClick ? [] : [id]
@@ -40,28 +38,8 @@ export default function MangaPage({ id, initialManga }: Props) {
   const manga = prepareManga(data, initialManga)
   const metadata = prepareMetadata(manga, metadataT)
 
-  function handleAdClick() {
-    if (unlockTimeoutRef.current !== null) {
-      return
-    }
-
-    unlockTimeoutRef.current = window.setTimeout(() => {
-      unlockTimeoutRef.current = null
-      setHasClickedAd(true)
-    }, AD_UNLOCK_DELAY_MS)
-  }
-
   // NOTE: 클라이언트 측에서 메타데이터를 업데이트 해요
   usePageMetadata(metadata)
-
-  // NOTE: 컴포넌트 언마운트 시 타이머를 정리해요
-  useEffect(() => {
-    return () => {
-      if (unlockTimeoutRef.current !== null) {
-        window.clearTimeout(unlockTimeoutRef.current)
-      }
-    }
-  }, [])
 
   // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 깜빡임을 막아요.
   if (me === undefined) {
@@ -73,7 +51,7 @@ export default function MangaPage({ id, initialManga }: Props) {
       <JuicyAdsBanner
         className="h-full flex flex-col gap-3 items-center justify-center"
         layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
-        onAdClick={handleAdClick}
+        onAdClick={() => setHasClickedAd(true)}
         title={
           <div className="grid gap-0.5 text-center">
             <p className="text-zinc-300 text-sm">{unlockT('title')}</p>

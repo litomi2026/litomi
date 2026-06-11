@@ -128,9 +128,9 @@ export default async function RootLayout({ children, params }: Props) {
             <MangaTorrentModal />
           </QueryProvider>
           <NewYearToastNudge />
+          <OriginProtectionTurnstile />
         </NextIntlClientProvider>
         <ServiceWorkerRegistrar />
-        <OriginProtectionTurnstile />
         <HiyobiPing />
         {NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} />}
         <p className="h-0 overflow-hidden tracking-widest invisible">
