@@ -78,6 +78,10 @@ export const messages = {
             description:
               'Google 검색의 SafeSearch와 Family Link를 통해 자녀 계정의 검색 결과와 일부 웹 접근을 관리할 수 있어요.',
           },
+          asacpParentalGuidelines: {
+            title: 'ASACP Parental Guidelines',
+            description: '보호자가 성인 콘텐츠 접근 제한과 온라인 안전 관리에 참고할 수 있는 외부 가이드예요.',
+          },
         },
       },
       docs: {
@@ -183,6 +187,11 @@ export const messages = {
             title: 'Google SafeSearch',
             description:
               'Use Google SafeSearch and Family Link to manage search results and some web access for child accounts.',
+          },
+          asacpParentalGuidelines: {
+            title: 'ASACP Parental Guidelines',
+            description:
+              'An external guide guardians can reference for adult content access controls and online safety practices.',
           },
         },
       },
@@ -290,6 +299,10 @@ export const messages = {
             description:
               'Google検索のSafeSearchとFamily Linkを使って、子ども用アカウントの検索結果や一部のWebアクセスを管理できます。',
           },
+          asacpParentalGuidelines: {
+            title: 'ASACP Parental Guidelines',
+            description: '成人向けコンテンツへのアクセス制限とオンライン安全管理について、保護者が参考にできる外部ガイドです。',
+          },
         },
       },
       docs: {
@@ -394,6 +407,10 @@ export const messages = {
           googleSafeSearch: {
             title: 'Google SafeSearch',
             description: '可通过 Google 搜索的 SafeSearch 和 Family Link 管理儿童账号的搜索结果及部分网页访问。',
+          },
+          asacpParentalGuidelines: {
+            title: 'ASACP Parental Guidelines',
+            description: '监护人可参考的外部指南，用于了解成人内容访问限制和在线安全管理。',
           },
         },
       },
