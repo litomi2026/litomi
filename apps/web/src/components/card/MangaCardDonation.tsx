@@ -54,7 +54,7 @@ export default function MangaCardDonation() {
             <div className="flex flex-col gap-2">
               <a
                 className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
-                href="https://discord.gg/xTrbQaxpyD"
+                href="https://discord.gg/CQYjDG4NPv"
                 onClick={() => handlePromotionClick('donation-card-discord')}
                 rel="noopener"
                 target="_blank"

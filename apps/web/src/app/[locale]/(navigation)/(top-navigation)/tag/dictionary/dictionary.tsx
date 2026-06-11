@@ -2,7 +2,7 @@
 
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { formatNumber } from '@litomi/std'
-import { BookOpen, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useDeferredValue, useState } from 'react'
 
