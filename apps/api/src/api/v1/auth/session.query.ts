@@ -1,6 +1,7 @@
 import {
   type AuthCookieConfig,
   getAccessTokenCookieConfig,
+  getAdultPassCookieConfigForAdult,
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
 } from '@litomi/auth/cookie'
@@ -29,10 +30,11 @@ export async function issueAuthCookies({
   deviceLabel,
 }: IssueAuthCookiesInput): Promise<AuthCookieConfig[]> {
   const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult })
+  const adultPassCookie = getAdultPassCookieConfigForAdult(adult)
 
   if (!remember) {
     const authHintCookie = getAuthHintCookieConfig()
-    return [accessTokenCookie, authHintCookie]
+    return [accessTokenCookie, authHintCookie, adultPassCookie]
   }
 
   const issuedSession = await issuePersistentSession(userId, deviceLabel, tx)
@@ -43,7 +45,7 @@ export async function issueAuthCookies({
     maxAgeSeconds: issuedSession.maxAgeSeconds,
   }
 
-  return [accessTokenCookie, getRefreshSessionCookieConfig(options), authHintCookie]
+  return [accessTokenCookie, getRefreshSessionCookieConfig(options), authHintCookie, adultPassCookie]
 }
 
 export async function revokeCurrentSessionByTokenHash(tokenHash: string, now: Date) {

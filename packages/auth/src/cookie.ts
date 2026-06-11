@@ -31,6 +31,9 @@ type AuthCookieOptions = {
   secure: boolean
 }
 
+const ADULT_PASS_COOKIE_MAX_AGE_SECONDS = sec('30 days')
+const ADULT_PASS_COOKIE_DOMAIN = '.litomi.in'
+
 export async function getAccessTokenCookieConfig({ userId, adult }: AccessTokenClaims) {
   const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.ACCESS)
 
@@ -46,10 +49,46 @@ export async function getAccessTokenCookieConfig({ userId, adult }: AccessTokenC
   } as const
 }
 
+export function getAdultPassCookieClearConfig(): AuthCookieConfig {
+  return {
+    key: CookieKey.ADULT_PASS,
+    value: '',
+    options: {
+      domain: ADULT_PASS_COOKIE_DOMAIN,
+      expires: new Date(0),
+      httpOnly: true,
+      maxAge: 0,
+      path: '/',
+      sameSite: 'strict',
+      secure: true,
+    },
+  }
+}
+
+export function getAdultPassCookieConfig(): AuthCookieConfig {
+  return {
+    key: CookieKey.ADULT_PASS,
+    value: '1',
+    options: {
+      domain: ADULT_PASS_COOKIE_DOMAIN,
+      httpOnly: true,
+      maxAge: ADULT_PASS_COOKIE_MAX_AGE_SECONDS,
+      path: '/',
+      sameSite: 'strict',
+      secure: true,
+    },
+  }
+}
+
+export function getAdultPassCookieConfigForAdult(adult: boolean): AuthCookieConfig {
+  return adult ? getAdultPassCookieConfig() : getAdultPassCookieClearConfig()
+}
+
 export function getAuthCookieClearConfigs(): AuthCookieConfig[] {
   const expires = new Date(0)
 
   return [
+    getAdultPassCookieClearConfig(),
     {
       key: CookieKey.ACCESS_TOKEN,
       value: '',
