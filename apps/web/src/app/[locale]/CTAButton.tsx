@@ -43,7 +43,7 @@ export default function CTAButton({ className = '' }: Props) {
   return (
     <a
       className={twMerge('flex justify-center items-center gap-2 rounded', className)}
-      href="https://discord.gg/xTrbQaxpyD"
+      href="https://discord.gg/CQYjDG4NPv"
       target="_blank"
     >
       <LogoDiscord className="size-6 text-[#5865F2]" />

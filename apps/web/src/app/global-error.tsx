@@ -46,7 +46,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
             문제가 계속되면{' '}
             <a
               className="underline decoration-dotted underline-offset-4"
-              href="https://discord.gg/HRWrV6u6Hw"
+              href="https://discord.gg/7c7kSQ9Byy"
               target="_blank"
             >
               Discord
