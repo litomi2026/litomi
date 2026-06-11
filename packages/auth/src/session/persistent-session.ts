@@ -1,6 +1,7 @@
 import {
   type AuthCookieConfig,
   getAccessTokenCookieConfig,
+  getAdultPassCookieConfigForAdult,
   getAuthCookieClearConfigs,
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
@@ -274,13 +275,14 @@ async function buildRefreshSuccess({
   })
 
   const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds })
+  const adultPassCookie = getAdultPassCookieConfigForAdult(adult)
 
   return {
     ok: true,
     rotated,
     userId,
     adult,
-    cookies: [accessTokenCookie, refreshTokenCookie, authHintCookie],
+    cookies: [accessTokenCookie, refreshTokenCookie, authHintCookie, adultPassCookie],
   }
 }
 

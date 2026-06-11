@@ -1,4 +1,8 @@
-import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@litomi/auth/cookie'
+import {
+  getAccessTokenCookieConfig,
+  getAdultPassCookieConfigForAdult,
+  getAuthHintCookieConfig,
+} from '@litomi/auth/cookie'
 import { hashSessionToken } from '@litomi/auth/session'
 import { db } from '@litomi/db/app'
 import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/app/auth'
@@ -28,9 +32,11 @@ export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: Rei
   const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult })
   const authHintCookieMaxAge = hasPersistentSession && activeSession ? activeSession.maxAgeSeconds : null
   const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: authHintCookieMaxAge })
+  const adultPassCookie = getAdultPassCookieConfigForAdult(adult)
 
   setCookie(c, accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
   setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
+  setCookie(c, adultPassCookie.key, adultPassCookie.value, adultPassCookie.options)
 }
 
 function getRemainingSeconds(expiresAt: Date, now: Date) {
