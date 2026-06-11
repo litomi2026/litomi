@@ -20,6 +20,10 @@ const guardianGuides = [
     href: 'https://support.google.com/websearch/answer/510',
     key: 'googleSafeSearch',
   },
+  {
+    href: 'https://www.asacp.org/index.html?content=parental_guidelines',
+    key: 'asacpParentalGuidelines',
+  },
 ] as const
 
 const policyLinks = [

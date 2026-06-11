@@ -4,6 +4,7 @@ import { TURNSTILE_ORIGIN_PROTECTION_ACTION } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -22,6 +23,7 @@ export default function OriginProtectionTurnstile() {
   const [verificationState, setVerificationState] = useState<VerificationState>('hidden')
   const turnstileRef = useRef<TurnstileInstance>(null)
   const siteverifyInFlightRef = useRef(false)
+  const t = useTranslations('Common.guard.originProtection')
   const verificationRequired = verificationState !== 'hidden'
 
   useEffect(() => {
@@ -110,20 +112,20 @@ export default function OriginProtectionTurnstile() {
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-sm leading-5 font-semibold">
-              {verificationState === 'failed' ? '보안 확인에 실패했어요' : '보안 확인이 필요해요'}
+              {verificationState === 'failed' ? t('failedTitle') : t('requiredTitle')}
             </p>
             <p className="mt-0.5 text-xs leading-5 text-zinc-400">
-              {verificationState === 'failed' ? '네트워크를 확인한 뒤 다시 시도해 주세요' : '사람인지 확인하고 있어요'}
+              {verificationState === 'failed' ? t('failedDescription') : t('checkingDescription')}
             </p>
           </div>
           <button
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-zinc-600 px-2.5 text-xs font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-700 focus-visible:ring-2 active:border-zinc-600 active:bg-zinc-800 focus-visible:ring-brand/60 focus-visible:outline-none"
             onClick={handleRetry}
-            title="보안 확인 다시 시도"
+            title={t('retryTitle')}
             type="button"
           >
             <RefreshCw className="size-3.5" />
-            재시도
+            {t('retryAction')}
           </button>
         </div>
       )}
