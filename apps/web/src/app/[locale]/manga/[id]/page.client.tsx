@@ -8,9 +8,11 @@ import { useState } from 'react'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
+import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import MangaReader from './MangaReader'
@@ -26,13 +28,14 @@ type Props = {
 type Translator = ReturnType<typeof useTranslations>
 
 export default function MangaPage({ id, initialManga }: Props) {
-  const unlockT = useTranslations('MangaViewer.unlock')
-  const metadataT = useTranslations('MangaViewer.metadata')
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const { data: me } = useMeQuery()
   const isWaitingForAdClick = !me && !hasClickedAd
   const mangaIds = isWaitingForAdClick ? [] : [id]
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds })
+  const { mangaMap, errorMap } = useMangaListCachedQuery({ mangaIds })
+  const unlockT = useTranslations('MangaViewer.unlock')
+  const metadataT = useTranslations('MangaViewer.metadata')
+  const guardT = useTranslations('Common.guard')
 
   const data = mangaMap.get(id) ?? (!isWaitingForAdClick && !initialManga ? createLoadingManga(id) : undefined)
   const manga = prepareManga(data, initialManga)
@@ -63,6 +66,14 @@ export default function MangaPage({ id, initialManga }: Props) {
           </div>
         }
       />
+    )
+  }
+
+  if (isAdultVerificationRequiredError(errorMap.get(id))) {
+    return (
+      <div className="flex min-h-dvh">
+        <AdultVerificationGate description={guardT('adultVerificationDescription')} />
+      </div>
     )
   }
 
