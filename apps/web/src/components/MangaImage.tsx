@@ -43,9 +43,7 @@ export default function MangaImage({
 }: Props) {
   const [pictureURLIndices, setPictureURLIndices] = useState(() => Array(pictures.length).fill(0))
   const [imageURLIndex, setImageURLIndex] = useState(0)
-
   const pictureURLs = pictures.map(({ src, variant }) => resolveImageURLs({ imageIndex, variant, mangaId, src }))
-  const imageURLs = resolveImageURLs({ imageIndex, variant, mangaId, src })
 
   const displayedPictures = pictures.map(({ type, sizes, media }, index) => ({
     type,
@@ -54,8 +52,9 @@ export default function MangaImage({
     index,
     srcSet: pictureURLs[index][pictureURLIndices[index]],
   }))
-  const displayedURL = imageURLs[imageURLIndex]
 
+  const imageURLs = resolveImageURLs({ imageIndex, variant, mangaId, src })
+  const displayedURL = imageURLs[imageURLIndex]
   const activePicture = displayedPictures.find(({ media }) => !media || window.matchMedia(media).matches)
   const activeURL = activePicture ? activePicture.srcSet : displayedURL
   const crossOrigin = isLitomiImageProxyURL(activeURL) ? 'anonymous' : undefined
