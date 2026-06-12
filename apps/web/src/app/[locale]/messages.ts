@@ -19,6 +19,7 @@ export const messages = {
         loginRequired: '로그인이 필요해요',
         loginAction: '로그인',
         adultVerificationRequired: '성인인증이 필요해요',
+        adultVerificationDescription: '익명 성인인증 후 이용할 수 있어요',
         anonymousAdultVerificationAction: '익명으로 성인인증하기',
         originProtection: {
           requiredTitle: '보안 확인이 필요해요',
@@ -214,6 +215,7 @@ export const messages = {
         loginRequired: 'Log in to continue',
         loginAction: 'Log in',
         adultVerificationRequired: 'Adult verification is required',
+        adultVerificationDescription: 'You can continue after anonymous adult verification.',
         anonymousAdultVerificationAction: 'Verify anonymously',
         originProtection: {
           requiredTitle: 'Security check required',
@@ -410,6 +412,7 @@ export const messages = {
         loginRequired: 'ログインが必要です',
         loginAction: 'ログイン',
         adultVerificationRequired: '成人認証が必要です',
+        adultVerificationDescription: '匿名の成人認証後に利用できます',
         anonymousAdultVerificationAction: '匿名で成人認証する',
         originProtection: {
           requiredTitle: 'セキュリティ確認が必要です',
@@ -604,6 +607,7 @@ export const messages = {
         loginRequired: '需要登录',
         loginAction: '登录',
         adultVerificationRequired: '需要成人认证',
+        adultVerificationDescription: '完成匿名成人认证后即可继续使用',
         anonymousAdultVerificationAction: '匿名进行成人认证',
         originProtection: {
           requiredTitle: '需要安全验证',

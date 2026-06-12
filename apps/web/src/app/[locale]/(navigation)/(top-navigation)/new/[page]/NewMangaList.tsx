@@ -4,11 +4,13 @@ import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 
 import { useTranslations } from 'next-intl'
 
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import { insertNativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import useMangaCensorship from '@/hook/useMangaCensorship'
+import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { useNewMangaQuery } from './useNewMangaQuery'
@@ -22,6 +24,7 @@ export default function NewMangaList({ nativeGridSponsor, page }: Props) {
   const { data: mangas, isLoading, error } = useNewMangaQuery({ page })
   const { isVisible } = useMangaCensorship()
   const t = useTranslations('Common.manga')
+  const guardT = useTranslations('Common.guard')
   const visibleMangas = mangas?.filter(isVisible) ?? []
 
   const mangaItems = visibleMangas.map((manga, mangaIndex) => ({
@@ -44,6 +47,10 @@ export default function NewMangaList({ nativeGridSponsor, page }: Props) {
         <MangaCardSkeleton />
       </div>
     )
+  }
+
+  if (isAdultVerificationRequiredError(error)) {
+    return <AdultVerificationGate description={guardT('adultVerificationDescription')} />
   }
 
   if (error || !mangas || mangas.length === 0) {

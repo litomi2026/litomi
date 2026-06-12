@@ -3,7 +3,6 @@
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 
 import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
-import { isProblemType, problemCode } from '@litomi/http/problem-details'
 import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -24,7 +23,7 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
@@ -100,14 +99,6 @@ export default function LibraryItemsClient({ libraryId }: Props) {
         view={view}
       />
     </>
-  )
-}
-
-function isAdultVerificationRequiredError(error: unknown): boolean {
-  return (
-    error instanceof ProblemDetailsError &&
-    error.status === 403 &&
-    isProblemType(error.type, problemCode.ADULT_VERIFICATION_REQUIRED)
   )
 }
 
