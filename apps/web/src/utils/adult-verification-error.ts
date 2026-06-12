@@ -1,8 +1,12 @@
 import { isProblemType, problemCode } from '@litomi/http/problem-details'
 
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import { HTTPResponseError, ProblemDetailsError } from '@/utils/fetch-response'
 
 export function isAdultVerificationRequiredError(error: unknown): boolean {
+  if (error instanceof HTTPResponseError) {
+    return error.status === 403
+  }
+
   return (
     error instanceof ProblemDetailsError &&
     error.status === 403 &&
