@@ -18,7 +18,7 @@ import { toAbsoluteUrl } from '@/utils/url'
 
 import { getManga } from './common.server'
 import Forbidden from './Forbidden'
-import MangaPage from './MangaPage'
+import MangaPage from './page.client'
 import { mangaSchema } from './schema'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/manga/[id]'>): Promise<Metadata> {

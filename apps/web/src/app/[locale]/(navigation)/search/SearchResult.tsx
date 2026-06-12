@@ -14,6 +14,7 @@ import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid
 
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import { useSearchQuery } from '@/app/[locale]/(navigation)/search/useSearchQuery'
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
@@ -23,6 +24,7 @@ import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/compo
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaCensorship from '@/hook/useMangaCensorship'
+import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -78,6 +80,7 @@ export default function SearchResult({ header, nativeGridSponsor, searchParams }
 
 function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: ContentProps) {
   const t = useTranslations('Search')
+  const guardT = useTranslations('Common.guard')
   const params = new URLSearchParams(searchParams)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
@@ -185,6 +188,14 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
   }
 
   if (error) {
+    if (isAdultVerificationRequiredError(error)) {
+      return (
+        <SearchSpacer>
+          <AdultVerificationGate description={guardT('adultVerificationDescription')} />
+        </SearchSpacer>
+      )
+    }
+
     if (error instanceof ProblemDetailsError && error.status === 400) {
       return (
         <SearchSpacer>

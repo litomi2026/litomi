@@ -143,10 +143,15 @@ export default function useMangaListCachedQuery({
   })
 
   const mangaMap = new Map<number, Manga>()
+  const errorMap = new Map<number, Error>()
 
   for (let i = 0; i < uniqueMangaIds.length; i++) {
     const id = uniqueMangaIds[i]
     const query = queries[i]
+
+    if (query.error) {
+      errorMap.set(id, query.error)
+    }
 
     const manga = query.data ?? catalogMangaMap.get(id)
 
@@ -159,6 +164,7 @@ export default function useMangaListCachedQuery({
   const isFetching = queries.some((query) => query.isFetching)
 
   return {
+    errorMap,
     mangaMap,
     isLoading,
     isFetching,
