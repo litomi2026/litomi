@@ -94,17 +94,8 @@ function getRetryAfterSeconds(response?: Response): number | undefined {
   return diffSeconds > 0 ? diffSeconds : undefined
 }
 
-function isJsonContentType(contentType: string | null | undefined): boolean {
-  return contentType?.toLowerCase().includes('json') === true
-}
-
-// NOTE: Cloudflare WAF 응답은 application/json 형태만 허용해서 Problem Details body 형태를 검증 후 처리해요.
-function isProblemDetailsReadableContentType(contentType: string | null | undefined): boolean {
-  return isProblemDetailsContentType(contentType) || isJsonContentType(contentType)
-}
-
 async function readProblemDetails(response: Response): Promise<ProblemDetails | null> {
-  if (!isProblemDetailsReadableContentType(response.headers.get('Content-Type'))) {
+  if (!isProblemDetailsContentType(response.headers.get('Content-Type'))) {
     return null
   }
 
