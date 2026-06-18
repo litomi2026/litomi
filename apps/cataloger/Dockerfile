@@ -1,33 +1,22 @@
-# Build stage
-FROM oven/bun:1.3 AS builder
-
-ENV NODE_ENV=production
+# Stage 1: Pruner
+FROM oven/bun:1.3 AS pruner
 WORKDIR /app
 
-COPY bun.lock package.json ./
-COPY apps/api/package.json ./apps/api/package.json
-COPY apps/cataloger/package.json ./apps/cataloger/package.json
-COPY apps/edge-proxy/package.json ./apps/edge-proxy/package.json
-COPY apps/mobile/package.json ./apps/mobile/package.json
-COPY apps/notifier/package.json ./apps/notifier/package.json
-COPY apps/recommender/package.json ./apps/recommender/package.json
-COPY apps/web/package.json ./apps/web/package.json
-COPY packages ./packages
+COPY . .
+RUN bunx turbo prune @litomi/cataloger --docker
 
-RUN bun install --filter=@litomi/cataloger --ignore-scripts --production --silent --frozen-lockfile
+# Stage 2: Builder
+FROM oven/bun:1.3 AS builder
+WORKDIR /app
 
-COPY tsconfig.json tsconfig.base.json turbo.json ./
+ENV NODE_ENV=production
+
+COPY --from=pruner /app/out/json/ .
+RUN bun install --frozen-lockfile --production --silent --ignore-scripts
+
+COPY --from=pruner /app/out/full/ .
 COPY types ./types
-COPY apps/cataloger ./apps/cataloger
-
-# Build the application
-RUN bun build --compile \
-  --conditions=react-server \
-  --minify \
-  --sourcemap \
-  --target=bun \
-  ./apps/cataloger/src/index.ts \
-  --outfile cataloger
+RUN bunx turbo run build --filter=@litomi/cataloger
 
 # Runtime stage
 FROM gcr.io/distroless/base-nossl-debian12:nonroot
@@ -36,7 +25,7 @@ ENV NODE_ENV=production
 WORKDIR /home
 
 # Copy the compiled binary
-COPY --chown=nonroot:nonroot --from=builder /app/cataloger ./
+COPY --chown=nonroot:nonroot --from=builder /app/apps/cataloger/dist/cataloger ./
 
 # Set the entrypoint
 ENTRYPOINT [ "./cataloger" ]
