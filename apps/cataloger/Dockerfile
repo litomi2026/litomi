@@ -15,17 +15,16 @@ COPY --from=pruner /app/out/json/ .
 RUN bun install --frozen-lockfile --production --silent --ignore-scripts
 
 COPY --from=pruner /app/out/full/ .
+COPY turbo.json tsconfig.json tsconfig.base.json ./
 COPY types ./types
 RUN bunx turbo run build --filter=@litomi/cataloger
 
-# Runtime stage
+# Stage 3: Runtime
 FROM gcr.io/distroless/base-nossl-debian12:nonroot
 
 ENV NODE_ENV=production
 WORKDIR /home
 
-# Copy the compiled binary
 COPY --chown=nonroot:nonroot --from=builder /app/apps/cataloger/dist/cataloger ./
 
-# Set the entrypoint
 ENTRYPOINT [ "./cataloger" ]

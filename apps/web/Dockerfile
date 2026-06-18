@@ -15,6 +15,7 @@ COPY --from=pruner /app/out/json/ .
 RUN bun install --frozen-lockfile --no-save --silent
 
 COPY --from=pruner /app/out/full/ .
+COPY turbo.json tsconfig.json tsconfig.base.json ./
 COPY types ./types
 COPY tools ./tools
 
@@ -60,7 +61,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=fals
   && find apps/web/.next/static -type f -name '*.js' -exec sed -i -E 's@//# sourceMappingURL=.*$@@g' {} + \
   && find apps/web/.next/static -type f -name '*.css' -exec sed -i -E 's@/\*#[[:space:]]*sourceMappingURL=.*\*/@@g' {} +
 
-# Runtime stage
+# Stage 3: Runtime
 FROM oven/bun:1.3-alpine AS runner
 WORKDIR /app
 
