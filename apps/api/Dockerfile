@@ -16,15 +16,7 @@ RUN bun install --frozen-lockfile --production --silent --ignore-scripts
 
 COPY --from=pruner /app/out/full/ .
 COPY types ./types
-
-# https://bun.com/docs/bundler/executables#deploying-to-production
-RUN bun build --compile \
-  --conditions=react-server \
-  --minify \
-  --sourcemap \
-  ./apps/api/src/server.ts \
-  --target=bun \
-  --outfile litomi-api
+RUN bunx turbo run build --filter=@litomi/api
 
 # Runtime stage
 FROM gcr.io/distroless/base-nossl-debian12:nonroot
@@ -32,6 +24,6 @@ FROM gcr.io/distroless/base-nossl-debian12:nonroot
 ENV NODE_ENV=production
 WORKDIR /home
 
-COPY --chown=nonroot:nonroot --from=builder /app/litomi-api ./
+COPY --chown=nonroot:nonroot --from=builder /app/apps/api/dist/litomi-api ./
 
 ENTRYPOINT [ "./litomi-api" ]

@@ -16,14 +16,7 @@ RUN bun install --frozen-lockfile --production --silent --ignore-scripts
 
 COPY --from=pruner /app/out/full/ .
 COPY types ./types
-
-RUN bun build --compile \
-  --conditions=react-server \
-  --minify \
-  --sourcemap \
-  ./apps/recommender/src/index.ts \
-  --target=bun \
-  --outfile recommender
+RUN bunx turbo run build --filter=@litomi/recommender
 
 # Runtime stage
 FROM gcr.io/distroless/base-nossl-debian12:nonroot
@@ -31,6 +24,6 @@ FROM gcr.io/distroless/base-nossl-debian12:nonroot
 ENV NODE_ENV=production
 WORKDIR /home
 
-COPY --chown=nonroot:nonroot --from=builder /app/recommender ./
+COPY --chown=nonroot:nonroot --from=builder /app/apps/recommender/dist/recommender ./
 
 ENTRYPOINT [ "./recommender" ]
