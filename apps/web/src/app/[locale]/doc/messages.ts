@@ -173,7 +173,7 @@ export const messages = {
             title: '제 2 조 (용어의 정의)',
             items: {
               user: '<term>"이용자"</term>는 본 약관에 따라 본 서비스를 이용하는 개인 또는 단체를 말합니다.',
-              service: '<term>"서비스"</term>는 litomi.in 도메인에서 제공되는 온라인 서비스 및 부가 기능을 말합니다.',
+              service: '<term>"서비스"</term>는 litomi.cc 도메인에서 제공되는 온라인 서비스 및 부가 기능을 말합니다.',
               advertising:
                 '<term>"광고"</term>는 본 서비스에 노출되는 광고 및 광고 관련 UI(스크립트, 배너, 네이티브 광고 등)를 말합니다.',
               libo: '<term>"리보"</term>는 본 서비스 내에서 적립·사용할 수 있는 포인트를 말합니다. 리보는 현금으로 환전되거나 제3자에게 양도될 수 없으며, 적립·사용 기준 및 한도는 서비스 내 안내에 따르고 운영상 변경될 수 있습니다.',
@@ -340,7 +340,7 @@ export const messages = {
             workURL: '저작물 URL (선택)',
             infringingSection: '침해물 식별',
             infringingReferences: '리토미 작품 URL 또는 작품 ID',
-            infringingPlaceholder: '예) https://litomi.in/manga/123\n123\nhttps://litomi.in/manga/456',
+            infringingPlaceholder: '예) https://litomi.cc/manga/123\n123\nhttps://litomi.cc/manga/456',
             infringingHelp:
               '작품 URL에 /manga/숫자 가 포함돼 있으면 자동으로 인식해요. 여러 개면 줄바꿈으로 적어 주세요.',
             statementsSection: '진술',
@@ -583,7 +583,7 @@ export const messages = {
             items: {
               user: '<term>"User"</term> means an individual or organization that uses the service under these terms.',
               service:
-                '<term>"Service"</term> means the online service and related features provided through the litomi.in domain.',
+                '<term>"Service"</term> means the online service and related features provided through the litomi.cc domain.',
               advertising:
                 '<term>"Advertising"</term> means advertisements and advertising-related UI shown in the service, including scripts, banners, and native ads.',
               libo: '<term>"Libo"</term> means points that can be earned and used within the service. Libo cannot be exchanged for cash or transferred to third parties, and earning/use standards and limits follow service notices and may change for operational reasons.',
@@ -749,7 +749,7 @@ export const messages = {
             workURL: 'URL (optional)',
             infringingSection: 'Identify the infringing material on Litomi',
             infringingReferences: 'Litomi URLs or Manga IDs',
-            infringingPlaceholder: 'e.g.\nhttps://litomi.in/manga/123\n123\nhttps://litomi.in/manga/456',
+            infringingPlaceholder: 'e.g.\nhttps://litomi.cc/manga/123\n123\nhttps://litomi.cc/manga/456',
             infringingHelp:
               'If your URL contains /manga/123, it will be detected automatically. Use new lines for multiple items.',
             statementsSection: 'Statements',
@@ -991,7 +991,7 @@ export const messages = {
             items: {
               user: '<term>「利用者」</term>とは、本規約に従って本サービスを利用する個人または団体をいいます。',
               service:
-                '<term>「サービス」</term>とは、litomi.in ドメインで提供されるオンラインサービスおよび付加機能をいいます。',
+                '<term>「サービス」</term>とは、litomi.cc ドメインで提供されるオンラインサービスおよび付加機能をいいます。',
               advertising:
                 '<term>「広告」</term>とは、本サービスに表示される広告および広告関連 UI (スクリプト、バナー、ネイティブ広告など) をいいます。',
               libo: '<term>「リボ」</term>とは、本サービス内で獲得・使用できるポイントをいいます。リボは現金に換金されたり第三者に譲渡されたりすることはできず、獲得・使用基準および限度はサービス内の案内に従い、運営上変更される場合があります。',
@@ -1159,7 +1159,7 @@ export const messages = {
             workURL: '著作物 URL (任意)',
             infringingSection: '侵害物の識別',
             infringingReferences: 'リトミ作品 URL または作品 ID',
-            infringingPlaceholder: '例)\nhttps://litomi.in/manga/123\n123\nhttps://litomi.in/manga/456',
+            infringingPlaceholder: '例)\nhttps://litomi.cc/manga/123\n123\nhttps://litomi.cc/manga/456',
             infringingHelp:
               '作品 URL に /manga/数字 が含まれている場合は自動で認識します。複数ある場合は改行で入力してください。',
             statementsSection: '陳述',
@@ -1391,7 +1391,7 @@ export const messages = {
             title: '第 2 条（术语定义）',
             items: {
               user: '<term>“用户”</term>是指根据本条款使用本服务的个人或组织。',
-              service: '<term>“服务”</term>是指通过 litomi.in 域名提供的在线服务及附加功能。',
+              service: '<term>“服务”</term>是指通过 litomi.cc 域名提供的在线服务及附加功能。',
               advertising: '<term>“广告”</term>是指本服务中展示的广告及广告相关 UI（脚本、横幅、原生广告等）。',
               libo: '<term>“利波”</term>是指可在本服务内获取和使用的积分。利波不能兑换现金或转让给第三方，获取/使用标准和限额以服务内说明为准，并可能因运营需要变更。',
             },
@@ -1548,7 +1548,7 @@ export const messages = {
             workURL: '作品 URL（可选）',
             infringingSection: '识别侵权内容',
             infringingReferences: '莉托米作品 URL 或作品 ID',
-            infringingPlaceholder: '例）\nhttps://litomi.in/manga/123\n123\nhttps://litomi.in/manga/456',
+            infringingPlaceholder: '例）\nhttps://litomi.cc/manga/123\n123\nhttps://litomi.cc/manga/456',
             infringingHelp: '如果作品 URL 中包含 /manga/数字，会自动识别。多个项目请换行填写。',
             statementsSection: '声明',
             goodFaith: '我基于善意相信该内容构成侵权，并提交此通知。',

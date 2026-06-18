@@ -63,7 +63,7 @@ describe('profile-edit-form', () => {
     document.body.append(form)
 
     const problem: ProblemDetails = {
-      type: 'https://litomi.in/problems/invalid-input',
+      type: 'https://litomi.cc/problems/invalid-input',
       title: '잘못된 요청이에요',
       status: 400,
       detail: '입력을 확인해 주세요',

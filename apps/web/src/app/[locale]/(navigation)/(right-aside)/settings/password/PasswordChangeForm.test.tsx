@@ -112,7 +112,7 @@ describe('PasswordChangeForm', () => {
       response: () =>
         jsonResponse(
           {
-            type: 'https://litomi.in/problems/invalid-input',
+            type: 'https://litomi.cc/problems/invalid-input',
             title: '잘못된 요청이에요',
             status: 400,
             detail: '입력을 확인해 주세요',
@@ -149,7 +149,7 @@ describe('PasswordChangeForm', () => {
       response: () =>
         jsonResponse(
           {
-            type: 'https://litomi.in/problems/bad-request',
+            type: 'https://litomi.cc/problems/bad-request',
             title: '잘못된 요청이에요',
             status: 400,
             detail: '현재 인증 정보를 확인해 주세요',
@@ -244,7 +244,7 @@ describe('PasswordChangeForm', () => {
       response: () =>
         jsonResponse(
           {
-            type: 'https://litomi.in/problems/unauthorized',
+            type: 'https://litomi.cc/problems/unauthorized',
             title: '로그인이 필요해요',
             status: 401,
             detail: '로그인 정보가 없거나 만료됐어요',

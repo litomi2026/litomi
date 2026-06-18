@@ -1,12 +1,12 @@
 # Litomi Mobile
 
-`apps/mobile/`은 `https://litomi.in`을 직접 여는 최소 Capacitor 앱입니다.
+`apps/mobile/`은 `https://litomi.cc`을 직접 여는 최소 Capacitor 앱입니다.
 
 이 디렉터리는 로컬 웹앱을 따로 구현하는 공간이 아니라, 모바일 셸과 네이티브 빌드 설정을 관리하는 용도입니다.
 
 ## 현재 구조
 
-- 앱 시작 시 Capacitor가 `https://litomi.in`을 직접 로드합니다.
+- 앱 시작 시 Capacitor가 `https://litomi.cc`을 직접 로드합니다.
 - 로컬 `web/` 폴더는 `webDir` 요구사항을 맞추기 위한 최소 placeholder만 가집니다.
 - Android/iOS 플랫폼 디렉터리 안에는 Capacitor가 생성한 파일이 많고, 우리가 직접 관리하는 파일은 일부 설정 파일뿐입니다.
 
