@@ -2,7 +2,7 @@ name: Database Backup
 
 on:
   schedule:
-    - cron: '0 21 */2 * *'
+    - cron: '0 21 * * *'
   workflow_dispatch:
 
 permissions:
@@ -10,35 +10,44 @@ permissions:
 
 jobs:
   backup:
+    name: Backup PostgreSQL Database
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      BACKUP_PREFIX: litomi
+      BACKUP_DIR: backups
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "date=$(date +%Y%m%d-%H%M)" >> "$GITHUB_OUTPUT"
 
-      - name: Generate date
-        id: date
-        run: echo "date=$(date +%Y%m%d-%H%M)" >> $GITHUB_OUTPUT
-
-      - name: Create backup using Docker
+      - name: Create and encrypt backup
         env:
-          POSTGRES_URL_DIRECT: ${{ secrets.POSTGRES_URL_DIRECT }}
-          DATE: ${{ steps.date.outputs.date }}
+          APP_POSTGRES_URL: ${{ secrets.APP_POSTGRES_URL }}
+          APP_POSTGRES_CERTIFICATE: ${{ secrets.APP_POSTGRES_CERTIFICATE }}
           BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
-          BACKUP_PREFIX: 'litomi'
-          BACKUP_DIR: 'backups'
+          DATE: ${{ steps.timestamp.outputs.date }}
         run: |
+          # 1. Prepare environment
           FILENAME="${BACKUP_PREFIX}-${DATE}"
           DUMP_FILE="${BACKUP_DIR}/${FILENAME}.dump"
           ENCRYPTED_FILE="${BACKUP_DIR}/${FILENAME}.dump.gpg"
-          mkdir -p "${BACKUP_DIR}"
+          CERT_FILE="${BACKUP_DIR}/db-cert.crt"
 
-          # Create compressed backup using PostgreSQL 17 Docker image
+          mkdir -p "${BACKUP_DIR}"
+          echo "$APP_POSTGRES_CERTIFICATE" > "${CERT_FILE}"
+
+          # 2. Dump database using PostgreSQL 17 Docker image
+          echo "Starting pg_dump..."
           docker run --rm \
             -v "$(pwd)/${BACKUP_DIR}:/backups" \
-            -e POSTGRES_URL_DIRECT="$POSTGRES_URL_DIRECT" \
+            -e APP_POSTGRES_URL="$APP_POSTGRES_URL" \
+            -e PGSSLMODE="verify-full" \
+            -e PGSSLROOTCERT="/backups/db-cert.crt" \
             postgres:17-alpine \
-            sh -c "pg_dump \"\$POSTGRES_URL_DIRECT\" \
+            sh -c "pg_dump \"\$APP_POSTGRES_URL\" \
               --no-owner \
               --no-privileges \
               --no-comments \
@@ -46,28 +55,32 @@ jobs:
               --compress=9 \
               --file=\"/backups/${FILENAME}.dump\""
 
-          # Encrypt the backup using GPG with symmetric encryption
+          # 3. Encrypt the backup with extreme GPG settings
+          echo "Encrypting backup..."
           gpg --batch --yes \
-            --passphrase="$BACKUP_ENCRYPTION_KEY" \
-            --cipher-algo AES256 \
+            --passphrase "$BACKUP_ENCRYPTION_KEY" \
             --symmetric \
+            --cipher-algo AES256 \
+            --s2k-mode 3 \
+            --s2k-count 65011712 \
+            --s2k-digest-algo SHA512 \
             --output "${ENCRYPTED_FILE}" \
             "${DUMP_FILE}"
 
-          rm "${DUMP_FILE}"
+          # 4. Cleanup unencrypted dump and cert immediately to prevent leaks
+          rm -f "${DUMP_FILE}" "${CERT_FILE}"
 
-          # Create checksum with just the filename
-          (cd "${BACKUP_DIR}" && sha256sum "$(basename ${ENCRYPTED_FILE})" > "$(basename ${ENCRYPTED_FILE}).sha256")
+          # 5. Generate checksum for integrity verification
+          echo "Generating checksum..."
+          cd "${BACKUP_DIR}" && sha256sum "$(basename "${ENCRYPTED_FILE}")" > "$(basename "${ENCRYPTED_FILE}").sha256"
 
-          # Display backup info
-          ls -lh "${BACKUP_DIR}/"
+          # 6. Display artifacts size
+          ls -lh
 
-      - name: Upload to GitHub Artifacts
+      - name: Upload backup to GitHub Artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.BACKUP_PREFIX }}-backup-${{ steps.date.outputs.date }}
+          name: ${{ env.BACKUP_PREFIX }}-backup-${{ steps.timestamp.outputs.date }}
           path: ${{ env.BACKUP_DIR }}/
-          retention-days: 30
-        env:
-          BACKUP_PREFIX: 'litomi'
-          BACKUP_DIR: 'backups'
+          retention-days: 7
+          if-no-files-found: error
