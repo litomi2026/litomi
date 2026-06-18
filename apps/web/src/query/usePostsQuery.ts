@@ -33,8 +33,7 @@ export default function usePostInfiniteQuery({ filter, mangaId, username }: Post
       }
 
       const url = withQuery('/api/v1/post', searchParams)
-      const credentials = filter === PostFilter.FOLLOWING ? 'same-origin' : 'omit'
-      const { data } = await fetchAPIData<GETV1PostResponse>(url, { credentials })
+      const { data } = await fetchAPIData<GETV1PostResponse>(url)
       return data
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,

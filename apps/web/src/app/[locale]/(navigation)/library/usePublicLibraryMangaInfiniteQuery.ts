@@ -15,7 +15,7 @@ export async function fetchPublicLibraryMangas({ cursor, locale }: { cursor: str
   }
 
   const url = withQuery('/api/v1/library/manga', searchParams)
-  const { data } = await fetchAPIData<GETV1LibraryMangaResponse>(url, { credentials: 'omit' })
+  const { data } = await fetchAPIData<GETV1LibraryMangaResponse>(url)
   return data
 }
 

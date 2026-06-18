@@ -3,9 +3,6 @@ name: Kubernetes Image Delivery
 on:
   push:
     branches: [main]
-    # Skip k8s-only changes to avoid rebuilding images for manifest-only commits.
-    paths-ignore:
-      - 'k8s/**'
   workflow_dispatch:
 
 permissions:
@@ -26,7 +23,6 @@ jobs:
     outputs:
       digest: ${{ steps.build_web_image.outputs.digest }}
     env:
-      OVERLAY_DIR: k8s/apps/litomi/overlays/prod
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
     steps:
       - name: Checkout repository
@@ -37,40 +33,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          public_env_file="${OVERLAY_DIR}/public.env.kv"
-          kustomization_file="${OVERLAY_DIR}/kustomization.yaml"
+          public_env_file="apps/web/public.env"
 
           if [ ! -f "$public_env_file" ]; then
-            echo "public.env.kv not found: $public_env_file" >&2
+            echo "public.env not found: $public_env_file" >&2
             exit 1
           fi
-
-          if [ ! -f "$kustomization_file" ]; then
-            echo "kustomization.yaml not found: $kustomization_file" >&2
-            exit 1
-          fi
-
-          extract_common_env() {
-            local key="$1"
-            local value=""
-
-            while IFS= read -r line; do
-              if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*${key}= ]]; then
-                value="${line#*=}"
-                break
-              fi
-            done < "$kustomization_file"
-
-            if [ -z "$value" ]; then
-              echo "$key literal not found in $kustomization_file" >&2
-              exit 1
-            fi
-
-            printf '%s' "$value"
-          }
-
-          app_origin="$(extract_common_env APP_ORIGIN)"
-          vapid_public_key="$(extract_common_env VAPID_PUBLIC_KEY)"
 
           tmp="$(mktemp)"
           while IFS= read -r line; do
@@ -79,13 +47,8 @@ jobs:
             fi
 
             if [[ ! "$line" =~ ^NEXT_PUBLIC_[A-Z0-9_]+=.*$ ]]; then
-              echo "public.env.kv must contain only NEXT_PUBLIC_* assignments, blank lines, or comments." >&2
+              echo "public.env must contain only NEXT_PUBLIC_* assignments, blank lines, or comments." >&2
               echo "$line" >&2
-              exit 1
-            fi
-
-            if [[ "$line" == NEXT_PUBLIC_APP_ORIGIN=* || "$line" == NEXT_PUBLIC_VAPID_PUBLIC_KEY=* ]]; then
-              echo "${line%%=*} is derived from kustomization.yaml and must not be set in public.env.kv." >&2
               exit 1
             fi
 
@@ -98,8 +61,6 @@ jobs:
           fi
 
           echo "build_args<<EOF" >> "$GITHUB_OUTPUT"
-          echo "APP_ORIGIN=$app_origin" >> "$GITHUB_OUTPUT"
-          echo "VAPID_PUBLIC_KEY=$vapid_public_key" >> "$GITHUB_OUTPUT"
           cat "$tmp" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
@@ -331,63 +292,34 @@ jobs:
           fetch-depth: 0
           ref: main
 
+      - name: Install Kustomize
+        shell: bash
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+
       - name: Update litomi-ops production image digests
         shell: bash
         run: |
           set -euo pipefail
 
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
+          if [[ ! "${IMAGE_WEB_DIGEST}" == sha256:* ]]; then
+            echo "Invalid digest for ${IMAGE_WEB}: ${IMAGE_WEB_DIGEST}" >&2
+            exit 1
+          fi
 
-          def update_image_digest(path: Path, image_name: str, digest: str) -> None:
-              if not digest.startswith("sha256:"):
-                  raise SystemExit(f"Invalid digest for {image_name}: {digest}")
+          if [[ ! "${IMAGE_API_DIGEST}" == sha256:* ]]; then
+            echo "Invalid digest for ${IMAGE_API}: ${IMAGE_API_DIGEST}" >&2
+            exit 1
+          fi
 
-              lines = path.read_text().splitlines(keepends=True)
-              start = next((index for index, line in enumerate(lines) if line.strip() == f"- name: {image_name}"), None)
-              if start is None:
-                  raise SystemExit(f"Failed to find image entry for {image_name} in {path}")
+          cd "${OPS_PATH}/$(dirname "${OPS_WEB_OVERLAY_FILE}")"
+          kustomize edit set image "${IMAGE_WEB}=${IMAGE_WEB}@${IMAGE_WEB_DIGEST}"
+          cd - > /dev/null
 
-              child_indent = lines[start].split("-", 1)[0] + "  "
-              end = next(
-                  (index for index in range(start + 1, len(lines)) if lines[index].strip().startswith("- name: ")),
-                  len(lines),
-              )
-
-              for index in range(start + 1, end):
-                  if lines[index].lstrip().startswith(("digest:", "newTag:")):
-                      lines[index] = f"{child_indent}digest: {digest}\n"
-                      path.write_text("".join(lines))
-                      return
-
-              insert_at = next(
-                  (index + 1 for index in range(start + 1, end) if lines[index].lstrip().startswith("newName:")),
-                  start + 1,
-              )
-
-              lines.insert(insert_at, f"{child_indent}digest: {digest}\n")
-              path.write_text("".join(lines))
-
-          ops_path = Path(os.environ["OPS_PATH"])
-          updates = [
-              (
-                  Path(os.environ["OPS_WEB_OVERLAY_FILE"]),
-                  os.environ["IMAGE_WEB"],
-                  os.environ["IMAGE_WEB_DIGEST"],
-              ),
-              (
-                  Path(os.environ["OPS_API_OVERLAY_FILE"]),
-                  os.environ["IMAGE_API"],
-                  os.environ["IMAGE_API_DIGEST"],
-              ),
-          ]
-
-          for relative_path, image_name, digest in updates:
-              if not digest:
-                  raise SystemExit(f"Missing digest for {image_name}")
-              update_image_digest(ops_path / relative_path, image_name, digest)
-          PY
+          cd "${OPS_PATH}/$(dirname "${OPS_API_OVERLAY_FILE}")"
+          kustomize edit set image "${IMAGE_API}=${IMAGE_API}@${IMAGE_API_DIGEST}"
+          cd - > /dev/null
 
       - name: Create or update litomi-ops production promotion PR
         id: create_production_pr
