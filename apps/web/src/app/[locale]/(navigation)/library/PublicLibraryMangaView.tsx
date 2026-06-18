@@ -14,6 +14,7 @@ import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
@@ -27,6 +28,7 @@ import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { Link } from '@/i18n/navigation'
+import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -122,6 +124,7 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
   const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { isVisible } = useMangaCensorship()
   const t = useTranslations('Library.empty')
+  const guardT = useTranslations('Common.guard')
 
   const {
     data,
@@ -130,6 +133,7 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
     isFetchingNextPage,
     isFetchNextPageError,
     isPending: isLibraryPending,
+    error,
   } = usePublicLibraryMangaInfiniteQuery()
 
   const mangas = mergeUniquePublicLibraryMangaItems(data?.pages)
@@ -235,6 +239,15 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
           icon={<Library className="size-8" />}
           title={t('publicTitle')}
         />
+      </>
+    )
+  }
+
+  if (isAdultVerificationRequiredError(error)) {
+    return (
+      <>
+        <LibraryHeaderSpacer />
+        <AdultVerificationGate description={guardT('adultDescription')} />
       </>
     )
   }
