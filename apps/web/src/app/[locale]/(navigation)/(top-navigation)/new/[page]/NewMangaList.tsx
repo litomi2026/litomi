@@ -50,7 +50,7 @@ export default function NewMangaList({ nativeGridSponsor, page }: Props) {
   }
 
   if (isAdultVerificationRequiredError(error)) {
-    return <AdultVerificationGate description={guardT('adultVerificationDescription')} />
+    return <AdultVerificationGate description={guardT('adultDescription')} />
   }
 
   if (error || !mangas || mangas.length === 0) {

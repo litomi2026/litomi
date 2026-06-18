@@ -72,7 +72,7 @@ export default function MangaPage({ id, initialManga }: Props) {
   if (isAdultVerificationRequiredError(errorMap.get(id))) {
     return (
       <div className="flex min-h-dvh">
-        <AdultVerificationGate description={guardT('adultVerificationDescription')} />
+        <AdultVerificationGate description={guardT('adultDescription')} />
       </div>
     )
   }

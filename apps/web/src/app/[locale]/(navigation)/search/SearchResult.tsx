@@ -191,7 +191,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
     if (isAdultVerificationRequiredError(error)) {
       return (
         <SearchSpacer>
-          <AdultVerificationGate description={guardT('adultVerificationDescription')} />
+          <AdultVerificationGate description={guardT('adultDescription')} />
         </SearchSpacer>
       )
     }
