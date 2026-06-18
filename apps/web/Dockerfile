@@ -1,22 +1,21 @@
-# Build stage
+# Stage 1: Pruner
+FROM oven/bun:1.3 AS pruner
+WORKDIR /app
+
+COPY . .
+RUN bunx turbo prune @litomi/web --docker
+
+# Stage 2: Builder
 FROM oven/bun:1.3 AS builder
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package.json bun.lock turbo.json tsconfig.json tsconfig.base.json ./
-COPY types ./types
-COPY apps/api/package.json ./apps/api/package.json
-COPY apps/cataloger/package.json ./apps/cataloger/package.json
-COPY apps/web/package.json ./apps/web/package.json
-COPY apps/edge-proxy/package.json ./apps/edge-proxy/package.json
-COPY apps/mobile/package.json ./apps/mobile/package.json
-COPY apps/notifier/package.json ./apps/notifier/package.json
-COPY apps/recommender/package.json ./apps/recommender/package.json
-COPY packages ./packages
-
+COPY --from=pruner /app/out/json/ .
 RUN bun install --frozen-lockfile --no-save --silent
 
+COPY --from=pruner /app/out/full/ .
+COPY types ./types
 COPY tools ./tools
 
 ARG CI
@@ -48,8 +47,6 @@ ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=$NEXT_PUBLIC_VAPID_PUBLIC_KEY
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV TURBO_TELEMETRY_DISABLED=1
-
-COPY apps/web ./apps/web
 
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=false \
     --mount=type=secret,id=SENTRY_ORG,env=SENTRY_ORG,required=false \
