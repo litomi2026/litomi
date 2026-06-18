@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 
 type FetchAccessibleLibraryMetaOptions = {
@@ -64,7 +64,8 @@ async function fetchAccessibleLibraryMeta({ libraryId, userId }: FetchAccessible
 }
 
 async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
-  const url = withQuery(`/api/v1/library/${libraryId}`, new URLSearchParams({ scope }))
+  const searchParams = buildSearchParams({ scope })
+  const url = `/api/v1/library/${libraryId}?${searchParams}`
 
   try {
     const { data } = await fetchAPIData<GETV1LibraryResponse>(url)

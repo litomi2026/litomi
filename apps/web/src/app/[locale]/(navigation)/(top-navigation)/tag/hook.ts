@@ -6,7 +6,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
 import type { CategoryParam } from './categories'
 
@@ -26,13 +26,8 @@ export function useTagQuery({ category, page }: Params) {
 }
 
 async function fetchTags(category: CategoryParam, page: number, locale: string) {
-  const searchParams = new URLSearchParams({
-    category,
-    locale,
-    page: String(page),
-  })
-
-  const url = withQuery('/api/v1/tag', searchParams)
+  const searchParams = buildSearchParams({ locale, category, page })
+  const url = `/api/v1/tag?${searchParams}`
   const { data } = await fetchAPIData<GETV1TagResponse>(url, { credentials: 'omit' })
   return data
 }

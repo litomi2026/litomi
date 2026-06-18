@@ -5,13 +5,13 @@ import { useQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { hasAdultAccess } from '@/utils/adult-verification'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
 
 export async function fetchCensorshipsMap() {
-  const params = new URLSearchParams({ limit: MAX_CENSORSHIPS_PER_USER.toString() })
-  const url = withQuery('/api/v1/censorship', params)
+  const params = buildSearchParams({ limit: MAX_CENSORSHIPS_PER_USER })
+  const url = `/api/v1/censorship?${params}`
   const { data } = await fetchAPIData<GETV1CensorshipResponse>(url)
   const lookup = new Map<string, CensorshipItem>()
 

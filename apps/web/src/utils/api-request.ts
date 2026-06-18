@@ -4,13 +4,32 @@ import Cookies from 'js-cookie'
 
 import { fetchResponseData, ProblemDetailsError } from '@/utils/fetch-response'
 
+type SearchParamValue = boolean | number | string | number[] | string[] | null | undefined
+
+let authRefreshPromise: Promise<boolean> | null = null
 const AUTH_REFRESH_PATH = '/api/v1/auth/refresh'
 
 export class UserVisibleError extends Error {
   readonly name = 'UserVisibleError'
 }
 
-let authRefreshPromise: Promise<boolean> | null = null
+export function buildSearchParams(params: Record<string, SearchParamValue>): URLSearchParams {
+  const searchParams = new URLSearchParams()
+
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item != null && item !== '') {
+          searchParams.append(key, String(item))
+        }
+      }
+    } else if (value != null && value !== '') {
+      searchParams.set(key, String(value))
+    }
+  }
+
+  return searchParams
+}
 
 export async function fetchAPIData<T>(
   input: string | Request | URL,
@@ -35,11 +54,6 @@ export function isAuthenticationRequiredError(error: unknown): boolean {
     error.status === 401 &&
     isProblemType(error.type, problemCode.AUTHENTICATION_REQUIRED)
   )
-}
-
-export function withQuery(path: string, searchParams?: URLSearchParams): string {
-  const query = searchParams?.toString()
-  return query ? `${path}?${query}` : path
 }
 
 function isAuthRefreshRequest(request: Request): boolean {

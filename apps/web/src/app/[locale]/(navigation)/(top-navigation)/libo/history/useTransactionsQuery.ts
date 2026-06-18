@@ -4,14 +4,14 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { fetchAPIData } from '@/utils/api-request'
 
 type QueryOptions = {
   enabled?: boolean
 }
 
 export async function fetchTransactions(searchParams: URLSearchParams) {
-  const url = withQuery('/api/v1/points/transactions', searchParams)
+  const url = `/api/v1/points/transactions?${searchParams}`
   const { data } = await fetchAPIData<GETV1PointTransactionResponse>(url)
   return data
 }

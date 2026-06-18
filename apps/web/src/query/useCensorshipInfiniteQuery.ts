@@ -1,10 +1,11 @@
 import type { GETV1CensorshipResponse } from '@litomi/contracts'
 
+import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/censorship/policy'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { hasAdultAccess } from '@/utils/adult-verification'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
 import useMeQuery from './useMeQuery'
 
@@ -13,13 +14,12 @@ type Params = {
 }
 
 export async function fetchPaginatedCensorships({ pageParam }: Params) {
-  const params = new URLSearchParams()
+  const params = buildSearchParams({
+    limit: MAX_CENSORSHIPS_PER_USER,
+    cursor: pageParam,
+  })
 
-  if (pageParam) {
-    params.set('cursor', pageParam)
-  }
-
-  const url = withQuery('/api/v1/censorship', params)
+  const url = `/api/v1/censorship?${params}`
   const { data } = await fetchAPIData<GETV1CensorshipResponse>(url)
   return data
 }

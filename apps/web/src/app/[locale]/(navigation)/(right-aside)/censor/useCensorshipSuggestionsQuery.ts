@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
 import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
@@ -34,8 +34,8 @@ type Props = {
 }
 
 export async function fetchCensorshipSuggestions({ query, locale }: Params) {
-  const params = new URLSearchParams({ locale, query })
-  const url = withQuery('/api/v1/search/suggestions', params)
+  const params = buildSearchParams({ locale, query })
+  const url = `/api/v1/search/suggestions?${params}`
   const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url, { credentials: 'omit' })
   return data
 }

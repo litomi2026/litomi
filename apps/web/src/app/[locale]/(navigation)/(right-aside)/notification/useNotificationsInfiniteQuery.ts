@@ -6,10 +6,15 @@ import { useSearchParams } from 'next/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
-export async function fetchNotifications(searchParams: URLSearchParams) {
-  const url = withQuery('/api/v1/notification', searchParams)
+export async function fetchNotifications(cursor: string | null, filters: string[]) {
+  const searchParams = buildSearchParams({
+    nextId: cursor,
+    filter: filters,
+  })
+
+  const url = `/api/v1/notification?${searchParams}`
   const { data } = await fetchAPIData<GETNotificationResponse>(url)
   return data
 }
@@ -20,19 +25,7 @@ export default function useNotificationInfiniteQuery() {
 
   return useInfiniteQuery<GETNotificationResponse, Error>({
     queryKey: QueryKeys.notifications(searchParams),
-    queryFn: ({ pageParam }) => {
-      const params = new URLSearchParams()
-
-      if (pageParam) {
-        params.set('nextId', pageParam.toString())
-      }
-
-      for (const filter of searchParams.getAll('filter')) {
-        params.append('filter', filter)
-      }
-
-      return fetchNotifications(params)
-    },
+    queryFn: ({ pageParam }) => fetchNotifications(pageParam as string | null, searchParams.getAll('filter')),
     getNextPageParam: ({ hasNextPage, notifications }) =>
       hasNextPage ? notifications[notifications.length - 1]?.id.toString() : null,
     initialPageParam: undefined,

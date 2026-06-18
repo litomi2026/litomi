@@ -5,16 +5,11 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
 export async function fetchPublicLibraryMangas({ cursor, locale }: { cursor: string | null; locale: Locale }) {
-  const searchParams = new URLSearchParams({ locale })
-
-  if (cursor) {
-    searchParams.set('cursor', cursor)
-  }
-
-  const url = withQuery('/api/v1/library/manga', searchParams)
+  const searchParams = buildSearchParams({ locale, cursor })
+  const url = `/api/v1/library/manga?${searchParams}`
   const { data } = await fetchAPIData<GETV1LibraryMangaResponse>(url)
   return data
 }
