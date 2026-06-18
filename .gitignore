@@ -430,6 +430,7 @@ terraform.rc
 .env.*
 *.env
 !.env*.example
+!apps/web/public.env
 /k8s/vault-secrets/**
 !/k8s/vault-secrets/
 !/k8s/vault-secrets/**/
