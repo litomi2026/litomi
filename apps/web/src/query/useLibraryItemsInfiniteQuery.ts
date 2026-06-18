@@ -30,8 +30,7 @@ export async function fetchLibraryItems({ libraryId, cursor, locale, scope, sort
   }
 
   const url = withQuery(`/api/v1/library/${libraryId}/item`, searchParams)
-  const credentials = scope === 'me' ? 'same-origin' : 'omit'
-  const { data } = await fetchAPIData<GETLibraryItemsResponse>(url, { credentials })
+  const { data } = await fetchAPIData<GETLibraryItemsResponse>(url)
   return data
 }
 

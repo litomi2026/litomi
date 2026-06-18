@@ -65,10 +65,9 @@ async function fetchAccessibleLibraryMeta({ libraryId, userId }: FetchAccessible
 
 async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
   const url = withQuery(`/api/v1/library/${libraryId}`, new URLSearchParams({ scope }))
-  const credentials = scope === 'me' ? 'same-origin' : 'omit'
 
   try {
-    const { data } = await fetchAPIData<GETV1LibraryResponse>(url, { credentials })
+    const { data } = await fetchAPIData<GETV1LibraryResponse>(url)
     return data
   } catch (error) {
     if (error instanceof ProblemDetailsError && error.status === 404) {
