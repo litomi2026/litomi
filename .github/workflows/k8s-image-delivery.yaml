@@ -26,22 +26,39 @@ jobs:
     outputs:
       digest: ${{ steps.build_web_image.outputs.digest }}
     env:
-      OVERLAY_DIR: k8s/apps/litomi/overlays/prod
+      OVERLAY_DIR: litomi-ops/k8s/workload/litomi/prod/web
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      - name: Generate litomi-ops GitHub App token
+        id: ops_app_token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.OPS_REPO_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPS_REPO_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: litomi-ops
+          # default permission-contents is read
+
+      - name: Checkout litomi-ops main branch
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository_owner }}/litomi-ops
+          token: ${{ steps.ops_app_token.outputs.token }}
+          path: litomi-ops
 
       - name: Load public web build arguments from overlay
         id: load_public_env
         shell: bash
         run: |
           set -euo pipefail
-          public_env_file="${OVERLAY_DIR}/public.env.kv"
+          public_env_file="${OVERLAY_DIR}/public.env"
           kustomization_file="${OVERLAY_DIR}/kustomization.yaml"
 
           if [ ! -f "$public_env_file" ]; then
-            echo "public.env.kv not found: $public_env_file" >&2
+            echo "public.env not found: $public_env_file" >&2
             exit 1
           fi
 
@@ -61,16 +78,14 @@ jobs:
               fi
             done < "$kustomization_file"
 
-            if [ -z "$value" ]; then
-              echo "$key literal not found in $kustomization_file" >&2
-              exit 1
-            fi
-
             printf '%s' "$value"
           }
 
           app_origin="$(extract_common_env APP_ORIGIN)"
-          vapid_public_key="$(extract_common_env VAPID_PUBLIC_KEY)"
+          if [ -z "$app_origin" ]; then
+            echo "APP_ORIGIN literal not found in $kustomization_file" >&2
+            exit 1
+          fi
 
           tmp="$(mktemp)"
           while IFS= read -r line; do
@@ -79,13 +94,13 @@ jobs:
             fi
 
             if [[ ! "$line" =~ ^NEXT_PUBLIC_[A-Z0-9_]+=.*$ ]]; then
-              echo "public.env.kv must contain only NEXT_PUBLIC_* assignments, blank lines, or comments." >&2
+              echo "public.env must contain only NEXT_PUBLIC_* assignments, blank lines, or comments." >&2
               echo "$line" >&2
               exit 1
             fi
 
-            if [[ "$line" == NEXT_PUBLIC_APP_ORIGIN=* || "$line" == NEXT_PUBLIC_VAPID_PUBLIC_KEY=* ]]; then
-              echo "${line%%=*} is derived from kustomization.yaml and must not be set in public.env.kv." >&2
+            if [[ "$line" == NEXT_PUBLIC_APP_ORIGIN=* ]]; then
+              echo "${line%%=*} is derived from kustomization.yaml and must not be set in public.env." >&2
               exit 1
             fi
 
@@ -99,7 +114,6 @@ jobs:
 
           echo "build_args<<EOF" >> "$GITHUB_OUTPUT"
           echo "APP_ORIGIN=$app_origin" >> "$GITHUB_OUTPUT"
-          echo "VAPID_PUBLIC_KEY=$vapid_public_key" >> "$GITHUB_OUTPUT"
           cat "$tmp" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
