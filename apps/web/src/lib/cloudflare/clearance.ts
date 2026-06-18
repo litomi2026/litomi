@@ -59,11 +59,11 @@ class ClearanceGate {
   }
 
   startVerification = () => {
-    if (this.state === 'ready' || this.state === 'verification-required') {
+    if (this.state === 'verification-required') {
       return
     }
 
-    if (this.state === 'failed') {
+    if (this.state === 'failed' || this.state === 'ready') {
       this.gate = createDeferred()
     }
 

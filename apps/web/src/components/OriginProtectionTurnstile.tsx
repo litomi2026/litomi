@@ -26,17 +26,6 @@ export default function OriginProtectionTurnstile() {
   const t = useTranslations('Common.guard.originProtection')
   const verificationRequired = verificationState !== 'hidden'
 
-  useEffect(() => {
-    function showVerificationPrompt() {
-      setVerificationState('checking')
-    }
-
-    window.addEventListener(VERIFICATION_REQUIRED_EVENT, showVerificationPrompt)
-    return () => {
-      window.removeEventListener(VERIFICATION_REQUIRED_EVENT, showVerificationPrompt)
-    }
-  }, [])
-
   async function handleSuccess(token: string) {
     if (clearanceGate.isReady()) {
       setVerificationState('hidden')
@@ -93,6 +82,18 @@ export default function OriginProtectionTurnstile() {
     setVerificationState('failed')
     console.warn('reportTurnstileFailure', errorCode)
   }
+
+  useEffect(() => {
+    function showVerificationPrompt() {
+      setVerificationState('checking')
+      turnstileRef.current?.reset()
+    }
+
+    window.addEventListener(VERIFICATION_REQUIRED_EVENT, showVerificationPrompt)
+    return () => {
+      window.removeEventListener(VERIFICATION_REQUIRED_EVENT, showVerificationPrompt)
+    }
+  }, [])
 
   return (
     <div
