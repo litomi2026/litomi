@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "src/app/api/**/*.ts": {
-      "maxDuration": 20
+      "maxDuration": 15
     }
   }
 }
