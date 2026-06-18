@@ -7,12 +7,14 @@ import { useState } from 'react'
 
 import type { PostQuery } from '@/query/usePostsQuery'
 
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import RetryGuidance from '@/components/RetryGuidance'
 import StatusState from '@/components/status/StatusState'
 import { Link } from '@/i18n/navigation'
 import usePostInfiniteQuery from '@/query/usePostsQuery'
+import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import FollowingUnauthorized from './FollowingUnauthorized'
@@ -31,6 +33,8 @@ type Props = {
 }
 
 export default function PostList({ source }: Props) {
+  const guardT = useTranslations('Common.guard')
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } =
     usePostInfiniteQuery(getPostQuery(source))
 
@@ -46,6 +50,14 @@ export default function PostList({ source }: Props) {
   }
 
   if (isError) {
+    if (isAdultVerificationRequiredError(error)) {
+      return (
+        <div className="flex-1 flex items-center justify-center py-8 p-4">
+          <AdultVerificationGate description={guardT('adultDescription')} />
+        </div>
+      )
+    }
+
     if (
       source.type === 'timeline' &&
       source.filter === PostFilter.FOLLOWING &&

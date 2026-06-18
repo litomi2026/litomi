@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
 type Options = {
   enabled?: boolean
@@ -13,17 +13,8 @@ type Options = {
 }
 
 export async function fetchRatingsPaginated(cursor: string, sort: RatingSort, locale: string) {
-  const searchParams = new URLSearchParams({ locale })
-
-  if (cursor) {
-    searchParams.set('cursor', cursor)
-  }
-
-  if (sort) {
-    searchParams.set('sort', sort)
-  }
-
-  const url = withQuery('/api/v1/library/rating', searchParams)
+  const searchParams = buildSearchParams({ locale, cursor, sort })
+  const url = `/api/v1/library/rating?${searchParams}`
   const { data } = await fetchAPIData<GETV1RatingsResponse>(url)
   return data
 }

@@ -52,7 +52,7 @@ export default function RandomMangaList({ nativeGridSponsor }: Props) {
   }
 
   if (isAdultVerificationRequiredError(error)) {
-    return <AdultVerificationGate description={guardT('adultVerificationDescription')} />
+    return <AdultVerificationGate description={guardT('adultDescription')} />
   }
 
   if (error || mangas.length === 0) {

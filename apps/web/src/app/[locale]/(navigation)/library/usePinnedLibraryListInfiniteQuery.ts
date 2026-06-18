@@ -3,7 +3,7 @@ import type { GETV1LibraryListResponse } from '@litomi/contracts'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
 interface Options {
   enabled?: boolean
@@ -11,13 +11,8 @@ interface Options {
 }
 
 export async function fetchPinnedLibraryList({ cursor }: { cursor: string | null }) {
-  const params = new URLSearchParams({ scope: 'pinned' })
-
-  if (cursor) {
-    params.set('cursor', cursor)
-  }
-
-  const url = withQuery('/api/v1/library', params)
+  const params = buildSearchParams({ scope: 'pinned', cursor })
+  const url = `/api/v1/library?${params}`
   const { data } = await fetchAPIData<GETV1LibraryListResponse>(url)
   return data
 }

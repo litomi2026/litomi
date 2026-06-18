@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { fetchAPIData, withQuery } from '@/utils/api-request'
+import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
 
 export type PostQuery = {
   filter: PostFilter
@@ -19,20 +19,15 @@ export default function usePostInfiniteQuery({ filter, mangaId, username }: Post
   return useInfiniteQuery<GETV1PostResponse>({
     queryKey: QueryKeys.posts(filter, mangaId, username, locale),
     queryFn: async ({ pageParam }) => {
-      const searchParams = new URLSearchParams({ filter, locale })
-      const cursor = typeof pageParam === 'string' ? pageParam : ''
+      const searchParams = buildSearchParams({
+        filter,
+        locale,
+        cursor: pageParam as string,
+        mangaId,
+        username,
+      })
 
-      if (cursor) {
-        searchParams.set('cursor', cursor)
-      }
-      if (mangaId) {
-        searchParams.set('mangaId', String(mangaId))
-      }
-      if (username) {
-        searchParams.set('username', username)
-      }
-
-      const url = withQuery('/api/v1/post', searchParams)
+      const url = `/api/v1/post?${searchParams}`
       const { data } = await fetchAPIData<GETV1PostResponse>(url)
       return data
     },
