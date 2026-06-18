@@ -16,7 +16,7 @@ import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
 
-const BOT_ID_ALLOWED_FRONTEND_HOSTS = ['litomi.in', 'stg.litomi.in']
+const BOT_ID_ALLOWED_FRONTEND_HOSTS = ['litomi.cc', 'stg.litomi.cc']
 const BROWSER_CACHE_MAX_AGE = 3
 const VERCEL_CACHE_RATIO = 0.7
 

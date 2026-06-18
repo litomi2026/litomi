@@ -9,7 +9,7 @@
     "backgroundColor": "#120d12"
   },
   "server": {
-    "url": "https://litomi.in",
+    "url": "https://litomi.cc",
     "cleartext": false,
     "errorPath": "offline.html"
   },

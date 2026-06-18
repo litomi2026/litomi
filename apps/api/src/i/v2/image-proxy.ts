@@ -56,7 +56,7 @@ const FORWARDED_HEADERS = ['Content-Type', 'Content-Length', 'Last-Modified', 'E
 const ACCEPTED_IMAGE_CONTENT_TYPES = ['application/octet-stream'] as const
 
 const requireAllowedRequestInitiator = createAllowedRequestInitiatorMiddleware({
-  allowedOrigins: ['https://litomi.in', 'https://stg.litomi.in'],
+  allowedOrigins: ['https://litomi.cc', 'https://stg.litomi.cc'],
   allowLocalhostInNonProduction: true,
 })
 

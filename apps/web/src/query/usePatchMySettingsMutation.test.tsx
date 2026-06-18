@@ -107,7 +107,7 @@ describe('usePatchMySettingsMutation', () => {
     resolveResponse(
       new Response(
         JSON.stringify({
-          type: 'https://litomi.in/problems/http-500',
+          type: 'https://litomi.cc/problems/http-500',
           title: 'Internal Server Error',
           status: 500,
           detail: '설정을 저장하지 못했어요',

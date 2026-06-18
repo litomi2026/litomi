@@ -32,7 +32,7 @@ type AuthCookieOptions = {
 }
 
 const ADULT_PASS_COOKIE_MAX_AGE_SECONDS = sec('30 days')
-const ADULT_PASS_COOKIE_DOMAIN = '.litomi.in'
+const ADULT_PASS_COOKIE_DOMAIN = '.litomi.cc'
 
 export async function getAccessTokenCookieConfig({ userId, adult }: AccessTokenClaims) {
   const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.ACCESS)

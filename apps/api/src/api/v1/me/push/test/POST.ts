@@ -23,7 +23,7 @@ route.post('/', zProblemValidator('json', postV1MePushTestBodySchema), async (c)
       body: message,
       icon: '/icon.png',
       badge: '/badge.png',
-      data: { url: 'https://litomi.in' },
+      data: { url: 'https://litomi.cc' },
     })
 
     await db.insert(notificationTable).values({

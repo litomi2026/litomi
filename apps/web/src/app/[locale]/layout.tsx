@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
     description,
     applicationName: appMetadata.shortName,
     keywords:
-      'litomi, 리토미, litomi.in, litomi.la, hitomi, 히토미, 히토미 뷰어, 히토미 미러, 성인망가, 동인지, 만화, 웹툰, manga, comic, webtoon, hentai',
+      'litomi, 리토미, litomi.cc, litomi.la, hitomi, 히토미, 히토미 뷰어, 히토미 미러, 성인망가, 동인지, 만화, 웹툰, manga, comic, webtoon, hentai',
     referrer: 'same-origin',
     robots: {
       index: true,

@@ -12,7 +12,7 @@ afterEach(() => {
 describe('createAllowedRequestInitiatorMiddleware', () => {
   test('허용된 Origin 요청이면 다음 핸들러로 요청을 넘긴다', async () => {
     const response = await requestWithHeaders({
-      Origin: 'https://litomi.in',
+      Origin: 'https://litomi.cc',
       'Sec-Fetch-Site': 'same-origin',
     })
 
@@ -22,7 +22,7 @@ describe('createAllowedRequestInitiatorMiddleware', () => {
 
   test('Origin이 없으면 Referer로 요청 출처를 판단한다', async () => {
     const response = await requestWithHeaders({
-      Referer: 'https://stg.litomi.in/manga/1',
+      Referer: 'https://stg.litomi.cc/manga/1',
       'Sec-Fetch-Site': 'same-origin',
     })
 
@@ -33,7 +33,7 @@ describe('createAllowedRequestInitiatorMiddleware', () => {
   test('Origin이 있으면 허용된 Referer로 우회하지 않는다', async () => {
     const response = await requestWithHeaders({
       Origin: 'https://example.com',
-      Referer: 'https://litomi.in/manga/1',
+      Referer: 'https://litomi.cc/manga/1',
       'Sec-Fetch-Site': 'same-site',
     })
 
@@ -44,7 +44,7 @@ describe('createAllowedRequestInitiatorMiddleware', () => {
 
   test('Fetch Metadata가 차단 값이면 허용된 Origin도 401을 반환한다', async () => {
     const response = await requestWithHeaders({
-      Origin: 'https://litomi.in',
+      Origin: 'https://litomi.cc',
       'Sec-Fetch-Site': 'cross-site',
     })
 
@@ -77,7 +77,7 @@ function createApp(options: { allowLocalhostInNonProduction?: boolean } = {}) {
   app.use(
     '*',
     createAllowedRequestInitiatorMiddleware({
-      allowedOrigins: ['https://litomi.in', 'https://stg.litomi.in'],
+      allowedOrigins: ['https://litomi.cc', 'https://stg.litomi.cc'],
       allowLocalhostInNonProduction: options.allowLocalhostInNonProduction,
     }),
   )

@@ -38,14 +38,14 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(externalFetchGuard.calls).toHaveLength(1)
   })
 
-  test('프로덕션에서는 litomi.in Origin 요청을 허용한다', async () => {
+  test('프로덕션에서는 litomi.cc Origin 요청을 허용한다', async () => {
     externalFetchGuard = installImageFetchGuard()
     setNodeEnv('production')
 
     const response = await requestBackend({
       path: PROXY_PATH,
       headers: {
-        Origin: 'https://litomi.in',
+        Origin: 'https://litomi.cc',
         'Sec-Fetch-Site': 'same-origin',
       },
     })
@@ -54,13 +54,13 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(externalFetchGuard.calls).toHaveLength(1)
   })
 
-  test('프로덕션에서는 stg.litomi.in Referer 요청을 허용한다', async () => {
+  test('프로덕션에서는 stg.litomi.cc Referer 요청을 허용한다', async () => {
     externalFetchGuard = installImageFetchGuard()
     setNodeEnv('production')
 
     const response = await requestBackendWithoutDefaultHeaders(PROXY_PATH, {
       headers: {
-        Referer: 'https://stg.litomi.in/manga/123',
+        Referer: 'https://stg.litomi.cc/manga/123',
         'Sec-Fetch-Site': 'same-origin',
       },
     })
@@ -77,7 +77,7 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
       path: PROXY_PATH,
       headers: {
         Origin: 'https://example.com',
-        Referer: 'https://litomi.in/manga/123',
+        Referer: 'https://litomi.cc/manga/123',
         'Sec-Fetch-Site': 'same-site',
       },
     })
@@ -95,7 +95,7 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     const response = await requestBackend({
       path: PROXY_PATH,
       headers: {
-        Origin: 'https://litomi.in',
+        Origin: 'https://litomi.cc',
         'Sec-Fetch-Site': 'cross-site',
       },
     })
@@ -113,7 +113,7 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     const response = await requestBackend({
       path: PROXY_PATH,
       headers: {
-        Origin: 'https://litomi.in',
+        Origin: 'https://litomi.cc',
         'Sec-Fetch-Site': 'same-origin',
       },
     })

@@ -139,7 +139,7 @@ export function PostSkeleton({ showMangaCover }: { showMangaCover?: boolean }) {
 
 function checkInternalURL(text: string): boolean {
   for (const match of text.matchAll(urlMatchRegex)) {
-    if (safeParseURL(match[0])?.hostname.endsWith('litomi.in')) {
+    if (safeParseURL(match[0])?.hostname.endsWith('litomi.cc')) {
       return true
     }
   }
@@ -190,7 +190,7 @@ function renderURL(url: string, key: string) {
     return url
   }
 
-  if (parsedURL.hostname.endsWith('litomi.in')) {
+  if (parsedURL.hostname.endsWith('litomi.cc')) {
     const postId = parsePostIdPathname(parsedURL.pathname)
     const href = postId ? getPostDetailHref(postId) : parsedURL
 

@@ -9,7 +9,7 @@ const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'cdn.imagedeliveries.com',
   'ehgt.org',
   'siam-cdn.net',
-  'litomi.in',
+  'litomi.cc',
   'zrocdn.xyz',
   'hiromi.b-cdn.net',
   'nhentai.net',

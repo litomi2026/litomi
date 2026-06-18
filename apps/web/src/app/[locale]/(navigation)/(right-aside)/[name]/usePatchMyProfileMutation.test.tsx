@@ -128,7 +128,7 @@ describe('usePatchMyProfileMutation', () => {
     resolveResponse(
       new Response(
         JSON.stringify({
-          type: 'https://litomi.in/problems/internal-server-error',
+          type: 'https://litomi.cc/problems/internal-server-error',
           title: '서버 오류가 발생했어요',
           status: 500,
           detail: '프로필 수정 중 오류가 발생했어요',
