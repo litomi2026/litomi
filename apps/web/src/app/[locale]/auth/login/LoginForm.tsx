@@ -147,6 +147,8 @@ export default function LoginForm() {
     }
 
     const me = await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
+    queryClient.invalidateQueries({ queryKey: QueryKeys.proxyBase })
+
     const localHistory = getLocalReadingHistoryArray()
 
     if (localHistory.length > 0 && isAdultVerified(me)) {
