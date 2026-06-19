@@ -230,6 +230,15 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
     )
   }
 
+  if (isAdultVerificationRequiredError(error)) {
+    return (
+      <>
+        <LibraryHeaderSpacer />
+        <AdultVerificationGate description={guardT('adultDescription')} />
+      </>
+    )
+  }
+
   if (mangas.length === 0) {
     return (
       <>
@@ -239,15 +248,6 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
           icon={<Library className="size-8" />}
           title={t('publicTitle')}
         />
-      </>
-    )
-  }
-
-  if (isAdultVerificationRequiredError(error)) {
-    return (
-      <>
-        <LibraryHeaderSpacer />
-        <AdultVerificationGate description={guardT('adultDescription')} />
       </>
     )
   }
