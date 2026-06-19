@@ -3,6 +3,7 @@
 import type { GETV1MeResponse } from '@litomi/contracts'
 import type { ReactNode } from 'react'
 
+import { useTranslations } from 'next-intl'
 import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -47,16 +48,18 @@ export default function JuicyAdsBanner({ className, title, layout, onAdClick }: 
 }
 
 function DefaultTitle({ me }: { me?: GETV1MeResponse | null }) {
+  const t = useTranslations('Common.ads')
+
   return (
     <>
       {me ? (
         <Link className="font-bold text-foreground p-2 -m-2" href="/settings#adult">
-          익명 성인인증
+          {t('action')}
         </Link>
       ) : (
-        <LoginPageLink className="text-foreground">로그인 후 익명 성인인증</LoginPageLink>
+        <LoginPageLink className="text-foreground">{t('actionGuest')}</LoginPageLink>
       )}
-      을 완료하면 광고는 자동으로 숨겨져요.
+      {t('suffix')}
     </>
   )
 }

@@ -30,6 +30,11 @@ export const messages = {
           retryAction: '재시도',
         },
       },
+      ads: {
+        action: '익명 성인인증',
+        actionGuest: '로그인 후 익명 성인인증',
+        suffix: '을 완료하면 광고는 자동으로 숨겨져요.',
+      },
       manga: {
         loadError: '작품을 불러올 수 없어요',
       },
@@ -225,6 +230,11 @@ export const messages = {
           retryTitle: 'Retry security check',
           retryAction: 'Retry',
         },
+      },
+      ads: {
+        action: 'Verify your age anonymously',
+        actionGuest: 'Log in and verify your age anonymously',
+        suffix: ' to hide ads automatically.',
       },
       manga: {
         loadError: 'Could not load works',
@@ -423,6 +433,11 @@ export const messages = {
           retryAction: '再試行',
         },
       },
+      ads: {
+        action: '匿名で成人認証',
+        actionGuest: 'ログイン後に匿名で成人認証',
+        suffix: 'を完了すると広告は自動的に非表示になります。',
+      },
       manga: {
         loadError: '作品を読み込めません',
       },
@@ -617,6 +632,11 @@ export const messages = {
           retryTitle: '重试安全验证',
           retryAction: '重试',
         },
+      },
+      ads: {
+        action: '匿名成人认证',
+        actionGuest: '登录并完成匿名成人认证',
+        suffix: '后广告会自动隐藏。',
       },
       manga: {
         loadError: '无法加载作品',
