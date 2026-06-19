@@ -107,8 +107,7 @@ function createDeferred() {
 function isOriginProtectionFetchError(error: unknown) {
   return (
     error instanceof TypeError ||
-    (error instanceof HTTPResponseError &&
-      (error.status === 403 || error.response.headers.get('cf-mitigated') === 'challenge'))
+    (error instanceof HTTPResponseError && error.response.headers.get('cf-mitigated') === 'challenge')
   )
 }
 
