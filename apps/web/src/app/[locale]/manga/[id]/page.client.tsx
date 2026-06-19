@@ -11,6 +11,7 @@ import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/la
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import { Link } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
 import { shouldShowAds } from '@/utils/adult-verification'
 import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
@@ -61,9 +62,14 @@ export default function MangaPage({ id, initialManga }: Props) {
           <div className="grid gap-0.5 text-center">
             <p className="text-zinc-300 text-sm">{unlockT('title')}</p>
             <p>
-              {unlockT('loginPrefix')}
-              <LoginPageLink className="text-foreground">{unlockT('loginAction')}</LoginPageLink>
-              {unlockT('loginSuffix')}
+              {me ? (
+                <Link className="font-bold text-xs p-2 -m-2 text-foreground" href="/settings#adult">
+                  {unlockT('adultAction')}
+                </Link>
+              ) : (
+                <LoginPageLink className="text-foreground">{unlockT('adultActionGuest')}</LoginPageLink>
+              )}
+              {unlockT('adultSuffix')}
             </p>
           </div>
         }

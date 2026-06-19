@@ -67,7 +67,6 @@ export const QueryKeys = {
     limit,
     locale,
   ],
-  search: (searchParams: URLSearchParams, locale: PublicLocale) => ['search', locale, Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string, limit?: number) => ['search', 'suggestions', locale, query, limit],
   censorshipSuggestions: (query: string, locale: string) => ['censorship', 'suggestions', locale, query],
   postsBase: ['posts'],
@@ -84,11 +83,18 @@ export const QueryKeys = {
   webtoonList: (provider: string, domain: string) => ['webtoon', 'list', provider, domain],
   webtoonSeries: (provider: string, domain: string, path: string) => ['webtoon', 'series', provider, domain, path],
 
+  proxyBase: ['proxy'],
+  search: (searchParams: URLSearchParams, locale: PublicLocale) => [
+    ...QueryKeys.proxyBase,
+    'search',
+    locale,
+    Object.fromEntries(searchParams),
+  ],
   proxyKRandomBase: ['proxy', 'k', 'random'],
   proxyKRandom: (searchParams: URLSearchParams, locale: PublicLocale) => [
     ...QueryKeys.proxyKRandomBase,
     locale,
     Object.fromEntries(searchParams),
   ],
-  proxyHiyobiNew: (page: number, locale: PublicLocale) => ['proxy', 'hiyobi', 'new', page, locale],
+  proxyHiyobiNew: (page: number, locale: PublicLocale) => [...QueryKeys.proxyBase, 'hiyobi', 'new', page, locale],
 }

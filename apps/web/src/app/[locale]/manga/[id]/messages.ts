@@ -15,9 +15,9 @@ export const messages = {
     MangaViewer: {
       unlock: {
         title: '작품을 보려면 광고를 클릭해주세요.',
-        loginPrefix: '',
-        loginAction: '로그인',
-        loginSuffix: '을 하면 광고를 보지 않고도 작품을 볼 수 있어요.',
+        adultAction: '성인인증',
+        adultActionGuest: '로그인 후 성인인증',
+        adultSuffix: '을 하면 광고를 보지 않고도 작품을 볼 수 있어요.',
       },
       metadata: {
         artist: '작가',
@@ -200,9 +200,9 @@ export const messages = {
     MangaViewer: {
       unlock: {
         title: 'Click the ad to view this work.',
-        loginPrefix: '',
-        loginAction: 'Log in',
-        loginSuffix: ' to view works without watching an ad.',
+        adultAction: 'Verify your age',
+        adultActionGuest: 'Log in and verify your age',
+        adultSuffix: ' to view works without watching an ad.',
       },
       metadata: {
         artist: 'Artist',
@@ -385,9 +385,9 @@ export const messages = {
     MangaViewer: {
       unlock: {
         title: '作品を見るには広告をクリックしてください。',
-        loginPrefix: '',
-        loginAction: 'ログイン',
-        loginSuffix: 'すると、広告を見なくても作品を閲覧できます。',
+        adultAction: '成人認証',
+        adultActionGuest: 'ログイン後に成人認証',
+        adultSuffix: 'すると、広告を見なくても作品を閲覧できます。',
       },
       metadata: {
         artist: '作家',
@@ -570,9 +570,9 @@ export const messages = {
     MangaViewer: {
       unlock: {
         title: '请点击广告以查看作品。',
-        loginPrefix: '',
-        loginAction: '登录',
-        loginSuffix: '后无需观看广告即可查看作品。',
+        adultAction: '成人认证',
+        adultActionGuest: '登录并完成成人认证',
+        adultSuffix: '后无需观看广告即可查看作品。',
       },
       metadata: {
         artist: '作者',
