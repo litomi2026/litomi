@@ -10,7 +10,7 @@ import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'
 import { Link } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
-import { isAdultVerified } from '@/utils/adult-verification'
+import { shouldShowAds } from '@/utils/adult-verification'
 
 import type { JuicyAdsLayoutNode } from './types'
 
@@ -29,9 +29,9 @@ type Props = {
 export default function JuicyAdsBanner({ className, title, layout, onAdClick }: Props) {
   const isMounted = useMounted()
   const { data: me } = useMeQuery()
-  const shouldShowAds = isMounted && checkShowingAds(me)
+  const adsVisible = isMounted && shouldShowAds(me)
 
-  if (!shouldShowAds) {
+  if (!adsVisible) {
     return null
   }
 
@@ -44,22 +44,6 @@ export default function JuicyAdsBanner({ className, title, layout, onAdClick }: 
       </div>
     </section>
   )
-}
-
-function checkShowingAds(me?: GETV1MeResponse | null) {
-  if (me === undefined) {
-    return false
-  }
-
-  if (me === null) {
-    return true
-  }
-
-  if (isAdultVerified(me)) {
-    return me.settings.adultVerifiedAdVisible
-  }
-
-  return true
 }
 
 function DefaultTitle({ me }: { me?: GETV1MeResponse | null }) {
