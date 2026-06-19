@@ -292,34 +292,33 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Install Kustomize
-        shell: bash
-        run: |
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-          sudo mv kustomize /usr/local/bin/
-
       - name: Update litomi-ops production image digests
         shell: bash
         run: |
           set -euo pipefail
 
-          if [[ ! "${IMAGE_WEB_DIGEST}" == sha256:* ]]; then
-            echo "Invalid digest for ${IMAGE_WEB}: ${IMAGE_WEB_DIGEST}" >&2
-            exit 1
-          fi
+          set_digest() {
+            local file="$1" image="$2" digest="$3"
 
-          if [[ ! "${IMAGE_API_DIGEST}" == sha256:* ]]; then
-            echo "Invalid digest for ${IMAGE_API}: ${IMAGE_API_DIGEST}" >&2
-            exit 1
-          fi
+            if [[ ! "${digest}" == sha256:* ]]; then
+              echo "Invalid digest for ${image}: ${digest}" >&2
+              exit 1
+            fi
 
-          cd "${OPS_PATH}/$(dirname "${OPS_WEB_OVERLAY_FILE}")"
-          kustomize edit set image "${IMAGE_WEB}=${IMAGE_WEB}@${IMAGE_WEB_DIGEST}"
-          cd - > /dev/null
+            local matches
+            matches="$(IMAGE="${image}" yq '[(.images // [])[] | select(.name == strenv(IMAGE))] | length' "${file}")"
 
-          cd "${OPS_PATH}/$(dirname "${OPS_API_OVERLAY_FILE}")"
-          kustomize edit set image "${IMAGE_API}=${IMAGE_API}@${IMAGE_API_DIGEST}"
-          cd - > /dev/null
+            if [[ "${matches}" != "1" ]]; then
+              echo "Expected exactly 1 image named ${image} in ${file}, found ${matches}" >&2
+              exit 1
+            fi
+
+            IMAGE="${image}" DIGEST="${digest}" yq -i \
+              '(.images[] | select(.name == strenv(IMAGE)) | .digest) = strenv(DIGEST)' "${file}"
+          }
+
+          set_digest "${OPS_PATH}/${OPS_WEB_OVERLAY_FILE}" "${IMAGE_WEB}" "${IMAGE_WEB_DIGEST}"
+          set_digest "${OPS_PATH}/${OPS_API_OVERLAY_FILE}" "${IMAGE_API}" "${IMAGE_API_DIGEST}"
 
       - name: Create or update litomi-ops production promotion PR
         id: create_production_pr
