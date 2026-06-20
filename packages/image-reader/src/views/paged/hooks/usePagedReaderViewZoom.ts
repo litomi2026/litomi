@@ -138,11 +138,13 @@ export default function usePagedReaderViewZoom() {
     [captureZoomAnchorAtClientPoint, getZoomLevel, zoomToAnchor],
   )
 
+  // NOTE: scrollWidth·clientWidth 측정값은 정수로 반올림되는데, 이를 기본 배율에서도 명시 크기로 박으면 Windows 125% 같은 비정수 디스플레이
+  // 배율에서 1px 가짜 스크롤바가 생기고(겹침 스크롤바인 macOS/iOS는 무관), 가로 스크롤바가 세로 영역을 줄여 세로 스크롤까지 연쇄돼요.
   const isZoomed = zoomLevel > DEFAULT_ZOOM
 
   const zoomScrollArea = {
-    height: isZoomed && zoomLayout.contentHeight > 0 ? zoomLayout.contentHeight * zoomLevel : undefined,
-    width: isZoomed && zoomLayout.contentWidth > 0 ? zoomLayout.contentWidth * zoomLevel : undefined,
+    height: zoomLayout.contentHeight > 0 ? zoomLayout.contentHeight * zoomLevel : undefined,
+    width: zoomLayout.contentWidth > 0 ? zoomLayout.contentWidth * zoomLevel : undefined,
   } satisfies CSSProperties
 
   const zoomContent = {
@@ -150,7 +152,7 @@ export default function usePagedReaderViewZoom() {
     transform: `scale(${zoomLevel})`,
     transformOrigin: 'top left',
     width: zoomLayout.viewportWidth > 0 ? zoomLayout.viewportWidth : '100%',
-    willChange: isZoomed ? 'transform' : undefined,
+    willChange: 'transform',
   } satisfies CSSProperties
 
   // NOTE: 페이지 구성이나 보기 옵션이 바뀌면 화면에 그리기 전에 줌 기준 크기를 다시 재요
@@ -233,8 +235,8 @@ export default function usePagedReaderViewZoom() {
     contentRef,
     scrollRef,
     styles: {
-      zoomContent,
-      zoomScrollArea,
+      zoomContent: isZoomed ? zoomContent : undefined,
+      zoomScrollArea: isZoomed ? zoomScrollArea : undefined,
     },
   }
 }
