@@ -138,9 +138,11 @@ export default function usePagedReaderViewZoom() {
     [captureZoomAnchorAtClientPoint, getZoomLevel, zoomToAnchor],
   )
 
+  const isZoomed = zoomLevel > DEFAULT_ZOOM
+
   const zoomScrollArea = {
-    height: zoomLayout.contentHeight > 0 ? zoomLayout.contentHeight * zoomLevel : undefined,
-    width: zoomLayout.contentWidth > 0 ? zoomLayout.contentWidth * zoomLevel : undefined,
+    height: isZoomed && zoomLayout.contentHeight > 0 ? zoomLayout.contentHeight * zoomLevel : undefined,
+    width: isZoomed && zoomLayout.contentWidth > 0 ? zoomLayout.contentWidth * zoomLevel : undefined,
   } satisfies CSSProperties
 
   const zoomContent = {
@@ -148,7 +150,7 @@ export default function usePagedReaderViewZoom() {
     transform: `scale(${zoomLevel})`,
     transformOrigin: 'top left',
     width: zoomLayout.viewportWidth > 0 ? zoomLayout.viewportWidth : '100%',
-    willChange: zoomLevel > DEFAULT_ZOOM ? 'transform' : undefined,
+    willChange: isZoomed ? 'transform' : undefined,
   } satisfies CSSProperties
 
   // NOTE: 페이지 구성이나 보기 옵션이 바뀌면 화면에 그리기 전에 줌 기준 크기를 다시 재요

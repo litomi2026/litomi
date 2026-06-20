@@ -20,9 +20,9 @@ const imageFitContentStyle: Record<ImageFit, string> = {
   width:
     'flex justify-center items-center [&_li]:items-center [&_li]:justify-center [&_li]:w-full [&_li]:h-full [&_picture]:contents [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto',
   height:
-    '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
+    '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-full',
   contain:
-    'p-safe [&_li]:items-center [&_li]:justify-center [&_li]:w-full [&_li]:h-full [&_picture]:contents [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto [&_img]:max-h-[calc(100dvh-var(--safe-area-top)-var(--safe-area-bottom))]',
+    'p-safe [&_li]:items-center [&_li]:justify-center [&_li]:w-full [&_li]:h-full [&_picture]:contents [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto [&_img]:max-h-full',
 }
 
 type ItemProps<TPage extends ReaderPage> = {
@@ -93,7 +93,7 @@ export default function PagedReaderView<TPage extends ReaderPage>({
       >
         <div className="relative min-h-full min-w-full" style={styles.zoomScrollArea}>
           <ul
-            className={`absolute left-0 top-0 h-dvh [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${imageFitContentStyle[imageFit]}`}
+            className={`absolute left-0 top-0 [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${imageFitContentStyle[imageFit]}`}
             onLoadCapture={measureZoomLayout}
             ref={contentRef}
             style={styles.zoomContent}
