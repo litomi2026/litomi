@@ -93,7 +93,7 @@ export default function PagedReaderView<TPage extends ReaderPage>({
       >
         <div className="relative min-h-full min-w-full" style={styles.zoomScrollArea}>
           <ul
-            className={`absolute left-0 top-0 [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${imageFitContentStyle[imageFit]}`}
+            className={`absolute left-0 top-0 h-dvh w-full [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${imageFitContentStyle[imageFit]}`}
             onLoadCapture={measureZoomLayout}
             ref={contentRef}
             style={styles.zoomContent}
