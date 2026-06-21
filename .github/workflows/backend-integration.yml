@@ -24,7 +24,7 @@ jobs:
       UPSTASH_KV_REST_API_URL: http://127.0.0.1:8079
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
