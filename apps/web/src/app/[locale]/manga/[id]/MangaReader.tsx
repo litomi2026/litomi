@@ -12,7 +12,7 @@ import Reader, {
 import { useQueryClient } from '@tanstack/react-query'
 import { Hash, MessageCircle } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -50,7 +50,7 @@ export default function MangaReader({ manga }: Props) {
   const { data: me } = useMeQuery()
   const locale = useLocale()
 
-  const pages = createMangaReaderPages(manga)
+  const pages = useMemo(() => createMangaReaderPages(manga), [manga])
   const canSyncReadingProgress = isAdultVerified(me) && me?.settings.historySyncEnabled
 
   function handleReaderNotice(notice: ReaderNotice) {

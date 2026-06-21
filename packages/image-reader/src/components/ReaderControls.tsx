@@ -196,17 +196,13 @@ export default function ReaderControls<TPage extends ReaderPage>({
             <ArrowRight className="size-4" />
             {readingDirection === 'ltr' ? messages.readingDirectionRightShort : messages.readingDirectionLeftShort}
           </button>
-          {!isHorizontalScrollMode && (
-            <button
-              className={CORE_BUTTON_CLASS_NAME}
-              onClick={() =>
-                setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')
-              }
-              type="button"
-            >
-              {messages.imageFitButtons[imageFit]}
-            </button>
-          )}
+          <button
+            className={CORE_BUTTON_CLASS_NAME}
+            onClick={() => setImageFit(imageFit === 'contain' ? 'width' : imageFit === 'width' ? 'height' : 'contain')}
+            type="button"
+          >
+            {messages.imageFitButtons[imageFit]}
+          </button>
           {isScrollMode && (
             <div className="relative" ref={viewControlRef}>
               <button
