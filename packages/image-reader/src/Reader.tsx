@@ -20,7 +20,7 @@ import PagedReaderView from '#reader/views/paged/PagedReaderView'
 import ScrollReaderView from '#reader/views/scroll/ScrollReaderView'
 import { Loader2 } from 'lucide-react'
 import ms from 'ms'
-import { type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export type ReaderProps<TPage extends ReaderPage> = {
@@ -77,7 +77,12 @@ function ReaderContent<TPage extends ReaderPage>({
   const messages = useReaderMessages()
   const onNotice = useReaderNoticeHandler()
 
-  const readerLayout = createReaderLayout(pages, { doublePageAnchorIndex, pageView })
+  // NOTE: React Compiler가 이 호출은 메모하지 않아서 수동으로 안정화해요.
+  const readerLayout = useMemo(
+    () => createReaderLayout(pages, { doublePageAnchorIndex, pageView }),
+    [pages, doublePageAnchorIndex, pageView],
+  )
+
   const maxPageIndex = Math.max(0, pages.length - 1)
   const isLowDataReady = isLowDataHydrated && lowDataSnapshot !== null
   const isPageMode = viewerMode === 'page'
