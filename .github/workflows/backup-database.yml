@@ -39,14 +39,14 @@ jobs:
           mkdir -p "${BACKUP_DIR}"
           echo "$APP_POSTGRES_CERTIFICATE" > "${CERT_FILE}"
 
-          # 2. Dump database using PostgreSQL 17 Docker image
+          # 2. Dump database using PostgreSQL 18 Docker image
           echo "Starting pg_dump..."
           docker run --rm \
             -v "$(pwd)/${BACKUP_DIR}:/backups" \
             -e APP_POSTGRES_URL="$APP_POSTGRES_URL" \
             -e PGSSLMODE="verify-full" \
             -e PGSSLROOTCERT="/backups/db-cert.crt" \
-            postgres:17-alpine \
+            postgres:18-alpine \
             sh -c "pg_dump \"\$APP_POSTGRES_URL\" \
               --no-owner \
               --no-privileges \
