@@ -471,3 +471,4 @@ data/model/
 
 .turbo/
 .playwright-mcp/
+*.jks

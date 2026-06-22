@@ -132,7 +132,7 @@ export default function LibrarySidebar({
         />
         {showLibrariesSkeleton ? (
           <>
-            <LibrarySidebarSectionDivider label={t('sidebar.sections.libraryList')} />
+            <LibrarySidebarSectionDivider />
             <LibrarySidebarSkeleton length={6} />
           </>
         ) : (
@@ -202,7 +202,7 @@ export default function LibrarySidebar({
             )}
             {publicLibraries.length > 0 && (
               <>
-                <LibrarySidebarSectionDivider label={t('sidebar.sections.browse')} />
+                <LibrarySidebarSectionDivider label={t('sidebar.publicLibraries')} />
                 {publicLibraries.map((library) => (
                   <LibrarySidebarLink
                     badge={
@@ -253,7 +253,15 @@ export default function LibrarySidebar({
   )
 }
 
-function LibrarySidebarSectionDivider({ label }: { label: string }) {
+function LibrarySidebarSectionDivider({ label }: { label?: string }) {
+  if (!label) {
+    return (
+      <div className="flex items-center px-2 py-1 sm:px-0 lg:px-3">
+        <div className="h-px flex-1 bg-zinc-800" />
+      </div>
+    )
+  }
+
   return (
     <div className="flex items-center gap-2 px-2 py-1 sm:px-0 lg:px-3">
       <div className="h-px flex-1 bg-zinc-800" />
