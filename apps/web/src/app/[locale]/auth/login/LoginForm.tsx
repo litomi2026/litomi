@@ -22,6 +22,7 @@ import TurnstileWidget from '@/components/TurnstileWidget'
 import { Link, useRouter } from '@/i18n/navigation'
 import { identify, track } from '@/lib/analytics/browser'
 import { getAuthRedirectHref, getAuthSuccessRedirect, getCurrentAuthRedirect } from '@/lib/auth-redirect'
+import { resetAdultGatedQueries } from '@/lib/react-query/adult-gated-queries'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { isAdultVerified } from '@/utils/adult-verification'
@@ -146,9 +147,9 @@ export default function LoginForm() {
       track('login', { loginId, lastLoginAt, lastLogoutAt })
     }
 
-    const me = await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
-    queryClient.invalidateQueries({ queryKey: QueryKeys.proxyBase })
+    resetAdultGatedQueries(queryClient)
 
+    const me = await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 }).catch(() => null)
     const localHistory = getLocalReadingHistoryArray()
 
     if (localHistory.length > 0 && isAdultVerified(me)) {
