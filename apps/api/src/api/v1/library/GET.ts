@@ -5,8 +5,9 @@ import { decodeLibraryListCursor, encodeLibraryListCursor } from '@litomi/db/cur
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
-import { and, desc, eq, lt, ne, or, sql } from 'drizzle-orm'
+import { and, count, desc, eq, gt, lt, ne, or, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import ms from 'ms'
 
 import type { Env } from '@/app'
 
@@ -32,12 +33,21 @@ libraryListRoutes.get('/', zProblemValidator('query', getV1LibraryListQuerySchem
     return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
   }
 
-  const itemCountExpr = sql<number>`
-    (SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int
-  `
-  const pinnedCountExpr = sql<number>`
-    (SELECT COUNT(*) FROM ${pinnedLibraryTable} WHERE ${pinnedLibraryTable.libraryId} = ${libraryTable.id})::int
-  `
+  const oneWeekAgo = new Date(Date.now() - ms('1 week'))
+
+  const itemCountSubquery = db
+    .select({ count: count() })
+    .from(libraryItemTable)
+    .where(eq(libraryItemTable.libraryId, libraryTable.id))
+
+  const pinnedCountSubquery = db
+    .select({ count: count() })
+    .from(pinnedLibraryTable)
+    .where(and(eq(pinnedLibraryTable.libraryId, libraryTable.id), gt(pinnedLibraryTable.createdAt, oneWeekAgo)))
+
+  const itemCountExpr = sql<number>`(${itemCountSubquery})::int`
+  const pinnedCountExpr = sql<number>`(${pinnedCountSubquery})::int`
+
   const sortCountExpr =
     listScope === 'public'
       ? pinnedCountExpr
