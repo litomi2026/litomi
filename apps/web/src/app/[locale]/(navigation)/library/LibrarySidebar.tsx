@@ -202,7 +202,7 @@ export default function LibrarySidebar({
             )}
             {publicLibraries.length > 0 && (
               <>
-                <LibrarySidebarSectionDivider label={t('sidebar.sections.browse')} />
+                <LibrarySidebarSectionDivider label={t('sidebar.sections.publicLibraries')} />
                 {publicLibraries.map((library) => (
                   <LibrarySidebarLink
                     badge={

@@ -74,7 +74,7 @@ export const messages = {
           libraryList: '서재 목록',
           myLibraries: '내 서재',
           pinned: '고정',
-          browse: '둘러보기',
+          publicLibraries: '공개 서재',
         },
       },
       sort: {
@@ -373,7 +373,7 @@ export const messages = {
           libraryList: 'Library list',
           myLibraries: 'My libraries',
           pinned: 'Pinned',
-          browse: 'Browse',
+          publicLibraries: 'Public libraries',
         },
       },
       sort: {
@@ -674,7 +674,7 @@ export const messages = {
           libraryList: 'ライブラリ一覧',
           myLibraries: '自分のライブラリ',
           pinned: '固定',
-          browse: '探す',
+          publicLibraries: '公開ライブラリ',
         },
       },
       sort: {
@@ -975,7 +975,7 @@ export const messages = {
           libraryList: '书库列表',
           myLibraries: '我的书库',
           pinned: '已固定',
-          browse: '发现',
+          publicLibraries: '公开书库',
         },
       },
       sort: {
