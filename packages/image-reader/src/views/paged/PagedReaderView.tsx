@@ -12,17 +12,19 @@ import usePagedReaderViewZoom from '#reader/views/paged/hooks/usePagedReaderView
 import usePageNavigation from '#reader/views/paged/hooks/usePageNavigation'
 import { Loader2 } from 'lucide-react'
 import { Fragment } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 const PAGED_READER_VIEW_WINDOW_SIZE = 6
 
 const imageFitContentStyle: Record<ImageFit, string> = {
+  // 가로 맞춤: 이미지 너비를 화면에 맞추고 my-auto로 세로 가운데 정렬해요.
   width:
-    'flex justify-center items-center [&_li]:items-center [&_li]:justify-center [&_li]:w-full [&_li]:h-full [&_picture]:contents [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto',
+    'min-h-dvh flex flex-col [&_li]:my-auto [&_li]:w-full [&_li]:items-center [&_li]:justify-center [&_picture]:contents [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto',
   height:
-    '[&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-full',
+    'h-dvh [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_picture]:contents [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-full',
   contain:
-    '[&_li]:items-center [&_li]:justify-center [&_li]:w-full [&_li]:h-full [&_picture]:contents [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto [&_img]:max-h-full',
+    'h-dvh [&_li]:items-center [&_li]:justify-center [&_li]:w-full [&_li]:h-full [&_picture]:contents [&_img]:min-w-0 [&_img]:max-w-full [&_img]:h-auto [&_img]:max-h-full',
 }
 
 type ItemProps<TPage extends ReaderPage> = {
@@ -94,13 +96,17 @@ export default function PagedReaderView<TPage extends ReaderPage>({
       >
         <div className="relative min-h-full min-w-full" style={styles.zoomScrollArea}>
           <ul
-            className={`absolute left-0 top-0 h-dvh w-full [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${imageFitContentStyle[imageFit]}`}
+            className={twMerge(
+              'absolute left-0 top-0 w-full [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background',
+              avoidCutout && 'p-safe',
+              imageFitContentStyle[imageFit],
+            )}
             onLoadCapture={measureZoomLayout}
             ref={contentRef}
             style={styles.zoomContent}
           >
             {pages.length === 0 ? (
-              <li className="flex items-center justify-center h-full animate-fade-in">
+              <li className="flex items-center justify-center h-dvh animate-fade-in">
                 <output className="flex items-center justify-center">
                   <Loader2 aria-hidden="true" className="size-8 animate-spin" />
                   <span className="sr-only">{messages.loadingImages}</span>
