@@ -26,8 +26,9 @@ export default function ViewControlPanel({ id }: Props) {
 
   const isWidthControlEnabled = useReaderStore(
     (state) =>
-      (state.imageFit === 'contain' || state.imageFit === 'width') &&
-      !(state.viewerMode === 'scroll' && state.scrollAxis === 'horizontal'),
+      state.viewerMode === 'scroll' &&
+      state.scrollAxis === 'vertical' &&
+      (state.imageFit === 'contain' || state.imageFit === 'width'),
   )
 
   useEffect(() => {

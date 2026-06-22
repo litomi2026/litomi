@@ -52,6 +52,7 @@ export function HorizontalScrollReaderView<TPage extends ReaderPage>({
   const hasPositionedInitialColumnRef = useRef(false)
   const hasMeasuredAspectRatioRef = useRef(false)
   const brightness = useReaderSessionStore((state) => state.brightness)
+  const avoidCutout = useReaderStore((state) => state.avoidCutout)
   const imageFit = useReaderStore((state) => state.imageFit)
   const readingDirection = useReaderStore((state) => state.readingDirection)
   const pageIndex = useReaderStore((state) => state.pageIndex)
