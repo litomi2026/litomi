@@ -11,7 +11,7 @@ import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { useRouter } from '@/i18n/navigation'
 import { identify, track } from '@/lib/analytics/browser'
 import { getAuthSuccessRedirect, getCurrentAuthRedirect } from '@/lib/auth-redirect'
-import { QueryKeys } from '@/lib/react-query/query-keys'
+import { resetAdultGatedQueries } from '@/lib/react-query/adult-gated-queries'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 
 import { signup } from './api'
@@ -38,8 +38,9 @@ export default function useSignupMutation({ onError }: Params = {}) {
         track('signup', { loginId, nickname, name })
       }
 
-      await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.proxyBase })
+      resetAdultGatedQueries(queryClient)
+
+      await queryClient.fetchQuery({ ...getMeQueryFetchOptions(), staleTime: 0 }).catch(() => null)
 
       router.replace(getAuthSuccessRedirect(getCurrentAuthRedirect(), name))
     },

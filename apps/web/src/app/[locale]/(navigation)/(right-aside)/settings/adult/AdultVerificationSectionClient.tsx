@@ -12,6 +12,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { BBATON_POPUP_WINDOW_NAME } from '@/bbaton'
 import { useRouter } from '@/i18n/navigation'
+import { resetAdultGatedQueries } from '@/lib/react-query/adult-gated-queries'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { LocalStorageKey } from '@/storage'
 import BBatonButton from '@/svg/BBatonButton'
@@ -127,6 +128,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
   function refreshStatus() {
     queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
+    resetAdultGatedQueries(queryClient)
     router.refresh()
   }
 
@@ -159,6 +161,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
       popupRef.current = null
       queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
+      resetAdultGatedQueries(queryClient)
       router.refresh()
     }
 
