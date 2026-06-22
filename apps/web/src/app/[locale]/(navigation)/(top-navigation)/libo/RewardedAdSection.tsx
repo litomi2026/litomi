@@ -7,6 +7,7 @@ import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { HelpCircle, MousePointerClick, ShieldCheck } from 'lucide-react'
 import ms from 'ms'
+import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
@@ -27,12 +28,14 @@ import { fetchAPIData } from '@/utils/api-request'
 import { runWhenDocumentVisible } from './util'
 
 export default function RewardedAdSection() {
-  const queryClient = useQueryClient()
+  const verificationSectionRef = useRef<HTMLDivElement>(null)
+  const turnstileRef = useRef<TurnstileInstance>(null)
   const { data: me } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const pointsTurnstile = usePointsTurnstileQuery(isLoggedIn)
-  const verificationSectionRef = useRef<HTMLDivElement>(null)
-  const turnstileRef = useRef<TurnstileInstance>(null)
+  const t = useTranslations('Libo.earn')
+  const queryClient = useQueryClient()
+
   const isVerified = pointsTurnstile.data?.verified === true
   const rewardEnabled = isLoggedIn && isVerified
 
@@ -75,14 +78,14 @@ export default function RewardedAdSection() {
 
     if (me === null) {
       runWhenDocumentVisible(() => {
-        toast.warning('로그인하면 리보가 적립돼요')
+        toast.warning(t('loginToast'))
       })
       return
     }
 
     if (!isVerified) {
       runWhenDocumentVisible(() => {
-        toast.warning('보안 검증을 완료해 주세요')
+        toast.warning(t('verifyToast'))
         verificationSectionRef.current?.scrollIntoView({ block: 'center' })
       })
       return
@@ -93,7 +96,9 @@ export default function RewardedAdSection() {
     }
 
     runWhenDocumentVisible(() => {
-      toast.success(`${result.earned} 리보 적립됐어요`)
+      if (result.earned) {
+        toast.success(t('earnedToast', { earned: result.earned }))
+      }
     })
   }
 
@@ -120,29 +125,51 @@ export default function RewardedAdSection() {
     }
   }, [pointsTurnstile.data, queryClient])
 
+  function getRewardedAdStatus(me: GETV1MeResponse | null | undefined, isVerified: boolean) {
+    if (me === null) {
+      return t('statusLogin')
+    }
+    if (!isVerified) {
+      return t('statusVerify')
+    }
+    return t('statusReady')
+  }
+
+  function getTurnstileStatus(isVerified: boolean, isPending: boolean) {
+    if (isVerified) {
+      return t('turnstileVerified')
+    }
+    if (isPending) {
+      return t('turnstilePending')
+    }
+    return t('turnstileRequired')
+  }
+
   return (
     <div className="flex flex-col gap-4">
       {/* 안내 문구 */}
       <details className="text-xs text-zinc-500 rounded-xl bg-white/4 border border-white/7">
         <summary className="cursor-pointer list-none p-3 flex items-center gap-2 text-zinc-300 [&::-webkit-details-marker]:hidden">
           <HelpCircle className="size-4 text-zinc-400" />
-          <span className="font-medium">안내</span>
+          <span className="font-medium">{t('guideTitle')}</span>
         </summary>
         <div className="px-3 pb-3 space-y-4">
           <div className="space-y-1">
-            <p className="text-zinc-400 font-medium">리보란?</p>
+            <p className="text-zinc-400 font-medium">{t('guideWhatIs')}</p>
             <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
-              <li>광고 클릭 시 {POINT_CONSTANTS.AD_CLICK_REWARD} 리보가 적립돼요</li>
-              <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
+              <li>{t('guideAdClick', { amount: POINT_CONSTANTS.AD_CLICK_REWARD })}</li>
+              <li>{t('guideExpand')}</li>
             </ul>
           </div>
           <div className="space-y-1">
-            <p className="text-zinc-400 font-medium">적립 주의사항</p>
+            <p className="text-zinc-400 font-medium">{t('guideNotesTitle')}</p>
             <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
-              <li>광고 클릭 시 새 탭에서 광고 페이지가 열려요</li>
-              <li>같은 광고: 1분 후 다시 클릭 가능</li>
+              <li>{t('guideNotesNewTab')}</li>
+              <li>{t('guideNotesCooldown')}</li>
               <li>
-                하루 최대 {POINT_CONSTANTS.AD_CLICK_REWARD * POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT} 리보 적립 가능
+                {t('guideNotesLimit', {
+                  limit: POINT_CONSTANTS.AD_CLICK_REWARD * POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT,
+                })}
               </li>
             </ul>
           </div>
@@ -201,10 +228,8 @@ export default function RewardedAdSection() {
           <div className="flex items-start gap-3">
             <ShieldCheck className="size-5 text-zinc-300 shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-medium text-zinc-200 mb-1">리보 적립 전에 보안 검증이 필요해요</h3>
-              <p className="text-xs text-zinc-400">
-                Cloudflare 보안 검증을 완료하면 광고를 클릭할 때 리보가 적립돼요. 2분마다 자동으로 다시 검증해요.
-              </p>
+              <h3 className="font-medium text-zinc-200 mb-1">{t('turnstileTitle')}</h3>
+              <p className="text-xs text-zinc-400">{t('turnstileDesc')}</p>
             </div>
           </div>
           <TurnstileWidget
@@ -226,24 +251,4 @@ export default function RewardedAdSection() {
       <AdsterraNativeBanner className="w-full max-w-5xl mx-auto" />
     </div>
   )
-}
-
-function getRewardedAdStatus(me: GETV1MeResponse | null | undefined, isVerified: boolean) {
-  if (me === null) {
-    return '로그인 후 광고를 클릭하면 리보가 적립돼요'
-  }
-  if (!isVerified) {
-    return '보안 검증 후 광고를 클릭하면 리보가 적립돼요'
-  }
-  return '상단 광고를 클릭하면 리보가 적립돼요'
-}
-
-function getTurnstileStatus(isVerified: boolean, isPending: boolean) {
-  if (isVerified) {
-    return '인증됐어요'
-  }
-  if (isPending) {
-    return '인증을 확인하고 있어요…'
-  }
-  return '인증을 확인해 주세요'
 }

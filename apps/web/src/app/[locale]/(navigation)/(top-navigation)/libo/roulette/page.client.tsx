@@ -2,7 +2,7 @@
 
 import { ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/points/roulette'
 import { formatNumber } from '@litomi/std'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -20,15 +20,18 @@ type WheelSlice = {
 }
 
 export default function RoulettePageClient() {
-  const locale = useLocale()
-  const { data: me } = useMeQuery()
-  const [displayBet, setDisplayBet] = useState<number>(ROULETTE_CONFIG.minBet)
-  const spin = useRouletteSpinMutation()
   const [rotationDeg, setRotationDeg] = useState(0)
   const [phase, setPhase] = useState<SpinPhase>('idle')
   const [isResultRevealed, setIsResultRevealed] = useState(false)
+  const [displayBet, setDisplayBet] = useState<number>(ROULETTE_CONFIG.minBet)
   const loopTimerRef = useRef<number | null>(null)
   const revealTimerRef = useRef<number | null>(null)
+  const { data: me } = useMeQuery()
+  const spin = useRouletteSpinMutation()
+  const locale = useLocale()
+  const t = useTranslations('Libo.roulette')
+  const tNav = useTranslations('Libo.navigation')
+
   const result = spin.data
   const hasRevealedResult = Boolean(result && isResultRevealed)
 
@@ -51,9 +54,9 @@ export default function RoulettePageClient() {
     <div className="space-y-4">
       <details className="group rounded-xl bg-white/3 border border-white/7 p-4 py-3">
         <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
-          <span className="text-sm text-zinc-300">룰렛 배당표 보기</span>
-          <span className="text-xs text-zinc-500 group-open:hidden">열기</span>
-          <span className="text-xs text-zinc-500 hidden group-open:inline">닫기</span>
+          <span className="text-sm text-zinc-300">{t('viewPayouts')}</span>
+          <span className="text-xs text-zinc-500 group-open:hidden">{t('open')}</span>
+          <span className="text-xs text-zinc-500 hidden group-open:inline">{t('close')}</span>
         </summary>
         <div className="mt-2 space-y-2">
           {ROULETTE_CONFIG.segments.map((s) => (
@@ -74,9 +77,7 @@ export default function RoulettePageClient() {
               <span className="tabular-nums text-zinc-400">{formatMultiplier(s.payoutMultiplierX100)}</span>
             </div>
           ))}
-          <p className="text-xs text-zinc-500">
-            배수는 “배팅 포함 지급” 기준이에요. 예를 들어 2배면 배팅 후에 배팅액의 2배가 지급돼요
-          </p>
+          <p className="text-xs text-zinc-500">{t('payoutNote')}</p>
         </div>
       </details>
 
@@ -132,14 +133,16 @@ export default function RoulettePageClient() {
                     )}
                   >
                     {result.payout > 0 ? '+' : ''}
-                    {formatNumber(result.payout, locale)} <span className="text-sm font-medium text-white/70">리보</span>
+                    {formatNumber(result.payout, locale)}{' '}
+                    <span className="text-sm font-medium text-white/70">{tNav('liboUnit')}</span>
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-xs text-white/60">배팅</p>
+                  <p className="text-xs text-white/60">{t('betTitle')}</p>
                   <p className="text-lg font-semibold tabular-nums text-white/90 drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)]">
-                    {formatNumber(displayBet, locale)} <span className="text-sm font-medium text-white/70">리보</span>
+                    {formatNumber(displayBet, locale)}{' '}
+                    <span className="text-sm font-medium text-white/70">{tNav('liboUnit')}</span>
                   </p>
                 </>
               )}
@@ -148,13 +151,15 @@ export default function RoulettePageClient() {
         </div>
 
         <div className="mt-3 text-center">
-          {phase === 'loop' && <p className="text-sm text-zinc-400">돌리는 중…</p>}
-          {phase === 'settle' && <p className="text-sm text-zinc-400">멈추는 중…</p>}
+          {phase === 'loop' && <p className="text-sm text-zinc-400">{t('spinning')}</p>}
+          {phase === 'settle' && <p className="text-sm text-zinc-400">{t('stopping')}</p>}
           {phase === 'idle' &&
             (hasRevealedResult && result ? (
-              <p className="text-sm text-zinc-500">새 잔액 {formatNumber(result.balance, locale)} 리보</p>
+              <p className="text-sm text-zinc-500">
+                {t('newBalance', { balance: formatNumber(result.balance, locale) })}
+              </p>
             ) : (
-              <p className="text-sm text-zinc-500">배팅하고 돌려보세요</p>
+              <p className="text-sm text-zinc-500">{t('betAndSpin')}</p>
             ))}
         </div>
       </div>
@@ -164,8 +169,8 @@ export default function RoulettePageClient() {
           <div aria-hidden className="py-6" />
         ) : me === null ? (
           <div className="text-center py-6">
-            <p className="text-zinc-300 font-medium">로그인하면 룰렛에 참여할 수 있어요</p>
-            <p className="text-sm text-zinc-500 mt-1">먼저 리보를 적립한 뒤에 배팅해 보세요</p>
+            <p className="text-zinc-300 font-medium">{t('loginPromptTitle')}</p>
+            <p className="text-sm text-zinc-500 mt-1">{t('loginPromptDesc')}</p>
           </div>
         ) : (
           <form
@@ -223,7 +228,7 @@ export default function RoulettePageClient() {
           >
             <div className="space-y-2">
               <label className="text-sm text-zinc-300" htmlFor="bet">
-                배팅 리보
+                {t('betInputLabel')}
               </label>
               <input
                 className="w-full rounded-xl bg-black/30 border border-white/10 px-3 py-2 text-zinc-100 outline-none focus:border-white/20"
@@ -239,8 +244,10 @@ export default function RoulettePageClient() {
                 type="number"
               />
               <p className="text-xs text-zinc-500">
-                최소 {formatNumber(ROULETTE_CONFIG.minBet, locale)} 리보 · 최대{' '}
-                {formatNumber(ROULETTE_CONFIG.maxBet, locale)} 리보
+                {t('betLimit', {
+                  min: formatNumber(ROULETTE_CONFIG.minBet, locale),
+                  max: formatNumber(ROULETTE_CONFIG.maxBet, locale),
+                })}
               </p>
             </div>
 
@@ -249,12 +256,12 @@ export default function RoulettePageClient() {
               disabled={spin.isPending || phase !== 'idle'}
               type="submit"
             >
-              {spin.isPending ? '돌리는 중…' : '룰렛 돌리기'}
+              {spin.isPending ? t('spinning') : t('spinButton')}
             </button>
 
             {spin.isError && (
               <div className="rounded-xl bg-white/3 border border-white/10 px-3 py-2">
-                <p className="text-sm text-zinc-300">{spin.error.problem.detail ?? '룰렛에 실패했어요'}</p>
+                <p className="text-sm text-zinc-300">{spin.error.problem.detail ?? t('spinFailed')}</p>
               </div>
             )}
           </form>
@@ -265,7 +272,7 @@ export default function RoulettePageClient() {
         <div className="mb-3 rounded-xl bg-white/3 border border-white/8 px-3 py-2">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-xs text-zinc-500">도착</p>
+              <p className="text-xs text-zinc-500">{t('landed')}</p>
               <p className="mt-0.5 flex items-center gap-1 text-sm text-zinc-200 font-medium">
                 <span aria-hidden className="inline-flex items-center gap-1 align-middle">
                   <span
@@ -283,9 +290,11 @@ export default function RoulettePageClient() {
             <div className="text-right tabular-nums">
               <p className={result.net >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
                 {result.net >= 0 ? '+' : ''}
-                {formatNumber(result.net, locale)} 리보
+                {formatNumber(result.net, locale)} {tNav('liboUnit')}
               </p>
-              <p className="mt-0.5 text-xs text-zinc-500">잔액 {formatNumber(result.balance, locale)} 리보</p>
+              <p className="mt-0.5 text-xs text-zinc-500">
+                {t('balance', { balance: formatNumber(result.balance, locale) })}
+              </p>
             </div>
           </div>
         </div>

@@ -18,9 +18,10 @@ type TransactionErrorInfo = {
 }
 
 export default function TransactionHistory() {
-  const locale = useLocale()
-  const t = useTranslations('Libo.history')
   const { data: me, isPending: isMePending } = useMeQuery()
+  const tNav = useTranslations('Libo.navigation')
+  const t = useTranslations('Libo.history')
+  const locale = useLocale()
 
   const isLoggedIn = Boolean(me)
   const isAuthReady = !isMePending
@@ -47,7 +48,7 @@ export default function TransactionHistory() {
   if (isAuthReady && !isLoggedIn) {
     return (
       <div className="text-center py-8">
-        <p className="text-zinc-500">로그인하면 거래 내역을 확인할 수 있어요</p>
+        <p className="text-zinc-500">{t('loginPrompt')}</p>
       </div>
     )
   }
@@ -56,10 +57,36 @@ export default function TransactionHistory() {
     return <AdultVerificationGate description={t('adultGateDescription')} />
   }
 
+  function getTransactionErrorInfo(error: unknown): TransactionErrorInfo {
+    if (error instanceof ProblemDetailsError) {
+      if (error.status === 401) {
+        return {
+          title: t('loginRequiredTitle'),
+          message: error.problem.detail ?? t('loginRequiredDesc'),
+        }
+      }
+
+      return {
+        title: error.problem.detail ?? t('errorTitle'),
+        message: t('errorDesc'),
+      }
+    }
+
+    return {
+      title: t('errorTitle'),
+      message: t('errorDesc'),
+    }
+  }
+
   return (
     <div className="space-y-3">
       {isInitialError && (
-        <TransactionHistoryErrorBanner error={error} isRetrying={isFetching} onRetry={() => refetch()} />
+        <TransactionHistoryErrorBanner
+          error={error}
+          getErrorInfo={getTransactionErrorInfo}
+          isRetrying={isFetching}
+          onRetry={() => refetch()}
+        />
       )}
 
       <div className="space-y-2">
@@ -67,8 +94,8 @@ export default function TransactionHistory() {
           <TransactionHistorySkeleton length={6} />
         ) : showEmpty ? (
           <div className="text-center py-8">
-            <p className="text-zinc-500">거래 내역이 없어요</p>
-            <p className="text-sm text-zinc-600 mt-1">광고를 클릭해서 리보를 적립해 보세요</p>
+            <p className="text-zinc-500">{t('emptyTitle')}</p>
+            <p className="text-sm text-zinc-600 mt-1">{t('emptyDesc')}</p>
           </div>
         ) : (
           transactions.map((tx) => (
@@ -82,7 +109,7 @@ export default function TransactionHistory() {
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-zinc-300 truncate">
-                  {tx.description || (tx.type === 'earn' ? '리보 적립' : '리보 사용')}
+                  {tx.description || (tx.type === 'earn' ? t('earned') : t('spent'))}
                 </p>
                 <p
                   className="text-xs text-zinc-500"
@@ -98,13 +125,13 @@ export default function TransactionHistory() {
                   data-type={tx.type}
                 >
                   {tx.type === 'earn' ? '+' : ''}
-                  {tx.amount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])} 리보
+                  {tx.amount.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])} {tNav('liboUnit')}
                 </p>
                 <p
                   className="text-xs text-zinc-500"
                   title={tx.balanceAfter.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
                 >
-                  잔액 {formatNumber(tx.balanceAfter, locale)} 리보
+                  {t('balance', { balance: formatNumber(tx.balanceAfter, locale) })}
                 </p>
               </div>
             </div>
@@ -122,7 +149,7 @@ export default function TransactionHistory() {
             onClick={() => fetchNextPage()}
             type="button"
           >
-            {isFetchingNextPage ? '불러오는 중…' : '더 보기'}
+            {isFetchingNextPage ? t('loading') : t('loadMore')}
           </button>
 
           {isFetchNextPageError && (
@@ -134,37 +161,19 @@ export default function TransactionHistory() {
   )
 }
 
-function getTransactionErrorInfo(error: unknown): TransactionErrorInfo {
-  if (error instanceof ProblemDetailsError) {
-    if (error.status === 401) {
-      return {
-        title: '로그인이 필요해요',
-        message: error.problem.detail ?? '로그인 정보가 없거나 만료됐어요',
-      }
-    }
-
-    return {
-      title: error.problem.detail ?? '거래 내역을 불러오지 못했어요',
-      message: '잠시 후 다시 시도해 주세요',
-    }
-  }
-
-  return {
-    title: '거래 내역을 불러오지 못했어요',
-    message: '잠시 후 다시 시도해 주세요',
-  }
-}
-
 function TransactionHistoryErrorBanner({
   error,
   isRetrying,
   onRetry,
+  getErrorInfo,
 }: {
   error: unknown
   isRetrying: boolean
   onRetry: () => void
+  getErrorInfo: (err: unknown) => TransactionErrorInfo
 }) {
-  const info = getTransactionErrorInfo(error)
+  const t = useTranslations('Libo.history')
+  const info = getErrorInfo(error)
   const showMessage = Boolean(info.message && info.message.trim() !== info.title.trim())
 
   return (
@@ -182,7 +191,7 @@ function TransactionHistoryErrorBanner({
             onClick={onRetry}
             type="button"
           >
-            {isRetrying ? '다시 시도 중…' : '다시 시도'}
+            {isRetrying ? t('retrying') : t('retry')}
           </button>
         </div>
       </div>
@@ -191,17 +200,19 @@ function TransactionHistoryErrorBanner({
 }
 
 function TransactionHistoryNextPageError({ isRetrying, onRetry }: { isRetrying: boolean; onRetry: () => void }) {
+  const t = useTranslations('Libo.history')
+
   return (
     <div className="rounded-xl bg-white/3 border border-white/7 px-3 py-2">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-zinc-500">추가 거래 내역을 불러오지 못했어요</p>
+        <p className="text-xs text-zinc-500">{t('nextPageError')}</p>
         <button
           className="text-xs font-medium text-zinc-300 hover:text-zinc-100 disabled:opacity-60 disabled:cursor-not-allowed transition"
           disabled={isRetrying}
           onClick={onRetry}
           type="button"
         >
-          {isRetrying ? '다시 시도 중…' : '다시 시도해요'}
+          {isRetrying ? t('retrying') : t('nextPageRetry')}
         </button>
       </div>
     </div>
