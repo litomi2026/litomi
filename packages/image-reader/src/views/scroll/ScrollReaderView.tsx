@@ -5,6 +5,7 @@ import { type ImageFit, useReaderSessionStore, useReaderStore } from '#reader/st
 import { type CSSProperties, Fragment, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
+import { twMerge } from 'tailwind-merge'
 
 import { HorizontalScrollReaderView } from './HorizontalScrollReaderView'
 import { Props, ScrollReaderViewLoading } from './shared'
@@ -82,7 +83,7 @@ function VerticalScrollReaderView<TPage extends ReaderPage>({
 
   return (
     <div
-      className={`overflow-hidden h-dvh contain-strict ${NATIVE_GESTURE_BLOCK_CSS}`}
+      className={twMerge('overflow-hidden h-dvh contain-strict', avoidCutout && 'px-safe', NATIVE_GESTURE_BLOCK_CSS)}
       onClick={onClick}
       style={dynamicStyle}
     >
@@ -106,15 +107,18 @@ function VerticalScrollReaderViewRow<TPage extends ReaderPage>({
   renderPage,
   style,
 }: RowComponentProps<VerticalRowProps<TPage>>) {
+  const avoidCutout = useReaderStore((state) => state.avoidCutout)
   const currentPageIndex = useReaderStore((state) => state.pageIndex)
-  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
   const isLTR = useReaderStore((state) => state.readingDirection === 'ltr')
+  const navigateToPageIndex = useReaderStore((state) => state.navigateToPageIndex)
 
   const spread = readerLayout.spreads[index]
   const firstPageIndex = spread?.startPageIndex ?? 0
   const isCurrentRow = index === (readerLayout.spreadIndexByPageIndex[currentPageIndex] ?? currentPageIndex)
   const fetchPriority = !isLowDataMode || isCurrentRow ? 'high' : 'low'
   const maxPage = readerLayout.spreadIndexByPageIndex.length
+  const isFirstRow = index === 0
+  const isLastRow = index === readerLayout.spreads.length - 1
 
   const { ref: inViewRef, inView } = useInView({
     threshold: 0,
@@ -144,7 +148,11 @@ function VerticalScrollReaderViewRow<TPage extends ReaderPage>({
   const orderedSpreadPages = isLTR ? spreadPages : [...spreadPages].reverse()
 
   return (
-    <li ref={inViewRef} style={style}>
+    <li
+      className={twMerge(avoidCutout && isFirstRow && 'pt-safe', avoidCutout && isLastRow && 'pb-safe')}
+      ref={inViewRef}
+      style={style}
+    >
       {orderedSpreadPages.map(({ page, pageIndex }) => (
         <Fragment key={page.id}>
           {renderPage({
