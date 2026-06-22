@@ -71,10 +71,8 @@ export const messages = {
         loading: '...',
         sections: {
           activity: '내 활동',
-          libraryList: '서재 목록',
           myLibraries: '내 서재',
           pinned: '고정',
-          publicLibraries: '공개 서재',
         },
       },
       sort: {
@@ -370,10 +368,8 @@ export const messages = {
         loading: '...',
         sections: {
           activity: 'My activity',
-          libraryList: 'Library list',
           myLibraries: 'My libraries',
           pinned: 'Pinned',
-          publicLibraries: 'Public libraries',
         },
       },
       sort: {
@@ -671,10 +667,8 @@ export const messages = {
         loading: '...',
         sections: {
           activity: '自分の記録',
-          libraryList: 'ライブラリ一覧',
           myLibraries: '自分のライブラリ',
           pinned: '固定',
-          publicLibraries: '公開ライブラリ',
         },
       },
       sort: {
@@ -972,10 +966,8 @@ export const messages = {
         loading: '...',
         sections: {
           activity: '我的记录',
-          libraryList: '书库列表',
           myLibraries: '我的书库',
           pinned: '已固定',
-          publicLibraries: '公开书库',
         },
       },
       sort: {
