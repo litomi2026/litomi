@@ -5,7 +5,7 @@ import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import { RefreshCw } from 'lucide-react'
 import ms from 'ms'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -40,12 +40,12 @@ type AppliedRange = {
 }
 
 export default function AdStats() {
-  const locale = useLocale()
-  const { data: me } = useMeQuery()
-  const isLoggedIn = Boolean(me)
-
   const startDateInputRef = useRef<HTMLInputElement>(null)
   const finishDateInputRef = useRef<HTMLInputElement>(null)
+  const locale = useLocale()
+  const t = useTranslations('Libo.stats')
+  const { data: me } = useMeQuery()
+  const isLoggedIn = Boolean(me)
 
   const initialRange = useMemo<AppliedRange>(() => {
     const finishDate = dayjs().format('YYYY-MM-DD')
@@ -87,6 +87,30 @@ export default function AdStats() {
     [appliedRange.finishDate, appliedRange.startDate],
   )
 
+  function validateRange(startDate: string, finishDate: string): { ok: false; message: string } | { ok: true } {
+    if (!startDate || !finishDate) {
+      return { ok: false, message: t('errSelectDate') }
+    }
+
+    const start = Date.parse(`${startDate}T00:00:00Z`)
+    const finish = Date.parse(`${finishDate}T00:00:00Z`)
+
+    if (!Number.isFinite(start) || !Number.isFinite(finish)) {
+      return { ok: false, message: t('errInvalidFormat') }
+    }
+
+    if (finish < start) {
+      return { ok: false, message: t('errStartAfterFinish') }
+    }
+
+    const rangeDays = getRangeDaysInclusive(startDate, finishDate)
+    if (rangeDays > MAX_RANGE_DAYS) {
+      return { ok: false, message: t('errMaxDays', { max: MAX_RANGE_DAYS }) }
+    }
+
+    return { ok: true }
+  }
+
   function applyRange(range: AppliedRange) {
     const result = validateRange(range.startDate, range.finishDate)
     if (!result.ok) {
@@ -125,8 +149,8 @@ export default function AdStats() {
     return (
       <div className="space-y-3">
         <div className="rounded-xl bg-white/4 border border-white/7 p-4">
-          <p className="text-zinc-300 font-medium">광고 수익 통계는 로그인한 사용자만 볼 수 있어요</p>
-          <p className="text-sm text-zinc-500 mt-1">로그인하면 최근 30일 통계를 확인할 수 있어요</p>
+          <p className="text-zinc-300 font-medium">{t('loginRequiredTitle')}</p>
+          <p className="text-sm text-zinc-500 mt-1">{t('loginRequiredDesc')}</p>
         </div>
       </div>
     )
@@ -135,11 +159,8 @@ export default function AdStats() {
   return (
     <div className="flex flex-col gap-4 p-2">
       <header className="flex flex-col gap-1">
-        <h1 className="text-lg font-semibold tracking-tight text-zinc-100">광고 수익 통계</h1>
-        <p className="text-xs text-zinc-400">
-          Adsterra에서 제공하는 통계를 확인해 보세요. 해당 광고 수익은 참고용이며, 정산이 확정되기 전까지는 실제
-          지급액과 차이가 있을 수 있어요.
-        </p>
+        <h1 className="text-lg font-semibold tracking-tight text-zinc-100">{t('title')}</h1>
+        <p className="text-xs text-zinc-400">{t('subtitle')}</p>
       </header>
 
       <form
@@ -158,14 +179,14 @@ export default function AdStats() {
               type="submit"
               value={days.toString()}
             >
-              최근 {days}일
+              {t('lastDays', { days })}
             </button>
           ))}
         </div>
 
         <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] items-end">
           <label className="grid gap-1 text-xs text-zinc-500" htmlFor="start-date">
-            시작 날짜
+            {t('startDate')}
             <input
               className="h-10 rounded-lg bg-white/5 border border-white/7 px-3 text-base text-zinc-100"
               defaultValue={appliedRange.startDate}
@@ -185,7 +206,7 @@ export default function AdStats() {
           </label>
 
           <label className="grid gap-1 text-xs text-zinc-500" htmlFor="finish-date">
-            종료 날짜
+            {t('finishDate')}
             <input
               className="h-10 rounded-lg bg-white/5 border border-white/7 px-3 text-base text-zinc-100"
               defaultValue={appliedRange.finishDate}
@@ -209,42 +230,46 @@ export default function AdStats() {
             disabled={isFetching}
             type="submit"
           >
-            적용
+            {t('apply')}
           </button>
         </div>
 
         <p className="text-xs text-zinc-500">
-          현재 범위: {appliedRange.startDate} ~ {appliedRange.finishDate} ({appliedRangeDays}일)
+          {t('currentRange', {
+            start: appliedRange.startDate,
+            finish: appliedRange.finishDate,
+            days: appliedRangeDays,
+          })}
         </p>
       </form>
 
       <div className="rounded-xl bg-white/4 border border-white/7 p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-medium text-zinc-200">요약</p>
+          <p className="text-sm font-medium text-zinc-200">{t('summary')}</p>
           <p className="text-xs text-zinc-500" title={dayjs(data?.dbDateTime).format('YYYY-MM-DD HH:mm')}>
             {data?.dbDateTime
-              ? `업데이트 ${formatDistanceToNow(new Date(data.dbDateTime), locale)}`
+              ? t('updatedAt', { time: formatDistanceToNow(new Date(data.dbDateTime), locale) })
               : isFetching
-                ? '업데이트 확인 중…'
+                ? t('checkingUpdate')
                 : ''}
           </p>
         </div>
 
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <div className="rounded-lg bg-white/5 border border-white/7 p-3">
-            <p className="text-xs text-zinc-500">수익 (USD)</p>
+            <p className="text-xs text-zinc-500">{t('revenue')}</p>
             <p className="mt-1 text-lg font-semibold text-zinc-100 tabular-nums">
               {formatters.moneyUsd.format(summary.totalRevenue)}
             </p>
           </div>
           <div className="rounded-lg bg-white/5 border border-white/7 p-3">
-            <p className="text-xs text-zinc-500">노출</p>
+            <p className="text-xs text-zinc-500">{t('impressions')}</p>
             <p className="mt-1 text-lg font-semibold text-zinc-100 tabular-nums">
               {formatters.int.format(summary.totalImpressions)}
             </p>
           </div>
           <div className="rounded-lg bg-white/5 border border-white/7 p-3">
-            <p className="text-xs text-zinc-500">클릭</p>
+            <p className="text-xs text-zinc-500">{t('clicks')}</p>
             <p className="mt-1 text-lg font-semibold text-zinc-100 tabular-nums">
               {formatters.int.format(summary.totalClicks)}
             </p>
@@ -270,14 +295,14 @@ export default function AdStats() {
       {isError && (
         <div className="rounded-xl bg-white/4 border border-white/7 p-4">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-zinc-300">통계를 불러오지 못했어요</p>
+            <p className="text-sm text-zinc-300">{t('errorTitle')}</p>
             <button
               className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium bg-white/5 border border-white/7 text-zinc-300 hover:bg-white/6 transition"
               onClick={() => refetch()}
               type="button"
             >
               <RefreshCw className="size-4" />
-              다시 시도
+              {t('retry')}
             </button>
           </div>
         </div>
@@ -285,22 +310,24 @@ export default function AdStats() {
 
       {isLoading && (
         <div className="flex items-center justify-center py-8">
-          <p className="text-sm text-zinc-400">불러오는 중이에요</p>
+          <p className="text-sm text-zinc-400">{t('loading')}</p>
         </div>
       )}
 
       {!isLoading && !isError && sortedItems.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-zinc-500">표시할 데이터가 없어요</p>
-          <p className="text-sm text-zinc-600 mt-1">기간을 바꿔서 다시 확인해 보세요</p>
+          <p className="text-zinc-500">{t('emptyTitle')}</p>
+          <p className="text-sm text-zinc-600 mt-1">{t('emptyDesc')}</p>
         </div>
       )}
 
       {sortedItems.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-zinc-400">일별</p>
-            <p className="text-xs text-zinc-500">{formatters.int.format(sortedItems.length)}일</p>
+            <p className="text-sm text-zinc-400">{t('daily')}</p>
+            <p className="text-xs text-zinc-500">
+              {t('daysCount', { days: formatters.int.format(sortedItems.length) })}
+            </p>
           </div>
 
           {sortedItems.map((item) => (
@@ -309,7 +336,8 @@ export default function AdStats() {
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-zinc-200">{item.date}</p>
                   <p className="text-xs text-zinc-500">
-                    노출 {formatters.int.format(item.impression)} · 클릭 {formatters.int.format(item.clicks)}
+                    {t('impressions')} {formatters.int.format(item.impression)} · {t('clicks')}{' '}
+                    {formatters.int.format(item.clicks)}
                   </p>
                 </div>
 
@@ -336,28 +364,4 @@ function getRangeDaysInclusive(startDate: string, finishDate: string): number {
   const dayMs = ms('1 day')
   const diffMs = finish - start
   return Math.floor(diffMs / dayMs) + 1
-}
-
-function validateRange(startDate: string, finishDate: string): { ok: false; message: string } | { ok: true } {
-  if (!startDate || !finishDate) {
-    return { ok: false, message: '날짜를 선택해 주세요' }
-  }
-
-  const start = Date.parse(`${startDate}T00:00:00Z`)
-  const finish = Date.parse(`${finishDate}T00:00:00Z`)
-
-  if (!Number.isFinite(start) || !Number.isFinite(finish)) {
-    return { ok: false, message: '날짜 형식이 올바르지 않아요' }
-  }
-
-  if (finish < start) {
-    return { ok: false, message: '시작 날짜는 종료 날짜보다 늦을 수 없어요' }
-  }
-
-  const rangeDays = getRangeDaysInclusive(startDate, finishDate)
-  if (rangeDays > MAX_RANGE_DAYS) {
-    return { ok: false, message: `최대 ${MAX_RANGE_DAYS}일까지만 조회할 수 있어요` }
-  }
-
-  return { ok: true }
 }

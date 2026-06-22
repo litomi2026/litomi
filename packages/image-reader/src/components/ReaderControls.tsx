@@ -203,19 +203,17 @@ export default function ReaderControls<TPage extends ReaderPage>({
           >
             {messages.imageFitButtons[imageFit]}
           </button>
-          {isScrollMode && (
-            <div className="relative" ref={viewControlRef}>
-              <button
-                aria-expanded={isViewControlOpen}
-                className={twMerge(SECONDARY_BUTTON_CLASS_NAME, 'flex items-center justify-center gap-1')}
-                onClick={() => setIsViewControlOpen((prev) => !prev)}
-                type="button"
-              >
-                {messages.viewControlsButton}
-              </button>
-              {isViewControlOpen && <ViewControlPanel />}
-            </div>
-          )}
+          <div className="relative" ref={viewControlRef}>
+            <button
+              aria-expanded={isViewControlOpen}
+              className={twMerge(SECONDARY_BUTTON_CLASS_NAME, 'flex items-center justify-center gap-1')}
+              onClick={() => setIsViewControlOpen((prev) => !prev)}
+              type="button"
+            >
+              {messages.viewControlsButton}
+            </button>
+            {isViewControlOpen && <ViewControlPanel />}
+          </div>
           <button
             aria-expanded={isThumbnailStripOpen}
             className={twMerge(SECONDARY_BUTTON_CLASS_NAME, 'flex items-center justify-center gap-1')}

@@ -15,12 +15,13 @@ import { Props, ScrollReaderViewLoading } from './shared'
 
 const DEFAULT_PAGE_ASPECT_RATIO = 0.7
 const DEFAULT_AVAILABLE_HEIGHT = 1000
+const DEFAULT_AVAILABLE_WIDTH = 1000
 const HORIZONTAL_CELL_BASE_CLASS_NAME = 'flex min-h-0 min-w-0 [&_picture]:contents'
 
 const horizontalImageFitStyle: Record<ImageFit, string> = {
-  // 화면 맞춤: 한 스프레드씩 화면에 가득 채우고 자유롭게 스크롤해요(스냅 없음).
+  // 화면 맞춤: 이미지를 화면 안에 맞추고(좁으면 너비, 넓으면 높이) 끊김 없이 연속 스크롤해요.
   contain:
-    'items-center justify-center overflow-hidden p-safe [&_img]:max-w-[calc(100%/var(--spread-page-count))] [&_img]:max-h-[calc(100dvh-var(--safe-area-top)-var(--safe-area-bottom))] [&_img]:h-auto',
+    'items-center justify-center overflow-hidden [&_img]:max-w-[calc(100%/var(--spread-page-count))] [&_img]:max-h-dvh [&_img]:w-auto [&_img]:h-auto',
   // 세로 맞춤: 이미지를 화면 높이에 맞추고 자연 너비로 나열해 끊김 없이 연속 스크롤해요.
   height:
     'items-center justify-center overflow-hidden [&_img]:h-dvh [&_img]:w-auto [&_img]:max-w-full [&_img]:max-h-dvh',
@@ -31,6 +32,7 @@ const horizontalImageFitStyle: Record<ImageFit, string> = {
 
 type HorizontalCellProps<TPage extends ReaderPage> = {
   availableHeight: number
+  availableWidth: number
   aspectRatio: number
   imageFit: ImageFit
   isLowDataMode: boolean
@@ -57,10 +59,11 @@ export function HorizontalScrollReaderView<TPage extends ReaderPage>({
   const clearScrollTargetPageIndex = useReaderStore((state) => state.clearScrollTargetPageIndex)
   const [aspectRatio, setAspectRatio] = useState(DEFAULT_PAGE_ASPECT_RATIO)
   const [availableHeight, setAvailableHeight] = useState(() => getAvailableHeight())
+  const [availableWidth, setAvailableWidth] = useState(() => getAvailableWidth())
 
   const overscanCount = isLowDataMode ? 1 : 3
   const maxPage = readerLayout.spreadIndexByPageIndex.length
-  const isContinuous = imageFit === 'height'
+  const isContinuous = imageFit !== 'width'
   const columnWidth = isContinuous ? computeContinuousColumnWidth<TPage> : '100%'
 
   const dynamicStyle = {
@@ -141,10 +144,18 @@ export function HorizontalScrollReaderView<TPage extends ReaderPage>({
     hasMeasuredAspectRatioRef.current = false
 
     const resizeObserver = new ResizeObserver((entries) => {
-      const height = entries[0]?.contentRect.height
+      const rect = entries[0]?.contentRect
 
-      if (height && height > 0) {
-        setAvailableHeight(height)
+      if (!rect) {
+        return
+      }
+
+      if (rect.height > 0) {
+        setAvailableHeight(rect.height)
+      }
+
+      if (rect.width > 0) {
+        setAvailableWidth(rect.width)
       }
     })
     resizeObserver.observe(element)
@@ -231,6 +242,7 @@ export function HorizontalScrollReaderView<TPage extends ReaderPage>({
         cellComponent={HorizontalScrollReaderViewCell}
         cellProps={{
           availableHeight,
+          availableWidth,
           aspectRatio,
           imageFit,
           isLowDataMode,
@@ -255,11 +267,18 @@ export function HorizontalScrollReaderView<TPage extends ReaderPage>({
 function computeContinuousColumnWidth<TPage extends ReaderPage>(index: number, props: HorizontalCellProps<TPage>) {
   const spreadIndex = getLogicalSpreadIndex(index, props.readerLayout.spreads.length, props.readingDirection)
   const pageCount = props.readerLayout.spreads[spreadIndex]?.pages.length ?? 1
-  return Math.max(1, Math.round(props.availableHeight * props.aspectRatio * pageCount))
+  const naturalWidth = props.availableHeight * props.aspectRatio * pageCount
+  const width = props.imageFit === 'contain' ? Math.min(props.availableWidth, naturalWidth) : naturalWidth
+
+  return Math.max(1, Math.round(width))
 }
 
 function getAvailableHeight() {
   return typeof window === 'undefined' ? DEFAULT_AVAILABLE_HEIGHT : window.innerHeight
+}
+
+function getAvailableWidth() {
+  return typeof window === 'undefined' ? DEFAULT_AVAILABLE_WIDTH : window.innerWidth
 }
 
 function getLogicalSpreadIndex(visualSpreadIndex: number, spreadCount: number, readingDirection: ReadingDirection) {

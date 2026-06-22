@@ -2,7 +2,7 @@
 
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { ChevronRight, Dice6, History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { type ReactNode } from 'react'
 
 import LinkPending from '@/components/LinkPending'
@@ -13,30 +13,31 @@ import { LIBO_PAGE_LAYOUT } from './constant'
 import styles from './liboTheme.module.css'
 import { usePointsQuery } from './usePointsQuery'
 
-type Tab = 'earn' | 'history' | 'roulette' | 'shop'
-
-const TABS: { id: Tab; label: string; href: string; icon: ReactNode }[] = [
-  { id: 'earn', label: '적립', href: '/libo', icon: <PiggyBank className="size-4" /> },
-  { id: 'roulette', label: '룰렛', href: '/libo/roulette', icon: <Dice6 className="size-4" /> },
-  { id: 'shop', label: '상점', href: '/libo/shop', icon: <ShoppingBag className="size-4" /> },
-  { id: 'history', label: '내역', href: '/libo/history', icon: <History className="size-4" /> },
-]
-
 type Props = {
   children: ReactNode
 }
 
+type Tab = 'earn' | 'history' | 'roulette' | 'shop'
+
 export default function LiboNavigation({ children }: Props) {
-  const locale = useLocale()
-  const pathname = usePathname()
-  const activeTab = getActiveTab(pathname)
   const { data: me } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const { data: points } = usePointsQuery({ enabled: isLoggedIn })
+  const locale = useLocale()
+  const pathname = usePathname()
+  const t = useTranslations('Libo.navigation')
 
+  const activeTab = getActiveTab(pathname)
   const isAuthPending = me === undefined
   const isPointsPending = isLoggedIn && !points
   const isBalancePending = isAuthPending || isPointsPending
+
+  const TABS: { id: Tab; label: string; href: string; icon: ReactNode }[] = [
+    { id: 'earn', label: t('earn'), href: '/libo', icon: <PiggyBank className="size-4" /> },
+    { id: 'roulette', label: t('roulette'), href: '/libo/roulette', icon: <Dice6 className="size-4" /> },
+    { id: 'shop', label: t('shop'), href: '/libo/shop', icon: <ShoppingBag className="size-4" /> },
+    { id: 'history', label: t('history'), href: '/libo/history', icon: <History className="size-4" /> },
+  ]
 
   return (
     <div className={LIBO_PAGE_LAYOUT.container}>
@@ -44,14 +45,14 @@ export default function LiboNavigation({ children }: Props) {
       <div aria-disabled={!isLoggedIn} className={`${styles.heroCard} rounded-2xl p-4 aria-disabled:opacity-80`}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-zinc-300 mb-1">내 리보</p>
+            <p className="text-sm text-zinc-300 mb-1">{t('myLibo')}</p>
             <p className="text-3xl font-semibold tracking-tight text-zinc-50 tabular-nums">
               {isBalancePending
                 ? '...'
                 : isLoggedIn
                   ? (points?.balance.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]) ?? '—')
                   : '—'}
-              <span className="text-base font-medium text-zinc-300 ml-1">리보</span>
+              <span className="text-base font-medium text-zinc-300 ml-1">{t('liboUnit')}</span>
             </p>
           </div>
           <div className="size-12 rounded-full bg-white/7 border border-white/7 flex items-center justify-center">
@@ -60,18 +61,18 @@ export default function LiboNavigation({ children }: Props) {
         </div>
         <div className="mt-4 pt-3 border-t border-white/7 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-zinc-400">
           {me === null ? (
-            <p className="text-zinc-400/90">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>
+            <p className="text-zinc-400/90">{t('loginPrompt')}</p>
           ) : (
             <div className="flex gap-3">
               <span>
-                총 적립{' '}
+                {t('totalEarned')}{' '}
                 {isBalancePending ? '...' : (points?.totalEarned.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]) ?? '—')}{' '}
-                리보
+                {t('liboUnit')}
               </span>
               <span>
-                총 사용{' '}
+                {t('totalSpent')}{' '}
                 {isBalancePending ? '...' : (points?.totalSpent.toLocaleString(LOCALE_LANGUAGE_TAGS[locale]) ?? '—')}{' '}
-                리보
+                {t('liboUnit')}
               </span>
             </div>
           )}
@@ -80,7 +81,7 @@ export default function LiboNavigation({ children }: Props) {
             href="/libo/stats"
             prefetch={false}
           >
-            광고 수익 통계
+            {t('adStats')}
             <ChevronRight className="size-3 text-zinc-500" />
           </Link>
         </div>
@@ -88,7 +89,7 @@ export default function LiboNavigation({ children }: Props) {
 
       {/* 탭 네비게이션 */}
       <div
-        aria-label="리보 탭"
+        aria-label={t('tabsAriaLabel')}
         className="flex gap-1 p-1 rounded-xl bg-white/4 border border-white/7 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
         role="tablist"
       >

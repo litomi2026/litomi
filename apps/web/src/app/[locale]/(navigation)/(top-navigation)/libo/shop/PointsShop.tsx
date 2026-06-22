@@ -3,7 +3,7 @@
 import { POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { formatNumber } from '@litomi/std'
 import { Bookmark, BookOpen, Check, LibraryBig, Pin, Star } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -32,6 +32,8 @@ type ShopItem = {
 
 export default function PointsShop() {
   const locale = useLocale()
+  const t = useTranslations('Libo.shop')
+  const tNav = useTranslations('Libo.navigation')
   const { data: me } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const { data: points } = usePointsQuery({ enabled: isLoggedIn })
@@ -43,10 +45,10 @@ export default function PointsShop() {
 
   const isDataReady = me != null && points != null && expansion != null
 
-  function formatCurrentMax(current?: number, max?: number, unit: string = '개') {
+  function formatCurrentMax(current?: number, max?: number) {
     const currentText = current == null ? '—' : formatNumber(current, locale)
     const maxText = max == null ? '—' : formatNumber(max, locale)
-    return `${currentText}/${maxText}${unit}`
+    return `${currentText}/${maxText}`
   }
 
   const shopItems: ShopItem[] = [
@@ -54,8 +56,8 @@ export default function PointsShop() {
       id: 'bookmark-expansion-small',
       type: 'bookmark',
       itemId: 'small',
-      name: '북마크 확장',
-      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max)})`,
+      name: t('bookmarkExpansion'),
+      description: t('expansionDesc', { amount: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT, current: formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max) }),
       price: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_PRICE,
       icon: <Bookmark className="size-5" />,
     },
@@ -63,40 +65,40 @@ export default function PointsShop() {
       id: 'bookmark-expansion-large',
       type: 'bookmark',
       itemId: 'large',
-      name: '북마크 확장',
-      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max)})`,
+      name: t('bookmarkExpansion'),
+      description: t('expansionDesc', { amount: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT, current: formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max) }),
       price: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_PRICE,
       icon: <Bookmark className="size-5" />,
     },
     {
       id: 'library-expansion',
       type: 'library',
-      name: '내 서재 확장',
-      description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.library.current, displayExpansion?.library.max)})`,
+      name: t('libraryExpansion'),
+      description: t('expansionDesc', { amount: POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT, current: formatCurrentMax(displayExpansion?.library.current, displayExpansion?.library.max) }),
       price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE,
       icon: <LibraryBig className="size-5" />,
     },
     {
       id: 'pinned-library-expansion',
       type: 'pinned_library',
-      name: '고정 서재 확장',
-      description: `+${POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.pinnedLibrary.current, displayExpansion?.pinnedLibrary.max)})`,
+      name: t('pinnedLibraryExpansion'),
+      description: t('expansionDesc', { amount: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT, current: formatCurrentMax(displayExpansion?.pinnedLibrary.current, displayExpansion?.pinnedLibrary.max) }),
       price: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_PRICE,
       icon: <Pin className="size-5" />,
     },
     {
       id: 'history-expansion',
       type: 'history',
-      name: '감상 기록 확장',
-      description: `+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.history.current, displayExpansion?.history.max)})`,
+      name: t('historyExpansion'),
+      description: t('expansionDesc', { amount: POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT, current: formatCurrentMax(displayExpansion?.history.current, displayExpansion?.history.max) }),
       price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
       icon: <BookOpen className="size-5" />,
     },
     {
       id: 'rating-expansion',
       type: 'rating',
-      name: '평가 확장',
-      description: `+${POINT_CONSTANTS.RATING_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.rating.current, displayExpansion?.rating.max)})`,
+      name: t('ratingExpansion'),
+      description: t('expansionDesc', { amount: POINT_CONSTANTS.RATING_EXPANSION_AMOUNT, current: formatCurrentMax(displayExpansion?.rating.current, displayExpansion?.rating.max) }),
       price: POINT_CONSTANTS.RATING_EXPANSION_PRICE,
       icon: <Star className="size-5" />,
     },
@@ -108,7 +110,7 @@ export default function PointsShop() {
     }
 
     if (balance < item.price) {
-      toast.error('리보가 부족해요')
+      toast.error(t('notEnoughLibo'))
       return
     }
 
@@ -119,7 +121,7 @@ export default function PointsShop() {
 
     spendPoints.mutate(variables, {
       onSuccess: (data) => {
-        toast.success('구매했어요', { description: `${item.name} · 잔액 ${formatNumber(data.balance, locale)} 리보` })
+        toast.success(t('purchased'), { description: t('purchaseToastDesc', { name: item.name, balance: formatNumber(data.balance, locale) }) })
       },
     })
   }
@@ -182,7 +184,7 @@ export default function PointsShop() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm leading-5 text-zinc-400">리보로 내 공간을 확장해 보세요</p>
+      <p className="text-sm leading-5 text-zinc-400">{t('subtitle')}</p>
 
       <div className="space-y-2" role="listbox">
         {enrichedItems.map((item) => {
@@ -210,7 +212,7 @@ export default function PointsShop() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h4 className="font-medium text-zinc-200">{item.name}</h4>
-                  {item.isMaxed && <span className="text-xs text-zinc-500">최대</span>}
+                  {item.isMaxed && <span className="text-xs text-zinc-500">{t('max')}</span>}
                 </div>
                 <p className="text-sm text-zinc-500 truncate">{item.description}</p>
               </div>
@@ -220,7 +222,7 @@ export default function PointsShop() {
                   className="text-right font-semibold text-zinc-200 tabular-nums data-[afford=unaffordable]:text-zinc-500"
                   data-afford={item.affordState}
                 >
-                  {formatNumber(item.price, locale)} 리보
+                  {formatNumber(item.price, locale)} {tNav('liboUnit')}
                 </p>
                 <span
                   aria-hidden="true"
@@ -243,10 +245,10 @@ export default function PointsShop() {
         >
           <div className="min-w-0">
             <p className="text-sm font-medium text-zinc-200 truncate">
-              {selectedItem ? selectedItem.name : '상품을 선택해 주세요'}
+              {selectedItem ? selectedItem.name : t('selectItem')}
             </p>
             <p className="text-xs text-zinc-500 truncate">
-              {selectedItem ? `${formatNumber(selectedItem.price, locale)} 리보` : ''}
+              {selectedItem ? `${formatNumber(selectedItem.price, locale)} ${tNav('liboUnit')}` : ''}
             </p>
           </div>
 
@@ -255,7 +257,7 @@ export default function PointsShop() {
             disabled={purchaseDisabled}
             type="submit"
           >
-            {isPurchasing ? '처리 중…' : selectedItem?.isMaxed ? '최대' : '구매'}
+            {isPurchasing ? t('processing') : selectedItem?.isMaxed ? t('max') : t('purchase')}
           </button>
         </form>
       </div>

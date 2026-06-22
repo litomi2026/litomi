@@ -2,8 +2,8 @@
 
 import { useReaderMessages } from '#reader/context'
 import { useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
-import { Slider } from '@litomi/ui'
-import { Monitor, Palette } from 'lucide-react'
+import { Slider, Toggle } from '@litomi/ui'
+import { Monitor, Palette, Smartphone } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 const CONTROL_ICONS_CLASS = 'size-4 text-zinc-400'
@@ -18,6 +18,8 @@ export default function ViewControlPanel({ id }: Props) {
   const imageWidth = useReaderStore((state) => state.imageWidth)
   const setBrightness = useReaderSessionStore((state) => state.setBrightness)
   const setImageWidth = useReaderStore((state) => state.setImageWidth)
+  const avoidCutout = useReaderStore((state) => state.avoidCutout)
+  const setAvoidCutout = useReaderStore((state) => state.setAvoidCutout)
   const [localBrightness, setLocalBrightness] = useState(brightness)
   const [localWidth, setLocalWidth] = useState(imageWidth)
   const messages = useReaderMessages()
@@ -77,6 +79,17 @@ export default function ViewControlPanel({ id }: Props) {
               <span className={CONTROL_LABEL_CLASS}>{localWidth}%</span>
             </div>
           )}
+
+          <div className="flex items-center gap-3.5">
+            <Smartphone className={CONTROL_ICONS_CLASS} />
+            <span className="flex-1 text-xs font-medium text-zinc-400">{messages.avoidCutoutLabel}</span>
+            <Toggle
+              aria-label={messages.avoidCutoutLabel}
+              checked={avoidCutout}
+              className="w-9 peer-checked:bg-brand"
+              onToggle={setAvoidCutout}
+            />
+          </div>
         </div>
 
         <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-800 text-foreground">

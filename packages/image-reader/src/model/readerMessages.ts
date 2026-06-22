@@ -21,6 +21,7 @@ export type ReaderMessageOverrides = Partial<Omit<ReaderMessages, ReaderMessageM
 }
 
 export type ReaderMessages = {
+  avoidCutoutLabel: string
   brightPreset: string
   brightnessLabel: string
   cancelAction: string
@@ -76,6 +77,7 @@ type ReaderMessageMapKey =
 
 export const readerMessageCatalog = {
   ko: {
+    avoidCutoutLabel: '노치 영역 피하기',
     brightPreset: '밝게',
     brightnessLabel: '밝기',
     cancelAction: '취소',
@@ -145,6 +147,7 @@ export const readerMessageCatalog = {
     },
   },
   en: {
+    avoidCutoutLabel: 'Avoid screen cutout',
     brightPreset: 'Bright',
     brightnessLabel: 'Brightness',
     cancelAction: 'Cancel',
@@ -214,6 +217,7 @@ export const readerMessageCatalog = {
     },
   },
   ja: {
+    avoidCutoutLabel: 'ノッチ領域を避ける',
     brightPreset: '明るく',
     brightnessLabel: '明るさ',
     cancelAction: 'キャンセル',
@@ -283,6 +287,7 @@ export const readerMessageCatalog = {
     },
   },
   'zh-CN': {
+    avoidCutoutLabel: '避开刘海区域',
     brightPreset: '调亮',
     brightnessLabel: '亮度',
     cancelAction: '取消',
@@ -352,6 +357,7 @@ export const readerMessageCatalog = {
     },
   },
   'zh-TW': {
+    avoidCutoutLabel: '避開瀏海區域',
     brightPreset: '調亮',
     brightnessLabel: '亮度',
     cancelAction: '取消',

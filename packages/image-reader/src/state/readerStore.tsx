@@ -35,6 +35,7 @@ export type ReaderSessionStore = {
 }
 
 export type ReaderStore = {
+  avoidCutout: boolean
   clearScrollTargetPageIndex: () => void
   doublePageAnchorIndex: number
   getOrientation: () => Orientation
@@ -50,6 +51,7 @@ export type ReaderStore = {
   scrollAxis: ScrollAxis
   imageFit: ImageFit
   scrollTargetPageIndex: number | null
+  setAvoidCutout: (avoidCutout: boolean) => void
   setImageWidth: (imageWidth: ImageWidth) => void
   setOrientation: (orientation: Orientation) => void
   setPageView: (pageView: PageView) => void
@@ -72,7 +74,7 @@ type PersistedStoreApi<T> = StoreApi<T> & {
 
 type ReaderPersistedState = Pick<
   ReaderStore,
-  'imageFit' | 'imageWidth' | 'orientation' | 'pageView' | 'readingDirection' | 'scrollAxis' | 'viewerMode'
+  'avoidCutout' | 'imageFit' | 'imageWidth' | 'orientation' | 'pageView' | 'readingDirection' | 'scrollAxis' | 'viewerMode'
 >
 
 type ReaderProviderProps = {
@@ -110,6 +112,7 @@ const DEFAULT_PAGE_VIEW: PageView = 'single'
 const DEFAULT_PERSISTENCE_KEY = 'reader'
 const DEFAULT_READING_DIRECTION: ReadingDirection = 'ltr'
 const DEFAULT_SCROLL_AXIS: ScrollAxis = 'vertical'
+const DEFAULT_AVOID_CUTOUT = false
 const DEFAULT_IMAGE_FIT: ImageFit = 'contain'
 const DEFAULT_VIEWER_MODE: ViewerMode = 'page'
 const LOW_DATA_MODES: readonly LowDataMode[] = ['off', 'auto', 'on']
@@ -221,6 +224,7 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
   return createStore<ReaderStore>()(
     persist(
       (set, get) => ({
+        avoidCutout: DEFAULT_AVOID_CUTOUT,
         clearScrollTargetPageIndex: () => {
           set({ scrollTargetPageIndex: null })
         },
@@ -253,6 +257,12 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
         },
         scrollAxis: DEFAULT_SCROLL_AXIS,
         scrollTargetPageIndex: null,
+        setAvoidCutout: (avoidCutout) => {
+          set((state) => ({
+            avoidCutout,
+            ...(state.viewerMode === 'scroll' && { scrollTargetPageIndex: state.pageIndex }),
+          }))
+        },
         setImageWidth: (imageWidth) => {
           set((state) => ({
             imageWidth,
@@ -302,6 +312,7 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
       {
         name: localStorageKey,
         partialize: (state): ReaderPersistedState => ({
+          avoidCutout: state.avoidCutout,
           imageFit: state.imageFit,
           imageWidth: state.imageWidth,
           orientation: state.orientation,
