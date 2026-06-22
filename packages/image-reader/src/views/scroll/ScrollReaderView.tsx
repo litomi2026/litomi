@@ -43,9 +43,10 @@ function VerticalScrollReaderView<TPage extends ReaderPage>({
   renderPage,
 }: Props<TPage>) {
   const listRef = useListRef(null)
-  const brightness = useReaderSessionStore((state) => state.brightness)
   const imageFit = useReaderStore((state) => state.imageFit)
   const imageWidth = useReaderStore((state) => state.imageWidth)
+  const avoidCutout = useReaderStore((state) => state.avoidCutout)
+  const brightness = useReaderSessionStore((state) => state.brightness)
   const scrollTargetPageIndex = useReaderStore((state) => state.scrollTargetPageIndex)
   const clearScrollTargetPageIndex = useReaderStore((state) => state.clearScrollTargetPageIndex)
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: DEFAULT_SCROLL_ROW_HEIGHT })

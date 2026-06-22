@@ -49,6 +49,7 @@ export default function PagedReaderView<TPage extends ReaderPage>({
   renderPage,
   showTouchAreaOverlay,
 }: Props<TPage>) {
+  const avoidCutout = useReaderStore((state) => state.avoidCutout)
   const imageFit = useReaderStore((state) => state.imageFit)
   const messages = useReaderMessages()
   const maxPageIndex = Math.max(0, pages.length - 1)
