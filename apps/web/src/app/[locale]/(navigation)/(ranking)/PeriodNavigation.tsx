@@ -33,7 +33,6 @@ export default function PeriodNavigation() {
           className={SECONDARY_RANKING_NAV_LINK_CLASSNAME}
           href={`/ranking/${metricParam || DEFAULT_METRIC}/${periodValue}`}
           key={periodValue}
-          prefetch={false}
         >
           <LinkPending className="h-5 w-6">{t(`periods.${periodValue}`)}</LinkPending>
         </Link>

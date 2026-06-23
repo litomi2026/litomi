@@ -33,7 +33,6 @@ export default function MetricLink({ value }: Props) {
       aria-current={isSelected ? 'page' : undefined}
       className={PRIMARY_RANKING_NAV_LINK_CLASSNAME}
       href={`/ranking/${value}/${targetPeriod}`}
-      prefetch={false}
     >
       <LinkPending className="size-4">
         <info.icon className={getPrimaryRankingIconClassName(isSelected, info.selectedIconStyle)} />

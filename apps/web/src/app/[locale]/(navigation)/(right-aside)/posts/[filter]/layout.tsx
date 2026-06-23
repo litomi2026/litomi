@@ -37,11 +37,11 @@ export default async function Layout({ params, children }: LayoutProps<'/[locale
             'sm:[&_a]:hover:bg-foreground/10',
           )}
         >
-          <Link aria-selected={isrecommend} href="recommend" prefetch={false}>
+          <Link aria-selected={isrecommend} href="recommend">
             {t('recommend')}
             <div aria-selected={isrecommend} className={barClassName} />
           </Link>
-          <Link aria-selected={isFollowing} href="following" prefetch={false}>
+          <Link aria-selected={isFollowing} href="following">
             {t('following')}
             <div aria-selected={isFollowing} className={barClassName} />
           </Link>

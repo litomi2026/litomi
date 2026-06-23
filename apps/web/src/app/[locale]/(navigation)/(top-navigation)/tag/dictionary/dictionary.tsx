@@ -86,7 +86,6 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
           aria-current={type ? undefined : 'page'}
           className="rounded-md px-3 py-1 text-center text-sm font-medium text-zinc-400 transition hover:text-zinc-100 aria-current:bg-zinc-800 aria-current:text-zinc-100"
           href="/tag/dictionary"
-          prefetch={false}
         >
           {t('dictionary.views.alpha')}
         </Link>
@@ -94,7 +93,6 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
           aria-current={type ? 'page' : undefined}
           className="rounded-md px-3 py-1 text-center text-sm font-medium text-zinc-400 transition hover:text-zinc-100 aria-current:bg-zinc-800 aria-current:text-zinc-100"
           href={`/tag/dictionary/${activeType}`}
-          prefetch={false}
         >
           {t('dictionary.views.category')}
         </Link>
@@ -108,7 +106,6 @@ export default function TagDictionary({ categoryStats, entries, totalEntryCount,
               className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/50 px-3 py-1.5 text-sm text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-100 aria-current:border-zinc-500 aria-current:text-zinc-100"
               href={`/tag/dictionary/${category}`}
               key={category}
-              prefetch={false}
             >
               <span>{t(`dictionary.typeLabels.${category}`)}</span>
               <span className="tabular-nums text-xs opacity-60">{formatNumber(count, locale)}</span>

@@ -18,7 +18,6 @@ export default function DonationLink() {
       aria-current={isDonationPage ? 'page' : undefined}
       className={PRIMARY_RANKING_NAV_LINK_CLASSNAME}
       href="/ranking/donation"
-      prefetch={false}
     >
       <LinkPending className="size-4">
         <Heart className={getPrimaryRankingIconClassName(isDonationPage, 'fill')} />
