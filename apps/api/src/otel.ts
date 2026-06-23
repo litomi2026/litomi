@@ -9,6 +9,15 @@ export function initBackendOtel() {
     return
   }
 
+  if (process.env.COMMIT_SHA) {
+    process.env.OTEL_RESOURCE_ATTRIBUTES = [
+      process.env.OTEL_RESOURCE_ATTRIBUTES,
+      `service.version=${process.env.COMMIT_SHA}`,
+    ]
+      .filter(Boolean)
+      .join(',')
+  }
+
   if (process.env.OTEL_LOG_LEVEL === 'debug') {
     diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG)
   }
