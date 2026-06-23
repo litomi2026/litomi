@@ -1,5 +1,6 @@
 import type { ZipWriterConstructorOptions } from '@zip.js/zip.js/lib/zip-core-writer.js'
 
+import { isLitomiImageProxyURL } from '@litomi/http/image-proxy'
 import { sleep } from '@litomi/std'
 import pLimit from 'p-limit'
 import pThrottle from 'p-throttle'
@@ -51,7 +52,11 @@ const downloadThrottle = pThrottle({
 })
 
 const runThrottledDownloadAttempt = downloadThrottle((url: string, signal: AbortSignal) =>
-  fetch(url, { signal }),
+  fetch(url, {
+    // NOTE: litomi 이미지 프록시(img.litomi.cc)는 KR adult gate 통과를 위해 쿠키가 필요해서 credentials를 포함해요.
+    credentials: isLitomiImageProxyURL(url) ? 'include' : 'same-origin',
+    signal,
+  }),
 )
 
 type FileSystemFileHandle = {
