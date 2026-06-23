@@ -2,7 +2,7 @@ export const MAX_MANGA_DESCRIPTION_LENGTH = 150
 export const MAX_MANGA_TITLE_LENGTH = 50
 
 // NOTE: 꾸준히 올려줘야 함
-export const LAST_VERIFIED_MANGA_ID = 3_900_000
+export const LAST_VERIFIED_MANGA_ID = 4_000_000
 export const MAX_MANGA_ID = LAST_VERIFIED_MANGA_ID * 2
 
 export const BLACKLISTED_MANGA_IDS = [
