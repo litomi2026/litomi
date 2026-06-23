@@ -5,7 +5,6 @@ import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std'
-import { checkBotId } from 'botid/server'
 
 import type { RouteProps } from '@/types/nextjs'
 
@@ -16,7 +15,6 @@ import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
 
-const BOT_ID_ALLOWED_FRONTEND_HOSTS = ['litomi.cc', 'stg.litomi.cc']
 const BROWSER_CACHE_MAX_AGE = 3
 const VERCEL_CACHE_RATIO = 0.7
 
@@ -82,31 +80,6 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   try {
-    // const botVerification = await checkBotId({
-    //   advancedOptions: {
-    //     checkLevel: 'basic',
-    //     extraAllowedHosts: BOT_ID_ALLOWED_FRONTEND_HOSTS,
-    //   },
-    // })
-
-    // if (botVerification.isBot) {
-    //   const forbiddenHeaders = createCacheControlHeaders({
-    //     vercel: {
-    //       noStore: true,
-    //     },
-    //     browser: {
-    //       noStore: true,
-    //     },
-    //   })
-
-    //   return createProblemDetailsResponse(request, {
-    //     status: 403,
-    //     code: 'forbidden',
-    //     detail: '요청하신 작품은 접근할 수 없어요',
-    //     headers: createProxyHeaders(forbiddenHeaders),
-    //   })
-    // }
-
     const manga = await fetchMangaFromMultiSources({ id, locale, signal: request.signal })
 
     if (!manga) {
