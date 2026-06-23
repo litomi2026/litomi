@@ -1,6 +1,6 @@
 import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 
-import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
+import { BACKUP_CODE_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { isSearchLanguage } from '@litomi/domain/search/language'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { z } from 'zod'
@@ -189,8 +189,12 @@ export const postV1MeTwoFactorSetupResponseSchema = z.object({
 
 export type POSTV1MeTwoFactorSetupResponse = z.infer<typeof postV1MeTwoFactorSetupResponseSchema>
 
+const twoFactorTokenSchema = z.string().length(6).regex(/^\d+$/)
+
+const twoFactorBackupCodeSchema = z.string().length(9).regex(new RegExp(BACKUP_CODE_PATTERN))
+
 const twoFactorTokenBodySchema = z.object({
-  token: z.string().length(6).regex(/^\d+$/),
+  token: twoFactorTokenSchema,
 })
 
 export const postV1MeTwoFactorVerifyBodySchema = twoFactorTokenBodySchema
@@ -203,7 +207,9 @@ export const postV1MeTwoFactorVerifyResponseSchema = z.object({
 
 export type POSTV1MeTwoFactorVerifyResponse = z.infer<typeof postV1MeTwoFactorVerifyResponseSchema>
 
-export const deleteV1MeTwoFactorBodySchema = twoFactorTokenBodySchema
+export const deleteV1MeTwoFactorBodySchema = z.object({
+  token: z.union([twoFactorTokenSchema, twoFactorBackupCodeSchema]),
+})
 
 export type DELETEV1MeTwoFactorBody = z.infer<typeof deleteV1MeTwoFactorBodySchema>
 
