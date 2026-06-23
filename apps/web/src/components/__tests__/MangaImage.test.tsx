@@ -42,7 +42,7 @@ describe('MangaImage 대체 경로', () => {
     expect(image.getAttribute('src')).toBe('/image/fallback.svg')
   })
 
-  test('프록시 URL을 표시할 때만 anonymous crossOrigin 값을 붙인다', () => {
+  test('프록시 URL을 표시할 때만 use-credentials crossOrigin 값을 붙인다', () => {
     const { getByAltText } = render(<MangaImage imageIndex={4} mangaId={123} src={originalSourceURL} />)
     const image = getByAltText('manga-image-5')
 
@@ -59,12 +59,12 @@ describe('MangaImage 대체 경로', () => {
     fireEvent.error(image)
 
     expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/original/5.webp')
-    expect(image.getAttribute('crossorigin')).toBe('anonymous')
+    expect(image.getAttribute('crossorigin')).toBe('use-credentials')
 
     fireEvent.error(image)
 
     expect(image.getAttribute('src')).toBe(originalMaterializeURL)
-    expect(image.getAttribute('crossorigin')).toBe('anonymous')
+    expect(image.getAttribute('crossorigin')).toBe('use-credentials')
 
     fireEvent.error(image)
 

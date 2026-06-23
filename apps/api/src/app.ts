@@ -48,6 +48,7 @@ app.use(
     origin: () => APP_ORIGIN,
     allowMethods: ['GET', 'HEAD'],
     exposeHeaders: ['ETag'],
+    credentials: true,
     maxAge: 86400,
   }),
 )
