@@ -57,7 +57,7 @@ export default function MangaImage({
   const displayedURL = imageURLs[imageURLIndex]
   const activePicture = displayedPictures.find(({ media }) => !media || window.matchMedia(media).matches)
   const activeURL = activePicture ? activePicture.srcSet : displayedURL
-  const crossOrigin = isLitomiImageProxyURL(activeURL) ? 'anonymous' : undefined
+  const crossOrigin = isLitomiImageProxyURL(activeURL) ? 'use-credentials' : undefined
 
   function handleError(event: SyntheticEvent<HTMLImageElement, Event>) {
     onError?.(event)
