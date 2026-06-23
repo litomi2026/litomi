@@ -1,5 +1,4 @@
 import { httpInstrumentationMiddleware } from '@hono/otel'
-import { env } from '@litomi/env/server.common'
 import { Hono } from 'hono'
 import { getConnInfo } from 'hono/bun'
 import { compress } from 'hono/compress'
@@ -75,17 +74,6 @@ app.use(
     crossOriginResourcePolicy: 'same-site',
   }),
 )
-
-// NOTE: 쿠키와 헤더는 Cloudflare 캐시 키가 아니기에 현재는 search param 값만 사용 가능함
-// app.use(
-//   languageDetector({
-//     lookupQueryString: 'locale',
-//     lookupCookie: 'locale',
-//     supportedLanguages: ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'],
-//     fallbackLanguage: 'ko',
-//     caches: false,
-//   }),
-// )
 
 app.route('/api', apiRoutes)
 app.route('/i', imageRoutes)
