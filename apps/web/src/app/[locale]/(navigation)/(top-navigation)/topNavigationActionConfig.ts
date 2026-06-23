@@ -1,5 +1,11 @@
-export const LIVE_CAM_AD_URL =
-  'https://t.nettrck.store/c1/d012584b-d43a-4900-9811-bdeaca53b632?externalId={impressionId}&cv1={impressionId}&cv2={userId}&cv3={device}&cv4={creativeId}&cv5={campaignId}&cv6={language}&cv7=%SLAVA_KPSS%&cv8={browser}&cv9={siteId}&cv10={creativeName}'
+import { Locale, type PublicLocale } from '@litomi/domain/locale'
+
+export const LIVE_CAM_AD_URL_BY_LOCALE = {
+  [Locale.KO]: 'https://en.hotzcam.com/girls/korean',
+  [Locale.EN]: 'https://en.hotzcam.com/girls/world-tournament',
+  [Locale.JA]: 'https://ja.hotzcam.com/girls/japanese',
+  [Locale.ZH_CN]: 'https://zh.hotzcam.com/girls/chinese',
+} satisfies Record<PublicLocale, string>
 
 export const TOR_LINKS = {
   braveBrowserTor: {
