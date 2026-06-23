@@ -1,16 +1,18 @@
 'use client'
 
+import { type PublicLocale } from '@litomi/domain/locale'
 import { Webcam } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'
 import { createPromotionEventParams } from '@/lib/analytics/promotion'
 
-import { LIVE_CAM_AD_URL, topNavigationActionClassName } from './topNavigationActionConfig'
+import { LIVE_CAM_AD_URL_BY_LOCALE, topNavigationActionClassName } from './topNavigationActionConfig'
 
 export default function LiveCamPromotionLink() {
   const t = useTranslations('TopNavigation.actions')
+  const locale = useLocale() as PublicLocale
 
   const promotionParams = createPromotionEventParams({
     creative_name: 'top-navigation-button',
@@ -28,7 +30,7 @@ export default function LiveCamPromotionLink() {
   return (
     <a
       className={topNavigationActionClassName}
-      href={LIVE_CAM_AD_URL}
+      href={LIVE_CAM_AD_URL_BY_LOCALE[locale]}
       onClick={() => track('select_promotion', promotionParams)}
       ref={ref}
       rel="noopener sponsored"

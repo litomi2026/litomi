@@ -1,4 +1,11 @@
-export const LIVE_CAM_AD_URL = 'https://en.hotzcam.com/girls/korean'
+import { Locale, type PublicLocale } from '@litomi/domain/locale'
+
+export const LIVE_CAM_AD_URL_BY_LOCALE = {
+  [Locale.KO]: 'https://en.hotzcam.com/girls/korean',
+  [Locale.EN]: 'https://en.hotzcam.com/girls/world-tournament',
+  [Locale.JA]: 'https://ja.hotzcam.com/girls/japanese',
+  [Locale.ZH_CN]: 'https://zh.hotzcam.com/girls/chinese',
+} satisfies Record<PublicLocale, string>
 
 export const TOR_LINKS = {
   braveBrowserTor: {
