@@ -35,7 +35,6 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
               <Link
                 className="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-lg px-2 text-xs font-semibold text-zinc-400 transition hover:bg-zinc-900 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700/70"
                 href={`/ranking/${MetricParam.VIEW}/${PeriodParam.DAY}`}
-                prefetch={false}
               >
                 {t('viewAll')}
                 <ChevronRight aria-hidden className="size-3.5" />

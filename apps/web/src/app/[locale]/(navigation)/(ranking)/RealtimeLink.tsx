@@ -18,7 +18,6 @@ export default function RealtimeLink() {
       aria-current={isRealtimePage ? 'page' : undefined}
       className={PRIMARY_RANKING_NAV_LINK_CLASSNAME}
       href="/realtime"
-      prefetch={false}
     >
       <LinkPending className="size-4">
         <Activity className={getPrimaryRankingIconClassName(isRealtimePage, 'stroke-bold')} />
