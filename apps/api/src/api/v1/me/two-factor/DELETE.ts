@@ -1,7 +1,8 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
+import { verifyBackupCode } from '@litomi/auth/two-factor-backup-code'
 import { deleteV1MeTwoFactorBodySchema, type DELETEV1MeTwoFactorResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
-import { twoFactorTable } from '@litomi/db/app/two-factor'
+import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
 
@@ -39,8 +40,20 @@ route.delete('/', zProblemValidator('json', deleteV1MeTwoFactorBodySchema), asyn
         return { kind: 'not-found' } as const
       }
 
-      const secret = decryptTOTPSecret(twoFactor.secret)
-      const isValidToken = await verifyTOTPToken(token, secret)
+      let isValidToken: boolean
+
+      if (token.length === 6) {
+        const secret = decryptTOTPSecret(twoFactor.secret)
+        isValidToken = await verifyTOTPToken(token, secret)
+      } else {
+        const backupCodes = await tx
+          .select({ codeHash: twoFactorBackupCodeTable.codeHash })
+          .from(twoFactorBackupCodeTable)
+          .where(eq(twoFactorBackupCodeTable.userId, userId))
+
+        const verifications = await Promise.all(backupCodes.map(({ codeHash }) => verifyBackupCode(token, codeHash)))
+        isValidToken = verifications.some(Boolean)
+      }
 
       if (!isValidToken) {
         return { kind: 'invalid-token' } as const

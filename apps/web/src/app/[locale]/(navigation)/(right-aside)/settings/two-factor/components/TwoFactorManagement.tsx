@@ -1,8 +1,9 @@
 'use client'
 
+import { BACKUP_CODE_PATTERN } from '@litomi/domain/auth/policy'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { Loader2 } from 'lucide-react'
+import { Key, Loader2 } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -113,12 +114,14 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
 }
 
 function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) {
+  const [isBackupCode, setIsBackupCode] = useState(false)
+
   const disableMutation = useMutation({
     mutationFn: disableTwoFactor,
     onSuccess,
   })
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!event.currentTarget.reportValidity()) {
@@ -136,7 +139,29 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
       <div className="rounded-lg bg-red-900/20 border border-red-900 p-4">
         <p className="text-sm text-red-500">2단계 인증을 비활성화하면 계정 보안이 약해져요. 계속할까요?</p>
       </div>
-      <OneTimeCodeInput disabled={disableMutation.isPending} />
+      {isBackupCode ? (
+        <OneTimeCodeInput
+          autoCapitalize="characters"
+          autoComplete="off"
+          disabled={disableMutation.isPending}
+          inputMode="text"
+          maxLength={9}
+          minLength={9}
+          pattern={BACKUP_CODE_PATTERN}
+          placeholder="XXXX-XXXX"
+        />
+      ) : (
+        <OneTimeCodeInput disabled={disableMutation.isPending} />
+      )}
+      <button
+        className="flex items-center justify-self-start text-sm text-zinc-400 transition hover:text-zinc-200 disabled:opacity-50"
+        disabled={disableMutation.isPending}
+        onClick={() => setIsBackupCode((prev) => !prev)}
+        type="button"
+      >
+        <Key className="mr-1 size-4" />
+        {isBackupCode ? '인증 앱 코드 사용' : '인증 앱을 잃어버렸나요? 복구 코드 사용'}
+      </button>
       <div className="flex gap-3">
         <button
           className={twMerge(
