@@ -21,9 +21,11 @@ RUN bunx turbo run build --filter=@litomi/api
 
 # Stage 3: Runtime
 FROM gcr.io/distroless/base-nossl-debian12:nonroot
+WORKDIR /app
 
+ARG COMMIT_SHA
+ENV COMMIT_SHA=$COMMIT_SHA
 ENV NODE_ENV=production
-WORKDIR /home
 
 COPY --chown=nonroot:nonroot --from=builder /app/apps/api/dist/litomi-api ./
 
