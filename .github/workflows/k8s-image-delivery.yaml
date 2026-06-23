@@ -205,6 +205,52 @@ jobs:
           tags: ${{ steps.metadata_cataloger.outputs.tags }}
           labels: ${{ steps.metadata_cataloger.outputs.labels }}
 
+  build-and-publish-notifier-image:
+    name: Build and publish notifier image
+    if: ${{ github.ref_name == 'main' }}
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.build_notifier_image.outputs.digest }}
+    env:
+      IMAGE_NOTIFIER: ghcr.io/${{ github.repository_owner }}/litomi-notifier
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Generate notifier image metadata
+        id: metadata_notifier
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE_NOTIFIER }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=raw,value=latest
+            type=ref,event=branch
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Authenticate to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish notifier image
+        id: build_notifier_image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/notifier/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.metadata_notifier.outputs.tags }}
+          labels: ${{ steps.metadata_notifier.outputs.labels }}
+
   build-and-publish-recommender-image:
     name: Build and publish recommender image
     if: ${{ github.ref_name == 'main' }}
@@ -258,6 +304,7 @@ jobs:
       - build-and-publish-web-image
       - build-and-publish-api-image
       - build-and-publish-cataloger-image
+      - build-and-publish-notifier-image
       - build-and-publish-recommender-image
     runs-on: ubuntu-24.04
     permissions:
@@ -267,10 +314,16 @@ jobs:
       OPS_PATH: litomi-ops
       OPS_WEB_OVERLAY_FILE: k8s/workload/litomi/prod/web/kustomization.yaml
       OPS_API_OVERLAY_FILE: k8s/workload/litomi/prod/api/kustomization.yaml
+      OPS_CATALOGER_OVERLAY_FILE: k8s/workload/litomi/prod/cataloger/kustomization.yaml
+      OPS_NOTIFIER_OVERLAY_FILE: k8s/workload/litomi/prod/notifier/kustomization.yaml
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
       IMAGE_API: ghcr.io/${{ github.repository_owner }}/litomi-api
+      IMAGE_CATALOGER: ghcr.io/${{ github.repository_owner }}/litomi-cataloger
+      IMAGE_NOTIFIER: ghcr.io/${{ github.repository_owner }}/litomi-notifier
       IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
       IMAGE_API_DIGEST: ${{ needs.build-and-publish-api-image.outputs.digest }}
+      IMAGE_CATALOGER_DIGEST: ${{ needs.build-and-publish-cataloger-image.outputs.digest }}
+      IMAGE_NOTIFIER_DIGEST: ${{ needs.build-and-publish-notifier-image.outputs.digest }}
     steps:
       - name: Generate litomi-ops GitHub App token
         id: ops_app_token
@@ -319,6 +372,8 @@ jobs:
 
           set_digest "${OPS_PATH}/${OPS_WEB_OVERLAY_FILE}" "${IMAGE_WEB}" "${IMAGE_WEB_DIGEST}"
           set_digest "${OPS_PATH}/${OPS_API_OVERLAY_FILE}" "${IMAGE_API}" "${IMAGE_API_DIGEST}"
+          set_digest "${OPS_PATH}/${OPS_CATALOGER_OVERLAY_FILE}" "${IMAGE_CATALOGER}" "${IMAGE_CATALOGER_DIGEST}"
+          set_digest "${OPS_PATH}/${OPS_NOTIFIER_OVERLAY_FILE}" "${IMAGE_NOTIFIER}" "${IMAGE_NOTIFIER_DIGEST}"
 
       - name: Create or update litomi-ops production promotion PR
         id: create_production_pr
@@ -329,6 +384,8 @@ jobs:
           add-paths: |
             ${{ env.OPS_WEB_OVERLAY_FILE }}
             ${{ env.OPS_API_OVERLAY_FILE }}
+            ${{ env.OPS_CATALOGER_OVERLAY_FILE }}
+            ${{ env.OPS_NOTIFIER_OVERLAY_FILE }}
           branch: codex/litomi-production-image-digests
           delete-branch: true
           commit-message: 'chore(k8s): promote litomi image digests'
@@ -338,6 +395,8 @@ jobs:
 
             - Web: `${{ env.IMAGE_WEB }}@${{ env.IMAGE_WEB_DIGEST }}`
             - API: `${{ env.IMAGE_API }}@${{ env.IMAGE_API_DIGEST }}`
+            - Cataloger: `${{ env.IMAGE_CATALOGER }}@${{ env.IMAGE_CATALOGER_DIGEST }}`
+            - Notifier: `${{ env.IMAGE_NOTIFIER }}@${{ env.IMAGE_NOTIFIER_DIGEST }}`
             - Source commit: `${{ github.sha }}`
             - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           base: main
