@@ -22,6 +22,10 @@ initializeFaro({
     new WebVitalsInstrumentation(),
     new PerformanceInstrumentation(),
   ],
+  sessionTracking: {
+    samplingRate: 0.5,
+    persistent: true,
+  },
   url: process.env.NEXT_PUBLIC_FARO_URL,
 })
 
@@ -33,7 +37,7 @@ Sentry.init({
     service: 'litomi-web',
   }),
   debug: false,
-  sampleRate: 1,
+  sampleRate: 0.1,
 })
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
