@@ -1,8 +1,8 @@
 import '@test/setup.base'
 import '@test/setup.dom'
+import { afterAll, afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { afterAll, afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import { ProblemDetailsError } from '@/utils/react-query-error'
 

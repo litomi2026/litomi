@@ -1,4 +1,4 @@
-import { mangaIdParamSchema, putV1MangaIdRatingRequestSchema, type PUTV1MangaIdRatingResponse } from '@litomi/contracts'
+import { mangaIdParamSchema, type PUTV1MangaIdRatingResponse, putV1MangaIdRatingRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { userExpansionTable } from '@litomi/db/app/points'

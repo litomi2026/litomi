@@ -1,13 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-
-import type { TwoFactorSetupData, TwoFactorStatus } from './types'
-
 import TwoFactorBackupCodes from './components/TwoFactorBackupCodes'
 import TwoFactorManagement from './components/TwoFactorManagement'
 import TwoFactorOnboarding from './components/TwoFactorOnboarding'
 import TwoFactorSetup from './components/TwoFactorSetup'
+import type { TwoFactorSetupData, TwoFactorStatus } from './types'
 
 interface Props {
   initialStatus: TwoFactorStatus | null

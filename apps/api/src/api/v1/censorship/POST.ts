@@ -1,4 +1,4 @@
-import { postV1CensorshipCreateBodySchema, type POSTV1CensorshipCreateResponse } from '@litomi/contracts'
+import { type POSTV1CensorshipCreateResponse, postV1CensorshipCreateBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/censorship/policy'

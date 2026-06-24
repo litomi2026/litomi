@@ -207,7 +207,6 @@ async function main() {
     } catch (e) {
       bumpError(e)
       maybeFlush(true)
-      continue
     }
   }
 

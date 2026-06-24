@@ -1,7 +1,7 @@
+import { describe, expect, setSystemTime, test } from 'bun:test'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { expectPersistentCookie, expectSessionCookie } from '@test/backend/setup/auth'
 import { readSessionFamiliesForUser, readUserById, seedTwoFactor, seedUser } from '@test/backend/setup/db'
-import { describe, expect, setSystemTime, test } from 'bun:test'
 
 import {
   AUTH_TEST_CHROME_USER_AGENT,

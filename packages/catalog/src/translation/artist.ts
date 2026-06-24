@@ -6,7 +6,7 @@ import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { getArtistSponsors } from '../sponsor/artist'
 import artistTranslationJSON from './artist.json'
 import { translateCategory } from './category'
-import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
+import { getPrefixedTranslationLabels, type TranslationMap, translateValue } from './common'
 
 const ARTIST_TRANSLATION = artistTranslationJSON as TranslationMap
 

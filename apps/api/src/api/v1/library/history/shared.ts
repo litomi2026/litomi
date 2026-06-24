@@ -1,4 +1,4 @@
-import { db } from '@litomi/db/app'
+import type { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
 import { userExpansionTable } from '@litomi/db/app/points'
 import { MAX_READING_HISTORY_PER_USER } from '@litomi/domain/library/policy'

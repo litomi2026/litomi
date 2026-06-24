@@ -1,7 +1,7 @@
 'use client'
 
 import { captureException } from '@sentry/nextjs'
-import { ErrorBoundaryFallbackProps } from '@suspensive/react'
+import type { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { RefreshCw, TriangleAlert } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'

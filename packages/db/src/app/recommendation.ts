@@ -1,25 +1,13 @@
-import {
-  bigint,
-  foreignKey,
-  integer,
-  pgTable,
-  primaryKey,
-  smallint,
-  timestamp,
-  uniqueIndex,
-} from 'drizzle-orm/pg-core'
+import { bigint, foreignKey, integer, pgTable, primaryKey, smallint, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
 
 import { userTable } from './user'
 
-export const mangaRecommendationSetTable = pgTable(
-  'manga_recommendation_set',
-  {
-    userId: bigint('user_id', { mode: 'number' })
-      .primaryKey()
-      .references(() => userTable.id, { onDelete: 'cascade' }),
-    generatedAt: timestamp('generated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-  },
-).enableRLS()
+export const mangaRecommendationSetTable = pgTable('manga_recommendation_set', {
+  userId: bigint('user_id', { mode: 'number' })
+    .primaryKey()
+    .references(() => userTable.id, { onDelete: 'cascade' }),
+  generatedAt: timestamp('generated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+}).enableRLS()
 
 export const mangaRecommendationTable = pgTable(
   'manga_recommendation',

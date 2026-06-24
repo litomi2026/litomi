@@ -1,4 +1,4 @@
-import { deleteV1MePasskeyParamSchema, type DELETEV1MePasskeyResponse } from '@litomi/contracts'
+import { type DELETEV1MePasskeyResponse, deleteV1MePasskeyParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { and, eq } from 'drizzle-orm'

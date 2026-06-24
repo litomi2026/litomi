@@ -2,10 +2,8 @@
 
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
-
-import type { ReadingHistorySource } from './common'
-
 import BulkDeleteDialog from '../BulkDeleteDialog'
+import type { ReadingHistorySource } from './common'
 import useDeleteReadingHistoryMutation from './useDeleteReadingHistoryMutation'
 
 type Props = {

@@ -1,10 +1,10 @@
 'use client'
 
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
-import { TurnstileInstance } from '@marsidev/react-turnstile'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { Eye, EyeOff, Info, Loader2, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { SubmitEvent, useEffect, useRef, useState } from 'react'
+import { type SubmitEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 

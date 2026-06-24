@@ -1,6 +1,5 @@
-import type { GETV1MeResponse } from '@litomi/contracts'
-
 import { describe, expect, it } from 'bun:test'
+import type { GETV1MeResponse } from '@litomi/contracts'
 
 import { hasAdultAccess, isAdultAccessBlocked, isAdultVerified, shouldShowNonAdultAds } from '../adult-verification'
 

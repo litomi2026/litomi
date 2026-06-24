@@ -1,7 +1,7 @@
 'use client'
 
 import { LogIn } from 'lucide-react'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import LinkPending from '@/components/LinkPending'
 import { getStatusActionClassName } from '@/components/status/styles'

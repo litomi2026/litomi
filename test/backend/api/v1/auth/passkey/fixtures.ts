@@ -1,6 +1,5 @@
-import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
-
 import { CookieKey } from '@litomi/http/cookie'
+import type { AuthenticationResponseJSON } from '@simplewebauthn/server'
 import { getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import { installExternalFetchGuard } from '@test/backend/setup/network'
 

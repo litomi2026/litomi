@@ -1,6 +1,6 @@
 'use client'
 
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/manga/policy'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { ErrorBoundary } from '@suspensive/react'

@@ -1,3 +1,4 @@
+import { describe, expect, setSystemTime, test } from 'bun:test'
 import { CookieKey } from '@litomi/http/cookie'
 import { getSetCookieNames, getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
 import {
@@ -9,7 +10,6 @@ import {
   seedTwoFactor,
   seedUser,
 } from '@test/backend/setup/db'
-import { describe, expect, setSystemTime, test } from 'bun:test'
 
 import { verifyTrustedBrowserToken } from '@/api/v1/auth/login/util'
 

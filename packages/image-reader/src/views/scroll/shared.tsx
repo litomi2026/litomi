@@ -1,7 +1,7 @@
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
+import { Loader2 } from 'lucide-react'
 
 import { useReaderMessages } from '#reader/context'
-import { Loader2 } from 'lucide-react'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 
 export type Props<TPage extends ReaderPage> = {
   isLowDataMode: boolean

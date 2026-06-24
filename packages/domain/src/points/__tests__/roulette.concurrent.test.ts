@@ -1,5 +1,5 @@
-import { assertRouletteConfig, getRouletteRoiInfo, ROULETTE_CONFIG } from '@litomi/domain/points/roulette'
 import { describe, expect, it } from 'bun:test'
+import { assertRouletteConfig, getRouletteRoiInfo, ROULETTE_CONFIG } from '@litomi/domain/points/roulette'
 
 describe('룰렛 설정', () => {
   it('ROI가 1보다 작고 목표값 이하인지 만족한다', () => {

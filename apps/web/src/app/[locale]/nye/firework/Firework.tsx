@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge'
 import { FireworkEngine } from './FireworkEngine'
 import PauseButton from './FireworkPauseButton'
 import SoundButton from './FireworkSoundButton'
-import { FireworkConfig } from './types'
+import type { FireworkConfig } from './types'
 
 interface FireworkProps {
   className?: string
@@ -78,7 +78,6 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
     return () => {
       engine.destroy()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

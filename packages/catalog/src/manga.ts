@@ -1,6 +1,6 @@
 import type { Locale } from '@litomi/domain/locale'
 
-import { type Manga, MANGA_TYPE_VALUE_BY_ID, tagCategoryIntToName } from '@litomi/domain/manga/model'
+import { MANGA_TYPE_VALUE_BY_ID, type Manga, tagCategoryIntToName } from '@litomi/domain/manga/model'
 
 import { translateArtistList } from './translation/artist'
 import { translateCharacterList } from './translation/character'

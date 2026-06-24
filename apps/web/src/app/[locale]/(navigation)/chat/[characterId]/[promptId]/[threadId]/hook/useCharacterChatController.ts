@@ -6,14 +6,17 @@ import ms from 'ms'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { ModelId } from '@/app/[locale]/(navigation)/chat/lib/webllmModel'
+import type { ModelId } from '@/app/[locale]/(navigation)/chat/lib/webllmModel'
 import { archiveChatMessages } from '@/app/[locale]/(navigation)/chat/storage/indexeddb'
 import { enqueueAppendMessages, enqueueCreateSession } from '@/app/[locale]/(navigation)/chat/storage/outbox'
-import { CharacterDefinition, CharacterPromptDefinition } from '@/app/[locale]/(navigation)/chat/types/characterDefinition'
-import { ChatMessage } from '@/app/[locale]/(navigation)/chat/types/chatMessage'
+import type {
+  CharacterDefinition,
+  CharacterPromptDefinition,
+} from '@/app/[locale]/(navigation)/chat/types/characterDefinition'
+import type { ChatMessage } from '@/app/[locale]/(navigation)/chat/types/chatMessage'
 import { buildContext, buildSummaryPrompt } from '@/app/[locale]/(navigation)/chat/util/chatPrompts'
 import { countHistoryTokens, pickPruneCountByTokenBudget } from '@/app/[locale]/(navigation)/chat/util/chatTokens'
-import { getTokenBudget, TokenBudget } from '@/app/[locale]/(navigation)/chat/util/tokenBudget'
+import { getTokenBudget, type TokenBudget } from '@/app/[locale]/(navigation)/chat/util/tokenBudget'
 
 import { useStateWithRef } from './useStateWithRef'
 

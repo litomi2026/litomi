@@ -7,10 +7,8 @@ import { Key, Loader2 } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { TwoFactorStatus } from '../types'
-
 import { disableTwoFactor, regenerateTwoFactorBackupCodes } from '../api'
+import type { TwoFactorStatus } from '../types'
 import OneTimeCodeInput from './OneTimeCodeInput'
 import TrustedBrowsers from './TrustedBrowsers'
 

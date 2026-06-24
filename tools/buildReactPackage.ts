@@ -1,4 +1,3 @@
-import { transformFileSync } from '@babel/core'
 import { spawnSync } from 'node:child_process'
 import {
   copyFileSync,
@@ -11,6 +10,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { basename, dirname, join, relative, resolve } from 'node:path'
+import { transformFileSync } from '@babel/core'
 
 const packageRootArg = process.argv[2]
 

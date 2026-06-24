@@ -1,6 +1,6 @@
 'use client'
 
-import { Locale, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
+import { LOCALE_LANGUAGE_TAGS, Locale } from '@litomi/domain/locale'
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import { RefreshCw } from 'lucide-react'

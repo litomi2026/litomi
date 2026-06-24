@@ -2,7 +2,7 @@
 
 import type { POSTV1MangaIdHistoryBody } from '@litomi/contracts'
 
-import { type Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import Reader, {
   type ReaderNotice,
   type ReaderPageRenderContext,

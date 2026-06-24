@@ -1,4 +1,4 @@
-import { postV1PointsDonationCreateRequestSchema, type POSTV1PointsDonationCreateResponse } from '@litomi/contracts'
+import { type POSTV1PointsDonationCreateResponse, postV1PointsDonationCreateRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import {
   DONATION_RECIPIENT_TYPE,

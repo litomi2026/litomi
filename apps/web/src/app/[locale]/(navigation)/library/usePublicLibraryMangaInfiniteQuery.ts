@@ -1,6 +1,6 @@
 import type { GETV1LibraryMangaResponse } from '@litomi/contracts'
 
-import { Locale } from '@litomi/domain/locale'
+import type { Locale } from '@litomi/domain/locale'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 

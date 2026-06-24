@@ -1,7 +1,7 @@
 import 'server-only'
 import type { Locale } from '@litomi/domain/locale'
 
-import { MangaTag } from '@litomi/domain/manga/model'
+import type { MangaTag } from '@litomi/domain/manga/model'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { getPrimaryTranslation, type TranslationEntry } from './common'

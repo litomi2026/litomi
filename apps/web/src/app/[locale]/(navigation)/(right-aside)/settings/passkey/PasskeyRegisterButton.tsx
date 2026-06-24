@@ -8,10 +8,8 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'
-
-import type { PasskeySignalData } from './common'
-
 import { requestPasskeyRegistrationOptions, verifyPasskeyRegistration } from './api'
+import type { PasskeySignalData } from './common'
 import PasskeyNameDialog from './PasskeyNameDialog'
 
 type Props = {

@@ -1,9 +1,8 @@
 import 'server-only'
 
-import type { PublicLocale } from '@litomi/domain/locale'
-
 import { catalogMangaRecordToManga } from '@litomi/catalog/manga'
 import { selectCatalogMangaRecordById } from '@litomi/db/query/catalog-manga'
+import type { PublicLocale } from '@litomi/domain/locale'
 import { cache } from 'react'
 
 export const getManga = cache(async (id: number, locale: PublicLocale) => {

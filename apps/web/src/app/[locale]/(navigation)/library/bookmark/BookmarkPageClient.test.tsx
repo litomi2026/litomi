@@ -1,13 +1,12 @@
 import '@test/setup.dom'
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import type { GETV1BookmarkResponse } from '@litomi/contracts'
-
 import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, fireEvent, waitFor } from '@testing-library/react'
-import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
@@ -75,11 +74,7 @@ afterAll(() => {
 describe('BookmarkPageClient', () => {
   test('정렬 옵션을 렌더링한다', () => {
     const view = renderWithLibrarySelection(
-      <BookmarkPageClient
-        initialData={basePage}
-        initialSort={LibraryItemSort.CREATED_DESC}
-        initialView={View.IMAGE}
-      />,
+      <BookmarkPageClient initialData={basePage} initialSort={LibraryItemSort.CREATED_DESC} initialView={View.IMAGE} />,
     )
 
     expect(view.getByRole('option', { name: '최근 추가순' })).toBeTruthy()
@@ -96,11 +91,7 @@ describe('BookmarkPageClient', () => {
     })
 
     const view = renderWithLibrarySelection(
-      <BookmarkPageClient
-        initialData={basePage}
-        initialSort={LibraryItemSort.CREATED_DESC}
-        initialView={View.IMAGE}
-      />,
+      <BookmarkPageClient initialData={basePage} initialSort={LibraryItemSort.CREATED_DESC} initialView={View.IMAGE} />,
     )
 
     fireEvent.change(view.getByRole('combobox'), {

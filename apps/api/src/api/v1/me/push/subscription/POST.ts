@@ -1,4 +1,4 @@
-import { postV1MePushSubscriptionBodySchema, type POSTV1MePushSubscriptionResponse } from '@litomi/contracts'
+import { type POSTV1MePushSubscriptionResponse, postV1MePushSubscriptionBodySchema } from '@litomi/contracts'
 import { WebPushService } from '@litomi/notifications'
 import { Hono } from 'hono'
 

@@ -1,8 +1,7 @@
-import type { Metadata } from 'next'
-
 import { PostFilter } from '@litomi/domain/post/filter'
-import { getTranslations } from 'next-intl/server'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'

@@ -1,7 +1,6 @@
 import type { CensorshipItem } from '@litomi/contracts'
-import type { Manga } from '@litomi/domain/manga/model'
-
 import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import { DEFAULT_CENSORSHIP_VALUES } from '@/app/[locale]/(navigation)/(right-aside)/censor/constants'
 

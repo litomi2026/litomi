@@ -7,12 +7,10 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useDeferredValue, useState } from 'react'
 
 import { Link } from '@/i18n/navigation'
-
+import { TAG_CATEGORY_PARAMS } from '../categories'
 import type { TagDictionaryTypeKey } from '../data/tag-dictionary'
 import type { DictionaryCategoryStat } from './dictionary-utils'
 import type { LocalizedTagDictionaryEntry } from './types'
-
-import { TAG_CATEGORY_PARAMS } from '../categories'
 
 type DictionaryEntryGridProps = {
   categoryStats: readonly DictionaryCategoryStat[]

@@ -7,7 +7,7 @@ import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'
 import { createPromotionEventParams } from '@/lib/analytics/promotion'
 
-import { topNavigationActionClassName, TOR_LINKS } from './topNavigationActionConfig'
+import { TOR_LINKS, topNavigationActionClassName } from './topNavigationActionConfig'
 
 type TorLink = (typeof TOR_LINKS)[keyof typeof TOR_LINKS]
 

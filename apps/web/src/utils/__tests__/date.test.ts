@@ -1,5 +1,5 @@
-import { formatDistanceToNow } from '@litomi/std'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
+import { formatDistanceToNow } from '@litomi/std'
 
 describe('formatDistanceToNow', () => {
   const originalDateNow = Date.now

@@ -57,7 +57,10 @@ export default function PointsShop() {
       type: 'bookmark',
       itemId: 'small',
       name: t('bookmarkExpansion'),
-      description: t('expansionDesc', { amount: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT, current: formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max) }),
+      description: t('expansionDesc', {
+        amount: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT,
+        current: formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max),
+      }),
       price: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_PRICE,
       icon: <Bookmark className="size-5" />,
     },
@@ -66,7 +69,10 @@ export default function PointsShop() {
       type: 'bookmark',
       itemId: 'large',
       name: t('bookmarkExpansion'),
-      description: t('expansionDesc', { amount: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT, current: formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max) }),
+      description: t('expansionDesc', {
+        amount: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT,
+        current: formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max),
+      }),
       price: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_PRICE,
       icon: <Bookmark className="size-5" />,
     },
@@ -74,7 +80,10 @@ export default function PointsShop() {
       id: 'library-expansion',
       type: 'library',
       name: t('libraryExpansion'),
-      description: t('expansionDesc', { amount: POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT, current: formatCurrentMax(displayExpansion?.library.current, displayExpansion?.library.max) }),
+      description: t('expansionDesc', {
+        amount: POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT,
+        current: formatCurrentMax(displayExpansion?.library.current, displayExpansion?.library.max),
+      }),
       price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE,
       icon: <LibraryBig className="size-5" />,
     },
@@ -82,7 +91,10 @@ export default function PointsShop() {
       id: 'pinned-library-expansion',
       type: 'pinned_library',
       name: t('pinnedLibraryExpansion'),
-      description: t('expansionDesc', { amount: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT, current: formatCurrentMax(displayExpansion?.pinnedLibrary.current, displayExpansion?.pinnedLibrary.max) }),
+      description: t('expansionDesc', {
+        amount: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT,
+        current: formatCurrentMax(displayExpansion?.pinnedLibrary.current, displayExpansion?.pinnedLibrary.max),
+      }),
       price: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_PRICE,
       icon: <Pin className="size-5" />,
     },
@@ -90,7 +102,10 @@ export default function PointsShop() {
       id: 'history-expansion',
       type: 'history',
       name: t('historyExpansion'),
-      description: t('expansionDesc', { amount: POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT, current: formatCurrentMax(displayExpansion?.history.current, displayExpansion?.history.max) }),
+      description: t('expansionDesc', {
+        amount: POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT,
+        current: formatCurrentMax(displayExpansion?.history.current, displayExpansion?.history.max),
+      }),
       price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
       icon: <BookOpen className="size-5" />,
     },
@@ -98,7 +113,10 @@ export default function PointsShop() {
       id: 'rating-expansion',
       type: 'rating',
       name: t('ratingExpansion'),
-      description: t('expansionDesc', { amount: POINT_CONSTANTS.RATING_EXPANSION_AMOUNT, current: formatCurrentMax(displayExpansion?.rating.current, displayExpansion?.rating.max) }),
+      description: t('expansionDesc', {
+        amount: POINT_CONSTANTS.RATING_EXPANSION_AMOUNT,
+        current: formatCurrentMax(displayExpansion?.rating.current, displayExpansion?.rating.max),
+      }),
       price: POINT_CONSTANTS.RATING_EXPANSION_PRICE,
       icon: <Star className="size-5" />,
     },
@@ -121,7 +139,9 @@ export default function PointsShop() {
 
     spendPoints.mutate(variables, {
       onSuccess: (data) => {
-        toast.success(t('purchased'), { description: t('purchaseToastDesc', { name: item.name, balance: formatNumber(data.balance, locale) }) })
+        toast.success(t('purchased'), {
+          description: t('purchaseToastDesc', { name: item.name, balance: formatNumber(data.balance, locale) }),
+        })
       },
     })
   }

@@ -2,9 +2,9 @@
 
 import { NotificationFilter } from '@litomi/domain/notification/filter'
 import { Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
-import { ReactNode } from 'react'
+import { useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { useRouter } from '@/i18n/navigation'

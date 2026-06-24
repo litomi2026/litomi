@@ -1,4 +1,4 @@
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 class NormalizedValueMap {

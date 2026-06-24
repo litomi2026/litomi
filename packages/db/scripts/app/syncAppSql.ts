@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
-import { env } from '@litomi/env/cli'
 import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { env } from '@litomi/env/cli'
 import postgres from 'postgres'
 
 type PgCronExtension = {

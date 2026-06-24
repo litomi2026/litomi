@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 
-import { ImportState } from './types'
+import type { ImportState } from './types'
 
 type Props = {
   importState: ImportState

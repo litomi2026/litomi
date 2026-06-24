@@ -1,4 +1,4 @@
-import { postV1PointTurnstileRequestSchema, type POSTV1PointTurnstileResponse } from '@litomi/contracts'
+import { type POSTV1PointTurnstileResponse, postV1PointTurnstileRequestSchema } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'

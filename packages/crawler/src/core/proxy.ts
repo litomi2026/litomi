@@ -1,6 +1,6 @@
 import { CircuitBreaker, type CircuitBreakerConfig } from './CircuitBreaker'
 import { NotFoundError, TimeoutError, UpstreamServerError } from './errors'
-import { RetryConfig, retryWithBackoff } from './retry'
+import { type RetryConfig, retryWithBackoff } from './retry'
 
 export const PROXY_HEADERS = {
   'accept-language': 'ko-KR,ko;q=0.9',

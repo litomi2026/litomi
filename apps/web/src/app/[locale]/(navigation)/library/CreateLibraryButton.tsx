@@ -4,7 +4,10 @@ import type { GETV1LibraryListResponse, LibraryListItem, POSTV1LibraryResponse }
 
 import { DEFAULT_LIBRARY_COLOR, DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import {
-  MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_ICON_LENGTH, MAX_LIBRARY_NAME_LENGTH, } from '@litomi/domain/library/policy'
+  MAX_LIBRARY_DESCRIPTION_LENGTH,
+  MAX_LIBRARY_ICON_LENGTH,
+  MAX_LIBRARY_NAME_LENGTH,
+} from '@litomi/domain/library/policy'
 import { normalizeString } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Toggle } from '@litomi/ui'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -13,12 +16,10 @@ import { useTranslations } from 'next-intl'
 import { type SubmitEvent, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { getRandomLibraryColor } from './libraryColorInput'
 import { getRandomLibraryIcon, preloadLibraryEmojiList, validateLibraryIcon } from './libraryIconInput'

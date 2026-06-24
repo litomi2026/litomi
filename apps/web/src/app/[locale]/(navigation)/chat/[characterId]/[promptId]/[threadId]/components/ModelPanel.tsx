@@ -6,11 +6,9 @@ import { ChevronRight, Trash2 } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
-
+import { computeContextWindowSizeFromPercent } from '@/app/[locale]/(navigation)/chat/lib/webllmAppConfig'
 import type { CustomWebLLMModel, ModelId } from '@/app/[locale]/(navigation)/chat/lib/webllmModel'
 import type { ContextWindowPercent } from '@/app/[locale]/(navigation)/chat/storage/webllmSettingsStore'
-
-import { computeContextWindowSizeFromPercent } from '@/app/[locale]/(navigation)/chat/lib/webllmAppConfig'
 import { normalizeHuggingFaceUrl } from '@/app/[locale]/(navigation)/chat/util/huggingface'
 import CustomSelect from '@/components/ui/CustomSelect'
 
@@ -279,7 +277,10 @@ export function ModelPanel({
   )
 }
 
-function buildContextPercentOptions(maxContextWindowSize: number | undefined, locale: Parameters<typeof formatNumber>[1]) {
+function buildContextPercentOptions(
+  maxContextWindowSize: number | undefined,
+  locale: Parameters<typeof formatNumber>[1],
+) {
   if (typeof maxContextWindowSize !== 'number') {
     return [{ value: '100', label: '100%' }]
   }

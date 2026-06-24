@@ -29,11 +29,11 @@
   background: linear-gradient(to bottom, rgb(235 247 255 / 0), rgb(235 247 255 / 0.62));
 }
 
-:global([data-theme='light']) .drop {
+:global([data-theme="light"]) .drop {
   background: linear-gradient(to bottom, rgb(37 99 235 / 0), rgb(37 99 235 / 0.48));
 }
 
-:global([data-theme='light']) .drop:nth-child(3n) {
+:global([data-theme="light"]) .drop:nth-child(3n) {
   background: linear-gradient(to bottom, rgb(30 64 175 / 0), rgb(30 64 175 / 0.44));
 }
 

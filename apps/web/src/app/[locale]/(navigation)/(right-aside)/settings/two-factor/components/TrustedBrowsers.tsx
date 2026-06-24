@@ -10,11 +10,9 @@ import { useLocale } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { ProblemDetailsError } from '@/utils/fetch-response'
-
-import type { TrustedBrowser } from '../types'
-
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { revokeAllTrustedBrowsers, revokeTrustedBrowser } from '../api'
+import type { TrustedBrowser } from '../types'
 
 type Props = {
   trustedBrowsers: TrustedBrowser[]

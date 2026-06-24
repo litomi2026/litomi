@@ -2,8 +2,8 @@
 
 import { captureException } from '@sentry/nextjs'
 import { TriangleAlert } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'

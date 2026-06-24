@@ -1,7 +1,7 @@
 'use client'
 
-import { Manga } from '@litomi/domain/manga/model'
-import { ComponentProps } from 'react'
+import type { Manga } from '@litomi/domain/manga/model'
+import type { ComponentProps } from 'react'
 
 import { useMangaDetailModal } from '@/components/MangaDetailModal'
 

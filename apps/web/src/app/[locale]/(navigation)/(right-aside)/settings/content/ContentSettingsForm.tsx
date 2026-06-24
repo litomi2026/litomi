@@ -4,7 +4,7 @@ import type { UserSettings } from '@litomi/domain/utils/user-settings'
 
 import { Toggle } from '@litomi/ui'
 import { Eye, History, Loader2 } from 'lucide-react'
-import { type ReactNode, SubmitEvent, useRef } from 'react'
+import { type ReactNode, type SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 

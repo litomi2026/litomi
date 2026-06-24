@@ -1,6 +1,3 @@
-import type { Metadata } from 'next'
-import type { Book, WithContext } from 'schema-dts'
-
 import {
   BLACKLISTED_MANGA_IDS,
   MAX_MANGA_DESCRIPTION_LENGTH,
@@ -8,8 +5,10 @@ import {
 } from '@litomi/domain/manga/policy'
 import { env } from '@litomi/env/client'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
-import { getTranslations } from 'next-intl/server'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+import type { Book, WithContext } from 'schema-dts'
 
 import { getPathname } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'

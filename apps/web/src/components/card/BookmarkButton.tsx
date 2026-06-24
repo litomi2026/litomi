@@ -3,7 +3,7 @@
 import type { GETV1BookmarkIdResponse, PUTV1BookmarkIdResponse } from '@litomi/contracts'
 
 import { captureException } from '@sentry/nextjs'
-import { ErrorBoundaryFallbackProps } from '@suspensive/react'
+import type { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Bookmark, Loader2 } from 'lucide-react'
 import ms from 'ms'

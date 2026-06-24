@@ -6,11 +6,9 @@ import { useState } from 'react'
 import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
-
-import type { NotificationCriteria } from './types'
-
 import NotificationCriteriaCard from './NotificationCriteriaCard'
 import NotificationCriteriaModal from './NotificationCriteriaModal'
+import type { NotificationCriteria } from './types'
 
 interface Props {
   initialCriteria: NotificationCriteria[]

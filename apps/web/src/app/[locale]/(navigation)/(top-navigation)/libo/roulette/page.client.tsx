@@ -3,7 +3,7 @@
 import { ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/points/roulette'
 import { formatNumber } from '@litomi/std'
 import { useLocale, useTranslations } from 'next-intl'
-import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
+import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import useMeQuery from '@/query/useMeQuery'

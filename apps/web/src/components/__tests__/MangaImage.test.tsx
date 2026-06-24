@@ -1,6 +1,6 @@
 import '@test/setup.dom'
-import { fireEvent, render } from '@testing-library/react'
 import { afterEach, describe, expect, test } from 'bun:test'
+import { fireEvent, render } from '@testing-library/react'
 
 import MangaImage from '../MangaImage'
 

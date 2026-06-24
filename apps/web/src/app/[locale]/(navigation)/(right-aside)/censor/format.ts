@@ -1,6 +1,6 @@
 import { CensorshipKey } from '@litomi/domain/censorship/model'
 
-import { CENSORSHIP_CATEGORIES, DEFAULT_CENSORSHIP_VALUES } from './constants'
+import { CENSORSHIP_CATEGORIES, type DEFAULT_CENSORSHIP_VALUES } from './constants'
 
 export type DefaultCensorshipValue = (typeof DEFAULT_CENSORSHIP_VALUES)[number]
 

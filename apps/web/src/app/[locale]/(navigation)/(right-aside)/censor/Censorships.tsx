@@ -2,11 +2,11 @@
 
 import type { DELETEV1CensorshipDeleteResponse } from '@litomi/contracts'
 
-import { CensorshipKey } from '@litomi/domain/censorship/model'
+import type { CensorshipKey } from '@litomi/domain/censorship/model'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Filter, Loader2, MoreHorizontal, Search } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
+import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 

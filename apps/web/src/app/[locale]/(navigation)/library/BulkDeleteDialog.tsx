@@ -3,7 +3,7 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 type Props = {
   ariaLabel: string

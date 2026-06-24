@@ -7,7 +7,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildWebLLMAppConfig, type EngineModelInput } from '@/app/[locale]/(navigation)/chat/lib/webllmAppConfig'
 import { deleteInstalledModel, hasInstalledModel } from '@/app/[locale]/(navigation)/chat/lib/webllmCache'
 import { createWebLLMEngine } from '@/app/[locale]/(navigation)/chat/lib/webllmEngine'
-import { DEFAULT_MODEL_ID, type ModelId, RESOLVED_MODEL_PRESETS } from '@/app/[locale]/(navigation)/chat/lib/webllmModel'
+import {
+  DEFAULT_MODEL_ID,
+  type ModelId,
+  RESOLVED_MODEL_PRESETS,
+} from '@/app/[locale]/(navigation)/chat/lib/webllmModel'
 import { useWebLLMSettingsStore } from '@/app/[locale]/(navigation)/chat/storage/webllmSettingsStore'
 import { recommendModelIdFromNavigator } from '@/app/[locale]/(navigation)/chat/util/modelRecommendation'
 

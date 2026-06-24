@@ -1,4 +1,4 @@
-import { deleteV1MePushSubscriptionBodySchema, type DELETEV1MePushSubscriptionResponse } from '@litomi/contracts'
+import { type DELETEV1MePushSubscriptionResponse, deleteV1MePushSubscriptionBodySchema } from '@litomi/contracts'
 import { WebPushService } from '@litomi/notifications'
 import { Hono } from 'hono'
 

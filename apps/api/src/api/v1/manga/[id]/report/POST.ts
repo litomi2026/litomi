@@ -1,4 +1,4 @@
-import { mangaIdParamSchema, postV1MangaIdReportBodySchema, type POSTV1MangaIdReportResponse } from '@litomi/contracts'
+import { mangaIdParamSchema, type POSTV1MangaIdReportResponse, postV1MangaIdReportBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { mangaReportTable } from '@litomi/db/app/report'
 import { isPostgresError } from '@litomi/db/error'

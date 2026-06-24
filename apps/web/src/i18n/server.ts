@@ -1,8 +1,7 @@
 import type { PublicLocale } from '@litomi/domain/locale'
-
+import { notFound } from 'next/navigation'
 import { hasLocale } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
-import { notFound } from 'next/navigation'
 
 import { routing } from './routing'
 

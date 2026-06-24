@@ -1,6 +1,5 @@
-import type { PublicLocale } from '@litomi/domain/locale'
-
 import { APP_METADATA } from '@litomi/domain/app/metadata'
+import type { PublicLocale } from '@litomi/domain/locale'
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
 import { useLocale } from 'next-intl'
 import { useEffect } from 'react'

@@ -1,5 +1,5 @@
-import { render } from '@test/utils/render'
 import { afterAll, beforeAll, describe, expect, mock, test } from 'bun:test'
+import { render } from '@test/utils/render'
 
 type SessionListModule = typeof import('./SessionList')
 

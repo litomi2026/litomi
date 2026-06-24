@@ -1,4 +1,4 @@
-import { BookmarkExportData } from './types'
+import type { BookmarkExportData } from './types'
 
 export function validateBookmarkData(data: unknown): data is BookmarkExportData {
   if (!data || typeof data !== 'object') {

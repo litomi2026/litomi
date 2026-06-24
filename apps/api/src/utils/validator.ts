@@ -1,9 +1,8 @@
+import { zValidator } from '@hono/zod-validator'
 import type { InvalidParam } from '@litomi/http/problem-details'
 import type { ValidationTargets } from 'hono'
 
-import { zValidator } from '@hono/zod-validator'
-
-import { problemResponse, type ProblemResponseOptions } from './problem'
+import { type ProblemResponseOptions, problemResponse } from './problem'
 
 type ValidationErrorLike = {
   issues: readonly ValidationIssueLike[]

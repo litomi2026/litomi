@@ -4,10 +4,8 @@ import { readingHistoryTable } from '@litomi/db/app/activity'
 import { readUserSettings } from '@litomi/db/query/user-settings'
 import { ne, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-
-import type { Env } from '@/app'
-
 import { enforceHistoryLimit, getUserHistoryLimitInTx } from '@/api/v1/library/history/shared'
+import type { Env } from '@/app'
 import { requireAdult } from '@/middleware/require-adult'
 import { requireAuth } from '@/middleware/require-auth'
 import { lockUserRowForUpdate } from '@/utils/lock-user-row'

@@ -1,9 +1,8 @@
-import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
-
 import { env } from '@litomi/env/client'
 import { Apple, ArrowUpRight, Bot } from 'lucide-react'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import type { ReactNode } from 'react'
 
 import InstallPrompt from '@/components/InstallPrompt'
 import { getLocaleFromParams } from '@/i18n/server'

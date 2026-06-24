@@ -1,6 +1,6 @@
 'use client'
 
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'

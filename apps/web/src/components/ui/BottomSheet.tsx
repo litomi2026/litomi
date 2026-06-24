@@ -1,6 +1,6 @@
 'use client'
 
-import { PointerEvent, ReactNode, useEffect, useRef, useState } from 'react'
+import { type PointerEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 type BottomSheetItemProps = {

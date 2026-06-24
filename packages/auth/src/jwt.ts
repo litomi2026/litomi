@@ -1,10 +1,9 @@
 import 'server-only'
 
-import type { JWTPayload } from 'jose'
-
 import { env } from '@litomi/env/server.common'
 import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'
+import type { JWTPayload } from 'jose'
 import { jwtVerify, SignJWT } from 'jose'
 
 const { APP_ORIGIN, JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN, JWT_SECRET_TRUSTED_DEVICE } = env

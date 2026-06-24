@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { ReactNode, useRef, useState } from 'react'
+import { type ReactNode, useRef, useState } from 'react'
 
 interface Props {
   children: ReactNode

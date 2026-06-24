@@ -106,7 +106,7 @@ self.addEventListener('notificationclick', (event) => {
   const targetURL = getSafeTargetURL(notificationData?.url)
 
   event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async function (clientList) {
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async (clientList) => {
       for (const client of clientList) {
         const isAlreadyOpen = isSameOriginClient(client) && 'focus' in client
 

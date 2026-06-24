@@ -1,7 +1,7 @@
 import {
   notificationCriteriaIdParamSchema,
-  patchV1NotificationCriteriaIdBodySchema,
   type PATCHV1NotificationCriteriaIdResponse,
+  patchV1NotificationCriteriaIdBodySchema,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'

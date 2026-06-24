@@ -1,8 +1,7 @@
 'use client'
 
-import type { ReadonlyURLSearchParams } from 'next/navigation'
-
 import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'

@@ -1,3 +1,4 @@
+import { describe, expect, setSystemTime, test } from 'bun:test'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import {
   expireTwoFactor,
@@ -9,7 +10,6 @@ import {
   seedUser,
 } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, setSystemTime, test } from 'bun:test'
 
 import { AUTH_TEST_TOTP_TIME, buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
 import { buildLoginTwoFactorRequest, issueAuthorizationChallenge } from './fixtures'

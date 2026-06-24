@@ -3,11 +3,9 @@
 import type { POSTV1PointSpendRequest, POSTV1PointSpendResponse } from '@litomi/contracts'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 export function useSpendPointsMutation() {
   const queryClient = useQueryClient()

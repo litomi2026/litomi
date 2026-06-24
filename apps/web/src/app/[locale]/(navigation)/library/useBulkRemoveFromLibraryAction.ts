@@ -6,10 +6,8 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
-
-import type { BulkActionDescriptor } from './bulkActionTypes'
-
 import { bulkRemoveFromLibrary } from './api'
+import type { BulkActionDescriptor } from './bulkActionTypes'
 import { useLibrarySelection } from './librarySelection'
 
 type Options = {

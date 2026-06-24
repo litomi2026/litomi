@@ -1,7 +1,7 @@
-import type { SQL } from 'drizzle-orm'
+import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import { LibraryItemSort } from '@litomi/domain/library/sort'
-import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test'
+import type { SQL } from 'drizzle-orm'
 import { PgDialect } from 'drizzle-orm/pg-core'
 
 const dialect = new PgDialect()

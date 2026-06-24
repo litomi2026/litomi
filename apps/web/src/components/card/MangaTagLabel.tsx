@@ -2,7 +2,7 @@
 
 import { Loader2 } from 'lucide-react'
 import { useLinkStatus } from 'next/link'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 export default function MangaTagLabel({ children }: PropsWithChildren) {
   const { pending } = useLinkStatus()

@@ -3,7 +3,7 @@
 import { AdultVerificationStatus, type GETV1MeResponse, type POSTV1BBatonUnlinkResponse } from '@litomi/contracts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronDown } from 'lucide-react'
-import { SubmitEvent, useRef } from 'react'
+import { type SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'

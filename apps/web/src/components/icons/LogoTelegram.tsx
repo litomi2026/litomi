@@ -1,4 +1,4 @@
-import { ComponentProps } from 'react'
+import type { ComponentProps } from 'react'
 
 export default function LogoTelegram(props: ComponentProps<'svg'>) {
   return (

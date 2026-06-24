@@ -1,4 +1,4 @@
-import { postV1PostBodySchema, type POSTV1PostResponse } from '@litomi/contracts'
+import { type POSTV1PostResponse, postV1PostBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { postTable } from '@litomi/db/app/post'
 import { isPostgresError } from '@litomi/db/error'

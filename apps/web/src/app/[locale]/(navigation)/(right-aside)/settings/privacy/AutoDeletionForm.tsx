@@ -1,6 +1,6 @@
 'use client'
 
-import { SubmitEvent, useRef } from 'react'
+import { type SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 

@@ -5,10 +5,8 @@ import { RectangleEllipsis } from 'lucide-react'
 
 import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
-
-import type { TwoFactorSetupData } from '../types'
-
 import { requestTwoFactorSetup } from '../api'
+import type { TwoFactorSetupData } from '../types'
 
 type Props = {
   onSuccess: (data: TwoFactorSetupData) => void

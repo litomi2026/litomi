@@ -8,15 +8,9 @@ import { useLocale, useTranslations } from 'next-intl'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { buildSearchParams, fetchAPIData } from '@/utils/api-request'
-
-import type { CensorshipSuggestion } from './useCensorshipSuggestions'
-
-import {
-  CENSORSHIP_CATEGORIES,
-  CENSORSHIP_KEY_MESSAGE_PATHS,
-  DEFAULT_CENSORSHIP_VALUES,
-} from './constants'
+import { CENSORSHIP_CATEGORIES, CENSORSHIP_KEY_MESSAGE_PATHS, DEFAULT_CENSORSHIP_VALUES } from './constants'
 import { getDefaultCensorshipInputValue } from './format'
+import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
 type Options = {
   query: string

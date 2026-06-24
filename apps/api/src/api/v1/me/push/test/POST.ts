@@ -1,4 +1,4 @@
-import { postV1MePushTestBodySchema, type POSTV1MePushTestResponse } from '@litomi/contracts'
+import { type POSTV1MePushTestResponse, postV1MePushTestBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
 import { NotificationType } from '@litomi/domain/notification/model'

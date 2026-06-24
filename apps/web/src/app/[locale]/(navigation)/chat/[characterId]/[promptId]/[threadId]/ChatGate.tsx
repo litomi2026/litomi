@@ -1,8 +1,7 @@
 'use client'
 
-import type { ReactNode } from 'react'
-
 import { Bot, Cpu, LockKeyhole } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 import LoginButton from '@/components/LoginButton'
 import StatusState from '@/components/status/StatusState'

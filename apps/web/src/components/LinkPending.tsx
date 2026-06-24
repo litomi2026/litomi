@@ -2,7 +2,7 @@
 
 import { Loader2 } from 'lucide-react'
 import { useLinkStatus } from 'next/link'
-import { ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { LINK_PENDING_DELAY } from '@/ui-policy'

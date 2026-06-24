@@ -5,7 +5,7 @@ import {
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
 } from '@litomi/auth/cookie'
-import { type SessionWriteExecutor } from '@litomi/auth/query/session'
+import type { SessionWriteExecutor } from '@litomi/auth/query/session'
 import { hashSessionToken } from '@litomi/auth/session'
 import { issuePersistentSession } from '@litomi/auth/session/persistent-session'
 import { db } from '@litomi/db/app'

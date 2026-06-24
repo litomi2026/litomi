@@ -1,10 +1,10 @@
+import { beforeAll, beforeEach } from 'bun:test'
 import {
   assertBackendDatabaseReady,
   assertBackendRedisReady,
   resetBackendDatabase,
   resetBackendRedis,
 } from '@test/backend/setup/db'
-import { beforeAll, beforeEach } from 'bun:test'
 
 type IntegrationOptions = {
   redis?: boolean

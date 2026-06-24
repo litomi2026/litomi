@@ -12,10 +12,8 @@ import {
   removeLocalReadingHistory,
   removeLocalReadingHistoryEntries,
 } from '@/utils/reading-history-index'
-
-import type { ReadingHistorySource } from './common'
-
 import { deleteReadingHistory } from './api'
+import type { ReadingHistorySource } from './common'
 
 type Options = {
   source: ReadingHistorySource

@@ -1,5 +1,5 @@
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
-import { getV1MangaRecommendationQuerySchema, type GETV1MangaRecommendationResponse } from '@litomi/contracts'
+import { type GETV1MangaRecommendationResponse, getV1MangaRecommendationQuerySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { mangaRecommendationSetTable, mangaRecommendationTable } from '@litomi/db/app/recommendation'
 import { selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'

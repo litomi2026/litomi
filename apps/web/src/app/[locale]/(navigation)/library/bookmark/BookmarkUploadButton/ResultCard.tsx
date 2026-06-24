@@ -2,7 +2,7 @@
 
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { useLocale, useTranslations } from 'next-intl'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 const colors = {
   error: {

@@ -1,4 +1,4 @@
-import { AnyPgColumn, bigint, index, pgEnum, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { type AnyPgColumn, bigint, index, pgEnum, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 import { userTable } from './user'
 

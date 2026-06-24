@@ -1,10 +1,9 @@
-import type { Manga } from '@litomi/domain/manga/model'
-
 import { db } from '@litomi/db/app'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'
+import type { Manga } from '@litomi/domain/manga/model'
 import { NotificationConditionType } from '@litomi/domain/notification/model'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
-import { and, count, eq, inArray, or, SQL, sql } from 'drizzle-orm'
+import { and, count, eq, inArray, or, type SQL, sql } from 'drizzle-orm'
 
 export interface MangaMetadata {
   artists?: string[]

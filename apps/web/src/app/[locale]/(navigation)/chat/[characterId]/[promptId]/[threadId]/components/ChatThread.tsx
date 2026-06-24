@@ -1,8 +1,7 @@
 'use client'
 
-import type { KeyboardEvent, SubmitEvent } from 'react'
-
 import { ChevronRight } from 'lucide-react'
+import type { KeyboardEvent, SubmitEvent } from 'react'
 
 import type { ChatMessage } from '@/app/[locale]/(navigation)/chat/types/chatMessage'
 

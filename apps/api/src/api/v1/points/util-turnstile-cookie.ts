@@ -1,8 +1,7 @@
-import type { JWTPayload } from 'jose'
-
 import { env } from '@litomi/env/server.common'
 import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'
+import type { JWTPayload } from 'jose'
 import { jwtVerify, SignJWT } from 'jose'
 
 type PointsTurnstileTokenPayload = JWTPayload & {

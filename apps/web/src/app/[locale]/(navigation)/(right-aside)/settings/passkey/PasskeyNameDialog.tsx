@@ -3,7 +3,8 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
-import React, { useEffect, useId, useState } from 'react'
+import type React from 'react'
+import { useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 
 import { updatePasskeyName } from './api'

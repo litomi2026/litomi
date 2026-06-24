@@ -1,8 +1,8 @@
+import { describe, expect, test } from 'bun:test'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { TEST_LOGIN_PASSWORD } from '@test/backend/setup/auth'
 import { readSessionFamiliesForUser, readUserByLoginId, seedUser } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, test } from 'bun:test'
 
 import { buildAuthHeaders, installAuthIntegrationHooks } from '../fixtures'
 import { buildSignupRequest, installSignupTurnstileGuard } from './fixtures'

@@ -1,6 +1,6 @@
 import { Calendar, User } from 'lucide-react'
-import { getLocale, getTranslations } from 'next-intl/server'
 import Image from 'next/image'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import MyPageButtons from './MyPageButtons'
 import { getPublicUserProfile, type PublicUserProfile } from './profile'

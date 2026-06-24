@@ -2,14 +2,12 @@
 
 import { useMutation } from '@tanstack/react-query'
 import { Check, Copy, Loader2 } from 'lucide-react'
-import { type FormEvent } from 'react'
+import type { FormEvent } from 'react'
 import { toast } from 'sonner'
 
 import useClipboard from '@/hook/useClipboard'
-
-import type { TwoFactorSetupData } from '../types'
-
 import { verifyTwoFactorSetup } from '../api'
+import type { TwoFactorSetupData } from '../types'
 import OneTimeCodeInput from './OneTimeCodeInput'
 
 interface Props {

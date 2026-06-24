@@ -1,6 +1,6 @@
 import type { GETLibraryItemsResponse } from '@litomi/contracts'
 
-import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
+import { DEFAULT_LIBRARY_ITEM_SORT, type LibraryItemSort } from '@litomi/domain/library/sort'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 

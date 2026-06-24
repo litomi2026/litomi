@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import { CookieKey } from '@litomi/http/cookie'
 import { getInvalidParams } from '@litomi/http/problem-details'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
@@ -17,7 +18,6 @@ import {
 } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
 import { compare } from 'bcryptjs'
-import { describe, expect, test } from 'bun:test'
 import { generateSync } from 'otplib'
 
 import { createMeSessionAuthContext } from '../fixtures'

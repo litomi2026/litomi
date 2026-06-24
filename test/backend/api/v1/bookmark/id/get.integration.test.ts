@@ -1,8 +1,8 @@
+import { describe, expect, test } from 'bun:test'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { seedBookmarks, seedUser } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, test } from 'bun:test'
 
 import { privateCacheControl } from '@/utils/cache-control'
 

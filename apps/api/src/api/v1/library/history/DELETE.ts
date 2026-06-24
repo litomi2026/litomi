@@ -1,4 +1,4 @@
-import { deleteV1ReadingHistoryBodySchema, type DELETEV1ReadingHistoryResponse } from '@litomi/contracts'
+import { type DELETEV1ReadingHistoryResponse, deleteV1ReadingHistoryBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
 import { and, eq, inArray, sql } from 'drizzle-orm'

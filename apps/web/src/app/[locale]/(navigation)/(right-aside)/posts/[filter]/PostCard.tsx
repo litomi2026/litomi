@@ -1,15 +1,14 @@
 import type { Post } from '@litomi/contracts'
-import type { ReactNode } from 'react'
-
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { formatDistanceToNow, formatNumber } from '@litomi/std'
 import dayjs from 'dayjs'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 
 import PostMangaCard from '@/app/[locale]/(navigation)/(right-aside)/post/[id]/PostMangaCard'
-import { getPostDetailHref } from '@/components/post/postHref'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
+import { getPostDetailHref } from '@/components/post/postHref'
 import Squircle from '@/components/ui/Squircle'
 import { Link } from '@/i18n/navigation'
 

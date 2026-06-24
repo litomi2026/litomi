@@ -1,13 +1,11 @@
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
 import { type CatalogMangaRecord, selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
 import { Locale } from '@litomi/domain/locale'
+import type { Manga } from '@litomi/domain/manga/model'
 import { addMangaRecommendationReason } from '@litomi/domain/manga-recommendation/reason'
-import { type Manga } from '@litomi/domain/manga/model'
-
-import type { Candidate, MangaRecommendation } from './types'
-
 import { type CensorshipMatcher, isMangaHiddenByCensorship } from './censorship'
 import { scoreCatalogMangaRecordByFeaturePosterior, type UserFeaturePosterior } from './feature-posterior'
+import type { Candidate, MangaRecommendation } from './types'
 
 const FEATURE_POSTERIOR_SCORE_WEIGHT = 12
 const SOURCE_SCORE_CAP = 220

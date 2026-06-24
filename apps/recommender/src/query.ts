@@ -6,9 +6,9 @@ import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { mangaRecommendationSetTable, mangaRecommendationTable } from '@litomi/db/app/recommendation'
 import { userTable } from '@litomi/db/app/user'
-import { type CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+import type { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { MANGA_RECOMMENDATION_REASON_BITS } from '@litomi/domain/manga-recommendation/reason'
-import { and, eq, sql, type SQL } from 'drizzle-orm'
+import { and, eq, type SQL, sql } from 'drizzle-orm'
 
 import type { CensorshipRule } from './censorship'
 import type {

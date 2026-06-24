@@ -1,3 +1,4 @@
+import { expect } from 'bun:test'
 import {
   type AuthCookieConfig,
   getAccessTokenCookieConfig,
@@ -7,7 +8,6 @@ import {
 import { issuePersistentSession } from '@litomi/auth/session/persistent-session'
 import { CookieKey } from '@litomi/http/cookie'
 import { hash } from 'bcryptjs'
-import { expect } from 'bun:test'
 
 import { getTrustedBrowserCookieConfig, signTrustedBrowserToken } from '@/api/v1/auth/login/2fa/util'
 

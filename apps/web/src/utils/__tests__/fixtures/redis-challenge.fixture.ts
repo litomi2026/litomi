@@ -1,6 +1,6 @@
 import '@test/setup.base'
-import { ChallengeType } from '@litomi/domain/auth/model'
 import { afterAll, afterEach, describe, expect, it, mock } from 'bun:test'
+import { ChallengeType } from '@litomi/domain/auth/model'
 
 const getdelRedisJsonMock = mock(async (): Promise<unknown | null> => null)
 const setRedisJsonMock = mock(async (): Promise<void> => undefined)

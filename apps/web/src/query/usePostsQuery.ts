@@ -1,6 +1,6 @@
 import type { GETV1PostResponse } from '@litomi/contracts'
 
-import { PostFilter } from '@litomi/domain/post/filter'
+import type { PostFilter } from '@litomi/domain/post/filter'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 

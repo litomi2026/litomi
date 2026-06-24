@@ -1,4 +1,4 @@
-import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@litomi/crawler/sources/k-hentai'
+import { encodeCategories, type KHentaiMangaSearchOptions, kHentaiClient } from '@litomi/crawler/sources/k-hentai'
 import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@litomi/crawler/sources/policy'
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { BLACKLISTED_MANGA_IDS } from '@litomi/domain/manga/policy'
@@ -8,10 +8,8 @@ import { sec } from '@litomi/std'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { handleRouteError } from '@/util/proxy-route'
-
-import type { GETProxyKSearchResponse } from './types'
-
 import { GETProxyKSearchSchema } from './schema'
+import type { GETProxyKSearchResponse } from './types'
 import { convertToKHentaiKey, filterMangasByMinusPrefix } from './utils'
 
 export const runtime = 'edge'

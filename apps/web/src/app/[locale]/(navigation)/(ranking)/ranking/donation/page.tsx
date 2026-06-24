@@ -1,8 +1,7 @@
 import type { PublicLocale } from '@litomi/domain/locale'
-import type { Metadata } from 'next'
-
 import { formatNumber } from '@litomi/std'
 import { Heart } from 'lucide-react'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'

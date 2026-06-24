@@ -11,7 +11,7 @@ import MangaImportModal from '@/components/card/MangaImportModal'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { addBookmarks } from '../api'
 import { useBookmarkImportModalStore } from './store'

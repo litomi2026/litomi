@@ -1,6 +1,5 @@
-import type { ReactNode } from 'react'
-
 import { Heart, Sparkles, Zap } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 import type { SexFortuneTab } from '../_lib/sexFortuneTypes'
 

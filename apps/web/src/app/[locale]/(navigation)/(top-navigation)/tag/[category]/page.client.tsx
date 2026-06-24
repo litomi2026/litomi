@@ -2,8 +2,8 @@
 
 import { formatNumber } from '@litomi/std'
 import { Loader2 } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 
 import PageNavigation from '@/components/PageNavigation'
 import { Link } from '@/i18n/navigation'

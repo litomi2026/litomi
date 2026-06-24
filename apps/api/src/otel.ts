@@ -1,4 +1,4 @@
-import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api'
+import { DiagConsoleLogger, DiagLogLevel, diag } from '@opentelemetry/api'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { NodeSDK } from '@opentelemetry/sdk-node'
 

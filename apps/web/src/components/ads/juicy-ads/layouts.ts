@@ -1,6 +1,5 @@
-import type { AdSlotDefinition, JuicyAdsLayoutNode } from './types'
-
 import { AD_SLOTS } from './constants'
+import type { AdSlotDefinition, JuicyAdsLayoutNode } from './types'
 
 function group(className: string, children: readonly JuicyAdsLayoutNode[]): JuicyAdsLayoutNode {
   return { type: 'group', className, children }

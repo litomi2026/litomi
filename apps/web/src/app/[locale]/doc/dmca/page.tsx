@@ -1,6 +1,5 @@
-import type { Metadata } from 'next'
-
 import { LOCALE_NATIVE_NAMES, PUBLIC_LOCALES } from '@litomi/domain/locale'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 

@@ -36,8 +36,6 @@
   },
   "scripts": {
     "type": "tsc --noEmit",
-    "lint": "eslint . --fix",
-    "format": "prettier --write . --ignore-path ../../.gitignore",
     "push": "bun run push:local",
     "push:local": "bun run push:local:app && bun run push:local:catalog",
     "push:local:app": "bun --env-file=.env.local drizzle-kit push --config=drizzle.app.config.ts --force && bun --env-file=.env.local scripts/app/syncAppSql.ts",

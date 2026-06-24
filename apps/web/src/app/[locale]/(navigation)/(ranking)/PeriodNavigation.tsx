@@ -1,7 +1,7 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
 import { useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import LinkPending from '@/components/LinkPending'
 import { Link } from '@/i18n/navigation'
@@ -10,8 +10,8 @@ import {
   DEFAULT_METRIC,
   isMetricParam,
   isPeriodParam,
-  Params,
-  PeriodParam,
+  type Params,
+  type PeriodParam,
   periodParams,
   SECONDARY_RANKING_NAV_LINK_CLASSNAME,
 } from './common'

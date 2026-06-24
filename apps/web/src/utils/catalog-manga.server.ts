@@ -1,10 +1,9 @@
 import 'server-only'
 
-import type { PublicLocale } from '@litomi/domain/locale'
-import type { Manga } from '@litomi/domain/manga/model'
-
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
 import { selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
+import type { PublicLocale } from '@litomi/domain/locale'
+import type { Manga } from '@litomi/domain/manga/model'
 
 export async function getCatalogMangaMap(mangaIds: number[], locale: PublicLocale): Promise<Map<number, Manga>> {
   try {

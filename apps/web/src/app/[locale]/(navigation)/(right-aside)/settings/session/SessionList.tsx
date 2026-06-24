@@ -2,7 +2,7 @@
 
 import type { DELETEV1MeSessionResponse } from '@litomi/contracts'
 
-import { Locale } from '@litomi/domain/locale'
+import type { Locale } from '@litomi/domain/locale'
 import { formatDistanceToNow } from '@litomi/std'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { revokeAllPersistentSessions, revokeOtherPersistentSessions, revokePersistentSession } from './api'
 

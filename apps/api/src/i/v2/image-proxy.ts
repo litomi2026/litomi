@@ -1,5 +1,3 @@
-import type { ValidationTargets } from 'hono'
-
 import { zValidator } from '@hono/zod-validator'
 import { createCacheControl } from '@litomi/http/cache-control'
 import {
@@ -8,6 +6,7 @@ import {
   validateImageSourceURL,
 } from '@litomi/http/image-proxy'
 import { sec } from '@litomi/std'
+import type { ValidationTargets } from 'hono'
 import { Hono } from 'hono'
 import { z } from 'zod'
 

@@ -1,8 +1,10 @@
 'use client'
 
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
-
+import { Loader2 } from 'lucide-react'
+import { Fragment } from 'react'
+import { twMerge } from 'tailwind-merge'
 import { useReaderMessages } from '#reader/context'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
 import { type ImageFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import useViewerPointerGestures from '#reader/views/paged/gestures/useViewerPointerGestures'
@@ -10,9 +12,6 @@ import usePagedReaderViewScrollRestoration from '#reader/views/paged/hooks/usePa
 import usePagedReaderViewWheelNavigation from '#reader/views/paged/hooks/usePagedReaderViewWheelNavigation'
 import usePagedReaderViewZoom from '#reader/views/paged/hooks/usePagedReaderViewZoom'
 import usePageNavigation from '#reader/views/paged/hooks/usePageNavigation'
-import { Loader2 } from 'lucide-react'
-import { Fragment } from 'react'
-import { twMerge } from 'tailwind-merge'
 
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 const PAGED_READER_VIEW_WINDOW_SIZE = 6

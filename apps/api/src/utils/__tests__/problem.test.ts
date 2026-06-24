@@ -1,5 +1,5 @@
-import { PROBLEM_CONTENT_TYPE } from '@litomi/http/problem-details'
 import { describe, expect, test } from 'bun:test'
+import { PROBLEM_CONTENT_TYPE } from '@litomi/http/problem-details'
 import { Hono } from 'hono'
 
 import { problemResponse } from '../problem'

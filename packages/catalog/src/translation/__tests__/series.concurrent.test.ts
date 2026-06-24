@@ -1,5 +1,5 @@
-import { Locale } from '@litomi/domain/locale'
 import { describe, expect, test } from 'bun:test'
+import { Locale } from '@litomi/domain/locale'
 
 import { translateSeriesList } from '../series'
 

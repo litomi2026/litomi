@@ -1,0 +1,47 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    // .gitignore is honored via vcs.useIgnoreFile. Only add tracked paths we still want skipped.
+    "includes": ["**", "!**/trash", "!apps/mobile/android", "!apps/mobile/ios"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "lineWidth": 120,
+    "lineEnding": "lf"
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "next": "recommended",
+      "react": "recommended"
+    },
+    "rules": {
+      "preset": "recommended",
+      "performance": {
+        // <img> is intentional (custom image proxy / reader); mirrors the old next/no-img-element being off.
+        "noImgElement": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "semicolons": "asNeeded"
+    }
+  }
+}

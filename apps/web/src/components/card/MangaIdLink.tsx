@@ -17,6 +17,7 @@ export default function MangaIdLink({ id, searchParams, viewerLink }: Props) {
       className="flex items-center gap-1 text-zinc-400 hover:underline focus:underline aria-current:text-brand aria-current:font-semibold"
       href={viewerLink}
       target="_blank"
+      rel="noopener"
     >
       {id}
       <ExternalLink className="size-3" />

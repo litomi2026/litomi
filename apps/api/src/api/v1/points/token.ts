@@ -1,4 +1,4 @@
-import { postV1PointTokenRequestSchema, type POSTV1PointTokenResponse } from '@litomi/contracts'
+import { type POSTV1PointTokenResponse, postV1PointTokenRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { adImpressionTokenTable, pointTransactionTable } from '@litomi/db/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'

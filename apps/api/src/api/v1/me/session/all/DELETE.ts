@@ -1,6 +1,5 @@
-import type { DELETEV1MeSessionResponse } from '@litomi/contracts'
-
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import type { DELETEV1MeSessionResponse } from '@litomi/contracts'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

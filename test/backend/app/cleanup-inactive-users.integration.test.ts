@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { authSessionFamilyTable } from '@litomi/db/app/auth'
@@ -13,7 +14,6 @@ import {
   seedUser,
   seedUserSettings,
 } from '@test/backend/setup/db'
-import { describe, expect, test } from 'bun:test'
 import { eq, sql } from 'drizzle-orm'
 
 installBackendIntegrationHooks()

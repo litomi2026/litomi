@@ -1,9 +1,8 @@
 'use client'
 
-import type { MouseEvent } from 'react'
-
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import type { MouseEvent } from 'react'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 

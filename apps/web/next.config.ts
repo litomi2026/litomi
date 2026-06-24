@@ -1,13 +1,12 @@
-import type { NextConfig } from 'next'
-
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { nextBuildEnv } from '@litomi/env/server.next.build'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
+import type { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 const isProduction = process.env.NODE_ENV === 'production'
 const configDir = dirname(fileURLToPath(import.meta.url))

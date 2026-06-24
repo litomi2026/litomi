@@ -1,4 +1,4 @@
-import { deleteV1MeTrustedBrowserParamSchema, type DELETEV1MeTrustedBrowserResponse } from '@litomi/contracts'
+import { type DELETEV1MeTrustedBrowserResponse, deleteV1MeTrustedBrowserParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { trustedBrowserTable } from '@litomi/db/app/two-factor'
 import { and, eq } from 'drizzle-orm'

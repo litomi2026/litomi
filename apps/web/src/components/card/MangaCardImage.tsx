@@ -1,4 +1,4 @@
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { getViewerLink } from '@litomi/domain/utils/manga'
 import { View } from '@litomi/std'
 import { twMerge } from 'tailwind-merge'
@@ -61,10 +61,7 @@ export default function MangaCardImage({ manga, mangaIndex, rank, className = ''
         />
       ) : images.length > 0 ? (
         <MangaThumbnailLink
-          className={twMerge(
-            'block select-none touch-pan-y relative',
-            config.imageContainerClassName,
-          )}
+          className={twMerge('block select-none touch-pan-y relative', config.imageContainerClassName)}
           href={href}
           prefetch={false}
         >

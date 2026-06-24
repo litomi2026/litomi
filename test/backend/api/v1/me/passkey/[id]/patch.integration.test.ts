@@ -1,8 +1,8 @@
+import { describe, expect, test } from 'bun:test'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { readPasskeyCredentialByCredentialId, seedPasskeyCredential, seedUser } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, test } from 'bun:test'
 
 import { createMeAuthContext } from '../../fixtures'
 

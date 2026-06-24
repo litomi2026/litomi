@@ -3,9 +3,8 @@
 import type { POSTV1PointTokenResponse } from '@litomi/contracts'
 
 import { useQuery } from '@tanstack/react-query'
-
-import { QueryKeys } from '@/lib/react-query/query-keys'
 import { shouldRetryError } from '@/lib/react-query/QueryProvider'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 

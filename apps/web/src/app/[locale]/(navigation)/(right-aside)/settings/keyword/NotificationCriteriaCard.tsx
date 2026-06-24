@@ -10,16 +10,12 @@ import { BellOff, Edit3, Trash2 } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import IconBell from '@/components/icons/IconBell'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { useRouter } from '@/i18n/navigation'
-
-import type { NotificationCriteria } from './types'
-
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { deleteNotificationCriteria, updateNotificationCriteria } from './api'
+import type { NotificationCriteria } from './types'
 
 interface NotificationCriteriaCardProps {
   criterion: NotificationCriteria

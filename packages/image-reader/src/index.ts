@@ -7,9 +7,8 @@ export type {
   ReaderPageRenderer,
   ReaderPageSpreadMode,
 } from '#reader/model/readerLayout'
-
-export { getReaderMessages, readerMessageCatalog } from '#reader/model/readerMessages'
 export type { ReaderLocale, ReaderMessageOverrides, ReaderMessages } from '#reader/model/readerMessages'
+export { getReaderMessages, readerMessageCatalog } from '#reader/model/readerMessages'
 
 export type {
   ReaderNotice,
@@ -19,7 +18,6 @@ export type {
   ReaderNoticeHandler,
   ReaderNoticeSeverity,
 } from '#reader/model/readerNotice'
-
-export { default, default as Reader } from '#reader/Reader'
 export type { ReaderProps } from '#reader/Reader'
+export { default, default as Reader } from '#reader/Reader'
 export type { ReadingProgress, ReadingProgressSaveOptions } from '#reader/reading-progress/ReadingProgressTracker'

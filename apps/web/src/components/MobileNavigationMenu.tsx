@@ -16,7 +16,7 @@ import {
   X,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { ReactNode, useEffect, useRef } from 'react'
+import { type ReactNode, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '@/app/[locale]/(navigation)/(ranking)/common'

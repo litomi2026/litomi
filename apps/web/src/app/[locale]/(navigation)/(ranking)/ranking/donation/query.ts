@@ -1,9 +1,8 @@
-import type { PublicLocale } from '@litomi/domain/locale'
-
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateGroupList } from '@litomi/catalog/translation/group'
 import { db } from '@litomi/db/app'
 import { DONATION_RECIPIENT_TYPE, pointDonationRecipientTable } from '@litomi/db/app/points'
+import type { PublicLocale } from '@litomi/domain/locale'
 import { desc, sum } from 'drizzle-orm'
 
 export type DonationRankingItem = {

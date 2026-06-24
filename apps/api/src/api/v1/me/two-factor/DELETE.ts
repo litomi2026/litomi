@@ -1,6 +1,6 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { verifyBackupCode } from '@litomi/auth/two-factor-backup-code'
-import { deleteV1MeTwoFactorBodySchema, type DELETEV1MeTwoFactorResponse } from '@litomi/contracts'
+import { type DELETEV1MeTwoFactorResponse, deleteV1MeTwoFactorBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { and, eq, isNull } from 'drizzle-orm'

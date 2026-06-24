@@ -1,5 +1,5 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
-import { patchV1MeBodySchema, type PATCHV1MeResponse } from '@litomi/contracts'
+import { type PATCHV1MeResponse, patchV1MeBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userTable } from '@litomi/db/app/user'
 import { isPostgresError } from '@litomi/db/error'

@@ -1,6 +1,5 @@
-import type { MiddlewareHandler } from 'hono'
-
 import { createCacheControl } from '@litomi/http/cache-control'
+import type { MiddlewareHandler } from 'hono'
 
 export type Options = {
   allowLocalhostInNonProduction?: boolean

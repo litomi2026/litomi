@@ -9,10 +9,8 @@ import { useLocale } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import { QueryKeys } from '@/lib/react-query/query-keys'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { sendTestPushNotification } from './api'
 import { getCurrentBrowserEndpoint } from './common'

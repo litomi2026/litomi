@@ -1,6 +1,6 @@
 'use client'
 
-import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
+import { type ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useEffectEvent } from 'react'
 
 type Props = {

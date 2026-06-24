@@ -1,4 +1,4 @@
-import { getSearchSuggestionsQuerySchema, type GETSearchSuggestionsResponse } from '@litomi/contracts'
+import { type GETSearchSuggestionsResponse, getSearchSuggestionsQuerySchema } from '@litomi/contracts'
 import { queryBlacklist } from '@litomi/domain/search/suggestion'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'

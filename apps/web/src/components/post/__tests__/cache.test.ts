@@ -1,9 +1,8 @@
+import { afterEach, describe, expect, test } from 'bun:test'
 import type { GETV1PostLikedResponse, GETV1PostResponse } from '@litomi/contracts'
-
 import { PostFilter } from '@litomi/domain/post/filter'
 import { PostType } from '@litomi/domain/post/model'
 import { type InfiniteData, QueryClient } from '@tanstack/react-query'
-import { afterEach, describe, expect, test } from 'bun:test'
 
 import { QueryKeys } from '@/lib/react-query/query-keys'
 

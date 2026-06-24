@@ -1,6 +1,5 @@
-import type { POSTV1AuthLogin2FARequest } from '@litomi/contracts'
-
 import { initiatePKCEChallenge } from '@litomi/auth/pkce-server'
+import type { POSTV1AuthLogin2FARequest } from '@litomi/contracts'
 import { TEST_TOTP_SECRET } from '@test/backend/setup/db'
 import { generateSync } from 'otplib'
 

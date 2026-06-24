@@ -1,6 +1,6 @@
+import { afterEach, describe, expect, test } from 'bun:test'
 import { requestBackend } from '@test/backend/setup/app'
 import { externalRoute, installExternalFetchGuard } from '@test/backend/setup/network'
-import { afterEach, describe, expect, test } from 'bun:test'
 
 import backendApp from '@/app'
 

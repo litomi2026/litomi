@@ -1,19 +1,16 @@
 'use client'
 
 import type { PATCHV1MePushSettingsBody, PATCHV1MePushSettingsResponse } from '@litomi/contracts'
-import type { ReactNode } from 'react'
-
 import { getTimezoneOffsetHours, localToUtcHour, utcToLocalHour } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, Moon } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import CustomSelect from '@/components/ui/CustomSelect'
 import { useRouter } from '@/i18n/navigation'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { updatePushSettings } from './api'
 

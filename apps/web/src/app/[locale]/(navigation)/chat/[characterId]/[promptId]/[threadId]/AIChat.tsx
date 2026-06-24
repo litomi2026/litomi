@@ -3,10 +3,8 @@
 import { toast } from 'sonner'
 
 import { Link, useRouter } from '@/i18n/navigation'
-
-import type { CharacterDefinition, CharacterPromptDefinition } from '../../../types/characterDefinition'
-
 import { useOutboxAutoFlush } from '../../../storage/outbox'
+import type { CharacterDefinition, CharacterPromptDefinition } from '../../../types/characterDefinition'
 import { ChatHeader } from './components/ChatHeader'
 import { ChatThread } from './components/ChatThread'
 import { ModelPanel } from './components/ModelPanel'

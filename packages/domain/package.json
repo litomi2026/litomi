@@ -42,8 +42,6 @@
   },
   "scripts": {
     "type": "tsc --noEmit",
-    "lint": "eslint . --fix",
-    "format": "prettier --write . --ignore-path ../../.gitignore",
     "generate:emoji": "bun scripts/generateEmojiList.ts"
   },
   "dependencies": {

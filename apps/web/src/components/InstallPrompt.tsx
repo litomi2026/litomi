@@ -2,7 +2,7 @@
 
 import { CheckCircle2, Compass, Download, Ellipsis, type LucideIcon, Share, SquarePlus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 
 import { checkIOSDevice, checkIOSSafari } from '@/utils/browser'
 

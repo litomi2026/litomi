@@ -43,7 +43,7 @@
   );
 }
 
-:global([data-theme='light']) .snowflake {
+:global([data-theme="light"]) .snowflake {
   background: radial-gradient(
     circle,
     rgb(71 85 105 / 0.48) 0 34%,
@@ -52,7 +52,7 @@
   );
 }
 
-:global([data-theme='light']) .snowflake:nth-child(3n) {
+:global([data-theme="light"]) .snowflake:nth-child(3n) {
   background: radial-gradient(
     circle,
     rgb(59 130 246 / 0.42) 0 34%,

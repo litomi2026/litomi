@@ -1,8 +1,7 @@
 import 'server-only'
 
-import type { Sponsor, SponsorMap } from './common'
-
 import artistSponsorsJSON from './artist.json'
+import type { Sponsor, SponsorMap } from './common'
 
 const ARTIST_SPONSORS = artistSponsorsJSON as SponsorMap
 

@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { createAccessTokenCookies, expectAuthCookiesCleared } from '@test/backend/setup/auth'
@@ -10,7 +11,6 @@ import {
   TEST_TOTP_SECRET,
 } from '@test/backend/setup/db'
 import { expectInvalidParams, expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, test } from 'bun:test'
 import { generateSync } from 'otplib'
 
 import { createMeAuthContext, createMeSessionAuthContext } from './fixtures'

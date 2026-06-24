@@ -1,12 +1,11 @@
 'use client'
 
-import type { ReadonlyURLSearchParams } from 'next/navigation'
-
 import { Locale } from '@litomi/domain/locale'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { ChevronRight } from 'lucide-react'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
+import { type ComponentProps, type PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 

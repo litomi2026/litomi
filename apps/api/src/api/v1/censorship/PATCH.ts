@@ -1,4 +1,4 @@
-import { patchV1CensorshipUpdateBodySchema, type PATCHV1CensorshipUpdateResponse } from '@litomi/contracts'
+import { type PATCHV1CensorshipUpdateResponse, patchV1CensorshipUpdateBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { sql } from 'drizzle-orm'

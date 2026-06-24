@@ -1,9 +1,8 @@
 'use client'
 
-import type { ComponentType } from 'react'
-
 import ms from 'ms'
 import dynamic from 'next/dynamic'
+import type { ComponentType } from 'react'
 import { useEffect, useState } from 'react'
 
 import { getActiveSeasonalEffectId, type SeasonalEffectId } from '@/components/seasonal/seasonalEffectConfig'

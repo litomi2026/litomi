@@ -1,4 +1,5 @@
 import '@test/backend/setup/redis'
+import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { ChallengeType } from '@litomi/domain/auth/model'
 import { CookieKey } from '@litomi/http/cookie'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
@@ -12,7 +13,6 @@ import {
   seedUser,
 } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
-import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
 import { buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
 import { buildPasskeyAuthentication, installPasskeyTurnstileGuard, issuePasskeyAttempt } from '../fixtures'

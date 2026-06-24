@@ -1,6 +1,5 @@
-import type { POSTV1MeTwoFactorSetupResponse } from '@litomi/contracts'
-
 import { encryptTOTPSecret, generateQRCode, TOTP_CONFIG } from '@litomi/auth/two-factor'
+import type { POSTV1MeTwoFactorSetupResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'

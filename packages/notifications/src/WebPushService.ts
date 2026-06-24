@@ -1,10 +1,10 @@
 import 'server-only'
-import type { PushSubscription } from 'web-push'
 
 import { db } from '@litomi/db/app'
 import { pushSettingsTable, webPushTable } from '@litomi/db/app/notification'
 import { env as commonEnv } from '@litomi/env/server.common'
 import { and, eq, inArray, sql } from 'drizzle-orm'
+import type { PushSubscription } from 'web-push'
 import webpush from 'web-push'
 
 const { APP_ORIGIN, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } = commonEnv

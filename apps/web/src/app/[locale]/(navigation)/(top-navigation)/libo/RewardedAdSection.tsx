@@ -3,27 +3,25 @@
 import type { GETV1MeResponse, POSTV1PointTurnstileResponse } from '@litomi/contracts'
 
 import { POINT_CONSTANTS } from '@litomi/domain/points/model'
-import { TurnstileInstance } from '@marsidev/react-turnstile'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { HelpCircle, MousePointerClick, ShieldCheck } from 'lucide-react'
 import ms from 'ms'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
-
-import type { AdClickResult } from '@/components/ads/types'
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'
 import AdsterraNativeBanner from '@/components/ads/adsterra/AdsterraNativeBanner'
 import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
 import JuicyAdsSlot from '@/components/ads/juicy-ads/JuicyAdsSlot'
+import type { AdClickResult } from '@/components/ads/types'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import { QueryKeys } from '@/lib/react-query/query-keys'
 import { isAdultVerificationRequiredProblem } from '@/lib/react-query/QueryProvider'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import usePointsTurnstileQuery from '@/query/usePointsTurnstileQuery'
 import { fetchAPIData } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { runWhenDocumentVisible } from './util'
 

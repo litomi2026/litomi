@@ -1,18 +1,16 @@
 'use client'
-import type { DELETEV1MePasskeyResponse } from '@litomi/contracts'
 
 import { signalCurrentPasskeyUserDetails } from '@litomi/auth/passkey'
+import type { DELETEV1MePasskeyResponse } from '@litomi/contracts'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, Shield } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/navigation'
-import { ProblemDetailsError } from '@/utils/fetch-response'
-
-import type { PasskeySignalData } from './common'
-
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { deletePasskey } from './api'
+import type { PasskeySignalData } from './common'
 
 type Props = {
   credentialId: string

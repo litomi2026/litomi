@@ -3,8 +3,8 @@
 import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@litomi/domain/notification/policy'
 import { useMutation } from '@tanstack/react-query'
 import { BellRing, Loader2 } from 'lucide-react'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -17,7 +17,7 @@ import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { createNotificationCriteria } from './api'
 import { SearchParam } from './constants'
-import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
+import { type ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 
 export default function KeywordSubscriptionButton() {
   const [query, setQuery] = useState<ParsedSearchQuery>(() => parseSearchQuery(''))

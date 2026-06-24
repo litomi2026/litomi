@@ -5,7 +5,7 @@
 import { describe, expect, it, mock } from 'bun:test'
 import ms from 'ms'
 
-import { CircuitBreaker, CircuitBreakerConfig } from '../CircuitBreaker'
+import { CircuitBreaker, type CircuitBreakerConfig } from '../CircuitBreaker'
 import { CircuitBreakerError } from '../errors'
 
 describe('CircuitBreaker', () => {

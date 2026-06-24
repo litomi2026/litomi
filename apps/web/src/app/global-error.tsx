@@ -7,12 +7,10 @@ import { env } from '@litomi/env/client'
 import * as Sentry from '@sentry/nextjs'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-
-import type { ErrorProps } from '@/types/nextjs'
-
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import ErrorDiagnosticDetails from '@/components/ErrorDiagnosticDetails'
 import RetryGuidance from '@/components/RetryGuidance'
+import type { ErrorProps } from '@/types/nextjs'
 
 export default function GlobalError({ error, reset }: ErrorProps) {
   const pathname = usePathname()
@@ -48,6 +46,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
               className="underline decoration-dotted underline-offset-4"
               href="https://discord.gg/7c7kSQ9Byy"
               target="_blank"
+              rel="noopener"
             >
               Discord
             </a>{' '}

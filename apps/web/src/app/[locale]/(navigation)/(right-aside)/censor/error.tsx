@@ -3,10 +3,8 @@
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
-
-import type { ErrorProps } from '@/types/nextjs'
-
 import { useRouter } from '@/i18n/navigation'
+import type { ErrorProps } from '@/types/nextjs'
 
 export default function Error({ error, reset }: ErrorProps) {
   const t = useTranslations('Censorship')

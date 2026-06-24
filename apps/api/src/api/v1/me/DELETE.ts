@@ -1,6 +1,6 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
-import { deleteV1MeBodySchema, type DELETEV1MeResponse } from '@litomi/contracts'
+import { type DELETEV1MeResponse, deleteV1MeBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'

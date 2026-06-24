@@ -1,9 +1,8 @@
 import '@test/setup.dom'
 
-import type { ComponentType, ReactElement, ReactNode } from 'react'
-
 import { QueryClient, type QueryClientConfig, QueryClientProvider } from '@tanstack/react-query'
-import { render, type RenderOptions } from '@testing-library/react'
+import { type RenderOptions, render } from '@testing-library/react'
+import type { ComponentType, ReactElement, ReactNode } from 'react'
 
 type RenderWithQueryClientOptions = Omit<RenderOptions, 'wrapper'> & {
   queryClient?: QueryClient
