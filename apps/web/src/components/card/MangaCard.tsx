@@ -1,10 +1,10 @@
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { getViewerLink } from '@litomi/domain/utils/manga'
 import { View } from '@litomi/std'
 import { ErrorBoundary } from '@suspensive/react'
 import { ExternalLink } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'

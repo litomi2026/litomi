@@ -1,17 +1,15 @@
 import {
   type POSTV1NotificationCriteriaBody,
-  postV1NotificationCriteriaBodySchema,
   type POSTV1NotificationCriteriaResponse,
+  postV1NotificationCriteriaBodySchema,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'
 import { MAX_CRITERIA_PER_USER } from '@litomi/domain/notification/policy'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-
-import type { Env } from '@/app'
-
 import { areNotificationCriteriaConditionsEqual } from '@/api/v1/notification/criteria/util'
+import type { Env } from '@/app'
 import { lockUserRowForUpdate } from '@/utils/lock-user-row'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'

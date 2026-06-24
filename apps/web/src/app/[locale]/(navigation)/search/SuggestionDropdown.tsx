@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { ReactNode, RefObject, useEffect } from 'react'
+import { type ReactNode, type RefObject, useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export type SuggestionItem = {

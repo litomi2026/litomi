@@ -1,7 +1,7 @@
 'use client'
 
 import { X } from 'lucide-react'
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 type Props = {

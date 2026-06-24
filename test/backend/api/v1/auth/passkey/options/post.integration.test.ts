@@ -1,8 +1,8 @@
+import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { CookieKey } from '@litomi/http/cookie'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { expectProblemResponse } from '@test/backend/setup/problem'
-import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
 import { buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
 import { getResponseCookieValue } from '../fixtures'

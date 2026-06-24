@@ -1,8 +1,7 @@
-import type { PublicLocale } from '@litomi/domain/locale'
-
 import { db } from '@litomi/db/app'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/app/activity'
 import { libraryItemTable } from '@litomi/db/app/library'
+import type { PublicLocale } from '@litomi/domain/locale'
 import { TOP_MANGA_PER_PAGE } from '@litomi/domain/ranking/policy'
 import { avg, count, desc, gte, sql } from 'drizzle-orm'
 import ms from 'ms'
@@ -13,6 +12,7 @@ import { MetricParam, PeriodParam } from '../../../common'
 
 export async function getRankingData(metric: MetricParam, period: PeriodParam, locale: PublicLocale) {
   const periodStart = getPeriodStart(period)
+  // biome-ignore lint/suspicious/noImplicitAnyLet: Drizzle dynamic query is reassigned per switch branch; a precise type is impractical.
   let query
 
   switch (metric) {

@@ -3,7 +3,7 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { Loader2, UploadCloud } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { SubmitEvent, useEffect, useId, useMemo, useState } from 'react'
+import { type SubmitEvent, useEffect, useId, useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { parseMangaIds } from './parseMangaIds'

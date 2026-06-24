@@ -6,10 +6,7 @@ import type {
   PUTV1UserIdFollowResponse,
 } from '@litomi/contracts'
 
-import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
+import { type QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   type PostListSnapshot,
   removeAuthorPostsFromFollowingPostLists,
@@ -19,6 +16,7 @@ import {
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showLoginRequiredToast } from '@/lib/toast'
 import { fetchAPIData } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import useMeQuery from './useMeQuery'
 

@@ -1,12 +1,11 @@
 'use client'
 
-import type { ReadonlyURLSearchParams } from 'next/navigation'
-
 import { Locale } from '@litomi/domain/locale'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { ChevronRight } from 'lucide-react'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
+import { type ComponentProps, type PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
@@ -239,6 +238,7 @@ export default function TrendingKeywords() {
           <div className="flex gap-0.5 justify-center overflow-x-auto max-w-full">
             {trendingKeywords.map(({ value }, i) => (
               <button
+                type="button"
                 aria-current={currentIndex === i}
                 aria-label={t('indicator', { index: i + 1 })}
                 className="rounded-full transition-all shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"

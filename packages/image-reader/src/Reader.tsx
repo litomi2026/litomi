@@ -1,14 +1,17 @@
 'use client'
 
-import type { ReaderLocale, ReaderMessageOverrides } from '#reader/model/readerMessages'
-import type { ReaderNoticeHandler } from '#reader/model/readerNotice'
-
+import { Loader2 } from 'lucide-react'
+import ms from 'ms'
+import { type ReactNode, useEffect, useMemo, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import ReaderControls from '#reader/components/ReaderControls'
 import { ReaderRuntimeProvider, useReaderMessages, useReaderNoticeHandler } from '#reader/context'
 import useAutoHideCursor from '#reader/hooks/useAutoHideCursor'
 import usePageSearchParamSync from '#reader/hooks/usePageSearchParamSync'
 import { getNavigatorLowDataSnapshot, type LowDataSnapshot, resolveLowDataState } from '#reader/model/lowData'
 import { createReaderLayout, type ReaderPage, type ReaderPageRenderer } from '#reader/model/readerLayout'
+import type { ReaderLocale, ReaderMessageOverrides } from '#reader/model/readerMessages'
+import type { ReaderNoticeHandler } from '#reader/model/readerNotice'
 import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
 import ReadingProgressTracker, {
   type ReadingProgress,
@@ -18,10 +21,6 @@ import ResumeReadingNotice from '#reader/reading-progress/ResumeReadingNotice'
 import { ReaderProvider, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import PagedReaderView from '#reader/views/paged/PagedReaderView'
 import ScrollReaderView from '#reader/views/scroll/ScrollReaderView'
-import { Loader2 } from 'lucide-react'
-import ms from 'ms'
-import { type ReactNode, useEffect, useMemo, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 
 export type ReaderProps<TPage extends ReaderPage> = {
   header?: ReactNode

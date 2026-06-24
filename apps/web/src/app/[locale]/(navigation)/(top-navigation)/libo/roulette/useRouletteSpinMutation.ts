@@ -3,11 +3,9 @@
 import type { POSTV1RouletteSpinRequest, POSTV1RouletteSpinResponse } from '@litomi/contracts'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 export function useRouletteSpinMutation() {
   const queryClient = useQueryClient()

@@ -15,7 +15,7 @@ import { useRouter } from '@/i18n/navigation'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import Squircle from '../ui/Squircle'
 import { createPost } from './api'

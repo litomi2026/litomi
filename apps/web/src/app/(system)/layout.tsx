@@ -3,7 +3,7 @@ import { DEFAULT_LOCALE } from '@litomi/domain/locale'
 import '../globals.css'
 
 import localFont from 'next/font/local'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import QueryProvider from '@/lib/react-query/QueryProvider'

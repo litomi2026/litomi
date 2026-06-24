@@ -1,7 +1,7 @@
 import {
+  type PATCHV1MePasskeyResponse,
   patchV1MePasskeyBodySchema,
   patchV1MePasskeyParamSchema,
-  type PATCHV1MePasskeyResponse,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'

@@ -1,5 +1,3 @@
-import type { Metadata } from 'next'
-
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
@@ -23,6 +21,7 @@ import {
   ShieldCheck,
   Trash2,
 } from 'lucide-react'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 

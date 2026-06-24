@@ -1,9 +1,6 @@
 import { type CatalogMangaRecord, selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { MANGA_RECOMMENDATION_ITEM_LIMIT } from '@litomi/domain/manga-recommendation/policy'
-
-import type { Candidate, CandidateRow, GenerateOptions, MangaRecommendation, PreferenceSignal } from './types'
-
 import {
   type CensorshipMatcher,
   type CensorshipRule,
@@ -27,6 +24,7 @@ import {
   selectUserPreferenceSignals,
 } from './query'
 import { scoreCandidates } from './scoring'
+import type { Candidate, CandidateRow, GenerateOptions, MangaRecommendation, PreferenceSignal } from './types'
 
 const CANDIDATE_LIMIT = 600
 const POSTERIOR_CANDIDATE_LIMIT = 900

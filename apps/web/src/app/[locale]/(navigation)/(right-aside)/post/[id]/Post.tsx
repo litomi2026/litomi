@@ -5,9 +5,9 @@ import { Bookmark, MessageCircle, Repeat, Upload } from 'lucide-react'
 import { getLocale, getTranslations } from 'next-intl/server'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
-import { POST_DETAIL_CURRENT_ANCHOR_ID } from '@/components/post/postHref'
 import PostImages from '@/components/post/PostImages'
 import PostManagementMenu from '@/components/post/PostManagementMenu'
+import { POST_DETAIL_CURRENT_ANCHOR_ID } from '@/components/post/postHref'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
 import { Link } from '@/i18n/navigation'
@@ -71,7 +71,7 @@ export default async function Post({ post }: Props) {
       </div>
       <div className="flex justify-between gap-1 border-y px-2 py-1 text-sm">
         <div className="flex items-center">
-          <button className="group flex items-center w-fit transition hover:text-brand">
+          <button type="button" className="group flex items-center w-fit transition hover:text-brand">
             <div className="shrink-0 rounded-full transition group-hover:bg-brand/20">
               <MessageCircle className="size-9 sm:size-10 p-2" />
             </div>
@@ -79,7 +79,7 @@ export default async function Post({ post }: Props) {
           </button>
         </div>
         <div className="flex items-center">
-          <button className="group flex items-center w-fit transition hover:text-green-500">
+          <button type="button" className="group flex items-center w-fit transition hover:text-green-500">
             <div className="shrink-0 rounded-full transition group-hover:bg-green-500/20 group-hover:text-green-500">
               <Repeat className="size-9 sm:size-10 p-2" />
             </div>
@@ -88,7 +88,7 @@ export default async function Post({ post }: Props) {
         </div>
         <PostDetailLikeButton likeCount={post.likeCount} postId={post.id} />
         <div className="flex items-center">
-          <button className="group flex items-center w-fit transition hover:text-sky-500">
+          <button type="button" className="group flex items-center w-fit transition hover:text-sky-500">
             <div className="shrink-0 rounded-full transition group-hover:bg-sky-800/20">
               <Bookmark className="size-9 sm:size-10 p-2" />
             </div>
@@ -96,7 +96,7 @@ export default async function Post({ post }: Props) {
           </button>
         </div>
         <div className="flex items-center">
-          <button className="group flex items-center w-fit transition">
+          <button type="button" className="group flex items-center w-fit transition">
             <div className="shrink-0 rounded-full transition group-hover:bg-zinc-800">
               <Upload className="size-9 sm:size-10 p-2" />
             </div>

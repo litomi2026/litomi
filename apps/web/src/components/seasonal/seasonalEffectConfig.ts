@@ -1,4 +1,4 @@
-import { Locale, LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
+import { LOCALE_LANGUAGE_TAGS, Locale } from '@litomi/domain/locale'
 
 const MINUTE_MS = 60 * 1000
 const SEOUL_TIME_ZONE = 'Asia/Seoul'

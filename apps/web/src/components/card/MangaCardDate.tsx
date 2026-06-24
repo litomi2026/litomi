@@ -1,6 +1,6 @@
 'use client'
 
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'
 import { useLocale } from 'next-intl'

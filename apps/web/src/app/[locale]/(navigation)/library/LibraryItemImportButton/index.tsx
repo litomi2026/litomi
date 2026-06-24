@@ -17,6 +17,7 @@ export default function LibraryItemImportButton({ libraryId, className = '' }: P
 
   return (
     <button
+      type="button"
       aria-disabled={!libraryId}
       className={`p-2.5 rounded-lg aria-disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:hover:bg-transparent hover:bg-zinc-800 transition ${className}`}
       onClick={() => libraryId && openImportModal(libraryId)}

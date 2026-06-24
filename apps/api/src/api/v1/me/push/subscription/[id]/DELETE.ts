@@ -1,4 +1,4 @@
-import { deleteV1MePushSubscriptionIdParamSchema, type DELETEV1MePushSubscriptionIdResponse } from '@litomi/contracts'
+import { type DELETEV1MePushSubscriptionIdResponse, deleteV1MePushSubscriptionIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { webPushTable } from '@litomi/db/app/notification'
 import { and, eq } from 'drizzle-orm'

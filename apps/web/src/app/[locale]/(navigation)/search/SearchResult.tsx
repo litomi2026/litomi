@@ -2,16 +2,12 @@
 
 import type { Manga } from '@litomi/domain/manga/model'
 import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
-import type { ReadonlyURLSearchParams } from 'next/navigation'
-import type { ReactNode } from 'react'
-
 import { getViewFromSearchParams, View } from '@litomi/std'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 import { useState } from 'react'
-
-import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
-
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import { useSearchQuery } from '@/app/[locale]/(navigation)/search/useSearchQuery'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
@@ -23,6 +19,7 @@ import ScrollButtons from '@/components/ScrollButtons'
 import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
+import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { ProblemDetailsError } from '@/utils/fetch-response'

@@ -58,7 +58,8 @@ export const messages = {
         statusVerify: '보안 검증 후 광고를 클릭하면 리보가 적립돼요',
         statusReady: '상단 광고를 클릭하면 리보가 적립돼요',
         turnstileTitle: '리보 적립 전에 보안 검증이 필요해요',
-        turnstileDesc: 'Cloudflare 보안 검증을 완료하면 광고를 클릭할 때 리보가 적립돼요. 2분마다 자동으로 다시 검증해요.',
+        turnstileDesc:
+          'Cloudflare 보안 검증을 완료하면 광고를 클릭할 때 리보가 적립돼요. 2분마다 자동으로 다시 검증해요.',
         turnstileVerified: '인증됐어요',
         turnstilePending: '인증을 확인하고 있어요…',
         turnstileRequired: '인증을 확인해 주세요',
@@ -102,7 +103,8 @@ export const messages = {
         loginRequiredTitle: '광고 수익 통계는 로그인한 사용자만 볼 수 있어요',
         loginRequiredDesc: '로그인하면 최근 30일 통계를 확인할 수 있어요',
         title: '광고 수익 통계',
-        subtitle: 'Adsterra에서 제공하는 통계를 확인해 보세요. 해당 광고 수익은 참고용이며, 정산이 확정되기 전까지는 실제 지급액과 차이가 있을 수 있어요.',
+        subtitle:
+          'Adsterra에서 제공하는 통계를 확인해 보세요. 해당 광고 수익은 참고용이며, 정산이 확정되기 전까지는 실제 지급액과 차이가 있을 수 있어요.',
         lastDays: '최근 {days}일',
         startDate: '시작 날짜',
         finishDate: '종료 날짜',
@@ -203,7 +205,8 @@ export const messages = {
         statusVerify: 'Complete verification and click an ad to earn Libo.',
         statusReady: 'Click top ads to earn Libo.',
         turnstileTitle: 'Security verification is required before earning Libo.',
-        turnstileDesc: 'Complete Cloudflare verification to earn Libo when clicking ads. It automatically re-verifies every 2 minutes.',
+        turnstileDesc:
+          'Complete Cloudflare verification to earn Libo when clicking ads. It automatically re-verifies every 2 minutes.',
         turnstileVerified: 'Verified.',
         turnstilePending: 'Verifying...',
         turnstileRequired: 'Please complete verification.',
@@ -247,7 +250,8 @@ export const messages = {
         loginRequiredTitle: 'Ad Revenue Stats are only visible to logged-in users.',
         loginRequiredDesc: 'Log in to view stats for the last 30 days.',
         title: 'Ad Revenue Stats',
-        subtitle: 'View stats provided by Adsterra. These earnings are for reference only and may differ from the actual payout until settlement is finalized.',
+        subtitle:
+          'View stats provided by Adsterra. These earnings are for reference only and may differ from the actual payout until settlement is finalized.',
         lastDays: 'Last {days} Days',
         startDate: 'Start Date',
         finishDate: 'End Date',
@@ -275,7 +279,8 @@ export const messages = {
         viewPayouts: 'View Roulette Payouts',
         open: 'Open',
         close: 'Close',
-        payoutNote: 'Multipliers are based on "payout including bet". For example, a 2x multiplier returns twice your bet amount after placing it.',
+        payoutNote:
+          'Multipliers are based on "payout including bet". For example, a 2x multiplier returns twice your bet amount after placing it.',
         liboUnit: 'Libo',
         betTitle: 'Bet',
         spinning: 'Spinning...',
@@ -348,7 +353,8 @@ export const messages = {
         statusVerify: '認証完了後、広告をクリックすると Libo が貯まります。',
         statusReady: '上部の広告をクリックすると Libo が貯まります。',
         turnstileTitle: 'Libo を獲得する前にセキュリティ認証が必要です。',
-        turnstileDesc: 'Cloudflare セキュリティ認証を完了すると、広告クリック時に Libo が貯まります。2分ごとに自動で再認証します。',
+        turnstileDesc:
+          'Cloudflare セキュリティ認証を完了すると、広告クリック時に Libo が貯まります。2分ごとに自動で再認証します。',
         turnstileVerified: '認証されました。',
         turnstilePending: '認証を確認しています…',
         turnstileRequired: '認証を完了してください。',
@@ -392,7 +398,8 @@ export const messages = {
         loginRequiredTitle: '広告収益統計はログインしたユーザーのみ閲覧可能です。',
         loginRequiredDesc: 'ログインすると過去30日間の統計を確認できます。',
         title: '広告収益統計',
-        subtitle: 'Adsterra が提供する統計をご確認ください。この広告収益は参考値であり、精算が確定するまでは実際の支払額と異なる場合があります。',
+        subtitle:
+          'Adsterra が提供する統計をご確認ください。この広告収益は参考値であり、精算が確定するまでは実際の支払額と異なる場合があります。',
         lastDays: '過去 {days} 日間',
         startDate: '開始日',
         finishDate: '終了日',
@@ -420,7 +427,8 @@ export const messages = {
         viewPayouts: 'ルーレット配当表を見る',
         open: '開く',
         close: '閉じる',
-        payoutNote: '倍率は「ベット額を含む支払い」を基準としています。たとえば2倍の場合、ベット後にベット額の2倍が支払われます。',
+        payoutNote:
+          '倍率は「ベット額を含む支払い」を基準としています。たとえば2倍の場合、ベット後にベット額の2倍が支払われます。',
         liboUnit: 'Libo',
         betTitle: 'ベット',
         spinning: '回転中…',

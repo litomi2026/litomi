@@ -3,9 +3,8 @@
 import { Trash2 } from 'lucide-react'
 
 import type { BulkActionDescriptor } from '../bulkActionTypes'
-import type { ReadingHistorySource } from './common'
-
 import { useLibrarySelection } from '../librarySelection'
+import type { ReadingHistorySource } from './common'
 import useDeleteReadingHistoryMutation from './useDeleteReadingHistoryMutation'
 
 type Options = {

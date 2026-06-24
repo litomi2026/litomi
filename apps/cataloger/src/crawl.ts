@@ -1,9 +1,8 @@
-import type { LabeledValue, Manga } from '@litomi/domain/manga/model'
-
-import { kHentaiClient, type KHentaiMangaSearchOptions } from '@litomi/crawler/sources/k-hentai'
+import { type KHentaiMangaSearchOptions, kHentaiClient } from '@litomi/crawler/sources/k-hentai'
 import { catalogDB } from '@litomi/db/catalog'
 import { mangaTable } from '@litomi/db/catalog/schema'
 import { Locale } from '@litomi/domain/locale'
+import type { LabeledValue, Manga } from '@litomi/domain/manga/model'
 import { MangaType, TagCategory, tagCategoryNameToInt } from '@litomi/domain/manga/model'
 import dayjs from 'dayjs'
 import { max, min, sql } from 'drizzle-orm'
@@ -46,7 +45,7 @@ export async function crawlMangas() {
       }`,
     )
 
-    let nextId: string | undefined = undefined
+    let nextId: string | undefined
     let hasSkippedToOlderMangas = false
 
     let totalProcessed = 0

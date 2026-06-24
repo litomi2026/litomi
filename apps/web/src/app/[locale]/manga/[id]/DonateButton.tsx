@@ -7,7 +7,7 @@ import { formatNumber } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import ms from 'ms'
 import { useLocale, useTranslations } from 'next-intl'
-import { ComponentProps, useState } from 'react'
+import { type ComponentProps, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 

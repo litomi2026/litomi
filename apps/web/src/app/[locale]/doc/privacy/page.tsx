@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
-
 import { getTranslations } from 'next-intl/server'
+import type { ReactNode } from 'react'
 
 import { Link } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'

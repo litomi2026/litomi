@@ -1,5 +1,5 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
-import { postV1BBatonUnlinkBodySchema, type POSTV1BBatonUnlinkResponse } from '@litomi/contracts'
+import { type POSTV1BBatonUnlinkResponse, postV1BBatonUnlinkBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { twoFactorTable } from '@litomi/db/app/two-factor'

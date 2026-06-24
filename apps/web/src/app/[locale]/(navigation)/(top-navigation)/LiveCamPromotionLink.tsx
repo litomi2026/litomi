@@ -1,6 +1,6 @@
 'use client'
 
-import { type PublicLocale } from '@litomi/domain/locale'
+import type { PublicLocale } from '@litomi/domain/locale'
 import { Webcam } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 

@@ -1,8 +1,7 @@
-import type { RegistrationResponseJSON } from '@simplewebauthn/server'
-
 import { BACKUP_CODE_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { isSearchLanguage } from '@litomi/domain/search/language'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
+import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 import { z } from 'zod'
 
 const passwordSchema = z

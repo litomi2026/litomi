@@ -1,11 +1,10 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import type { StoreApi } from 'zustand/vanilla'
-
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useStore } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import type { StoreApi } from 'zustand/vanilla'
 import { createStore } from 'zustand/vanilla'
 
 export type ImageFit = 'contain' | 'height' | 'width'
@@ -74,7 +73,14 @@ type PersistedStoreApi<T> = StoreApi<T> & {
 
 type ReaderPersistedState = Pick<
   ReaderStore,
-  'avoidCutout' | 'imageFit' | 'imageWidth' | 'orientation' | 'pageView' | 'readingDirection' | 'scrollAxis' | 'viewerMode'
+  | 'avoidCutout'
+  | 'imageFit'
+  | 'imageWidth'
+  | 'orientation'
+  | 'pageView'
+  | 'readingDirection'
+  | 'scrollAxis'
+  | 'viewerMode'
 >
 
 type ReaderProviderProps = {

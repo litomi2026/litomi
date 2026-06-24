@@ -10,9 +10,7 @@
     "start": "bun run start:prod",
     "start:local": "bun --env-file=.env.local next start --port 3001",
     "start:prod": "bun --env-file=.env.prod.runtime next start --port 3001",
-    "type": "tsc --noEmit",
-    "lint": "eslint . --fix",
-    "format": "prettier --write . --ignore-path ../../.gitignore"
+    "type": "tsc --noEmit"
   },
   "dependencies": {
     "@litomi/catalog": "workspace:*",

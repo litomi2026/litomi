@@ -1,6 +1,5 @@
-import type { NextConfig } from 'next'
-
 import { withSentryConfig } from '@sentry/nextjs'
+import type { NextConfig } from 'next'
 
 const isProduction = process.env.NODE_ENV === 'production'
 const sentryRelease = process.env.VERCEL_GIT_COMMIT_SHA

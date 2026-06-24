@@ -1,12 +1,12 @@
 'use client'
 
-import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
-import type { ReaderNoticeHandle } from '#reader/model/readerNotice'
-
-import { useReaderMessages, useReaderNoticeHandler } from '#reader/context'
-import { useReaderStore } from '#reader/state/readerStore'
 import ms from 'ms'
 import { useEffect, useEffectEvent, useRef } from 'react'
+
+import { useReaderMessages, useReaderNoticeHandler } from '#reader/context'
+import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
+import type { ReaderNoticeHandle } from '#reader/model/readerNotice'
+import { useReaderStore } from '#reader/state/readerStore'
 
 const DEFAULT_DURATION_MS = ms('10 seconds')
 

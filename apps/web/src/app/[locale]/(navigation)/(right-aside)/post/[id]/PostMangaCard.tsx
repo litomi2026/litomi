@@ -1,8 +1,7 @@
 'use client'
 
-import type { Manga } from '@litomi/domain/manga/model'
-
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'

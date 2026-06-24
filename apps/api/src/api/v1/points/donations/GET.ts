@@ -1,12 +1,12 @@
 import { translateArtistList } from '@litomi/catalog/translation/artist'
 import { translateGroupList } from '@litomi/catalog/translation/group'
 import {
-  getV1PointsDonationRecipientQuerySchema,
   type GETV1PointsDonationRecipientResponse,
   type GETV1PointsDonationsMeItem,
-  getV1PointsDonationsMeQuerySchema,
   type GETV1PointsDonationsMeRecipient,
   type GETV1PointsDonationsMeResponse,
+  getV1PointsDonationRecipientQuerySchema,
+  getV1PointsDonationsMeQuerySchema,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import {

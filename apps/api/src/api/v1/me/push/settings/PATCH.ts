@@ -1,4 +1,4 @@
-import { patchV1MePushSettingsBodySchema, type PATCHV1MePushSettingsResponse } from '@litomi/contracts'
+import { type PATCHV1MePushSettingsResponse, patchV1MePushSettingsBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pushSettingsTable } from '@litomi/db/app/notification'
 import { Hono } from 'hono'

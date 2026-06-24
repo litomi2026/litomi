@@ -1,4 +1,4 @@
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 class NormalizedValueMap {
@@ -115,8 +115,8 @@ type ExcludableCategory = (typeof EXCLUDABLE_CATEGORIES)[number]
 export function parseMinusPrefixFilters(query: string) {
   const excludePatternWithCategory = /-(\w+):(\S+)/g
   const filters: { category: ExcludableCategory; value: string }[] = []
+  let match: RegExpExecArray | null
 
-  let match
   while ((match = excludePatternWithCategory.exec(query)) !== null) {
     const category = normalizeValue(match[1]) as ExcludableCategory
 

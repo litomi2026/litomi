@@ -1,7 +1,7 @@
 import '@test/setup.dom'
-import type { ProblemDetails } from '@litomi/http/problem-details'
 
 import { afterEach, describe, expect, test } from 'bun:test'
+import type { ProblemDetails } from '@litomi/http/problem-details'
 
 import {
   applySignupProblem,

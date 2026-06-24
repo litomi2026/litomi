@@ -1,14 +1,12 @@
 'use client'
 
 import type { Manga } from '@litomi/domain/manga/model'
-
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
-import AdultVerificationGate from '@/components/AdultVerificationGate'
 import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { Link } from '@/i18n/navigation'

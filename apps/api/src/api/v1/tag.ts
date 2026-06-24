@@ -1,5 +1,5 @@
 import { translateTag } from '@litomi/catalog/translation/tag'
-import { getV1TagQuerySchema, type GETV1TagResponse, type TagCategoryParam, type TagItem } from '@litomi/contracts'
+import { type GETV1TagResponse, getV1TagQuerySchema, type TagCategoryParam, type TagItem } from '@litomi/contracts'
 import { catalogDB } from '@litomi/db/catalog'
 import { mangaTable } from '@litomi/db/catalog/schema'
 import { createCacheControl } from '@litomi/http/cache-control'

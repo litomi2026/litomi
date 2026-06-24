@@ -1,14 +1,13 @@
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
-
-import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
-import { type ImageFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { type CSSProperties, Fragment, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, type RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 import { twMerge } from 'tailwind-merge'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
+import { NATIVE_GESTURE_BLOCK_CSS } from '#reader/model/viewerGesturePolicy'
+import { type ImageFit, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 
 import { HorizontalScrollReaderView } from './HorizontalScrollReaderView'
-import { Props, ScrollReaderViewLoading } from './shared'
+import { type Props, ScrollReaderViewLoading } from './shared'
 
 const verticalImageFitStyle: Record<ImageFit, string> = {
   width:

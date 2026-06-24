@@ -8,7 +8,7 @@ const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 export function calculateOptimalCacheDuration(images: string[]): number {
   const now = Math.floor(Date.now() / 1000)
-  let nearestExpiration
+  let nearestExpiration: number | undefined
 
   for (const imageUrl of images) {
     const expiration = extractExpirationFromURL(imageUrl)

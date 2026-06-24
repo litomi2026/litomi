@@ -4,7 +4,7 @@ import type { Locale } from '@litomi/domain/locale'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 import { translateCategory } from './category'
-import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
+import { getPrefixedTranslationLabels, type TranslationMap, translateValue } from './common'
 import typeTranslationJSON from './type.json'
 
 const TYPE_TRANSLATION = typeTranslationJSON as TranslationMap

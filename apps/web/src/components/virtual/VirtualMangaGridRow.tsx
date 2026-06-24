@@ -1,6 +1,5 @@
-import type { RowComponentProps } from 'react-window'
-
 import { Fragment } from 'react'
+import type { RowComponentProps } from 'react-window'
 
 import type { VirtualMangaGridItem, VirtualMangaGridRowProps } from './VirtualMangaGrid.types'
 

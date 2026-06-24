@@ -1,8 +1,7 @@
 'use client'
 
-import type { ComponentPropsWithRef, MouseEvent } from 'react'
-
 import { Capacitor } from '@capacitor/core'
+import type { ComponentPropsWithRef, MouseEvent } from 'react'
 
 import { Link } from '@/i18n/navigation'
 

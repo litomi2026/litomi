@@ -1,8 +1,7 @@
-/* eslint-disable max-params */
-import type { FireworkConfig } from './types'
-
+// biome-ignore-all lint/complexity/useLiteralKeys: nested classes reach FireworkEngine private members via bracket notation to bypass TS visibility
 import { MyMath } from './MyMath'
 import { Stage } from './Stage'
+import type { FireworkConfig } from './types'
 
 const MAX_WIDTH = 7680
 const MAX_HEIGHT = 4320
@@ -352,7 +351,7 @@ class FireworkEngine {
       this.targetSkyColor.b += tuple.b * count
     })
 
-    const intensity = Math.pow(Math.min(1, totalStarCount / maxStarCount), 0.3)
+    const intensity = Math.min(1, totalStarCount / maxStarCount) ** 0.3
     const maxColorComponent = Math.max(1, this.targetSkyColor.r, this.targetSkyColor.g, this.targetSkyColor.b)
     this.targetSkyColor.r = (this.targetSkyColor.r / maxColorComponent) * maxSkySaturation * intensity
     this.targetSkyColor.g = (this.targetSkyColor.g / maxColorComponent) * maxSkySaturation * intensity
@@ -371,7 +370,7 @@ class FireworkEngine {
   private crackleEffect = (star: StarInstance) => {
     const count = this.isHighQuality ? 32 : 16
     this.createParticleArc(0, PI_2, count, 1.8, (angle) => {
-      this.Spark.add(star.x, star.y, COLOR.Gold, angle, Math.pow(Math.random(), 0.45) * 2.4, 300 + Math.random() * 200)
+      this.Spark.add(star.x, star.y, COLOR.Gold, angle, Math.random() ** 0.45 * 2.4, 300 + Math.random() * 200)
     })
   }
 
@@ -1413,7 +1412,7 @@ class FireworkEngine {
           stars.splice(i, 1)
           this.Star.returnInstance(star)
         } else {
-          const burnRate = Math.pow(star.life / star.fullLife, 0.5)
+          const burnRate = (star.life / star.fullLife) ** 0.5
           const burnRateInverse = 1 - burnRate
 
           star.prevX = star.x
@@ -1549,6 +1548,7 @@ class FireworkEngine {
 
 // FireworkEngine implementation
 export { FireworkEngine }
+
 // Shell class - defined before FireworkEngine implementation
 class Shell {
   color: string | 'random' | string[]
@@ -1723,7 +1723,7 @@ class Shell {
 
       if (this.ring) {
         const ringStartAngle = Math.random() * Math.PI
-        const ringSquash = Math.pow(Math.random(), 2) * 0.85 + 0.15
+        const ringSquash = Math.random() ** 2 * 0.85 + 0.15
 
         this.engine['createParticleArc'](0, PI_2, this.starCount, 0, (angle: number) => {
           const initSpeedX = Math.sin(angle) * speed * ringSquash
@@ -1816,7 +1816,7 @@ class Shell {
     const burstY = minHeight - launchHeight * (minHeight - vpad)
 
     const launchDistance = launchY - burstY
-    const launchVelocity = Math.pow(launchDistance * 0.04, 0.64)
+    const launchVelocity = (launchDistance * 0.04) ** 0.64
 
     const comet = (this.comet = this.engine['Star'].add(
       launchX,
@@ -1844,7 +1844,7 @@ class Shell {
 
     if (Math.random() > 0.4 && !this.horsetail) {
       comet.secondColor = INVISIBLE
-      comet.transitionTime = Math.pow(Math.random(), 1.5) * 700 + 500
+      comet.transitionTime = Math.random() ** 1.5 * 700 + 500
     }
 
     comet.onDeath = () => this.burst(comet.x, comet.y)

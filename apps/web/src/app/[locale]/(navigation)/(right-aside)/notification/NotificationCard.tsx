@@ -1,7 +1,6 @@
 'use client'
 
-import { NotificationType } from '@litomi/domain/notification/model'
-import { NotificationData } from '@litomi/domain/notification/model'
+import { type NotificationData, NotificationType } from '@litomi/domain/notification/model'
 import { formatDistanceToNow } from '@litomi/std'
 import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
@@ -148,6 +147,7 @@ export default function NotificationCard({
         <div className="absolute right-3 top-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
           {isUnread && onMarkAsRead && (
             <button
+              type="button"
               className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 transition"
               onClick={(e) => {
                 e.preventDefault()
@@ -160,6 +160,7 @@ export default function NotificationCard({
           )}
           {onDelete && (
             <button
+              type="button"
               className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-red-900 hover:text-red-400 transition"
               onClick={(e) => {
                 e.preventDefault()

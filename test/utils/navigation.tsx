@@ -5,10 +5,9 @@ import type {
   NavigateOptions,
   PrefetchOptions,
 } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import type { ReactNode } from 'react'
-
 import { AppRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { PathnameContext, SearchParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime'
+import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 
 type NavigationWrapperOptions = {

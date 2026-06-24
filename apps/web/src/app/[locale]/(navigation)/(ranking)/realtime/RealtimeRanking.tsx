@@ -95,6 +95,7 @@ export default function RealtimeRanking() {
                           className="text-xs p-2 -m-2 text-zinc-400 shrink-0 whitespace-nowrap hover:underline flex items-center gap-1"
                           href={`https://www.google.com/search?q=site:litomi.cc+${item.page}`}
                           target="_blank"
+                          rel="noopener"
                         >
                           <span className="hidden sm:inline">Google</span> <ExternalLink className="size-3" />
                         </a>

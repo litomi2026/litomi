@@ -5,7 +5,7 @@ import { getSafeProfileImageURL } from '@litomi/std'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { SquarePen } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { SubmitEvent, SyntheticEvent, useEffect, useRef, useState } from 'react'
+import { type SubmitEvent, type SyntheticEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 
 /**
  * Generate a secure encryption key for TOTP secrets

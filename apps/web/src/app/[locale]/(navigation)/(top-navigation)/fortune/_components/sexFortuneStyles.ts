@@ -8,7 +8,7 @@ export const LIBO_PAGE_LAYOUT = {
 } as const
 
 type AccentCardStyle = CSSProperties & {
-  ['--accent']?: string
+  '--accent'?: string
 }
 
 export function getAccentCardStyle(accent: string): AccentCardStyle {

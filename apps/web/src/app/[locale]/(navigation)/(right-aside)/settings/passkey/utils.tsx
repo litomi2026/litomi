@@ -1,6 +1,5 @@
-import type { AuthenticatorTransportFuture } from '@simplewebauthn/server'
-
 import { getDefaultPasskeyName } from '@litomi/domain/auth/model'
+import type { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 import { Fingerprint, Key, Smartphone, SquareAsterisk, Usb } from 'lucide-react'
 
 export function generateFakeCredentials(loginId: string): Array<{

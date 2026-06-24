@@ -1,6 +1,6 @@
 import type { PATCHV1CensorshipUpdateResponse } from '@litomi/contracts'
 
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+import type { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check } from 'lucide-react'
 import { useTranslations } from 'next-intl'

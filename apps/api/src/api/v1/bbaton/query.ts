@@ -8,7 +8,7 @@ import { db } from '@litomi/db/app'
 import { authSessionFamilyTable, authSessionTokenTable } from '@litomi/db/app/auth'
 import { CookieKey } from '@litomi/http/cookie'
 import { eq } from 'drizzle-orm'
-import { Context } from 'hono'
+import type { Context } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 
 import type { Env } from '@/app'

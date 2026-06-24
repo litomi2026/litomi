@@ -8,13 +8,7 @@
     },
     "@litomi/edge-proxy#build": {
       "dependsOn": ["^build"],
-      "env": [
-        "CI",
-        "NEXT_PUBLIC_APP_ORIGIN",
-        "NEXT_PUBLIC_SENTRY_DSN",
-        "VERCEL_ENV",
-        "VERCEL_GIT_COMMIT_SHA"
-      ],
+      "env": ["CI", "NEXT_PUBLIC_APP_ORIGIN", "NEXT_PUBLIC_SENTRY_DSN", "VERCEL_ENV", "VERCEL_GIT_COMMIT_SHA"],
       "passThroughEnv": ["SENTRY_AUTH_TOKEN", "SENTRY_ORG", "SENTRY_PROJECT"],
       "inputs": ["$TURBO_DEFAULT$", ".env.prod.build"],
       "outputs": [".next/**"]
@@ -103,22 +97,6 @@
       "outputs": []
     },
     "//#type:root": {
-      "outputs": []
-    },
-    "lint": {
-      "cache": false,
-      "outputs": []
-    },
-    "//#lint:root": {
-      "cache": false,
-      "outputs": []
-    },
-    "format": {
-      "cache": false,
-      "outputs": []
-    },
-    "//#format:root": {
-      "cache": false,
       "outputs": []
     }
   }

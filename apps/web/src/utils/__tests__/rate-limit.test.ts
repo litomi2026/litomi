@@ -1,5 +1,5 @@
-import { MemoryStore, RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 import { describe, expect, spyOn, test } from 'bun:test'
+import { MemoryStore, RateLimiter, RateLimitPresets } from '@litomi/http/rate-limit'
 
 describe('RateLimiter', () => {
   describe('MemoryStore', () => {

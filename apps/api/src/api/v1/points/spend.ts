@@ -1,4 +1,4 @@
-import { postV1PointSpendRequestSchema, type POSTV1PointSpendResponse } from '@litomi/contracts'
+import { type POSTV1PointSpendResponse, postV1PointSpendRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pointTransactionTable, userExpansionTable, userItemTable, userPointsTable } from '@litomi/db/app/points'
 import { ITEM_TYPE, TRANSACTION_TYPE } from '@litomi/domain/points/model'
@@ -22,7 +22,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSc
 
   try {
     const { type, itemId } = c.req.valid('json')
-    let spendMeta
+    let spendMeta: ReturnType<typeof getSpendMeta>
     let expansionConfig: ReturnType<typeof getExpansionConfig> | null = null
     let purchaseItem: { type: (typeof ITEM_TYPE)[keyof typeof ITEM_TYPE]; itemId: string } | null = null
     let transactionType!: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE]

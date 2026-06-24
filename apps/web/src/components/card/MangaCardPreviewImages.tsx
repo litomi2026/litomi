@@ -1,6 +1,6 @@
 'use client'
 
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
@@ -50,7 +50,11 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
         }
       })
     }, observerOptions)
-    slides.forEach((slide) => observer.observe(slide))
+
+    for (const slide of slides) {
+      observer.observe(slide)
+    }
+
     return () => observer.disconnect()
   }, [activeIndex])
 
@@ -80,6 +84,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
         ))}
       </div>
       <button
+        type="button"
         aria-label={t('previous')}
         className="pointer-coarse:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(prevIndex)}
@@ -87,6 +92,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
         <ChevronLeft className="size-4" />
       </button>
       <button
+        type="button"
         aria-label={t('next')}
         className="pointer-coarse:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(nextIndex)}

@@ -1,4 +1,4 @@
-import { type GETV1MeResponse } from '@litomi/contracts'
+import type { GETV1MeResponse } from '@litomi/contracts'
 
 export function hasAdultAccess(me: GETV1MeResponse | null | undefined): boolean {
   if (!me) {

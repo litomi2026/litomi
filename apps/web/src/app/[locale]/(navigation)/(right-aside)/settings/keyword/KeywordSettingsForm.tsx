@@ -6,11 +6,9 @@ import { useState } from 'react'
 import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
-
-import type { NotificationCriteria } from './types'
-
 import NotificationCriteriaCard from './NotificationCriteriaCard'
 import NotificationCriteriaModal from './NotificationCriteriaModal'
+import type { NotificationCriteria } from './types'
 
 interface Props {
   initialCriteria: NotificationCriteria[]
@@ -67,6 +65,7 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
               </p>
             </div>
             <button
+              type="button"
               className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 px-3 py-2 sm:px-4 text-xs sm:text-sm font-medium text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 transition-all self-start sm:self-auto"
               onClick={handleCreateClick}
             >

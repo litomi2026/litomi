@@ -3,7 +3,7 @@ import { postLikeTable, postTable } from '@litomi/db/app/post'
 import { userFollowTable, userTable } from '@litomi/db/app/user'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { PostType } from '@litomi/domain/post/model'
-import { and, count, desc, eq, inArray, isNotNull, isNull, lt, or, SQL } from 'drizzle-orm'
+import { and, count, desc, eq, inArray, isNotNull, isNull, lt, or, type SQL } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
 type DeletedReferredPost = {

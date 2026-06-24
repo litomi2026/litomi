@@ -1,18 +1,16 @@
 'use client'
 
-import { PKCEChallenge } from '@litomi/auth/pkce-browser'
+import type { PKCEChallenge } from '@litomi/auth/pkce-browser'
 import { BACKUP_CODE_PATTERN } from '@litomi/domain/auth/policy'
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Key, Loader2, RectangleEllipsis } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { SubmitEvent, useRef, useState } from 'react'
+import { type SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import OneTimeCodeInput from '@/app/[locale]/(navigation)/(right-aside)/settings/two-factor/components/OneTimeCodeInput'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { verifyTwoFactorLogin } from './api'
 import { applyTwoFactorProblem, clearTwoFactorValidity } from './util'

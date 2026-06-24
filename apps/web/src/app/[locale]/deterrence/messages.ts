@@ -301,7 +301,8 @@ export const messages = {
           },
           asacpParentalGuidelines: {
             title: 'ASACP Parental Guidelines',
-            description: '成人向けコンテンツへのアクセス制限とオンライン安全管理について、保護者が参考にできる外部ガイドです。',
+            description:
+              '成人向けコンテンツへのアクセス制限とオンライン安全管理について、保護者が参考にできる外部ガイドです。',
           },
         },
       },

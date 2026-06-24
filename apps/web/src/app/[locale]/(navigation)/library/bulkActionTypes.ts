@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 export type BulkActionDescriptor = BulkConfirmActionDescriptor | BulkLibrarySelectActionDescriptor
 

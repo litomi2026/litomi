@@ -1,4 +1,4 @@
-import { libraryIdParamSchema, patchV1LibraryIdBodySchema, type PATCHV1LibraryIdResponse } from '@litomi/contracts'
+import { libraryIdParamSchema, type PATCHV1LibraryIdResponse, patchV1LibraryIdBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable } from '@litomi/db/app/library'
 import { hexColorToInt } from '@litomi/domain/utils/color'

@@ -1,5 +1,5 @@
 import { env } from '@litomi/env/client'
-import { type MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/',
       },
     ],
-    sitemap: env.NEXT_PUBLIC_APP_ORIGIN + '/sitemap.xml',
+    sitemap: `${env.NEXT_PUBLIC_APP_ORIGIN}/sitemap.xml`,
   }
 }

@@ -30,5 +30,3 @@ declare module '@tanstack/query-core' {
     }
   }
 }
-
-export {}

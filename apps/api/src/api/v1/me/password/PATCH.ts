@@ -1,7 +1,7 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { PASSWORD_HASH_COST } from '@litomi/auth/password'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
-import { patchV1MePasswordBodySchema, type PATCHV1MePasswordResponse } from '@litomi/contracts'
+import { type PATCHV1MePasswordResponse, patchV1MePasswordBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'

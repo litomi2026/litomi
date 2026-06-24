@@ -10,16 +10,12 @@ import { BellOff, Edit3, Trash2 } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import IconBell from '@/components/icons/IconBell'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { useRouter } from '@/i18n/navigation'
-
-import type { NotificationCriteria } from './types'
-
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { deleteNotificationCriteria, updateNotificationCriteria } from './api'
+import type { NotificationCriteria } from './types'
 
 interface NotificationCriteriaCardProps {
   criterion: NotificationCriteria
@@ -143,6 +139,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
                 onToggle={handleToggle}
               />
               <button
+                type="button"
                 className="p-2 text-zinc-600 hover:text-zinc-400 rounded-xl hover:bg-zinc-800/50 transition disabled:opacity-50"
                 disabled={isToggling || isDeleting}
                 onClick={() => onEdit(criterion)}
@@ -151,6 +148,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
                 <Edit3 className="h-4 w-4" />
               </button>
               <button
+                type="button"
                 className="p-2 text-zinc-600 hover:text-red-400 rounded-xl hover:bg-red-900/10 transition disabled:opacity-50"
                 disabled={isToggling || isDeleting}
                 onClick={handleDelete}

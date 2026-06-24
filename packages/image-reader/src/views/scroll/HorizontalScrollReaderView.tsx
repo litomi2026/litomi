@@ -1,5 +1,7 @@
+import { type CSSProperties, Fragment, useEffect, useRef, useState, type WheelEvent } from 'react'
+import { useInView } from 'react-intersection-observer'
+import { type CellComponentProps, Grid, useGridRef } from 'react-window'
 import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
-
 import {
   getScrollableAxesInPath,
   NATIVE_GESTURE_BLOCK_CSS,
@@ -7,11 +9,8 @@ import {
 } from '#reader/model/viewerGesturePolicy'
 import { type ImageFit, type ReadingDirection, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
 import { getNormalizedWheelDelta } from '#reader/views/paged/gestures/viewerZoom'
-import { type CSSProperties, Fragment, useEffect, useRef, useState, type WheelEvent } from 'react'
-import { useInView } from 'react-intersection-observer'
-import { type CellComponentProps, Grid, useGridRef } from 'react-window'
 
-import { Props, ScrollReaderViewLoading } from './shared'
+import { type Props, ScrollReaderViewLoading } from './shared'
 
 const DEFAULT_PAGE_ASPECT_RATIO = 0.7
 const DEFAULT_AVAILABLE_HEIGHT = 1000

@@ -1,7 +1,6 @@
-import type { Metadata } from 'next'
-
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
 import ScrollButtons from '@/components/ScrollButtons'

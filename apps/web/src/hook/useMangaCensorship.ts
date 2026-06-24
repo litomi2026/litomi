@@ -1,6 +1,5 @@
-import type { Manga } from '@litomi/domain/manga/model'
-
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
+import type { Manga } from '@litomi/domain/manga/model'
 
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import useMeQuery from '@/query/useMeQuery'

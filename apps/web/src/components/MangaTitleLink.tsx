@@ -1,8 +1,7 @@
 'use client'
 
-import type { MouseEvent, ReactNode } from 'react'
-
 import { Capacitor } from '@capacitor/core'
+import type { MouseEvent, ReactNode } from 'react'
 
 import { useRouter } from '@/i18n/navigation'
 
@@ -23,7 +22,7 @@ export default function MangaTitleLink({ children, className, href }: Props) {
   }
 
   return (
-    <a className={className} href={href} onClick={handleClick} target="_blank">
+    <a className={className} href={href} onClick={handleClick} target="_blank" rel="noopener">
       {children}
     </a>
   )

@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import fs from 'fs'
+import fs from 'node:fs'
+import path from 'node:path'
 import ms from 'ms'
-import path from 'path'
 
 type ChampionFull = { data: Record<string, { name: string }> }
 
@@ -231,7 +231,7 @@ function toSnake(id: string): string {
 }
 
 function writeJsonFile(filePath: string, value: unknown) {
-  fs.writeFileSync(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8')
+  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf-8')
 }
 
 main()

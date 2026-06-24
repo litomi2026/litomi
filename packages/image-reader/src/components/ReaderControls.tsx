@@ -1,16 +1,15 @@
 'use client'
 
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
-
+import { ArrowRight } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import PageSlider from '#reader/components/PageSlider'
 import SlideshowButton from '#reader/components/SlideshowButton'
 import ThumbnailStrip from '#reader/components/ThumbnailStrip'
 import ViewControlPanel from '#reader/components/ViewControlPanel'
 import { useReaderMessages } from '#reader/context'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
 import { orientations, useReaderSessionStore, useReaderStore } from '#reader/state/readerStore'
-import { ArrowRight } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 
 const CONTROL_BUTTON_CLASS_NAME =
   'rounded-full p-2 py-1 min-w-20 transition disabled:pointer-events-none disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background'

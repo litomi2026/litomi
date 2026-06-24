@@ -3,11 +3,9 @@ import type { GETV1PointsDonationsMeResponse } from '@litomi/contracts'
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useLocale } from 'next-intl'
 import { toast } from 'sonner'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 type MutationContext = {
   previous?: InfiniteData<GETV1PointsDonationsMeResponse>

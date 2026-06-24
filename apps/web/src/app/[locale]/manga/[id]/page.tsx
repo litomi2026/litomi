@@ -1,6 +1,3 @@
-import type { Metadata } from 'next'
-import type { Book, WithContext } from 'schema-dts'
-
 import {
   BLACKLISTED_MANGA_IDS,
   MAX_MANGA_DESCRIPTION_LENGTH,
@@ -8,8 +5,10 @@ import {
 } from '@litomi/domain/manga/policy'
 import { env } from '@litomi/env/client'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
-import { getTranslations } from 'next-intl/server'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+import type { Book, WithContext } from 'schema-dts'
 
 import { getPathname } from '@/i18n/navigation'
 import { getLocaleFromParams } from '@/i18n/server'
@@ -103,6 +102,7 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]'>
   return (
     <main className="h-full">
       <script
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data; '<' is escaped to prevent XSS.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replaceAll('<', '\\u003c') }}
         type="application/ld+json"
       />

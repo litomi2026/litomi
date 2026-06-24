@@ -1,5 +1,5 @@
-import { PROBLEM_CONTENT_TYPE, problemCode } from '@litomi/http/problem-details'
 import { describe, expect, test } from 'bun:test'
+import { PROBLEM_CONTENT_TYPE, problemCode } from '@litomi/http/problem-details'
 import { Hono } from 'hono'
 
 import { requireAdult } from '../require-adult'
@@ -44,13 +44,7 @@ describe('requireAdult', () => {
   })
 })
 
-function createApp({
-  headers,
-  variables,
-}: {
-  headers?: HeadersInit
-  variables?: TestEnv['Variables']
-} = {}) {
+function createApp({ headers, variables }: { headers?: HeadersInit; variables?: TestEnv['Variables'] } = {}) {
   const app = new Hono<TestEnv>()
 
   app.use('*', async (c, next) => {

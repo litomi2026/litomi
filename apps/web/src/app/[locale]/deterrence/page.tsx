@@ -1,7 +1,6 @@
-import type { Metadata } from 'next'
-
 import { APP_METADATA } from '@litomi/domain/app/metadata'
 import { ArrowLeft, ExternalLink, ShieldAlert } from 'lucide-react'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
 import IconLogo from '@/components/icons/LogoLitomi'

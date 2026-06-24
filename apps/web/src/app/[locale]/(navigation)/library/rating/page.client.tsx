@@ -1,11 +1,10 @@
 'use client'
 
-import type { ReadonlyURLSearchParams } from 'next/navigation'
-
 import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { Star } from 'lucide-react'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
@@ -22,8 +21,8 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
-import { getRatingSortFromSearchParams, setRatingSortToSearchParams } from '../searchParams'
 import SelectableMangaCard from '../SelectableMangaCard'
+import { getRatingSortFromSearchParams, setRatingSortToSearchParams } from '../searchParams'
 import NotFound from './NotFound'
 import Unauthorized from './Unauthorized'
 import useRatingInfiniteQuery from './useRatingInfiniteQuery'

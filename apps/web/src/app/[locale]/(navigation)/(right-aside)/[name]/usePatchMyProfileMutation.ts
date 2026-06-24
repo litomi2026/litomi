@@ -3,11 +3,9 @@
 import type { GETV1MeResponse, PATCHV1MeBody, PATCHV1MeResponse } from '@litomi/contracts'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 type MutationContext = {
   previousMe?: GETV1MeResponse | null

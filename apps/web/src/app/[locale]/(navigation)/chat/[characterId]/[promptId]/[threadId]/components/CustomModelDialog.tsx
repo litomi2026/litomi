@@ -1,5 +1,5 @@
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
-import { SubmitEvent, useRef } from 'react'
+import { type SubmitEvent, useRef } from 'react'
 
 interface CustomModelDialogProps {
   onClose: () => void

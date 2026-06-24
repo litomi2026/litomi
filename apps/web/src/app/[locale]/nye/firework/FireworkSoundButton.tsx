@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { FireworkEngine } from './FireworkEngine'
+import type { FireworkEngine } from './FireworkEngine'
 
 type Props = {
   engineRef: React.RefObject<FireworkEngine | null>

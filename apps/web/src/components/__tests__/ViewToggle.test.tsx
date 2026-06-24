@@ -1,8 +1,8 @@
 import '@test/setup.dom'
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 import { getViewFromSearchParams, View } from '@litomi/std'
 import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { fireEvent, render } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 import { useSearchParams } from 'next/navigation'
 
 import ViewToggle from '../ViewToggle'

@@ -1,4 +1,4 @@
-import { deleteV1NotificationBodySchema, type DELETEV1NotificationResponse } from '@litomi/contracts'
+import { type DELETEV1NotificationResponse, deleteV1NotificationBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
 import { and, eq, inArray } from 'drizzle-orm'

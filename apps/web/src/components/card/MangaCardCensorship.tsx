@@ -1,12 +1,11 @@
 'use client'
 
-import type { Manga } from '@litomi/domain/manga/model'
-
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { Locale } from '@litomi/domain/locale'
+import type { Manga } from '@litomi/domain/manga/model'
 import { Eye, EyeOff } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import useMangaCensorship from '@/hook/useMangaCensorship'

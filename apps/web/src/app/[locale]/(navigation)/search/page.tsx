@@ -1,7 +1,6 @@
-import type { Metadata } from 'next'
-
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
@@ -11,8 +10,8 @@ import { getSearchSEO } from '@/lib/searchSEO'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import { SearchParam } from './constants'
-import { getLanguageFilter } from './searchLanguage'
 import SearchResult from './SearchResult'
+import { getLanguageFilter } from './searchLanguage'
 import TrendingKeywords from './TrendingKeywords'
 
 export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/search'>): Promise<Metadata> {

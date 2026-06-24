@@ -1,4 +1,4 @@
-import { deleteV1LibraryRatingBodySchema, type DELETEV1LibraryRatingResponse } from '@litomi/contracts'
+import { type DELETEV1LibraryRatingResponse, deleteV1LibraryRatingBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { and, eq, inArray, sql } from 'drizzle-orm'

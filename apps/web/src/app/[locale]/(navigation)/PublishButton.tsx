@@ -37,7 +37,7 @@ export default function PublishButton({ className = '' }: Props) {
         </DialogBody>
 
         <DialogFooter>
-          <button className="w-full rounded-lg bg-zinc-800 p-3 font-semibold text-zinc-500" disabled>
+          <button type="button" className="w-full rounded-lg bg-zinc-800 p-3 font-semibold text-zinc-500" disabled>
             게시하기
           </button>
         </DialogFooter>

@@ -1,6 +1,5 @@
-import type { Metadata } from 'next'
-
 import { getUsernameFromParam } from '@litomi/std'
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
 import { getLocaleFromParams } from '@/i18n/server'

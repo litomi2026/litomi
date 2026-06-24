@@ -2,12 +2,12 @@
 
 import { TOP_MANGA_PER_PAGE } from '@litomi/domain/ranking/policy'
 import { TrendingUp } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import { usePathname } from '@/i18n/navigation'
 
-import { DEFAULT_METRIC, DEFAULT_PERIOD, isMetricParam, isPeriodParam, Params } from './common'
+import { DEFAULT_METRIC, DEFAULT_PERIOD, isMetricParam, isPeriodParam, type Params } from './common'
 
 export default function RankingTitle() {
   const { metric: metricParam, period: periodParam } = useParams<Params>()

@@ -1,6 +1,6 @@
 'use client'
 
-import { Manga } from '@litomi/domain/manga/model'
+import type { Manga } from '@litomi/domain/manga/model'
 import { MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/manga/policy'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { ErrorBoundary } from '@suspensive/react'
@@ -87,7 +87,7 @@ export function MangaDetailModal() {
 
   const displayDescription =
     shouldTruncateDescription && !showFullDescription
-      ? description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH) + '...'
+      ? `${description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)}...`
       : description
 
   const actionButtonBaseClassName = twMerge(

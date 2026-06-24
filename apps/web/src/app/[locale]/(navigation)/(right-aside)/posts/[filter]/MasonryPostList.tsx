@@ -117,8 +117,16 @@ function useMasonryLayoutConfig() {
     }
 
     update()
-    mediaQueries.forEach(({ mediaQuery }) => mediaQuery.addEventListener('change', update))
-    return () => mediaQueries.forEach(({ mediaQuery }) => mediaQuery.removeEventListener('change', update))
+
+    for (const { mediaQuery } of mediaQueries) {
+      mediaQuery.addEventListener('change', update)
+    }
+
+    return () => {
+      for (const { mediaQuery } of mediaQueries) {
+        mediaQuery.removeEventListener('change', update)
+      }
+    }
   }, [])
 
   return layoutConfig

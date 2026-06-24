@@ -1,7 +1,6 @@
-import type { FetchContext, FetchRoute, FetchRouteSource } from '@test/utils/fetch'
-
-import { jsonResponse } from '@test/utils/fetch'
 import { mock } from 'bun:test'
+import type { FetchContext, FetchRoute, FetchRouteSource } from '@test/utils/fetch'
+import { jsonResponse } from '@test/utils/fetch'
 
 type FetchInit = Parameters<typeof fetch>[1]
 type FetchInput = Parameters<typeof fetch>[0]

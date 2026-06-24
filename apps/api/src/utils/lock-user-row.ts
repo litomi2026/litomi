@@ -1,4 +1,4 @@
-import { db } from '@litomi/db/app'
+import type { db } from '@litomi/db/app'
 import { userTable } from '@litomi/db/app/user'
 import { eq } from 'drizzle-orm'
 

@@ -3,7 +3,7 @@
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { ChevronRight, Dice6, History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import LinkPending from '@/components/LinkPending'
 import { Link, usePathname } from '@/i18n/navigation'

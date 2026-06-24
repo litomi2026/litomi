@@ -1,9 +1,8 @@
 'use client'
 
-import type { ReactNode } from 'react'
-
 import { ShieldAlert } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 

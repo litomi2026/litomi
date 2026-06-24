@@ -1,4 +1,4 @@
-import { getV1RatingsQuerySchema, type GETV1RatingsResponse } from '@litomi/contracts'
+import { type GETV1RatingsResponse, getV1RatingsQuerySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { decodeRatingCursor } from '@litomi/db/cursor'

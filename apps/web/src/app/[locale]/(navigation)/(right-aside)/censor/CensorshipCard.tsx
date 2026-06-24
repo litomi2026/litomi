@@ -1,6 +1,6 @@
 'use client'
 
-import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
+import { type CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { Check, SquarePen } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'

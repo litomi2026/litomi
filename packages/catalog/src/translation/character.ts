@@ -6,7 +6,7 @@ import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { getCharacterSponsors } from '../sponsor/character'
 import { translateCategory } from './category'
 import characterTranslationJSON from './character.json'
-import { getPrefixedTranslationLabels, translateValue, type TranslationMap } from './common'
+import { getPrefixedTranslationLabels, type TranslationMap, translateValue } from './common'
 
 const CHARACTER_TRANSLATION = characterTranslationJSON as TranslationMap
 

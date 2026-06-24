@@ -243,6 +243,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       >
         {[1, 2, 3, 4, 5].map((value, i) => (
           <button
+            type="button"
             aria-busy={justSaved && value <= rating}
             aria-current={value <= displayRating}
             aria-label={t('starLabel', { value })}
@@ -277,6 +278,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         className="flex gap-4 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
         <button
+          type="button"
           className="flex items-center gap-2 text-zinc-500 hover:text-red-400 rounded-full text-sm transition p-3 py-2 -m-2 hover:bg-red-400/10"
           disabled={isInteractionDisabled}
           onClick={handleCancelClick}

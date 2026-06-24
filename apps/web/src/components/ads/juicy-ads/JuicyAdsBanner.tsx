@@ -1,9 +1,8 @@
 'use client'
 
 import type { GETV1MeResponse } from '@litomi/contracts'
-import type { ReactNode } from 'react'
-
 import { useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -12,13 +11,11 @@ import useMounted from '@/hook/useMounted'
 import { Link } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
 import { shouldShowAds } from '@/utils/adult-verification'
-
-import type { JuicyAdsLayoutNode } from './types'
-
 import { JUICY_ADS_BANNER_ID } from './constants'
 import JuicyAdsScript from './JuicyAdsScript'
 import JuicyAdsSlot from './JuicyAdsSlot'
 import { DEFAULT_NON_ADULT_AD_LAYOUT } from './layouts'
+import type { JuicyAdsLayoutNode } from './types'
 
 type Props = {
   className?: string

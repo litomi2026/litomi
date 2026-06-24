@@ -1,12 +1,11 @@
 'use client'
 
-import type { ComponentPropsWithRef, SyntheticEvent } from 'react'
-
 import {
   createLitomiProxyMangaImageURL,
   createThirdPartyMangaImageURLs,
   isLitomiImageProxyURL,
 } from '@litomi/http/image-proxy'
+import type { ComponentPropsWithRef, SyntheticEvent } from 'react'
 import { useEffect, useState } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5

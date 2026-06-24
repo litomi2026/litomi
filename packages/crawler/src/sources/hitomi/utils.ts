@@ -3,7 +3,7 @@
  */
 
 import { gg } from './gg'
-import { HitomiFile } from './types'
+import type { HitomiFile } from './types'
 
 export async function fullPathFromHash(hash: string): Promise<string> {
   const b = await gg.b()

@@ -1,12 +1,12 @@
-import type { RegistrationResponseJSON } from '@simplewebauthn/server'
+import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
 import { DeviceType } from '@litomi/domain/auth/model'
+import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 import * as SimpleWebAuthnServer from '@simplewebauthn/server'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { readPasskeyCredentialByCredentialId } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
-import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
 import { createMeAuthContext } from '../../fixtures'
 

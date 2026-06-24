@@ -3,9 +3,9 @@
 import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { Toggle } from '@litomi/ui'
 import { Clock, Loader2, Trash2, X } from 'lucide-react'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ReadonlyURLSearchParams } from 'next/navigation'
-import { SubmitEvent, useEffect, useRef, useState, useTransition } from 'react'
+import { type SubmitEvent, useEffect, useRef, useState, useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import SearchParamsSync from '@/components/router/SearchParamsSync'

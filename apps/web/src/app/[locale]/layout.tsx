@@ -1,15 +1,14 @@
 import '../globals.css'
 
-import type { Metadata, Viewport } from 'next'
-
 import { APP_METADATA, THEME_COLOR } from '@litomi/domain/app/metadata'
 import { PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import { GoogleTagManager } from '@next/third-parties/google'
+import type { Metadata, Viewport } from 'next'
+import localFont from 'next/font/local'
 import { NextIntlClientProvider } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
-import localFont from 'next/font/local'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
 import CapacitorNativeEffects from '@/components/CapacitorNativeEffects'

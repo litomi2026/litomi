@@ -12,7 +12,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { useRouter } from '@/i18n/navigation'
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'
 import { deleteMyAccount } from './api'

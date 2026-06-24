@@ -1,13 +1,10 @@
-import type { POSTV1AuthLogoutResponse } from '@litomi/contracts'
-
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
+import type { POSTV1AuthLogoutResponse } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
 import { Hono } from 'hono'
 import { getCookie } from 'hono/cookie'
-
-import type { Env } from '@/app'
-
 import { touchUserLogoutAtAndReturnLoginId } from '@/api/v1/auth/query'
+import type { Env } from '@/app'
 import { applyAuthCookie } from '@/utils/cookie'
 import { problemResponse } from '@/utils/problem'
 

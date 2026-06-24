@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import { requestBackend } from '@test/backend/setup/app'
 import {
   createAccessTokenCookies,
@@ -6,7 +7,6 @@ import {
   serializeCookieHeader,
 } from '@test/backend/setup/auth'
 import { readSessionFamiliesForUser, readUserById, seedUser } from '@test/backend/setup/db'
-import { describe, expect, test } from 'bun:test'
 
 import { installAuthIntegrationHooks } from '../fixtures'
 

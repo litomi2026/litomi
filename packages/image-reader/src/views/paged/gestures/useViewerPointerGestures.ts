@@ -1,3 +1,4 @@
+import { type PointerEvent, useEffect, useRef } from 'react'
 import {
   canScrollAxis,
   getScrollableAxesInPath,
@@ -15,7 +16,6 @@ import {
   moveZoomAnchorToClientPoint,
   type ZoomAnchor,
 } from '#reader/views/paged/gestures/viewerZoom'
-import { type PointerEvent, useEffect, useRef } from 'react'
 
 const HORIZONTAL_SWIPE_THRESHOLD = 50
 const VERTICAL_BRIGHTNESS_THRESHOLD = 24

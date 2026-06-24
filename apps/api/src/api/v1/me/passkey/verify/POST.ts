@@ -1,6 +1,6 @@
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey/server'
 import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
-import { postV1MePasskeyVerifyBodySchema, type POSTV1MePasskeyVerifyResponse } from '@litomi/contracts'
+import { type POSTV1MePasskeyVerifyResponse, postV1MePasskeyVerifyBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { ChallengeType, encodeDeviceType, getDefaultPasskeyName } from '@litomi/domain/auth/model'

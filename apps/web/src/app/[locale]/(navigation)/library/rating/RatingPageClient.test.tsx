@@ -1,5 +1,5 @@
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import type { GETV1RatingsResponse } from '@litomi/contracts'
-
 import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
@@ -7,7 +7,6 @@ import { createTestNavigationWrapper } from '@test/utils/navigation'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { fireEvent } from '@test/utils/render'
 import { cleanup, waitFor } from '@testing-library/react'
-import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'

@@ -1,5 +1,5 @@
-import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { describe, expect, test } from 'bun:test'
+import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
 describe('normalizeValue', () => {
   test('알파벳을 모두 소문자로 변환하고 공백을 언더스코어로 변환한다', () => {

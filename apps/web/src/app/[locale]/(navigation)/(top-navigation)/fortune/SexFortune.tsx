@@ -4,20 +4,18 @@ import { useEffect, useState } from 'react'
 
 import useClipboard from '@/hook/useClipboard'
 import useMeQuery from '@/query/useMeQuery'
-
-import type { SexFortuneTab } from './_lib/sexFortuneTypes'
-
 import { SexFortuneHeader } from './_components/SexFortuneHeader'
 import { SexFortuneHeroCard } from './_components/SexFortuneHeroCard'
 import { SexFortuneLoadingState } from './_components/SexFortuneLoadingState'
 import { SexFortuneLoginGate } from './_components/SexFortuneLoginGate'
-import { LIBO_PAGE_LAYOUT } from './_components/sexFortuneStyles'
 import { SexFortuneTabNav } from './_components/SexFortuneTabNav'
+import { LIBO_PAGE_LAYOUT } from './_components/sexFortuneStyles'
 import { CourseTab } from './_components/tabs/CourseTab'
 import { FortuneTab } from './_components/tabs/FortuneTab'
 import { SpecialTab } from './_components/tabs/SpecialTab'
 import { createClientSeed, generateFortune } from './_lib/sexFortuneGenerator'
 import { buildSexFortuneShareText } from './_lib/sexFortuneShareText'
+import type { SexFortuneTab } from './_lib/sexFortuneTypes'
 
 type Props = {
   todayKey: string

@@ -4,11 +4,9 @@ import { formatDistanceFromNow } from '@litomi/std'
 import { useLocale } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-
-import type { AdClickResult } from '../types'
-
 import AdBlockedMessage from '../AdBlockedMessage'
 import RewardedAdFooter from '../RewardedAdFooter'
+import type { AdClickResult } from '../types'
 import { useRewardedIframeAdSlot } from '../useRewardedIframeAdSlot'
 import { JUICY_ADS_EVENT, JUICY_ADS_SLOT_PROPS } from './constants'
 

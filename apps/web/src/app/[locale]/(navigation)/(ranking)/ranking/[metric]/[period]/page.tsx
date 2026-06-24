@@ -1,9 +1,8 @@
-import type { Metadata } from 'next'
-
 import { getNativeGridSponsor } from '@litomi/catalog/sponsor/native-grid'
 import { nativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
-import { getTranslations } from 'next-intl/server'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import z from 'zod'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'

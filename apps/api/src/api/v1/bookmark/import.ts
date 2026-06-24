@@ -1,4 +1,4 @@
-import { postV1BookmarkImportBodySchema, type POSTV1BookmarkImportResponse } from '@litomi/contracts'
+import { type POSTV1BookmarkImportResponse, postV1BookmarkImportBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { problemCode } from '@litomi/http/problem-details'

@@ -5,13 +5,11 @@ import { browserSupportsWebAuthnAutofill, startAuthentication } from '@simpleweb
 import { useMutation } from '@tanstack/react-query'
 import { Fingerprint, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { RefObject, useEffect, useEffectEvent, useRef, useState } from 'react'
+import { type RefObject, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import { requestPasskeyAuthenticationOptions, verifyPasskeyAuthentication } from '@/app/[locale]/auth/login/api'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/fetch-response'
 
 type Props = {

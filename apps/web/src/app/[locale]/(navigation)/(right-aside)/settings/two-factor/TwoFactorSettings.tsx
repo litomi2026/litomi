@@ -6,7 +6,7 @@ import { and, eq, isNull, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import TwoFactorSettingsClient from './TwoFactorSettingsClient'
-import { TwoFactorStatus } from './types'
+import type { TwoFactorStatus } from './types'
 
 type Props = {
   userId: number

@@ -1,7 +1,6 @@
-import type { MetadataRoute } from 'next'
-
 import { PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
+import type { MetadataRoute } from 'next'
 
 import { getPathname } from '@/i18n/navigation'
 import { getSearchCanonicalPath, SEARCH_LANDING_QUERIES } from '@/lib/searchSEO'

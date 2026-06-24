@@ -1,5 +1,5 @@
-import { generatePKCEChallenge } from '@litomi/auth/pkce-browser'
 import { describe, expect, it } from 'bun:test'
+import { generatePKCEChallenge } from '@litomi/auth/pkce-browser'
 
 describe('Web Crypto API 기반 PKCE', () => {
   it('유효한 PKCE 챌린지와 검증 문자열을 생성한다', async () => {

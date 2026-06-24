@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import { CookieKey } from '@litomi/http/cookie'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import { createTrustedBrowserCookies, expectCookieCleared } from '@test/backend/setup/auth'
@@ -9,7 +10,6 @@ import {
   seedTwoFactor,
   seedUser,
 } from '@test/backend/setup/db'
-import { describe, expect, test } from 'bun:test'
 
 import { buildAuthHeaders, installAuthIntegrationHooks } from '../fixtures'
 import { buildLoginRequest, installLoginTurnstileGuard } from './fixtures'

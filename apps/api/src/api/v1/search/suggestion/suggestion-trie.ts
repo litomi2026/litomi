@@ -13,7 +13,7 @@ import { getAllTypesWithLabels } from '@litomi/catalog/translation/type'
 import { Locale } from '@litomi/domain/locale'
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@litomi/domain/search/query-key-alias'
 
-import SuggestionTrie, { SuggestionItem } from './trie'
+import SuggestionTrie, { type SuggestionItem } from './trie'
 
 export const suggestionTrie = new SuggestionTrie()
 

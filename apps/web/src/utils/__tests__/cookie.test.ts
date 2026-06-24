@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import {
   getAccessTokenCookieConfig,
   getAuthCookieClearConfigs,
@@ -5,7 +6,6 @@ import {
   getRefreshSessionCookieConfig,
 } from '@litomi/auth/cookie'
 import { CookieKey } from '@litomi/http/cookie'
-import { describe, expect, test } from 'bun:test'
 
 describe('auth cookie configs', () => {
   test('access token cookie는 remember 여부와 상관없이 session cookie로 발급된다', async () => {

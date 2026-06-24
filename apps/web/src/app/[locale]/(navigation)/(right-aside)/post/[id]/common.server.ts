@@ -1,7 +1,6 @@
-import type { PublicLocale } from '@litomi/domain/locale'
-
 import { db } from '@litomi/db/app'
 import { postTable } from '@litomi/db/app/post'
+import type { PublicLocale } from '@litomi/domain/locale'
 import 'server-only'
 import selectPost from '@litomi/db/query/post'
 import selectPostComment from '@litomi/db/query/post-comment'

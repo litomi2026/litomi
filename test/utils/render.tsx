@@ -1,11 +1,10 @@
 import '@test/setup.dom'
-import { RenderOptions, render as rtlRender } from '@testing-library/react'
-import { ReactElement, ReactNode } from 'react'
+import { type RenderOptions, render as rtlRender } from '@testing-library/react'
+import type { ReactElement, ReactNode } from 'react'
 
 import QueryProvider from '@/lib/react-query/QueryProvider'
 
 // 모든 provider를 포함한 커스텀 render 함수를 만든다.
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   // 필요한 테스트 옵션이 생기면 여기에 추가한다.
 }

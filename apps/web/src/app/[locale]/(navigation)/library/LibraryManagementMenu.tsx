@@ -1,8 +1,8 @@
 'use client'
 
 import { Edit, MoreVertical, Trash2 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from '@/components/ui/Dropdown'

@@ -1,8 +1,7 @@
 import type { PublicLocale } from '@litomi/domain/locale'
-import type { ComponentProps } from 'react'
-
 import { BookOpen, Tag } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import type { ComponentProps } from 'react'
 
 import { Link } from '@/i18n/navigation'
 

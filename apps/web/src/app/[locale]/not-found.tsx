@@ -1,7 +1,7 @@
 import { APP_METADATA } from '@litomi/domain/app/metadata'
 import { Home, Search, SearchX } from 'lucide-react'
-import { getLocale, getTranslations } from 'next-intl/server'
 import Image from 'next/image'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { twMerge } from 'tailwind-merge'
 
 import { Link } from '@/i18n/navigation'

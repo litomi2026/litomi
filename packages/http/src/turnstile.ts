@@ -126,7 +126,7 @@ export default class TurnstileValidator {
           return normalized
         }
 
-        await sleep(Math.pow(2, attempt) * BACKOFF_BASE_DELAY_MS)
+        await sleep(2 ** attempt * BACKOFF_BASE_DELAY_MS)
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
           return { success: false, 'error-codes': ['validation-timeout'] }

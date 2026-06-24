@@ -1,4 +1,4 @@
-import { postV1RouletteSpinRequestSchema, type POSTV1RouletteSpinResponse } from '@litomi/contracts'
+import { type POSTV1RouletteSpinResponse, postV1RouletteSpinRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
 import { TRANSACTION_TYPE } from '@litomi/domain/points/model'

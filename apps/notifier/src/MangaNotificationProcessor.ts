@@ -1,9 +1,8 @@
-import type { Manga } from '@litomi/domain/manga/model'
-import type { NotificationData } from '@litomi/domain/notification/model'
-
 import { db } from '@litomi/db/app'
 import { mangaSeenTable, notificationTable } from '@litomi/db/app/notification'
+import type { Manga } from '@litomi/domain/manga/model'
 import { MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
+import type { NotificationData } from '@litomi/domain/notification/model'
 import { NotificationType } from '@litomi/domain/notification/model'
 import { MAX_NOTIFICATION_COUNT } from '@litomi/domain/notification/policy'
 import { getViewerLink } from '@litomi/domain/utils/manga'

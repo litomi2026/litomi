@@ -1,8 +1,8 @@
+import { describe, expect, test } from 'bun:test'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { createRefreshSessionCookies, expectAuthCookiesCleared } from '@test/backend/setup/auth'
 import { readSessionFamiliesForUser, seedUser } from '@test/backend/setup/db'
-import { describe, expect, test } from 'bun:test'
 
 import { createMeAuthContext, createMeSessionAuthContext } from '../../fixtures'
 

@@ -16,16 +16,12 @@ import { Loader2, Plus } from 'lucide-react'
 import { useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { useRouter } from '@/i18n/navigation'
-
-import type { NotificationCriteria } from './types'
-
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { createNotificationCriteria, updateNotificationCriteria } from './api'
 import ConditionInput, { type ConditionInputRow } from './ConditionInput'
+import type { NotificationCriteria } from './types'
 
 interface Props {
   editingCriteria: NotificationCriteria | null

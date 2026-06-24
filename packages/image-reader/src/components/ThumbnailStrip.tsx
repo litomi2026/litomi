@@ -1,13 +1,12 @@
 'use client'
 
-import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
-
-import { useReaderMessages } from '#reader/context'
-import { useReaderStore } from '#reader/state/readerStore'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
+import { useReaderMessages } from '#reader/context'
+import type { ReaderLayout, ReaderPage, ReaderPageRenderer } from '#reader/model/readerLayout'
+import { useReaderStore } from '#reader/state/readerStore'
 
 type Props<TPage extends ReaderPage> = {
   pages: readonly TPage[]

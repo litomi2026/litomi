@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import { ResultCard } from './ResultCard'
-import { ImportResult } from './types'
+import type { ImportResult } from './types'
 
 type Props = {
   importResult: ImportResult

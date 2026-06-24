@@ -5,13 +5,12 @@ import { translateLanguageList } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
-import { Locale } from '@litomi/domain/locale'
-import { MangaSource } from '@litomi/domain/manga/model'
-import { Manga, MangaTag } from '@litomi/domain/manga/model'
+import type { Locale } from '@litomi/domain/locale'
+import { type Manga, MangaSource, type MangaTag } from '@litomi/domain/manga/model'
 import ms from 'ms'
 
 import { isUpstreamServerError } from '../core/errors'
-import { ProxyClient, ProxyClientConfig } from '../core/proxy'
+import { ProxyClient, type ProxyClientConfig } from '../core/proxy'
 
 type HiyobiImage = {
   height: number

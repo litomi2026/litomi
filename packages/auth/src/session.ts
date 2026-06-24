@@ -1,7 +1,7 @@
 import { env } from '@litomi/env/server.common'
 import 'server-only'
+import crypto from 'node:crypto'
 import { sec } from '@litomi/std'
-import crypto from 'crypto'
 import { userAgent as parseUserAgent } from 'next/server'
 
 const { JWT_SECRET_REFRESH_TOKEN } = env

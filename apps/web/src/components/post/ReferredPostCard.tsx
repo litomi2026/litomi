@@ -7,8 +7,8 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
 
 import Squircle from '../ui/Squircle'
-import { getPostDetailHref } from './postHref'
 import PostImages from './PostImages'
+import { getPostDetailHref } from './postHref'
 
 type Props = {
   referredPost: ReferredPost

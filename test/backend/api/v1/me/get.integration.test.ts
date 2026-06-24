@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import { DEFAULT_SEARCH_LANGUAGE } from '@litomi/domain/search/language'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
@@ -8,7 +9,6 @@ import {
 } from '@test/backend/setup/auth'
 import { seedAdultVerification, seedUser, seedUserSettings } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, test } from 'bun:test'
 
 import { privateCacheControl } from '@/utils/cache-control'
 

@@ -1,6 +1,5 @@
 'use client'
 
-import { registerTopLayerPortalContainer, unregisterTopLayerPortalContainer } from '#ui/topLayerPortal'
 import {
   type CSSProperties,
   type MouseEvent,
@@ -14,6 +13,7 @@ import {
   type WheelEvent,
 } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { registerTopLayerPortalContainer, unregisterTopLayerPortalContainer } from '#ui/topLayerPortal'
 
 type DialogState = 'closed' | 'closing' | 'open' | 'opening'
 

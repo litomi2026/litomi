@@ -2,11 +2,9 @@
 
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-
-import type { BulkActionDescriptor } from './bulkActionTypes'
-
 import BulkDeleteDialog from './BulkDeleteDialog'
 import BulkLibrarySelectDialog from './BulkLibrarySelectDialog'
+import type { BulkActionDescriptor } from './bulkActionTypes'
 import { useLibrarySelection } from './librarySelection'
 
 const ACTION_BUTTON_CLASS_NAME =

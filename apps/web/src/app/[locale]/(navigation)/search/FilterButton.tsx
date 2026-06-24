@@ -1,10 +1,9 @@
 'use client'
 
-import type { ReadonlyURLSearchParams } from 'next/navigation'
-
 import { SlidersHorizontal } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 

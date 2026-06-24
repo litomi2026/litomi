@@ -1,4 +1,4 @@
-import { postIdParamSchema, type PUTV1PostIdLikeResponse } from '@litomi/contracts'
+import { type PUTV1PostIdLikeResponse, postIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { postLikeTable } from '@litomi/db/app/post'
 import { isPostgresError } from '@litomi/db/error'

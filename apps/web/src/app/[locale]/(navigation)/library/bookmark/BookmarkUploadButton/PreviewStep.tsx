@@ -5,7 +5,7 @@ import { Bookmark } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { ImportModeOption } from './ImportModeOption'
-import { BookmarkExportData, ImportMode } from './types'
+import type { BookmarkExportData, ImportMode } from './types'
 
 type Props = {
   importMode: ImportMode

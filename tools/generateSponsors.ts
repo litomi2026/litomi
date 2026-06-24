@@ -1,7 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import ms from 'ms'
 import pLimit from 'p-limit'
-import { join } from 'path'
 import { z } from 'zod'
 
 type CacheEntry = {
@@ -455,11 +455,11 @@ async function fetchJsonWithTimeout(url: string, timeoutMs: number): Promise<unk
 async function fetchTextViaCurl(url: string, timeoutMs: number) {
   const timeoutSeconds = Math.max(1, Math.ceil(timeoutMs / 1000))
 
-  const escape = (value: string) => value.replaceAll('\\', '\\\\').replaceAll('"', '\\"')
+  const escapeValue = (value: string) => value.replaceAll('\\', '\\\\').replaceAll('"', '\\"')
 
   // URL에 api_key가 포함될 수 있어서(쿼리 파라미터 방식), process args에 남기지 않도록 curl config stdin을 사용해요.
   const curlConfig = [
-    `url = "${escape(url)}"`,
+    `url = "${escapeValue(url)}"`,
     'silent',
     'show-error',
     'location',

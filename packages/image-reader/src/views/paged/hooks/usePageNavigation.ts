@@ -1,9 +1,9 @@
-import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
+import { useEffect, useEffectEvent } from 'react'
 
 import { useReaderMessages, useReaderNoticeHandler } from '#reader/context'
+import type { ReaderLayout, ReaderPage } from '#reader/model/readerLayout'
 import { shouldIgnoreViewerGestureTarget } from '#reader/model/viewerGesturePolicy'
 import { useReaderStore } from '#reader/state/readerStore'
-import { useEffect, useEffectEvent } from 'react'
 
 const PREV_PAGE_CODES = new Set(['ArrowLeft', 'AudioVolumeUp', 'PageUp'])
 const NEXT_PAGE_CODES = new Set(['ArrowRight', 'AudioVolumeDown', 'PageDown'])

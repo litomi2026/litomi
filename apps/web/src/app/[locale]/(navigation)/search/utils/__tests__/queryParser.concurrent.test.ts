@@ -1,5 +1,5 @@
-import { NotificationConditionType } from '@litomi/domain/notification/model'
 import { describe, expect, it } from 'bun:test'
+import { NotificationConditionType } from '@litomi/domain/notification/model'
 
 import { parseSearchQuery } from '../queryParser'
 

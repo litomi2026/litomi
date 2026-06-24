@@ -1,5 +1,5 @@
 import { env } from '@litomi/env/client'
-import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
+import type { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 
 export type Passkey = {
   id: number

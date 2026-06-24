@@ -2,7 +2,7 @@ import { Fingerprint } from 'lucide-react'
 
 import StatusState from '@/components/status/StatusState'
 
-import { Passkey, PasskeySignalData } from './common'
+import type { Passkey, PasskeySignalData } from './common'
 import PasskeyCard from './PasskeyCard'
 import PasskeyInfoButton from './PasskeyInfoButton'
 import PasskeyRegisterButton from './PasskeyRegisterButton'

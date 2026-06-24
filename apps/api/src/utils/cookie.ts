@@ -1,6 +1,6 @@
 import type { AuthCookieConfig } from '@litomi/auth/cookie'
 
-import { Context } from 'hono'
+import type { Context } from 'hono'
 import { setCookie } from 'hono/cookie'
 
 import type { Env } from '../app'

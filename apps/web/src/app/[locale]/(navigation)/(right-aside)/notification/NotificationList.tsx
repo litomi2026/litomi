@@ -2,8 +2,8 @@
 
 import { NotificationFilter } from '@litomi/domain/notification/filter'
 import { Book, Check, Loader2 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import IconBell from '@/components/icons/IconBell'

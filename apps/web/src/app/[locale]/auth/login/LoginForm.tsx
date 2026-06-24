@@ -1,21 +1,17 @@
 'use client'
 
-import type { POSTV1AuthLoginAuthenticatedResponse, POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts'
-
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
-import { generatePKCEChallenge, PKCEChallenge } from '@litomi/auth/pkce-browser'
+import { generatePKCEChallenge, type PKCEChallenge } from '@litomi/auth/pkce-browser'
+import type { POSTV1AuthLoginAuthenticatedResponse, POSTV1AuthPasskeyVerifyResponse } from '@litomi/contracts'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { Toggle } from '@litomi/ui'
-import { TurnstileInstance } from '@marsidev/react-turnstile'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { MouseEvent, SubmitEvent, useEffect, useRef, useState } from 'react'
+import { type MouseEvent, type SubmitEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import IconLogo from '@/components/icons/LogoLitomi'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import TurnstileWidget from '@/components/TurnstileWidget'
@@ -26,6 +22,7 @@ import { resetAdultGatedQueries } from '@/lib/react-query/adult-gated-queries'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
 import { isAdultVerified } from '@/utils/adult-verification'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { getLocalReadingHistoryArray, removeLocalReadingHistory } from '@/utils/reading-history-index'
 
 import { importReadingHistory, login } from './api'

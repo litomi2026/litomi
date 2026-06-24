@@ -13,8 +13,8 @@
       "    </div>",
       "  )",
       "}",
-      "",
-    ],
+      ""
+    ]
   },
   "Layout component": {
     "prefix": "layout",
@@ -25,8 +25,8 @@
       "export default function Layout({ children }: LayoutProps) {",
       "  return <>{children}</>",
       "}",
-      "",
-    ],
+      ""
+    ]
   },
   "Error component": {
     "prefix": "error",
@@ -49,13 +49,13 @@
       "    </main>",
       "  )",
       "}",
-      "",
-    ],
+      ""
+    ]
   },
   "Function component": {
     "prefix": "fc",
     "body": ["export default function ${TM_FILENAME_BASE}() {", "  return <>$1</>", "}", ""],
-    "description": "Function Component",
+    "description": "Function Component"
   },
   "Function component with props": {
     "prefix": "fcp",
@@ -68,12 +68,12 @@
       "export default function ${TM_FILENAME_BASE}({  }: Props) {",
       "  return <></>",
       "}",
-      "",
-    ],
+      ""
+    ]
   },
   "pre": {
     "prefix": "pre",
     "description": "pre",
-    "body": ["<pre>{JSON.stringify($1, null, 2)}</pre>"],
-  },
+    "body": ["<pre>{JSON.stringify($1, null, 2)}</pre>"]
+  }
 }

@@ -1,7 +1,6 @@
-import type { CatalogMangaRecord } from '@litomi/db/query/catalog-manga'
-
 import { catalogDB } from '@litomi/db/catalog'
 import { mangaTable } from '@litomi/db/catalog/schema'
+import type { CatalogMangaRecord } from '@litomi/db/query/catalog-manga'
 import { CensorshipKey } from '@litomi/domain/censorship/model'
 import { MANGA_TYPE_VALUE_BY_ID, TagCategory } from '@litomi/domain/manga/model'
 import { env } from '@litomi/env/server.common'
@@ -158,13 +157,12 @@ async function bulkIndexMangaRecords(indexName: string, records: readonly Catalo
     return
   }
 
-  const body =
-    records
-      .flatMap((record) => [
-        JSON.stringify({ index: { _id: record.id, _index: indexName } }),
-        JSON.stringify(createMangaSearchDocument(record)),
-      ])
-      .join('\n') + '\n'
+  const body = `${records
+    .flatMap((record) => [
+      JSON.stringify({ index: { _id: record.id, _index: indexName } }),
+      JSON.stringify(createMangaSearchDocument(record)),
+    ])
+    .join('\n')}\n`
 
   const response = await openSearchRequest<OpenSearchBulkResponse>({
     body,

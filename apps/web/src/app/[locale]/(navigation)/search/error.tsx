@@ -2,8 +2,8 @@
 
 import { captureException } from '@sentry/nextjs'
 import { TriangleAlert } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
@@ -58,6 +58,7 @@ export default function ErrorPage({ error, reset }: Props) {
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             className="bg-zinc-700 text-sm font-semibold rounded-full min-w-40 hover:bg-zinc-600 active:bg-zinc-700 px-4 py-2 transition disabled:bg-zinc-600 disabled:text-zinc-400"
             disabled={cooldown > 0}
             onClick={reset}
@@ -65,6 +66,7 @@ export default function ErrorPage({ error, reset }: Props) {
             {cooldown > 0 ? t('retryWithCooldown', { seconds: cooldown / 1000 }) : t('retry')}
           </button>
           <button
+            type="button"
             className="bg-zinc-800 text-sm font-semibold rounded-full min-w-40 hover:bg-zinc-700 active:bg-zinc-800 px-4 py-2 transition border border-zinc-700"
             onClick={() => router.replace('/search')}
           >

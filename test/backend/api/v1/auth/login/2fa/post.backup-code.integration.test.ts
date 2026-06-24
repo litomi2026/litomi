@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import { getSetCookieNames, requestBackend } from '@test/backend/setup/app'
 import {
   readSessionFamiliesForUser,
@@ -8,7 +9,6 @@ import {
   seedUser,
 } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, test } from 'bun:test'
 
 import { AUTH_TEST_SAFARI_USER_AGENT, buildAuthHeaders, installAuthIntegrationHooks } from '../../fixtures'
 import { buildLoginTwoFactorRequest, issueAuthorizationChallenge } from './fixtures'

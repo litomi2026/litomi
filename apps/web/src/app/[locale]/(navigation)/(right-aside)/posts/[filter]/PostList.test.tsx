@@ -1,9 +1,9 @@
 import '@test/setup.dom'
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { PostFilter } from '@litomi/domain/post/filter'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
 import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup, waitFor } from '@testing-library/react'
-import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import PostList from './PostList'
 

@@ -1,9 +1,8 @@
 'use client'
 
-import type { ReactNode } from 'react'
-
 import { Menu } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 
 import { Link } from '@/i18n/navigation'
 

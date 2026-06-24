@@ -1,4 +1,4 @@
-import { getV1BookmarkQuerySchema, type GETV1BookmarkResponse } from '@litomi/contracts'
+import { type GETV1BookmarkResponse, getV1BookmarkQuerySchema } from '@litomi/contracts'
 import { decodeBookmarkCursor } from '@litomi/db/cursor'
 import { selectBookmark } from '@litomi/db/query/bookmark'
 import { getNextLibraryItemCursor } from '@litomi/db/sql/library-item-sort'

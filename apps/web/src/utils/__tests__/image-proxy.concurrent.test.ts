@@ -1,10 +1,10 @@
+import { describe, expect, test } from 'bun:test'
 import { env } from '@litomi/env/client'
 import {
   createLitomiProxyMangaImageURL,
   createThirdPartyMangaImageURLs,
   isLitomiImageProxyURL,
 } from '@litomi/http/image-proxy'
-import { describe, expect, test } from 'bun:test'
 
 const proxyOrigin = new URL(env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN).origin
 

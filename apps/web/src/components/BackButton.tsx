@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowRight } from 'lucide-react'
-import { ComponentProps } from 'react'
+import type { ComponentProps } from 'react'
 
 import { useRouter } from '@/i18n/navigation'
 

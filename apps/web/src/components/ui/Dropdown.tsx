@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ComponentProps, ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import React, { type ComponentProps, type ReactNode, useContext, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 type DropdownContentProps = {

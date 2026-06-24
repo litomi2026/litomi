@@ -1,3 +1,4 @@
+import { describe, expect, setSystemTime, test } from 'bun:test'
 import { addSeconds, REFRESH_SESSION_REUSE_GRACE_SECONDS } from '@litomi/auth/session'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { getSetCookieNames, getSetCookieStrings, requestBackend } from '@test/backend/setup/app'
@@ -16,7 +17,6 @@ import {
   seedUser,
 } from '@test/backend/setup/db'
 import { expectProblemResponse } from '@test/backend/setup/problem'
-import { describe, expect, setSystemTime, test } from 'bun:test'
 
 import { noStoreCacheControl } from '@/utils/cache-control'
 

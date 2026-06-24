@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 const positionStyle = {
   right: 'right-0 top-1/2 translate-x-full -translate-y-1/2',

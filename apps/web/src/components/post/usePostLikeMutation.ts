@@ -1,12 +1,10 @@
 'use client'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { toggleLikingPost } from './api'
 import {

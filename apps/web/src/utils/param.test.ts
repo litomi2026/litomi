@@ -1,5 +1,5 @@
-import { appendViewToPath, getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { describe, expect, test } from 'bun:test'
+import { appendViewToPath, getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 
 describe('view search params helpers', () => {
   test('view=img일 때만 이미지 모드로 해석한다', () => {

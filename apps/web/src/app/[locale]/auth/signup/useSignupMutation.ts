@@ -5,14 +5,12 @@ import type { POSTV1AuthSignupRequest, POSTV1AuthSignupResponse } from '@litomi/
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 import { useRouter } from '@/i18n/navigation'
 import { identify, track } from '@/lib/analytics/browser'
 import { getAuthSuccessRedirect, getCurrentAuthRedirect } from '@/lib/auth-redirect'
 import { resetAdultGatedQueries } from '@/lib/react-query/adult-gated-queries'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
+import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { signup } from './api'
 

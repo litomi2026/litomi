@@ -1,7 +1,7 @@
 import { CN, DE, ES, FR, HU, IT, JP, KR, NL, PT, RU, TH, US, VN } from 'country-flag-icons/react/3x2'
 import { Globe, Meh, Pencil } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import { Link } from '@/i18n/navigation'
 

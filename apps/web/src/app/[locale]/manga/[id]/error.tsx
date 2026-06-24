@@ -36,6 +36,7 @@ export default function ErrorPage({ error, reset }: Props) {
         <p className="text-red-600">{error.message}</p>
       </div>
       <button
+        type="button"
         className="bg-zinc-700 rounded-full min-w-50 hover:bg-zinc-600 active:bg-zinc-700 px-4 py-2 transition disabled:bg-zinc-600 disabled:text-zinc-400"
         disabled={cooldown > 0}
         onClick={reset}

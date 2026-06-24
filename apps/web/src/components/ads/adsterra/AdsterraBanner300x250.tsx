@@ -3,12 +3,10 @@
 import { formatDistanceFromNow } from '@litomi/std'
 import { useLocale } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
-
-import type { AdClickResult } from '../types'
-
 import AdBlockedMessage from '../AdBlockedMessage'
 import AdPlaceholder from '../AdPlaceholder'
 import RewardedAdFooter from '../RewardedAdFooter'
+import type { AdClickResult } from '../types'
 import { useRewardedIframeAdSlot } from '../useRewardedIframeAdSlot'
 
 type AtOptions = {

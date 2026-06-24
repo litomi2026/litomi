@@ -1,9 +1,8 @@
-import type { Metadata } from 'next'
-
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
-import { getTranslations } from 'next-intl/server'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 
 import PostList from '@/app/[locale]/(navigation)/(right-aside)/posts/[filter]/PostList'
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'

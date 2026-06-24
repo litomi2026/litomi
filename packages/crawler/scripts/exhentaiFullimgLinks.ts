@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
-import { parse } from 'node-html-parser'
 import { appendFileSync, mkdirSync } from 'node:fs'
 import { mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from 'node:fs/promises'
 import { dirname, extname, resolve } from 'node:path'
+import { parse } from 'node-html-parser'
 import sharp from 'sharp'
 
 type Args = {
