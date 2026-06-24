@@ -72,7 +72,10 @@ async function crawlAndNotify() {
 
     if (result.errors.length > 0) {
       log.warn('Errors encountered:')
-      result.errors.forEach((error) => log.error(error))
+
+      for (const error of result.errors) {
+        log.error(error)
+      }
     }
 
     process.exit(0)

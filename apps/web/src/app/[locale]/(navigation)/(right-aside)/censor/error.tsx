@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { useRouter } from '@/i18n/navigation'
 import type { ErrorProps } from '@/types/nextjs'
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function CensorshipError({ error, reset }: ErrorProps) {
   const t = useTranslations('Censorship')
   const router = useRouter()
 

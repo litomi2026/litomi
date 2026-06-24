@@ -50,7 +50,11 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
         }
       })
     }, observerOptions)
-    slides.forEach((slide) => observer.observe(slide))
+
+    for (const slide of slides) {
+      observer.observe(slide)
+    }
+
     return () => observer.disconnect()
   }, [activeIndex])
 

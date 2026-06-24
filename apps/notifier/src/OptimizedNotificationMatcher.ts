@@ -79,7 +79,11 @@ export class OptimizedNotificationMatcher {
       // Aggregate all values by type
       for (const [type, values] of mangaValues) {
         const typeSet = valuesByType.get(type) || new Set()
-        values.forEach((v) => typeSet.add(v))
+
+        for (const value of values) {
+          typeSet.add(value)
+        }
+
         valuesByType.set(type, typeSet)
       }
     }

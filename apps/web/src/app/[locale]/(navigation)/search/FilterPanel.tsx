@@ -145,7 +145,9 @@ export default function FilterPanel({ buttonRef, onAfterClose, onClose, show }: 
       params.delete(SearchParam.QUERY)
     }
 
-    FILTER_PARAM_KEYS.forEach((key) => params.delete(key))
+    for (const key of FILTER_PARAM_KEYS) {
+      params.delete(key)
+    }
 
     startTransition(() => {
       router.replace(`${pathname}?${params}`)

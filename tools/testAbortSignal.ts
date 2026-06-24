@@ -104,8 +104,9 @@ async function testRaceCondition() {
     }, Math.random() * 1000)
   })
 
-  const results = await Promise.all(promises)
-  results.forEach((result) => console.log(result))
+  for (const result of await Promise.all(promises)) {
+    console.log(result)
+  }
 }
 
 async function testServerSideTimeout() {

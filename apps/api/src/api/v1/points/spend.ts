@@ -22,7 +22,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSc
 
   try {
     const { type, itemId } = c.req.valid('json')
-    let spendMeta
+    let spendMeta: ReturnType<typeof getSpendMeta>
     let expansionConfig: ReturnType<typeof getExpansionConfig> | null = null
     let purchaseItem: { type: (typeof ITEM_TYPE)[keyof typeof ITEM_TYPE]; itemId: string } | null = null
     let transactionType!: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE]
