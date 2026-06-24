@@ -6,24 +6,27 @@ import {
   WebVitalsInstrumentation,
 } from '@grafana/faro-web-sdk'
 import { getDefaultOTELInstrumentations, TracingInstrumentation } from '@grafana/faro-web-tracing'
-import { createSentryInitOptions } from '@litomi/observability'
+import { createSentryInitOptions, FARO_IGNORED_URLS } from '@litomi/observability'
 import * as Sentry from '@sentry/nextjs'
 
+// Errors are owned by Sentry. Faro provides RUM (Web Vitals, sessions, views, perf), browser→API distributed tracing.
 initializeFaro({
   app: {
     environment: process.env.NEXT_PUBLIC_APP_ENV || 'local',
-    name: 'litomi',
+    name: 'litomi-browser',
     version: process.env.NEXT_PUBLIC_COMMIT_SHA,
   },
-  // Errors are owned by Sentry. Faro provides RUM (Web Vitals, sessions, views, perf), browser→API distributed tracing.
   instrumentations: [
     new SessionInstrumentation(),
     new ViewInstrumentation(),
     new WebVitalsInstrumentation(),
     new PerformanceInstrumentation(),
     new TracingInstrumentation({
+      resourceAttributes: {
+        'service.namespace': 'litomi',
+      },
       instrumentations: getDefaultOTELInstrumentations({
-        ignoreUrls: [/\/i\//],
+        ignoreUrls: FARO_IGNORED_URLS,
       }),
     }),
   ],
@@ -39,7 +42,7 @@ Sentry.init({
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     environment: process.env.NEXT_PUBLIC_APP_ENV || 'local',
     release: process.env.NEXT_PUBLIC_COMMIT_SHA,
-    service: 'litomi-web',
+    service: 'litomi-browser',
   }),
   debug: false,
   sampleRate: 0.1,

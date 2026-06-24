@@ -13,7 +13,7 @@ export const config = {
     { source: '/((?:[a-z]{2}(?:-[A-Za-z0-9]+)*/)?@.*)' },
     {
       source:
-        '/((?!api(?:/|$)|health(?:/|$)|oauth(?:/|$)|_next(?:/|$)|_vercel(?:/|$)|cdn-cgi(?:/|$)|\\.well-known(?:/|$)|image(?:/|$)|.*\\..*).*)',
+        '/((?!api(?:/|$)|health(?:/|$)|oauth(?:/|$)|_next(?:/|$)|_vercel(?:/|$)|cdn-cgi(?:/|$)|\\.well-known(?:/|$)|image(?:/|$)|vvs83w(?:/|$)|.*\\..*).*)',
     },
   ],
 }

@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
 }
 
 export default withSentryConfig(nextConfig, {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
+  org: 'litomi',
+  project: 'litomi-edge-proxy',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   silent: !process.env.CI,
 
@@ -34,7 +34,8 @@ export default withSentryConfig(nextConfig, {
     },
   }),
 
-  bundleSizeOptimizations: { excludeTracing: true },
-  webpack: { treeshake: { removeDebugLogging: true } },
-  telemetry: false,
+  widenClientFileUpload: true,
+  bundleSizeOptimizations: {
+    excludeTracing: true,
+  },
 })
