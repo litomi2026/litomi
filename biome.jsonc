@@ -31,9 +31,19 @@
     },
     "rules": {
       "preset": "recommended",
+      "a11y": {
+        // Decorative / brand icon components; labeling is the caller's responsibility (aria-label / aria-hidden).
+        "noSvgWithoutTitle": "off",
+        // False positives: a <label> wrapping a custom component (e.g. <Toggle/>) isn't recognized as a control.
+        "noLabelWithoutControl": "off"
+      },
       "performance": {
         // <img> is intentional (custom image proxy / reader); mirrors the old next/no-img-element being off.
         "noImgElement": "off"
+      },
+      "suspicious": {
+        // Intentional index keys for static / generated lists (skeletons, rating stars, seasonal effects).
+        "noArrayIndexKey": "off"
       }
     }
   },
