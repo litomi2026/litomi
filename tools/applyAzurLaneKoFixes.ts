@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
 import fs from 'node:fs'
-import ms from 'ms'
 import path from 'node:path'
+import ms from 'ms'
 
 type AzurLaneShipDataStatistics = Record<string, AzurLaneShipDataStatisticsEntry>
 

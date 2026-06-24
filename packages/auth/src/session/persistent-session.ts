@@ -7,6 +7,7 @@ import {
   getRefreshSessionCookieConfig,
 } from '@litomi/auth/cookie'
 import 'server-only'
+import crypto from 'node:crypto'
 import {
   addSeconds,
   generateSessionToken,
@@ -20,7 +21,6 @@ import {
   truncateSessionMetadata,
 } from '@litomi/auth/session'
 import { db } from '@litomi/db/app'
-import crypto from 'node:crypto'
 
 import {
   insertSessionFamily,
