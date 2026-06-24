@@ -6,7 +6,7 @@ import {
   WebVitalsInstrumentation,
 } from '@grafana/faro-web-sdk'
 import { getDefaultOTELInstrumentations, TracingInstrumentation } from '@grafana/faro-web-tracing'
-import { createSentryInitOptions } from '@litomi/observability'
+import { createSentryInitOptions, FARO_IGNORED_URLS } from '@litomi/observability'
 import * as Sentry from '@sentry/nextjs'
 
 initializeFaro({
@@ -23,7 +23,7 @@ initializeFaro({
     new PerformanceInstrumentation(),
     new TracingInstrumentation({
       instrumentations: getDefaultOTELInstrumentations({
-        ignoreUrls: [/\/i\//],
+        ignoreUrls: FARO_IGNORED_URLS,
       }),
     }),
   ],
