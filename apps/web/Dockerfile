@@ -52,8 +52,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV TURBO_TELEMETRY_DISABLED=1
 
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=false \
-    --mount=type=secret,id=SENTRY_ORG,env=SENTRY_ORG,required=false \
-    --mount=type=secret,id=SENTRY_PROJECT,env=SENTRY_PROJECT,required=false \
     --mount=type=secret,id=APP_POSTGRES_URL,env=APP_POSTGRES_URL,required=false \
     --mount=type=secret,id=APP_POSTGRES_CERTIFICATE,env=APP_POSTGRES_CERTIFICATE,required=false \
     --mount=type=secret,id=CATALOG_POSTGRES_URL,env=CATALOG_POSTGRES_URL,required=false \

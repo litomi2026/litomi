@@ -153,8 +153,8 @@ const withAnalyzer = withBundleAnalyzer({
 })(withNextIntlConfig)
 
 export default withSentryConfig(withAnalyzer, {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
+  org: 'litomi',
+  project: 'litomi-web',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   silent: !process.env.CI,
 
@@ -168,8 +168,8 @@ export default withSentryConfig(withAnalyzer, {
   }),
 
   widenClientFileUpload: true,
-  sourcemaps: { deleteSourcemapsAfterUpload: true },
-  bundleSizeOptimizations: { excludeTracing: true },
-  webpack: { treeshake: { removeDebugLogging: true } },
-  telemetry: false,
+  tunnelRoute: '/vvs83w',
+  bundleSizeOptimizations: {
+    excludeTracing: true,
+  },
 })

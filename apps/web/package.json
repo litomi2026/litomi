@@ -35,7 +35,7 @@
     "@marsidev/react-turnstile": "^1.5.0",
     "@mlc-ai/web-llm": "^0.2.82",
     "@next/third-parties": "16.1.7",
-    "@sentry/nextjs": "10.47.0",
+    "@sentry/nextjs": "^10",
     "@simplewebauthn/browser": "^13.3.0",
     "@simplewebauthn/server": "^13.3.0",
     "@suspensive/react": "^3.20.2",
