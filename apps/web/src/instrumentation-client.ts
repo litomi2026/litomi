@@ -12,7 +12,7 @@ import * as Sentry from '@sentry/nextjs'
 initializeFaro({
   app: {
     environment: process.env.NEXT_PUBLIC_APP_ENV || 'local',
-    name: 'litomi',
+    name: 'litomi-browser',
     version: process.env.NEXT_PUBLIC_COMMIT_SHA,
   },
   // Errors are owned by Sentry. Faro provides RUM (Web Vitals, sessions, views, perf), browser→API distributed tracing.
@@ -22,6 +22,9 @@ initializeFaro({
     new WebVitalsInstrumentation(),
     new PerformanceInstrumentation(),
     new TracingInstrumentation({
+      resourceAttributes: {
+        'service.namespace': 'litomi',
+      },
       instrumentations: getDefaultOTELInstrumentations({
         ignoreUrls: FARO_IGNORED_URLS,
       }),
@@ -39,7 +42,7 @@ Sentry.init({
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     environment: process.env.NEXT_PUBLIC_APP_ENV || 'local',
     release: process.env.NEXT_PUBLIC_COMMIT_SHA,
-    service: 'litomi-web',
+    service: 'litomi-browser',
   }),
   debug: false,
   sampleRate: 0.1,
