@@ -19,6 +19,7 @@
       "react": "recommended"
     },
     "rules": {
+      "preset": "recommended",
       "a11y": {
         // Decorative / brand icon components; labeling is the caller's responsibility (aria-label / aria-hidden).
         "noSvgWithoutTitle": "off",
