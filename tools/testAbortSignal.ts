@@ -20,7 +20,7 @@ async function main() {
   await testRaceCondition()
   await testServerSideTimeout()
 
-  console.log('\n' + '='.repeat(50))
+  console.log(`\n${'='.repeat(50)}`)
   console.log('✅ 테스트 완료')
 }
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import fs from 'fs'
+import fs from 'node:fs'
 import ms from 'ms'
-import path from 'path'
+import path from 'node:path'
 
 interface CharacterTranslation {
   en: string
@@ -244,7 +244,7 @@ function readJsonFile<T>(filePath: string): T {
 }
 
 function writeJsonFile(filePath: string, value: unknown) {
-  fs.writeFileSync(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8')
+  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf-8')
 }
 
 main()

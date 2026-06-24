@@ -1,6 +1,6 @@
 import { getdelRedisJson, setRedisJson } from '@litomi/db/redis'
 import { sec } from '@litomi/std'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 
 interface AuthChallenge {
   authorizationCode: string

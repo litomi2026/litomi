@@ -1,5 +1,5 @@
 import { installBackendIntegrationHooks } from '@test/backend/setup'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 
 type AuthHeadersInput = {
   ip?: string

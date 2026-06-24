@@ -1,6 +1,6 @@
 import 'server-only'
 import { env } from '@litomi/env/server.common'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 import { verify } from 'otplib'
 import QRCode from 'qrcode'
 
@@ -49,7 +49,7 @@ export function encryptTOTPSecret(secret: string): string {
     let encrypted = cipher.update(secret, 'utf8', 'hex')
     encrypted += cipher.final('hex')
 
-    return iv.toString('hex') + ':' + encrypted
+    return `${iv.toString('hex')}:${encrypted}`
   } catch (error) {
     console.error('Failed to encrypt TOTP secret:', error)
     throw new Error('Failed to encrypt TOTP secret')

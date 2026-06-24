@@ -87,7 +87,7 @@ export function MangaDetailModal() {
 
   const displayDescription =
     shouldTruncateDescription && !showFullDescription
-      ? description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH) + '...'
+      ? `${description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)}...`
       : description
 
   const actionButtonBaseClassName = twMerge(

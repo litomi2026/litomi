@@ -1578,7 +1578,7 @@ class Shell {
     this.engine = engine
     this.comet = null
     this.starLifeVariation = options.starLifeVariation || 0.125
-    this.color = options.color || engine['randomColor']()
+    this.color = options.color || engine.randomColor()
     this.glitterColor = options.glitterColor || (typeof this.color === 'string' ? this.color : COLOR.White)
     this.spreadSize = options.spreadSize || 300
     this.starLife = options.starLife || 900
@@ -1621,21 +1621,21 @@ class Shell {
     if (this.crossette)
       onDeath = (star: StarInstance) => {
         if (!playedDeathSound) {
-          this.engine['soundManager'].playSound('crackleSmall')
+          this.engine.soundManager.playSound('crackleSmall')
           playedDeathSound = true
         }
-        this.engine['crossetteEffect'](star)
+        this.engine.crossetteEffect(star)
       }
     if (this.crackle)
       onDeath = (star: StarInstance) => {
         if (!playedDeathSound) {
-          this.engine['soundManager'].playSound('crackle')
+          this.engine.soundManager.playSound('crackle')
           playedDeathSound = true
         }
-        this.engine['crackleEffect'](star)
+        this.engine.crackleEffect(star)
       }
-    if (this.floral) onDeath = this.engine['floralEffect']
-    if (this.fallingLeaves) onDeath = this.engine['fallingLeavesEffect']
+    if (this.floral) onDeath = this.engine.floralEffect
+    if (this.fallingLeaves) onDeath = this.engine.fallingLeavesEffect
 
     if (this.glitter === 'light') {
       sparkFreq = 400
@@ -1654,7 +1654,7 @@ class Shell {
       sparkLifeVariation = 2
     } else if (this.glitter === 'thick') {
       sparkFreq = 16
-      sparkSpeed = this.engine['isHighQuality'] ? 1.65 : 1.5
+      sparkSpeed = this.engine.isHighQuality ? 1.65 : 1.5
       sparkLife = 1400
       sparkLifeVariation = 3
     } else if (this.glitter === 'streamer') {
@@ -1670,16 +1670,16 @@ class Shell {
     }
 
     if (sparkFreq) {
-      sparkFreq = sparkFreq / this.engine['quality']
+      sparkFreq = sparkFreq / this.engine.quality
     }
 
     const starFactory = (angle: number, speedMult: number) => {
       const standardInitialSpeed = this.spreadSize / 1800
 
-      const star = this.engine['Star'].add(
+      const star = this.engine.Star.add(
         x,
         y,
-        color || this.engine['randomColor'](),
+        color || this.engine.randomColor(),
         angle,
         speedMult * speed,
         this.starLife + Math.random() * this.starLife * this.starLifeVariation,
@@ -1724,15 +1724,15 @@ class Shell {
         const ringStartAngle = Math.random() * Math.PI
         const ringSquash = Math.random() ** 2 * 0.85 + 0.15
 
-        this.engine['createParticleArc'](0, PI_2, this.starCount, 0, (angle: number) => {
+        this.engine.createParticleArc(0, PI_2, this.starCount, 0, (angle: number) => {
           const initSpeedX = Math.sin(angle) * speed * ringSquash
           const initSpeedY = Math.cos(angle) * speed
           const newSpeed = MyMath.pointDist(0, 0, initSpeedX, initSpeedY)
           const newAngle = MyMath.pointAngle(0, 0, initSpeedX, initSpeedY) + ringStartAngle
-          const star = this.engine['Star'].add(
+          const star = this.engine.Star.add(
             x,
             y,
-            color || this.engine['randomColor'](),
+            color || this.engine.randomColor(),
             newAngle,
             newSpeed,
             this.starLife + Math.random() * this.starLife * this.starLifeVariation,
@@ -1748,7 +1748,7 @@ class Shell {
           }
         })
       } else {
-        this.engine['createBurst'](this.starCount, starFactory)
+        this.engine.createBurst(this.starCount, starFactory)
       }
     } else if (Array.isArray(this.color)) {
       if (Math.random() < 0.5) {
@@ -1756,14 +1756,14 @@ class Shell {
         const start2 = start + Math.PI
         const arc = Math.PI
         color = this.color[0]
-        this.engine['createBurst'](this.starCount, starFactory, start, arc)
+        this.engine.createBurst(this.starCount, starFactory, start, arc)
         color = this.color[1]
-        this.engine['createBurst'](this.starCount, starFactory, start2, arc)
+        this.engine.createBurst(this.starCount, starFactory, start2, arc)
       } else {
         color = this.color[0]
-        this.engine['createBurst'](this.starCount / 2, starFactory)
+        this.engine.createBurst(this.starCount / 2, starFactory)
         color = this.color[1]
-        this.engine['createBurst'](this.starCount / 2, starFactory)
+        this.engine.createBurst(this.starCount / 2, starFactory)
       }
     }
 
@@ -1792,19 +1792,19 @@ class Shell {
       innerShell.burst(x, y)
     }
 
-    this.engine['BurstFlash'].add(x, y, this.spreadSize / 4)
+    this.engine.BurstFlash.add(x, y, this.spreadSize / 4)
 
     if (this.comet) {
       const maxDiff = 2
-      const sizeDifferenceFromMaxSize = Math.min(maxDiff, parseFloat(this.engine['config'].size) - this.shellSize)
+      const sizeDifferenceFromMaxSize = Math.min(maxDiff, parseFloat(this.engine.config.size) - this.shellSize)
       const soundScale = (1 - sizeDifferenceFromMaxSize / maxDiff) * 0.3 + 0.7
-      this.engine['soundManager'].playSound('burst', soundScale)
+      this.engine.soundManager.playSound('burst', soundScale)
     }
   }
 
   launch(position: number, launchHeight: number) {
-    const width = this.engine['stageW']
-    const height = this.engine['stageH']
+    const width = this.engine.stageW
+    const height = this.engine.stageH
     const hpad = 60
     const vpad = 50
     const minHeightPercent = 0.45
@@ -1817,7 +1817,7 @@ class Shell {
     const launchDistance = launchY - burstY
     const launchVelocity = (launchDistance * 0.04) ** 0.64
 
-    const comet = (this.comet = this.engine['Star'].add(
+    const comet = (this.comet = this.engine.Star.add(
       launchX,
       launchY,
       typeof this.color === 'string' && this.color !== 'random' ? this.color : COLOR.White,
@@ -1828,12 +1828,12 @@ class Shell {
 
     comet.heavy = true
     comet.spinRadius = MyMath.random(0.32, 0.85)
-    comet.sparkFreq = 32 / this.engine['quality']
-    if (this.engine['isHighQuality']) comet.sparkFreq = 8
+    comet.sparkFreq = 32 / this.engine.quality
+    if (this.engine.isHighQuality) comet.sparkFreq = 8
     comet.sparkLife = 320
     comet.sparkLifeVariation = 3
     if (this.glitter === 'willow' || this.fallingLeaves) {
-      comet.sparkFreq = 20 / this.engine['quality']
+      comet.sparkFreq = 20 / this.engine.quality
       comet.sparkSpeed = 0.5
       comet.sparkLife = 500
     }
@@ -1848,6 +1848,6 @@ class Shell {
 
     comet.onDeath = () => this.burst(comet.x, comet.y)
 
-    this.engine['soundManager'].playSound('lift')
+    this.engine.soundManager.playSound('lift')
   }
 }

@@ -20,7 +20,7 @@ import {
   truncateSessionMetadata,
 } from '@litomi/auth/session'
 import { db } from '@litomi/db/app'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 
 import {
   insertSessionFamily,

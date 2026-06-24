@@ -1,6 +1,6 @@
 import { redis } from '@litomi/db/redis'
 import { sec } from '@litomi/std'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 
 const RATE_LIMIT_CHECK_SCRIPT = `
 local window = tonumber(ARGV[1])

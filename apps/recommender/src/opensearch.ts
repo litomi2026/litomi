@@ -157,13 +157,12 @@ async function bulkIndexMangaRecords(indexName: string, records: readonly Catalo
     return
   }
 
-  const body =
-    records
-      .flatMap((record) => [
-        JSON.stringify({ index: { _id: record.id, _index: indexName } }),
-        JSON.stringify(createMangaSearchDocument(record)),
-      ])
-      .join('\n') + '\n'
+  const body = `${records
+    .flatMap((record) => [
+      JSON.stringify({ index: { _id: record.id, _index: indexName } }),
+      JSON.stringify(createMangaSearchDocument(record)),
+    ])
+    .join('\n')}\n`
 
   const response = await openSearchRequest<OpenSearchBulkResponse>({
     body,

@@ -1,7 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import ms from 'ms'
 import pLimit from 'p-limit'
-import { join } from 'path'
+import { join } from 'node:path'
 import { z } from 'zod'
 
 type CacheEntry = {

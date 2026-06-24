@@ -1,7 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import ms from 'ms'
 import pLimit from 'p-limit'
-import { dirname, join, resolve } from 'path'
+import { dirname, join, resolve } from 'node:path'
 import { z } from 'zod'
 
 type CacheDecision = 'exists' | 'missing' | 'unknown'

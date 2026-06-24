@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 interface AtlasBasicServant {
   collectionNo: number
@@ -191,7 +191,7 @@ function readJsonFile<T>(filePath: string): T {
 }
 
 function writeJsonFile(filePath: string, value: unknown) {
-  fs.writeFileSync(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8')
+  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf-8')
 }
 
 main()

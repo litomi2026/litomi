@@ -33,7 +33,7 @@ function formatEnglishNumberOptimized(num: number): string {
         : value >= 10
           ? Math.floor(value * 10 + EPSILON) / 10
           : Math.floor(value * 100 + EPSILON) / 100
-    return numberFormatters.en.format(formatted) + 'k'
+    return `${numberFormatters.en.format(formatted)}k`
   }
 
   if (num < BILLION) {
@@ -46,7 +46,7 @@ function formatEnglishNumberOptimized(num: number): string {
         : value >= 10
           ? Math.floor(value * 10 + EPSILON) / 10
           : Math.floor(value * 100 + EPSILON) / 100
-    return numberFormatters.en.format(formatted) + 'M'
+    return `${numberFormatters.en.format(formatted)}M`
   }
 
   const value = num / BILLION
@@ -58,7 +58,7 @@ function formatEnglishNumberOptimized(num: number): string {
       : value >= 10
         ? Math.floor(value * 10 + EPSILON) / 10
         : Math.floor(value * 100 + EPSILON) / 100
-  return numberFormatters.en.format(formatted) + 'B'
+  return `${numberFormatters.en.format(formatted)}B`
 }
 
 function formatKoreanNumberOptimized(num: number): string {
@@ -73,11 +73,11 @@ function formatKoreanNumberOptimized(num: number): string {
     const value = num / TEN_THOUSAND
     const isWholeNumber = num % TEN_THOUSAND === 0
     const formatted = isWholeNumber ? Math.floor(value) : Math.floor(value * 10 + EPSILON) / 10
-    return numberFormatters.ko.format(formatted) + '만'
+    return `${numberFormatters.ko.format(formatted)}만`
   }
 
   const value = num / HUNDRED_MILLION
   const isWholeNumber = num % HUNDRED_MILLION === 0
   const formatted = isWholeNumber ? Math.floor(value) : Math.floor(value * 10 + EPSILON) / 10
-  return numberFormatters.ko.format(formatted) + '억'
+  return `${numberFormatters.ko.format(formatted)}억`
 }

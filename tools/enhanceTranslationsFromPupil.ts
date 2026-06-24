@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import fs from 'fs'
+import fs from 'node:fs'
 import ms from 'ms'
-import path from 'path'
+import path from 'node:path'
 import { z } from 'zod'
 
 const filesURL = 'https://api.github.com/repos/tom5079/Pupil/git/trees/tags'
@@ -89,7 +89,7 @@ function computeInsertionIndent(jsonText: string, objectStart: number): string {
   if (lineStart < 0) return '  '
   const afterNewline = jsonText.slice(lineStart + 1, objectStart)
   const m = afterNewline.match(/^\s*/)
-  return (m?.[0] ?? '') + '  '
+  return `${m?.[0] ?? ''}  `
 }
 
 function computeSingleSexPrefixFromKey(key: string): 'both' | 'female' | 'male' | null {
@@ -282,7 +282,7 @@ function insertTopLevelKeyEntry(jsonText: string, key: string, entry: Record<str
   const insertPrefix = hasExistingEntries ? ',\n' : '\n'
 
   // Preserve trailing whitespace/newline after final brace.
-  return jsonText.slice(0, end) + insertPrefix + entryLine + '\n' + jsonText.slice(end)
+  return `${jsonText.slice(0, end) + insertPrefix + entryLine}\n${jsonText.slice(end)}`
 }
 
 function isBlank(value: string): boolean {
@@ -542,9 +542,9 @@ function parseArgs(argv: string[]): Args {
 
   const normalized: Record<string, unknown> = { ...raw }
   // aliases
-  if (typeof raw['dir'] === 'string' && !raw['translationDir']) normalized.translationDir = raw['dir']
-  if (typeof raw['timeout'] === 'string' && raw['timeoutMs'] === undefined) {
-    const n = Number(raw['timeout'])
+  if (typeof raw.dir === 'string' && !raw.translationDir) normalized.translationDir = raw.dir
+  if (typeof raw.timeout === 'string' && raw.timeoutMs === undefined) {
+    const n = Number(raw.timeout)
     if (Number.isFinite(n)) normalized.timeoutMs = n
   }
 

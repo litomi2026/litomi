@@ -116,7 +116,7 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
             }
           } else {
             // Not a recognized category, treat as plain keyword
-            const fullKeyword = currentWord + ':' + query.slice(valueStart, i)
+            const fullKeyword = `${currentWord}:${query.slice(valueStart, i)}`
             if (!isExclusion) {
               plainKeywords.push(fullKeyword)
               processedParts.push(fullKeyword)
