@@ -9,14 +9,16 @@ export function initBackendOtel() {
     return
   }
 
-  if (process.env.COMMIT_SHA) {
-    process.env.OTEL_RESOURCE_ATTRIBUTES = [
-      process.env.OTEL_RESOURCE_ATTRIBUTES,
-      `service.version=${process.env.COMMIT_SHA}`,
-    ]
-      .filter(Boolean)
-      .join(',')
-  }
+  const COMMIT_SHA = process.env.COMMIT_SHA
+  const K8S_NODE_NAME = process.env.K8S_NODE_NAME
+
+  process.env.OTEL_RESOURCE_ATTRIBUTES = [
+    process.env.OTEL_RESOURCE_ATTRIBUTES,
+    COMMIT_SHA && `service.version=${COMMIT_SHA}`,
+    K8S_NODE_NAME && `k8s.node.name=${K8S_NODE_NAME}`,
+  ]
+    .filter(Boolean)
+    .join(',')
 
   if (process.env.OTEL_LOG_LEVEL === 'debug') {
     diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG)

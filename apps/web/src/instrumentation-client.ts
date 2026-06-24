@@ -5,6 +5,7 @@ import {
   ViewInstrumentation,
   WebVitalsInstrumentation,
 } from '@grafana/faro-web-sdk'
+import { getDefaultOTELInstrumentations, TracingInstrumentation } from '@grafana/faro-web-tracing'
 import { createSentryInitOptions } from '@litomi/observability'
 import * as Sentry from '@sentry/nextjs'
 
@@ -14,13 +15,17 @@ initializeFaro({
     name: 'litomi',
     version: process.env.NEXT_PUBLIC_COMMIT_SHA,
   },
-  // Errors are owned by Sentry. Faro stays RUM-only (Web Vitals, sessions, views, perf)
-  // to avoid double-reporting. Add @grafana/faro-web-tracing later for browser→API traces.
+  // Errors are owned by Sentry. Faro provides RUM (Web Vitals, sessions, views, perf), browser→API distributed tracing.
   instrumentations: [
     new SessionInstrumentation(),
     new ViewInstrumentation(),
     new WebVitalsInstrumentation(),
     new PerformanceInstrumentation(),
+    new TracingInstrumentation({
+      instrumentations: getDefaultOTELInstrumentations({
+        ignoreUrls: [/\/i\//],
+      }),
+    }),
   ],
   sessionTracking: {
     samplingRate: 0.5,

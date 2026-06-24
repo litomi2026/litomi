@@ -21,6 +21,7 @@
     "@capacitor/core": "8.3.0",
     "@fingerprintjs/fingerprintjs": "^5.2.0",
     "@grafana/faro-web-sdk": "^2.7.1",
+    "@grafana/faro-web-tracing": "^2.7.1",
     "@litomi/auth": "workspace:*",
     "@litomi/catalog": "workspace:*",
     "@litomi/contracts": "workspace:*",
