@@ -156,7 +156,7 @@ export default withSentryConfig(withAnalyzer, {
   org: 'litomi',
   project: 'litomi-web',
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  silent: !process.env.CI,
+  silent: true,
 
   ...(commitSHA && {
     release: {
