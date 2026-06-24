@@ -1,12 +1,12 @@
 # Stage 1: Pruner
-FROM oven/bun:1.3 AS pruner
+FROM oven/bun:1.3-alpine AS pruner
 WORKDIR /app
 
 COPY . .
 RUN bunx turbo prune @litomi/notifier --docker
 
 # Stage 2: Builder
-FROM oven/bun:1.3 AS builder
+FROM oven/bun:1.3-alpine AS builder
 WORKDIR /app
 
 ENV NODE_ENV=production
