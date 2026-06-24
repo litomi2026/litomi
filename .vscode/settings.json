@@ -16,6 +16,7 @@
   },
   "SQL-Formatter-VSCode.dialect": "postgresql",
   "turboConsoleLog.logMessagePrefix": "👀",
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[sql]": { "editor.defaultFormatter": "ReneSaarsoo.sql-formatter-vsc" },

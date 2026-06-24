@@ -21,7 +21,7 @@
     "type": "turbo run type type:root",
     "type:root": "tsc -p tsconfig.json --noEmit",
     "lint": "biome check --write .",
-    "format": "prettier --write '**/*.{md,yml,yaml,html}'",
+    "format": "prettier --write '**/*.{css,md,yml,yaml,html}'",
     "format:sql": "git ls-files '*.sql' | xargs -n 1 sql-formatter --fix -l postgresql",
     "prepare": "husky",
     "clean": "rm -rf .next .turbo apps/web/.next apps/edge-proxy/.next apps/api/dist apps/cataloger/dist apps/notifier/dist node_modules/.cache",

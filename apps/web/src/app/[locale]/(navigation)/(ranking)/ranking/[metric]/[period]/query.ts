@@ -12,6 +12,7 @@ import { MetricParam, PeriodParam } from '../../../common'
 
 export async function getRankingData(metric: MetricParam, period: PeriodParam, locale: PublicLocale) {
   const periodStart = getPeriodStart(period)
+  // biome-ignore lint/suspicious/noImplicitAnyLet: Drizzle dynamic query is reassigned per switch branch; a precise type is impractical.
   let query
 
   switch (metric) {

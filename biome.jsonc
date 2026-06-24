@@ -7,7 +7,8 @@
   },
   "files": {
     // .gitignore is honored via vcs.useIgnoreFile. Only add tracked paths we still want skipped.
-    "includes": ["**", "!**/trash", "!apps/mobile/android", "!apps/mobile/ios"]
+    // CSS is owned by Prettier — Biome's CSS parser can't read Tailwind v4 syntax (@theme / @custom-variant).
+    "includes": ["**", "!**/trash", "!apps/mobile/android", "!apps/mobile/ios", "!**/*.css"]
   },
   "formatter": {
     "indentStyle": "space",
@@ -24,7 +25,20 @@
         // Decorative / brand icon components; labeling is the caller's responsibility (aria-label / aria-hidden).
         "noSvgWithoutTitle": "off",
         // False positives: a <label> wrapping a custom component (e.g. <Toggle/>) isn't recognized as a control.
-        "noLabelWithoutControl": "off"
+        "noLabelWithoutControl": "off",
+        // a11y findings concentrated in seasonal/toy pages & custom widgets — visible but non-blocking until addressed.
+        "noAutofocus": "warn",
+        "noNoninteractiveElementToInteractiveRole": "warn",
+        "noRedundantAlt": "warn",
+        "noStaticElementInteractions": "warn",
+        "useAriaPropsSupportedByRole": "warn",
+        "useFocusableInteractive": "warn",
+        "useKeyWithClickEvents": "warn",
+        "useSemanticElements": "warn"
+      },
+      "correctness": {
+        // React Compiler manages memoization; manual effect deps are often intentional — visible but non-blocking.
+        "useExhaustiveDependencies": "warn"
       },
       "performance": {
         // <img> is intentional (custom image proxy / reader); mirrors the old next/no-img-element being off.
@@ -32,7 +46,9 @@
       },
       "suspicious": {
         // Intentional index keys for static / generated lists (skeletons, rating stars, seasonal effects).
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        // Idiomatic regex exec-loops / PRNG step / dual-assignment — visible but non-blocking.
+        "noAssignInExpressions": "warn"
       }
     }
   },

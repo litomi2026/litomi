@@ -16,8 +16,8 @@
   aspect-ratio: 2002 / 189;
   background: rgb(245 188 255 / 0.18);
   animation: hangul-watermark-breathe 18s ease-in-out infinite both;
-  mask: url("/image/hangul-watermark.png") center / contain no-repeat;
-  -webkit-mask: url("/image/hangul-watermark.png") center / contain no-repeat;
+  mask: url('/image/hangul-watermark.png') center / contain no-repeat;
+  -webkit-mask: url('/image/hangul-watermark.png') center / contain no-repeat;
 }
 
 .glyph {
@@ -43,19 +43,19 @@
   color: rgb(255 255 255);
 }
 
-:global([data-theme="light"]) .glyph {
+:global([data-theme='light']) .glyph {
   color: rgb(139 92 246);
 }
 
-:global([data-theme="light"]) .glyph:nth-child(3n) {
+:global([data-theme='light']) .glyph:nth-child(3n) {
   color: rgb(59 130 246);
 }
 
-:global([data-theme="light"]) .glyph:nth-child(5n) {
+:global([data-theme='light']) .glyph:nth-child(5n) {
   color: rgb(39 39 42);
 }
 
-:global([data-theme="light"]) .watermark {
+:global([data-theme='light']) .watermark {
   background: rgb(59 130 246 / 0.12);
 }
 

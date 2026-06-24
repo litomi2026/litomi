@@ -29,6 +29,7 @@ const limitMock = mock((limit: number) => {
 
 const query = {
   limit: limitMock,
+  // biome-ignore lint/suspicious/noThenProperty: intentional thenable — mocks an awaitable Drizzle query builder.
   then: (resolve: (value: typeof nextRows) => unknown, reject?: (reason: unknown) => unknown) =>
     Promise.resolve(nextRows).then(resolve, reject),
 }

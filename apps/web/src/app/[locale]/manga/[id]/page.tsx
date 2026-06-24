@@ -102,6 +102,7 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]'>
   return (
     <main className="h-full">
       <script
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data; '<' is escaped to prevent XSS.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replaceAll('<', '\\u003c') }}
         type="application/ld+json"
       />
