@@ -139,6 +139,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
                 onToggle={handleToggle}
               />
               <button
+                type="button"
                 className="p-2 text-zinc-600 hover:text-zinc-400 rounded-xl hover:bg-zinc-800/50 transition disabled:opacity-50"
                 disabled={isToggling || isDeleting}
                 onClick={() => onEdit(criterion)}
@@ -147,6 +148,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
                 <Edit3 className="h-4 w-4" />
               </button>
               <button
+                type="button"
                 className="p-2 text-zinc-600 hover:text-red-400 rounded-xl hover:bg-red-900/10 transition disabled:opacity-50"
                 disabled={isToggling || isDeleting}
                 onClick={handleDelete}

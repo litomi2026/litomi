@@ -62,7 +62,11 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
               type="text"
               value={secret}
             />
-            <button className="rounded bg-zinc-800 p-2 text-zinc-400 hover:bg-zinc-700" onClick={() => copy(secret)}>
+            <button
+              type="button"
+              className="rounded bg-zinc-800 p-2 text-zinc-400 hover:bg-zinc-700"
+              onClick={() => copy(secret)}
+            >
               {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
             </button>
           </div>

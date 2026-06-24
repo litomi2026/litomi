@@ -71,12 +71,14 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
       {!showDisableConfirm && !showRegenerateModal && (
         <div className="space-y-3">
           <button
+            type="button"
             className="w-full rounded-lg bg-red-900/20 border border-red-900 px-4 py-3 font-medium text-red-500 hover:bg-red-900/30"
             onClick={() => setShowDisableConfirm(true)}
           >
             2단계 인증 비활성화
           </button>
           <button
+            type="button"
             className="w-full rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 hover:bg-zinc-700"
             onClick={() => setShowRegenerateModal(true)}
           >

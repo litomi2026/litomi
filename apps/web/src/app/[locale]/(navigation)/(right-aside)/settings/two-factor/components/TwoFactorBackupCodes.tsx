@@ -30,6 +30,7 @@ export default function TwoFactorBackupCodes({ backupCodes, onComplete }: Props)
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-zinc-100">복구 코드</h3>
           <button
+            type="button"
             className="flex items-center space-x-1 rounded-lg bg-zinc-800 px-3 py-1.5 text-sm text-zinc-300 hover:bg-zinc-700"
             onClick={() => copy(backupCodes.join('\n'))}
           >
@@ -55,6 +56,7 @@ export default function TwoFactorBackupCodes({ backupCodes, onComplete }: Props)
         </div>
       </div>
       <button
+        type="button"
         className="w-full rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 hover:bg-zinc-700"
         onClick={onComplete}
       >

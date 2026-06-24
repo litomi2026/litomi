@@ -17,6 +17,7 @@ export default function RealtimeToggleButton() {
       <button
         className="rounded-lg bg-zinc-800 px-4 p-2 text-sm transition hover:bg-zinc-700"
         onClick={() => setIsLive(!isLive)}
+        type="button"
       >
         {isLive ? t('pause') : t('resume')}
       </button>

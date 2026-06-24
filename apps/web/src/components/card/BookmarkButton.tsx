@@ -146,6 +146,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
 
   return (
     <button
+      type="button"
       className="flex justify-center items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition flex-1"
       onClick={reset}
     >

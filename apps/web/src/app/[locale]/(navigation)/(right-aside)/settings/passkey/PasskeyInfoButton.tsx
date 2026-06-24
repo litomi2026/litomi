@@ -10,6 +10,7 @@ export default function PasskeyInfoButton() {
   return (
     <>
       <button
+        type="button"
         aria-label="패스키 정보"
         className="rounded-full p-2 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300"
         onClick={() => setShowInfoModal(true)}

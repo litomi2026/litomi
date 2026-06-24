@@ -80,6 +80,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
         ))}
       </div>
       <button
+        type="button"
         aria-label={t('previous')}
         className="pointer-coarse:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(prevIndex)}
@@ -87,6 +88,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
         <ChevronLeft className="size-4" />
       </button>
       <button
+        type="button"
         aria-label={t('next')}
         className="pointer-coarse:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(nextIndex)}

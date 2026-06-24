@@ -28,7 +28,7 @@ export default function RewardedAdFooter({
           {apiError instanceof ProblemDetailsError &&
             !apiError.message.includes('한도') &&
             !apiError.message.includes('잠시 후') && (
-              <button className="ml-2 text-zinc-300 underline" disabled={isLoading} onClick={onRetry}>
+              <button type="button" className="ml-2 text-zinc-300 underline" disabled={isLoading} onClick={onRetry}>
                 다시 시도
               </button>
             )}

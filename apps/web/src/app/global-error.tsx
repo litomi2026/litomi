@@ -53,6 +53,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
             에 남겨주세요
           </p>
           <button
+            type="button"
             className="transition mx-auto mt-6 mb-4 flex w-full max-w-xs items-center justify-center gap-2 whitespace-nowrap rounded-full bg-zinc-800 px-6 py-3 text-sm font-medium text-foreground hover:bg-zinc-700 active:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-background"
             onClick={() => reset()}
           >

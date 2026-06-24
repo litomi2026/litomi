@@ -61,6 +61,7 @@ export default function NotificationHeader() {
         <div className="flex items-center gap-1.5">
           {filter === NotificationFilter.UNREAD && (
             <button
+              type="button"
               className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50"
               disabled={notifications.length === 0 || isActionPending}
               onClick={markVisibleUnreadAsRead}
@@ -71,6 +72,7 @@ export default function NotificationHeader() {
           {selectionMode ? (
             <>
               <button
+                type="button"
                 className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-zinc-300 bg-zinc-800 rounded-md hover:bg-zinc-700 transition disabled:opacity-50"
                 disabled={selectedIds.size === 0 || isActionPending}
                 onClick={() => runBatchAction('read')}
@@ -80,6 +82,7 @@ export default function NotificationHeader() {
                 <span className="hidden sm:inline">{t('actions.markSelectedAsRead')}</span>
               </button>
               <button
+                type="button"
                 className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-red-400 bg-red-900/20 rounded-md hover:bg-red-900/30 transition disabled:opacity-50"
                 disabled={selectedIds.size === 0 || isActionPending}
                 onClick={() => runBatchAction('delete')}
@@ -93,6 +96,7 @@ export default function NotificationHeader() {
                 <span className="hidden sm:inline">{t('actions.deleteSelected')}</span>
               </button>
               <button
+                type="button"
                 className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50"
                 disabled={isActionPending}
                 onClick={cancelSelection}
@@ -102,6 +106,7 @@ export default function NotificationHeader() {
             </>
           ) : (
             <button
+              type="button"
               className="px-2.5 py-1.5 text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50"
               disabled={notifications.length === 0 || isActionPending}
               onClick={startSelection}
@@ -129,6 +134,7 @@ function FilterButton({
 }) {
   return (
     <button
+      type="button"
       aria-pressed={active}
       className={twMerge(
         'relative px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap',
