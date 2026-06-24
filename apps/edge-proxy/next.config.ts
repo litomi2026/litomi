@@ -38,4 +38,5 @@ export default withSentryConfig(nextConfig, {
   bundleSizeOptimizations: {
     excludeTracing: true,
   },
+  telemetry: false,
 })

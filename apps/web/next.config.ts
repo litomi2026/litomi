@@ -172,4 +172,5 @@ export default withSentryConfig(withAnalyzer, {
   bundleSizeOptimizations: {
     excludeTracing: true,
   },
+  telemetry: false,
 })
