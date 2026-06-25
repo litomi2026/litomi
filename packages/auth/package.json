@@ -27,6 +27,7 @@
     "@litomi/domain": "workspace:*",
     "@litomi/env": "workspace:*",
     "@litomi/http": "workspace:*",
+    "@litomi/kv": "workspace:*",
     "@litomi/std": "workspace:*",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",

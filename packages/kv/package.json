@@ -1,0 +1,16 @@
+{
+  "name": "@litomi/kv",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@litomi/env": "workspace:*",
+    "ioredis": "^5.11.0"
+  }
+}

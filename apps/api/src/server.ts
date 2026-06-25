@@ -1,6 +1,6 @@
 import './instrumentation'
 
-import { closeRedis, pingRedis } from '@litomi/db/redis'
+import { closeRedis, pingRedis } from '@litomi/kv'
 
 import { shutdownAnalyticsClient } from './api/v1/analytics/realtime'
 import app from './app'

@@ -45,6 +45,7 @@
         "@litomi/domain": "workspace:*",
         "@litomi/env": "workspace:*",
         "@litomi/http": "workspace:*",
+        "@litomi/kv": "workspace:*",
         "@litomi/notifications": "workspace:*",
         "@litomi/std": "workspace:*",
         "@opentelemetry/api": "^1.9.0",
@@ -239,6 +240,7 @@
         "@litomi/domain": "workspace:*",
         "@litomi/env": "workspace:*",
         "@litomi/http": "workspace:*",
+        "@litomi/kv": "workspace:*",
         "@litomi/std": "workspace:*",
         "bcryptjs": "^3.0.3",
         "drizzle-orm": "^0.45.2",
@@ -296,7 +298,6 @@
         "@litomi/env": "workspace:*",
         "@litomi/std": "workspace:*",
         "drizzle-orm": "^0.45.2",
-        "ioredis": "^5.11.0",
         "postgres": "^3.4.9",
         "server-only": "^0.0.1",
         "zod": "^4.3.6",
@@ -354,6 +355,14 @@
         "react": ">=19",
         "react-dom": ">=19",
         "tailwindcss": ">=4",
+      },
+    },
+    "packages/kv": {
+      "name": "@litomi/kv",
+      "version": "1.1.0",
+      "dependencies": {
+        "@litomi/env": "workspace:*",
+        "ioredis": "^5.11.0",
       },
     },
     "packages/notifications": {
@@ -705,6 +714,8 @@
     "@litomi/http": ["@litomi/http@workspace:packages/http"],
 
     "@litomi/image-reader": ["@litomi/image-reader@workspace:packages/image-reader"],
+
+    "@litomi/kv": ["@litomi/kv@workspace:packages/kv"],
 
     "@litomi/mobile": ["@litomi/mobile@workspace:apps/mobile"],
 

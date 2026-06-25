@@ -30,7 +30,6 @@
     "./query/post-comment": "./src/query/post-comment.ts",
     "./query/post": "./src/query/post.ts",
     "./query/user-settings": "./src/query/user-settings.ts",
-    "./redis": "./src/redis.ts",
     "./sql/library-item-sort": "./src/sql/library-item-sort.ts",
     "./sql/rating-sort": "./src/sql/rating-sort.ts"
   },
@@ -49,7 +48,6 @@
     "@litomi/env": "workspace:*",
     "@litomi/std": "workspace:*",
     "drizzle-orm": "^0.45.2",
-    "ioredis": "^5.11.0",
     "postgres": "^3.4.9",
     "server-only": "^0.0.1",
     "zod": "^4.3.6"

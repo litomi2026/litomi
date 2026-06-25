@@ -5,7 +5,7 @@ import { ChallengeType } from '@litomi/domain/auth/model'
 const getdelRedisJsonMock = mock(async (): Promise<unknown | null> => null)
 const setRedisJsonMock = mock(async (): Promise<void> => undefined)
 
-mock.module('@litomi/db/redis', () => ({
+mock.module('@litomi/kv', () => ({
   getdelRedisJson: getdelRedisJsonMock,
   setRedisJson: setRedisJsonMock,
 }))

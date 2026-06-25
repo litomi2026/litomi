@@ -1,4 +1,4 @@
-import { redis } from '@litomi/db/redis'
+import { redis } from '@litomi/kv'
 import { sec } from '@litomi/std'
 
 export interface TrendingKeyword {

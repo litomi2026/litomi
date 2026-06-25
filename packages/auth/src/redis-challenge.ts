@@ -1,6 +1,6 @@
 import type { PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
-import { getdelRedisJson, setRedisJson } from '@litomi/db/redis'
 import type { ChallengeType } from '@litomi/domain/auth/model'
+import { getdelRedisJson, setRedisJson } from '@litomi/kv'
 import { sec } from '@litomi/std'
 
 /**

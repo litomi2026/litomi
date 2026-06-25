@@ -26,6 +26,7 @@
     "@litomi/domain": "workspace:*",
     "@litomi/env": "workspace:*",
     "@litomi/http": "workspace:*",
+    "@litomi/kv": "workspace:*",
     "@litomi/notifications": "workspace:*",
     "@litomi/std": "workspace:*",
     "@opentelemetry/api": "^1.9.0",
