@@ -6,8 +6,15 @@ import {
   WebVitalsInstrumentation,
 } from '@grafana/faro-web-sdk'
 import { getDefaultOTELInstrumentations, TracingInstrumentation } from '@grafana/faro-web-tracing'
-import { createSentryInitOptions, FARO_IGNORED_URLS } from '@litomi/observability'
+import {
+  createSentryInitOptions,
+  FARO_IGNORED_URLS,
+  isBrowserNoiseEvent,
+  SENTRY_BROWSER_DENY_URLS,
+  SENTRY_BROWSER_IGNORE_ERRORS,
+} from '@litomi/observability'
 import * as Sentry from '@sentry/nextjs'
+import { scrubSentryEvent } from '../../../packages/observability/src/sentry'
 
 // Errors are owned by Sentry. Faro provides RUM (Web Vitals, sessions, views, perf), browser→API distributed tracing.
 initializeFaro({
@@ -44,6 +51,9 @@ Sentry.init({
     release: process.env.NEXT_PUBLIC_COMMIT_SHA,
     service: 'litomi-browser',
   }),
+  beforeSend: (event) => (isBrowserNoiseEvent(event) ? null : scrubSentryEvent(event)),
+  denyUrls: SENTRY_BROWSER_DENY_URLS,
+  ignoreErrors: SENTRY_BROWSER_IGNORE_ERRORS,
   debug: false,
   sampleRate: 0.1,
 })
