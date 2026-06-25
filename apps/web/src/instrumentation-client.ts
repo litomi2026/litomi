@@ -55,7 +55,7 @@ Sentry.init({
   denyUrls: SENTRY_BROWSER_DENY_URLS,
   ignoreErrors: SENTRY_BROWSER_IGNORE_ERRORS,
   debug: false,
-  sampleRate: 0.1,
+  sampleRate: 0.5,
 })
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart

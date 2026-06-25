@@ -125,6 +125,9 @@ const NETWORK_ERROR_MESSAGE = /Failed to fetch|Load failed|NetworkError when att
 // Our application bundle is served under the app:/// scheme at send time
 const FIRST_PARTY_FRAME = /^app:\/\/\//i
 
+// Any frame that resolves to a real downloaded script
+const REMOTE_SCRIPT_URL = /^https?:\/\//i
+
 function isForeignScriptURL(url: string): boolean {
   return SENTRY_BROWSER_DENY_URLS.some((pattern) => pattern.test(url))
 }
@@ -159,10 +162,32 @@ function referencesIgnoredRequestHost(event: ErrorEvent): boolean {
   )
 }
 
+/** Inline / injected foreign scripts - in-app browser helpers, extensions, userscripts and `javascript:` handlers */
+function isInjectedScriptError(event: ErrorEvent): boolean {
+  if (!isUnhandled(event)) {
+    return false
+  }
+
+  const frames = getEventFrames(event)
+  if (frames.length === 0) {
+    return false
+  }
+
+  // Injected/inline scripts have neither our (app:///) nor a named third-party file (http/https).
+  return frames.every((frame) => {
+    const url = getFrameURL(frame)
+    return !FIRST_PARTY_FRAME.test(url) && !REMOTE_SCRIPT_URL.test(url)
+  })
+}
+
 export function isBrowserNoiseEvent(event: ErrorEvent): boolean {
   const frames = getEventFrames(event)
 
   if (frames.some((frame) => isForeignScriptURL(getFrameURL(frame)))) {
+    return true
+  }
+
+  if (isInjectedScriptError(event)) {
     return true
   }
 

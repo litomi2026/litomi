@@ -26,7 +26,7 @@ export const getSearchSuggestionsResponseSchema = z.array(
 export type GETSearchSuggestionsResponse = z.infer<typeof getSearchSuggestionsResponseSchema>
 
 export const getTrendingKeywordsQuerySchema = z.object({
-  limit: z.coerce.number().int().positive().max(10).default(10),
+  limit: z.coerce.number().int().positive().max(15).default(15),
   locale: z.enum(Locale),
   type: z.enum(TrendingType).default(TrendingType.HOURLY),
 })
