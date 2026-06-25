@@ -186,7 +186,3 @@ export function isBrowserNoiseEvent(event: ErrorEvent): boolean {
 
   return false
 }
-
-export function createBrowserBeforeSend(): (event: ErrorEvent) => ErrorEvent | null {
-  return (event) => (isBrowserNoiseEvent(event) ? null : scrubSentryEvent(event))
-}

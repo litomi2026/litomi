@@ -1,6 +1,5 @@
 export { FARO_IGNORED_URLS } from './faro'
 export {
-  createBrowserBeforeSend,
   createSentryInitOptions,
   isBrowserNoiseEvent,
   SENTRY_BROWSER_DENY_URLS,
