@@ -44,11 +44,17 @@
         // <img> is intentional (custom image proxy / reader); mirrors the old next/no-img-element being off.
         "noImgElement": "off"
       },
+      "style": {
+        // `!` is an idiomatic escape hatch in this strict-TS codebase (was off under the old ESLint config too).
+        "noNonNullAssertion": "off"
+      },
       "suspicious": {
         // Intentional index keys for static / generated lists (skeletons, rating stars, seasonal effects).
         "noArrayIndexKey": "off",
         // Idiomatic regex exec-loops / PRNG step / dual-assignment — visible but non-blocking.
-        "noAssignInExpressions": "warn"
+        "noAssignInExpressions": "warn",
+        // Bootstrap (otel.ts / server.ts) reads process.env directly by design; app code uses the typed @litomi/env package.
+        "noUndeclaredEnvVars": "off"
       }
     }
   },
