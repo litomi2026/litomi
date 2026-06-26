@@ -1,6 +1,6 @@
 import { describe, test } from 'bun:test'
 
-import { runIsolatedBunTest } from '../../../../../test/utils/run-isolated-bun-test'
+import { runIsolatedBunTest } from '../../../../../../test/utils/run-isolated-bun-test'
 
 describe('selectLibraryItem', () => {
   test('mocked db query builder behavior is isolated from the main test process', async () => {

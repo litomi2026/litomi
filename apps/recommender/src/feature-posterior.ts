@@ -1,4 +1,4 @@
-import type { CatalogMangaRecord } from '@litomi/db/query/catalog-manga'
+import type { CatalogMangaRecord } from '@litomi/db/catalog/query'
 
 import {
   addMangaRecommendationReason,

@@ -1,6 +1,6 @@
 import { catalogDB } from '@litomi/db/catalog'
+import type { CatalogMangaRecord } from '@litomi/db/catalog/query'
 import { mangaTable } from '@litomi/db/catalog/schema'
-import type { CatalogMangaRecord } from '@litomi/db/query/catalog-manga'
 import { CensorshipKey } from '@litomi/domain/censorship/model'
 import { MANGA_TYPE_VALUE_BY_ID, TagCategory } from '@litomi/domain/manga/model'
 import { env } from '@litomi/env/server.common'

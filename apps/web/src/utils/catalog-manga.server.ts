@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
-import { selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
+import { selectCatalogMangaRecordsByIds } from '@litomi/db/catalog/query'
 import type { PublicLocale } from '@litomi/domain/locale'
 import type { Manga } from '@litomi/domain/manga/model'
 

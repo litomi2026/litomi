@@ -1,4 +1,4 @@
-import { getChatCreatorByUserId, hasActiveChatSubscription } from '@litomi/db/query/chat'
+import { getChatCreatorByUserId, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
 
 // 채팅 스트림에 대한 실시간 읽기 권한(read-authorization)을 처리합니다.
 //

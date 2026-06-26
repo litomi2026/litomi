@@ -1,8 +1,8 @@
 import { getUserIdFromCookie } from '@litomi/auth/cookie'
 import { db } from '@litomi/db/app'
+import { readUserSettings } from '@litomi/db/app/query/user-settings'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
-import { readUserSettings } from '@litomi/db/query/user-settings'
 import { ErrorBoundary } from '@suspensive/react'
 import { and, eq, isNull } from 'drizzle-orm'
 import {
