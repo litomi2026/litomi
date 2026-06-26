@@ -6,7 +6,7 @@ ENV DO_NOT_TRACK=1
 ENV TURBO_TELEMETRY_DISABLED=1
 
 COPY . .
-RUN bunx turbo prune @litomi/cataloger --docker
+RUN bunx turbo prune @litomi/chat --docker
 
 # Stage 2: Builder
 FROM oven/bun:1.3-slim AS builder
@@ -22,7 +22,7 @@ RUN bun install --frozen-lockfile --silent --ignore-scripts
 COPY --from=pruner /app/out/full/ .
 COPY turbo.json tsconfig.json tsconfig.base.json ./
 COPY types ./types
-RUN bunx turbo run build --filter=@litomi/cataloger
+RUN bunx turbo run build --filter=@litomi/chat
 
 # Stage 3: Runtime
 FROM gcr.io/distroless/base-nossl-debian13:nonroot
@@ -30,6 +30,6 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY --chown=nonroot:nonroot --from=builder /app/apps/cataloger/dist/cataloger ./
+COPY --chown=nonroot:nonroot --from=builder /app/apps/chat/dist/litomi-chat ./
 
-ENTRYPOINT [ "./cataloger" ]
+ENTRYPOINT [ "./litomi-chat" ]
