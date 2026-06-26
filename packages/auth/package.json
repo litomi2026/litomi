@@ -27,14 +27,14 @@
     "@litomi/domain": "workspace:*",
     "@litomi/env": "workspace:*",
     "@litomi/http": "workspace:*",
+    "@litomi/kv": "workspace:*",
     "@litomi/std": "workspace:*",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "jose": "^6.2.2",
     "next": "16.2.6",
     "otplib": "^13.4.0",
-    "qrcode": "^1.5.4",
-    "server-only": "^0.0.1"
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@simplewebauthn/server": "^13.3.0",

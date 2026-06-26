@@ -1,4 +1,4 @@
-import { getdelRedisJson, setRedisJson } from '@litomi/db/redis'
+import { getdelRedisJson, setRedisJson } from '@litomi/kv'
 
 import { BBATON_ATTEMPT_TTL_SECONDS } from './utils'
 

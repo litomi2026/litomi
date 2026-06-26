@@ -1,4 +1,4 @@
-import { type CatalogMangaRecord, selectCatalogMangaRecordsByIds } from '@litomi/db/query/catalog-manga'
+import { type CatalogMangaRecord, selectCatalogMangaRecordsByIds } from '@litomi/db/catalog/query'
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { MANGA_RECOMMENDATION_ITEM_LIMIT } from '@litomi/domain/manga-recommendation/policy'
 import {

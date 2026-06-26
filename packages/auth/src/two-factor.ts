@@ -1,4 +1,3 @@
-import 'server-only'
 import crypto from 'node:crypto'
 import { env } from '@litomi/env/server.common'
 import { verify } from 'otplib'

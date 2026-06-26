@@ -1,4 +1,3 @@
-import 'server-only'
 import type { Locale } from '@litomi/domain/locale'
 
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'

@@ -1,5 +1,3 @@
-import 'server-only'
-
 import { db } from '@litomi/db/app'
 import { pushSettingsTable, webPushTable } from '@litomi/db/app/notification'
 import { env as commonEnv } from '@litomi/env/server.common'

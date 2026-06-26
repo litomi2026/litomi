@@ -1,12 +1,11 @@
 import './instrumentation'
 
-import { closeRedis, pingRedis } from '@litomi/db/redis'
-
+import { closeRedis, pingRedis } from '@litomi/kv'
+import { registerShutdownHandler, registerShutdownSignals } from '@litomi/std'
 import { shutdownAnalyticsClient } from './api/v1/analytics/realtime'
 import app from './app'
 import { shutdownBackendOtel } from './otel'
 import { markProbeDraining, markProbeStartupComplete } from './probe/state'
-import { registerShutdownHandler, registerShutdownSignals } from './shutdown'
 
 const server = Bun.serve({
   fetch: app.fetch,

@@ -1,7 +1,7 @@
 import { patchV1MeSettingsBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
+import { readUserSettings } from '@litomi/db/app/query/user-settings'
 import { userSettingsTable } from '@litomi/db/app/user'
-import { readUserSettings } from '@litomi/db/query/user-settings'
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { Hono } from 'hono'
 

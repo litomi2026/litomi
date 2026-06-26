@@ -1,4 +1,3 @@
-import 'server-only'
 import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { and, asc, desc, eq, gt, lt, or, type SQL } from 'drizzle-orm'
 import type { AnyPgColumn } from 'drizzle-orm/pg-core'
@@ -36,7 +35,6 @@ export function getLibraryItemCursorCondition(
     case LibraryItemSort.MANGA_ID_DESC:
       return lt(columns.mangaId, cursor.mangaId)
     case LibraryItemSort.CREATED_DESC:
-    default:
       return or(
         lt(columns.createdAt, cursorTime),
         and(eq(columns.createdAt, cursorTime), lt(columns.mangaId, cursor.mangaId)),
@@ -53,7 +51,6 @@ export function getLibraryItemOrderByClauses(sort: LibraryItemSort, columns: Lib
     case LibraryItemSort.MANGA_ID_DESC:
       return [desc(columns.mangaId)]
     case LibraryItemSort.CREATED_DESC:
-    default:
       return [desc(columns.createdAt), desc(columns.mangaId)]
   }
 }

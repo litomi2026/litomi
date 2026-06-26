@@ -1,4 +1,3 @@
-import 'server-only'
 import type { Locale } from '@litomi/domain/locale'
 
 import categoryJSON from './category.json'

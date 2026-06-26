@@ -1,5 +1,3 @@
-import 'server-only'
-
 import characterSponsorsJSON from './character.json'
 import type { Sponsor, SponsorMap } from './common'
 

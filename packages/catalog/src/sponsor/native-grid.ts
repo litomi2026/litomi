@@ -1,4 +1,3 @@
-import 'server-only'
 import type { NativeGridSponsor, NativeGridSponsorPlacement } from '@litomi/domain/sponsor/native-grid'
 
 import { getElementBySecureFisherYates } from '@litomi/std'

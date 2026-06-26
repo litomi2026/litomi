@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "bun run dev:local",
-    "dev:local": "bun run --conditions=react-server --env-file=.env.local --watch src/server.ts",
-    "dev:prod": "bun run --conditions=react-server --env-file=.env.prod.dev --watch src/server.ts",
-    "build": "bun build --compile --conditions=react-server --minify --sourcemap src/server.ts --target=bun --outfile dist/litomi-api",
+    "dev:local": "bun run --env-file=.env.local --watch src/server.ts",
+    "dev:prod": "bun run --env-file=.env.prod.dev --watch src/server.ts",
+    "build": "bun build --compile --minify --sourcemap src/server.ts --target=bun --outfile dist/litomi-api",
     "start": "bun run start:prod",
-    "start:local": "bun --conditions=react-server --env-file=.env.local src/server.ts",
-    "start:prod": "bun --conditions=react-server --env-file=.env.prod.runtime src/server.ts",
+    "start:local": "bun --env-file=.env.local src/server.ts",
+    "start:prod": "bun --env-file=.env.prod.runtime src/server.ts",
     "type": "tsc --noEmit",
     "docker:build": "docker build -f Dockerfile -t litomi-api-local ../..",
     "docker:run": "docker run --rm -p 3002:3002 --env-file .env.prod.runtime litomi-api-local"
@@ -25,7 +25,9 @@
     "@litomi/db": "workspace:*",
     "@litomi/domain": "workspace:*",
     "@litomi/env": "workspace:*",
+    "@litomi/events": "workspace:*",
     "@litomi/http": "workspace:*",
+    "@litomi/kv": "workspace:*",
     "@litomi/notifications": "workspace:*",
     "@litomi/std": "workspace:*",
     "@opentelemetry/api": "^1.9.0",
@@ -38,13 +40,14 @@
     "hono": "^4.12.12",
     "jose": "^6.2.2",
     "ms": "^2.1.3",
-    "next": "16.2.6",
+    "ua-parser-js": "^2.0.10",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bun": "^1.3.12",
     "@types/ms": "^2.1.0",
     "@types/node": "^25.6.0",
+    "@types/ua-parser-js": "^0.7.39",
     "typescript": "^5.9.3"
   }
 }

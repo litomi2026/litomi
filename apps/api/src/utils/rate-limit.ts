@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { redis } from '@litomi/db/redis'
+import { redis } from '@litomi/kv'
 import { sec } from '@litomi/std'
 
 const RATE_LIMIT_CHECK_SCRIPT = `

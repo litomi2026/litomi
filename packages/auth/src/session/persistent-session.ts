@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import {
   type AuthCookieConfig,
   getAccessTokenCookieConfig,
@@ -6,8 +7,6 @@ import {
   getAuthHintCookieConfig,
   getRefreshSessionCookieConfig,
 } from '@litomi/auth/cookie'
-import 'server-only'
-import crypto from 'node:crypto'
 import {
   addSeconds,
   generateSessionToken,

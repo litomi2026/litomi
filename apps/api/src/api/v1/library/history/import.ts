@@ -3,7 +3,7 @@ import type { POSTV1LibraryHistoryImportBody, POSTV1LibraryHistoryImportResponse
 import { postV1LibraryHistoryImportBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
-import { readUserSettings } from '@litomi/db/query/user-settings'
+import { readUserSettings } from '@litomi/db/app/query/user-settings'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 

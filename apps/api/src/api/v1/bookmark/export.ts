@@ -1,6 +1,6 @@
 import type { GETV1BookmarkExportResponse } from '@litomi/contracts'
 
-import { selectBookmark } from '@litomi/db/query/bookmark'
+import { selectBookmark } from '@litomi/db/app/query/bookmark'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

@@ -1,4 +1,4 @@
-import type { PostComment } from '@litomi/db/query/post-comment'
+import type { PostComment } from '@litomi/db/app/query/post-comment'
 
 import { formatDistanceToNow } from '@litomi/std'
 import dayjs from 'dayjs'

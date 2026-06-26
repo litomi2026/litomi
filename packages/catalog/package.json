@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@litomi/domain": "workspace:*",
-    "@litomi/std": "workspace:*",
-    "server-only": "^0.0.1"
+    "@litomi/std": "workspace:*"
   }
 }

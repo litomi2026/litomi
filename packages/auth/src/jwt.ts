@@ -1,5 +1,3 @@
-import 'server-only'
-
 import { env } from '@litomi/env/server.common'
 import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'

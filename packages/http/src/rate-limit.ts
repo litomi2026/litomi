@@ -1,5 +1,4 @@
 import ms from 'ms'
-import 'server-only'
 
 export interface RateLimitConfig {
   identifier?: string
