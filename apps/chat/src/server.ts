@@ -1,6 +1,7 @@
 import { closePubSub, connectPubSub } from '@litomi/kv/pubsub'
 import { registerShutdownHandler, registerShutdownSignals } from '@litomi/std'
 import { authenticateRequest } from './auth'
+import { canAccessStream } from './entitlements'
 import { encode, parseClientMessage, type SocketData } from './protocol'
 import { RoomRegistry } from './rooms'
 
@@ -53,6 +54,8 @@ const server = Bun.serve<SocketData>({
   },
   websocket: {
     maxPayloadLength: 128 * 1024, // 128KB
+    backpressureLimit: 1024 * 1024, // 1MB
+    closeOnBackpressureLimit: true,
     open: (ws) => {
       ws.subscribe('global:system')
       ws.send(encode({ t: 'ready', userId: ws.data.userId }))
@@ -81,6 +84,11 @@ const server = Bun.serve<SocketData>({
       try {
         switch (message.t) {
           case 'sub':
+            if (!(await canAccessStream(ws.data.userId, message.room))) {
+              ws.send(encode({ t: 'err', code: 'forbidden', message: 'Not allowed to join this room' }))
+              break
+            }
+
             await rooms.subscribe(ws, message.room)
             ws.send(encode({ t: 'sub:ok', room: message.room }))
             break
