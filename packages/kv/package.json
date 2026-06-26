@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./channels": "./src/channels.ts",
+    "./pubsub": "./src/pubsub.ts"
   },
   "scripts": {
     "type": "tsc --noEmit"

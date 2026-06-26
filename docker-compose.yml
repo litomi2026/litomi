@@ -33,8 +33,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Chat message store. Prod = CockroachDB (Postgres-wire); the schema is
-  # vanilla Postgres, so a local Postgres gives full parity for dev.
+  # Chat message store. The schema is vanilla Postgres, so a local Postgres gives full parity for dev.
   chat-postgres:
     image: postgres:18-alpine
     container_name: litomi-chat-postgres
@@ -59,8 +58,15 @@ services:
     volumes:
       - redis-data:/data
 
-  # Kafka-compatible broker for local development (the Chat event pipeline).
-  # Prod uses Aiven Kafka; this is plaintext on localhost:9092, no auth.
+  # Dedicated Pub/Sub Valkey — separate instance, so broadcast fan-out can't contend with latency-sensitive cache traffic.
+  redis-pubsub:
+    image: valkey/valkey:9
+    ports:
+      - '6381:6379'
+    volumes:
+      - redis-pubsub-data:/data
+
+  # Kafka-compatible broker for local development (the Chat event pipeline), no auth.
   redpanda:
     image: redpandadata/redpanda:v24.2.7
     container_name: litomi-redpanda
@@ -86,4 +92,5 @@ volumes:
   catalog-db-data:
   chat-db-data:
   redis-data:
+  redis-pubsub-data:
   redpanda-data:
