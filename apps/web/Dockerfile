@@ -12,16 +12,6 @@ RUN bunx turbo prune @litomi/web --docker
 FROM oven/bun:1.3-alpine AS builder
 WORKDIR /app
 
-ENV NODE_ENV=production
-
-COPY --from=pruner /app/out/json/ .
-RUN bun install --frozen-lockfile --no-save --silent
-
-COPY --from=pruner /app/out/full/ .
-COPY turbo.json tsconfig.json tsconfig.base.json ./
-COPY types ./types
-COPY tools ./tools
-
 ARG CI
 ARG COMMIT_SHA
 ARG NEXT_PUBLIC_APP_ENV
@@ -52,7 +42,16 @@ ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=$NEXT_PUBLIC_VAPID_PUBLIC_KEY
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 ENV TURBO_TELEMETRY_DISABLED=1
+
+COPY --from=pruner /app/out/json/ .
+RUN bun install --frozen-lockfile --no-save --silent
+
+COPY --from=pruner /app/out/full/ .
+COPY turbo.json tsconfig.json tsconfig.base.json ./
+COPY types ./types
+COPY tools ./tools
 
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=false \
     --mount=type=secret,id=APP_POSTGRES_URL,env=APP_POSTGRES_URL,required=false \
