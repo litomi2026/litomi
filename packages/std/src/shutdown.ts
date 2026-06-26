@@ -1,5 +1,5 @@
-type ShutdownHandler = () => Promise<void> | void
-type ShutdownSignal = 'SIGINT' | 'SIGTERM'
+export type ShutdownHandler = () => Promise<void> | void
+export type ShutdownSignal = 'SIGINT' | 'SIGTERM'
 
 const shutdownHandlers = new Map<string, ShutdownHandler>()
 const shutdownTimeoutMs = 10_000
