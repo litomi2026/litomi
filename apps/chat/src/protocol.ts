@@ -11,6 +11,7 @@ export interface SocketData {
 }
 
 export const ROOM_ID_MAX_LENGTH = 64
+export const MAX_ROOMS_PER_SOCKET = 100
 
 export const clientMessageSchema = z.discriminatedUnion('t', [
   z.object({
