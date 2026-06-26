@@ -2,6 +2,9 @@
 FROM oven/bun:1.3-slim AS pruner
 WORKDIR /app
 
+ENV DO_NOT_TRACK=1
+ENV TURBO_TELEMETRY_DISABLED=1
+
 COPY . .
 RUN bunx turbo prune @litomi/api --docker
 
@@ -9,10 +12,12 @@ RUN bunx turbo prune @litomi/api --docker
 FROM oven/bun:1.3-slim AS builder
 WORKDIR /app
 
+ENV DO_NOT_TRACK=1
 ENV NODE_ENV=production
+ENV TURBO_TELEMETRY_DISABLED=1
 
 COPY --from=pruner /app/out/json/ .
-RUN bun install --frozen-lockfile --production --silent --ignore-scripts
+RUN bun install --frozen-lockfile --silent --ignore-scripts
 
 COPY --from=pruner /app/out/full/ .
 COPY turbo.json tsconfig.json tsconfig.base.json ./
