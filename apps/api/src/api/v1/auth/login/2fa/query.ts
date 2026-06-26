@@ -3,7 +3,7 @@ import type { db } from '@litomi/db/app'
 import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { MAX_TRUSTED_DEVICES_PER_USER } from '@litomi/domain/auth/policy'
 import { and, desc, eq, gte, isNull, lt, notInArray, or } from 'drizzle-orm'
-import { userAgent as getUserAgent } from 'next/server'
+import { UAParser } from 'ua-parser-js'
 
 import { TRUSTED_BROWSER_EXPIRY_DAYS } from './util'
 
@@ -96,10 +96,10 @@ function generateBrowserId(userId: number, fingerprint: string) {
 }
 
 function parseBrowserName(ua: string) {
-  const agent = getUserAgent({ headers: new Headers({ 'user-agent': ua }) })
-  const browser = agent.browser.name || 'Unknown Browser'
-  const os = agent.os.name || 'Unknown OS'
-  const device = agent.device.type || 'Desktop'
+  const parser = new UAParser(ua)
+  const browser = parser.getBrowser().name || 'Unknown Browser'
+  const os = parser.getOS().name || 'Unknown OS'
+  const device = parser.getDevice().type || 'Desktop'
 
   return `${browser} on ${os} (${device})`
 }
