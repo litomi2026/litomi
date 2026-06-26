@@ -25,7 +25,7 @@ COPY types ./types
 RUN bunx turbo run build --filter=@litomi/api
 
 # Stage 3: Runtime
-FROM gcr.io/distroless/base-nossl-debian12:nonroot
+FROM gcr.io/distroless/base-nossl-debian13:nonroot
 WORKDIR /app
 
 ARG COMMIT_SHA
