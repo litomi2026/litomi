@@ -93,6 +93,7 @@
       "dependencies": {
         "@litomi/auth": "workspace:*",
         "@litomi/contracts": "workspace:*",
+        "@litomi/db": "workspace:*",
         "@litomi/env": "workspace:*",
         "@litomi/http": "workspace:*",
         "@litomi/kv": "workspace:*",
