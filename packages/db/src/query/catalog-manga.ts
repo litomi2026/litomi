@@ -1,4 +1,3 @@
-import 'server-only'
 import { eq, inArray } from 'drizzle-orm'
 
 import { catalogDB } from '../catalog/db'

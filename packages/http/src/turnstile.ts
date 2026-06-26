@@ -1,5 +1,4 @@
 import { env } from '@litomi/env/server.common'
-import 'server-only'
 import { sleep } from '@litomi/std'
 import ms from 'ms'
 

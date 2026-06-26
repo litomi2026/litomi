@@ -1,4 +1,3 @@
-import 'server-only'
 import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { and, asc, desc, eq, gt, lt, or, type SQL } from 'drizzle-orm'
 import type { AnyPgColumn } from 'drizzle-orm/pg-core'

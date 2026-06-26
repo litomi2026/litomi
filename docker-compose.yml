@@ -33,6 +33,25 @@ services:
       timeout: 5s
       retries: 5
 
+  # Chat message store. Prod = CockroachDB (Postgres-wire); the schema is
+  # vanilla Postgres, so a local Postgres gives full parity for dev.
+  chat-postgres:
+    image: postgres:18-alpine
+    container_name: litomi-chat-postgres
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: chat_db
+    ports:
+      - '5436:5432'
+    volumes:
+      - chat-db-data:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U test_user -d chat_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   redis:
     image: valkey/valkey:9
     ports:
@@ -40,7 +59,31 @@ services:
     volumes:
       - redis-data:/data
 
+  # Kafka-compatible broker for local development (the Chat event pipeline).
+  # Prod uses Aiven Kafka; this is plaintext on localhost:9092, no auth.
+  redpanda:
+    image: redpandadata/redpanda:v24.2.7
+    container_name: litomi-redpanda
+    command:
+      - redpanda
+      - start
+      - --mode=dev-container
+      - --smp=1
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr=PLAINTEXT://localhost:9092
+    ports:
+      - '9092:9092'
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    healthcheck:
+      test: ['CMD-SHELL', 'rpk cluster health | grep -q "Healthy:.*true"']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 volumes:
   app-db-data:
   catalog-db-data:
+  chat-db-data:
   redis-data:
+  redpanda-data:

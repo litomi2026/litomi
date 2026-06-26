@@ -27,7 +27,6 @@ console.log('[backend-test-db] applying Drizzle schema')
 await runCommand(['bunx', 'drizzle-kit', 'push', '--config=drizzle.app.config.ts', '--force'], {
   cwd: dbPackageDirectory,
   env: {
-    NODE_OPTIONS: '--conditions=react-server',
     APP_POSTGRES_URL_DIRECT: testDatabaseUrl,
   },
 })

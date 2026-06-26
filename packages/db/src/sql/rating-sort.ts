@@ -1,4 +1,3 @@
-import 'server-only'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { encodeRatingCursor } from '@litomi/db/cursor'
 import { RatingSort } from '@litomi/domain/library/sort'

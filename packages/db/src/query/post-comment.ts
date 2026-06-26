@@ -1,5 +1,4 @@
 import { db } from '@litomi/db/app'
-import 'server-only'
 import { postTable } from '@litomi/db/app/post'
 import { userTable } from '@litomi/db/app/user'
 import { desc, eq } from 'drizzle-orm'
