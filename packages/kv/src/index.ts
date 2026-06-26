@@ -20,7 +20,7 @@ redis.on('error', (error) => {
   console.error('redis:', error)
 })
 
-let redisConnectPromise: Promise<void> | null = null
+let connectPromise: Promise<void> | null = null
 
 export async function closeRedis(): Promise<void> {
   if (redis.status === 'end') {
@@ -44,19 +44,11 @@ export async function connectRedis(): Promise<void> {
     throw new Error('Redis connection is closed')
   }
 
-  if (redis.status !== 'wait') {
-    await waitForRedisReady()
-    return
-  }
+  connectPromise ??= performConnection().finally(() => {
+    connectPromise = null
+  })
 
-  redisConnectPromise ??= redis
-    .connect()
-    .then(() => undefined)
-    .finally(() => {
-      redisConnectPromise = null
-    })
-
-  await redisConnectPromise
+  await connectPromise
 }
 
 export async function getdelRedisJson<T>(key: string): Promise<T | null> {
@@ -93,11 +85,16 @@ function parseRedisJson<T>(value: string | null): T | null {
   return JSON.parse(value) as T
 }
 
-async function waitForRedisReady(): Promise<void> {
-  if (redis.status === 'ready') {
+async function performConnection(): Promise<void> {
+  if (redis.status === 'wait') {
+    await redis.connect()
     return
   }
 
+  await waitForRedisReady()
+}
+
+async function waitForRedisReady(): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => {
       cleanup()
