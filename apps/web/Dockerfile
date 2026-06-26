@@ -2,6 +2,9 @@
 FROM oven/bun:1.3-alpine AS pruner
 WORKDIR /app
 
+ENV DO_NOT_TRACK=1
+ENV TURBO_TELEMETRY_DISABLED=1
+
 COPY . .
 RUN bunx turbo prune @litomi/web --docker
 
