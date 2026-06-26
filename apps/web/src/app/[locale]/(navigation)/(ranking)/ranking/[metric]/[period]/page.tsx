@@ -6,10 +6,10 @@ import { getTranslations } from 'next-intl/server'
 import z from 'zod'
 
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
+import ScrollButtons from '@/components/ScrollButtons'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
-
 import { MetricParam, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
 import RankingList from './RankingList'
@@ -80,6 +80,7 @@ export default async function Page({ params }: PageProps<'/[locale]/ranking/[met
     <>
       <JuicyAdsBanner className="mt-2 mx-2" />
       <RankingList className={MANGA_GRID_COLUMN.card} nativeGridSponsor={nativeGridSponsor} rankings={rankings} />
+      <ScrollButtons />
     </>
   )
 }
