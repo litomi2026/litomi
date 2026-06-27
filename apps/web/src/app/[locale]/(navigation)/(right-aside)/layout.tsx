@@ -1,6 +1,7 @@
 import type { PublicLocale } from '@litomi/domain/locale'
 import { ErrorBoundary } from '@suspensive/react'
 import { ChevronRight, Flame } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 
@@ -53,8 +54,15 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
   )
 }
 
+// TODO: cache component 도입하기
+const getCachedDailyRanking = unstable_cache(
+  (locale: PublicLocale) => getRankingData(MetricParam.VIEW, PeriodParam.DAY, locale),
+  ['right-aside-daily-ranking'],
+  { revalidate: 43200 },
+)
+
 async function DailyRanking({ locale }: { locale: PublicLocale }) {
-  const rankings = await getRankingData(MetricParam.VIEW, PeriodParam.DAY, locale)
+  const rankings = await getCachedDailyRanking(locale)
 
   if (!rankings) {
     return null
