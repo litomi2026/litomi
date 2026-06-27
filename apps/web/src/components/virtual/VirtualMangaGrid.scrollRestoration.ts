@@ -70,11 +70,6 @@ export function useVirtualScrollRestoration({ anchors, list, restorationKey }: O
     [storageKey],
   )
 
-  const saveScrollSnapshot = useCallback(
-    (targetElement: HTMLElement) => saveSnapshot(getVirtualScrollSnapshot(targetElement, getItemKeyByRowIndex)),
-    [getItemKeyByRowIndex, saveSnapshot],
-  )
-
   useEffect(() => {
     pendingSnapshotRef.current = null
   }, [storageKey])
@@ -176,8 +171,6 @@ export function useVirtualScrollRestoration({ anchors, list, restorationKey }: O
       snapshot,
     })
   }, [list, rowIndexByItemKey, scrollElement, storageKey])
-
-  return { saveScrollSnapshot }
 }
 
 function getFirstVisibleVirtualRow(element: HTMLElement) {
