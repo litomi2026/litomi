@@ -904,7 +904,7 @@ class FireworkEngine {
         }
 
         const source = this.soundManager.sources[type]
-        if (!source || !source.buffers.length) {
+        if (!source?.buffers.length) {
           return
         }
 
@@ -1684,8 +1684,8 @@ class Shell {
         angle,
         speedMult * speed,
         this.starLife + Math.random() * this.starLife * this.starLifeVariation,
-        this.horsetail ? (this.comet && this.comet.speedX) || 0 : 0,
-        this.horsetail ? (this.comet && this.comet.speedY) || -standardInitialSpeed : -standardInitialSpeed,
+        this.horsetail ? this.comet?.speedX || 0 : 0,
+        this.horsetail ? this.comet?.speedY || -standardInitialSpeed : -standardInitialSpeed,
       )
 
       if (this.secondColor) {

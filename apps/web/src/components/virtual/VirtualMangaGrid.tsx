@@ -180,12 +180,6 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     return anchors
   }, [rows])
 
-  const { saveScrollSnapshot } = useVirtualScrollRestoration({
-    anchors: scrollAnchors,
-    list,
-    restorationKey: createScrollRestorationKey(scrollRestorationKey),
-  })
-
   const handleVisibleRowsRendered = useCallback(
     async ({ stopIndex }: { stopIndex: number }) => {
       if (!fetchNextPage || !hasNextPage || isFetchingNextPage || fetchInFlightRef.current) {
@@ -218,21 +212,25 @@ function VirtualMangaGridBody<TItem extends VirtualMangaGridItem>({
     [onScrollElementChange],
   )
 
-  // NOTE: scrollToTopOptions 객체가 바뀔 때 전달된 옵션으로 상단으로 스크롤해요
+  useVirtualScrollRestoration({
+    anchors: scrollAnchors,
+    list,
+    restorationKey: createScrollRestorationKey(scrollRestorationKey),
+  })
+
   useEffect(() => {
     const element = list?.element
 
-    if (!element) {
+    if (!element || !scrollToOptions) {
       return
     }
 
     element.scrollTo(scrollToOptions)
-    saveScrollSnapshot(element)
-  }, [list, saveScrollSnapshot, scrollToOptions])
+  }, [list, scrollToOptions])
 
   return (
     <List
-      className="[scrollbar-gutter:stable]"
+      className="scrollbar-gutter-stable"
       defaultHeight={DEFAULT_HEIGHT}
       listRef={setListRef}
       onRowsRendered={handleVisibleRowsRendered}

@@ -114,6 +114,11 @@ export const SENTRY_BROWSER_IGNORE_ERRORS: (string | RegExp)[] = [
   // Injected scripts (in-app browsers, userscripts) try eval()/new Function(); our CSP allows only `wasm-unsafe-eval`,
   // so the EvalError is the CSP correctly blocking foreign code, not an app bug.
   /Evaluating a string as JavaScript|Refused to evaluate a string as JavaScript/i,
+  // Grafana Faro web-sdk's session manager reads web storage (`window[type]`) to persist RUM sessions. On
+  // storage-restricted iOS Safari (Lockdown/private mode, embedded webviews) `window[type]` is null and Faro
+  // SDK throws from a throttled setTimeout callback.
+  // e.g. "null is not an object (evaluating 'window[t].getItem')".
+  /(?:null|undefined) is not an object \(evaluating 'window\[\w+\]\.(?:get|set|remove)Item'\)/,
 ]
 
 /** Foreign script-URL patterns: browser extensions and page-injected third parties whose originating script is not ours. */
@@ -190,8 +195,17 @@ function isInjectedScriptError(event: ErrorEvent): boolean {
   })
 }
 
+function isAdFillRejectionNoise(event: ErrorEvent): boolean {
+  const serialized = event.extra?.__serialized__ as { message?: unknown } | undefined
+  return typeof serialized?.message === 'string' && /\bad data is empty\b/i.test(serialized.message)
+}
+
 export function isBrowserNoiseEvent(event: ErrorEvent): boolean {
   const frames = getEventFrames(event)
+
+  if (isAdFillRejectionNoise(event)) {
+    return true
+  }
 
   if (frames.some((frame) => isForeignScriptURL(getFrameURL(frame)))) {
     return true

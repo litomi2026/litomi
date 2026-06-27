@@ -1,3 +1,5 @@
+/// <reference types="@webgpu/types" />
+
 export async function isWebGPUSupported(): Promise<boolean> {
   try {
     if (typeof navigator === 'undefined' || !navigator.gpu) {

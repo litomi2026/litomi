@@ -86,7 +86,7 @@ class HentaiPawClient {
         scriptContent.match(/"slides":\s*(\[[\s\S]*?\])\s*(?:,\s*"[^"]+"|})/) ||
         scriptContent.match(/"slides":\[(.*?)\],"startingPage":/s)
 
-      if (!slidesMatch || !slidesMatch[1]) {
+      if (!slidesMatch?.[1]) {
         return null
       }
 

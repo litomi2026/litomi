@@ -127,16 +127,10 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
 }
 
 function renderHighlightedText(text: string, searchTerm: string) {
-  if (!searchTerm) {
-    return text
-  }
-
-  const lowerText = text.toLowerCase()
-  const lowerSearchTerm = searchTerm.toLowerCase()
-  const index = lowerText.indexOf(lowerSearchTerm)
+  const index = searchTerm ? text.toLowerCase().indexOf(searchTerm.toLowerCase()) : -1
 
   if (index === -1) {
-    return text
+    return <span>{text}</span>
   }
 
   const beforeMatch = text.slice(0, index)
@@ -145,9 +139,9 @@ function renderHighlightedText(text: string, searchTerm: string) {
 
   return (
     <>
-      {beforeMatch}
+      <span>{beforeMatch}</span>
       <span className="text-brand">{matchedText}</span>
-      {afterMatch}
+      <span>{afterMatch}</span>
     </>
   )
 }
