@@ -14,13 +14,11 @@ export interface RunConsumerOptions {
   eachMessage: (payload: EachMessagePayload) => Promise<void>
 }
 
-export async function runConsumer(consumer: Consumer, options: RunConsumerOptions): Promise<void> {
+export async function runConsumer(
+  consumer: Consumer,
+  { topics, fromBeginning = false, eachMessage }: RunConsumerOptions,
+) {
   await consumer.connect()
-
-  await consumer.subscribe({
-    topics: options.topics,
-    fromBeginning: options.fromBeginning ?? false,
-  })
-
-  await consumer.run({ eachMessage: options.eachMessage })
+  await consumer.subscribe({ topics, fromBeginning })
+  await consumer.run({ eachMessage })
 }
