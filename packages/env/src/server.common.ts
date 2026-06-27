@@ -42,6 +42,7 @@ export const env = createEnv({
     PUBSUB_REDIS_URL: z.url().default('redis://localhost:6381'),
     KAFKA_BROKERS: z.string().default('localhost:9092'),
     KAFKA_CLIENT_ID: z.string().default('litomi'),
+    KAFKA_GROUP_ID: z.string().default('litomi-worker'),
     KAFKA_USERNAME: z.string().optional(),
     KAFKA_PASSWORD: z.string().optional(),
     KAFKA_SSL_CA: z.string().optional(),
