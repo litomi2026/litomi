@@ -119,6 +119,11 @@ export const SENTRY_BROWSER_IGNORE_ERRORS: (string | RegExp)[] = [
   // SDK throws from a throttled setTimeout callback.
   // e.g. "null is not an object (evaluating 'window[t].getItem')".
   /(?:null|undefined) is not an object \(evaluating 'window\[\w+\]\.(?:get|set|remove)Item'\)/,
+  // Android in-app WebViews (KakaoTalk, Naver, WeChat, etc.) expose a native JS↔Java bridge via
+  // addJavascriptInterface and fire lifecycle hooks into the page. The Android framework throws
+  // "Java bridge method invocation error" when that reflective call fails — it is emitted by the host app's
+  // WebView and has no code path in a pure web app, so matching the message can never hide a first-party bug.
+  /Java bridge method invocation/i,
 ]
 
 /** Foreign script-URL patterns: browser extensions and page-injected third parties whose originating script is not ours. */
