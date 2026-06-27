@@ -104,6 +104,16 @@ export const SENTRY_BROWSER_IGNORE_ERRORS: (string | RegExp)[] = [
   'Extension context invalidated',
   // ResizeObserver 콜백이 또 리사이즈를 유발해 한 프레임 안에 알림을 다 못 보낼 때 브라우저가 띄우는 경고
   /ResizeObserver loop (?:limit exceeded|completed with undelivered notifications)/i,
+  // iOS in-app/WebKit browsers (Brave, Firefox) inject a `window.__firefox__` global helper. Errors touching it
+  // surface as a single `app:///<route>:1:NN (global code)` frame, so they look first-party and slip the URL filters.
+  // e.g. "undefined is not an object (evaluating 'window.__firefox__.reader')", "Can't find variable: __firefox__".
+  /__firefox__/,
+  // Crypto-wallet extensions inject `window.ethereum` / web3 providers and collide with each other.
+  // e.g. "undefined is not an object (evaluating 'window.ethereum.selectedAddress = undefined')".
+  /\bwindow\.ethereum\b|\bethereum\.selectedAddress\b|\bweb3\b/i,
+  // Injected scripts (in-app browsers, userscripts) try eval()/new Function(); our CSP allows only `wasm-unsafe-eval`,
+  // so the EvalError is the CSP correctly blocking foreign code, not an app bug.
+  /Evaluating a string as JavaScript|Refused to evaluate a string as JavaScript/i,
 ]
 
 /** Foreign script-URL patterns: browser extensions and page-injected third parties whose originating script is not ours. */
