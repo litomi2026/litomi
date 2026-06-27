@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["apps/web/src/*"],
-      "@test/*": ["test/*"]
+      "@/*": ["../../apps/web/src/*"],
+      "@test/*": ["../../test/*"]
     }
   }
 }
