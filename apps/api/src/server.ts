@@ -1,5 +1,6 @@
 import './instrumentation'
 
+import { disconnectProducer } from '@litomi/events'
 import { closeRedis, pingRedis } from '@litomi/kv'
 import { registerShutdownHandler, registerShutdownSignals } from '@litomi/std'
 import { shutdownAnalyticsClient } from './api/v1/analytics/realtime'
@@ -18,6 +19,7 @@ registerShutdownHandler('http-server', () => server.stop())
 registerShutdownHandler('redis', () => closeRedis())
 registerShutdownHandler('google-analytics', () => shutdownAnalyticsClient())
 registerShutdownHandler('opentelemetry', () => shutdownBackendOtel())
+registerShutdownHandler('kafka-producer', () => disconnectProducer())
 registerShutdownSignals()
 
 await pingRedis()
