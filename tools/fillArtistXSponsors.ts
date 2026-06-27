@@ -693,7 +693,7 @@ function parseArgs(argv: string[]): Args {
 
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i]
-    if (!token || !token.startsWith('--')) continue
+    if (!token?.startsWith('--')) continue
 
     const [flag, inlineValue] = token.split('=', 2)
     const key = flag.replace(/^--/, '')

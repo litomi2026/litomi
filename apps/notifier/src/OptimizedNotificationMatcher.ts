@@ -202,7 +202,7 @@ export class OptimizedNotificationMatcher {
         // Check included conditions
         for (const [conditionValue, conditionType] of criteriaData.includedConditions) {
           const mangaTypeValues = mangaValues.get(conditionType)
-          if (mangaTypeValues && mangaTypeValues.has(conditionValue)) {
+          if (mangaTypeValues?.has(conditionValue)) {
             includedMatchCount++
           }
         }
@@ -210,7 +210,7 @@ export class OptimizedNotificationMatcher {
         // Check excluded conditions - if any match, skip this criteria
         for (const [conditionValue, conditionType] of criteriaData.excludedConditions) {
           const mangaTypeValues = mangaValues.get(conditionType)
-          if (mangaTypeValues && mangaTypeValues.has(conditionValue)) {
+          if (mangaTypeValues?.has(conditionValue)) {
             hasExcludedMatch = true
             break
           }

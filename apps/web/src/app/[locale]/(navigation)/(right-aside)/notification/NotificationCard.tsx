@@ -199,13 +199,13 @@ export default function NotificationCard({
         <div className="flex justify-between gap-2 mt-1">
           <div>
             <p className="font-medium text-sm text-zinc-400 line-clamp-2">{notification.body}</p>
-            {parsedData && parsedData.artists && parsedData.artists.length > 0 && (
+            {parsedData?.artists && parsedData.artists.length > 0 && (
               <p className="text-xs text-zinc-400 line-clamp-1 mt-1">
                 {t('card.artists', { artists: parsedData.artists.join(', ') })}
               </p>
             )}
           </div>
-          {parsedData && parsedData.mangaId && parsedData.previewImageURL && (
+          {parsedData?.mangaId && parsedData.previewImageURL && (
             <img
               alt={parsedData.mangaId.toString()}
               className="rounded-md object-cover aspect-5/7"

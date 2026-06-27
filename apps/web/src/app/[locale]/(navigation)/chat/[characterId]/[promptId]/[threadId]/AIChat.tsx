@@ -142,7 +142,6 @@ function getChatInputDisabledReason(kind: InstallStateKind): string | null {
     case 'not-installed':
       return '모델을 설치하면 대화를 시작할 수 있어요'
     case 'unknown':
-    default:
       return '모델 상태를 확인하고 있어요…'
   }
 }

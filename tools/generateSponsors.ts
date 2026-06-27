@@ -256,7 +256,7 @@ function parseArgs(argv: string[]): Args {
 
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i]
-    if (!token || !token.startsWith('--')) {
+    if (!token?.startsWith('--')) {
       continue
     }
 

@@ -93,7 +93,7 @@ function UserProfileIdentity({
     <div className="flex items-end">
       <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden bg-zinc-900 flex items-center justify-center">
         {imageURL ? (
-          <img alt="Profile Image" className="object-cover bg-zinc-900 aspect-square w-32" src={imageURL} />
+          <img alt={`@${name} profile`} className="object-cover bg-zinc-900 aspect-square w-32" src={imageURL} />
         ) : (
           <User className="size-2/3 shrink-0 text-zinc-700" />
         )}

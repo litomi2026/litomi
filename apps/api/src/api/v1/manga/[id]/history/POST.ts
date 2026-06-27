@@ -57,7 +57,7 @@ route.post(
             inserted: sql<boolean>`xmax = 0`,
           })
 
-        if (!saved || !saved.inserted) {
+        if (!saved?.inserted) {
           return
         }
 

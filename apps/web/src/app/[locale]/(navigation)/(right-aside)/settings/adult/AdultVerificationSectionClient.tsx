@@ -144,7 +144,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
       }
 
       const payload = safeParseJSON<{ type?: unknown; at?: unknown }>(event.newValue)
-      if (!payload || payload.type !== 'complete') {
+      if (payload?.type !== 'complete') {
         return
       }
 
