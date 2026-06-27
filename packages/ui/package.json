@@ -34,12 +34,12 @@
     "type": "tsc -p tsconfig.dev.json --noEmit"
   },
   "dependencies": {
-    "lucide-react": "^0.562.0",
-    "tailwind-merge": "^3.5.0"
+    "lucide-react": "^1.21.0",
+    "tailwind-merge": "^3.6.0"
   },
   "peerDependencies": {
-    "react": ">=19",
-    "react-dom": ">=19",
+    "react": ">=19.2.7",
+    "react-dom": ">=19.2.7",
     "tailwindcss": ">=4"
   },
   "peerDependenciesMeta": {
@@ -48,7 +48,7 @@
     }
   },
   "devDependencies": {
-    "@types/react": "19.2.14",
+    "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3"
   }
 }

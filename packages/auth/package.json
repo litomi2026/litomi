@@ -31,13 +31,13 @@
     "@litomi/std": "workspace:*",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
-    "jose": "^6.2.2",
+    "jose": "^6.2.3",
     "next": "16.2.9",
-    "otplib": "^13.4.0",
+    "otplib": "^13.4.1",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@simplewebauthn/server": "^13.3.0",
+    "@simplewebauthn/server": "^13.3.2",
     "@types/qrcode": "^1.5.6"
   }
 }

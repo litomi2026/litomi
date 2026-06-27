@@ -19,12 +19,12 @@
   },
   "dependencies": {
     "@capacitor/app": "8.1.0",
-    "@capacitor/core": "8.3.0"
+    "@capacitor/core": "8.4.1"
   },
   "devDependencies": {
-    "@capacitor/android": "8.3.0",
-    "@capacitor/cli": "8.3.0",
-    "@capacitor/ios": "8.3.0",
-    "sharp": "^0.34.5"
+    "@capacitor/android": "8.4.1",
+    "@capacitor/cli": "8.4.1",
+    "@capacitor/ios": "8.4.1",
+    "sharp": "^0.35.2"
   }
 }

@@ -10,6 +10,6 @@
     "type": "tsc --noEmit"
   },
   "devDependencies": {
-    "@sentry/core": "10.47.0"
+    "@sentry/core": "10.62.0"
   }
 }

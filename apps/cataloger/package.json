@@ -17,7 +17,7 @@
     "@litomi/crawler": "workspace:*",
     "@litomi/db": "workspace:*",
     "@litomi/domain": "workspace:*",
-    "dayjs": "^1.11.20",
+    "dayjs": "^1.11.21",
     "drizzle-orm": "^0.45.2"
   },
   "devDependencies": {
