@@ -54,7 +54,7 @@
     "prettier": "^3.8.5",
     "sql-formatter": "^15.8.2",
     "turbo": "^2.10.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "zod": "^4.4.3"
   }
 }

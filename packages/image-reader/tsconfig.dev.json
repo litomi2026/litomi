@@ -1,9 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "#reader/*": ["src/*"],
+      "#reader/*": ["./src/*"],
       "#ui/*": ["../ui/src/*"],
       "@litomi/ui": ["../ui/src/index.ts"]
     },
