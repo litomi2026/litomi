@@ -1,9 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "#ui/*": ["src/*"]
+      "#ui/*": ["./src/*"]
     },
     "types": ["json", "node", "react", "react-dom"]
   },

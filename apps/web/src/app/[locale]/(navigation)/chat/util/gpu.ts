@@ -9,7 +9,7 @@ export async function isWebGPUSupported(): Promise<boolean> {
       return false
     }
 
-    const requiredFeatures: string[] = []
+    const requiredFeatures: GPUFeatureName[] = []
     if (adapter.features.has('shader-f16')) {
       requiredFeatures.push('shader-f16')
     }
