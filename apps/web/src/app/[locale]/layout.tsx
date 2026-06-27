@@ -113,10 +113,11 @@ export default async function RootLayout({ children, params }: Props) {
         <CapacitorNativeEffects />
         <OverlayHost>
           <Toaster
-            className="pointer-events-auto"
+            className="pointer-events-auto notranslate"
             mobileOffset={{ top: 'calc(1rem + var(--safe-area-top))' }}
             position="top-center"
             theme="system"
+            toastOptions={{ className: 'notranslate' }}
           />
         </OverlayHost>
         <NextIntlClientProvider>
