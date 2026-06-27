@@ -1,5 +1,5 @@
 import type { PublicLocale } from '@litomi/domain/locale'
-
+import { ErrorBoundary } from '@suspensive/react'
 import { ChevronRight, Flame } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
@@ -41,9 +41,11 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
               </Link>
             </div>
           </div>
-          <Suspense fallback={<DailyRankingFallback />}>
-            <DailyRanking locale={locale} />
-          </Suspense>
+          <ErrorBoundary fallback={null}>
+            <Suspense fallback={<DailyRankingFallback />}>
+              <DailyRanking locale={locale} />
+            </Suspense>
+          </ErrorBoundary>
         </div>
       </aside>
       <MobileNavigationSpacer />

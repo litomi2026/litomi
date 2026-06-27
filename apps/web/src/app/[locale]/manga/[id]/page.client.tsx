@@ -108,7 +108,7 @@ function prepareManga(data: Manga | undefined, initialManga: Manga | null | unde
 }
 
 function prepareMetadata(manga: Manga | null | undefined, t: Translator) {
-  if (!manga || !manga.images || manga.images.length === 0) {
+  if (!manga?.images || manga.images.length === 0) {
     return {}
   }
 
