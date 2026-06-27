@@ -199,7 +199,7 @@ export function ClearAllFilters() {
           <span>{t('removing')}</span>
         </>
       ) : (
-        t('clearAll')
+        <span>{t('clearAll')}</span>
       )}
     </button>
   )
