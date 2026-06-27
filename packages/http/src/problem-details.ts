@@ -115,7 +115,11 @@ export function createProblemDetailsResponse(
   return new Response(JSON.stringify(problem), { status: options.status, headers })
 }
 
-export function getInvalidParams(problem: ProblemDetails): InvalidParam[] {
+export function getInvalidParams(problem: ProblemDetails | null | undefined): InvalidParam[] {
+  if (problem == null || typeof problem !== 'object') {
+    return []
+  }
+
   const { invalidParams } = problem as ValidationProblemDetails
 
   if (!Array.isArray(invalidParams)) {

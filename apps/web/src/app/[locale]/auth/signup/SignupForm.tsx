@@ -333,8 +333,8 @@ export default function SignupForm() {
           disabled={isPending || !hasTurnstileToken}
           type="submit"
         >
-          {isPending ? <Loader2 className="size-5 animate-spin" /> : null}
-          {isPending ? t('submitting') : t('submit')}
+          {isPending && <Loader2 className="size-5 animate-spin" />}
+          <span>{isPending ? t('submitting') : t('submit')}</span>
         </button>
 
         <TurnstileWidget
@@ -348,7 +348,7 @@ export default function SignupForm() {
 
       <div className="grid gap-2 text-center text-xs text-zinc-400">
         <p className="flex flex-wrap gap-1 justify-center">
-          {t('termsPrefix')}
+          <span>{t('termsPrefix')}</span>
           <Link
             className="underline underline-offset-4 hover:text-zinc-200 transition"
             href="/doc/terms"
@@ -356,7 +356,7 @@ export default function SignupForm() {
           >
             {t('termsAction')}
           </Link>
-          {t('termsMiddle')}
+          <span>{t('termsMiddle')}</span>
           <Link
             className="underline underline-offset-4 hover:text-zinc-200 transition"
             href="/doc/privacy"
@@ -364,10 +364,10 @@ export default function SignupForm() {
           >
             {t('privacyAction')}
           </Link>
-          {t('termsSuffix')}
+          <span>{t('termsSuffix')}</span>
         </p>
         <p className="flex flex-wrap gap-1 justify-center">
-          {t('loginPrompt')}
+          <span>{t('loginPrompt')}</span>
           <Link
             className="underline underline-offset-4 hover:text-zinc-200 transition"
             href={loginHref}

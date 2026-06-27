@@ -366,8 +366,8 @@ export default function LoginForm() {
               disabled={isPending || !hasTurnstileToken}
               type="submit"
             >
-              {isPending ? <Loader2 className="size-5 animate-spin" /> : null}
-              {isPending ? t('submitting') : t('submit')}
+              {isPending && <Loader2 className="size-5 animate-spin" />}
+              <span>{isPending ? t('submitting') : t('submit')}</span>
             </button>
 
             <div className="relative">
@@ -399,7 +399,7 @@ export default function LoginForm() {
           </form>
 
           <p className="text-center flex flex-wrap gap-1 justify-center text-xs text-zinc-400">
-            {t('signupPrompt')}
+            <span>{t('signupPrompt')}</span>
             <Link
               className="underline underline-offset-4 hover:text-zinc-200 transition"
               href={signupHref}
