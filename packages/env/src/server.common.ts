@@ -40,6 +40,11 @@ export const env = createEnv({
     JWT_SECRET_TRUSTED_DEVICE: z.string().default('789'),
     REDIS_URL: z.url().default('redis://localhost:6380'),
     PUBSUB_REDIS_URL: z.url().default('redis://localhost:6381'),
+    KAFKA_BROKERS: z.string().default('localhost:9092'),
+    KAFKA_CLIENT_ID: z.string().default('litomi'),
+    KAFKA_USERNAME: z.string().optional(),
+    KAFKA_PASSWORD: z.string().optional(),
+    KAFKA_SSL_CA: z.string().optional(),
 
     TOTP_ENCRYPTION_KEY: z
       .string()
