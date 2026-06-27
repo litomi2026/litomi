@@ -4,7 +4,7 @@ import { appendFileSync, mkdirSync } from 'node:fs'
 import { mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from 'node:fs/promises'
 import { dirname, extname, resolve } from 'node:path'
 import { parse } from 'node-html-parser'
-import sharp from 'sharp'
+import sharp, { type AvifOptions } from 'sharp'
 
 type Args = {
   apiUrl: string
@@ -1198,7 +1198,7 @@ function galleryUrl(target: ResolvedTarget) {
   return `${baseUrl}/g/${target.gid}/${target.token}/`
 }
 
-function getAvifOptions(args: Args): sharp.AvifOptions {
+function getAvifOptions(args: Args): AvifOptions {
   return { effort: args.avifEffort, quality: args.avifQuality }
 }
 

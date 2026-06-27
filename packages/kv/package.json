@@ -13,6 +13,6 @@
   },
   "dependencies": {
     "@litomi/env": "workspace:*",
-    "ioredis": "^5.11.0"
+    "ioredis": "^5.11.1"
   }
 }

@@ -6,7 +6,7 @@ import type { Manga } from '@litomi/domain/manga/model'
 import { Eye, EyeOff } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import { Link } from '@/i18n/navigation'
@@ -37,14 +37,18 @@ type Props = {
 
 export default function MangaCardCensorship({ manga }: Props) {
   const [isBlurDisabled, setIsBlurDisabled] = useState(false)
+  const [isChildrenDay, setIsChildrenDay] = useState(false)
   const t = useTranslations('Common.mangaCard.censorship')
   const { getMatch } = useMangaCensorship()
   const locale = useLocale()
 
   const childrenDay = getChildrenDayForLocale(locale)
-  const isChildrenDay = checkChildrenDay(childrenDay)
   const { censoringReasons, highestCensorshipLevel } = getMatch(manga)
   const shouldCensorChildren = isChildrenDay && manga.tags?.some((tag) => CHILDREN_TAGS.has(tag.value))
+
+  useEffect(() => {
+    setIsChildrenDay(checkChildrenDay(getChildrenDayForLocale(locale)))
+  }, [locale])
 
   if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
     return null

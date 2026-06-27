@@ -2,6 +2,7 @@
 
 import { CandyCane, PartyPopper } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import LogoDiscord from '@/components/icons/LogoDiscord'
@@ -17,8 +18,12 @@ type Props = {
 }
 
 export default function CTAButton({ className = '' }: Props) {
+  const [period, setPeriod] = useState<Period | null>(null)
   const t = useTranslations('Home.cta')
-  const period = getPeriod()
+
+  useEffect(() => {
+    setPeriod(getPeriod())
+  }, [])
 
   if (period === Period.CHRISTMAS) {
     return (
