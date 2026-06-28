@@ -63,10 +63,6 @@ export async function connectPubSub(): Promise<void> {
   await connectPromise
 }
 
-export async function publish(channel: string, message: string): Promise<number> {
-  return await publisherClient.publish(channel, message)
-}
-
 async function performConnection(client: Redis): Promise<void> {
   if (client.status === 'ready') {
     return
