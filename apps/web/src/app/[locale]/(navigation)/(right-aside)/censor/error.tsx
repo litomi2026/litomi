@@ -5,16 +5,21 @@ import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from '@/i18n/navigation'
 import type { ErrorProps } from '@/types/nextjs'
+import { reloadIfStaleDeployment } from '@/utils/stale-deployment'
 
 export default function CensorshipError({ error, reset }: ErrorProps) {
   const t = useTranslations('Censorship')
   const router = useRouter()
 
   useEffect(() => {
+    if (reloadIfStaleDeployment(error)) {
+      return
+    }
+
     if (error.message) {
       toast.error(t('error.toast'))
     }
-  }, [error.message, t])
+  }, [error, t])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
