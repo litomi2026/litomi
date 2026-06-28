@@ -69,3 +69,14 @@ export async function listInboxThreads(creatorId: number, options: ListInboxOpti
     .orderBy(desc(chatThreadTable.lastMessageId))
     .limit(clampPageSize(options.limit))
 }
+
+// 팬이 참여한 1:1 대화(reply) 스레드들(크리에이터당 1개)을 최신순으로 가져옵니다.
+// 각 행은 그 자체로 해당 r-스트림의 요약본이기도 합니다. (r:{C}:{fan}은 크리에이터당 유일하므로 크리에이터별 1행)
+export async function listFanReplyThreads(fanId: number, limit = 200): Promise<ChatThreadRow[]> {
+  return chatDB
+    .select()
+    .from(chatThreadTable)
+    .where(eq(chatThreadTable.fanId, fanId))
+    .orderBy(desc(chatThreadTable.lastMessageId))
+    .limit(limit)
+}

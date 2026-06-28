@@ -54,6 +54,8 @@ export const chatThreadTable = pgTable(
   (table) => [
     // Inbox: range-scan one creator's reply threads ordered by recency (lastMessageId is a ULID).
     index('idx_chat_thread_creator_recent').on(table.creatorId, table.lastMessageId),
+    // Fan chat list: the reply threads of a fan
+    index('idx_chat_thread_fan_recent').on(table.fanId, table.lastMessageId),
   ],
 ).enableRLS()
 
