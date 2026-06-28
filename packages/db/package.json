@@ -30,6 +30,7 @@
     "./chat/query": "./src/chat/query/index.ts",
     "./app/query/bookmark": "./src/app/query/bookmark.ts",
     "./app/query/chat": "./src/app/query/chat.ts",
+    "./app/query/payment": "./src/app/query/payment.ts",
     "./catalog/query": "./src/catalog/query.ts",
     "./app/query/library-item": "./src/app/query/library-item.ts",
     "./app/query/post-comment": "./src/app/query/post-comment.ts",

@@ -29,17 +29,30 @@ export type Env = {
 
 const app = new Hono<Env>()
 const etagMiddleware = etag()
-const csrfSecFetchSite = process.env.NODE_ENV === 'production' ? 'same-origin' : 'same-site'
 
-// NOTE: 공통 미들웨어
+const csrfMiddleware = csrf({
+  origin: isAllowedRequestOrigin,
+  secFetchSite: process.env.NODE_ENV === 'production' ? 'same-origin' : 'same-site',
+})
+
+// 1. 관측성 및 전역 설정
 app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-api' }))
-app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
 app.use(logger())
 app.use(timing())
-app.route('/', probeRoutes)
-app.use(compress())
 app.use(contextStorage())
+
+// 2. 초기 보안 및 네트워크 방어막
+app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
+app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
+
+app.use(
+  '/i/*',
+  secureHeaders({
+    ...getDefaultSecureHeadersOptions(),
+    crossOriginResourcePolicy: 'same-site',
+  }),
+)
 
 app.use(
   '/i/*',
@@ -52,11 +65,11 @@ app.use(
   }),
 )
 
-app.use(csrf({ origin: isAllowedRequestOrigin, secFetchSite: csrfSecFetchSite }))
-app.use('*', auth)
+// 3. 상태 검사
+app.route('/', probeRoutes)
 
-// NOTE: /api 미들웨어
-app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
+// 4. 응답 변환
+app.use(compress())
 
 app.use('/api/*', async (c, next) => {
   if (c.req.method === 'GET' || c.req.method === 'HEAD') {
@@ -66,15 +79,18 @@ app.use('/api/*', async (c, next) => {
   return await next()
 })
 
-// NOTE: /i 미들웨어
-app.use(
-  '/i/*',
-  secureHeaders({
-    ...getDefaultSecureHeadersOptions(),
-    crossOriginResourcePolicy: 'same-site',
-  }),
-)
+// 5. 애플리케이션 보안 계층
+app.use('*', (c, next) => {
+  if (c.req.path === '/api/v1/billing/portone/webhook') {
+    return next()
+  }
 
+  return csrfMiddleware(c, next)
+})
+
+app.use('*', auth)
+
+// 6. 하위 route
 app.route('/api', apiRoutes)
 app.route('/i', imageRoutes)
 

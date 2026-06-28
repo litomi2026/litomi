@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { bigint, boolean, index, pgEnum, pgTable, text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 import { userTable } from './user'
 
@@ -44,7 +44,7 @@ export const chatSubscriptionTable = pgTable(
   },
   (table) => [
     // 사용자가 같은 크리에이터에게 여러 개의 활성 구독을 갖는 것을 방지합니다.
-    uniqueIndex('uq_active_chat_subscription').on(table.creatorId, table.userId).where(eq(table.status, 'active')),
+    uniqueIndex('uq_active_chat_subscription').on(table.creatorId, table.userId).where(sql`${table.status} = 'active'`),
     // Fan-out: enumerate the active subscribers of a creator.
     index('idx_chat_subscription_creator_status').on(table.creatorId, table.status),
     // "My subscriptions" listing.
