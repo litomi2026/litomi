@@ -27,7 +27,7 @@
     "./error": "./src/error.ts",
     "./chat/db": "./src/chat/db.ts",
     "./chat/schema": "./src/chat/schema.ts",
-    "./chat/query": "./src/chat/query.ts",
+    "./chat/query": "./src/chat/query/index.ts",
     "./app/query/bookmark": "./src/app/query/bookmark.ts",
     "./app/query/chat": "./src/app/query/chat.ts",
     "./catalog/query": "./src/catalog/query.ts",
