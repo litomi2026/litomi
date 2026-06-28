@@ -6,7 +6,7 @@ import type { NotificationData } from '@litomi/domain/notification/model'
 import { NotificationType } from '@litomi/domain/notification/model'
 import { MAX_NOTIFICATION_COUNT } from '@litomi/domain/notification/policy'
 import { getViewerLink } from '@litomi/domain/utils/manga'
-import { type WebPushMessage, WebPushService } from '@litomi/notifications'
+import { isWithinQuietHours, type WebPushMessage, WebPushService } from '@litomi/notifications'
 import { and, count, desc, gte, inArray, isNull, sql } from 'drizzle-orm'
 
 import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
@@ -300,7 +300,8 @@ export class MangaNotificationProcessor {
 
     const userSettings = await this.notificationService.getPushSettingsOfUsers(allUserIds)
 
-    const todayStart = new Date()
+    const now = new Date()
+    const todayStart = new Date(now)
     todayStart.setUTCHours(0, 0, 0, 0)
 
     const dailyCounts = await db
@@ -319,7 +320,7 @@ export class MangaNotificationProcessor {
     for (const notification of insertedNotifications) {
       const settings = userSettings.get(notification.userId)!
 
-      if (!this.shouldSendNotificationBasedOnSettings(settings)) {
+      if (isWithinQuietHours(settings, now)) {
         continue
       }
 
@@ -373,27 +374,5 @@ export class MangaNotificationProcessor {
     }
 
     return result
-  }
-
-  private shouldSendNotificationBasedOnSettings(settings: {
-    quietEnabled: boolean
-    quietHours: { start: number; end: number }
-  }): boolean {
-    if (settings.quietEnabled && settings.quietHours) {
-      const { start, end } = settings.quietHours
-      const currentHour = new Date().getUTCHours()
-
-      if (start > end) {
-        if (currentHour >= start || currentHour < end) {
-          return false
-        }
-      } else {
-        if (currentHour >= start && currentHour < end) {
-          return false
-        }
-      }
-    }
-
-    return true
   }
 }
