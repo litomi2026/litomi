@@ -108,17 +108,25 @@ export const SENTRY_BROWSER_IGNORE_ERRORS: (string | RegExp)[] = [
   // surface as a single `app:///<route>:1:NN (global code)` frame, so they look first-party and slip the URL filters.
   // e.g. "undefined is not an object (evaluating 'window.__firefox__.reader')", "Can't find variable: __firefox__".
   /__firefox__/,
-  // Crypto-wallet extensions inject `window.ethereum` / web3 providers and collide with each other.
+  // Crypto-wallet extensions inject `window.ethereum` / `window.web3` providers and collide with each other.
   // e.g. "undefined is not an object (evaluating 'window.ethereum.selectedAddress = undefined')".
-  /\bwindow\.ethereum\b|\bethereum\.selectedAddress\b|\bweb3\b/i,
-  // Injected scripts (in-app browsers, userscripts) try eval()/new Function(); our CSP allows only `wasm-unsafe-eval`,
-  // so the EvalError is the CSP correctly blocking foreign code, not an app bug.
-  /Evaluating a string as JavaScript|Refused to evaluate a string as JavaScript/i,
+  /\bwindow\.ethereum\b|\bethereum\.selectedAddress\b|\bwindow\.web3\b/i,
   // Grafana Faro web-sdk's session manager reads web storage (`window[type]`) to persist RUM sessions. On
   // storage-restricted iOS Safari (Lockdown/private mode, embedded webviews) `window[type]` is null and Faro
   // SDK throws from a throttled setTimeout callback.
   // e.g. "null is not an object (evaluating 'window[t].getItem')".
   /(?:null|undefined) is not an object \(evaluating 'window\[\w+\]\.(?:get|set|remove)Item'\)/,
+  // Android in-app WebViews (KakaoTalk, Naver, WeChat, etc.) expose a native JS↔Java bridge via
+  // addJavascriptInterface and fire lifecycle hooks into the page. The Android framework throws
+  // "Java bridge method invocation error" when that reflective call fails — it is emitted by the host app's
+  // WebView and has no code path in a pure web app, so matching the message can never hide a first-party bug.
+  /Java bridge method invocation/i,
+  // OpenHarmony / Quark and similar CN in-app browsers inject their own smooth-scroll/touch handler that writes an
+  // internal `bodyTouched` flag from a touchstart listener and, on their bug, sets it on an undefined object. We ship
+  // no such polyfill and `bodyTouched` appears nowhere in our source or any dependency (grep-verified), so it is an
+  // intrinsically-foreign token — matching it can never hide a first-party bug.
+  // e.g. "Cannot set properties of undefined (setting 'bodyTouched')".
+  /\bbodyTouched\b/,
 ]
 
 /** Foreign script-URL patterns: browser extensions and page-injected third parties whose originating script is not ours. */
@@ -127,6 +135,9 @@ export const SENTRY_BROWSER_DENY_URLS: RegExp[] = [
   /^(?:chrome|moz|safari)(?:-(?:web-)?extension)?:\/\//i,
   // Third-party script that monkey-patches window.fetch on some users' pages
   /injectScriptAdjust/i,
+  // Google Tag Manager / Analytics throw from inside Google's own gtm.js / analytics.js bundles. Our code is never
+  // served from these hosts, so dropping by script URL (unlike a message filter) cannot hide a first-party error.
+  /googletagmanager\.com|google-analytics\.com/i,
 ]
 
 /** External request hosts whose fetch/network failures are third-party noise */
@@ -136,6 +147,9 @@ export const SENTRY_BROWSER_IGNORED_REQUEST_HOSTS: (string | RegExp)[] = [
 ]
 
 const NETWORK_ERROR_MESSAGE = /Failed to fetch|Load failed|NetworkError when attempting to fetch|fetch failed/i
+
+// CSP blocking eval()/new Function(). Foreign (injected) eval is noise; a first-party dep tripping our CSP is real.
+const CSP_EVAL_BLOCKED_MESSAGE = /Evaluating a string as JavaScript|Refused to evaluate a string as JavaScript/i
 
 // Our application bundle is served under the app:/// scheme at send time
 const FIRST_PARTY_FRAME = /^app:\/\/\//i
@@ -195,6 +209,14 @@ function isInjectedScriptError(event: ErrorEvent): boolean {
   })
 }
 
+/** True when any frame is our own bundle (app:///) and not a foreign script masquerading under that scheme. */
+function hasFirstPartyFrame(frames: StackFrame[]): boolean {
+  return frames.some((frame) => {
+    const url = getFrameURL(frame)
+    return FIRST_PARTY_FRAME.test(url) && !isForeignScriptURL(url)
+  })
+}
+
 function isAdFillRejectionNoise(event: ErrorEvent): boolean {
   const serialized = event.extra?.__serialized__ as { message?: unknown } | undefined
   return typeof serialized?.message === 'string' && /\bad data is empty\b/i.test(serialized.message)
@@ -215,16 +237,15 @@ export function isBrowserNoiseEvent(event: ErrorEvent): boolean {
     return true
   }
 
-  if (NETWORK_ERROR_MESSAGE.test(getEventMessage(event))) {
-    if (isUnhandled(event)) {
-      const hasFirstPartyFrame = frames.some((frame) => {
-        const url = getFrameURL(frame)
-        return FIRST_PARTY_FRAME.test(url) && !isForeignScriptURL(url)
-      })
+  // CSP blocked eval() — drop ONLY when it came from a foreign/injected script (no first-party frame)
+  if (CSP_EVAL_BLOCKED_MESSAGE.test(getEventMessage(event)) && !hasFirstPartyFrame(frames)) {
+    return true
+  }
 
-      if (!hasFirstPartyFrame) {
-        return true
-      }
+  if (NETWORK_ERROR_MESSAGE.test(getEventMessage(event))) {
+    // unhandled network error with no first-party frame = a foreign script's failed fetch, not ours
+    if (isUnhandled(event) && !hasFirstPartyFrame(frames)) {
+      return true
     }
 
     // upstream API/CDN outages, ad-blocked pings

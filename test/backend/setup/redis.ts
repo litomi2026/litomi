@@ -181,7 +181,7 @@ export const redis = {
   },
 }
 
-mock.module('@litomi/db/redis', () => ({
+mock.module('@litomi/kv', () => ({
   closeRedis,
   connectRedis,
   getdelRedisJson,

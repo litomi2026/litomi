@@ -25,6 +25,7 @@ const DEFAULT_HEIGHT = 640
 const IMAGE_ITEM_ASPECT_HEIGHT_RATIO = 7 / 5
 const CARD_ITEM_ASPECT_HEIGHT_RATIO = 4 / 3
 const ESTIMATED_CARD_BODY_HEIGHT_PX = 420
+const RESIZE_MEASURE_DEBOUNCE_MS = 100
 
 type VirtualMangaGridBodyProps<TItem extends VirtualMangaGridItem> = VirtualMangaGridProps<TItem> & {
   size: VirtualMangaGridSize
@@ -64,10 +65,21 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>(pro
 
     measure()
 
-    const observer = new ResizeObserver(measure)
+    // ResizeObserver 콜백을 디바운스해요. 동적 행 높이가 스크롤 중 컨테이너 크기를 미세하게 흔들면
+    // measure→리렌더→react-window 재측정→scroll→setIndices→… 피드백 루프(Maximum update depth)가 생겨요.
+    let debounceId: number | undefined
+
+    const observer = new ResizeObserver(() => {
+      window.clearTimeout(debounceId)
+      debounceId = window.setTimeout(measure, RESIZE_MEASURE_DEBOUNCE_MS)
+    })
+
     observer.observe(measuredElement)
 
-    return () => observer.disconnect()
+    return () => {
+      window.clearTimeout(debounceId)
+      observer.disconnect()
+    }
   }, [view])
 
   return (

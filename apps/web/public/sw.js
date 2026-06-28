@@ -48,32 +48,72 @@ self.addEventListener('activate', async (event) => {
 })
 
 self.addEventListener('push', (event) => {
-  if (event.data) {
-    const { title, body, icon, badge, tag, data } = event.data.json()
+  if (!event.data) {
+    return
+  }
 
-    const options = {
-      body,
-      icon: icon || '/icon.png',
-      badge: badge || '/badge.png',
-      vibrate: [200, 100, 200],
-      tag: tag || 'default',
-      data,
-      actions: [
-        {
-          action: 'view',
-          title: '보기',
-          icon: '/icon-view.png',
-        },
-        {
-          action: 'dismiss',
-          title: '닫기',
-          icon: '/icon-close.png',
-        },
-      ],
+  const { title, body, icon, badge, tag, data } = event.data.json()
+
+  const options = {
+    body,
+    icon: icon || '/icon.png',
+    badge: badge || '/badge.png',
+    vibrate: [200, 100, 200],
+    tag: tag || 'default',
+    data,
+    actions: [
+      {
+        action: 'view',
+        title: '보기',
+        icon: '/icon-view.png',
+      },
+      {
+        action: 'dismiss',
+        title: '닫기',
+        icon: '/icon-close.png',
+      },
+    ],
+  }
+
+  async function showNotificationIfInvisible() {
+    const clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+    const isVisible = clientList.some((client) => client.visibilityState === 'visible' && client.focused)
+
+    if (isVisible) {
+      // 사용자가 이미 앱을 보고 있는 상태라면 시스템 알림을 띄우지 않습니다.
+      return
     }
 
-    event.waitUntil(self.registration.showNotification(title, options))
+    return self.registration.showNotification(title, options)
   }
+
+  event.waitUntil(showNotificationIfInvisible())
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+
+  const notificationData = event.notification.data
+  const targetURL = getSafeTargetURL(notificationData?.url)
+
+  async function openOrFocusWindow() {
+    const clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+
+    for (const client of clientList) {
+      const isAlreadyOpen = isSameOriginClient(client) && 'focus' in client
+
+      if (isAlreadyOpen) {
+        await client.navigate(targetURL)
+        return client.focus()
+      }
+    }
+
+    if (self.clients.openWindow) {
+      return self.clients.openWindow(targetURL)
+    }
+  }
+
+  event.waitUntil(openOrFocusWindow())
 })
 
 function getSafeTargetURL(url) {
@@ -98,27 +138,3 @@ function isSameOriginClient(client) {
     return false
   }
 }
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close()
-
-  const notificationData = event.notification.data
-  const targetURL = getSafeTargetURL(notificationData?.url)
-
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async (clientList) => {
-      for (const client of clientList) {
-        const isAlreadyOpen = isSameOriginClient(client) && 'focus' in client
-
-        if (isAlreadyOpen) {
-          await client.navigate(targetURL)
-          return client.focus()
-        }
-      }
-
-      if (self.clients.openWindow) {
-        return self.clients.openWindow(targetURL)
-      }
-    }),
-  )
-})

@@ -12,19 +12,23 @@ import { getDefaultCensorshipInputValue } from './format'
 
 export default function DefaultCensorshipInfo() {
   const t = useTranslations('Censorship')
-  const { guardLogin, me } = useAdultAccessGuard()
+  const { guardAdultAccess, me } = useAdultAccessGuard()
   const patchMySettingsMutation = usePatchMySettingsMutation()
   const defaultCensorshipEnabled = me?.settings.defaultCensorshipEnabled
   const defaultCensorshipValueGroups = groupDefaultCensorshipValues()
 
-  async function handleToggleDefaultCensorship() {
-    if (!guardLogin()) {
+  function handleToggleDefaultCensorship() {
+    if (!guardAdultAccess()) {
       return
     }
 
     const nextValue = !defaultCensorshipEnabled
-    await patchMySettingsMutation.mutateAsync({ defaultCensorshipEnabled: nextValue })
-    toast.success(nextValue ? t('defaultInfo.enableSuccessToast') : t('defaultInfo.disableSuccessToast'))
+    const variables = { defaultCensorshipEnabled: nextValue }
+
+    patchMySettingsMutation.mutate(variables, {
+      onSuccess: () =>
+        toast.success(nextValue ? t('defaultInfo.enableSuccessToast') : t('defaultInfo.disableSuccessToast')),
+    })
   }
 
   return (

@@ -22,7 +22,7 @@ export default function ContentSettingsForm({ initialSettings }: Props) {
 
   const patchMySettingsMutation = usePatchMySettingsMutation()
 
-  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
@@ -40,10 +40,12 @@ export default function ContentSettingsForm({ initialSettings }: Props) {
       return
     }
 
-    await patchMySettingsMutation.mutateAsync(nextSettings)
-
-    savedSettingsRef.current = nextSettings
-    toast.success('감상 및 광고 설정이 반영됐어요')
+    patchMySettingsMutation.mutate(nextSettings, {
+      onSuccess: () => {
+        savedSettingsRef.current = nextSettings
+        toast.success('감상 및 광고 설정이 반영됐어요')
+      },
+    })
   }
 
   return (

@@ -11,6 +11,7 @@ import CloudProviderStatus from '@/components/CloudProviderStatus'
 import ErrorDiagnosticDetails from '@/components/ErrorDiagnosticDetails'
 import RetryGuidance from '@/components/RetryGuidance'
 import type { ErrorProps } from '@/types/nextjs'
+import { reloadIfStaleDeployment } from '@/utils/stale-deployment'
 
 export default function GlobalError({ error, reset }: ErrorProps) {
   const pathname = usePathname()
@@ -19,6 +20,10 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   const [hasSystemIssues, setHasSystemIssues] = useState(false)
 
   useEffect(() => {
+    if (reloadIfStaleDeployment(error)) {
+      return
+    }
+
     Sentry.captureException(error, {
       tags: {
         appEnvironment: env.NEXT_PUBLIC_APP_ENV,

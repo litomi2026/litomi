@@ -4,6 +4,7 @@ import type { GETV1MeResponse, PATCHV1MeSettingsBody } from '@litomi/contracts'
 
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { BroadcastChannelKey, type UserSettingsBroadcastMessage } from '@/storage'
 import { fetchAPIData } from '@/utils/api-request'
@@ -49,6 +50,8 @@ export default function usePatchMySettingsMutation() {
       if (context?.previousMe !== undefined) {
         queryClient.setQueryData(QueryKeys.me, context.previousMe)
       }
+
+      toast.error('설정을 저장하지 못했어요')
     },
 
     onSuccess: () => {

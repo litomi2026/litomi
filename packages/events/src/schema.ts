@@ -8,7 +8,6 @@ export const chatMessageEventSchema = z.object({
   creatorId: z.number().int().positive(),
   streamId: z.string().min(1),
   senderId: z.number().int().positive(),
-  kind: z.enum(['broadcast', 'reply']),
   contentType: z.string().min(1),
   content: z.unknown(),
   createdAt: z.iso.datetime(),

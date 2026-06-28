@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import useCooldown from '@/hook/useCooldown'
 import { usePathname, useRouter } from '@/i18n/navigation'
+import { reloadIfStaleDeployment } from '@/utils/stale-deployment'
 
 import { SearchHeaderSpacer } from './SearchHeaderSpacer'
 
@@ -25,6 +26,10 @@ export default function ErrorPage({ error, reset }: Props) {
   const searchParams = useSearchParams()
 
   useEffect(() => {
+    if (reloadIfStaleDeployment(error)) {
+      return
+    }
+
     captureException(error, {
       tags: { error_boundary: pathname },
       extra: { searchParams: Object.fromEntries(searchParams) },

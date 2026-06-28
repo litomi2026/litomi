@@ -64,6 +64,14 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
           <a className="hover:underline" href={pornDudeUrl} rel="nofollow sponsored noopener" target="_blank">
             ThePornDude
           </a>
+          <a
+            className="hover:underline"
+            href="https://moemoekyu.com/"
+            rel="nofollow sponsored noopener"
+            target="_blank"
+          >
+            萌女仆导航
+          </a>
         </div>
       </footer>
       <MobileNavigationSpacer />
