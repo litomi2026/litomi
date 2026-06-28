@@ -23,7 +23,7 @@ export default function AutoDeletionForm({ autoDeletionDay }: Props) {
   const savedAutoDeletionDayRef = useRef(autoDeletionDay)
   const patchMySettingsMutation = usePatchMySettingsMutation()
 
-  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
@@ -34,10 +34,14 @@ export default function AutoDeletionForm({ autoDeletionDay }: Props) {
       return
     }
 
-    await patchMySettingsMutation.mutateAsync({ autoDeletionDay: selectedDay })
+    const variables = { autoDeletionDay: selectedDay }
 
-    savedAutoDeletionDayRef.current = selectedDay
-    toast.success('자동 삭제 설정이 반영됐어요')
+    patchMySettingsMutation.mutate(variables, {
+      onSuccess: () => {
+        savedAutoDeletionDayRef.current = selectedDay
+        toast.success('자동 삭제 설정이 반영됐어요')
+      },
+    })
   }
 
   return (

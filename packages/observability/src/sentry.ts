@@ -121,6 +121,12 @@ export const SENTRY_BROWSER_IGNORE_ERRORS: (string | RegExp)[] = [
   // "Java bridge method invocation error" when that reflective call fails — it is emitted by the host app's
   // WebView and has no code path in a pure web app, so matching the message can never hide a first-party bug.
   /Java bridge method invocation/i,
+  // OpenHarmony / Quark and similar CN in-app browsers inject their own smooth-scroll/touch handler that writes an
+  // internal `bodyTouched` flag from a touchstart listener and, on their bug, sets it on an undefined object. We ship
+  // no such polyfill and `bodyTouched` appears nowhere in our source or any dependency (grep-verified), so it is an
+  // intrinsically-foreign token — matching it can never hide a first-party bug.
+  // e.g. "Cannot set properties of undefined (setting 'bodyTouched')".
+  /\bbodyTouched\b/,
 ]
 
 /** Foreign script-URL patterns: browser extensions and page-injected third parties whose originating script is not ours. */

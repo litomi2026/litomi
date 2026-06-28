@@ -36,17 +36,20 @@ export default function SearchLanguageSettings({ initialSearchLanguage, isAuthen
   const isSaveDisabled = selectedLanguage === savedLanguage || patchMySettingsMutation.isPending
   const options = [{ value: SEARCH_LANGUAGE_ALL, label: t('allLanguages') }, ...languageOptions]
 
-  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (isAuthenticated) {
-      await patchMySettingsMutation.mutateAsync({ searchLanguage: selectedLanguage })
-    } else {
-      writeStoredSearchLanguage(selectedLanguage)
+    function handleSaved() {
+      setLanguageState({ savedLanguage: selectedLanguage, selectedLanguage })
+      toast.success(t('savedToast'))
     }
 
-    setLanguageState({ savedLanguage: selectedLanguage, selectedLanguage })
-    toast.success(t('savedToast'))
+    if (isAuthenticated) {
+      patchMySettingsMutation.mutate({ searchLanguage: selectedLanguage }, { onSuccess: handleSaved })
+    } else {
+      writeStoredSearchLanguage(selectedLanguage)
+      handleSaved()
+    }
   }
 
   return (
