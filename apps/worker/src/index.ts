@@ -3,11 +3,15 @@ import { chatMessageEventSchema, createConsumer, runConsumer, TOPIC_CHAT_MESSAGE
 import { closePubSub, connectPubSub } from '@litomi/kv/pubsub'
 import { registerShutdownHandler, registerShutdownSignals } from '@litomi/std'
 import { processChatMessage } from './handler'
+import { markDraining, startHealthServer } from './health'
 
+const healthServer = startHealthServer()
 const consumer = createConsumer(env.KAFKA_GROUP_ID)
 
+registerShutdownHandler('probe', () => markDraining())
 registerShutdownHandler('kafka', () => consumer.disconnect())
 registerShutdownHandler('pubsub', () => closePubSub())
+registerShutdownHandler('health-server', () => healthServer.stop(true))
 registerShutdownSignals()
 
 await connectPubSub()
@@ -39,4 +43,4 @@ await runConsumer(consumer, {
   },
 })
 
-console.info(`litomi worker consuming ${TOPIC_CHAT_MESSAGE}`)
+console.info(`litomi worker consuming ${TOPIC_CHAT_MESSAGE} (health on :${healthServer.port})`)
