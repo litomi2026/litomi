@@ -6,6 +6,7 @@ import adsterraRoutes from './adsterra'
 import analyticsRoutes from './analytics'
 import authRoutes from './auth'
 import bbatonRoutes from './bbaton'
+import billingRoutes from './billing'
 import bookmarkRoutes from './bookmark'
 import censorshipRoutes from './censorship'
 import chatRoutes from './chat'
@@ -27,6 +28,7 @@ v1Routes.route('/adsterra', adsterraRoutes)
 v1Routes.route('/analytics', analyticsRoutes)
 v1Routes.route('/auth', authRoutes)
 v1Routes.route('/bbaton', bbatonRoutes)
+v1Routes.route('/billing', billingRoutes)
 v1Routes.route('/bookmark', bookmarkRoutes)
 v1Routes.route('/censorship', censorshipRoutes)
 v1Routes.route('/chat', chatRoutes)
