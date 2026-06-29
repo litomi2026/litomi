@@ -4,19 +4,19 @@ import { LOCALE_LANGUAGE_TAGS, PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std'
+import type { Context } from 'hono'
 import z from 'zod'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { handleRouteError } from '@/util/proxy-route'
-
-export const runtime = 'edge'
 
 const GETProxyHiyobiNewSchema = z.object({
   locale: z.enum(PUBLIC_LOCALES),
   page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
 })
 
-export async function GET(request: Request) {
+export async function handleHiyobiNewProxy(c: Context): Promise<Response> {
+  const request = c.req.raw
   const url = new URL(request.url)
   const searchParams = Object.fromEntries(url.searchParams)
   const validation = GETProxyHiyobiNewSchema.safeParse(searchParams)
@@ -45,13 +45,9 @@ export async function GET(request: Request) {
     const mangas = await hiyobiClient.fetchMangas({ page, locale, signal: request.signal })
 
     const cacheControlHeader = createCacheControlHeaders({
-      vercel: {
-        public: true,
-        maxAge: sec('4 hours'),
-      },
       cloudflare: {
         public: true,
-        maxAge: sec('10 minutes'),
+        maxAge: sec('4 hours'),
       },
       browser: {
         public: true,

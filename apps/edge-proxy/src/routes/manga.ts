@@ -1,32 +1,29 @@
 import { fetchMangaFromMultiSources } from '@litomi/crawler/manga/multi-source'
-import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
-import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@litomi/domain/manga/policy'
+import { LOCALE_LANGUAGE_TAGS, PUBLIC_LOCALES } from '@litomi/domain/locale'
+import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID, MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@litomi/http/degraded-response'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std'
-
-import type { RouteProps } from '@/types/nextjs'
+import type { Context } from 'hono'
+import { z } from 'zod'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { calculateOptimalCacheDuration, handleRouteError } from '@/util/proxy-route'
 
-import { GETProxyMangaIdSchema } from './schema'
-
-export const runtime = 'edge'
+const GETProxyMangaIdSchema = z.object({
+  id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
+  locale: z.enum(PUBLIC_LOCALES),
+})
 
 const BROWSER_CACHE_MAX_AGE = 3
-const VERCEL_CACHE_RATIO = 0.7
 
-type Params = {
-  id: string
-}
-
-export async function GET(request: Request, { params }: RouteProps<Params>) {
+export async function handleMangaProxy(c: Context): Promise<Response> {
+  const request = c.req.raw
   const url = new URL(request.url)
 
   const validation = GETProxyMangaIdSchema.safeParse({
-    id: (await params).id,
+    id: c.req.param('id'),
     ...Object.fromEntries(url.searchParams),
   })
 
@@ -45,11 +42,6 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const swr = sec('10 minutes')
 
     const forbiddenHeaders = createCacheControlHeaders({
-      vercel: {
-        public: true,
-        maxAge: sec('90 days'),
-        swr,
-      },
       cloudflare: {
         public: true,
         maxAge: sec('90 days'),
@@ -87,11 +79,6 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         const swr = sec('10 minutes')
 
         const headers = createCacheControlHeaders({
-          vercel: {
-            public: true,
-            maxAge: sec('90 days'),
-            swr,
-          },
           cloudflare: {
             public: true,
             maxAge: sec('90 days'),
@@ -113,13 +100,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       }
 
       const headers = createCacheControlHeaders({
-        vercel: {
-          public: true,
-          maxAge: sec('1 hour'),
-        },
         cloudflare: {
           public: true,
-          maxAge: sec('10 minutes'),
+          maxAge: sec('1 hour'),
         },
         browser: {
           public: true,
@@ -137,7 +120,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
     if ('isError' in manga) {
       const errorHeaders = createCacheControlHeaders({
-        vercel: {
+        cloudflare: {
           public: true,
           maxAge: 10,
         },
@@ -160,19 +143,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const firstImageURL = manga.images?.[0]?.original?.url ?? manga.images?.[0]?.thumbnail?.url ?? ''
     const optimalCacheDuration = calculateOptimalCacheDuration([firstImageURL])
     const cacheBudget = Math.max(0, optimalCacheDuration - BROWSER_CACHE_MAX_AGE)
-    const vercelCacheWindow = Math.floor(cacheBudget * VERCEL_CACHE_RATIO)
-    const cloudflareCacheWindow = cacheBudget - vercelCacheWindow
     const swr = Math.min(sec('10 minutes'), Math.floor(cacheBudget * 0.005))
 
     const successHeaders = createCacheControlHeaders({
-      vercel: {
-        public: true,
-        maxAge: vercelCacheWindow - swr,
-        swr,
-      },
       cloudflare: {
         public: true,
-        maxAge: cloudflareCacheWindow - swr,
+        maxAge: cacheBudget - swr,
         swr,
       },
       browser: {
