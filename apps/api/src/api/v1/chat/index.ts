@@ -1,10 +1,10 @@
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
-import creatorsHandleFansFanIdMessagesGetRoute from './creators/[handle]/fans/[fanId]/messages/GET'
-import creatorsHandleFansFanIdMessagesPostRoute from './creators/[handle]/fans/[fanId]/messages/POST'
-import creatorsHandleFansFanIdReadPutRoute from './creators/[handle]/fans/[fanId]/read/PUT'
-import creatorsHandleFansGetRoute from './creators/[handle]/fans/GET'
+import bubbleReadPutRoute from './creators/[handle]/bubbles/[bubbleId]/read/PUT'
+import bubbleRepliesGetRoute from './creators/[handle]/bubbles/[bubbleId]/replies/GET'
+import bubbleRepliesPostRoute from './creators/[handle]/bubbles/[bubbleId]/replies/POST'
+import creatorsHandleGetRoute from './creators/[handle]/GET'
 import creatorsHandleMessagesGetRoute from './creators/[handle]/messages/GET'
 import creatorsHandleMessagesPostRoute from './creators/[handle]/messages/POST'
 import creatorsHandleReadPutRoute from './creators/[handle]/read/PUT'
@@ -13,12 +13,12 @@ import threadsGetRoute from './threads/GET'
 const chatRoutes = new Hono<Env>()
 
 chatRoutes.route('/threads', threadsGetRoute)
+chatRoutes.route('/creators/:handle', creatorsHandleGetRoute)
 chatRoutes.route('/creators/:handle/messages', creatorsHandleMessagesGetRoute)
 chatRoutes.route('/creators/:handle/messages', creatorsHandleMessagesPostRoute)
 chatRoutes.route('/creators/:handle/read', creatorsHandleReadPutRoute)
-chatRoutes.route('/creators/:handle/fans', creatorsHandleFansGetRoute)
-chatRoutes.route('/creators/:handle/fans/:fanId/messages', creatorsHandleFansFanIdMessagesGetRoute)
-chatRoutes.route('/creators/:handle/fans/:fanId/messages', creatorsHandleFansFanIdMessagesPostRoute)
-chatRoutes.route('/creators/:handle/fans/:fanId/read', creatorsHandleFansFanIdReadPutRoute)
+chatRoutes.route('/creators/:handle/bubbles/:bubbleId/replies', bubbleRepliesGetRoute)
+chatRoutes.route('/creators/:handle/bubbles/:bubbleId/replies', bubbleRepliesPostRoute)
+chatRoutes.route('/creators/:handle/bubbles/:bubbleId/read', bubbleReadPutRoute)
 
 export default chatRoutes

@@ -7,9 +7,9 @@ import {
 import {
   type ChatMessageRow,
   getKindFromStreamId,
-  type ParsedStreamId,
   parseStreamId,
   putChatMessage,
+  toCreatorInboundChannel,
   upsertChatThread,
 } from '@litomi/db/chat/query'
 import type { ChatMessageEvent } from '@litomi/events'
@@ -41,27 +41,30 @@ export async function processChatMessage(event: ChatMessageEvent): Promise<void>
   // 1. Persist — idempotent on (streamId, messageId), SDK rate-limits to <=50/s.
   await putChatMessage(row)
 
-  // 2. Update the conversation summary that powers the chat list & inbox —
-  //    idempotent and order-safe (only advances to a newer messageId).
-  await upsertChatThread({
-    streamId: event.streamId,
-    creatorId: event.creatorId,
-    fanId: parsed.kind === 'reply' ? parsed.fanId : null,
-    lastMessageId: event.messageId,
-    lastSenderId: event.senderId,
-    lastContentType: event.contentType,
-    lastPreview: previewBody(event),
-    lastCreatedAt: row.createdAt,
-  })
+  // 2. Only the broadcast feed is summarized (it drives the fan chat list). Reply rooms
+  //    are not: the creator's per-bubble unread is counted live, and fans never list them.
+  if (parsed.kind === 'broadcast') {
+    await upsertChatThread({
+      streamId: event.streamId,
+      lastMessageId: event.messageId,
+      lastSenderId: event.senderId,
+      lastContentType: event.contentType,
+      lastPreview: previewBody(event),
+      lastCreatedAt: row.createdAt,
+    })
+  }
 
-  // 3. Realtime relay to online subscribers via the gateway's Valkey channel.
-  await publisherClient.publish(roomChannel(event.streamId), JSON.stringify(toClientMessage(row)))
+  // 3. Realtime relay. A broadcast goes to its own room (fans + owner subscribe). A reply
+  //    fans IN to the creator's owner-only inbound channel — NOT its rb: stream, which
+  //    nobody subscribes to; the bubbleId rides along in the payload's streamId.
+  const relayChannel = parsed.kind === 'broadcast' ? event.streamId : toCreatorInboundChannel(parsed.creatorId)
+  await publisherClient.publish(roomChannel(relayChannel), JSON.stringify(toClientMessage(row)))
 
   try {
     if (parsed.kind === 'broadcast') {
       await fanOutBroadcastPush(event)
     } else {
-      await pushReplyNotification(event, parsed)
+      await pushReplyToCreator(event)
     }
   } catch (error) {
     console.error('worker: chat web push failed', { messageId: event.messageId, error })
@@ -90,7 +93,7 @@ async function fanOutBroadcastPush(event: ChatMessageEvent): Promise<void> {
   const payload = {
     title: creator.emoji ? `${creator.emoji} ${creator.displayName}` : creator.displayName,
     body: previewBody(event),
-    data: { url: `/chat/${creator.handle}` },
+    data: { url: `/sobok/${creator.handle}` },
     tag: `chat:${event.creatorId}`,
   }
 
@@ -115,42 +118,25 @@ async function fanOutBroadcastPush(event: ChatMessageEvent): Promise<void> {
   }
 }
 
-// A 1:1 reply notifies the OTHER party: the creator when a fan writes in, and the
-// fan when the creator writes back. The stream's fanId comes from the streamId.
-async function pushReplyNotification(
-  event: ChatMessageEvent,
-  parsed: Extract<ParsedStreamId, { kind: 'reply' }>,
-): Promise<void> {
+// A fan's reply notifies the creator only (there is no creator → fan 1:1 reply).
+async function pushReplyToCreator(event: ChatMessageEvent): Promise<void> {
   const creator = await getChatCreatorBrief(event.creatorId)
   if (!creator) {
     return
   }
 
-  // Creator → fan: deep-link the fan to the creator's chat (merged timeline).
+  // A creator never writes into a reply room, but guard against self-notifying anyway.
   if (event.senderId === creator.userId) {
-    if (parsed.fanId === event.senderId) {
-      return
-    }
-
-    const payload = {
-      title: creator.emoji ? `${creator.emoji} ${creator.displayName}` : creator.displayName,
-      body: previewBody(event),
-      data: { url: `/chat/${creator.handle}` },
-      tag: `chat:${event.creatorId}`,
-    }
-
-    await webPush.sendWebPushesToUsers(await buildDeliverableMessages([parsed.fanId], payload))
     return
   }
 
-  // Fan → creator: deep-link the creator to this fan's reply thread.
   const sender = await getChatSenderBrief(event.senderId)
 
   const payload = {
     title: sender?.nickname ?? '팬',
     body: previewBody(event),
-    data: { url: `/chat/${creator.handle}/fans/${event.senderId}` },
-    tag: `chat-reply:${event.creatorId}:${event.senderId}`,
+    data: { url: `/sobok/studio/${creator.handle}` },
+    tag: `chat-reply:${event.creatorId}`,
     icon: sender?.imageURL ?? undefined,
   }
 

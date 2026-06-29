@@ -1,11 +1,21 @@
-import { chatHandleParamSchema, type GETV1ChatMessagesResponse, getV1ChatMessagesQuerySchema } from '@litomi/contracts'
+import {
+  type ChatReplyDTO,
+  type ChatTimelineBubble,
+  chatHandleParamSchema,
+  type GETV1ChatMessagesResponse,
+  getV1ChatMessagesQuerySchema,
+} from '@litomi/contracts'
 import { getChatCreatorByHandle, hasActiveChatSubscription, listPaidIntervals } from '@litomi/db/app/query/chat'
 import {
-  listTimelineMessages,
+  type ChatMessageRow,
+  countUnreadByStreams,
+  getReadCursors,
+  listBroadcastBubbles,
+  listOwnRepliesForBubbles,
   messageIdAtOrAfter,
-  type TimelineStream,
-  toBroadcastStreamId,
-  toReplyStreamId,
+  type TimelineWindow,
+  toBubbleReplyStreamId,
+  type UnreadFilter,
 } from '@litomi/db/chat/query'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -17,7 +27,7 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { mapMessageRow } from '../../../lib'
+import { mapBubble, mapReply } from '../../../lib'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -28,12 +38,11 @@ const middlewares = factory.createHandlers(
   zProblemValidator('query', getV1ChatMessagesQuerySchema),
 )
 
-// A fan reads a creator as one merged timeline: the creator's broadcast plus their
-// own 1:1 reply thread. Access policy:
-//   - owner            → their broadcast feed
-//   - entitled fan     → broadcast (full archive) + own 1:1
-//   - lapsed fan       → own 1:1 (perpetual) + broadcasts sent during their paid windows
-//   - never-subscribed → 403
+// The timeline is the creator's broadcast feed (bubbles). Per bubble:
+//   - fan view   → the fan's own replies + whether the creator has read them
+//   - owner view → the bubble's unread reply count
+// Access: owner / entitled fan → full broadcast; lapsed fan → broadcast sent during
+// the windows they paid for; never-subscribed → 403.
 route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle } = c.req.valid('param')
@@ -44,42 +53,115 @@ route.get('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 404 })
   }
 
-  let streams: TimelineStream[]
-  if (creator.userId === userId) {
-    streams = [{ streamId: toBroadcastStreamId(creator.id) }]
-  } else if (await hasActiveChatSubscription(userId, creator.id)) {
-    streams = [{ streamId: toBroadcastStreamId(creator.id) }, { streamId: toReplyStreamId(creator.id, userId) }]
-  } else {
-    // Lapsed/never-subscribed: the 1:1 thread is perpetual, but the broadcast is
-    // scoped to the windows the fan actually paid for. No paid window ever ⇒ no access.
+  const isOwner = creator.userId === userId
+  let windows: TimelineWindow[] | undefined
+
+  if (!isOwner && !(await hasActiveChatSubscription(userId, creator.id))) {
     const intervals = await listPaidIntervals(userId, creator.id)
 
     if (intervals.length === 0) {
       return problemResponse(c, { status: 403 })
     }
 
-    streams = [
-      {
-        streamId: toBroadcastStreamId(creator.id),
-        windows: intervals.map((interval) => ({
-          fromId: messageIdAtOrAfter(interval.startedAt),
-          toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
-        })),
-      },
-      { streamId: toReplyStreamId(creator.id, userId) },
-    ]
+    windows = intervals.map((interval) => ({
+      fromId: messageIdAtOrAfter(interval.startedAt),
+      toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
+    }))
   }
 
-  const rows = await listTimelineMessages(streams, { before, after, limit })
+  const bubbles = await listBroadcastBubbles(creator.id, { windows, before, after, limit })
+  const bubbleIds = bubbles.map((bubble) => bubble.messageId)
 
-  // A full page implies more may exist; continue with the last id in the page
-  // direction (before for scroll-up, after for forward sync).
-  const nextCursor = rows.length === limit ? rows[rows.length - 1]?.messageId : null
+  const result = {
+    bubbles: isOwner
+      ? await buildOwnerBubbles(creator.id, userId, bubbles, bubbleIds)
+      : await buildFanBubbles(creator.id, creator.userId, userId, bubbles, bubbleIds),
+    nextCursor: bubbles.length === limit ? (bubbles.at(-1)?.messageId ?? null) : null,
+  }
 
-  return c.json<GETV1ChatMessagesResponse>(
-    { messages: rows.map(mapMessageRow), nextCursor },
-    { headers: { 'Cache-Control': privateCacheControl } },
-  )
+  return c.json<GETV1ChatMessagesResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
 })
+
+// Owner view: each bubble plus how many unread replies it has (one batched GROUP BY).
+async function buildOwnerBubbles(
+  creatorId: number,
+  ownerUserId: number,
+  bubbles: ChatMessageRow[],
+  bubbleIds: string[],
+): Promise<ChatTimelineBubble[]> {
+  if (bubbleIds.length === 0) {
+    return []
+  }
+
+  const cursors = await getReadCursors(
+    ownerUserId,
+    bubbleIds.map((bubbleId) => toBubbleReplyStreamId(creatorId, bubbleId)),
+  )
+
+  const filters: UnreadFilter[] = bubbleIds.map((bubbleId) => {
+    const streamId = toBubbleReplyStreamId(creatorId, bubbleId)
+    return { streamId, sinceMessageId: cursors.get(streamId), excludeSenderId: ownerUserId }
+  })
+  const unread = await countUnreadByStreams(filters)
+
+  return bubbles.map((bubble) => ({
+    bubble: mapBubble(bubble),
+    unreadReplyCount: unread.get(toBubbleReplyStreamId(creatorId, bubble.messageId)) ?? 0,
+  }))
+}
+
+// Fan view: each bubble plus the fan's own replies and whether the creator has read them.
+async function buildFanBubbles(
+  creatorId: number,
+  creatorUserId: number,
+  fanId: number,
+  bubbles: ChatMessageRow[],
+  bubbleIds: string[],
+): Promise<ChatTimelineBubble[]> {
+  if (bubbleIds.length === 0) {
+    return []
+  }
+
+  const replyRows = await listOwnRepliesForBubbles(creatorId, fanId, bubbleIds)
+
+  // Group the fan's replies by bubbleId (ascending messageId within a bubble).
+  const repliesByBubble = new Map<string, ChatReplyDTO[]>()
+  for (const row of replyRows) {
+    const reply = mapReply(row)
+    const list = repliesByBubble.get(reply.bubbleId)
+    if (list) {
+      list.push(reply)
+    } else {
+      repliesByBubble.set(reply.bubbleId, [reply])
+    }
+  }
+
+  // Read the creator's reply-room cursor only for bubbles the fan actually replied to,
+  // to tell whether their latest reply has been read (A · room-level read receipt).
+  const repliedBubbleIds = [...repliesByBubble.keys()]
+  const artistCursors = repliedBubbleIds.length
+    ? await getReadCursors(
+        creatorUserId,
+        repliedBubbleIds.map((bubbleId) => toBubbleReplyStreamId(creatorId, bubbleId)),
+      )
+    : new Map<string, string>()
+
+  return bubbles.map((bubble) => {
+    const myReplies = repliesByBubble.get(bubble.messageId)
+
+    if (!myReplies || myReplies.length === 0) {
+      return { bubble: mapBubble(bubble) }
+    }
+
+    const lastOwnReplyId = myReplies[myReplies.length - 1].messageId
+    const artistCursor = artistCursors.get(toBubbleReplyStreamId(creatorId, bubble.messageId))
+
+    return {
+      bubble: mapBubble(bubble),
+      myReplies,
+      artistReadMyReplies: artistCursor !== undefined && artistCursor >= lastOwnReplyId,
+    }
+  })
+}
 
 export default route

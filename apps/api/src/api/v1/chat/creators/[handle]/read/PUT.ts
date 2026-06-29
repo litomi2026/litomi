@@ -19,7 +19,7 @@ const middlewares = factory.createHandlers(
   zProblemValidator('json', putV1ChatReadBodySchema),
 )
 
-// Advance the fan's read watermark for this creator (covers both broadcast and 1:1).
+// Advance the fan's broadcast read watermark for this creator (stored under b:{C}).
 route.put('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle } = c.req.valid('param')
@@ -32,8 +32,8 @@ route.put('/', ...middlewares, async (c) => {
 
   // The creator authors their own broadcast, so there's nothing to mark read there.
   if (creator.userId !== userId) {
-    // Anyone who ever paid can read this timeline (entitled, or lapsed with windows /
-    // perpetual 1:1), so anyone with a paid window may advance their read cursor.
+    // Anyone who ever paid can read this timeline (entitled, or lapsed with paid-window
+    // broadcasts), so anyone with a paid window may advance their read cursor.
     if ((await listPaidIntervals(userId, creator.id)).length === 0) {
       return problemResponse(c, { status: 403 })
     }
