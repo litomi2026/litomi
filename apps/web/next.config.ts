@@ -14,7 +14,6 @@ const repoRoot = join(configDir, '../..')
 const commitSHA = process.env.COMMIT_SHA
 const sentryDeployEnv = process.env.NEXT_PUBLIC_APP_ENV
 const imageProxyOrigin = nextBuildEnv.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN
-const localApiOrigin = nextBuildEnv.API_ORIGIN.replace(/\/$/, '')
 
 const cspHeader = `
   default-src 'self';
@@ -106,17 +105,16 @@ const nextConfig: NextConfig = {
       ],
     },
   ],
-  rewrites: async () =>
-    isProduction
-      ? []
-      : {
-          beforeFiles: [
-            {
-              source: '/api/:path*',
-              destination: `${localApiOrigin}/api/:path*`,
-            },
-          ],
+  ...(!isProduction && {
+    rewrites: async () => ({
+      beforeFiles: [
+        {
+          source: '/api/:path*',
+          destination: `http://localhost:3002/api/:path*`,
         },
+      ],
+    }),
+  }),
   poweredByHeader: false,
   reactCompiler: true,
   outputFileTracingRoot: repoRoot,

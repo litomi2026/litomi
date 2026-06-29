@@ -1,11 +1,19 @@
-import { and, asc, desc, eq, gt, inArray, lt } from 'drizzle-orm'
-import { ulid } from 'ulid'
+import { and, asc, desc, eq, gt, gte, inArray, lt, or } from 'drizzle-orm'
+import { encodeTime, ulid } from 'ulid'
 
 import { chatDB } from '../db'
 import { chatMessageTable } from '../schema'
 import { clampPageSize } from './common'
+import { toBroadcastStreamId, toMessageReplyStreamId } from './stream'
 
 export type ChatMessageRow = typeof chatMessageTable.$inferSelect
+
+const ULID_TIME_LENGTH = 10
+const ULID_RANDOM_MIN = '0'.repeat(16)
+
+export function messageIdAtOrAfter(date: Date): string {
+  return encodeTime(date.getTime(), ULID_TIME_LENGTH) + ULID_RANDOM_MIN
+}
 
 export interface AppendMessageInput {
   streamId: string
@@ -35,30 +43,53 @@ export async function appendChatMessage(input: AppendMessageInput): Promise<Chat
   return row
 }
 
-export interface ListMessagesOptions {
-  limit?: number
-  // 과거 시간으로 페이지 넘김: 이 id보다 정확히 더 오래된 메시지만 가져옵니다.
-  before?: string
-  // 미래 시간으로 페이지 넘김: 이 id보다 정확히 더 최신인 메시지만 가져옵니다.
-  after?: string
+// 단일 메시지 존재 확인 — 답장 대상 말풍선(message)이 실재하는지 검증할 때 씁니다(PK 조회).
+export async function chatMessageExists(streamId: string, messageId: string): Promise<boolean> {
+  const [row] = await chatDB
+    .select({ messageId: chatMessageTable.messageId })
+    .from(chatMessageTable)
+    .where(and(eq(chatMessageTable.streamId, streamId), eq(chatMessageTable.messageId, messageId)))
+
+  return row !== undefined
 }
 
-// 하나 이상의 스트림을 시간 순으로 정렬된 단일 타임라인으로 읽어옵니다.
-// 팬이 특정 크리에이터의 대화방을 볼 때 브로드캐스트 스트림과 본인의 1:1 대화(reply) 스트림을 병합해서 보게 되는데,
-// messageId가 ULID 형식이므로 단순히 messageId만으로 정렬해도 여러 스트림 간의 전역적인 시간 순서가 자연스럽게 보장됩니다.
-export async function listStreamMessages(
-  streamIds: string[],
+// messageId(ULID) 기준의 반열린 구간 [fromId, toIdExclusive). 시간 창을 messageId 범위로 변환할 때 씁니다.
+export interface TimelineWindow {
+  fromId: string
+  toIdExclusive: string
+}
+
+export interface ListMessagesOptions {
+  // windows가 주어지면 그 messageId 범위에 드는 말풍선만 포함합니다(예: 만료된 구독 팬은
+  // 결제했던 기간에 발송된 브로드캐스트만). 빈 배열이면 결과 없음. 미지정이면 전체.
+  windows?: TimelineWindow[]
+  // 과거로 페이지 넘김: 이 id보다 더 오래된 말풍선만.
+  before?: string
+  // 미래로 페이지 넘김: 이 id보다 더 최신인 말풍선만.
+  after?: string
+  limit?: number
+}
+
+// 크리에이터의 브로드캐스트(말풍선) 타임라인을 시간 순으로 읽어옵니다.
+export async function listBroadcastMessages(
+  artistId: number,
   options: ListMessagesOptions = {},
 ): Promise<ChatMessageRow[]> {
-  if (streamIds.length === 0) {
-    return []
-  }
+  const conditions = [eq(chatMessageTable.streamId, toBroadcastStreamId(artistId))]
 
-  const conditions = [
-    streamIds.length === 1
-      ? eq(chatMessageTable.streamId, streamIds[0]!)
-      : inArray(chatMessageTable.streamId, streamIds),
-  ]
+  if (options.windows) {
+    if (options.windows.length === 0) {
+      return []
+    }
+
+    const inAnyWindow = or(
+      ...options.windows.map((window) =>
+        and(gte(chatMessageTable.messageId, window.fromId), lt(chatMessageTable.messageId, window.toIdExclusive)),
+      ),
+    )!
+
+    conditions.push(inAnyWindow)
+  }
 
   if (options.before) {
     conditions.push(lt(chatMessageTable.messageId, options.before))
@@ -84,6 +115,47 @@ export async function listStreamMessages(
   return rows
 }
 
-export function listChatMessages(streamId: string, options: ListMessagesOptions = {}): Promise<ChatMessageRow[]> {
-  return listStreamMessages([streamId], options)
+// 한 팬이 주어진 말풍선들에 단 "자기 자신의" 답장들. 화면에 보이는 말풍선들에 인라인으로 붙이기 위해
+// 페이지 단위(보통 ≤30개 messageId)로만 호출됩니다 → idx_chat_message_stream_sender 정확 seek.
+export async function listOwnRepliesForMessages(
+  artistId: number,
+  fanId: number,
+  messageIds: string[],
+): Promise<ChatMessageRow[]> {
+  if (messageIds.length === 0) {
+    return []
+  }
+
+  const streamIds = messageIds.map((messageId) => toMessageReplyStreamId(artistId, messageId))
+
+  return chatDB
+    .select()
+    .from(chatMessageTable)
+    .where(and(inArray(chatMessageTable.streamId, streamIds), eq(chatMessageTable.senderId, fanId)))
+    .orderBy(asc(chatMessageTable.messageId))
+}
+
+export interface ListRepliesOptions {
+  before?: string
+  limit?: number
+}
+
+// 한 말풍선의 답장방: 모든 팬의 답장(크리에이터만 읽음). 최신순 keyset 페이지네이션.
+export async function listMessageReplies(
+  artistId: number,
+  messageId: string,
+  options: ListRepliesOptions = {},
+): Promise<ChatMessageRow[]> {
+  const conditions = [eq(chatMessageTable.streamId, toMessageReplyStreamId(artistId, messageId))]
+
+  if (options.before) {
+    conditions.push(lt(chatMessageTable.messageId, options.before))
+  }
+
+  return chatDB
+    .select()
+    .from(chatMessageTable)
+    .where(and(...conditions))
+    .orderBy(desc(chatMessageTable.messageId))
+    .limit(clampPageSize(options.limit))
 }

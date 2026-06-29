@@ -1,10 +1,17 @@
 import {
-  getChatCreatorBrief,
+  getChatArtistBrief,
   getChatSenderBrief,
   listActiveSubscriberUserIds,
   SUBSCRIBER_PAGE_SIZE,
 } from '@litomi/db/app/query/chat'
-import { type ChatMessageRow, getKindFromStreamId, putChatMessage } from '@litomi/db/chat/query'
+import {
+  type ChatMessageRow,
+  getKindFromStreamId,
+  parseStreamId,
+  putChatMessage,
+  toArtistInboundChannel,
+  upsertChatThread,
+} from '@litomi/db/chat/query'
 import type { ChatMessageEvent } from '@litomi/events'
 import { roomChannel } from '@litomi/kv/channels'
 import { publisherClient } from '@litomi/kv/pubsub'
@@ -14,6 +21,13 @@ const webPush = WebPushService.getInstance()
 const PUSH_BODY_MAX_LENGTH = 120
 
 export async function processChatMessage(event: ChatMessageEvent): Promise<void> {
+  const parsed = parseStreamId(event.streamId)
+  if (!parsed) {
+    // Unparseable streamId can never be routed; retrying won't help, so drop it.
+    console.error('worker: dropping message with invalid streamId', { streamId: event.streamId })
+    return
+  }
+
   const row: ChatMessageRow = {
     streamId: event.streamId,
     messageId: event.messageId,
@@ -26,14 +40,31 @@ export async function processChatMessage(event: ChatMessageEvent): Promise<void>
   // Critical path (throwing here triggers a Kafka retry):
   // 1. Persist — idempotent on (streamId, messageId), SDK rate-limits to <=50/s.
   await putChatMessage(row)
-  // 2. Realtime relay to online subscribers via the gateway's Valkey channel.
-  await publisherClient.publish(roomChannel(event.streamId), JSON.stringify(toClientMessage(row)))
+
+  // 2. Only the broadcast feed is summarized (it drives the fan chat list). Reply rooms
+  //    are not: the artist's per-message unread is counted live, and fans never list them.
+  if (parsed.kind === 'broadcast') {
+    await upsertChatThread({
+      streamId: event.streamId,
+      lastMessageId: event.messageId,
+      lastSenderId: event.senderId,
+      lastContentType: event.contentType,
+      lastPreview: previewBody(event),
+      lastCreatedAt: row.createdAt,
+    })
+  }
+
+  // 3. Realtime relay. A broadcast goes to its own room (fans + owner subscribe). A reply
+  //    fans IN to the artist's owner-only inbound channel — NOT its rb: stream, which
+  //    nobody subscribes to; the messageId rides along in the payload's streamId.
+  const relayChannel = parsed.kind === 'broadcast' ? event.streamId : toArtistInboundChannel(parsed.artistId)
+  await publisherClient.publish(roomChannel(relayChannel), JSON.stringify(toClientMessage(row)))
 
   try {
-    if (getKindFromStreamId(event.streamId) === 'broadcast') {
+    if (parsed.kind === 'broadcast') {
       await fanOutBroadcastPush(event)
     } else {
-      await pushReplyToCreator(event)
+      await pushReplyToArtist(event)
     }
   } catch (error) {
     console.error('worker: chat web push failed', { messageId: event.messageId, error })
@@ -52,25 +83,25 @@ function toClientMessage(row: ChatMessageRow) {
   }
 }
 
-// A creator's broadcast notifies every active subscriber.
+// A artist's broadcast notifies every active subscriber.
 async function fanOutBroadcastPush(event: ChatMessageEvent): Promise<void> {
-  const creator = await getChatCreatorBrief(event.creatorId)
-  if (!creator) {
+  const artist = await getChatArtistBrief(event.artistId)
+  if (!artist) {
     return
   }
 
   const payload = {
-    title: creator.emoji ? `${creator.emoji} ${creator.displayName}` : creator.displayName,
+    title: artist.emoji ? `${artist.emoji} ${artist.displayName}` : artist.displayName,
     body: previewBody(event),
-    data: { url: `/chat/${creator.handle}` },
-    tag: `chat:${event.creatorId}`,
+    data: { url: `/sobok/${artist.handle}` },
+    tag: `chat:${event.artistId}`,
   }
 
   // Page subscribers by keyset so a huge audience is fanned out in bounded chunks.
   let afterUserId = 0
 
   for (;;) {
-    const userIds = await listActiveSubscriberUserIds(event.creatorId, { afterUserId, limit: SUBSCRIBER_PAGE_SIZE })
+    const userIds = await listActiveSubscriberUserIds(event.artistId, { afterUserId, limit: SUBSCRIBER_PAGE_SIZE })
     if (userIds.length === 0) {
       break
     }
@@ -87,27 +118,29 @@ async function fanOutBroadcastPush(event: ChatMessageEvent): Promise<void> {
   }
 }
 
-// A fan's reply is a 1:1 message; it notifies the single creator who owns the stream.
-async function pushReplyToCreator(event: ChatMessageEvent): Promise<void> {
-  const [creator, sender] = await Promise.all([
-    getChatCreatorBrief(event.creatorId),
-    getChatSenderBrief(event.senderId),
-  ])
-
-  if (!creator || creator.userId === event.senderId) {
+// A fan's reply notifies the artist only (there is no artist → fan 1:1 reply).
+async function pushReplyToArtist(event: ChatMessageEvent): Promise<void> {
+  const artist = await getChatArtistBrief(event.artistId)
+  if (!artist) {
     return
   }
+
+  // A artist never writes into a reply room, but guard against self-notifying anyway.
+  if (event.senderId === artist.userId) {
+    return
+  }
+
+  const sender = await getChatSenderBrief(event.senderId)
 
   const payload = {
     title: sender?.nickname ?? '팬',
     body: previewBody(event),
-    // Deep-links the creator to this fan's reply thread (inbox UI pending).
-    data: { url: `/chat/${creator.handle}/fans/${event.senderId}` },
-    tag: `chat-reply:${event.creatorId}:${event.senderId}`,
+    data: { url: `/sobok/studio/${artist.handle}` },
+    tag: `chat-reply:${event.artistId}`,
     icon: sender?.imageURL ?? undefined,
   }
 
-  await webPush.sendWebPushesToUsers(await buildDeliverableMessages([creator.userId], payload))
+  await webPush.sendWebPushesToUsers(await buildDeliverableMessages([artist.userId], payload))
 }
 
 // Drops recipients currently inside their quiet-hours window. maxDaily is

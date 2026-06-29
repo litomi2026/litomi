@@ -25,7 +25,6 @@ export const nextBuildEnv = createEnv({
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().default(env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
 
     // Next.js server build requirements
-    API_ORIGIN: z.url().default('http://localhost:3002'),
     APP_POSTGRES_URL: z.url(),
     CATALOG_POSTGRES_URL: z.url(),
     SENTRY_AUTH_TOKEN: z.string().optional(),
