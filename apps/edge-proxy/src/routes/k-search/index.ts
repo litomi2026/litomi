@@ -5,18 +5,19 @@ import { BLACKLISTED_MANGA_IDS } from '@litomi/domain/manga/policy'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std'
+import type { Context } from 'hono'
 
 import { createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { handleRouteError } from '@/util/proxy-route'
+
 import { GETProxyKSearchSchema } from './schema'
 import type { GETProxyKSearchResponse } from './types'
 import { convertToKHentaiKey, filterMangasByMinusPrefix } from './utils'
 
-export const runtime = 'edge'
-
 const JAPANESE_LANGUAGE_DEFAULT_CATEGORIES = encodeCategories('doujinshi,manga,artist_cg,image_set')
 
-export async function GET(request: Request) {
+export async function handleKSearchProxy(c: Context): Promise<Response> {
+  const request = c.req.raw
   const requestSignal = request.signal
   const url = new URL(request.url)
   const searchParams = Object.fromEntries(url.searchParams)
@@ -92,9 +93,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const revalidate = params.nextId ? sec('30 days') : 0
-    const options = { next: { revalidate }, signal: requestSignal }
-    const searchedMangas = await kHentaiClient.searchMangas(params, locale, options)
+    const searchedMangas = await kHentaiClient.searchMangas(params, locale, { signal: requestSignal })
     const hasManga = searchedMangas.length > 0
     let nextCursor = null
 
@@ -128,14 +127,10 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
 
   if (sort === 'random') {
     return createCacheControlHeaders({
-      vercel: {
+      cloudflare: {
         public: true,
         maxAge: 20,
         swr: 5,
-      },
-      cloudflare: {
-        public: true,
-        maxAge: 5,
       },
       browser: {
         public: true,
@@ -148,11 +143,6 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
 
   if (nextId) {
     return createCacheControlHeaders({
-      vercel: {
-        public: true,
-        maxAge: sec('90 days'),
-        swr,
-      },
       cloudflare: {
         public: true,
         maxAge: sec('90 days'),
@@ -168,14 +158,10 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
 
   if (nextViews) {
     return createCacheControlHeaders({
-      vercel: {
+      cloudflare: {
         public: true,
         maxAge: sec('1 day'),
         swr,
-      },
-      cloudflare: {
-        public: true,
-        maxAge: sec('10 minutes'),
       },
       browser: {
         public: true,
@@ -186,14 +172,10 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   }
 
   return createCacheControlHeaders({
-    vercel: {
+    cloudflare: {
       public: true,
       maxAge: sec('1 hour'),
       swr,
-    },
-    cloudflare: {
-      public: true,
-      maxAge: sec('10 minutes'),
     },
     browser: {
       public: true,

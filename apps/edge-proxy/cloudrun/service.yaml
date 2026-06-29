@@ -1,0 +1,40 @@
+# ⚠️ egress IP 로테이션이 이 서비스의 존재 이유:
+#    VPC 커넥터 / Direct VPC egress / Cloud NAT 를 *절대* 붙이지 말 것.
+#    아무 VPC 설정도 없으면 기본값 = Google 동적 IP 풀에서 로테이션.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: litomi-edge-proxy
+  labels:
+    cloud.googleapis.com/location: asia-northeast3
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: '0'
+        autoscaling.knative.dev/maxScale: '10'
+        run.googleapis.com/cpu-throttling: 'true'
+        run.googleapis.com/startup-cpu-boost: 'true'
+    spec:
+      containerConcurrency: 200
+      timeoutSeconds: 20
+      containers:
+        - image: ghcr.io/litomi2026/litomi-edge-proxy:latest
+          ports:
+            - name: http1
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: '1'
+              memory: 512Mi
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: NEXT_PUBLIC_APP_ORIGIN
+              value: https://litomi.cc
+            # 에러추적(Sentry)은 현재 드롭됨 — 필요해지면 OTel(api 방식) 권장.
+  traffic:
+    - percent: 100
+      latestRevision: true

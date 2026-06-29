@@ -1,4 +1,3 @@
-import 'server-only'
 import { PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { MAX_SEARCH_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { z } from 'zod'
