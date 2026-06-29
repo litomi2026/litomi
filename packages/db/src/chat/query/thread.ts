@@ -6,7 +6,7 @@ import { chatThreadTable } from '../schema'
 export type ChatThreadRow = typeof chatThreadTable.$inferSelect
 
 export interface ChatThreadSummaryInput {
-  // 'b:{creatorId}'
+  // 'b:{artistId}'
   streamId: string
   lastMessageId: string
   lastSenderId: number

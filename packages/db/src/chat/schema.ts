@@ -5,14 +5,14 @@ import { bigint, index, jsonb, pgTable, primaryKey, timestamp, varchar } from 'd
 // independently. messageId is a ULID: lexicographically time-sortable, so the
 // primary-key index already orders a stream newest-first.
 //
-// Stream model (DearU-Bubble, per-MESSAGE reply rooms):
-//   b:{creatorId}             broadcast — the creator's one-way feed of "bubbles".
-//   rb:{creatorId}:{bubbleId} reply room — fans' replies to ONE bubble. Append-only:
-//                             fans write, the creator reads the whole room, and fans
+// Stream model (DearU-Message, per-MESSAGE reply rooms):
+//   b:{artistId}             broadcast — the artist's one-way feed of "messages".
+//   rb:{artistId}:{messageId} reply room — fans' replies to ONE message. Append-only:
+//                             fans write, the artist reads the whole room, and fans
 //                             never see each other's replies. There is NO per-fan 1:1
 //                             stream — a fan never has a private back-and-forth thread.
-// The creator's realtime "all replies" panel is fed by the Valkey-only inbound channel
-// c:{creatorId} (not a stored stream); see packages/db/src/chat/query/stream.ts.
+// The artist's realtime "all replies" panel is fed by the Valkey-only inbound channel
+// c:{artistId} (not a stored stream); see packages/db/src/chat/query/stream.ts.
 
 export const chatMessageTable = pgTable(
   'chat_message',
@@ -27,8 +27,8 @@ export const chatMessageTable = pgTable(
   (table) => [
     primaryKey({ columns: [table.streamId, table.messageId] }),
     // Seek one sender's messages within a set of streams — a fan pulling their OWN
-    // replies for the bubbles currently on screen (`streamId IN (...) AND senderId = me`),
-    // tight even on a bubble with tens of thousands of replies from other fans.
+    // replies for the messages currently on screen (`streamId IN (...) AND senderId = me`),
+    // tight even on a message with tens of thousands of replies from other fans.
     index('idx_chat_message_stream_sender').on(table.streamId, table.senderId, table.messageId),
   ],
 ).enableRLS()
@@ -45,12 +45,12 @@ export const chatReadCursorTable = pgTable(
 ).enableRLS()
 
 // Per-stream conversation summary, upserted by the worker on every BROADCAST message
-// (one row per `b:{creatorId}` stream). O(1) per message, so the fan chat list renders
-// its "last bubble" preview without scanning chat_message. Reply rooms are deliberately
-// NOT summarized here: the creator's per-bubble unread is counted live from chat_message
+// (one row per `b:{artistId}` stream). O(1) per message, so the fan chat list renders
+// its "last message" preview without scanning chat_message. Reply rooms are deliberately
+// NOT summarized here: the artist's per-message unread is counted live from chat_message
 // (bounded), and fans never enumerate reply rooms.
 export const chatThreadTable = pgTable('chat_thread', {
-  // 'b:{creatorId}'
+  // 'b:{artistId}'
   streamId: varchar('stream_id', { length: 64 }).primaryKey(),
   lastMessageId: varchar('last_message_id', { length: 26 }).notNull(),
   lastSenderId: bigint('last_sender_id', { mode: 'number' }).notNull(),

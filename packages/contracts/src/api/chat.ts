@@ -15,17 +15,17 @@ export const chatHandleParamSchema = z.object({
 
 export type ChatHandleParam = z.infer<typeof chatHandleParamSchema>
 
-// A bubble (broadcast message) is addressed by its messageId (a ULID).
-export const chatBubbleParamSchema = z.object({
+// A message (broadcast message) is addressed by its messageId (a ULID).
+export const chatMessageParamSchema = z.object({
   handle: z.string().min(1),
-  bubbleId: z.string().min(1).max(MESSAGE_ID_MAX_LENGTH),
+  messageId: z.string().min(1).max(MESSAGE_ID_MAX_LENGTH),
 })
 
-export type ChatBubbleParam = z.infer<typeof chatBubbleParamSchema>
+export type ChatMessageParam = z.infer<typeof chatMessageParamSchema>
 
 const mediaUrlSchema = z.url().max(CHAT_MEDIA_URL_MAX_LENGTH)
 
-// Shared content shapes — a broadcast bubble and a fan reply carry the same payloads.
+// Shared content shapes — a broadcast message and a fan reply carry the same payloads.
 export const postV1ChatMessageBodySchema = z.discriminatedUnion('contentType', [
   z.object({ contentType: z.literal('text'), text: z.string().trim().min(1).max(CHAT_TEXT_MAX_LENGTH) }),
   z.object({
@@ -56,7 +56,7 @@ export const postV1ChatMessageResponseSchema = z.object({
 
 export type POSTV1ChatMessageResponse = z.infer<typeof postV1ChatMessageResponseSchema>
 
-// A fan's reply uses the same content shapes as a bubble.
+// A fan's reply uses the same content shapes as a message.
 export const postV1ChatReplyBodySchema = postV1ChatMessageBodySchema
 export type POSTV1ChatReplyBody = POSTV1ChatMessageBody
 export type POSTV1ChatReplyResponse = POSTV1ChatMessageResponse
@@ -70,8 +70,8 @@ export type ChatMessageContent =
   | { url: string; durationMs?: number; width?: number; height?: number }
 
 // Realtime relay envelope (Valkey → gateway → client). For a reply the client derives
-// bubbleId from streamId (`rb:{creatorId}:{bubbleId}`).
-export interface ChatMessageDTO {
+// messageId from streamId (`rb:{artistId}:{messageId}`).
+export interface ChatRelayMessageDTO {
   messageId: string
   streamId: string
   senderId: number
@@ -81,8 +81,8 @@ export interface ChatMessageDTO {
   createdAt: string
 }
 
-// A broadcast bubble as seen on the timeline.
-export interface ChatBubbleDTO {
+// A broadcast message as seen on the timeline.
+export interface ChatMessageDTO {
   messageId: string
   senderId: number
   contentType: ChatContentType
@@ -90,10 +90,10 @@ export interface ChatBubbleDTO {
   createdAt: string
 }
 
-// A fan's reply to a specific bubble.
+// A fan's reply to a specific message.
 export interface ChatReplyDTO {
   messageId: string
-  bubbleId: string
+  targetMessageId: string
   senderId: number
   contentType: ChatContentType
   content: ChatMessageContent
@@ -108,7 +108,7 @@ export interface ChatMessagePreview {
   createdAt: string
 }
 
-export interface ChatCreatorBrief {
+export interface ChatArtistBrief {
   id: number
   handle: string
   displayName: string
@@ -122,36 +122,36 @@ export interface ChatUserBrief {
   imageURL: string | null
 }
 
-// --- Timeline (bubble-centric) ------------------------------------------------
+// --- Timeline (message-centric) ------------------------------------------------
 
 export const getV1ChatMessagesQuerySchema = z.object({
-  // Page backwards in time (older than this bubbleId) — the default scroll-up behavior.
+  // Page backwards in time (older than this messageId) — the default scroll-up behavior.
   before: messageIdCursorSchema.optional(),
-  // Page/sync forwards in time (newer than this bubbleId), e.g. after a reconnect.
+  // Page/sync forwards in time (newer than this messageId), e.g. after a reconnect.
   after: messageIdCursorSchema.optional(),
   limit: z.coerce.number().int().min(1).max(100).default(30),
 })
 
 export type GETV1ChatMessagesQuery = z.infer<typeof getV1ChatMessagesQuerySchema>
 
-// One bubble on the timeline. Role-specific fields:
-//   - fan:   myReplies + artistReadMyReplies (whether the creator has read them)
-//   - owner: unreadReplyCount (new replies on this bubble, capped)
-export interface ChatTimelineBubble {
-  bubble: ChatBubbleDTO
+// One message on the timeline. Role-specific fields:
+//   - fan:   myReplies + artistReadMyReplies (whether the artist has read them)
+//   - owner: unreadReplyCount (new replies on this message, capped)
+export interface ChatTimelineMessage {
+  message: ChatMessageDTO
   myReplies?: ChatReplyDTO[]
   artistReadMyReplies?: boolean
   unreadReplyCount?: number
 }
 
 export interface GETV1ChatMessagesResponse {
-  bubbles: ChatTimelineBubble[]
+  messages: ChatTimelineMessage[]
   // Pass back as `before` to load the previous page; null when the stream start is reached.
   nextCursor?: string | null
 }
 
 // --- Mark-as-read -------------------------------------------------------------
-// Fan: advances the broadcast watermark. Owner: marks one bubble's reply room read.
+// Fan: advances the broadcast watermark. Owner: marks one message's reply room read.
 export const putV1ChatReadBodySchema = z.object({
   lastReadMessageId: messageIdCursorSchema,
 })
@@ -161,7 +161,7 @@ export type PUTV1ChatReadBody = z.infer<typeof putV1ChatReadBodySchema>
 // --- Fan chat list ------------------------------------------------------------
 
 export interface ChatThreadListItem {
-  creator: ChatCreatorBrief
+  artist: ChatArtistBrief
   // false = a lapsed subscription kept reachable for its paid-window broadcast archive
   // (read-only; sending disabled until re-subscribe). true = currently entitled.
   entitled: boolean
@@ -173,17 +173,17 @@ export interface GETV1ChatThreadsResponse {
   threads: ChatThreadListItem[]
 }
 
-// --- Creator resource (resolve handle → id + viewer's role) -------------------
+// --- Artist resource (resolve handle → id + viewer's role) -------------------
 
-export interface GETV1ChatCreatorResponse {
-  creator: ChatCreatorBrief
-  // The viewer owns this creator (→ studio).
+export interface GETV1ChatArtistResponse {
+  artist: ChatArtistBrief
+  // The viewer owns this artist (→ studio).
   isOwner: boolean
   // The viewer may currently read the live broadcast (owner or paid-up fan).
   entitled: boolean
 }
 
-// --- Creator reply room (all fans' replies to one bubble) ---------------------
+// --- Artist reply room (all fans' replies to one message) ---------------------
 
 export const getV1ChatRepliesQuerySchema = z.object({
   before: messageIdCursorSchema.optional(),

@@ -4,7 +4,7 @@ import { encodeTime, ulid } from 'ulid'
 import { chatDB } from '../db'
 import { chatMessageTable } from '../schema'
 import { clampPageSize } from './common'
-import { toBroadcastStreamId, toBubbleReplyStreamId } from './stream'
+import { toBroadcastStreamId, toMessageReplyStreamId } from './stream'
 
 export type ChatMessageRow = typeof chatMessageTable.$inferSelect
 
@@ -43,7 +43,7 @@ export async function appendChatMessage(input: AppendMessageInput): Promise<Chat
   return row
 }
 
-// 단일 메시지 존재 확인 — 답장 대상 말풍선(bubble)이 실재하는지 검증할 때 씁니다(PK 조회).
+// 단일 메시지 존재 확인 — 답장 대상 말풍선(message)이 실재하는지 검증할 때 씁니다(PK 조회).
 export async function chatMessageExists(streamId: string, messageId: string): Promise<boolean> {
   const [row] = await chatDB
     .select({ messageId: chatMessageTable.messageId })
@@ -59,7 +59,7 @@ export interface TimelineWindow {
   toIdExclusive: string
 }
 
-export interface ListBubblesOptions {
+export interface ListMessagesOptions {
   // windows가 주어지면 그 messageId 범위에 드는 말풍선만 포함합니다(예: 만료된 구독 팬은
   // 결제했던 기간에 발송된 브로드캐스트만). 빈 배열이면 결과 없음. 미지정이면 전체.
   windows?: TimelineWindow[]
@@ -71,11 +71,11 @@ export interface ListBubblesOptions {
 }
 
 // 크리에이터의 브로드캐스트(말풍선) 타임라인을 시간 순으로 읽어옵니다.
-export async function listBroadcastBubbles(
-  creatorId: number,
-  options: ListBubblesOptions = {},
+export async function listBroadcastMessages(
+  artistId: number,
+  options: ListMessagesOptions = {},
 ): Promise<ChatMessageRow[]> {
-  const conditions = [eq(chatMessageTable.streamId, toBroadcastStreamId(creatorId))]
+  const conditions = [eq(chatMessageTable.streamId, toBroadcastStreamId(artistId))]
 
   if (options.windows) {
     if (options.windows.length === 0) {
@@ -116,17 +116,17 @@ export async function listBroadcastBubbles(
 }
 
 // 한 팬이 주어진 말풍선들에 단 "자기 자신의" 답장들. 화면에 보이는 말풍선들에 인라인으로 붙이기 위해
-// 페이지 단위(보통 ≤30개 bubbleId)로만 호출됩니다 → idx_chat_message_stream_sender 정확 seek.
-export async function listOwnRepliesForBubbles(
-  creatorId: number,
+// 페이지 단위(보통 ≤30개 messageId)로만 호출됩니다 → idx_chat_message_stream_sender 정확 seek.
+export async function listOwnRepliesForMessages(
+  artistId: number,
   fanId: number,
-  bubbleIds: string[],
+  messageIds: string[],
 ): Promise<ChatMessageRow[]> {
-  if (bubbleIds.length === 0) {
+  if (messageIds.length === 0) {
     return []
   }
 
-  const streamIds = bubbleIds.map((bubbleId) => toBubbleReplyStreamId(creatorId, bubbleId))
+  const streamIds = messageIds.map((messageId) => toMessageReplyStreamId(artistId, messageId))
 
   return chatDB
     .select()
@@ -141,12 +141,12 @@ export interface ListRepliesOptions {
 }
 
 // 한 말풍선의 답장방: 모든 팬의 답장(크리에이터만 읽음). 최신순 keyset 페이지네이션.
-export async function listBubbleReplies(
-  creatorId: number,
-  bubbleId: string,
+export async function listMessageReplies(
+  artistId: number,
+  messageId: string,
   options: ListRepliesOptions = {},
 ): Promise<ChatMessageRow[]> {
-  const conditions = [eq(chatMessageTable.streamId, toBubbleReplyStreamId(creatorId, bubbleId))]
+  const conditions = [eq(chatMessageTable.streamId, toMessageReplyStreamId(artistId, messageId))]
 
   if (options.before) {
     conditions.push(lt(chatMessageTable.messageId, options.before))

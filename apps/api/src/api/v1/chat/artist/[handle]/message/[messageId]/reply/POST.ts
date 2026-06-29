@@ -1,6 +1,6 @@
-import { chatBubbleParamSchema, type POSTV1ChatReplyResponse, postV1ChatReplyBodySchema } from '@litomi/contracts'
-import { getChatCreatorByHandle, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
-import { buildChatMessage, chatMessageExists, toBroadcastStreamId, toBubbleReplyStreamId } from '@litomi/db/chat/query'
+import { chatMessageParamSchema, type POSTV1ChatReplyResponse, postV1ChatReplyBodySchema } from '@litomi/contracts'
+import { getChatArtistByHandle, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
+import { buildChatMessage, chatMessageExists, toBroadcastStreamId, toMessageReplyStreamId } from '@litomi/db/chat/query'
 import { publishChatMessage } from '@litomi/events'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -18,41 +18,41 @@ const factory = createFactory<Env>()
 
 const middlewares = factory.createHandlers(
   requireAuth,
-  zProblemValidator('param', chatBubbleParamSchema),
+  zProblemValidator('param', chatMessageParamSchema),
   zProblemValidator('json', postV1ChatReplyBodySchema),
 )
 
-// A fan replies to one specific bubble. The creator broadcasts (they never reply into a
-// fan room), so the owner is rejected here. Requires a live subscription + a real bubble.
+// A fan replies to one specific message. The artist broadcasts (they never reply into a
+// fan room), so the owner is rejected here. Requires a live subscription + a real message.
 route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
-  const { handle, bubbleId } = c.req.valid('param')
+  const { handle, messageId } = c.req.valid('param')
   const body = c.req.valid('json')
-  const creator = await getChatCreatorByHandle(handle)
+  const artist = await getChatArtistByHandle(handle)
 
-  if (!creator) {
+  if (!artist) {
     return problemResponse(c, { status: 404 })
   }
 
-  if (!creator.isActive) {
+  if (!artist.isActive) {
     return problemResponse(c, { status: 403 })
   }
 
-  if (creator.userId === userId) {
+  if (artist.userId === userId) {
     return problemResponse(c, { status: 403 })
   }
 
-  if (!(await hasActiveChatSubscription(userId, creator.id))) {
+  if (!(await hasActiveChatSubscription(userId, artist.id))) {
     return problemResponse(c, { status: 403 })
   }
 
-  // The reply must target an existing bubble of this creator.
-  if (!(await chatMessageExists(toBroadcastStreamId(creator.id), bubbleId))) {
+  // The reply must target an existing message of this artist.
+  if (!(await chatMessageExists(toBroadcastStreamId(artist.id), messageId))) {
     return problemResponse(c, { status: 404 })
   }
 
   const message = buildChatMessage({
-    streamId: toBubbleReplyStreamId(creator.id, bubbleId),
+    streamId: toMessageReplyStreamId(artist.id, messageId),
     senderId: userId,
     contentType: body.contentType,
     content: toContent(body),
@@ -61,7 +61,7 @@ route.post('/', ...middlewares, async (c) => {
   try {
     await publishChatMessage({
       ...message,
-      creatorId: creator.id,
+      artistId: artist.id,
       createdAt: message.createdAt.toISOString(),
     })
   } catch (error) {

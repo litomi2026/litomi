@@ -1,5 +1,5 @@
-import { chatHandleParamSchema, type GETV1ChatCreatorResponse } from '@litomi/contracts'
-import { getChatCreatorByHandle, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
+import { chatHandleParamSchema, type GETV1ChatArtistResponse } from '@litomi/contracts'
+import { getChatArtistByHandle, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -10,35 +10,35 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toCreatorBrief } from '../../lib'
+import { toArtistBrief } from '../../lib'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
 
 const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', chatHandleParamSchema))
 
-// Resolves a handle to the creator's id and the viewer's role. The client needs the
-// creatorId to build realtime room ids (b:{id} / c:{id}) and the role to pick the UI
+// Resolves a handle to the artist's id and the viewer's role. The client needs the
+// artistId to build realtime room ids (b:{id} / c:{id}) and the role to pick the UI
 // (studio vs fan room) — neither is derivable from the auth'd userId alone.
 route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle } = c.req.valid('param')
-  const creator = await getChatCreatorByHandle(handle)
+  const artist = await getChatArtistByHandle(handle)
 
-  if (!creator) {
+  if (!artist) {
     return problemResponse(c, { status: 404 })
   }
 
-  const isOwner = creator.userId === userId
-  const entitled = isOwner || (await hasActiveChatSubscription(userId, creator.id))
+  const isOwner = artist.userId === userId
+  const entitled = isOwner || (await hasActiveChatSubscription(userId, artist.id))
 
   const result = {
-    creator: toCreatorBrief(creator),
+    artist: toArtistBrief(artist),
     isOwner,
     entitled,
   }
 
-  return c.json<GETV1ChatCreatorResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+  return c.json<GETV1ChatArtistResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
 })
 
 export default route

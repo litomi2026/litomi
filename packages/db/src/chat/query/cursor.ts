@@ -36,9 +36,9 @@ export async function setReadCursor(userId: number, streamId: string, lastReadMe
     })
 }
 
-// 팬의 브로드캐스트 읽음 워터마크는 대표 스트림인 공지방 ID(b:{creatorId})에 저장합니다.
-export function setFanReadWatermark(fanId: number, creatorId: number, lastReadMessageId: string): Promise<void> {
-  return setReadCursor(fanId, toBroadcastStreamId(creatorId), lastReadMessageId)
+// 팬의 브로드캐스트 읽음 워터마크는 대표 스트림인 공지방 ID(b:{artistId})에 저장합니다.
+export function setFanReadWatermark(fanId: number, artistId: number, lastReadMessageId: string): Promise<void> {
+  return setReadCursor(fanId, toBroadcastStreamId(artistId), lastReadMessageId)
 }
 
 export interface UnreadFilter {

@@ -12,7 +12,7 @@ export const paymentTable = pgTable(
     paymentId: varchar('payment_id', { length: 64 }).notNull().unique(),
     // The financial record must survive account deletion for tax/audit retention
     userId: bigint('user_id', { mode: 'number' }).references(() => userTable.id, { onDelete: 'set null' }),
-    // What was bought (polymorphic; null for a generic/one-off purchase). e.g. 'chat_creator'.
+    // What was bought (polymorphic; null for a generic/one-off purchase). e.g. 'chat_artist'.
     targetType: varchar('target_type', { length: 32 }),
     targetId: bigint('target_id', { mode: 'number' }),
     // Entitlement window this payment grants (null for non-subscription one-offs).

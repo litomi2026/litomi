@@ -1,5 +1,5 @@
 import { chatHandleParamSchema, type POSTV1ChatMessageResponse, postV1ChatMessageBodySchema } from '@litomi/contracts'
-import { getChatCreatorByHandle } from '@litomi/db/app/query/chat'
+import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { buildChatMessage, toBroadcastStreamId } from '@litomi/db/chat/query'
 import { publishChatMessage } from '@litomi/events'
 import { Hono } from 'hono'
@@ -22,28 +22,28 @@ const middlewares = factory.createHandlers(
   zProblemValidator('json', postV1ChatMessageBodySchema),
 )
 
-// Posts a broadcast bubble. Only the creator may post here; fans reply to a specific
-// bubble via POST /creators/:handle/bubbles/:bubbleId/replies.
+// Posts a broadcast message. Only the artist may post here; fans reply to a specific
+// message via POST /artists/:handle/messages/:messageId/replies.
 route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle } = c.req.valid('param')
   const body = c.req.valid('json')
-  const creator = await getChatCreatorByHandle(handle)
+  const artist = await getChatArtistByHandle(handle)
 
-  if (!creator) {
+  if (!artist) {
     return problemResponse(c, { status: 404 })
   }
 
-  if (!creator.isActive) {
+  if (!artist.isActive) {
     return problemResponse(c, { status: 403 })
   }
 
-  if (creator.userId !== userId) {
+  if (artist.userId !== userId) {
     return problemResponse(c, { status: 403 })
   }
 
   const message = buildChatMessage({
-    streamId: toBroadcastStreamId(creator.id),
+    streamId: toBroadcastStreamId(artist.id),
     senderId: userId,
     contentType: body.contentType,
     content: toContent(body),
@@ -52,11 +52,11 @@ route.post('/', ...middlewares, async (c) => {
   try {
     await publishChatMessage({
       ...message,
-      creatorId: creator.id,
+      artistId: artist.id,
       createdAt: message.createdAt.toISOString(),
     })
   } catch (error) {
-    console.error('chat bubble publish failed', error)
+    console.error('chat message publish failed', error)
     return problemResponse(c, { status: 503, detail: '메시지 전송에 실패했어요. 잠시 후 다시 시도해 주세요.' })
   }
 

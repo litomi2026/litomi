@@ -1,9 +1,9 @@
 import type { ChatThreadListItem, GETV1ChatThreadsResponse } from '@litomi/contracts'
 import {
-  type ChatCreatorBriefRow,
-  listChatCreatorBriefs,
+  type ChatArtistBriefRow,
+  listChatArtistBriefs,
   listEntitledSubscriptionsOfUser,
-  listSubscribedCreatorIds,
+  listSubscribedArtistIds,
 } from '@litomi/db/app/query/chat'
 import {
   countUnreadByStreams,
@@ -19,27 +19,27 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
 
-import { threadPreview, toCreatorBrief } from '../lib'
+import { threadPreview, toArtistBrief } from '../lib'
 
 const route = new Hono<Env>()
 
-// A fan's chat list = (currently-entitled subscriptions) ∪ (every creator they ever
+// A fan's chat list = (currently-entitled subscriptions) ∪ (every artist they ever
 // subscribed to). Entitled rows show the last broadcast + unread; lapsed rows stay
 // reachable read-only (broadcast hidden, sending disabled) for the paid-window archive.
 route.get('/', requireAuth, async (c) => {
   const userId = c.get('userId')!
 
-  const [entitledCreators, subscribedCreatorIds] = await Promise.all([
+  const [entitledArtists, subscribedArtistIds] = await Promise.all([
     listEntitledSubscriptionsOfUser(userId),
-    listSubscribedCreatorIds(userId),
+    listSubscribedArtistIds(userId),
   ])
 
-  const entitledIds = new Set(entitledCreators.map((creator) => creator.id))
-  const lapsedIds = subscribedCreatorIds.filter((id) => !entitledIds.has(id))
-  const lapsedBriefs = await listChatCreatorBriefs(lapsedIds)
+  const entitledIds = new Set(entitledArtists.map((artist) => artist.id))
+  const lapsedIds = subscribedArtistIds.filter((id) => !entitledIds.has(id))
+  const lapsedBriefs = await listChatArtistBriefs(lapsedIds)
 
-  const items: { brief: ChatCreatorBriefRow; entitled: boolean }[] = [
-    ...entitledCreators.map((brief) => ({ brief, entitled: true })),
+  const items: { brief: ChatArtistBriefRow; entitled: boolean }[] = [
+    ...entitledArtists.map((brief) => ({ brief, entitled: true })),
     ...lapsedIds.flatMap((id) => {
       const brief = lapsedBriefs.get(id)
       return brief ? [{ brief, entitled: false }] : []
@@ -71,14 +71,14 @@ route.get('/', requireAuth, async (c) => {
     const summary = entitled ? summaries.get(broadcastId) : undefined
 
     return {
-      creator: toCreatorBrief(brief),
+      artist: toArtistBrief(brief),
       entitled,
       lastMessage: summary ? threadPreview(summary) : null,
       unreadCount: entitled ? (unreadByStream.get(broadcastId) ?? 0) : 0,
     }
   })
 
-  // Most-recently-active first; creators with no broadcast yet sink to the bottom.
+  // Most-recently-active first; artists with no broadcast yet sink to the bottom.
   threads.sort((a, b) => (b.lastMessage?.messageId ?? '').localeCompare(a.lastMessage?.messageId ?? ''))
 
   return c.json<GETV1ChatThreadsResponse>({ threads }, { headers: { 'Cache-Control': privateCacheControl } })
