@@ -4,7 +4,14 @@ import {
   listActiveSubscriberUserIds,
   SUBSCRIBER_PAGE_SIZE,
 } from '@litomi/db/app/query/chat'
-import { type ChatMessageRow, getKindFromStreamId, putChatMessage } from '@litomi/db/chat/query'
+import {
+  type ChatMessageRow,
+  getKindFromStreamId,
+  type ParsedStreamId,
+  parseStreamId,
+  putChatMessage,
+  upsertChatThread,
+} from '@litomi/db/chat/query'
 import type { ChatMessageEvent } from '@litomi/events'
 import { roomChannel } from '@litomi/kv/channels'
 import { publisherClient } from '@litomi/kv/pubsub'
@@ -14,6 +21,13 @@ const webPush = WebPushService.getInstance()
 const PUSH_BODY_MAX_LENGTH = 120
 
 export async function processChatMessage(event: ChatMessageEvent): Promise<void> {
+  const parsed = parseStreamId(event.streamId)
+  if (!parsed) {
+    // Unparseable streamId can never be routed; retrying won't help, so drop it.
+    console.error('worker: dropping message with invalid streamId', { streamId: event.streamId })
+    return
+  }
+
   const row: ChatMessageRow = {
     streamId: event.streamId,
     messageId: event.messageId,
@@ -26,14 +40,28 @@ export async function processChatMessage(event: ChatMessageEvent): Promise<void>
   // Critical path (throwing here triggers a Kafka retry):
   // 1. Persist — idempotent on (streamId, messageId), SDK rate-limits to <=50/s.
   await putChatMessage(row)
-  // 2. Realtime relay to online subscribers via the gateway's Valkey channel.
+
+  // 2. Update the conversation summary that powers the chat list & inbox —
+  //    idempotent and order-safe (only advances to a newer messageId).
+  await upsertChatThread({
+    streamId: event.streamId,
+    creatorId: event.creatorId,
+    fanId: parsed.kind === 'reply' ? parsed.fanId : null,
+    lastMessageId: event.messageId,
+    lastSenderId: event.senderId,
+    lastContentType: event.contentType,
+    lastPreview: previewBody(event),
+    lastCreatedAt: row.createdAt,
+  })
+
+  // 3. Realtime relay to online subscribers via the gateway's Valkey channel.
   await publisherClient.publish(roomChannel(event.streamId), JSON.stringify(toClientMessage(row)))
 
   try {
-    if (getKindFromStreamId(event.streamId) === 'broadcast') {
+    if (parsed.kind === 'broadcast') {
       await fanOutBroadcastPush(event)
     } else {
-      await pushReplyToCreator(event)
+      await pushReplyNotification(event, parsed)
     }
   } catch (error) {
     console.error('worker: chat web push failed', { messageId: event.messageId, error })
@@ -87,21 +115,40 @@ async function fanOutBroadcastPush(event: ChatMessageEvent): Promise<void> {
   }
 }
 
-// A fan's reply is a 1:1 message; it notifies the single creator who owns the stream.
-async function pushReplyToCreator(event: ChatMessageEvent): Promise<void> {
-  const [creator, sender] = await Promise.all([
-    getChatCreatorBrief(event.creatorId),
-    getChatSenderBrief(event.senderId),
-  ])
-
-  if (!creator || creator.userId === event.senderId) {
+// A 1:1 reply notifies the OTHER party: the creator when a fan writes in, and the
+// fan when the creator writes back. The stream's fanId comes from the streamId.
+async function pushReplyNotification(
+  event: ChatMessageEvent,
+  parsed: Extract<ParsedStreamId, { kind: 'reply' }>,
+): Promise<void> {
+  const creator = await getChatCreatorBrief(event.creatorId)
+  if (!creator) {
     return
   }
+
+  // Creator → fan: deep-link the fan to the creator's chat (merged timeline).
+  if (event.senderId === creator.userId) {
+    if (parsed.fanId === event.senderId) {
+      return
+    }
+
+    const payload = {
+      title: creator.emoji ? `${creator.emoji} ${creator.displayName}` : creator.displayName,
+      body: previewBody(event),
+      data: { url: `/chat/${creator.handle}` },
+      tag: `chat:${event.creatorId}`,
+    }
+
+    await webPush.sendWebPushesToUsers(await buildDeliverableMessages([parsed.fanId], payload))
+    return
+  }
+
+  // Fan → creator: deep-link the creator to this fan's reply thread.
+  const sender = await getChatSenderBrief(event.senderId)
 
   const payload = {
     title: sender?.nickname ?? '팬',
     body: previewBody(event),
-    // Deep-links the creator to this fan's reply thread (inbox UI pending).
     data: { url: `/chat/${creator.handle}/fans/${event.senderId}` },
     tag: `chat-reply:${event.creatorId}:${event.senderId}`,
     icon: sender?.imageURL ?? undefined,
