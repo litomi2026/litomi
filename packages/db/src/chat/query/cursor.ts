@@ -2,7 +2,7 @@ import { and, count, eq, gt, inArray, ne, or, sql } from 'drizzle-orm'
 
 import { chatDB } from '../db'
 import { chatMessageTable, chatReadCursorTable } from '../schema'
-import { broadcastStreamId } from './stream'
+import { toBroadcastStreamId } from './stream'
 
 export async function getReadCursor(userId: number, streamId: string): Promise<string | null> {
   const [row] = await chatDB
@@ -35,11 +35,11 @@ export async function getReadCursors(userId: number, streamIds: string[]): Promi
 // 따라서 읽음 처리(책갈피)를 두 방에 따로 할 필요 없이, 대표로 '공지방 ID'에만
 // 단일 워터마크(마지막으로 읽은 메시지 ID)를 저장하고 두 방의 안읽음 상태를 한꺼번에 계산합니다.
 export function getFanReadWatermark(fanId: number, creatorId: number): Promise<string | null> {
-  return getReadCursor(fanId, broadcastStreamId(creatorId))
+  return getReadCursor(fanId, toBroadcastStreamId(creatorId))
 }
 
 export function setFanReadWatermark(fanId: number, creatorId: number, lastReadMessageId: string): Promise<void> {
-  return setReadCursor(fanId, broadcastStreamId(creatorId), lastReadMessageId)
+  return setReadCursor(fanId, toBroadcastStreamId(creatorId), lastReadMessageId)
 }
 
 export async function setReadCursor(userId: number, streamId: string, lastReadMessageId: string): Promise<void> {
@@ -63,7 +63,7 @@ export interface CountUnreadOptions {
 
 export async function countUnread(
   streamId: string,
-  sinceMessageId: string | null,
+  sinceMessageId?: string | null,
   options: CountUnreadOptions = {},
 ): Promise<number> {
   const conditions = [eq(chatMessageTable.streamId, streamId)]
@@ -88,7 +88,7 @@ export async function countUnread(
 
 export interface UnreadFilter {
   streamId: string
-  sinceMessageId: string | null
+  sinceMessageId?: string | null
   excludeSenderId?: number
 }
 

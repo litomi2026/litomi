@@ -1,12 +1,12 @@
 export type ChatMessageKind = 'broadcast' | 'reply'
 
 // 크리에이터가 자신의 모든 팬들에게 일방향으로 보내는 "공지방(Broadcast)"의 고유 ID를 만듭니다.
-export function broadcastStreamId(creatorId: number): string {
+export function toBroadcastStreamId(creatorId: number): string {
   return `b:${creatorId}`
 }
 
 // 크리에이터와 특정 팬 한 명이 주고받는 "1:1 개인톡(Reply)" 방의 고유 ID를 만듭니다.
-export function replyStreamId(creatorId: number, fanId: number): string {
+export function toReplyStreamId(creatorId: number, fanId: number): string {
   return `r:${creatorId}:${fanId}`
 }
 

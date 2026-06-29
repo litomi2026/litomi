@@ -6,6 +6,7 @@ import { contextStorage } from 'hono/context-storage'
 import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { etag } from 'hono/etag'
+import { HTTPException } from 'hono/http-exception'
 import { ipRestriction } from 'hono/ip-restriction'
 import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
@@ -17,6 +18,7 @@ import imageRoutes from './i'
 import { auth } from './middleware/auth'
 import { getDefaultSecureHeadersOptions } from './middleware/secure-headers'
 import probeRoutes from './probe'
+import { problemResponse } from './utils/problem'
 import { APP_ORIGIN, isAllowedRequestOrigin } from './utils/request-origin'
 
 export type Env = {
@@ -29,10 +31,11 @@ export type Env = {
 
 const app = new Hono<Env>()
 const etagMiddleware = etag()
+const isProduction = process.env.NODE_ENV === 'production'
 
 const csrfMiddleware = csrf({
   origin: isAllowedRequestOrigin,
-  secFetchSite: process.env.NODE_ENV === 'production' ? 'same-origin' : 'same-site',
+  secFetchSite: isProduction ? 'same-origin' : 'same-site',
 })
 
 // 1. 관측성 및 전역 설정
@@ -93,5 +96,20 @@ app.use('*', auth)
 // 6. 하위 route
 app.route('/api', apiRoutes)
 app.route('/i', imageRoutes)
+
+app.notFound((c) => {
+  return problemResponse(c, { status: 404 })
+})
+
+app.onError((err, c) => {
+  if (err instanceof HTTPException) {
+    return problemResponse(c, {
+      status: err.status,
+      detail: err.message,
+    })
+  }
+
+  return problemResponse(c, { status: 500 })
+})
 
 export default app
