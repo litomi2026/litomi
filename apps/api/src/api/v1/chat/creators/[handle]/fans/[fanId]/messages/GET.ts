@@ -1,5 +1,5 @@
 import { chatFanIdParamSchema, type GETV1ChatMessagesResponse, getV1ChatMessagesQuerySchema } from '@litomi/contracts'
-import { listStreamMessages, toReplyStreamId } from '@litomi/db/chat/query'
+import { listTimelineMessages, toReplyStreamId } from '@litomi/db/chat/query'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -29,7 +29,8 @@ route.get('/', ...handlers, async (c) => {
   }
 
   const { before, after, limit } = c.req.valid('query')
-  const rows = await listStreamMessages([toReplyStreamId(owned.creator.id, fanId)], { before, after, limit })
+  const streams = [{ streamId: toReplyStreamId(owned.creator.id, fanId) }]
+  const rows = await listTimelineMessages(streams, { before, after, limit })
 
   const result = {
     messages: rows.map(mapMessageRow),
