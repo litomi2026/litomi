@@ -21,7 +21,7 @@ type Props = {
 export default function PinLibraryButton({ className = '', libraryId, library }: Props) {
   const { guardAdultAccess, me } = useAdultAccessGuard()
   const { mutate, isPending } = usePinLibraryMutation()
-  const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id, enabled: !!me })
+  const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id, enabled: Boolean(me) })
   const isPinned = pinnedData?.pages.some((page) => page.libraries.some((lib) => lib.id === libraryId))
   const [isAnimating, setIsAnimating] = useState(false)
   const t = useTranslations('Library.pin')
