@@ -29,7 +29,6 @@ export const env = createEnv({
     JWT_SECRET_TRUSTED_DEVICE: z.string().default('789'),
     KAFKA_BROKERS: z.string().default('localhost:9092'),
     KAFKA_CLIENT_ID: z.string().default('litomi'),
-    KAFKA_GROUP_ID: z.string().default('litomi-worker'),
     KAFKA_USERNAME: z.string().optional(),
     KAFKA_PASSWORD: z.string().optional(),
     KAFKA_SSL_CA: z.string().optional(),
