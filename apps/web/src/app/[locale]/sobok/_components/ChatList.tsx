@@ -75,7 +75,7 @@ function ChatThreadList() {
   )
 }
 
-export function ChatList() {
+export default function ChatList() {
   return (
     <div className="flex-1 flex flex-col h-full bg-white dark:bg-[#0a0a0c]">
       {/* Header */}

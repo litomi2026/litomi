@@ -1,4 +1,4 @@
-import { StudioReplyRoom } from '../../../../_components/StudioReplyRoom'
+import StudioReplyRoom from '../../../../_components/StudioReplyRoom'
 
 type Props = PageProps<'/[locale]/sobok/studio/[handle]/message/[messageId]'>
 

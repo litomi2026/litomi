@@ -30,7 +30,7 @@ const HEARTBEAT_INTERVAL_MS = 25_000
 const STALE_AFTER_MS = 55_000
 const MAX_BACKOFF_MS = 30_000
 
-export function ChatProvider({ children }: { children: ReactNode }) {
+export default function ChatProvider({ children }: { children: ReactNode }) {
   const [myUserId, setMyUserId] = useState<number | null>(null)
   const [isConnected, setIsConnected] = useState(false)
 
