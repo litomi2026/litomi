@@ -70,7 +70,7 @@ export interface ListMessagesOptions {
   limit?: number
 }
 
-// 크리에이터의 브로드캐스트(말풍선) 타임라인을 시간 순으로 읽어옵니다.
+// 아티스트의 브로드캐스트(말풍선) 타임라인을 시간 순으로 읽어옵니다.
 export async function listBroadcastMessages(
   artistId: number,
   options: ListMessagesOptions = {},
@@ -140,7 +140,7 @@ export interface ListRepliesOptions {
   limit?: number
 }
 
-// 한 말풍선의 답장방: 모든 팬의 답장(크리에이터만 읽음). 최신순 keyset 페이지네이션.
+// 한 말풍선의 답장방: 모든 팬의 답장(아티스트만 읽음). 최신순 keyset 페이지네이션.
 export async function listMessageReplies(
   artistId: number,
   messageId: string,
