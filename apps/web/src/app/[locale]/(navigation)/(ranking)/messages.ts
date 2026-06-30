@@ -97,7 +97,7 @@ export const messages = {
         },
         donation: {
           title: 'Donation Ranking',
-          description: 'See the ranking of donations supporting manga and creators.',
+          description: 'See the ranking of donations supporting manga and artists.',
         },
         title: '{period} {metric} Ranking',
         metrics: {
@@ -116,10 +116,10 @@ export const messages = {
       },
     },
     RankingDonationPage: {
-      summaryTitle: 'Donations go back to creators',
+      summaryTitle: 'Donations go back to artists',
       detailsLabel: 'Details',
       summaryDescription:
-        'All donated Libo is used to support creators. Use the Libo you earn to support the creators of manga you love.',
+        'All donated Libo is used to support artists. Use the Libo you earn to support the artists of manga you love.',
       rankColumn: 'Rank',
       recipientColumn: 'Recipient',
       totalColumn: 'Total Donations',

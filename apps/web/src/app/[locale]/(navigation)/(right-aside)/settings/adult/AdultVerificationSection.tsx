@@ -24,5 +24,5 @@ export default async function AdultVerificationSection({ userId }: Props) {
       .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt))),
   ])
 
-  return <AdultVerificationSectionClient initialVerification={verification} isTwoFactorEnabled={!!twoFactor} />
+  return <AdultVerificationSectionClient initialVerification={verification} isTwoFactorEnabled={Boolean(twoFactor)} />
 }

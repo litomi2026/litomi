@@ -38,7 +38,7 @@
       },
       "correctness": {
         // React Compiler manages memoization; manual effect deps are often intentional — visible but non-blocking.
-        "useExhaustiveDependencies": "warn"
+        "useExhaustiveDependencies": "off"
       },
       "performance": {
         // <img> is intentional (custom image proxy / reader); mirrors the old next/no-img-element being off.

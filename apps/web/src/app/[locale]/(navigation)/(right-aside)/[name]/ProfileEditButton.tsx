@@ -212,7 +212,7 @@ export default function ProfileEditButton({ me }: Props) {
                   {t('name')}
                 </label>
                 <input
-                  aria-invalid={!!fieldErrors.name}
+                  aria-invalid={Boolean(fieldErrors.name)}
                   autoCapitalize="off"
                   autoComplete="username"
                   className={twMerge(
@@ -227,7 +227,7 @@ export default function ProfileEditButton({ me }: Props) {
                   placeholder={t('namePlaceholder')}
                   type="text"
                 />
-                <p aria-invalid={!!fieldErrors.name} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                <p aria-invalid={Boolean(fieldErrors.name)} className="text-xs text-zinc-500 aria-invalid:text-red-400">
                   {fieldErrors.name || t('nameHelp')}
                 </p>
               </div>
@@ -236,7 +236,7 @@ export default function ProfileEditButton({ me }: Props) {
                   {t('nickname')}
                 </label>
                 <input
-                  aria-invalid={!!fieldErrors.nickname}
+                  aria-invalid={Boolean(fieldErrors.nickname)}
                   autoCapitalize="off"
                   className={twMerge(
                     'w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent',
@@ -250,7 +250,10 @@ export default function ProfileEditButton({ me }: Props) {
                   placeholder={t('nicknamePlaceholder')}
                   type="text"
                 />
-                <p aria-invalid={!!fieldErrors.nickname} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                <p
+                  aria-invalid={Boolean(fieldErrors.nickname)}
+                  className="text-xs text-zinc-500 aria-invalid:text-red-400"
+                >
                   {fieldErrors.nickname || t('nicknameHelp')}
                 </p>
               </div>
@@ -259,7 +262,7 @@ export default function ProfileEditButton({ me }: Props) {
                   {t('imageURL')}
                 </label>
                 <input
-                  aria-invalid={!!fieldErrors.imageURL}
+                  aria-invalid={Boolean(fieldErrors.imageURL)}
                   autoCapitalize="off"
                   autoComplete="photo"
                   className={twMerge(
@@ -276,7 +279,10 @@ export default function ProfileEditButton({ me }: Props) {
                   placeholder="https://example.com/profile.jpg"
                   type="url"
                 />
-                <p aria-invalid={!!fieldErrors.imageURL} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                <p
+                  aria-invalid={Boolean(fieldErrors.imageURL)}
+                  className="text-xs text-zinc-500 aria-invalid:text-red-400"
+                >
                   {fieldErrors.imageURL || t('imageURLHelp')}
                 </p>
               </div>
