@@ -8,7 +8,7 @@ import useChatThreadsQuery from '../_query/useChatThreadsQuery'
 import { useChat } from './ChatProvider'
 
 export default function ChatRealtime() {
-  const { subscribeRoom, unsubscribeRoom, onMessage } = useChat()
+  const { connectionId, subscribeRoom, unsubscribeRoom, onMessage } = useChat()
   const { data } = useChatThreadsQuery()
   const queryClient = useQueryClient()
   const currentRoomsRef = useRef<Set<string>>(new Set())
@@ -53,6 +53,16 @@ export default function ChatRealtime() {
       }
     })
   }, [onMessage, queryClient])
+
+  // NOTE: 재연결 catch-up — 소켓이 끊긴 동안 relay된 메시지는 유실되므로(WS는 재생이 없음), 재연결
+  //       (connectionId>1)마다 chat 쿼리를 모두 무효화해 활성 화면(목록·열린 방·답장방)이 놓친
+  //       구간을 다시 가져오게 한다. 최초 연결(=1)은 마운트 시 초기 fetch가 이미 커버하므로 건너뜀.
+  useEffect(() => {
+    if (connectionId <= 1) {
+      return
+    }
+    queryClient.invalidateQueries({ queryKey: ['chat'] })
+  }, [connectionId, queryClient])
 
   return null
 }
