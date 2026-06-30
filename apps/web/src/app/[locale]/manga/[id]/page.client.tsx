@@ -28,9 +28,9 @@ type Props = {
 type Translator = ReturnType<typeof useTranslations>
 
 export default function MangaPage({ id, initialManga }: Props) {
-  const [hasClickedAd, setHasClickedAd] = useState(false)
+  const [hasBypassedAd, setHasBypassedAd] = useState(false)
   const { data: me } = useMeQuery()
-  const isAdsVisible = shouldShowAds(me) && !hasClickedAd
+  const isAdsVisible = shouldShowAds(me) && !hasBypassedAd
   const shouldLoadManga = me !== undefined && !isAdsVisible
   const mangaIds = shouldLoadManga ? [id] : []
   const { mangaMap, errorMap } = useMangaListCachedQuery({ mangaIds })
@@ -52,26 +52,35 @@ export default function MangaPage({ id, initialManga }: Props) {
 
   if (isAdsVisible) {
     return (
-      <JuicyAdsBanner
-        className="h-full flex flex-col gap-3 items-center justify-center"
-        layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
-        onAdClick={() => setHasClickedAd(true)}
-        title={
-          <div className="grid gap-0.5 text-center">
-            <p className="text-zinc-300 text-sm">{unlockT('title')}</p>
-            <p>
-              {me ? (
-                <Link className="font-bold text-xs p-2 -m-2 text-foreground" href="/settings#adult">
-                  {unlockT('adultAction')}
-                </Link>
-              ) : (
-                <LoginPageLink className="text-foreground">{unlockT('adultActionGuest')}</LoginPageLink>
-              )}
-              {unlockT('adultSuffix')}
-            </p>
-          </div>
-        }
-      />
+      <div className="flex h-full flex-col gap-4 items-center justify-center p-4">
+        <JuicyAdsBanner
+          className="flex flex-col gap-3 items-center justify-center"
+          layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
+          onAdClick={() => setHasBypassedAd(true)}
+          title={
+            <div className="grid gap-0.5 text-center">
+              <p className="text-zinc-300 text-sm">{unlockT('title')}</p>
+              <p>
+                {me ? (
+                  <Link className="font-bold text-xs p-2 -m-2 text-foreground" href="/settings#adult">
+                    {unlockT('adultAction')}
+                  </Link>
+                ) : (
+                  <LoginPageLink className="text-foreground">{unlockT('adultActionGuest')}</LoginPageLink>
+                )}
+                {unlockT('adultSuffix')}
+              </p>
+            </div>
+          }
+        />
+        <button
+          className="w-full max-w-xs text-sm text-zinc-400 underline p-2"
+          onClick={() => setHasBypassedAd(true)}
+          type="button"
+        >
+          {unlockT('skipAd')}
+        </button>
+      </div>
     )
   }
 

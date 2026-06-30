@@ -172,7 +172,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // WebSocket 기본 라이프사이클 관리 (Mount/Unmount)
+  // NOTE: WebSocket 기본 라이프사이클 관리 (Mount/Unmount)
   useEffect(() => {
     unmountedRef.current = false
     connect()
@@ -193,7 +193,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [connect, stopHeartbeat])
 
-  // 모바일 브라우저 네트워크 & 화면 활성화 상태 감지
+  // NOTE: 모바일 브라우저 네트워크 & 화면 활성화 상태 감지
   useEffect(() => {
     function handleAwake() {
       attemptRef.current = 0

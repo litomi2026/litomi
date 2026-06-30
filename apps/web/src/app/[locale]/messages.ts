@@ -34,6 +34,13 @@ export const messages = {
         action: '익명 성인인증',
         actionGuest: '로그인 후 익명 성인인증',
         suffix: '을 완료하면 광고는 자동으로 숨겨져요.',
+        blocked: {
+          title: '광고가 차단되고 있어요',
+          descriptionLine1: '광고 수익은 서버 운영과 작가 후원에 사용돼요.',
+          descriptionLine2: '이 사이트의 광고를 허용해 주시면 큰 도움이 돼요.',
+          rewardHint: '광고가 보이면 클릭해서 리보를 적립할 수 있어요',
+        },
+        loading: '불러오는 중이에요…',
       },
       manga: {
         loadError: '작품을 불러올 수 없어요',
@@ -235,6 +242,13 @@ export const messages = {
         action: 'Verify your age anonymously',
         actionGuest: 'Log in and verify your age anonymously',
         suffix: ' to hide ads automatically.',
+        blocked: {
+          title: 'Ads are being blocked',
+          descriptionLine1: 'Ad revenue pays for servers and supports artists.',
+          descriptionLine2: 'Please allow ads to help us keep running.',
+          rewardHint: 'Click visible ads to earn Libo.',
+        },
+        loading: 'Loading…',
       },
       manga: {
         loadError: 'Could not load works',
@@ -437,6 +451,13 @@ export const messages = {
         action: '匿名で成人認証',
         actionGuest: 'ログイン後に匿名で成人認証',
         suffix: 'を完了すると広告は自動的に非表示になります。',
+        blocked: {
+          title: '広告がブロックされています',
+          descriptionLine1: '広告収益はサーバーの運営と作家への支援に使用されます。',
+          descriptionLine2: 'このサイトの広告を許可していただけると大変助かります。',
+          rewardHint: '広告が表示されたらクリックしてLiboを獲得できます。',
+        },
+        loading: '読み込み中…',
       },
       manga: {
         loadError: '作品を読み込めません',
@@ -637,6 +658,13 @@ export const messages = {
         action: '匿名成人认证',
         actionGuest: '登录并完成匿名成人认证',
         suffix: '后广告会自动隐藏。',
+        blocked: {
+          title: '广告被拦截了',
+          descriptionLine1: '广告收入用于服务器运营和支持作者。',
+          descriptionLine2: '如果能允许本站广告，将对我们有很大帮助。',
+          rewardHint: '如果能看到广告，点击即可赚取 Libo。',
+        },
+        loading: '加载中…',
       },
       manga: {
         loadError: '无法加载作品',

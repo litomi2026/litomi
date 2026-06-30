@@ -15,7 +15,7 @@ export default function ChatRealtime() {
 
   useEffect(() => {
     const nextRooms = new Set(
-      data?.threads.filter((thread) => thread.entitled).map((thread) => `b:${thread.artist.id}`) ?? [],
+      data?.threads.filter((thread) => thread.entitled).map((thread) => `b:${thread.artist.id}`),
     )
 
     // 1. 기존 방 중에서 목록에서 사라진 방 구독 취소
@@ -35,7 +35,7 @@ export default function ChatRealtime() {
     }
   }, [data?.threads, subscribeRoom, unsubscribeRoom])
 
-  // 3. 언마운트 시에만 전체 구독 취소
+  // NOTE: 언마운트 시에만 전체 구독 취소
   useEffect(() => {
     return () => {
       for (const room of currentRoomsRef.current) {
@@ -45,7 +45,7 @@ export default function ChatRealtime() {
     }
   }, [unsubscribeRoom])
 
-  // 다른 채팅방을 보고 있거나 홈 화면에 있더라도, 백그라운드에서 새 메시지를 캐치해서 앱 전체의 상태를 새로고침
+  // NOTE: 다른 채팅방을 보고 있거나 홈 화면에 있더라도, 백그라운드에서 새 메시지를 캐치해서 앱 전체의 상태를 새로고침
   useEffect(() => {
     return onMessage((room, msg) => {
       if (msg.kind === 'broadcast' && room.startsWith('b:')) {

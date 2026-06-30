@@ -1,7 +1,7 @@
 'use client'
 
 import { formatDistanceFromNow } from '@litomi/std'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import AdBlockedMessage from '../AdBlockedMessage'
@@ -44,9 +44,10 @@ export default function JuicyAdsSlot({
   onAdClick,
 }: Props) {
   const locale = useLocale()
-  const slotRef = useRef<HTMLDivElement>(null)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
   const [isScriptError, setIsScriptError] = useState(false)
+  const slotRef = useRef<HTMLDivElement>(null)
+  const t = useTranslations('Common.ads')
 
   const { dailyRemaining, isLoading, apiError, shouldDimAd, cooldownUntil, refresh, isAdBlocked } =
     useRewardedIframeAdSlot({
@@ -146,7 +147,7 @@ export default function JuicyAdsSlot({
           <ins className="block w-full h-full" data-height={height} data-width={width} id={String(zoneId)} />
           {isLoading && (
             <div className="absolute inset-0 bg-zinc-950/40 flex items-center justify-center">
-              <span className="text-xs font-medium text-zinc-200">불러오는 중이에요…</span>
+              <span className="text-xs font-medium text-zinc-200">{t('loading')}</span>
             </div>
           )}
         </div>
