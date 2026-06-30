@@ -1,27 +1,27 @@
-.git
-.next
-dist
-data
-node_modules
+**/.git
+**/.next
+**/dist
+**/data
+**/node_modules
 
 # OS / editors
-.DS_Store
-.idea
-.vscode
+**/.DS_Store
+**/.idea
+**/.vscode
 
 # Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-bun-debug.log*
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/bun-debug.log*
 
 # Tests / tooling caches
-playwright-report
-test-results
-.turbo
-.cache
-coverage
+**/playwright-report
+**/test-results
+**/.turbo
+**/.cache
+**/coverage
 
 # Mobile build artifacts
 apps/mobile/android/.gradle
@@ -30,4 +30,4 @@ apps/mobile/android/app/build
 apps/mobile/ios/App/build
 
 # Local env
-.env*
+**/.env*
