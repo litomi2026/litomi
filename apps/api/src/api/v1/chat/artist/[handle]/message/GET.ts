@@ -23,7 +23,7 @@ import { createFactory } from 'hono/factory'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { privateCacheControl } from '@/utils/cache-control'
+import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -79,7 +79,7 @@ route.get('/', ...middlewares, async (c) => {
     nextCursor: messages.length === limit ? (messages.at(-1)?.messageId ?? null) : null,
   }
 
-  return c.json<GETV1ChatMessagesResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+  return c.json<GETV1ChatMessagesResponse>(result, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
 // Owner view: each message plus how many unread replies it has (one batched GROUP BY).

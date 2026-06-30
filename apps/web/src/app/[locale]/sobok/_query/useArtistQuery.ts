@@ -18,5 +18,8 @@ export default function useArtistQuery(handle: string) {
     queryKey: QueryKeys.chatArtist(handle),
     queryFn: () => fetchChatArtist({ handle }),
     enabled: Boolean(handle),
+    // Role/entitlement can change (subscribe/lapse) — keep it fresh across navigation
+    // instead of the app-wide 10-min default.
+    staleTime: 0,
   })
 }

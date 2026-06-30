@@ -28,5 +28,7 @@ export default function useMessageReplyQuery(handle: string, messageId: string) 
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled: Boolean(handle) && Boolean(messageId),
+    // Realtime reply room: refetch on remount/focus rather than serving a 10-min-stale cache.
+    staleTime: 0,
   })
 }

@@ -1,5 +1,6 @@
 import type { PUTV1ChatReadBody } from '@litomi/contracts'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
 type Params = {
@@ -19,9 +20,16 @@ export async function markChatMessageRead({ handle, messageId, lastReadMessageId
 }
 
 export default function useMarkMessageReadMutation(handle: string, messageId: string) {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async ({ lastReadMessageId }: { lastReadMessageId: string }) => {
       await markChatMessageRead({ handle, messageId, lastReadMessageId })
+    },
+    // Synchronous server write (the cursor is persisted before the 204), so refetching the
+    // studio timeline now reliably reflects the now-zero unread count for this message.
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.chatMessages(handle) })
     },
   })
 }

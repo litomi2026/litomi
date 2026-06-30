@@ -17,7 +17,7 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { privateCacheControl } from '@/utils/cache-control'
+import { noStoreCacheControl } from '@/utils/cache-control'
 
 import { threadPreview, toArtistBrief } from '../lib'
 
@@ -47,7 +47,7 @@ route.get('/', requireAuth, async (c) => {
   ]
 
   if (items.length === 0) {
-    return c.json<GETV1ChatThreadsResponse>({ threads: [] }, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json<GETV1ChatThreadsResponse>({ threads: [] }, { headers: { 'Cache-Control': noStoreCacheControl } })
   }
 
   // The broadcast summary + read watermark drive each entitled row's preview & unread.
@@ -81,7 +81,7 @@ route.get('/', requireAuth, async (c) => {
   // Most-recently-active first; artists with no broadcast yet sink to the bottom.
   threads.sort((a, b) => (b.lastMessage?.messageId ?? '').localeCompare(a.lastMessage?.messageId ?? ''))
 
-  return c.json<GETV1ChatThreadsResponse>({ threads }, { headers: { 'Cache-Control': privateCacheControl } })
+  return c.json<GETV1ChatThreadsResponse>({ threads }, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
 export default route
