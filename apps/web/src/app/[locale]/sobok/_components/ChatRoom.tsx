@@ -1,16 +1,17 @@
 'use client'
 
-import type { ChatMessageContent, ChatMessageDTO, ChatRelayMessageDTO, ChatReplyDTO } from '@litomi/contracts'
-import { Check, CheckCheck, ChevronLeft, Image as ImageIcon, Send, X } from 'lucide-react'
+import type { ChatMessageDTO, ChatReplyDTO } from '@litomi/contracts'
+import { Check, CheckCheck, ChevronLeft, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import TextareaAutosize from 'react-textarea-autosize'
+import { avatarUrl, textOf, toChatMessageDTO } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useMarkReadMutation from '../_query/useMarkReadMutation'
 import useSendReplyMutation from '../_query/useSendReplyMutation'
+import ChatComposer from './ChatComposer'
 import { useChat } from './ChatProvider'
 
 interface TimelineEntry {
@@ -25,20 +26,6 @@ interface TimelineEntry {
 type FlatItem =
   | { id: string; kind: 'message'; message: ChatMessageDTO }
   | { id: string; kind: 'reply'; reply: ChatReplyDTO; read: boolean }
-
-function messageToMessage(msg: ChatRelayMessageDTO): ChatMessageDTO {
-  return {
-    messageId: msg.messageId,
-    senderId: msg.senderId,
-    contentType: msg.contentType,
-    content: msg.content,
-    createdAt: msg.createdAt,
-  }
-}
-
-function textOf(content: ChatMessageContent): string {
-  return 'text' in content && typeof content.text === 'string' ? content.text : '미디어'
-}
 
 export default function ChatRoom({ handle }: { handle: string }) {
   const [optimisticReplies, setOptimisticReplies] = useState<Record<string, ChatReplyDTO[]>>({})
@@ -81,10 +68,13 @@ export default function ChatRoom({ handle }: { handle: string }) {
 
     for (const [messageId, replies] of Object.entries(optimisticReplies)) {
       const entry = byId.get(messageId)
+
       if (!entry) {
         continue
       }
+
       const seen = new Set(entry.myReplies.map((r) => r.messageId))
+
       for (const reply of replies) {
         if (!seen.has(reply.messageId)) {
           entry.myReplies.push(reply)
@@ -93,20 +83,25 @@ export default function ChatRoom({ handle }: { handle: string }) {
     }
 
     const entries = [...byId.values()].sort((a, b) => a.message.messageId.localeCompare(b.message.messageId))
+
     for (const entry of entries) {
       entry.myReplies.sort((a, b) => a.messageId.localeCompare(b.messageId))
     }
+
     return entries
   }
 
   function getFlatItems(): FlatItem[] {
     const items: FlatItem[] = []
+
     for (const entry of timeline) {
       items.push({ id: entry.message.messageId, kind: 'message', message: entry.message })
+
       for (const reply of entry.myReplies) {
         items.push({ id: reply.messageId, kind: 'reply', reply, read: entry.artistRead })
       }
     }
+
     return items.sort((a, b) => a.id.localeCompare(b.id))
   }
 
@@ -123,8 +118,16 @@ export default function ChatRoom({ handle }: { handle: string }) {
     }
 
     const messageId = effectiveTargetId
+
     try {
-      const { messageId: replyMessageId } = await sendReply({ messageId, body: { contentType: 'text', text } })
+      const { messageId: replyMessageId } = await sendReply({
+        messageId,
+        body: {
+          contentType: 'text',
+          text,
+        },
+      })
+
       const reply: ChatReplyDTO = {
         messageId: replyMessageId,
         targetMessageId: messageId,
@@ -133,6 +136,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
         content: { text },
         createdAt: new Date().toISOString(),
       }
+
       setOptimisticReplies((prev) => ({ ...prev, [messageId]: [...(prev[messageId] ?? []), reply] }))
       setInput('')
       setReplyTargetId(null)
@@ -148,8 +152,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
     }
   }, [isOwner, handle, router])
 
-  // Live broadcast requires entitlement (the gateway rejects b: otherwise). Subscribe to
-  // new messages and append them; the fan never receives other fans' replies.
+  // Live broadcast requires entitlement (the gateway rejects b: otherwise).
   useEffect(() => {
     if (!artist || !entitled) {
       return
@@ -157,21 +160,29 @@ export default function ChatRoom({ handle }: { handle: string }) {
 
     const room = `b:${artist.id}`
     subscribeRoom(room)
-    const off = onMessage((msgRoom, msg) => {
+
+    return () => {
+      unsubscribeRoom(room)
+    }
+  }, [artist, entitled, subscribeRoom, unsubscribeRoom])
+
+  // Subscribe to new messages and append them; the fan never receives other fans' replies.
+  useEffect(() => {
+    if (!artist || !entitled) {
+      return
+    }
+
+    const room = `b:${artist.id}`
+
+    return onMessage((msgRoom, msg) => {
       if (msgRoom === room && msg.kind === 'broadcast') {
         setRealtimeMessages((prev) =>
-          prev.some((b) => b.messageId === msg.messageId) ? prev : [...prev, messageToMessage(msg)],
+          prev.some((b) => b.messageId === msg.messageId) ? prev : [...prev, toChatMessageDTO(msg)],
         )
       }
     })
+  }, [artist, entitled, onMessage])
 
-    return () => {
-      off()
-      unsubscribeRoom(room)
-    }
-  }, [artist, entitled, onMessage, subscribeRoom, unsubscribeRoom])
-
-  // Advance the broadcast read watermark as new messages arrive.
   useEffect(() => {
     if (entitled && latestMessageId) {
       markRead({ lastReadMessageId: latestMessageId })
@@ -232,7 +243,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
             <div key={item.id} className="flex justify-start w-full">
               <div className="flex max-w-[80%] flex-row items-end gap-2">
                 <img
-                  src={artist.imageURL || `https://ui-avatars.com/api/?name=${artist.displayName}&background=random`}
+                  src={avatarUrl(artist.displayName, artist.imageURL)}
                   alt=""
                   className="w-9 h-9 rounded-full object-cover shadow-sm border border-black/5 dark:border-white/10 shrink-0"
                 />
@@ -299,33 +310,13 @@ export default function ChatRoom({ handle }: { handle: string }) {
             구독이 만료되어 답장을 보낼 수 없어요. 재구독 후 이용해 주세요.
           </p>
         ) : (
-          <div className="flex items-end gap-2 bg-gray-100/60 dark:bg-white/5 rounded-3xl p-1.5 pr-2 focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all">
-            <button className="p-2 text-gray-400 hover:text-indigo-500 transition-colors shrink-0" type="button">
-              <ImageIcon className="w-[22px] h-[22px]" />
-            </button>
-            <TextareaAutosize
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault()
-                  void handleSend()
-                }
-              }}
-              placeholder="메시지를 입력하세요..."
-              className="flex-1 bg-transparent border-none py-[10px] px-1 text-[15px] text-gray-900 dark:text-white placeholder-gray-400 resize-none outline-none max-h-28"
-              maxRows={4}
-              disabled={isPending || !effectiveTargetId}
-            />
-            <button
-              className="p-[9px] bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-300 disabled:dark:bg-indigo-900 text-white rounded-full transition-all shrink-0 shadow-sm"
-              disabled={!input.trim() || isPending || !effectiveTargetId}
-              onClick={() => void handleSend()}
-              type="button"
-            >
-              <Send className="w-4 h-4 ml-0.5" />
-            </button>
-          </div>
+          <ChatComposer
+            value={input}
+            onChange={setInput}
+            onSend={() => void handleSend()}
+            placeholder="메시지를 입력하세요..."
+            disabled={isPending || !effectiveTargetId}
+          />
         )}
       </div>
     </div>

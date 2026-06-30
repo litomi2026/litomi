@@ -3,10 +3,10 @@ import { getChatArtistByUserId, hasActiveChatSubscription } from '@litomi/db/app
 // 채팅 스트림에 대한 실시간 구독(read) 권한을 처리합니다.
 //
 // 실시간 룸은 단 두 종류뿐이고, 접근 정책이 룸 id에 인코딩되어 있습니다:
-//   b:{artistId}   브로드캐스트 — 활성 구독자(결제 중) 또는 크리에이터 본인만
-//   c:{artistId}   크리에이터 인바운드 집계(모든 팬 답장 fan-in) — 크리에이터 본인만
+//   b:{artistId}   브로드캐스트 — 활성 구독자(결제 중) 또는 아티스트 본인만
+//   c:{artistId}   아티스트 인바운드 집계(모든 팬 답장 fan-in) — 아티스트 본인만
 //
-// 답장 저장 스트림 rb:{artistId}:{messageId}는 실시간 룸이 아닙니다 — 팬은 b:만, 크리에이터는
+// 답장 저장 스트림 rb:{artistId}:{messageId}는 실시간 룸이 아닙니다 — 팬은 b:만, 아티스트는
 // c:만 구독합니다. 따라서 rb:(또는 그 외 무엇이든) 구독 시도는 전부 거부됩니다.
 
 type ParsedStream = { kind: 'broadcast'; artistId: number } | { kind: 'artistInbound'; artistId: number }
@@ -45,7 +45,7 @@ async function resolveAccess(userId: number, streamId: string): Promise<boolean>
     return false
   }
 
-  // 인바운드 집계 채널은 오직 크리에이터 본인만 구독할 수 있습니다.
+  // 인바운드 집계 채널은 오직 아티스트 본인만 구독할 수 있습니다.
   if (parsed.kind === 'artistInbound') {
     return ownsArtist(userId, parsed.artistId)
   }

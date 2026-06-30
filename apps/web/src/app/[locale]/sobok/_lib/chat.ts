@@ -1,0 +1,38 @@
+import type { ChatMessageContent, ChatMessageDTO, ChatRelayMessageDTO } from '@litomi/contracts'
+
+export function textOf(content: ChatMessageContent): string {
+  return 'text' in content && typeof content.text === 'string' ? content.text : '미디어'
+}
+
+export function toChatMessageDTO(msg: ChatRelayMessageDTO): ChatMessageDTO {
+  return {
+    messageId: msg.messageId,
+    senderId: msg.senderId,
+    contentType: msg.contentType,
+    content: msg.content,
+    createdAt: msg.createdAt,
+  }
+}
+
+export function avatarUrl(name: string, imageURL: string | null | undefined): string {
+  return imageURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
+}
+
+// Merges fetched items with realtime ones, deduped by id (fetched wins), sorted ascending by
+// id. Chat ids are ULIDs, so id order is chronological — this is the canonical "infinite-query
+// pages ∪ realtime stream" reconciliation used by the studio rooms.
+export function mergeById<T>(fetched: T[], realtime: T[], idOf: (item: T) => string): T[] {
+  const byId = new Map<string, T>()
+
+  for (const item of fetched) {
+    byId.set(idOf(item), item)
+  }
+
+  for (const item of realtime) {
+    if (!byId.has(idOf(item))) {
+      byId.set(idOf(item), item)
+    }
+  }
+
+  return [...byId.values()].sort((a, b) => idOf(a).localeCompare(idOf(b)))
+}

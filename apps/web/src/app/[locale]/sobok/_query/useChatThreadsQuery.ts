@@ -13,6 +13,8 @@ export default function useChatThreadsQuery() {
   return useQuery({
     queryKey: QueryKeys.chatThreads,
     queryFn: fetchChatThreads,
-    staleTime: 1000 * 60, // 1 minute
+    // Realtime chat list: refetch on remount/focus. ChatRealtime also invalidates this on
+    // incoming broadcasts, and markRead invalidates it on read — so the unread badge stays live.
+    staleTime: 0,
   })
 }

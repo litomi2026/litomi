@@ -12,7 +12,7 @@ import { createFactory } from 'hono/factory'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { privateCacheControl } from '@/utils/cache-control'
+import { noStoreCacheControl } from '@/utils/cache-control'
 import { zProblemValidator } from '@/utils/validator'
 
 import { mapReply, requireOwnedArtist } from '../../../../../lib'
@@ -60,7 +60,7 @@ route.get('/', ...middlewares, async (c) => {
   }
 
   return c.json<GETV1ChatRepliesResponse>(result, {
-    headers: { 'Cache-Control': privateCacheControl },
+    headers: { 'Cache-Control': noStoreCacheControl },
   })
 })
 

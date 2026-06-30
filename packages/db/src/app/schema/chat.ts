@@ -43,7 +43,7 @@ export const chatSubscriptionTable = pgTable(
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
-    // 사용자가 같은 크리에이터에게 여러 개의 활성 구독을 갖는 것을 방지합니다.
+    // 사용자가 같은 아티스트에게 여러 개의 활성 구독을 갖는 것을 방지합니다.
     uniqueIndex('uq_active_chat_subscription').on(table.artistId, table.userId).where(sql`${table.status} = 'active'`),
     // Fan-out: enumerate the active subscribers of a artist.
     index('idx_chat_subscription_artist_status').on(table.artistId, table.status),

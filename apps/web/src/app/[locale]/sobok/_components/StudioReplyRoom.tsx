@@ -1,40 +1,37 @@
 'use client'
 
-import type { ChatMessageContent, ChatReplyWithFan } from '@litomi/contracts'
+import type { ChatReplyWithFan } from '@litomi/contracts'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type React from 'react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { avatarUrl, mergeById, textOf } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useMarkMessageReadMutation from '../_query/useMarkMessageReadMutation'
 import useMessageReplyQuery from '../_query/useMessageReplyQuery'
 import { useChat } from './ChatProvider'
 
-function messageIdOfReply(streamId: string): string | null {
-  const parts = streamId.split(':')
-  return parts[0] === 'rb' && parts.length === 3 ? parts[2] : null
-}
-
-function textOf(content: ChatMessageContent): string {
-  return 'text' in content && typeof content.text === 'string' ? content.text : '미디어'
-}
-
 export default function StudioReplyRoom({ handle, messageId }: { handle: string; messageId: string }) {
-  const router = useRouter()
-  const { subscribeRoom, unsubscribeRoom, onMessage } = useChat()
-
-  const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
-  const artist = artistData?.artist
-  const isOwner = artistData?.isOwner ?? false
-
-  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useMessageReplyQuery(handle, messageId)
-  const { mutate: markMessageRead } = useMarkMessageReadMutation(handle, messageId)
-
-  // Live replies arriving on the inbound channel for THIS message. The wire payload has
-  // no fan brief, so fall back to the sender id until a fetch fills it in (deduped by id).
   const [liveReplies, setLiveReplies] = useState<ChatReplyWithFan[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { subscribeRoom, unsubscribeRoom, onMessage } = useChat()
+  const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
+  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useMessageReplyQuery(handle, messageId)
+  const { mutate: markMessageRead } = useMarkMessageReadMutation(handle, messageId)
+  const router = useRouter()
+
+  const artist = artistData?.artist
+  const isOwner = artistData?.isOwner
+  const fetchedReplies = data?.pages.flatMap((page) => page.replies) ?? []
+  const replies = mergeById(fetchedReplies, liveReplies, (reply) => reply.messageId)
+  const newestReplyId = replies.at(-1)?.messageId ?? null
+
+  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
+    if (e.currentTarget.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
+    }
+  }
 
   useEffect(() => {
     if (artistData && !isOwner) {
@@ -49,49 +46,37 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
 
     const inboundRoom = `c:${artist.id}`
     subscribeRoom(inboundRoom)
-    const off = onMessage((msgRoom, msg) => {
-      if (msgRoom !== inboundRoom || msg.kind !== 'reply' || messageIdOfReply(msg.streamId) !== messageId) {
-        return
-      }
-      setLiveReplies((prev) =>
-        prev.some((r) => r.messageId === msg.messageId)
-          ? prev
-          : [
-              ...prev,
-              {
-                messageId: msg.messageId,
-                targetMessageId: messageId,
-                senderId: msg.senderId,
-                contentType: msg.contentType,
-                content: msg.content,
-                createdAt: msg.createdAt,
-                fan: null,
-              },
-            ],
-      )
-    })
 
     return () => {
-      off()
       unsubscribeRoom(inboundRoom)
     }
-  }, [artist, isOwner, messageId, onMessage, subscribeRoom, unsubscribeRoom])
+  }, [artist, isOwner, subscribeRoom, unsubscribeRoom])
 
-  const replies = useMemo<ChatReplyWithFan[]>(() => {
-    const byId = new Map<string, ChatReplyWithFan>()
-    for (const reply of data?.pages.flatMap((page) => page.replies) ?? []) {
-      byId.set(reply.messageId, reply)
+  useEffect(() => {
+    if (!artist || !isOwner) {
+      return
     }
-    // Live entries never overwrite a fetched one (which carries the fan brief).
-    for (const reply of liveReplies) {
-      if (!byId.has(reply.messageId)) {
-        byId.set(reply.messageId, reply)
+
+    const inboundRoom = `c:${artist.id}`
+
+    return onMessage((msgRoom, msg) => {
+      if (msgRoom !== inboundRoom || msg.kind !== 'reply' || msg.targetMessageId !== messageId) {
+        return
       }
-    }
-    return [...byId.values()].sort((a, b) => a.messageId.localeCompare(b.messageId))
-  }, [data, liveReplies])
 
-  const newestReplyId = replies.at(-1)?.messageId ?? null
+      const newReply: ChatReplyWithFan = {
+        messageId: msg.messageId,
+        targetMessageId: messageId,
+        senderId: msg.senderId,
+        contentType: msg.contentType,
+        content: msg.content,
+        createdAt: msg.createdAt,
+        fan: null,
+      }
+
+      setLiveReplies((prev) => (prev.some((r) => r.messageId === msg.messageId) ? prev : [...prev, newReply]))
+    })
+  }, [artist, isOwner, messageId, onMessage])
 
   // Mark the room read up to the newest reply → fans see "read" on their reply.
   useEffect(() => {
@@ -100,16 +85,9 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
     }
   }, [newestReplyId, handle, messageId, markMessageRead])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll to newest only when the count changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [replies.length])
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (e.currentTarget.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  }
 
   if (isArtistLoading || !artist || !isOwner) {
     return (
@@ -149,10 +127,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
             <div key={reply.messageId} className="flex justify-start w-full">
               <div className="flex max-w-[80%] flex-row items-end gap-2">
                 <img
-                  src={
-                    reply.fan?.imageURL ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(fanName)}&background=random`
-                  }
+                  src={avatarUrl(fanName, reply.fan?.imageURL)}
                   alt=""
                   className="w-9 h-9 rounded-full object-cover shadow-sm border border-black/5 dark:border-white/10 shrink-0"
                 />

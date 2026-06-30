@@ -6,7 +6,7 @@ import { createFactory } from 'hono/factory'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { privateCacheControl } from '@/utils/cache-control'
+import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -38,7 +38,7 @@ route.get('/', ...middlewares, async (c) => {
     entitled,
   }
 
-  return c.json<GETV1ChatArtistResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+  return c.json<GETV1ChatArtistResponse>(result, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
 export default route

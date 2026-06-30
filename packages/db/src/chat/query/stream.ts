@@ -1,17 +1,17 @@
 export type ChatMessageKind = 'broadcast' | 'reply'
 
-// 크리에이터가 모든 팬에게 보내는 "공지방(Broadcast)" — 말풍선(message)들이 쌓이는 스트림.
+// 아티스트가 모든 팬에게 보내는 "공지방(Broadcast)" — 말풍선(message)들이 쌓이는 스트림.
 export function toBroadcastStreamId(artistId: number): string {
   return `b:${artistId}`
 }
 
 // 말풍선(message) 하나에 달린 모든 팬의 답장이 모이는 "답장방" 스트림.
-// 팬은 append만 하고, 크리에이터만 방 전체를 읽습니다. 팬끼리는 서로의 답장을 볼 수 없습니다.
+// 팬은 append만 하고, 아티스트만 방 전체를 읽습니다. 팬끼리는 서로의 답장을 볼 수 없습니다.
 export function toMessageReplyStreamId(artistId: number, messageId: string): string {
   return `rb:${artistId}:${messageId}`
 }
 
-// 크리에이터의 실시간 인바운드 채널 — 모든 팬 답장이 fan-in 되는 곳(오너 전용 구독).
+// 아티스트의 실시간 인바운드 채널 — 모든 팬 답장이 fan-in 되는 곳(오너 전용 구독).
 // 저장 스트림이 아니라 Valkey 릴레이 전용 채널입니다(chat_message에 이 streamId로 저장되는 행은 없음).
 export function toArtistInboundChannel(artistId: number): string {
   return `c:${artistId}`

@@ -18,6 +18,7 @@ type RealtimeListener = (room: string, message: ChatRelayMessageDTO) => void
 type ChatContextType = {
   myUserId: number | null
   isConnected: boolean
+  connectionId: number
   subscribeRoom: (room: string) => void
   unsubscribeRoom: (room: string) => void
   onMessage: (listener: RealtimeListener) => () => void
@@ -33,6 +34,7 @@ const MAX_BACKOFF_MS = 30_000
 export default function ChatProvider({ children }: { children: ReactNode }) {
   const [myUserId, setMyUserId] = useState<number | null>(null)
   const [isConnected, setIsConnected] = useState(false)
+  const [connectionId, setConnectionId] = useState(0)
 
   const wsRef = useRef<WebSocket | null>(null)
   const roomCountsRef = useRef<Map<string, number>>(new Map())
@@ -46,6 +48,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
   const value = {
     myUserId,
     isConnected,
+    connectionId,
     subscribeRoom,
     unsubscribeRoom,
     onMessage,
@@ -75,6 +78,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
       attemptRef.current = 0
       lastActivityRef.current = Date.now()
       setIsConnected(true)
+      setConnectionId((id) => id + 1)
 
       for (const room of roomCountsRef.current.keys()) {
         ws.send(JSON.stringify({ t: 'sub', room }))
