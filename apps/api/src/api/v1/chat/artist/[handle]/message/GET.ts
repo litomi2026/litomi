@@ -124,15 +124,16 @@ async function buildFanMessages(
 
   const replyRows = await listOwnRepliesForMessages(artistId, fanId, messageIds)
 
-  // Group the fan's replies by messageId (ascending messageId within a message).
+  // Group the fan's replies by the message they target (NOT the reply's own id), so a
+  // message's myReplies can be looked up by message.messageId below.
   const repliesByMessage = new Map<string, ChatReplyDTO[]>()
   for (const row of replyRows) {
     const reply = mapReply(row)
-    const list = repliesByMessage.get(reply.messageId)
+    const list = repliesByMessage.get(reply.targetMessageId)
     if (list) {
       list.push(reply)
     } else {
-      repliesByMessage.set(reply.messageId, [reply])
+      repliesByMessage.set(reply.targetMessageId, [reply])
     }
   }
 

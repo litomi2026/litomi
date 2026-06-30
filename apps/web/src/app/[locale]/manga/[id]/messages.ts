@@ -283,8 +283,8 @@ export const messages = {
       donate: {
         action: 'Donate',
         shortAction: 'Donate',
-        title: 'Support the creator',
-        description: 'Use the Libo you earned to support the creators of works you like.',
+        title: 'Support the artist',
+        description: 'Use the Libo you earned to support the artists of works you like.',
         currentBalance: 'Current Libo',
         loading: 'Loading',
         liboAmount: '{amount} Libo',

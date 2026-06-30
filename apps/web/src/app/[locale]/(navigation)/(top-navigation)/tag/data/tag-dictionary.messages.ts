@@ -770,7 +770,7 @@ const ENTRIES_EN = {
   tag_rough_grammar:
     'Any 3rd party translation consisting of a required amount of sentences with a grammatical or spelling error. The requirement is defined by: Either 25% of the number of total translated pages (rounded to the nearest whole number), or 10, whichever is higher.',
   tag_rough_translation:
-    'Any 3rd party translation consisting of a required amount of text boxes/bubbles with a translation error. The requirement is defined by: Either 25% of the number of total translated pages (rounded to the nearest whole number), or 10, whichever is higher. Translation errors include missing context, missing author intent, omitted story/situation-relevant text on translated pages, or incorrect meaning.',
+    'Any 3rd party translation consisting of a required amount of text boxes/messages with a translation error. The requirement is defined by: Either 25% of the number of total translated pages (rounded to the nearest whole number), or 10, whichever is higher. Translation errors include missing context, missing author intent, omitted story/situation-relevant text on translated pages, or incorrect meaning.',
   tag_ruined_orgasm:
     'Halting a stimulation before a participant has reached orgasm. The participant must then reach their orgasm, typically in lower quality and intensity than usual, without any further stimulation.',
   tag_ryona: 'Violence, fighting, or beatings. Usually at a level that does NOT necessitate the torture tag.',

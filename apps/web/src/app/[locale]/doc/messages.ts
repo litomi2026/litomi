@@ -447,7 +447,7 @@ export const messages = {
         subtitle:
           'This page explains the service hosting structure and operating principles related to 18 U.S.C. §2257, §2257A, and 28 C.F.R. Part 75.',
         notice: {
-          p1: 'This notice is a general service-level notice. If an uploader or original creator provides a separate work-specific record-keeping statement, that work-specific notice controls for that work.',
+          p1: 'This notice is a general service-level notice. If an uploader or original artist provides a separate work-specific record-keeping statement, that work-specific notice controls for that work.',
           p2: 'The service does not guarantee individual notices provided by third-party uploaders, whether record-keeping obligations apply, or the legality of any specific work.',
         },
         sections: {
