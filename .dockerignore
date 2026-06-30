@@ -1,12 +1,11 @@
 **/.git
 **/.next
 **/dist
-**/data
+/data
 **/node_modules
 
 # OS / editors
 **/.DS_Store
-**/.idea
 **/.vscode
 
 # Logs

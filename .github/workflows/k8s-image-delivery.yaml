@@ -339,6 +339,98 @@ jobs:
           tags: ${{ steps.metadata_chat.outputs.tags }}
           labels: ${{ steps.metadata_chat.outputs.labels }}
 
+  build-and-publish-chat-worker-image:
+    name: Build and publish chat-worker image
+    if: ${{ github.ref_name == 'main' }}
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.build_chat_worker_image.outputs.digest }}
+    env:
+      IMAGE_CHAT_WORKER: ghcr.io/${{ github.repository_owner }}/litomi-chat-worker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Generate chat-worker image metadata
+        id: metadata_chat_worker
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE_CHAT_WORKER }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=raw,value=latest
+            type=ref,event=branch
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Authenticate to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish chat-worker image
+        id: build_chat_worker_image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/chat-worker/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.metadata_chat_worker.outputs.tags }}
+          labels: ${{ steps.metadata_chat_worker.outputs.labels }}
+
+  build-and-publish-chat-push-image:
+    name: Build and publish chat-push image
+    if: ${{ github.ref_name == 'main' }}
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.build_chat_push_image.outputs.digest }}
+    env:
+      IMAGE_CHAT_PUSH: ghcr.io/${{ github.repository_owner }}/litomi-chat-push
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Generate chat-push image metadata
+        id: metadata_chat_push
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE_CHAT_PUSH }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=raw,value=latest
+            type=ref,event=branch
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Authenticate to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish chat-push image
+        id: build_chat_push_image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/chat-push/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.metadata_chat_push.outputs.tags }}
+          labels: ${{ steps.metadata_chat_push.outputs.labels }}
+
   # ops 디지스트 승격(propose-ops) 작업에는 넣지 않는다(k8s 대상이 아님).
   build-and-publish-edge-proxy-image:
     name: Build and publish edge-proxy image
