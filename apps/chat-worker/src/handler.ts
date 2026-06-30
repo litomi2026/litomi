@@ -1,7 +1,6 @@
 import { getChatArtistBrief, getChatSenderBrief } from '@litomi/db/app/query/chat'
 import {
   type ChatMessageRow,
-  getKindFromStreamId,
   type ParsedStreamId,
   parseStreamId,
   putChatMessage,
@@ -20,7 +19,6 @@ const PUSH_BODY_MAX_LENGTH = 120
 export async function processChatMessage(event: ChatMessageEvent): Promise<void> {
   const parsed = parseStreamId(event.streamId)
   if (!parsed) {
-    // Unparseable streamId can never be routed; retrying won't help, so drop it.
     console.error('chat-worker: dropping message with invalid streamId', { streamId: event.streamId })
     return
   }
@@ -60,11 +58,11 @@ export async function processChatMessage(event: ChatMessageEvent): Promise<void>
   //    bucket so a reply storm can never flood the artist's socket. A dropped relay is
   //    still persisted, counted (server-side unread), and pushed.
   if (parsed.kind === 'broadcast') {
-    await publisherClient.publish(roomChannel(event.streamId), JSON.stringify(toClientMessage(row)))
+    await publisherClient.publish(roomChannel(event.streamId), JSON.stringify(toClientMessage(row, parsed)))
   } else if (await allowTickerRelay(parsed.artistId)) {
     await publisherClient.publish(
       roomChannel(toArtistInboundChannel(parsed.artistId)),
-      JSON.stringify(toClientMessage(row, replySender)),
+      JSON.stringify(toClientMessage(row, parsed, replySender)),
     )
   }
 
@@ -150,25 +148,28 @@ async function allowTickerRelay(artistId: number): Promise<boolean> {
   }
 }
 
-function toClientMessage(row: ChatMessageRow, sender?: ChatSenderBrief | null) {
-  const kind = getKindFromStreamId(row.streamId)
-  return {
+// Builds the wire envelope from a stored row. The target (broadcast) messageId for a reply
+// comes from the already-parsed streamId, so the client receives a semantic field and never
+// parses the internal `rb:{artistId}:{messageId}` key itself.
+function toClientMessage(row: ChatMessageRow, parsed: ParsedStreamId, sender?: ChatSenderBrief | null) {
+  const base = {
     messageId: row.messageId,
-    streamId: row.streamId,
     senderId: row.senderId,
-    kind,
     contentType: row.contentType,
     content: row.content,
     createdAt: row.createdAt.toISOString(),
-    // A reply always carries `sender` (null when the brief lookup missed); a broadcast omits it.
-    ...(kind === 'reply' &&
-      sender && {
-        sender: {
-          nickname: sender.nickname,
-          imageURL: sender.imageURL,
-        },
-      }),
   }
+
+  if (parsed.kind === 'reply') {
+    return {
+      ...base,
+      kind: 'reply' as const,
+      targetMessageId: parsed.messageId,
+      sender: sender ? { nickname: sender.nickname, imageURL: sender.imageURL } : null,
+    }
+  }
+
+  return { ...base, kind: 'broadcast' as const }
 }
 
 const FALLBACK_PREVIEWS: Record<string, string> = {

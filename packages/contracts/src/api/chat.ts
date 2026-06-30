@@ -69,22 +69,12 @@ export type ChatMessageContent =
   | { url: string; durationMs?: number }
   | { url: string; durationMs?: number; width?: number; height?: number }
 
-// Realtime relay envelope (Valkey → gateway → client). For a reply the client derives the
-// target messageId from streamId (`rb:{artistId}:{messageId}`). Discriminated by `kind`:
-// only a reply carries the fan's `sender` brief (for the studio's live ticker), a broadcast
-// never does — so broadcast-with-sender / reply-without are not representable.
-interface ChatRelayMessageBase {
-  messageId: string
-  streamId: string
-  senderId: number
-  contentType: ChatContentType
-  content: ChatMessageContent
-  createdAt: string
-}
-
 export type ChatRelayMessageDTO =
-  | (ChatRelayMessageBase & { kind: 'broadcast' })
-  | (ChatRelayMessageBase & { kind: 'reply'; sender: { nickname: string; imageURL: string | null } | null })
+  | (ChatMessageDTO & { kind: 'broadcast' })
+  | (ChatReplyDTO & {
+      kind: 'reply'
+      sender: { nickname: string; imageURL: string | null } | null
+    })
 
 // A broadcast message as seen on the timeline.
 export interface ChatMessageDTO {

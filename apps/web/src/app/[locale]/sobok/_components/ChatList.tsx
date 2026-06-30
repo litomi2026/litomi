@@ -3,6 +3,7 @@
 import type { GETV1ChatThreadsResponse } from '@litomi/contracts'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
+import { avatarUrl } from '../_lib/chat'
 import useChatThreadsQuery from '../_query/useChatThreadsQuery'
 
 type ChatThread = GETV1ChatThreadsResponse['threads'][number]
@@ -17,9 +18,7 @@ function ChatThreadItem({ thread }: { thread: ChatThread }) {
     >
       <div className="relative shrink-0">
         <img
-          src={
-            thread.artist.imageURL || `https://ui-avatars.com/api/?name=${thread.artist.displayName}&background=random`
-          }
+          src={avatarUrl(thread.artist.displayName, thread.artist.imageURL)}
           alt={thread.artist.displayName}
           className="w-14 h-14 rounded-full object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10"
         />
