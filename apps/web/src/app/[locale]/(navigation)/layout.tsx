@@ -28,7 +28,7 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
       <AutoHideHeader
         className={twMerge(
           'fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t bg-background/80 backdrop-blur transition',
-          'sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-1 sm:border-r-2 sm:border-t-0 sm:px-0 sm:py-safe sm:data-[auto-hide=true]:opacity-100',
+          'sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-1 sm:border-r sm:border-t-0 sm:px-0 sm:py-safe sm:data-[auto-hide=true]:opacity-100',
           '2xl:w-3xs',
         )}
       >
