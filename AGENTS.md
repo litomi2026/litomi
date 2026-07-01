@@ -20,6 +20,7 @@
 ## Web Rules
 
 - `apps/web`는 App Router + Server Components + Tailwind를 사용한다.
+  - Tailwind 디자인 시 `pt-[55px]` 등 동적 레이아웃은 지양한다.
 - Next.js는 HTML 서버로만 사용한다.
 - Next API route는 probe 정도만 허용한다.
 - Server Action은 사용하지 않는다.

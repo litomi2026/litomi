@@ -14,22 +14,22 @@ function ChatThreadItem({ thread }: { thread: ChatThread }) {
   return (
     <Link
       href={`/sobok/${handle}`}
-      className="flex items-center gap-4 p-3 rounded-2xl transition-all active:scale-[0.98] active:bg-gray-50 dark:active:bg-white/5"
+      className="flex items-center gap-4 p-3 rounded-2xl transition-all active:scale-[0.98] active:bg-foreground/5"
     >
       <div className="relative shrink-0">
         <img
           src={avatarUrl(thread.artist.displayName, thread.artist.imageURL)}
           alt={thread.artist.displayName}
-          className="w-14 h-14 rounded-full object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+          className="w-14 h-14 rounded-full object-cover shadow-sm ring-1 ring-foreground/10"
         />
       </div>
-      <div className="flex-1 min-w-0 border-b border-gray-100 dark:border-white/5 pb-3 pt-1">
+      <div className="flex-1 min-w-0 border-b border-foreground/10 pb-3 pt-1">
         <div className="flex justify-between items-center mb-1">
-          <h3 className="font-semibold text-[16px] truncate text-gray-900 dark:text-white">
+          <h3 className="font-semibold text-base truncate text-foreground">
             {thread.artist.emoji && <span className="mr-1.5">{thread.artist.emoji}</span>}
             {thread.artist.displayName}
           </h3>
-          <span className="text-xs font-medium text-gray-400 shrink-0">
+          <span className="text-xs font-medium text-zinc-400 shrink-0">
             {thread.lastMessage?.createdAt
               ? new Date(thread.lastMessage.createdAt).toLocaleTimeString([], {
                   hour: '2-digit',
@@ -39,11 +39,11 @@ function ChatThreadItem({ thread }: { thread: ChatThread }) {
           </span>
         </div>
         <div className="flex justify-between items-center gap-2">
-          <p className="text-[14px] text-gray-500 dark:text-gray-400 truncate flex-1">
+          <p className="text-sm text-zinc-400 truncate flex-1">
             {thread.lastMessage?.preview || '새로운 메시지를 기다리고 있어요'}
           </p>
           {thread.unreadCount > 0 && (
-            <div className="w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center text-[11px] font-bold text-white shadow-sm shrink-0">
+            <div className="w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0">
               {thread.unreadCount}
             </div>
           )}
@@ -58,11 +58,11 @@ function ChatThreadList() {
   const threads = data?.threads
 
   if (isLoading) {
-    return <div className="p-4 text-center text-sm text-gray-500">Loading chats...</div>
+    return <div className="p-4 text-center text-sm text-zinc-400">Loading chats...</div>
   }
 
   if (!threads || threads.length === 0) {
-    return <div className="p-4 text-center text-sm text-gray-500">No active chats</div>
+    return <div className="p-4 text-center text-sm text-zinc-400">No active chats</div>
   }
 
   return (
@@ -76,16 +76,16 @@ function ChatThreadList() {
 
 export default function ChatList() {
   return (
-    <div className="flex-1 flex flex-col h-full bg-white dark:bg-[#0a0a0c]">
+    <div className="flex-1 flex flex-col h-full bg-background">
       {/* Header */}
-      <div className="px-5 pt-14 pb-4 sticky top-0 bg-white/80 dark:bg-[#0a0a0c]/80 backdrop-blur-xl z-10">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">Chats</h1>
+      <div className="px-5 pt-14 pb-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
+        <h1 className="text-2xl font-bold text-foreground mb-4 tracking-tight">Chats</h1>
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
           <input
             type="text"
             placeholder="Search artist..."
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-100 dark:bg-white/5 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all text-[15px] placeholder:text-gray-400 text-gray-900 dark:text-white"
+            className="w-full pl-10 pr-4 py-2.5 bg-zinc-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all text-base placeholder:text-zinc-400 text-foreground"
           />
         </div>
       </div>

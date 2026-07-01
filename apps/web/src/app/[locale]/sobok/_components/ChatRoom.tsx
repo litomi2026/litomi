@@ -13,6 +13,7 @@ import useMarkReadMutation from '../_query/useMarkReadMutation'
 import useSendReplyMutation from '../_query/useSendReplyMutation'
 import ChatComposer from './ChatComposer'
 import { useChat } from './ChatProvider'
+import ComposerDock from './ComposerDock'
 
 interface TimelineEntry {
   message: ChatMessageDTO
@@ -219,16 +220,16 @@ export default function ChatRoom({ handle }: { handle: string }) {
 
   if (isArtistLoading || !artist || isOwner) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#A6D5E9]/10 dark:bg-[#0a0a0c]">
-        <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-200 dark:bg-indigo-900" />
+      <div className="flex-1 flex items-center justify-center bg-background">
+        <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-500/30" />
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center bg-[#A6D5E9]/10 dark:bg-[#0a0a0c]">
-        <p className="text-[15px] text-gray-600 dark:text-gray-300">이 아티스트의 채팅을 보려면 구독이 필요해요.</p>
+      <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center bg-background">
+        <p className="text-base text-zinc-300">이 아티스트의 채팅을 보려면 구독이 필요해요.</p>
         <Link href="/sobok" className="text-indigo-500 font-semibold text-sm">
           채팅 목록으로
         </Link>
@@ -237,17 +238,14 @@ export default function ChatRoom({ handle }: { handle: string }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#A6D5E9]/15 dark:bg-[#0a0a0c] relative">
+    <div className="flex flex-col h-full bg-background relative">
       {/* Header */}
-      <div className="h-14 flex items-center justify-between px-2 border-b border-gray-200/40 dark:border-white/5 bg-white/80 dark:bg-[#0a0a0c]/80 backdrop-blur-xl absolute top-0 w-full z-10">
+      <div className="h-14 shrink-0 flex items-center justify-between px-2 border-b border-foreground/10 bg-background/80">
         <div className="flex items-center gap-2">
-          <Link
-            href="/sobok"
-            className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
-          >
+          <Link href="/sobok" className="p-2 text-zinc-400 hover:text-foreground transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </Link>
-          <h2 className="font-bold text-[17px] text-gray-900 dark:text-white flex items-center gap-1.5">
+          <h2 className="font-bold text-lg text-foreground flex items-center gap-1.5">
             {artist.displayName}
             {artist.emoji && <span>{artist.emoji}</span>}
           </h2>
@@ -257,9 +255,9 @@ export default function ChatRoom({ handle }: { handle: string }) {
       {/* Messages */}
       <div
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 pt-[72px] pb-6 space-y-4 custom-scrollbar flex flex-col"
+        className="flex-1 overflow-y-auto px-4 pt-4 pb-(--sobok-dock-h) space-y-4 custom-scrollbar flex flex-col"
       >
-        {isFetchingNextPage && <div className="text-center text-xs text-gray-400 py-2">불러오는 중...</div>}
+        {isFetchingNextPage && <div className="text-center text-xs text-zinc-400 py-2">불러오는 중...</div>}
 
         {flatItems.map((item) => {
           if (item.kind === 'message') {
@@ -280,7 +278,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
                   <img
                     src={avatarUrl(artist.displayName, artist.imageURL)}
                     alt=""
-                    className="w-9 h-9 rounded-full object-cover shadow-sm border border-black/5 dark:border-white/10 shrink-0"
+                    className="w-9 h-9 rounded-full object-cover shadow-sm border border-foreground/10 shrink-0"
                   />
                   <div className="flex items-end gap-1.5">
                     <button
@@ -288,15 +286,13 @@ export default function ChatRoom({ handle }: { handle: string }) {
                       onClick={() =>
                         setReplyTargetId(item.message.messageId === latestMessageId ? null : item.message.messageId)
                       }
-                      className={`text-left px-3.5 py-2 rounded-2xl rounded-bl-[4px] shadow-sm text-[15px] leading-relaxed wrap-break-word whitespace-pre-wrap bg-white dark:bg-white/10 text-gray-900 dark:text-white border transition-all ${
-                        replyTargetId === item.message.messageId
-                          ? 'border-indigo-400 dark:border-indigo-500'
-                          : 'border-gray-100/50 dark:border-white/5'
+                      className={`text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border transition-all ${
+                        replyTargetId === item.message.messageId ? 'border-indigo-400' : 'border-foreground/10'
                       } ${highlightedId === item.message.messageId ? 'ring-2 ring-indigo-400/80' : ''}`}
                     >
                       {textOf(item.message.content)}
                     </button>
-                    <span className="text-[10px] text-gray-400 mb-0.5 shrink-0 font-medium">
+                    <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
                       {new Date(item.message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
@@ -316,7 +312,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
             <div key={item.id} className="flex justify-end w-full">
               <div className="flex max-w-[80%] flex-col items-end">
                 <div className="flex items-end gap-1.5 flex-row-reverse">
-                  <div className="flex flex-col gap-1.5 px-3.5 py-2 rounded-2xl rounded-br-[4px] shadow-sm text-[15px] leading-relaxed bg-[#ffe800] dark:bg-indigo-500 text-gray-900 dark:text-white">
+                  <div className="flex flex-col gap-1.5 px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed bg-indigo-500 text-white">
                     {target && (
                       <QuotedMessage
                         label={artist.displayName}
@@ -331,9 +327,9 @@ export default function ChatRoom({ handle }: { handle: string }) {
                     {item.read ? (
                       <CheckCheck className="w-3.5 h-3.5 text-indigo-400" />
                     ) : (
-                      <Check className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
+                      <Check className="w-3.5 h-3.5 text-zinc-600" />
                     )}
-                    <span className="text-[10px] text-gray-400 font-medium">
+                    <span className="text-[10px] text-zinc-400 font-medium">
                       {new Date(item.reply.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
@@ -345,30 +341,31 @@ export default function ChatRoom({ handle }: { handle: string }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Reply-target preview when answering an older message */}
-      {replyingToOlder && replyTarget && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 border-t border-indigo-100 dark:border-indigo-500/20 z-10">
-          <QuotedMessage
-            className="flex-1"
-            label={`${artist.displayName}에게 답장`}
-            onClick={() => scrollToMessage(replyTarget.messageId)}
-            preview={contentPreview(replyTarget.contentType, replyTarget.content)}
-            variant="standalone"
-          />
-          <button
-            type="button"
-            onClick={() => setReplyTargetId(null)}
-            className="p-1 shrink-0 text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Input */}
-      <div className="bg-white/90 dark:bg-[#0a0a0c]/90 backdrop-blur-2xl border-t border-gray-200/50 dark:border-white/5 p-2.5 pb-[max(env(safe-area-inset-bottom),0.5rem)] z-10">
+      {/* Composer island — reply-target chip docks above the input on the same surface */}
+      <ComposerDock
+        preview={
+          entitled && replyingToOlder && replyTarget ? (
+            <div className="flex items-center gap-2 px-3 py-2">
+              <QuotedMessage
+                className="flex-1"
+                label={`${artist.displayName}에게 답장`}
+                onClick={() => scrollToMessage(replyTarget.messageId)}
+                preview={contentPreview(replyTarget.contentType, replyTarget.content)}
+                variant="standalone"
+              />
+              <button
+                type="button"
+                onClick={() => setReplyTargetId(null)}
+                className="p-1 shrink-0 text-indigo-500 hover:text-indigo-400"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : null
+        }
+      >
         {!entitled ? (
-          <p className="text-center text-[13px] text-gray-500 dark:text-gray-400 py-2">
+          <p className="text-center text-sm text-zinc-400 py-3 px-4">
             구독이 만료되어 답장을 보낼 수 없어요. 재구독 후 이용해 주세요.
           </p>
         ) : (
@@ -380,7 +377,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
             disabled={isPending || !effectiveTargetId}
           />
         )}
-      </div>
+      </ComposerDock>
     </div>
   )
 }
@@ -409,13 +406,9 @@ type Props = {
 }
 
 function QuotedMessage({ label, preview, onClick, variant, className = '' }: Props) {
-  const accent = variant === 'onMessage' ? 'border-black/25 dark:border-white/45' : 'border-indigo-400'
-
-  const labelTone =
-    variant === 'onMessage' ? 'text-gray-900/80 dark:text-white' : 'text-indigo-700 dark:text-indigo-300'
-
-  const previewTone =
-    variant === 'onMessage' ? 'text-gray-800/65 dark:text-white/75' : 'text-indigo-600/80 dark:text-indigo-300/70'
+  const accent = variant === 'onMessage' ? 'border-white/45' : 'border-indigo-400'
+  const labelTone = variant === 'onMessage' ? 'text-white' : 'text-indigo-500'
+  const previewTone = variant === 'onMessage' ? 'text-white/75' : 'text-zinc-400'
 
   return (
     <button
@@ -423,8 +416,8 @@ function QuotedMessage({ label, preview, onClick, variant, className = '' }: Pro
       onClick={onClick}
       className={`flex min-w-0 flex-col items-start border-l-2 pl-2 text-left transition-opacity hover:opacity-70 ${accent} ${className}`}
     >
-      <span className={`max-w-full truncate text-[11px] font-semibold ${labelTone}`}>{label}</span>
-      <span className={`line-clamp-1 max-w-full text-[12px] leading-snug ${previewTone}`}>{preview}</span>
+      <span className={`max-w-full truncate text-xs font-semibold ${labelTone}`}>{label}</span>
+      <span className={`line-clamp-1 max-w-full text-xs leading-snug ${previewTone}`}>{preview}</span>
     </button>
   )
 }
