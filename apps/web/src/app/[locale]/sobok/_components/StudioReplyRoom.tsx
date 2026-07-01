@@ -4,17 +4,16 @@ import type { ChatReplyWithFan } from '@litomi/contracts'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { avatarUrl, mergeById, textOf } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useMarkMessageReadMutation from '../_query/useMarkMessageReadMutation'
 import useMessageReplyQuery from '../_query/useMessageReplyQuery'
+import ChatMessageList from './ChatMessageList'
 import { useChat } from './ChatProvider'
 
 export default function StudioReplyRoom({ handle, messageId }: { handle: string; messageId: string }) {
   const [liveReplies, setLiveReplies] = useState<ChatReplyWithFan[]>([])
-  const messagesEndRef = useRef<HTMLDivElement>(null)
   const { subscribeRoom, unsubscribeRoom, onMessage } = useChat()
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useMessageReplyQuery(handle, messageId)
@@ -26,12 +25,6 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
   const fetchedReplies = data?.pages.flatMap((page) => page.replies) ?? []
   const replies = mergeById(fetchedReplies, liveReplies, (reply) => reply.messageId)
   const newestReplyId = replies.at(-1)?.messageId ?? null
-
-  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
-    if (e.currentTarget.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  }
 
   useEffect(() => {
     if (artistData && !isOwner) {
@@ -85,10 +78,6 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
     }
   }, [newestReplyId, handle, messageId, markMessageRead])
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [replies.length])
-
   if (isArtistLoading || !artist || !isOwner) {
     return (
       <div className="flex-1 flex items-center justify-center bg-background">
@@ -108,20 +97,18 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
       </div>
 
       {/* Replies (all fans; the artist reads the whole room) */}
-      <div
-        onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 pt-4 pb-6 space-y-4 custom-scrollbar flex flex-col"
-      >
-        {isFetchingNextPage && <div className="text-center text-xs text-zinc-400 py-2">불러오는 중...</div>}
-
-        {replies.length === 0 && (
-          <div className="flex-1 flex items-center justify-center text-sm text-zinc-400">아직 답장이 없어요.</div>
-        )}
-
-        {replies.map((reply) => {
+      <ChatMessageList
+        bottomInsetClassName="pb-6"
+        emptyState={<p className="text-sm text-zinc-400">아직 답장이 없어요.</p>}
+        hasOlder={hasNextPage}
+        isLoadingOlder={isFetchingNextPage}
+        itemKey={(reply) => reply.messageId}
+        items={replies}
+        onLoadOlder={fetchNextPage}
+        renderItem={(reply) => {
           const fanName = reply.fan?.nickname || `팬 #${reply.senderId}`
           return (
-            <div key={reply.messageId} className="flex justify-start w-full">
+            <div className="flex justify-start w-full">
               <div className="flex max-w-[80%] flex-row items-end gap-2">
                 <img
                   src={avatarUrl(fanName, reply.fan?.imageURL)}
@@ -142,9 +129,8 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
               </div>
             </div>
           )
-        })}
-        <div ref={messagesEndRef} />
-      </div>
+        }}
+      />
     </div>
   )
 }

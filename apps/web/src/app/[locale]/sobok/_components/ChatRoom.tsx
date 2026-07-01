@@ -4,7 +4,6 @@ import type { ChatMessageDTO, ChatReplyDTO } from '@litomi/contracts'
 import { Check, CheckCheck, ChevronLeft, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { avatarUrl, contentPreview, textOf, toChatMessageDTO } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
@@ -12,6 +11,7 @@ import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useMarkReadMutation from '../_query/useMarkReadMutation'
 import useSendReplyMutation from '../_query/useSendReplyMutation'
 import ChatComposer from './ChatComposer'
+import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import { useChat } from './ChatProvider'
 import ComposerDock from './ComposerDock'
 
@@ -31,8 +31,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
   const [replyTargetId, setReplyTargetId] = useState<string | null>(null)
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const [input, setInput] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const messageRefs = useRef(new Map<string, HTMLDivElement>())
+  const listRef = useRef<ChatMessageListHandle>(null)
   const { myUserId, subscribeRoom, unsubscribeRoom, onMessage } = useChat()
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage, isError } = useChatMessageQuery(handle)
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
@@ -108,20 +107,10 @@ export default function ChatRoom({ handle }: { handle: string }) {
     return items.sort((a, b) => a.id.localeCompare(b.id))
   }
 
-  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
-    if (e.currentTarget.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  }
-
-  // Jump to the message a reply quotes and flash it briefly.
+  // Jump to the message a reply quotes and flash it briefly. The target may be virtualized out of
+  // the DOM, so we scroll by index through the list rather than holding a node ref.
   function scrollToMessage(messageId: string) {
-    const el = messageRefs.current.get(messageId)
-    if (!el) {
-      return
-    }
-
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    listRef.current?.scrollToKey(messageId, { align: 'center' })
     setHighlightedId(messageId)
   }
 
@@ -154,6 +143,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
       setOptimisticReplies((prev) => ({ ...prev, [messageId]: [...(prev[messageId] ?? []), reply] }))
       setInput('')
       setReplyTargetId(null)
+      listRef.current?.scrollToBottom()
     } catch {
       // Surface nothing inline; the input keeps the text so the fan can retry.
     }
@@ -214,10 +204,6 @@ export default function ChatRoom({ handle }: { handle: string }) {
     return () => window.clearTimeout(timer)
   }, [highlightedId])
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [flatItems.length])
-
   if (isArtistLoading || !artist || isOwner) {
     return (
       <div className="flex-1 flex items-center justify-center bg-background">
@@ -253,27 +239,19 @@ export default function ChatRoom({ handle }: { handle: string }) {
       </div>
 
       {/* Messages */}
-      <div
-        onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 pt-4 pb-(--sobok-dock-h) space-y-4 custom-scrollbar flex flex-col"
-      >
-        {isFetchingNextPage && <div className="text-center text-xs text-zinc-400 py-2">불러오는 중...</div>}
-
-        {flatItems.map((item) => {
+      <ChatMessageList
+        bottomInsetClassName="pb-[var(--sobok-dock-h)]"
+        hasOlder={hasNextPage}
+        isLoadingOlder={isFetchingNextPage}
+        itemKey={(item) => item.id}
+        items={flatItems}
+        onLoadOlder={fetchNextPage}
+        ref={listRef}
+        renderItem={(item) => {
           if (item.kind === 'message') {
             // Artist message — tap to target it for the next reply, or land here from a reply's quote.
             return (
-              <div
-                key={item.id}
-                ref={(el) => {
-                  if (el) {
-                    messageRefs.current.set(item.message.messageId, el)
-                  } else {
-                    messageRefs.current.delete(item.message.messageId)
-                  }
-                }}
-                className="flex justify-start w-full scroll-mt-20"
-              >
+              <div className="flex justify-start w-full">
                 <div className="flex max-w-[80%] flex-row items-end gap-2">
                   <img
                     src={avatarUrl(artist.displayName, artist.imageURL)}
@@ -309,7 +287,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
             : null
 
           return (
-            <div key={item.id} className="flex justify-end w-full">
+            <div className="flex justify-end w-full">
               <div className="flex max-w-[80%] flex-col items-end">
                 <div className="flex items-end gap-1.5 flex-row-reverse">
                   <div className="flex flex-col gap-1.5 px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed bg-indigo-500 text-white">
@@ -337,9 +315,9 @@ export default function ChatRoom({ handle }: { handle: string }) {
               </div>
             </div>
           )
-        })}
-        <div ref={messagesEndRef} />
-      </div>
+        }}
+        scrollButtonClassName="bottom-[calc(var(--sobok-dock-h)+0.75rem)] right-4"
+      />
 
       {/* Composer island — reply-target chip docks above the input on the same surface */}
       <ComposerDock

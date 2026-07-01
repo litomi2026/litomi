@@ -5,13 +5,13 @@ import { MessageCircle, Users } from 'lucide-react'
 import ms from 'ms'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { avatarUrl, mergeById, textOf, toChatMessageDTO } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useSendMessageMutation from '../_query/useSendMessageMutation'
 import ChatComposer from './ChatComposer'
+import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import { useChat } from './ChatProvider'
 import ComposerDock from './ComposerDock'
 
@@ -37,7 +37,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
   const [realtimeMessages, setRealtimeMessages] = useState<ChatMessageDTO[]>([])
   const [liveReplies, setLiveReplies] = useState<LiveReply[]>([])
   const [input, setInput] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<ChatMessageListHandle>(null)
   const { subscribeRoom, unsubscribeRoom, onMessage } = useChat()
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
   const { mutateAsync: sendMessage, isPending } = useSendMessageMutation(handle)
@@ -56,12 +56,6 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
   const messages = mergeById(fetchedRows, realtimeRows, (row) => row.message.messageId)
   const artist = artistData?.artist
   const isOwner = artistData?.isOwner
-
-  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
-    if (e.currentTarget.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  }
 
   async function handleSend() {
     const text = input.trim()
@@ -82,6 +76,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
 
       setRealtimeMessages((prev) => (prev.some((b) => b.messageId === messageId) ? prev : [...prev, newMessage]))
       setInput('')
+      listRef.current?.scrollToBottom()
     } catch {
       // Keep the text so the artist can retry.
     }
@@ -143,10 +138,6 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
     })
   }, [artist, isOwner, onMessage])
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages.length])
-
   if (isArtistLoading || !artist || !isOwner) {
     return (
       <div className="flex-1 flex items-center justify-center bg-background">
@@ -194,51 +185,55 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
       )}
 
       {/* Message feed */}
-      <div
-        onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 pt-4 pb-(--sobok-dock-h) space-y-3 custom-scrollbar flex flex-col"
-      >
-        {isFetchingNextPage && <div className="text-center text-xs text-zinc-400 py-2">불러오는 중...</div>}
-
-        <div className="text-center my-2">
-          <span className="bg-foreground/10 text-zinc-400 text-xs px-3 py-1.5 rounded-full font-medium">
-            여기서 보내는 메시지는 모든 팬에게 전송됩니다.
-          </span>
-        </div>
-
-        {messages.map((row) => {
-          const unread = row.unreadReplyCount
-          return (
-            <div key={row.message.messageId} className="flex justify-end w-full">
-              <div className="flex flex-col items-end gap-1 max-w-[80%]">
-                <div className="flex items-end gap-1.5 flex-row-reverse">
-                  <div className="px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-indigo-500 text-white">
-                    {textOf(row.message.content)}
-                  </div>
-                  <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
-                    {new Date(row.message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+      <ChatMessageList
+        banner={
+          <div className="text-center my-2">
+            <span className="bg-foreground/10 text-zinc-400 text-xs px-3 py-1.5 rounded-full font-medium">
+              여기서 보내는 메시지는 모든 팬에게 전송됩니다.
+            </span>
+          </div>
+        }
+        bottomInsetClassName="pb-[var(--sobok-dock-h)]"
+        gapClassName="pb-3"
+        hasOlder={hasNextPage}
+        isLoadingOlder={isFetchingNextPage}
+        itemKey={(row) => row.message.messageId}
+        items={messages}
+        onLoadOlder={fetchNextPage}
+        ref={listRef}
+        renderItem={(row) => (
+          <div className="flex justify-end w-full">
+            <div className="flex flex-col items-end gap-1 max-w-[80%]">
+              <div className="flex items-end gap-1.5 flex-row-reverse">
+                <div className="px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-indigo-500 text-white">
+                  {textOf(row.message.content)}
                 </div>
-                <Link
-                  href={`/sobok/studio/${handle}/message/${row.message.messageId}`}
-                  className="flex items-center gap-1 text-xs font-medium text-indigo-500 hover:text-indigo-600 transition-colors"
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  답장방{unread > 0 ? ` · ${unread > 999 ? '999+' : unread} 새 답장` : ''}
-                </Link>
+                <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
+                  {new Date(row.message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
               </div>
+              <Link
+                href={`/sobok/studio/${handle}/message/${row.message.messageId}`}
+                className="flex items-center gap-1 text-xs font-medium text-indigo-500 hover:text-indigo-600 transition-colors"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                답장방
+                {row.unreadReplyCount > 0
+                  ? ` · ${row.unreadReplyCount > 999 ? '999+' : row.unreadReplyCount} 새 답장`
+                  : ''}
+              </Link>
             </div>
-          )
-        })}
-        <div ref={messagesEndRef} />
-      </div>
+          </div>
+        )}
+        scrollButtonClassName="bottom-[calc(var(--sobok-dock-h)+0.75rem)] right-4"
+      />
 
       {/* Composer island */}
       <ComposerDock>
         <ChatComposer
           value={input}
           onChange={setInput}
-          onSend={() => void handleSend()}
+          onSend={handleSend}
           placeholder="팬들에게 보낼 메시지를 입력하세요..."
           disabled={isPending}
         />
