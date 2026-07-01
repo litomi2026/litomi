@@ -1,5 +1,6 @@
-import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
+import { MANGA_DESCRIPTION_MAX_LENGTH, MANGA_TITLE_MAX_LENGTH } from '@litomi/domain/manga/policy'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
+import { truncateAtWordBoundary } from '@litomi/std'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
@@ -32,9 +33,9 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/manga/[i
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'Metadata.manga' })
   const manga = await getManga(id, locale)
-  const mangaTitle = (manga?.title ?? t('fallbackTitle', { id })).slice(0, MAX_MANGA_TITLE_LENGTH)
+  const mangaTitle = truncateAtWordBoundary(manga?.title ?? t('fallbackTitle', { id }), MANGA_TITLE_MAX_LENGTH)
   const title = t('detailTitle', { title: mangaTitle })
-  const description = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
+  const description = manga?.description?.slice(0, MANGA_DESCRIPTION_MAX_LENGTH)
 
   return {
     title,

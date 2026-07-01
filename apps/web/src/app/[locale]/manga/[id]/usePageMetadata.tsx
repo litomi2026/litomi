@@ -1,6 +1,7 @@
 import { APP_METADATA } from '@litomi/domain/app/metadata'
 import type { PublicLocale } from '@litomi/domain/locale'
-import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
+import { MANGA_DESCRIPTION_MAX_LENGTH, MANGA_TITLE_MAX_LENGTH } from '@litomi/domain/manga/policy'
+import { truncateAtWordBoundary } from '@litomi/std'
 import { useLocale } from 'next-intl'
 import { useEffect } from 'react'
 
@@ -16,7 +17,7 @@ export default function usePageMetadata({ title, description, image }: Props) {
 
   useEffect(() => {
     if (title) {
-      const fullTitle = `${title.slice(0, MAX_MANGA_TITLE_LENGTH)} - ${shortName}`
+      const fullTitle = `${truncateAtWordBoundary(title, MANGA_TITLE_MAX_LENGTH)} - ${shortName}`
       document.title = fullTitle
       updateMetaTag('property', 'og:title', fullTitle)
       updateMetaTag('name', 'twitter:title', fullTitle)
@@ -25,7 +26,7 @@ export default function usePageMetadata({ title, description, image }: Props) {
 
   useEffect(() => {
     if (description) {
-      const slicedDescription = description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
+      const slicedDescription = description.slice(0, MANGA_DESCRIPTION_MAX_LENGTH)
       updateMetaTag('name', 'description', slicedDescription)
       updateMetaTag('property', 'og:description', slicedDescription)
       updateMetaTag('name', 'twitter:description', slicedDescription)
