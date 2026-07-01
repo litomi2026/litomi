@@ -14,7 +14,7 @@ export function isAdultVerified(me: GETV1MeResponse | null | undefined) {
 
 export function shouldShowAds(me: GETV1MeResponse | null | undefined): boolean {
   if (me === undefined) {
-    return false
+    return true
   }
 
   if (me === null) {
