@@ -45,11 +45,6 @@ export default function MangaPage({ id, initialManga }: Props) {
   // NOTE: 클라이언트 측에서 메타데이터를 업데이트 해요
   usePageMetadata(metadata)
 
-  // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 깜빡임을 막아요.
-  if (me === undefined) {
-    return null
-  }
-
   if (isAdsVisible) {
     return (
       <div className="flex h-full flex-col gap-4 items-center justify-center p-4">
