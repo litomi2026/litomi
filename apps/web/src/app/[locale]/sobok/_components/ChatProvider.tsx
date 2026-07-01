@@ -1,8 +1,8 @@
 'use client'
 
 import type { ChatRelayMessageDTO } from '@litomi/contracts'
-import { env } from '@litomi/env/client'
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { getChatWebSocketURL } from '../_lib/chat'
 
 type ServerMessage =
   | { t: 'ready'; userId: number }
@@ -26,7 +26,6 @@ type ChatContextType = {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined)
 
-const WS_URL = `${env.NEXT_PUBLIC_CHAT_WS_ORIGIN}/ws`
 const HEARTBEAT_INTERVAL_MS = 25_000
 const STALE_AFTER_MS = 55_000
 const MAX_BACKOFF_MS = 30_000
@@ -71,7 +70,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    const ws = new WebSocket(WS_URL)
+    const ws = new WebSocket(getChatWebSocketURL())
     wsRef.current = ws
 
     ws.onopen = () => {

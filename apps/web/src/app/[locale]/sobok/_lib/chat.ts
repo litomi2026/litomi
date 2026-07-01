@@ -1,4 +1,13 @@
 import type { ChatMessageContent, ChatMessageDTO, ChatRelayMessageDTO } from '@litomi/contracts'
+import { env } from '@litomi/env/client'
+
+export function getChatWebSocketURL(): string {
+  if (window.location.hostname === 'localhost') {
+    return `${env.NEXT_PUBLIC_CHAT_WS_ORIGIN}/ws`
+  }
+
+  return `wss://${window.location.host}/ws`
+}
 
 export function textOf(content: ChatMessageContent): string {
   return 'text' in content && typeof content.text === 'string' ? content.text : '미디어'
