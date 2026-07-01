@@ -5,7 +5,7 @@ import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { avatarUrl, mergeById, textOf } from '../_lib/chat'
+import { avatarURL, mergeById, textOf } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useMarkMessageReadMutation from '../_query/useMarkMessageReadMutation'
 import useMessageReplyQuery from '../_query/useMessageReplyQuery'
@@ -111,7 +111,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
             <div className="flex justify-start w-full">
               <div className="flex max-w-[80%] flex-row items-end gap-2">
                 <img
-                  src={avatarUrl(fanName, reply.fan?.imageURL)}
+                  src={avatarURL(fanName, reply.fan?.imageURL)}
                   alt=""
                   className="w-9 h-9 rounded-full object-cover shadow-sm border border-foreground/10 shrink-0"
                 />

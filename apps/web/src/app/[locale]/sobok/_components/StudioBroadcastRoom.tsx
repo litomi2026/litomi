@@ -6,7 +6,7 @@ import ms from 'ms'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { avatarUrl, mergeById, textOf, toChatMessageDTO } from '../_lib/chat'
+import { avatarURL, mergeById, textOf, toChatMessageDTO } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useSendMessageMutation from '../_query/useSendMessageMutation'
@@ -172,7 +172,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
                 className="flex items-center gap-1.5 shrink-0 max-w-60 bg-zinc-800 rounded-full pl-1 pr-3 py-1 hover:bg-zinc-700 transition-colors"
               >
                 <img
-                  src={avatarUrl(reply.nickname, reply.imageURL)}
+                  src={avatarURL(reply.nickname, reply.imageURL)}
                   alt=""
                   className="w-5 h-5 rounded-full object-cover shrink-0"
                 />
@@ -218,9 +218,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
               >
                 <MessageCircle className="w-3.5 h-3.5" />
                 답장방
-                {row.unreadReplyCount > 0
-                  ? ` · ${row.unreadReplyCount > 999 ? '999+' : row.unreadReplyCount} 새 답장`
-                  : ''}
+                {renderUnreadCount(row.unreadReplyCount)}
               </Link>
             </div>
           </div>
@@ -240,4 +238,12 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
       </ComposerDock>
     </div>
   )
+}
+
+function renderUnreadCount(count: number) {
+  if (count <= 0) {
+    return ''
+  }
+
+  return ` · ${count > 999 ? '999+' : count} 새 답장`
 }

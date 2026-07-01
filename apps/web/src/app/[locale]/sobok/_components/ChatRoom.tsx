@@ -1,15 +1,16 @@
 'use client'
 
 import type { ChatMessageDTO, ChatReplyDTO } from '@litomi/contracts'
-import { Check, CheckCheck, ChevronLeft, X } from 'lucide-react'
+import { ChevronLeft, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { avatarUrl, contentPreview, textOf, toChatMessageDTO } from '../_lib/chat'
+import { avatarURL, contentPreview, toChatMessageDTO } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useMarkReadMutation from '../_query/useMarkReadMutation'
 import useSendReplyMutation from '../_query/useSendReplyMutation'
+import { ArtistMessageBubble, FanReplyBubble, QuotedMessage } from './ChatBubbles'
 import ChatComposer from './ChatComposer'
 import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import { useChat } from './ChatProvider'
@@ -249,71 +250,31 @@ export default function ChatRoom({ handle }: { handle: string }) {
         ref={listRef}
         renderItem={(item) => {
           if (item.kind === 'message') {
-            // Artist message — tap to target it for the next reply, or land here from a reply's quote.
             return (
-              <div className="flex justify-start w-full">
-                <div className="flex max-w-[80%] flex-row items-end gap-2">
-                  <img
-                    src={avatarUrl(artist.displayName, artist.imageURL)}
-                    alt=""
-                    className="w-9 h-9 rounded-full object-cover shadow-sm border border-foreground/10 shrink-0"
-                  />
-                  <div className="flex items-end gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setReplyTargetId(item.message.messageId === latestMessageId ? null : item.message.messageId)
-                      }
-                      className={`text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border transition-all ${
-                        replyTargetId === item.message.messageId ? 'border-indigo-400' : 'border-foreground/10'
-                      } ${highlightedId === item.message.messageId ? 'ring-2 ring-indigo-400/80' : ''}`}
-                    >
-                      {textOf(item.message.content)}
-                    </button>
-                    <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
-                      {new Date(item.message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <ArtistMessageBubble
+                avatarSrc={avatarURL(artist.displayName, artist.imageURL)}
+                isHighlighted={highlightedId === item.message.messageId}
+                isTarget={replyTargetId === item.message.messageId}
+                message={item.message}
+                onSelect={() =>
+                  setReplyTargetId(item.message.messageId === latestMessageId ? null : item.message.messageId)
+                }
+              />
             )
           }
 
-          // The fan's own reply (right-aligned) sits at its own send time. It quotes the artist
-          // message it answers only when that's an older message, so the context survives when
-          // the reply lands far below the original; a reply to the current message stays plain.
-          const target = quotedReplyIds.has(item.reply.messageId)
+          const quoteTarget = quotedReplyIds.has(item.reply.messageId)
             ? (messageById.get(item.reply.targetMessageId) ?? null)
             : null
 
           return (
-            <div className="flex justify-end w-full">
-              <div className="flex max-w-[80%] flex-col items-end">
-                <div className="flex items-end gap-1.5 flex-row-reverse">
-                  <div className="flex flex-col gap-1.5 px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed bg-indigo-500 text-white">
-                    {target && (
-                      <QuotedMessage
-                        label={artist.displayName}
-                        onClick={() => scrollToMessage(target.messageId)}
-                        preview={contentPreview(target.contentType, target.content)}
-                        variant="onMessage"
-                      />
-                    )}
-                    <span className="wrap-break-word whitespace-pre-wrap">{textOf(item.reply.content)}</span>
-                  </div>
-                  <div className="flex flex-col items-end mb-0.5 shrink-0">
-                    {item.read ? (
-                      <CheckCheck className="w-3.5 h-3.5 text-indigo-400" />
-                    ) : (
-                      <Check className="w-3.5 h-3.5 text-zinc-600" />
-                    )}
-                    <span className="text-[10px] text-zinc-400 font-medium">
-                      {new Date(item.reply.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <FanReplyBubble
+              onQuoteClick={scrollToMessage}
+              quoteLabel={artist.displayName}
+              quoteTarget={quoteTarget}
+              read={item.read}
+              reply={item.reply}
+            />
           )
         }}
         scrollButtonClassName="bottom-[calc(var(--sobok-dock-h)+0.75rem)] right-4"
@@ -322,7 +283,9 @@ export default function ChatRoom({ handle }: { handle: string }) {
       {/* Composer island — reply-target chip docks above the input on the same surface */}
       <ComposerDock
         preview={
-          entitled && replyingToOlder && replyTarget ? (
+          entitled &&
+          replyingToOlder &&
+          replyTarget && (
             <div className="flex items-center gap-2 p-4 pb-3 pr-3">
               <QuotedMessage
                 className="flex-1"
@@ -339,14 +302,10 @@ export default function ChatRoom({ handle }: { handle: string }) {
                 <X className="w-4 h-4" />
               </button>
             </div>
-          ) : null
+          )
         }
       >
-        {!entitled ? (
-          <p className="text-center text-sm text-zinc-400 py-3 px-4">
-            구독이 만료되어 답장을 보낼 수 없어요. 재구독 후 이용해 주세요.
-          </p>
-        ) : (
+        {entitled ? (
           <ChatComposer
             value={input}
             onChange={setInput}
@@ -354,6 +313,10 @@ export default function ChatRoom({ handle }: { handle: string }) {
             placeholder="메시지를 입력하세요..."
             disabled={isPending || !effectiveTargetId}
           />
+        ) : (
+          <p className="text-center text-sm text-zinc-400 py-3 px-4">
+            구독이 만료되어 답장을 보낼 수 없어요. 재구독 후 이용해 주세요.
+          </p>
         )}
       </ComposerDock>
     </div>
@@ -373,29 +336,4 @@ function getQuotedReplyIds(items: FlatItem[]): Set<string> {
   }
 
   return ids
-}
-
-type Props = {
-  label: string
-  preview: string
-  onClick: () => void
-  variant: 'onMessage' | 'standalone'
-  className?: string
-}
-
-function QuotedMessage({ label, preview, onClick, variant, className = '' }: Props) {
-  const accent = variant === 'onMessage' ? 'border-white/45' : 'border-indigo-400'
-  const labelTone = variant === 'onMessage' ? 'text-white' : 'text-indigo-500'
-  const previewTone = variant === 'onMessage' ? 'text-white/75' : 'text-zinc-400'
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex min-w-0 flex-col items-start border-l-2 pl-2 text-left transition-opacity hover:opacity-70 ${accent} ${className}`}
-    >
-      <span className={`max-w-full truncate text-xs font-semibold ${labelTone}`}>{label}</span>
-      <span className={`line-clamp-1 max-w-full text-xs leading-snug ${previewTone}`}>{preview}</span>
-    </button>
-  )
 }

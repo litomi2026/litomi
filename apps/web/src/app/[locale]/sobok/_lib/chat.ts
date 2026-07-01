@@ -40,7 +40,7 @@ export function toChatMessageDTO(msg: ChatRelayMessageDTO): ChatMessageDTO {
   }
 }
 
-export function avatarUrl(name: string, imageURL: string | null | undefined): string {
+export function avatarURL(name: string, imageURL: string | null | undefined): string {
   return imageURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
 }
 
