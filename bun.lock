@@ -71,6 +71,20 @@
         "typescript": "^6.0.3",
       },
     },
+    "apps/billing-worker": {
+      "name": "@litomi/billing-worker",
+      "version": "1.1.0",
+      "dependencies": {
+        "@litomi/db": "workspace:*",
+        "@litomi/env": "workspace:*",
+        "@portone/server-sdk": "^0.19.0",
+      },
+      "devDependencies": {
+        "@types/bun": "^1.3.12",
+        "@types/node": "^25.6.0",
+        "typescript": "^6.0.3",
+      },
+    },
     "apps/cataloger": {
       "name": "@litomi/cataloger",
       "version": "1.1.0",
@@ -227,6 +241,7 @@
         "@marsidev/react-turnstile": "^1.5.3",
         "@mlc-ai/web-llm": "^0.2.84",
         "@next/third-parties": "16.2.9",
+        "@portone/browser-sdk": "^0.1.9",
         "@sentry/nextjs": "^10.62.0",
         "@simplewebauthn/browser": "^13.3.0",
         "@simplewebauthn/server": "^13.3.2",
@@ -758,6 +773,8 @@
 
     "@litomi/auth": ["@litomi/auth@workspace:packages/auth"],
 
+    "@litomi/billing-worker": ["@litomi/billing-worker@workspace:apps/billing-worker"],
+
     "@litomi/catalog": ["@litomi/catalog@workspace:packages/catalog"],
 
     "@litomi/cataloger": ["@litomi/cataloger@workspace:apps/cataloger"],
@@ -963,6 +980,8 @@
     "@playwright/test": ["@playwright/test@1.61.1", "", { "dependencies": { "playwright": "1.61.1" }, "bin": { "playwright": "cli.js" } }, "sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig=="],
 
     "@polka/url": ["@polka/url@1.0.0-next.29", "", {}, "sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww=="],
+
+    "@portone/browser-sdk": ["@portone/browser-sdk@0.1.9", "", {}, "sha512-GiLziqmKKSrorjWDvWjPhtD1nBd4zlY1crIPX5Kisx797MQYveqhtSMYwuyjRgwgInfEWonXjXWkHd5bTFUiWQ=="],
 
     "@portone/server-sdk": ["@portone/server-sdk@0.19.0", "", {}, "sha512-JIbD9HEEqaYuuW0zKU/sapqH1HQBf/Len+8ZPnMRb7E7tHnqRGrKPLS+fom34xUTiF3ZVKTrDjHeQHQ2YZc2og=="],
 

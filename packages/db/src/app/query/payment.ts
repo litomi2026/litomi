@@ -38,21 +38,12 @@ export async function getPaymentByPaymentId(paymentId: string): Promise<PaymentR
   return row ?? null
 }
 
-// 결제 상태를 pending에서 paid로 변경하는 멱등성(Idempotent) 보장 함수입니다.
-export async function markPaymentPaid(
-  paymentId: string,
-  data: { providerTxnId: string; paidAt: Date },
-): Promise<boolean> {
-  const updated = await db
+export async function markPaymentFailed(paymentId: string): Promise<void> {
+  await db
     .update(paymentTable)
     .set({
-      status: 'paid',
-      providerTxnId: data.providerTxnId,
-      paidAt: data.paidAt,
+      status: 'failed',
       updatedAt: new Date(),
     })
     .where(and(eq(paymentTable.paymentId, paymentId), eq(paymentTable.status, 'pending')))
-    .returning({ id: paymentTable.id })
-
-  return updated.length > 0
 }
