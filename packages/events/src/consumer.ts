@@ -6,7 +6,10 @@ import { kafka } from './client'
 export type { EachMessagePayload }
 
 export function createConsumer(groupId: string): Consumer {
-  return kafka.consumer({ groupId })
+  return kafka.consumer({
+    groupId,
+    allowAutoTopicCreation: false,
+  })
 }
 
 export interface TopicRoute<T = any> {

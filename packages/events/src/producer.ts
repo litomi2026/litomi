@@ -2,7 +2,7 @@ import { kafka } from './client'
 import type { ChatMessageEvent, ChatPushFanoutEvent } from './schema'
 import { TOPIC_CHAT_MESSAGE, TOPIC_CHAT_PUSH_FANOUT } from './topics'
 
-export const producer = kafka.producer()
+export const producer = kafka.producer({ allowAutoTopicCreation: false })
 
 let producerReady: Promise<void> | null = null
 
