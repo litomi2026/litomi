@@ -1,4 +1,4 @@
-import type { ChatMessageContent, ChatMessageDTO, ChatRelayMessageDTO } from '@litomi/contracts'
+import type { ChatContentType, ChatMessageContent, ChatMessageDTO, ChatRelayMessageDTO } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
 
 export function getChatWebSocketURL(): string {
@@ -11,6 +11,23 @@ export function getChatWebSocketURL(): string {
 
 export function textOf(content: ChatMessageContent): string {
   return 'text' in content && typeof content.text === 'string' ? content.text : '미디어'
+}
+
+export function contentPreview(contentType: ChatContentType, content: ChatMessageContent): string {
+  if (contentType === 'text' && 'text' in content && typeof content.text === 'string') {
+    return content.text
+  }
+
+  switch (contentType) {
+    case 'image':
+      return '사진'
+    case 'voice':
+      return '음성 메시지'
+    case 'video':
+      return '동영상'
+    default:
+      return '미디어'
+  }
 }
 
 export function toChatMessageDTO(msg: ChatRelayMessageDTO): ChatMessageDTO {
