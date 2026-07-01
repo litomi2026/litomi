@@ -194,6 +194,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
           </div>
         }
         bottomInsetClassName="pb-[var(--sobok-dock-h)]"
+        dateOf={(row) => new Date(row.message.createdAt).getTime()}
         gapClassName="pb-3"
         hasOlder={hasNextPage}
         isLoadingOlder={isFetchingNextPage}

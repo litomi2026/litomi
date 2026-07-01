@@ -1,7 +1,7 @@
 'use client'
 
 import type { Manga } from '@litomi/domain/manga/model'
-import { MAX_MANGA_DESCRIPTION_LENGTH } from '@litomi/domain/manga/policy'
+import { MANGA_DESCRIPTION_MAX_LENGTH } from '@litomi/domain/manga/policy'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
@@ -81,13 +81,13 @@ export function MangaDetailModal() {
   } = manga
 
   const isDownloadable = images?.length === count
-  const shouldTruncateDescription = description && description.length > MAX_MANGA_DESCRIPTION_LENGTH
+  const shouldTruncateDescription = description && description.length > MANGA_DESCRIPTION_MAX_LENGTH
   const hasMoreLines = lines && lines.length > MANGA_INITIAL_LINES
   const displayLines = showAllLines ? lines : lines?.slice(0, MANGA_INITIAL_LINES)
 
   const displayDescription =
     shouldTruncateDescription && !showFullDescription
-      ? `${description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)}...`
+      ? `${description.slice(0, MANGA_DESCRIPTION_MAX_LENGTH)}...`
       : description
 
   const actionButtonBaseClassName = twMerge(

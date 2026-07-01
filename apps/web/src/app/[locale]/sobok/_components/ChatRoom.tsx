@@ -242,6 +242,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
       {/* Messages */}
       <ChatMessageList
         bottomInsetClassName="pb-[var(--sobok-dock-h)]"
+        dateOf={(item) => new Date(item.kind === 'message' ? item.message.createdAt : item.reply.createdAt).getTime()}
         hasOlder={hasNextPage}
         isLoadingOlder={isFetchingNextPage}
         itemKey={(item) => item.id}

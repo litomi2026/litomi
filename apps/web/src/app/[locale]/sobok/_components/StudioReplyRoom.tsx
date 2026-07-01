@@ -99,6 +99,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
       {/* Replies (all fans; the artist reads the whole room) */}
       <ChatMessageList
         bottomInsetClassName="pb-6"
+        dateOf={(reply) => new Date(reply.createdAt).getTime()}
         emptyState={<p className="text-sm text-zinc-400">아직 답장이 없어요.</p>}
         hasOlder={hasNextPage}
         isLoadingOlder={isFetchingNextPage}

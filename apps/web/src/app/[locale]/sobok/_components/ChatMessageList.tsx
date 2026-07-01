@@ -3,30 +3,12 @@
 import { ChevronDown } from 'lucide-react'
 import type { ReactNode, Ref } from 'react'
 import { useImperativeHandle, useRef, useState } from 'react'
-import type { IndexLocationWithAlign, VirtuosoHandle } from 'react-virtuoso'
+import type { VirtuosoHandle } from 'react-virtuoso'
 import { Virtuoso } from 'react-virtuoso'
 import { twMerge } from 'tailwind-merge'
+import { dayKey, formatDateSeparator } from '../_lib/chat'
 
 const START_INDEX = 1_000_000
-
-const INITIAL_LOCATION: IndexLocationWithAlign = {
-  align: 'end',
-  index: 'LAST',
-}
-
-interface ChatListHeaderContext {
-  banner: ReactNode
-  isLoadingOlder: boolean
-}
-
-const CHAT_COMPONENTS = {
-  Header: ({ context }: { context: ChatListHeaderContext }) => (
-    <div className="pt-4">
-      {context.isLoadingOlder ? <div className="py-2 text-center text-xs text-zinc-400">불러오는 중...</div> : null}
-      {context.banner}
-    </div>
-  ),
-}
 
 export interface ChatMessageListHandle {
   scrollToBottom: (behavior?: 'auto' | 'smooth') => void
@@ -43,6 +25,8 @@ interface ChatMessageListProps<TItem> {
   banner?: ReactNode
   bottomInsetClassName?: string
   className?: string
+  /** When provided, a date chip is inserted before the first message of each local day. */
+  dateOf?: (item: TItem) => number
   emptyState?: ReactNode
   gapClassName?: string
   hasOlder?: boolean
@@ -59,6 +43,7 @@ export default function ChatMessageList<TItem>({
   banner,
   bottomInsetClassName = '',
   className,
+  dateOf,
   emptyState,
   gapClassName = 'pb-4',
   hasOlder = false,
@@ -74,16 +59,18 @@ export default function ChatMessageList<TItem>({
   const virtuosoRef = useRef<VirtuosoHandle>(null)
   const firstKeyRef = useRef<string | null>(null)
   const firstItemIndexRef = useRef(START_INDEX)
-  const itemsRef = useRef(items)
-  const itemKeyRef = useRef(itemKey)
 
-  if (items.length > 0) {
-    const currentFirstKey = itemKey(items[0])
+  const rows = buildRows(items, itemKey, dateOf)
+  const rowsRef = useRef(rows)
+  rowsRef.current = rows
+
+  if (rows.length > 0) {
+    const currentFirstKey = rows[0].key
 
     if (firstKeyRef.current === null) {
       firstKeyRef.current = currentFirstKey
     } else if (currentFirstKey !== firstKeyRef.current) {
-      const prependedCount = items.findIndex((item) => itemKey(item) === firstKeyRef.current)
+      const prependedCount = rows.findIndex((row) => row.key === firstKeyRef.current)
 
       if (prependedCount > 0) {
         firstItemIndexRef.current -= prependedCount
@@ -95,9 +82,6 @@ export default function ChatMessageList<TItem>({
     }
   }
 
-  itemsRef.current = items
-  itemKeyRef.current = itemKey
-
   useImperativeHandle(
     ref,
     () => ({
@@ -105,7 +89,7 @@ export default function ChatMessageList<TItem>({
         virtuosoRef.current?.scrollToIndex({ align: 'end', behavior, index: 'LAST' })
       },
       scrollToKey: (key, options) => {
-        const index = itemsRef.current.findIndex((item) => itemKeyRef.current(item) === key)
+        const index = rowsRef.current.findIndex((row) => row.kind === 'item' && row.key === key)
 
         if (index >= 0) {
           virtuosoRef.current?.scrollToIndex({
@@ -119,30 +103,41 @@ export default function ChatMessageList<TItem>({
     [],
   )
 
-  if (items.length === 0) {
+  if (rows.length === 0) {
     return <div className="relative min-h-0 flex-1 flex items-center justify-center">{emptyState}</div>
   }
 
-  const lastKey = itemKey(items[items.length - 1])
-
   return (
     <div className="relative min-h-0 flex-1">
-      <Virtuoso<TItem, ChatListHeaderContext>
+      <Virtuoso<Row<TItem>, ChatListHeaderContext>
         atBottomStateChange={setAtBottom}
         className={twMerge('custom-scrollbar', className)}
         components={CHAT_COMPONENTS}
-        computeItemKey={(_index, item) => itemKey(item)}
+        computeItemKey={(_index, row) => row.key}
         context={{ banner, isLoadingOlder }}
-        data={items}
+        data={rows}
         firstItemIndex={firstItemIndexRef.current}
         followOutput={(isAtBottom) => (isAtBottom ? 'smooth' : false)}
-        increaseViewportBy={{ bottom: 600, top: 600 }}
-        initialTopMostItemIndex={INITIAL_LOCATION}
-        itemContent={(_index, item) => (
-          <div className={twMerge('px-4', itemKey(item) === lastKey ? bottomInsetClassName : gapClassName)}>
-            {renderItem(item)}
-          </div>
-        )}
+        increaseViewportBy={{
+          bottom: 600,
+          top: 600,
+        }}
+        initialTopMostItemIndex={{
+          align: 'end',
+          index: 'LAST',
+        }}
+        itemContent={(_index, row) => {
+          if (row.kind === 'separator') {
+            return <DateSeparator label={row.label} />
+          }
+
+          const isBottomItem = row.key === rows[rows.length - 1].key
+          return (
+            <div className={twMerge('px-4', isBottomItem ? bottomInsetClassName : gapClassName)}>
+              {renderItem(row.item)}
+            </div>
+          )
+        }}
         ref={virtuosoRef}
         startReached={() => {
           if (hasOlder && !isLoadingOlder) {
@@ -171,4 +166,58 @@ export default function ChatMessageList<TItem>({
       )}
     </div>
   )
+}
+
+function DateSeparator({ label }: { label: string }) {
+  return (
+    <div className="flex justify-center px-4 py-3">
+      <span className="rounded-full bg-foreground/10 px-3 py-1 text-xs font-medium text-zinc-400">{label}</span>
+    </div>
+  )
+}
+
+interface ChatListHeaderContext {
+  banner: ReactNode
+  isLoadingOlder: boolean
+}
+
+const CHAT_COMPONENTS = {
+  Header: ({ context }: { context: ChatListHeaderContext }) => (
+    <div className="pt-4">
+      {context.isLoadingOlder ? <div className="py-2 text-center text-xs text-zinc-400">불러오는 중...</div> : null}
+      {context.banner}
+    </div>
+  ),
+}
+
+// A rendered row is either a message (caller-supplied) or a date separator interleaved by this list.
+type Row<TItem> = { kind: 'item'; key: string; item: TItem } | { kind: 'separator'; key: string; label: string }
+
+// Interleave a date chip before the first message of each local day. Separators carry a stable
+// `date:<dayKey>` key so the reverse-scroll anchor keeps working across prepends.
+function buildRows<TItem>(
+  items: readonly TItem[],
+  itemKey: (item: TItem) => string,
+  dateOf?: (item: TItem) => number,
+): Row<TItem>[] {
+  if (!dateOf) {
+    return items.map((item) => ({ item, key: itemKey(item), kind: 'item' }))
+  }
+
+  const rows: Row<TItem>[] = []
+  let previousDay: string | null = null
+
+  for (const item of items) {
+    const timestamp = dateOf(item)
+    const day = dayKey(timestamp)
+
+    if (day !== previousDay) {
+      rows.push({ key: `date:${day}`, kind: 'separator', label: formatDateSeparator(timestamp) })
+      previousDay = day
+    }
+
+    rows.push({ item, key: itemKey(item), kind: 'item' })
+  }
+
+  return rows
 }

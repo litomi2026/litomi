@@ -1,10 +1,11 @@
 import {
   BLACKLISTED_MANGA_IDS,
-  MAX_MANGA_DESCRIPTION_LENGTH,
-  MAX_MANGA_TITLE_LENGTH,
+  MANGA_DESCRIPTION_MAX_LENGTH,
+  MANGA_TITLE_MAX_LENGTH,
 } from '@litomi/domain/manga/policy'
 import { env } from '@litomi/env/client'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
+import { truncateAtWordBoundary } from '@litomi/std'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
@@ -39,8 +40,8 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/manga/[i
   }
 
   const manga = await getManga(id, locale)
-  const title = manga?.title?.slice(0, MAX_MANGA_TITLE_LENGTH) || t('fallbackTitle', { id })
-  const description = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
+  const title = truncateAtWordBoundary(manga?.title, MANGA_TITLE_MAX_LENGTH) || t('fallbackTitle', { id })
+  const description = manga?.description?.slice(0, MANGA_DESCRIPTION_MAX_LENGTH)
 
   return {
     title,
