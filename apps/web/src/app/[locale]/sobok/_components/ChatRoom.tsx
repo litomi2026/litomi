@@ -1,18 +1,20 @@
 'use client'
 
 import type { ChatMessageDTO, ChatReplyDTO } from '@litomi/contracts'
-import { Check, CheckCheck, ChevronLeft, X } from 'lucide-react'
+import { ChevronLeft, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { avatarUrl, textOf, toChatMessageDTO } from '../_lib/chat'
+import { avatarURL, contentPreview, toChatMessageDTO } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useMarkReadMutation from '../_query/useMarkReadMutation'
 import useSendReplyMutation from '../_query/useSendReplyMutation'
+import { ArtistMessageBubble, FanReplyBubble, QuotedMessage } from './ChatBubbles'
 import ChatComposer from './ChatComposer'
+import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import { useChat } from './ChatProvider'
+import ComposerDock from './ComposerDock'
 
 interface TimelineEntry {
   message: ChatMessageDTO
@@ -20,9 +22,6 @@ interface TimelineEntry {
   artistRead: boolean
 }
 
-// The fan's room is a single time-ordered stream: artist messages and the fan's own
-// replies interleaved strictly by messageId (ULID = chronological), so a reply to an
-// older message still appears at the bottom when it was sent — never back up the list.
 type FlatItem =
   | { id: string; kind: 'message'; message: ChatMessageDTO }
   | { id: string; kind: 'reply'; reply: ChatReplyDTO; read: boolean }
@@ -31,8 +30,9 @@ export default function ChatRoom({ handle }: { handle: string }) {
   const [optimisticReplies, setOptimisticReplies] = useState<Record<string, ChatReplyDTO[]>>({})
   const [realtimeMessages, setRealtimeMessages] = useState<ChatMessageDTO[]>([])
   const [replyTargetId, setReplyTargetId] = useState<string | null>(null)
+  const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const [input, setInput] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<ChatMessageListHandle>(null)
   const { myUserId, subscribeRoom, unsubscribeRoom, onMessage } = useChat()
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage, isError } = useChatMessageQuery(handle)
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
@@ -48,6 +48,9 @@ export default function ChatRoom({ handle }: { handle: string }) {
   const latestMessageId = timeline.at(-1)?.message.messageId ?? null
   const effectiveTargetId = replyTargetId ?? latestMessageId
   const replyingToOlder = replyTargetId !== null && replyTargetId !== latestMessageId
+  const messageById = new Map(timeline.map((entry) => [entry.message.messageId, entry.message]))
+  const replyTarget = replyTargetId ? messageById.get(replyTargetId) : null
+  const quotedReplyIds = getQuotedReplyIds(flatItems)
 
   function getTimeline(): TimelineEntry[] {
     const byId = new Map<string, TimelineEntry>()
@@ -105,10 +108,11 @@ export default function ChatRoom({ handle }: { handle: string }) {
     return items.sort((a, b) => a.id.localeCompare(b.id))
   }
 
-  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
-    if (e.currentTarget.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
+  // Jump to the message a reply quotes and flash it briefly. The target may be virtualized out of
+  // the DOM, so we scroll by index through the list rather than holding a node ref.
+  function scrollToMessage(messageId: string) {
+    listRef.current?.scrollToKey(messageId, { align: 'center' })
+    setHighlightedId(messageId)
   }
 
   async function handleSend() {
@@ -140,6 +144,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
       setOptimisticReplies((prev) => ({ ...prev, [messageId]: [...(prev[messageId] ?? []), reply] }))
       setInput('')
       setReplyTargetId(null)
+      listRef.current?.scrollToBottom()
     } catch {
       // Surface nothing inline; the input keeps the text so the fan can retry.
     }
@@ -189,22 +194,29 @@ export default function ChatRoom({ handle }: { handle: string }) {
     }
   }, [entitled, latestMessageId, handle, markRead])
 
+  // Clear the jump highlight after it flashes.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [flatItems.length])
+    if (!highlightedId) {
+      return
+    }
+
+    const timer = window.setTimeout(() => setHighlightedId(null), 1500)
+
+    return () => window.clearTimeout(timer)
+  }, [highlightedId])
 
   if (isArtistLoading || !artist || isOwner) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#A6D5E9]/10 dark:bg-[#0a0a0c]">
-        <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-200 dark:bg-indigo-900" />
+      <div className="flex-1 flex items-center justify-center bg-background">
+        <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-500/30" />
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center bg-[#A6D5E9]/10 dark:bg-[#0a0a0c]">
-        <p className="text-[15px] text-gray-600 dark:text-gray-300">이 아티스트의 채팅을 보려면 구독이 필요해요.</p>
+      <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center bg-background">
+        <p className="text-base text-zinc-300">이 아티스트의 채팅을 보려면 구독이 필요해요.</p>
         <Link href="/sobok" className="text-indigo-500 font-semibold text-sm">
           채팅 목록으로
         </Link>
@@ -213,17 +225,14 @@ export default function ChatRoom({ handle }: { handle: string }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#A6D5E9]/15 dark:bg-[#0a0a0c] relative">
+    <div className="flex flex-col h-full bg-background relative">
       {/* Header */}
-      <div className="h-14 flex items-center justify-between px-2 border-b border-gray-200/40 dark:border-white/5 bg-white/80 dark:bg-[#0a0a0c]/80 backdrop-blur-xl absolute top-0 w-full z-10">
+      <div className="h-14 shrink-0 flex items-center justify-between px-2 border-b border-foreground/10 bg-background/80">
         <div className="flex items-center gap-2">
-          <Link
-            href="/sobok"
-            className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
-          >
+          <Link href="/sobok" className="p-2 text-zinc-400 hover:text-foreground transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </Link>
-          <h2 className="font-bold text-[17px] text-gray-900 dark:text-white flex items-center gap-1.5">
+          <h2 className="font-bold text-lg text-foreground flex items-center gap-1.5">
             {artist.displayName}
             {artist.emoji && <span>{artist.emoji}</span>}
           </h2>
@@ -231,85 +240,72 @@ export default function ChatRoom({ handle }: { handle: string }) {
       </div>
 
       {/* Messages */}
-      <div
-        onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 pt-[72px] pb-6 space-y-4 custom-scrollbar flex flex-col"
+      <ChatMessageList
+        bottomInsetClassName="pb-[var(--sobok-dock-h)]"
+        hasOlder={hasNextPage}
+        isLoadingOlder={isFetchingNextPage}
+        itemKey={(item) => item.id}
+        items={flatItems}
+        onLoadOlder={fetchNextPage}
+        ref={listRef}
+        renderItem={(item) => {
+          if (item.kind === 'message') {
+            return (
+              <ArtistMessageBubble
+                avatarSrc={avatarURL(artist.displayName, artist.imageURL)}
+                isHighlighted={highlightedId === item.message.messageId}
+                isTarget={replyTargetId === item.message.messageId}
+                message={item.message}
+                onSelect={() =>
+                  setReplyTargetId(item.message.messageId === latestMessageId ? null : item.message.messageId)
+                }
+              />
+            )
+          }
+
+          const quoteTarget = quotedReplyIds.has(item.reply.messageId)
+            ? (messageById.get(item.reply.targetMessageId) ?? null)
+            : null
+
+          return (
+            <FanReplyBubble
+              onQuoteClick={scrollToMessage}
+              quoteLabel={artist.displayName}
+              quoteTarget={quoteTarget}
+              read={item.read}
+              reply={item.reply}
+            />
+          )
+        }}
+        scrollButtonClassName="bottom-[calc(var(--sobok-dock-h)+0.75rem)] right-4"
+      />
+
+      {/* Composer island — reply-target chip docks above the input on the same surface */}
+      <ComposerDock
+        preview={
+          entitled &&
+          replyingToOlder &&
+          replyTarget && (
+            <div className="flex items-center gap-2 p-4 pb-3 pr-3">
+              <QuotedMessage
+                className="flex-1"
+                label={`${artist.displayName}에게 답장`}
+                onClick={() => scrollToMessage(replyTarget.messageId)}
+                preview={contentPreview(replyTarget.contentType, replyTarget.content)}
+                variant="standalone"
+              />
+              <button
+                type="button"
+                onClick={() => setReplyTargetId(null)}
+                className="p-1 shrink-0 text-indigo-500 hover:text-indigo-400"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )
+        }
       >
-        {isFetchingNextPage && <div className="text-center text-xs text-gray-400 py-2">불러오는 중...</div>}
-
-        {flatItems.map((item) =>
-          item.kind === 'message' ? (
-            // Artist message — tap to target it for the next reply
-            <div key={item.id} className="flex justify-start w-full">
-              <div className="flex max-w-[80%] flex-row items-end gap-2">
-                <img
-                  src={avatarUrl(artist.displayName, artist.imageURL)}
-                  alt=""
-                  className="w-9 h-9 rounded-full object-cover shadow-sm border border-black/5 dark:border-white/10 shrink-0"
-                />
-                <div className="flex items-end gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setReplyTargetId(item.message.messageId === latestMessageId ? null : item.message.messageId)
-                    }
-                    className={`text-left px-3.5 py-2 rounded-2xl rounded-bl-[4px] shadow-sm text-[15px] leading-relaxed wrap-break-word whitespace-pre-wrap bg-white dark:bg-white/10 text-gray-900 dark:text-white border transition-colors ${
-                      replyTargetId === item.message.messageId
-                        ? 'border-indigo-400 dark:border-indigo-500'
-                        : 'border-gray-100/50 dark:border-white/5'
-                    }`}
-                  >
-                    {textOf(item.message.content)}
-                  </button>
-                  <span className="text-[10px] text-gray-400 mb-0.5 shrink-0 font-medium">
-                    {new Date(item.message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            // The fan's own reply (right-aligned), placed at its own send time
-            <div key={item.id} className="flex justify-end w-full">
-              <div className="flex flex-col items-end">
-                <div className="flex items-end gap-1.5 flex-row-reverse">
-                  <div className="px-3.5 py-2 rounded-2xl rounded-br-[4px] shadow-sm text-[15px] leading-relaxed wrap-break-word whitespace-pre-wrap bg-[#ffe800] dark:bg-indigo-500 text-gray-900 dark:text-white">
-                    {textOf(item.reply.content)}
-                  </div>
-                  <div className="flex flex-col items-end mb-0.5 shrink-0">
-                    {item.read ? (
-                      <CheckCheck className="w-3.5 h-3.5 text-indigo-400" />
-                    ) : (
-                      <Check className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
-                    )}
-                    <span className="text-[10px] text-gray-400 font-medium">
-                      {new Date(item.reply.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ),
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Reply-target banner when answering an older message */}
-      {replyingToOlder && (
-        <div className="flex items-center justify-between gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 border-t border-indigo-100 dark:border-indigo-500/20 text-[13px] text-indigo-700 dark:text-indigo-300 z-10">
-          <span className="truncate">이전 메시지에 답장 중</span>
-          <button type="button" onClick={() => setReplyTargetId(null)} className="p-1 shrink-0">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Input */}
-      <div className="bg-white/90 dark:bg-[#0a0a0c]/90 backdrop-blur-2xl border-t border-gray-200/50 dark:border-white/5 p-2.5 pb-[max(env(safe-area-inset-bottom),0.5rem)] z-10">
-        {!entitled ? (
-          <p className="text-center text-[13px] text-gray-500 dark:text-gray-400 py-2">
-            구독이 만료되어 답장을 보낼 수 없어요. 재구독 후 이용해 주세요.
-          </p>
-        ) : (
+        {entitled ? (
           <ChatComposer
             value={input}
             onChange={setInput}
@@ -317,8 +313,27 @@ export default function ChatRoom({ handle }: { handle: string }) {
             placeholder="메시지를 입력하세요..."
             disabled={isPending || !effectiveTargetId}
           />
+        ) : (
+          <p className="text-center text-sm text-zinc-400 py-3 px-4">
+            구독이 만료되어 답장을 보낼 수 없어요. 재구독 후 이용해 주세요.
+          </p>
         )}
-      </div>
+      </ComposerDock>
     </div>
   )
+}
+
+function getQuotedReplyIds(items: FlatItem[]): Set<string> {
+  const ids = new Set<string>()
+  let lastMessageId: string | null = null
+
+  for (const item of items) {
+    if (item.kind === 'message') {
+      lastMessageId = item.message.messageId
+    } else if (item.reply.targetMessageId !== lastMessageId) {
+      ids.add(item.reply.messageId)
+    }
+  }
+
+  return ids
 }
