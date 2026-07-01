@@ -70,7 +70,16 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    const ws = new WebSocket(getChatWebSocketURL())
+    // new WebSocket()은 동기적으로 던질 수 있다. (HTTPS 페이지의 ws:// mixed-content로 인한 SecurityError, CSP connect-src 위반, WeChat 등 인앱웹뷰 제약)
+    let ws: WebSocket
+    try {
+      ws = new WebSocket(getChatWebSocketURL())
+    } catch (error) {
+      console.error('chat WebSocket 연결 실패:', error)
+      scheduleReconnect()
+      return
+    }
+
     wsRef.current = ws
 
     ws.onopen = () => {
@@ -119,20 +128,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     }
 
     ws.onerror = () => ws.close()
-
-    ws.onclose = () => {
-      if (unmountedRef.current) {
-        return
-      }
-
-      stopHeartbeat()
-      setIsConnected(false)
-      setMyUserId(null)
-
-      const delay = Math.min(MAX_BACKOFF_MS, 1000 * 2 ** attemptRef.current) + Math.random() * 1000
-      attemptRef.current += 1
-      reconnectTimerRef.current = setTimeout(connect, delay)
-    }
+    ws.onclose = () => scheduleReconnect()
   }, [stopHeartbeat])
 
   function send(data: unknown) {
@@ -173,6 +169,20 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     return () => {
       listenersRef.current.delete(listener)
     }
+  }
+
+  function scheduleReconnect() {
+    if (unmountedRef.current) {
+      return
+    }
+
+    stopHeartbeat()
+    setIsConnected(false)
+    setMyUserId(null)
+
+    const delay = Math.min(MAX_BACKOFF_MS, 1000 * 2 ** attemptRef.current) + Math.random() * 1000
+    attemptRef.current += 1
+    reconnectTimerRef.current = setTimeout(connect, delay)
   }
 
   // NOTE: WebSocket 기본 라이프사이클 관리 (Mount/Unmount)
