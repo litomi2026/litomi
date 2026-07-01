@@ -323,7 +323,7 @@ export default function ChatRoom({ handle }: { handle: string }) {
       <ComposerDock
         preview={
           entitled && replyingToOlder && replyTarget ? (
-            <div className="flex items-center gap-2 px-3 py-2">
+            <div className="flex items-center gap-2 p-4 pb-3 pr-3">
               <QuotedMessage
                 className="flex-1"
                 label={`${artist.displayName}에게 답장`}
