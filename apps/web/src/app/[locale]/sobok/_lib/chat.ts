@@ -1,5 +1,34 @@
 import type { ChatContentType, ChatMessageContent, ChatMessageDTO, ChatRelayMessageDTO } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
+import dayjs from 'dayjs'
+
+const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토']
+
+export function dayKey(ts: number): string {
+  const d = new Date(ts)
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+}
+
+export function formatDateSeparator(ts: number): string {
+  const target = new Date(ts)
+  const now = new Date()
+  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  const targetDay = startOfDay(target)
+
+  if (targetDay === startOfDay(now)) {
+    return '오늘'
+  }
+
+  if (targetDay === new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime()) {
+    return '어제'
+  }
+
+  if (target.getFullYear() === now.getFullYear()) {
+    return `${dayjs(ts).format('M월 D일')} (${WEEKDAYS_KO[target.getDay()]})`
+  }
+
+  return dayjs(ts).format('YYYY년 M월 D일')
+}
 
 export function getChatWebSocketURL(): string {
   if (window.location.hostname === 'localhost') {
