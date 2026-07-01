@@ -27,13 +27,13 @@ export default function ChatComposer({ value, onChange, onSend, placeholder, dis
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
+          if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
             e.preventDefault()
             onSend()
           }
         }}
         placeholder={placeholder}
-        className="flex-1 bg-transparent border-none py-[10px] px-1 text-[15px] text-gray-900 dark:text-white placeholder-gray-400 resize-none outline-none max-h-28"
+        className="flex-1 bg-transparent border-none py-[10px] px-1 text-gray-900 dark:text-white placeholder-gray-400 resize-none outline-none max-h-28"
         maxRows={4}
         disabled={disabled}
       />
