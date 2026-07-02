@@ -40,19 +40,25 @@ libraryListRoutes.get('/', zProblemValidator('query', getV1LibraryListQuerySchem
     .from(libraryItemTable)
     .where(eq(libraryItemTable.libraryId, libraryTable.id))
 
-  const pinnedCountSubquery = db
+  const weeklyPinCountSubquery = db
     .select({ count: count() })
     .from(pinnedLibraryTable)
     .where(and(eq(pinnedLibraryTable.libraryId, libraryTable.id), gt(pinnedLibraryTable.createdAt, oneWeekAgo)))
 
+  const pinCountSubquery = db
+    .select({ count: count() })
+    .from(pinnedLibraryTable)
+    .where(eq(pinnedLibraryTable.libraryId, libraryTable.id))
+
   const itemCountExpr = sql<number>`(${itemCountSubquery})::int`
-  const pinnedCountExpr = sql<number>`(${pinnedCountSubquery})::int`
+  const weeklyPinCountExpr = sql<number>`(${weeklyPinCountSubquery})::int`
+  const pinCountExpr = sql<number>`(${pinCountSubquery})::int`
 
   const sortCountExpr =
     listScope === 'public'
-      ? pinnedCountExpr
+      ? weeklyPinCountExpr
       : listScope === 'all' && userId
-        ? sql<number>`CASE WHEN ${libraryTable.userId} = ${userId} THEN ${itemCountExpr} ELSE ${pinnedCountExpr} END`
+        ? sql<number>`CASE WHEN ${libraryTable.userId} = ${userId} THEN ${itemCountExpr} ELSE ${weeklyPinCountExpr} END`
         : itemCountExpr
 
   const conditions = []
@@ -122,6 +128,7 @@ libraryListRoutes.get('/', zProblemValidator('query', getV1LibraryListQuerySchem
       isPublic: libraryTable.isPublic,
       createdAt: libraryTable.createdAt,
       itemCount: itemCountExpr,
+      pinCount: pinCountExpr,
       sortCount: sortCountExpr,
     })
     .from(libraryTable)
@@ -180,6 +187,7 @@ libraryListRoutes.get('/', zProblemValidator('query', getV1LibraryListQuerySchem
       isPublic: row.isPublic,
       createdAt: row.createdAt.getTime(),
       itemCount: row.itemCount,
+      pinCount: row.pinCount,
     }))
 
     const isOwnerFlag = listScope === 'public' ? 0 : userId && lastRow.userId === userId ? 1 : 0

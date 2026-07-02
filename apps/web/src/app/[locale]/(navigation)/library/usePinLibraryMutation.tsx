@@ -8,67 +8,32 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchAPIData } from '@/utils/api-request'
 
+type PinLibraryVariables = {
+  libraryId: number
+  action: 'pin' | 'unpin'
+  library?: LibraryListItem
+}
+
 export default function usePinLibraryMutation() {
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const t = useTranslations('Library.pin')
 
-  return useMutation<
-    unknown,
-    Error,
-    { libraryId: number; action: 'pin' | 'unpin'; library?: LibraryListItem },
-    { previous?: InfiniteData<GETV1LibraryListResponse> }
-  >({
+  return useMutation<unknown, Error, PinLibraryVariables, { previous?: InfiniteData<GETV1LibraryListResponse> }>({
     mutationFn: async ({ libraryId, action }) => {
       const url = `/api/v1/library/${libraryId}/pin`
       const method = action === 'pin' ? 'POST' : 'DELETE'
       const { data } = await fetchAPIData(url, { method })
       return data
     },
-    onMutate: async ({ libraryId, action, library }) => {
+    onMutate: async (variables) => {
       const queryKey = QueryKeys.infinitePinnedLibraryList(me?.id)
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<InfiniteData<GETV1LibraryListResponse>>(queryKey)
 
-      const updater = (
-        old: InfiniteData<GETV1LibraryListResponse> | undefined,
-      ): InfiniteData<GETV1LibraryListResponse> => {
-        const fallback: InfiniteData<GETV1LibraryListResponse> = {
-          pages: [{ libraries: [], nextCursor: null }],
-          pageParams: [''],
-        }
-
-        const data = old ?? fallback
-
-        if (action === 'unpin') {
-          return {
-            ...data,
-            pages: data.pages.map((page) => ({
-              ...page,
-              libraries: page.libraries.filter((lib) => lib.id !== libraryId),
-            })),
-          }
-        }
-
-        if (library) {
-          return {
-            ...data,
-            pages: data.pages.map((page, index) => {
-              if (index === 0) {
-                return {
-                  ...page,
-                  libraries: [library, ...page.libraries.filter((lib) => lib.id !== libraryId)],
-                }
-              }
-              return page
-            }),
-          }
-        }
-
-        return data
-      }
-
-      queryClient.setQueryData<InfiniteData<GETV1LibraryListResponse>>(queryKey, updater)
+      queryClient.setQueryData<InfiniteData<GETV1LibraryListResponse>>(queryKey, (old) =>
+        updatePinnedLibraryList(old, variables),
+      )
 
       return { previous }
     },
@@ -83,4 +48,48 @@ export default function usePinLibraryMutation() {
       }
     },
   })
+}
+
+function updatePinnedLibraryList(
+  old: InfiniteData<GETV1LibraryListResponse> | undefined,
+  { libraryId, action, library }: PinLibraryVariables,
+) {
+  const data = old ?? { pages: [{ libraries: [], nextCursor: null }], pageParams: [''] }
+
+  if (action === 'unpin') {
+    return {
+      ...data,
+      pages: data.pages.map((page) => ({
+        ...page,
+        libraries: page.libraries.filter((lib) => lib.id !== libraryId),
+      })),
+    }
+  }
+
+  if (!library) {
+    return data
+  }
+
+  const [firstPage, ...restPages] = data.pages
+
+  if (!firstPage) {
+    return data
+  }
+
+  return {
+    ...data,
+    pages: [
+      {
+        ...firstPage,
+        libraries: [
+          {
+            ...library,
+            pinCount: library.pinCount + 1,
+          },
+          ...firstPage.libraries.filter((lib) => lib.id !== libraryId),
+        ],
+      },
+      ...restPages,
+    ],
+  }
 }

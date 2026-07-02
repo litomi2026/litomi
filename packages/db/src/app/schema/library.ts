@@ -51,5 +51,8 @@ export const pinnedLibraryTable = pgTable(
       .notNull(),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [primaryKey({ columns: [table.userId, table.libraryId] })],
+  (table) => [
+    primaryKey({ columns: [table.userId, table.libraryId] }),
+    index('idx_pinned_library_library_id').on(table.libraryId, table.createdAt),
+  ],
 ).enableRLS()

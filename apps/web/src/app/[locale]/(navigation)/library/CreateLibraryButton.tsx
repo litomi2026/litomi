@@ -69,6 +69,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
           isPublic: variables.isPublic,
           createdAt,
           itemCount: 0,
+          pinCount: 0,
         }
 
         return oldLibraries ? [...oldLibraries.filter((lib) => lib.id !== newLibrary.id), newLibrary] : [newLibrary]
@@ -90,6 +91,7 @@ export default function CreateLibraryButton({ className = '' }: Props) {
             icon: variables.icon,
             isPublic: variables.isPublic,
             itemCount: 0,
+            pinCount: 0,
             createdAt,
           }
 

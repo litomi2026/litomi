@@ -1,5 +1,7 @@
 'use client'
 
+import type { LibraryListItem } from '@litomi/contracts'
+
 import { Edit, Menu, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
@@ -32,28 +34,8 @@ const BulkOperationsToolbar = dynamic(() => import('./BulkOperationsToolbar'))
 type LibraryPageKind = 'bookmark' | 'browse' | 'detail' | 'history' | 'rating'
 
 type Props = {
-  libraries: {
-    id: number
-    name: string
-    description: string | null
-    color: string | null
-    icon: string | null
-    userId: number
-    isPublic: boolean
-    createdAt: number
-    itemCount: number
-  }[]
-  pinnedLibraries?: {
-    id: number
-    name: string
-    description: string | null
-    color: string | null
-    icon: string | null
-    userId: number
-    isPublic: boolean
-    createdAt: number
-    itemCount: number
-  }[]
+  libraries: LibraryListItem[]
+  pinnedLibraries?: LibraryListItem[]
   userId?: number
   historySource?: ReadingHistorySource
   summary?: {
