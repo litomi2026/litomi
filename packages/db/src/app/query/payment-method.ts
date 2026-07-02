@@ -1,0 +1,119 @@
+import { and, desc, eq, sql } from 'drizzle-orm'
+import { db } from '../db'
+import { paymentMethodTable } from '../schema/subscription'
+
+export interface SavePaymentMethodInput {
+  userId: number
+  token: string
+  method?: string | null
+  brand?: string | null
+  cardLast4?: string | null
+}
+
+export async function savePaymentMethod(input: SavePaymentMethodInput): Promise<{ id: number } | null> {
+  const [row] = await db
+    .insert(paymentMethodTable)
+    .values({
+      userId: input.userId,
+      token: input.token,
+      method: input.method ?? null,
+      brand: input.brand ?? null,
+      cardLast4: input.cardLast4 ?? null,
+    })
+    .onConflictDoUpdate({
+      target: [paymentMethodTable.provider, paymentMethodTable.token],
+      set: {
+        method: input.method ?? null,
+        brand: input.brand ?? null,
+        cardLast4: input.cardLast4 ?? null,
+        status: 'active',
+        updatedAt: new Date(),
+      },
+      setWhere: sql`${paymentMethodTable.userId} = excluded.user_id`,
+    })
+    .returning({ id: paymentMethodTable.id })
+
+  return row ?? null
+}
+
+export interface PaymentMethodBrief {
+  id: number
+  brand: string | null
+  cardLast4: string | null
+  createdAt: Date
+}
+
+export async function listActivePaymentMethods(userId: number): Promise<PaymentMethodBrief[]> {
+  return db
+    .select({
+      id: paymentMethodTable.id,
+      brand: paymentMethodTable.brand,
+      cardLast4: paymentMethodTable.cardLast4,
+      createdAt: paymentMethodTable.createdAt,
+    })
+    .from(paymentMethodTable)
+    .where(and(eq(paymentMethodTable.userId, userId), eq(paymentMethodTable.status, 'active')))
+    .orderBy(desc(paymentMethodTable.createdAt))
+}
+
+export async function getActivePaymentMethodForUser(
+  id: number,
+  userId: number,
+): Promise<{ id: number; token: string; method: string | null } | null> {
+  const [row] = await db
+    .select({ id: paymentMethodTable.id, token: paymentMethodTable.token, method: paymentMethodTable.method })
+    .from(paymentMethodTable)
+    .where(
+      and(
+        eq(paymentMethodTable.id, id),
+        eq(paymentMethodTable.userId, userId),
+        eq(paymentMethodTable.status, 'active'),
+      ),
+    )
+
+  return row ?? null
+}
+
+export async function getPaymentMethodToken(id: number): Promise<{ token: string; method: string | null } | null> {
+  const [row] = await db
+    .select({ token: paymentMethodTable.token, method: paymentMethodTable.method })
+    .from(paymentMethodTable)
+    .where(and(eq(paymentMethodTable.id, id), eq(paymentMethodTable.status, 'active')))
+
+  return row ?? null
+}
+
+export async function markPaymentMethodDeletedByToken(token: string): Promise<void> {
+  await db
+    .update(paymentMethodTable)
+    .set({
+      status: 'deleted',
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(paymentMethodTable.provider, 'portone'),
+        eq(paymentMethodTable.token, token),
+        eq(paymentMethodTable.status, 'active'),
+      ),
+    )
+}
+
+export async function markPaymentMethodDeleted(id: number, userId: number): Promise<boolean> {
+  const updated = await db
+    .update(paymentMethodTable)
+    .set({
+      status: 'deleted',
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(paymentMethodTable.id, id),
+        eq(paymentMethodTable.userId, userId),
+        eq(paymentMethodTable.status, 'active'),
+      ),
+    )
+    .returning({ id: paymentMethodTable.id })
+
+  return updated.length > 0
+}

@@ -85,6 +85,8 @@ async function main() {
           userId: fan.id,
           targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
           targetId: artist.id,
+          priceAmount: 1000,
+          priceCurrency: 'KRW',
           status: 'active',
           expiresAt,
           autoRenew: true,

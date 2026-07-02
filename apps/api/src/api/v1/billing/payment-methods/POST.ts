@@ -14,10 +14,6 @@ const route = new Hono<Env>()
 const factory = createFactory<Env>()
 
 const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PaymentMethodBodySchema))
-
-// Register a payment method: the provider token the client just issued (via
-// @portone/browser-sdk today). We validate it against PortOne (rejecting fake tokens) and
-// store only the opaque token + display brief.
 route.post('/', ...middlewares, async (c) => {
   if (!isBillingConfigured()) {
     return problemResponse(c, { status: 503 })
@@ -34,15 +30,23 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 400 })
   }
 
-  const { id } = await savePaymentMethod({
+  const saved = await savePaymentMethod({
     userId,
     token,
+    method: brief.method,
     brand: brief.brand,
     cardLast4: brief.cardLast4,
   })
 
+  if (!saved) {
+    return problemResponse(c, {
+      status: 409,
+      detail: '이미 다른 계정에 등록된 결제수단이에요.',
+    })
+  }
+
   return c.json({
-    id,
+    id: saved.id,
     brand: brief.brand,
     cardLast4: brief.cardLast4,
     createdAt: new Date().toISOString(),
