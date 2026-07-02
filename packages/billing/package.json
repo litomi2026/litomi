@@ -1,0 +1,19 @@
+{
+  "name": "@litomi/billing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "type": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@litomi/env": "workspace:*",
+    "@portone/server-sdk": "^0.19.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@litomi/billing-worker",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build --compile --minify --sourcemap src/index.ts --target=bun --outfile dist/billing-worker",
+    "start": "bun run start:local",
+    "start:local": "bun --env-file=.env.local src/index.ts",
+    "start:prod": "bun --env-file=.env.prod.runtime src/index.ts",
+    "type": "tsc --noEmit",
+    "docker:build": "docker build -f Dockerfile -t litomi-billing-worker-local ../..",
+    "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-billing-worker-local"
+  },
+  "dependencies": {
+    "@litomi/billing": "workspace:*",
+    "@litomi/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.12",
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3"
+  }
+}

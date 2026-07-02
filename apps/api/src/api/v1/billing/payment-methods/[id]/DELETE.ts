@@ -1,3 +1,4 @@
+import { revokeBillingKey } from '@litomi/billing'
 import { getActivePaymentMethodForUser, markPaymentMethodDeleted } from '@litomi/db/app/query/payment-method'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -6,7 +7,6 @@ import { z } from 'zod'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { revokeBillingKey } from '@/services/billing'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 

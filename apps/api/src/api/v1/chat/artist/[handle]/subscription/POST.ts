@@ -1,3 +1,4 @@
+import { chargeWithBillingKey, isBillingConfigured } from '@litomi/billing'
 import {
   chatHandleParamSchema,
   type POSTV1ChatSubscriptionResponse,
@@ -20,7 +21,6 @@ import { createFactory } from 'hono/factory'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { chargeWithBillingKey, isBillingConfigured } from '@/services/billing'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 

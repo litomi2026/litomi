@@ -1,3 +1,4 @@
+import { inspectBillingKey, isBillingConfigured } from '@litomi/billing'
 import { type POSTV1PaymentMethodResponse, postV1PaymentMethodBodySchema } from '@litomi/contracts'
 import { savePaymentMethod } from '@litomi/db/app/query/payment-method'
 import { Hono } from 'hono'
@@ -6,7 +7,6 @@ import { createFactory } from 'hono/factory'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { inspectBillingKey, isBillingConfigured } from '@/services/billing'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
