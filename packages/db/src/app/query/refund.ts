@@ -1,4 +1,4 @@
-import { and, eq, max, sql } from 'drizzle-orm'
+import { and, eq, max, sql, sum } from 'drizzle-orm'
 import { db } from '../db'
 import { invoiceTable } from '../schema/invoice'
 import { paymentRefundTable, paymentTable } from '../schema/payment'
@@ -39,18 +39,18 @@ export async function applyPaymentRefunds(paymentId: string, refunds: RemoteRefu
           providerRefundId: refund.providerRefundId,
           amount: refund.amount,
           currency: payment.currency,
-          reason: refund.reason?.slice(0, 256) ?? null,
+          reason: refund.reason,
           refundedAt: refund.refundedAt,
         })),
       )
       .onConflictDoNothing({ target: paymentRefundTable.providerRefundId })
 
     const [{ refundedTotal }] = await tx
-      .select({ refundedTotal: sql<number>`coalesce(sum(${paymentRefundTable.amount}), 0)::bigint` })
+      .select({ refundedTotal: sum(paymentRefundTable.amount) })
       .from(paymentRefundTable)
       .where(eq(paymentRefundTable.paymentId, payment.id))
 
-    const fullyRefunded = Number(refundedTotal) >= payment.amount
+    const fullyRefunded = Number(refundedTotal ?? 0) >= payment.amount
     const lastRefundedAt = new Date(Math.max(...refunds.map((refund) => refund.refundedAt.getTime())))
 
     if (fullyRefunded) {

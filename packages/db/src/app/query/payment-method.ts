@@ -1,13 +1,13 @@
-import { and, desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import { db } from '../db'
 import { paymentMethodTable } from '../schema/subscription'
 
 export interface SavePaymentMethodInput {
   userId: number
   token: string
-  method?: string | null
-  brand?: string | null
-  cardLast4?: string | null
+  method: string | null
+  brand: string | null
+  cardLast4: string | null
 }
 
 export async function savePaymentMethod(input: SavePaymentMethodInput): Promise<{ id: number } | null> {
@@ -16,20 +16,20 @@ export async function savePaymentMethod(input: SavePaymentMethodInput): Promise<
     .values({
       userId: input.userId,
       token: input.token,
-      method: input.method ?? null,
-      brand: input.brand ?? null,
-      cardLast4: input.cardLast4 ?? null,
+      method: input.method,
+      brand: input.brand,
+      cardLast4: input.cardLast4,
     })
     .onConflictDoUpdate({
       target: [paymentMethodTable.provider, paymentMethodTable.token],
       set: {
-        method: input.method ?? null,
-        brand: input.brand ?? null,
-        cardLast4: input.cardLast4 ?? null,
+        method: input.method,
+        brand: input.brand,
+        cardLast4: input.cardLast4,
         status: 'active',
         updatedAt: new Date(),
       },
-      setWhere: sql`${paymentMethodTable.userId} = excluded.user_id`,
+      setWhere: eq(paymentMethodTable.userId, input.userId),
     })
     .returning({ id: paymentMethodTable.id })
 

@@ -140,6 +140,25 @@ export async function verifyBillingWebhook(
   }
 }
 
+export interface ChargeFailure {
+  code: string | null
+  message: string
+}
+
+export function describeChargeFailure(cause: unknown): ChargeFailure {
+  if (cause instanceof Error) {
+    return {
+      code: cause.name.slice(0, 64),
+      message: cause.message.slice(0, 256),
+    }
+  }
+
+  return {
+    code: null,
+    message: String(cause).slice(0, 256),
+  }
+}
+
 export interface BillingGateway {
   charge(input: ChargeInput): Promise<ChargeResult>
   getPayment(paymentId: string): Promise<RemotePayment>
@@ -223,7 +242,8 @@ function extractRefunds(cancellations: RawCancellation[] | undefined): RemoteRef
       return {
         providerRefundId: cancellation.id!,
         amount: cancellation.totalAmount ?? 0,
-        reason: cancellation.reason ?? null,
+        // Pre-truncated to the payment_refund column width; consumers write it verbatim.
+        reason: cancellation.reason?.slice(0, 256) ?? null,
         refundedAt: at ? new Date(at) : new Date(),
       }
     })

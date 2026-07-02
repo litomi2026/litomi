@@ -54,14 +54,16 @@ export async function getPaymentByPaymentId(paymentId: string): Promise<PaymentR
 
 export async function markPaymentFailed(
   paymentId: string,
-  failure?: { code?: string | null; message?: string | null },
+  failure: { code: string | null; message: string },
 ): Promise<void> {
+  const { code, message } = failure
+
   await db
     .update(paymentTable)
     .set({
       status: 'failed',
-      failureCode: failure?.code?.slice(0, 64) ?? null,
-      failureMessage: failure?.message?.slice(0, 256) ?? null,
+      failureCode: code,
+      failureMessage: message,
       updatedAt: new Date(),
     })
     .where(and(eq(paymentTable.paymentId, paymentId), eq(paymentTable.status, 'pending')))

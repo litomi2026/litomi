@@ -67,6 +67,7 @@ route.post('/portone/webhook', async (c) => {
         await confirmPayment(event.paymentId, {
           providerTxnId: remote.providerTxnId ?? event.paymentId,
           paidAt: remote.paidAt ?? new Date(),
+          paymentMethodId: null,
           method: remote.method,
         })
       }

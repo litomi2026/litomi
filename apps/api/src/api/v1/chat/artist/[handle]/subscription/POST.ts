@@ -1,4 +1,4 @@
-import { chargeWithBillingKey, getRemotePayment, isBillingConfigured } from '@litomi/billing'
+import { chargeWithBillingKey, describeChargeFailure, getRemotePayment, isBillingConfigured } from '@litomi/billing'
 import {
   chatHandleParamSchema,
   type POSTV1ChatSubscriptionResponse,
@@ -180,18 +180,10 @@ async function settleAmbiguousCharge(paymentId: string, paymentMethodId: number,
   }
 
   if (remote.status === 'failed' || remote.status === 'canceled') {
-    await markPaymentFailed(paymentId, describeFailure(cause))
+    await markPaymentFailed(paymentId, describeChargeFailure(cause))
   }
 
   return false
-}
-
-function describeFailure(cause: unknown): { code: string | null; message: string | null } {
-  if (cause instanceof Error) {
-    return { code: cause.name, message: cause.message }
-  }
-
-  return { code: null, message: String(cause) }
 }
 
 export default route

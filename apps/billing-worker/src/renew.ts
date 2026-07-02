@@ -1,4 +1,4 @@
-import type { BillingGateway } from '@litomi/billing'
+import { type BillingGateway, describeChargeFailure } from '@litomi/billing'
 import { getChatArtistById } from '@litomi/db/app/query/chat'
 import { ensureOpenInvoice, voidOpenInvoice } from '@litomi/db/app/query/invoice'
 import { ensureInvoicePayment, markPaymentFailed } from '@litomi/db/app/query/payment'
@@ -145,6 +145,7 @@ async function handleDue(
     await confirmPayment(paymentId, {
       providerTxnId: charge.providerTxnId,
       paidAt: charge.paidAt,
+      paymentMethodId: sub.paymentMethodId,
       method: paymentMethod.method,
     })
 
@@ -185,6 +186,7 @@ async function reconcileFailedCharge(
     await confirmPayment(paymentId, {
       providerTxnId: remote.providerTxnId ?? paymentId,
       paidAt: remote.paidAt ?? now,
+      paymentMethodId: sub.paymentMethodId,
       method: remote.method,
     })
 
@@ -197,16 +199,8 @@ async function reconcileFailedCharge(
     return
   }
 
-  await markPaymentFailed(paymentId, describeFailure(cause))
+  await markPaymentFailed(paymentId, describeChargeFailure(cause))
   await applyDunning(sub, now, summary)
-}
-
-function describeFailure(cause: unknown): { code: string | null; message: string | null } {
-  if (cause instanceof Error) {
-    return { code: cause.name, message: cause.message }
-  }
-
-  return { code: null, message: String(cause) }
 }
 
 async function applyDunning(sub: DueSubscription, now: Date, summary: RenewSummary): Promise<void> {

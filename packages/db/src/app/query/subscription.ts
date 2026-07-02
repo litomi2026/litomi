@@ -82,16 +82,18 @@ export async function setAutoRenew(
 
 export async function confirmPayment(
   paymentId: string,
-  data: { providerTxnId: string; paidAt: Date; paymentMethodId?: number | null; method?: string | null },
+  data: { providerTxnId: string; paidAt: Date; paymentMethodId: number | null; method: string | null },
 ): Promise<{ confirmed: boolean }> {
+  const { providerTxnId, paidAt, paymentMethodId, method } = data
+
   return db.transaction(async (tx) => {
     const [paid] = await tx
       .update(paymentTable)
       .set({
         status: 'paid',
-        providerTxnId: data.providerTxnId,
-        ...(data.method != null && { method: data.method }),
-        paidAt: data.paidAt,
+        providerTxnId,
+        ...(method && { method }),
+        paidAt,
         updatedAt: new Date(),
       })
       .where(and(eq(paymentTable.paymentId, paymentId), eq(paymentTable.status, 'pending')))
@@ -107,9 +109,16 @@ export async function confirmPayment(
 
     const [invoice] = await tx
       .update(invoiceTable)
-      .set({ status: 'paid', paidAt: data.paidAt, updatedAt: new Date() })
+      .set({
+        status: 'paid',
+        paidAt,
+        updatedAt: new Date(),
+      })
       .where(and(eq(invoiceTable.id, paid.invoiceId), inArray(invoiceTable.status, ['open', 'void'])))
-      .returning({ subscriptionId: invoiceTable.subscriptionId, periodEnd: invoiceTable.periodEnd })
+      .returning({
+        subscriptionId: invoiceTable.subscriptionId,
+        periodEnd: invoiceTable.periodEnd,
+      })
 
     if (invoice && invoice.subscriptionId !== null) {
       const set: Record<string, unknown> = {
@@ -119,8 +128,8 @@ export async function confirmPayment(
         updatedAt: new Date(),
       }
 
-      if (data.paymentMethodId != null) {
-        set.paymentMethodId = data.paymentMethodId
+      if (paymentMethodId !== null) {
+        set.paymentMethodId = paymentMethodId
       }
 
       await tx.update(subscriptionTable).set(set).where(eq(subscriptionTable.id, invoice.subscriptionId))
@@ -156,7 +165,7 @@ export async function ensureSubscription(input: {
       target: [subscriptionTable.userId, subscriptionTable.targetType, subscriptionTable.targetId],
       set: {
         autoRenew: true,
-        paymentMethodId: sql`coalesce(excluded.payment_method_id, ${subscriptionTable.paymentMethodId})`,
+        ...(input.paymentMethodId !== null && { paymentMethodId: input.paymentMethodId }),
         priceAmount: input.priceAmount,
         priceCurrency: input.priceCurrency,
         updatedAt: input.now,
