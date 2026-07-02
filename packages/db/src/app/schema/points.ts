@@ -11,9 +11,9 @@ export const adImpressionTokenTable = pgTable(
       .notNull(),
     token: varchar('token', { length: 64 }).notNull().unique(),
     adSlotId: varchar('ad_slot_id', { length: 50 }).notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     lastEarnedAt: timestamp('last_earned_at', { precision: 3, withTimezone: true }),
     expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     index('idx_ad_impression_token_user').on(table.userId),
@@ -39,10 +39,10 @@ export const pointTransactionTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     type: smallint('type').notNull(),
     amount: bigint('amount', { mode: 'number' }).notNull(),
     balanceAfter: bigint('balance_after', { mode: 'number' }).notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_point_transaction_user_id').on(table.userId, table.createdAt.desc())],
 ).enableRLS()
@@ -116,8 +116,8 @@ export const userItemTable = pgTable(
       .notNull(),
     type: smallint('type').notNull(),
     itemId: varchar('item_id', { length: 50 }).notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     isActive: smallint('is_active').notNull().default(1),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_user_item_user_type').on(table.userId, table.type)],
 ).enableRLS()

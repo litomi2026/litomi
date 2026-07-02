@@ -9,10 +9,10 @@ export const userCensorshipTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     key: smallint().notNull(),
     value: varchar({ length: 256 }).notNull(),
     level: smallint().notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_user_censorship_user_id').on(table.userId)],
 ).enableRLS()

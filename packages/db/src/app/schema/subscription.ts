@@ -4,9 +4,6 @@ import { userTable } from './user'
 export const paymentMethodProviderEnum = pgEnum('payment_method_provider', ['portone'])
 export const paymentMethodStatusEnum = pgEnum('payment_method_status', ['active', 'deleted'])
 
-// A user's saved payment method (provider-neutral). `token` holds the provider's opaque
-// recurring-charge token — a PortOne billing key today, a Stripe payment_method id later —
-// and the raw card data never touches us. The PortOne specifics live in the billing adapter.
 export const paymentMethodTable = pgTable(
   'payment_method',
   {
@@ -30,7 +27,13 @@ export const paymentMethodTable = pgTable(
   ],
 ).enableRLS()
 
-export const subscriptionStatusEnum = pgEnum('subscription_status', ['active', 'past_due', 'canceled', 'expired'])
+export const subscriptionStatusEnum = pgEnum('subscription_status', [
+  'incomplete',
+  'active',
+  'past_due',
+  'canceled',
+  'expired',
+])
 
 export const subscriptionTable = pgTable(
   'subscription',
@@ -41,12 +44,12 @@ export const subscriptionTable = pgTable(
       .notNull(),
     targetType: varchar('target_type', { length: 32 }).notNull(),
     targetId: bigint('target_id', { mode: 'number' }).notNull(),
-    status: subscriptionStatusEnum().notNull().default('active'),
-    expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
-    autoRenew: boolean('auto_renew').notNull().default(true),
     paymentMethodId: bigint('payment_method_id', { mode: 'number' }).references(() => paymentMethodTable.id, {
       onDelete: 'set null',
     }),
+    status: subscriptionStatusEnum().notNull().default('active'),
+    autoRenew: boolean('auto_renew').notNull().default(true),
+    expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },

@@ -1,4 +1,6 @@
+import { sql } from 'drizzle-orm'
 import { bigint, index, pgEnum, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { invoiceTable } from './invoice'
 import { userTable } from './user'
 
 export const paymentProviderEnum = pgEnum('payment_provider', ['portone'])
@@ -8,16 +10,9 @@ export const paymentTable = pgTable(
   'payment',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
-    // Our id handed to the PG as `paymentId`; also the idempotency anchor for confirmation.
-    paymentId: varchar('payment_id', { length: 64 }).notNull().unique(),
-    // The financial record must survive account deletion for tax/audit retention
     userId: bigint('user_id', { mode: 'number' }).references(() => userTable.id, { onDelete: 'set null' }),
-    // What was bought (polymorphic; null for a generic/one-off purchase). e.g. 'chat_artist'.
-    targetType: varchar('target_type', { length: 32 }),
-    targetId: bigint('target_id', { mode: 'number' }),
-    // Entitlement window this payment grants (null for non-subscription one-offs).
-    periodStart: timestamp('period_start', { precision: 3, withTimezone: true }),
-    periodEnd: timestamp('period_end', { precision: 3, withTimezone: true }),
+    invoiceId: bigint('invoice_id', { mode: 'number' }).references(() => invoiceTable.id, { onDelete: 'set null' }),
+    paymentId: varchar('payment_id', { length: 64 }).notNull().unique(),
     orderName: varchar('order_name', { length: 128 }).notNull(),
     // Smallest currency unit (minor units), à la Stripe: KRW won (₩1000 → 1000), USD cents ($10.00 → 1000)
     amount: bigint({ mode: 'number' }).notNull(),
@@ -37,9 +32,7 @@ export const paymentTable = pgTable(
   },
   (table) => [
     index('idx_payment_user').on(table.userId),
-    // Entitlement scan: "what did this user pay for this target?" (drives listPaidIntervals).
-    index('idx_payment_target').on(table.targetType, table.targetId, table.userId),
-    // One ledger row per PG transaction (NULLs are distinct, so many pending rows are fine).
+    uniqueIndex('uq_payment_invoice_pending').on(table.invoiceId).where(sql`status = 'pending'`),
     uniqueIndex('uq_payment_provider_txn').on(table.provider, table.providerTxnId),
   ],
 ).enableRLS()

@@ -14,12 +14,12 @@ export const libraryTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     name: varchar('name', { length: MAX_LIBRARY_NAME_LENGTH }).notNull(),
     description: varchar('description', { length: MAX_LIBRARY_DESCRIPTION_LENGTH }),
     color: integer('color'),
     icon: varchar('icon', { length: MAX_LIBRARY_ICON_LENGTH }),
     isPublic: boolean('is_public').default(false).notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_library_user_id').on(table.userId)],
 ).enableRLS()

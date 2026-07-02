@@ -6,17 +6,17 @@ export const credentialTable = pgTable(
   'credential',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
-    credentialId: varchar({ length: 256 }).notNull(),
-    name: varchar({ length: 32 }),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }),
+    credentialId: varchar({ length: 256 }).notNull(),
+    name: varchar({ length: 32 }),
     counter: integer().notNull().default(0),
     publicKey: text('public_key').notNull(),
     deviceType: smallint('device_type').notNull(),
     transports: text().array(),
+    lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     index('idx_credential_user_id').on(table.userId),
