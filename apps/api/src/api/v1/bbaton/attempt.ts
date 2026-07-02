@@ -38,10 +38,10 @@ route.post('/', requireAuth, async (c) => {
     const state = createBBatonState()
     await storeBBatonOAuthAttempt(state, { userId })
 
-    return c.json<POSTV1BBatonAttemptResponse>({
+    return c.json({
       authorizeUrl: buildAuthorizeUrl(state),
       expiresIn: BBATON_ATTEMPT_TTL_SECONDS,
-    })
+    } satisfies POSTV1BBatonAttemptResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '비바톤 인증을 시작하지 못했어요.' })

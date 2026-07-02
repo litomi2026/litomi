@@ -44,12 +44,12 @@ route.get('/', zProblemValidator('query', getNotificationQuerySchema), async (c)
       .orderBy(desc(notificationTable.id))
       .limit(NOTIFICATION_PER_PAGE + 1)
 
-    const result: GETNotificationResponse = {
+    const result = {
       notifications: results.slice(0, NOTIFICATION_PER_PAGE),
       hasNextPage: results.length > NOTIFICATION_PER_PAGE,
-    }
+    } satisfies GETNotificationResponse
 
-    return c.json<GETNotificationResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '알림을 불러오지 못했어요' })

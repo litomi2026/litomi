@@ -130,11 +130,11 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
       })
     }
 
-    return c.json<POSTV1PointTokenResponse>({
+    return c.json({
       token: result.token,
       expiresAt: result.expiresAt.toISOString(),
       dailyRemaining: (POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT - todayEarnCount) * POINT_CONSTANTS.AD_CLICK_REWARD,
-    })
+    } satisfies POSTV1PointTokenResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '토큰 생성에 실패했어요' })

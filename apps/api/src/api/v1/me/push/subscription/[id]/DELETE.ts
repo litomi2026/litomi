@@ -25,10 +25,10 @@ route.delete('/', zProblemValidator('param', deleteV1MePushSubscriptionIdParamSc
       return problemResponse(c, { status: 404, detail: '브라우저를 찾을 수 없어요' })
     }
 
-    return c.json<DELETEV1MePushSubscriptionIdResponse>({
+    return c.json({
       id: deleted.id,
       message: '푸시 알림을 해제했어요',
-    })
+    } satisfies DELETEV1MePushSubscriptionIdResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '푸시 알림을 해제하지 못했어요' })

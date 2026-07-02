@@ -180,13 +180,13 @@ trendingRoutes.get('/', zProblemValidator('query', getTrendingKeywordsQuerySchem
     },
   }[type]
 
-  const response: GETTrendingKeywordsResponse = {
+  const response = {
     keywords: keywords.map(({ keyword }) => ({
       value: keyword,
       label: translateTrendingKeyword(keyword, locale),
     })),
     updatedAt: new Date(),
-  }
+  } satisfies GETTrendingKeywordsResponse
 
   const cacheControl =
     response.keywords.length > 0
@@ -203,7 +203,7 @@ trendingRoutes.get('/', zProblemValidator('query', getTrendingKeywordsQuerySchem
           swr: 0,
         })
 
-  return c.json<GETTrendingKeywordsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default trendingRoutes

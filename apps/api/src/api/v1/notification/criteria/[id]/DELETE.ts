@@ -25,7 +25,7 @@ route.delete('/', zProblemValidator('param', notificationCriteriaIdParamSchema),
       return problemResponse(c, { status: 404, detail: '알림 기준을 찾을 수 없어요' })
     }
 
-    return c.json<DELETEV1NotificationCriteriaIdResponse>(deleted)
+    return c.json(deleted satisfies DELETEV1NotificationCriteriaIdResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '알림 기준 삭제 중 오류가 발생했어요' })

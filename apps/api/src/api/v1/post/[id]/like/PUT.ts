@@ -23,7 +23,7 @@ route.put('/', requireAuth, zProblemValidator('param', postIdParamSchema), async
       .onConflictDoNothing()
       .returning({ postId: postLikeTable.postId })
 
-    return c.json<PUTV1PostIdLikeResponse>({ liked: true }, inserted.length > 0 ? 201 : 200)
+    return c.json({ liked: true } satisfies PUTV1PostIdLikeResponse, inserted.length > 0 ? 201 : 200)
   } catch (error) {
     if (isPostgresError(error) && error.cause.code === '23503') {
       return problemResponse(c, { status: 404, detail: '글을 찾을 수 없어요' })

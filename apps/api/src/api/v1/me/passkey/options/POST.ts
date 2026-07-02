@@ -72,7 +72,7 @@ route.post('/', async (c) => {
 
     await storeChallenge(userId, ChallengeType.REGISTRATION, options.challenge)
 
-    return c.json<POSTV1MePasskeyOptionsResponse>({ options })
+    return c.json({ options } satisfies POSTV1MePasskeyOptionsResponse)
   } catch (error) {
     console.error('getRegistrationOptions:', error)
     return problemResponse(c, { status: 500, detail: '패스키 등록 중 오류가 발생했어요' })

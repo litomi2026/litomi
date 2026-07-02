@@ -33,15 +33,15 @@ route.get('/', ...middlewares, async (c) => {
   const subscription = isOwner ? null : await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
   const entitled = isOwner || (subscription !== null && subscription.expiresAt.getTime() > Date.now())
 
-  const result: GETV1ChatArtistResponse = {
+  const response = {
     artist: { ...toArtistBrief(artist), description: artist.description },
     isOwner,
     entitled,
     price: artist.priceAmount > 0 ? { amount: artist.priceAmount, currency: artist.priceCurrency } : null,
     subscription: subscription ? toSubscriptionDTO(subscription) : null,
-  }
+  } satisfies GETV1ChatArtistResponse
 
-  return c.json<GETV1ChatArtistResponse>(result, { headers: { 'Cache-Control': noStoreCacheControl } })
+  return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
 export default route

@@ -35,7 +35,7 @@ route.post('/', zProblemValidator('json', postV1MePushTestBodySchema), async (c)
       sentAt: new Date(),
     })
 
-    return c.json<POSTV1MePushTestResponse>({ message: '현재 브라우저에 테스트 알림을 보냈어요' })
+    return c.json({ message: '현재 브라우저에 테스트 알림을 보냈어요' } satisfies POSTV1MePushTestResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '테스트 푸시 알림 발송 중 오류가 발생했어요' })

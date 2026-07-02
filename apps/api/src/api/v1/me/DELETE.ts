@@ -84,10 +84,10 @@ route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => 
       case 'deleted':
         applyAuthCookie(c, getAuthCookieClearConfigs())
 
-        return c.json<DELETEV1MeResponse>({
+        return c.json({
           loginId: result.loginId,
           message: `${result.loginId} 계정을 삭제했어요`,
-        })
+        } satisfies DELETEV1MeResponse)
 
       case 'unauthorized':
         applyAuthCookie(c, getAuthCookieClearConfigs())

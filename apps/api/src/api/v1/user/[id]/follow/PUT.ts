@@ -30,7 +30,7 @@ route.put('/', requireAuth, zProblemValidator('param', userIdParamSchema), async
       .onConflictDoNothing()
       .returning({ followeeId: userFollowTable.followeeId })
 
-    return c.json<PUTV1UserIdFollowResponse>({ following: true }, inserted.length > 0 ? 201 : 200)
+    return c.json({ following: true } satisfies PUTV1UserIdFollowResponse, inserted.length > 0 ? 201 : 200)
   } catch (error) {
     if (isPostgresError(error)) {
       if (error.cause.code === '23503') {

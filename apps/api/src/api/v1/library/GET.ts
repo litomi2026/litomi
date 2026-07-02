@@ -158,7 +158,11 @@ libraryListRoutes.get('/', zProblemValidator('query', getV1LibraryListQuerySchem
     const cacheControl = listScope === 'public' ? sharedCacheControl : privateCacheControl
 
     if (rows.length === 0) {
-      const result: GETV1LibraryListResponse = { libraries: [], nextCursor: null }
+      const result = {
+        libraries: [],
+        nextCursor: null,
+      } satisfies GETV1LibraryListResponse
+
       return c.json(result, { headers: { 'Cache-Control': cacheControl } })
     }
 
@@ -191,9 +195,12 @@ libraryListRoutes.get('/', zProblemValidator('query', getV1LibraryListQuerySchem
           )
         : null
 
-    const result = { libraries, nextCursor }
+    const result = {
+      libraries,
+      nextCursor,
+    } satisfies GETV1LibraryListResponse
 
-    return c.json<GETV1LibraryListResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '서재 목록을 불러오지 못했어요' })

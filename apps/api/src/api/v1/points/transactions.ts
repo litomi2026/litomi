@@ -62,8 +62,8 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1PointT
     const response = {
       items,
       nextCursor: hasMore ? transactions[transactions.length - 1].id : null,
-    }
-    return c.json<GETV1PointTransactionResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+    } satisfies GETV1PointTransactionResponse
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '거래 내역을 불러오지 못했어요' })

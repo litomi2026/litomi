@@ -29,19 +29,19 @@ route.post('/', async (c) => {
 
     if (!logoutUserId) {
       applyAuthCookie(c, getAuthCookieClearConfigs())
-      return c.json<POSTV1AuthLogoutResponse>({ loginId: null })
+      return c.json({ loginId: null } satisfies POSTV1AuthLogoutResponse)
     }
 
     const user = await touchUserLogoutAtAndReturnLoginId(logoutUserId, now)
 
     if (!user) {
       applyAuthCookie(c, getAuthCookieClearConfigs())
-      return c.json<POSTV1AuthLogoutResponse>({ loginId: null })
+      return c.json({ loginId: null } satisfies POSTV1AuthLogoutResponse)
     }
 
     applyAuthCookie(c, getAuthCookieClearConfigs())
 
-    return c.json<POSTV1AuthLogoutResponse>({ loginId: user.loginId })
+    return c.json({ loginId: user.loginId } satisfies POSTV1AuthLogoutResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '로그아웃 중 오류가 발생했어요' })

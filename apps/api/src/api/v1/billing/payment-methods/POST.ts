@@ -41,12 +41,12 @@ route.post('/', ...middlewares, async (c) => {
     cardLast4: brief.cardLast4,
   })
 
-  return c.json<POSTV1PaymentMethodResponse>({
+  return c.json({
     id,
     brand: brief.brand,
     cardLast4: brief.cardLast4,
     createdAt: new Date().toISOString(),
-  })
+  } satisfies POSTV1PaymentMethodResponse)
 })
 
 export default route

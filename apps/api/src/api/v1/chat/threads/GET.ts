@@ -47,7 +47,8 @@ route.get('/', requireAuth, async (c) => {
   ]
 
   if (items.length === 0) {
-    return c.json<GETV1ChatThreadsResponse>({ threads: [] }, { headers: { 'Cache-Control': noStoreCacheControl } })
+    const response = { threads: [] } satisfies GETV1ChatThreadsResponse
+    return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })
   }
 
   // The broadcast summary + read watermark drive each entitled row's preview & unread.
@@ -81,7 +82,7 @@ route.get('/', requireAuth, async (c) => {
   // Most-recently-active first; artists with no broadcast yet sink to the bottom.
   threads.sort((a, b) => (b.lastMessage?.messageId ?? '').localeCompare(a.lastMessage?.messageId ?? ''))
 
-  return c.json<GETV1ChatThreadsResponse>({ threads }, { headers: { 'Cache-Control': noStoreCacheControl } })
+  return c.json({ threads } satisfies GETV1ChatThreadsResponse, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
 export default route

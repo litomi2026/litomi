@@ -69,7 +69,11 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 503, detail: '메시지 전송에 실패했어요. 잠시 후 다시 시도해 주세요.' })
   }
 
-  return c.json<POSTV1ChatReplyResponse>({ messageId: message.messageId }, 202)
+  const response = {
+    messageId: message.messageId,
+  } satisfies POSTV1ChatReplyResponse
+
+  return c.json(response, 202)
 })
 
 export default route

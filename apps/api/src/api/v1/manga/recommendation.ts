@@ -54,9 +54,9 @@ route.get(
           generatedAt: row.generatedAt.getTime(),
           manga: mangaMap.get(row.mangaId),
         })),
-      }
+      } satisfies GETV1MangaRecommendationResponse
 
-      return c.json<GETV1MangaRecommendationResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+      return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '추천 작품을 불러오지 못했어요' })

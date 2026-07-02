@@ -30,11 +30,11 @@ librarySummaryRoutes.get('/', requireAuth, requireAdult, async (c) => {
       bookmarkCount: counts?.bookmarkCount ?? 0,
       historyCount: counts?.historyCount ?? 0,
       ratingCount: counts?.ratingCount ?? 0,
-    }
+    } satisfies GETV1LibrarySummaryResponse
 
     const cacheControl = createCacheControl({ private: true, maxAge: sec('1 minute') })
 
-    return c.json<GETV1LibrarySummaryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '요약 정보를 불러오지 못했어요' })

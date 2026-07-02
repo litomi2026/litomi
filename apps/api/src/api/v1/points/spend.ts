@@ -168,10 +168,10 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSc
       return problemResponse(c, { status: result.status, detail: result.detail })
     }
 
-    return c.json<POSTV1PointSpendResponse>({
+    return c.json({
       balance: result.balance,
       spent: result.spent,
-    })
+    } satisfies POSTV1PointSpendResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '포인트 사용에 실패했어요' })

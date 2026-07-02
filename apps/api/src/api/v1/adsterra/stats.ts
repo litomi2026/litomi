@@ -55,7 +55,7 @@ route.get('/stats', requireAuth, zProblemValidator('query', getV1AdsterraStatsQu
       swr: sec('1 hour'),
     })
 
-    return c.json<GETV1AdsterraStatsResponse>(parsed.data, { headers: { 'Cache-Control': cacheControl } })
+    return c.json(parsed.data satisfies GETV1AdsterraStatsResponse, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       return problemResponse(c, { status: 499, detail: '요청이 취소됐어요' })

@@ -83,7 +83,7 @@ route.post('/', zProblemValidator('json', postV1MeTwoFactorVerifyBodySchema), as
 
       case 'verified':
         await Promise.allSettled([twoFactorVerifyLimiter.reward(String(userId))])
-        return c.json<POSTV1MeTwoFactorVerifyResponse>({ backupCodes: result.backupCodes })
+        return c.json({ backupCodes: result.backupCodes } satisfies POSTV1MeTwoFactorVerifyResponse)
     }
   } catch (error) {
     console.error(error)

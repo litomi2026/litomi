@@ -33,7 +33,7 @@ route.delete('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 404 })
   }
 
-  return c.json<DELETEV1ChatSubscriptionResponse>({ subscription: toSubscriptionDTO(subscription) })
+  return c.json({ subscription: toSubscriptionDTO(subscription) } satisfies DELETEV1ChatSubscriptionResponse)
 })
 
 export default route

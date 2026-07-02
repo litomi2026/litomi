@@ -71,7 +71,12 @@ route.put('/', requireAuth, requireAdult, zProblemValidator('param', bookmarkMan
       }
     })
 
-    return c.json<PUTV1BookmarkIdResponse>({ mangaId: result.mangaId, createdAt: result.createdAt }, result.status)
+    const response = {
+      mangaId: result.mangaId,
+      createdAt: result.createdAt,
+    } satisfies PUTV1BookmarkIdResponse
+
+    return c.json(response, result.status)
   } catch (error) {
     if (error instanceof Error && error.message === ErrorCode.BOOKMARK_LIMIT_REACHED) {
       return problemResponse(c, {

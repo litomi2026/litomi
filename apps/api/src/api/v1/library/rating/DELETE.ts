@@ -23,7 +23,7 @@ route.delete('/', requireAuth, zProblemValidator('json', deleteV1LibraryRatingBo
       .where(and(eq(userRatingTable.userId, userId), inArray(userRatingTable.mangaId, requestedMangaIds)))
       .returning({ deleted: sql<number>`1` })
 
-    return c.json<DELETEV1LibraryRatingResponse>({ deletedCount: deleted.length })
+    return c.json({ deletedCount: deleted.length } satisfies DELETEV1LibraryRatingResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '평가 삭제에 실패했어요' })

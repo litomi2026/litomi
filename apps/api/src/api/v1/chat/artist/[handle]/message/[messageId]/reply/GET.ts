@@ -54,14 +54,12 @@ route.get('/', ...middlewares, async (c) => {
     }
   })
 
-  const result = {
+  const response = {
     replies,
     nextCursor: rows.length === limit ? (rows.at(-1)?.messageId ?? null) : null,
-  }
+  } satisfies GETV1ChatRepliesResponse
 
-  return c.json<GETV1ChatRepliesResponse>(result, {
-    headers: { 'Cache-Control': noStoreCacheControl },
-  })
+  return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
 export default route

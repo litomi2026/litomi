@@ -80,9 +80,9 @@ route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async 
       loginId,
       name: loginId,
       nickname,
-    }
+    } satisfies POSTV1AuthSignupResponse
 
-    return c.json<POSTV1AuthSignupResponse>(response, 201)
+    return c.json(response, 201)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '회원가입 중 오류가 발생했어요' })

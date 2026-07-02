@@ -35,12 +35,12 @@ route.get('/:id/rating', requireAuth, zProblemValidator('param', mangaIdParamSch
       })
     }
 
-    const result: GETV1MangaIdRatingResponse = {
+    const result = {
       rating: rating.rating,
       updatedAt: rating.updatedAt.getTime(),
-    }
+    } satisfies GETV1MangaIdRatingResponse
 
-    return c.json<GETV1MangaIdRatingResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '평점을 불러오지 못했어요' })

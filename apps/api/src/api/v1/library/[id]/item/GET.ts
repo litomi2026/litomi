@@ -91,10 +91,10 @@ routes.get(
 
       const lastItem = items[items.length - 1]
       const nextCursor = hasNextPage && lastItem ? getNextLibraryItemCursor(pageItems[pageItems.length - 1]) : null
-      const result = { items, nextCursor }
+      const result = { items, nextCursor } satisfies GETLibraryItemsResponse
       const cacheControl = isPublicScope ? sharedCacheControl : privateCacheControl
 
-      return c.json<GETLibraryItemsResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+      return c.json(result, { headers: { 'Cache-Control': cacheControl } })
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '서재 작품을 불러오지 못했어요' })

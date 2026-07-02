@@ -32,11 +32,11 @@ route.post(
       const settings = await readUserSettings(userId)
 
       if (!settings.historySyncEnabled) {
-        return c.json<POSTV1LibraryHistoryImportResponse>({
+        return c.json({
           importedCount: 0,
           skippedCount: localHistories.length,
           synced: false,
-        })
+        } satisfies POSTV1LibraryHistoryImportResponse)
       }
 
       const values = Array.from(getLatestLocalHistories(localHistories).values()).map((item) => ({
@@ -67,11 +67,11 @@ route.post(
         return inserted.length
       })
 
-      return c.json<POSTV1LibraryHistoryImportResponse>({
+      return c.json({
         importedCount,
         skippedCount: localHistories.length - importedCount,
         synced: true,
-      })
+      } satisfies POSTV1LibraryHistoryImportResponse)
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '읽기 기록 동기화 중 오류가 발생했어요' })

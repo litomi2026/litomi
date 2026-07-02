@@ -61,9 +61,9 @@ route.get('/', zProblemValidator('query', getV1PostQuerySchema), async (c) => {
       manga: post.mangaId ? catalogMangaMap.get(post.mangaId) : undefined,
     })),
     nextCursor,
-  }
+  } satisfies GETV1PostResponse
 
-  return c.json<GETV1PostResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+  return c.json(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

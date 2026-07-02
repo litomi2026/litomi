@@ -65,7 +65,7 @@ route.post('/', ...middlewares, async (c) => {
       const resumed = current.autoRenew
         ? current
         : await setAutoRenew(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id, true)
-      return c.json<POSTV1ChatSubscriptionResponse>({ subscription: toSubscriptionDTO(resumed ?? current) })
+      return c.json({ subscription: toSubscriptionDTO(resumed ?? current) } satisfies POSTV1ChatSubscriptionResponse)
     }
   }
 
@@ -121,7 +121,7 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 500 })
   }
 
-  return c.json<POSTV1ChatSubscriptionResponse>({ subscription: toSubscriptionDTO(subscription) })
+  return c.json({ subscription: toSubscriptionDTO(subscription) } satisfies POSTV1ChatSubscriptionResponse)
 })
 
 export default route

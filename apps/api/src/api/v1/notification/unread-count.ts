@@ -26,7 +26,7 @@ unreadCountRoutes.get('/', async (c) => {
       maxAge: 10,
     })
 
-    return c.json<GETUnreadCountResponse>(unreadCount, { headers: { 'Cache-Control': cacheControl } })
+    return c.json(unreadCount satisfies GETUnreadCountResponse, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '알림을 불러오지 못했어요' })

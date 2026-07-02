@@ -41,7 +41,7 @@ route.delete('/', requireAuth, requireAdult, zProblemValidator('json', deleteV1R
       return deleted.length
     })
 
-    return c.json<DELETEV1ReadingHistoryResponse>({ deletedCount })
+    return c.json({ deletedCount } satisfies DELETEV1ReadingHistoryResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '감상 기록을 삭제하지 못했어요' })

@@ -22,9 +22,9 @@ route.get('/', requireAuth, async (c) => {
         mangaId,
         createdAt: createdAt.getTime(),
       })),
-    }
+    } satisfies GETV1BookmarkExportResponse
 
-    return c.json<GETV1BookmarkExportResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '북마크 내보내기 목록을 불러오지 못했어요' })

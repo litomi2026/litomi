@@ -38,7 +38,7 @@ route.delete('/', zProblemValidator('json', deleteV1LibraryItemBodySchema), asyn
       return deleted.length
     })
 
-    return c.json<DELETEV1LibraryItemResponse>({ removedCount })
+    return c.json({ removedCount } satisfies DELETEV1LibraryItemResponse)
   } catch (error) {
     if (error instanceof Error && error.message === LibraryItemError.NOT_FOUND) {
       return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })

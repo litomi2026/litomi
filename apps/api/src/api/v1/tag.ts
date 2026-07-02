@@ -72,7 +72,7 @@ tagRoutes.get('/', zProblemValidator('query', getV1TagQuerySchema), async (c) =>
     swr: sec('1 day'),
   })
 
-  const response: GETV1TagResponse = {
+  const response = {
     tags,
     pagination: {
       page,
@@ -80,9 +80,9 @@ tagRoutes.get('/', zProblemValidator('query', getV1TagQuerySchema), async (c) =>
       total: totalCount,
       totalPages,
     },
-  }
+  } satisfies GETV1TagResponse
 
-  return c.json<GETV1TagResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default tagRoutes

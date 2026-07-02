@@ -29,7 +29,7 @@ suggestionRoutes.get('/', zProblemValidator('query', getSearchSuggestionsQuerySc
     swr: sec('1 day'),
   })
 
-  return c.json<GETSearchSuggestionsResponse>(suggestions, { headers: { 'Cache-Control': cacheControl } })
+  return c.json(suggestions satisfies GETSearchSuggestionsResponse, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default suggestionRoutes

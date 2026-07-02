@@ -47,10 +47,10 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTurnstileReque
     secure: true,
   })
 
-  return c.json<POSTV1PointTurnstileResponse>({
+  return c.json({
     verified: true,
     expiresInSeconds: POINTS_TURNSTILE_TTL_SECONDS,
-  })
+  } satisfies POSTV1PointTurnstileResponse)
 })
 
 export default route

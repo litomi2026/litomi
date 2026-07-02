@@ -49,10 +49,12 @@ route.get('/', requireAuth, zProblemValidator('query', getV1RatingsQuerySchema),
       : privateCacheControl
 
     if (rows.length === 0) {
-      return c.json<GETV1RatingsResponse>(
-        { items: [], nextCursor: null },
-        { headers: { 'Cache-Control': cacheControl } },
-      )
+      const response = {
+        items: [],
+        nextCursor: null,
+      } satisfies GETV1RatingsResponse
+
+      return c.json(response, { headers: { 'Cache-Control': cacheControl } })
     }
 
     const hasNextPage = rows.length > limit
@@ -62,19 +64,18 @@ route.get('/', requireAuth, zProblemValidator('query', getV1RatingsQuerySchema),
     const mangaIds = items.map(({ mangaId }) => mangaId)
     const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
 
-    return c.json<GETV1RatingsResponse>(
-      {
-        items: items.map((row) => ({
-          mangaId: row.mangaId,
-          manga: catalogMangaMap.get(row.mangaId),
-          rating: row.rating,
-          createdAt: row.createdAt.getTime(),
-          updatedAt: row.updatedAt.getTime(),
-        })),
-        nextCursor,
-      },
-      { headers: { 'Cache-Control': cacheControl } },
-    )
+    const response = {
+      items: items.map((row) => ({
+        mangaId: row.mangaId,
+        manga: catalogMangaMap.get(row.mangaId),
+        rating: row.rating,
+        createdAt: row.createdAt.getTime(),
+        updatedAt: row.updatedAt.getTime(),
+      })),
+      nextCursor,
+    } satisfies GETV1RatingsResponse
+
+    return c.json(response, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '평점 목록을 불러오지 못했어요' })

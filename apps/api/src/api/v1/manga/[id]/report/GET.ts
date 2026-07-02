@@ -30,9 +30,9 @@ route.get('/:id/report', requireAuth, requireAdult, zProblemValidator('param', m
 
     const cutoff = new Date(Date.now() - REPORT_DEDUPE_TTL_MS)
     const alreadyReported = Boolean(report && report.reportedAt.getTime() >= cutoff.getTime())
-    const result = { alreadyReported }
+    const result = { alreadyReported } satisfies GETV1MangaIdReportResponse
 
-    return c.json<GETV1MangaIdReportResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '신고 내역을 불러오지 못했어요' })

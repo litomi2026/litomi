@@ -99,7 +99,7 @@ route.put(
         }
       })
 
-      return c.json<PUTV1MangaIdRatingResponse>(result)
+      return c.json(result satisfies PUTV1MangaIdRatingResponse)
     } catch (error) {
       if (error instanceof Error && error.message === ErrorCode.RATING_LIMIT_REACHED) {
         return problemResponse(c, {

@@ -46,7 +46,7 @@ route.patch(
         return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
       }
 
-      return c.json<PATCHV1LibraryIdResponse>({ id: updatedLibrary.id })
+      return c.json({ id: updatedLibrary.id } satisfies PATCHV1LibraryIdResponse)
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '서재를 수정하지 못했어요' })

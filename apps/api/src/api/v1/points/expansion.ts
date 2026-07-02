@@ -91,9 +91,9 @@ route.get('/', requireAuth, async (c) => {
         price: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_PRICE,
         unit: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT,
       },
-    }
+    } satisfies GETV1PointExpansionResponse
 
-    return c.json<GETV1PointExpansionResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '확장 정보를 불러오지 못했어요' })

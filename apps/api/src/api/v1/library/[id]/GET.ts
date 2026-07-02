@@ -79,11 +79,11 @@ routes.get(
         isPublic: library.isPublic,
         createdAt: library.createdAt.getTime(),
         itemCount: library.itemCount,
-      }
+      } satisfies GETV1LibraryResponse
 
       const cacheControl = scope === 'public' ? sharedCacheControl : privateCacheControl
 
-      return c.json<GETV1LibraryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+      return c.json(result, { headers: { 'Cache-Control': cacheControl } })
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '서재 정보를 불러오지 못했어요' })

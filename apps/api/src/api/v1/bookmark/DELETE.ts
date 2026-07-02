@@ -30,7 +30,7 @@ route.delete('/', requireAuth, zProblemValidator('json', deleteV1BookmarkBodySch
       return deleted.length
     })
 
-    return c.json<DELETEV1BookmarkResponse>({ deletedCount })
+    return c.json({ deletedCount } satisfies DELETEV1BookmarkResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '북마크 삭제에 실패했어요' })

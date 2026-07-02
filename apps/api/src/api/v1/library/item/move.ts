@@ -82,7 +82,7 @@ route.post('/', zProblemValidator('json', postV1LibraryItemMoveBodySchema), asyn
       return inserted
     })
 
-    return c.json<POSTV1LibraryItemMoveResponse>({ movedCount: result.length })
+    return c.json({ movedCount: result.length } satisfies POSTV1LibraryItemMoveResponse)
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === LibraryItemError.NOT_FOUND) {
