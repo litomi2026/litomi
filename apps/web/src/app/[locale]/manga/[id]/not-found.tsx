@@ -1,10 +1,12 @@
+'use client'
+
 import { SearchX } from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
+import { useTranslations } from 'next-intl'
 
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 
-export default async function NotFound() {
-  const t = await getTranslations('MangaViewer.notFound')
+export default function NotFound() {
+  const t = useTranslations('MangaViewer.notFound')
 
   return (
     <StatusState

@@ -15,6 +15,9 @@ import {
 } from '@litomi/observability'
 import * as Sentry from '@sentry/nextjs'
 import { scrubSentryEvent } from '../../../packages/observability/src/sentry'
+import { installTranslatorDomGuard } from './utils/translator-dom-guard'
+
+installTranslatorDomGuard()
 
 // Errors are owned by Sentry. Faro provides RUM (Web Vitals, sessions, views, perf), browser→API distributed tracing.
 initializeFaro({

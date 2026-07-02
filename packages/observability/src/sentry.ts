@@ -127,6 +127,11 @@ export const SENTRY_BROWSER_IGNORE_ERRORS: (string | RegExp)[] = [
   // intrinsically-foreign token — matching it can never hide a first-party bug.
   // e.g. "Cannot set properties of undefined (setting 'bodyTouched')".
   /\bbodyTouched\b/,
+  // Adblocker scriptlets scan the DOM for tracking pixels using attribute-suffix selectors that embed a full
+  // Google Analytics hit URL (`…?tid=G-XXXX&gtm=…`), and querySelectorAll throws when that URL carries bytes
+  // invalid in a selector. Our code never embeds a GA measurement URL inside a selector, so the `src$="…tid=G-`
+  // shape is intrinsically foreign — a first-party selector typo like "[data-gtm=x" does NOT match.
+  /querySelectorAll[\s\S]*src\$="[^"]*[?&]tid=G-/,
 ]
 
 /** Foreign script-URL patterns: browser extensions and page-injected third parties whose originating script is not ours. */
@@ -138,6 +143,10 @@ export const SENTRY_BROWSER_DENY_URLS: RegExp[] = [
   // Google Tag Manager / Analytics throw from inside Google's own gtm.js / analytics.js bundles. Our code is never
   // served from these hosts, so dropping by script URL (unlike a message filter) cannot hide a first-party error.
   /googletagmanager\.com|google-analytics\.com/i,
+  // Anti-adblock ad scripts served from our own origin under hash-sharded paths (e.g.
+  // "app:///10/f2/5d/10f25d49efc66ff3b1091949826a6b91.js" — three 2-hex directory segments mirroring the leading
+  // bytes of a 32-hex filename). Our bundles only ever live under `/_next/`, so this shape cannot be ours.
+  /\/[0-9a-f]{2}\/[0-9a-f]{2}\/[0-9a-f]{2}\/[0-9a-f]{32}\.js$/i,
 ]
 
 /** External request hosts whose fetch/network failures are third-party noise */

@@ -21,6 +21,8 @@ function ensureOverlayRoot(): HTMLDivElement {
 
   const el = document.createElement('div')
   el.dataset.overlayRoot = 'true'
+  el.setAttribute('translate', 'no')
+  el.classList.add('notranslate')
   el.style.position = 'fixed'
   el.style.inset = '0'
   el.style.zIndex = '2147483647'

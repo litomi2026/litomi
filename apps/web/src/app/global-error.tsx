@@ -13,7 +13,7 @@ import RetryGuidance from '@/components/RetryGuidance'
 import type { ErrorProps } from '@/types/nextjs'
 import { reloadIfStaleDeployment } from '@/utils/stale-deployment'
 
-export default function GlobalError({ error, reset }: ErrorProps) {
+export default function GlobalError({ error }: ErrorProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const locale = getLocaleFromPathname(pathname)
@@ -60,7 +60,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
           <button
             type="button"
             className="transition mx-auto mt-6 mb-4 flex w-full max-w-xs items-center justify-center gap-2 whitespace-nowrap rounded-full bg-zinc-800 px-6 py-3 text-sm font-medium text-foreground hover:bg-zinc-700 active:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-background"
-            onClick={() => reset()}
+            onClick={() => window.location.reload()}
           >
             다시 시도하기
           </button>
