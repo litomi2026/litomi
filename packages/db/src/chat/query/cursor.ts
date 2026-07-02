@@ -25,7 +25,7 @@ export async function getReadCursors(userId: number, streamIds: string[]): Promi
 export async function setReadCursor(userId: number, streamId: string, lastReadMessageId: string): Promise<void> {
   await chatDB
     .insert(chatReadCursorTable)
-    .values({ userId, streamId, lastReadMessageId, updatedAt: new Date() })
+    .values({ userId, streamId, lastReadMessageId })
     .onConflictDoUpdate({
       target: [chatReadCursorTable.userId, chatReadCursorTable.streamId],
       set: {

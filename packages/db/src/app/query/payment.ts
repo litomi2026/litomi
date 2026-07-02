@@ -47,9 +47,9 @@ export async function ensureInvoicePayment(input: {
   return row
 }
 
-export async function getPaymentByPaymentId(paymentId: string): Promise<PaymentRow | null> {
+export async function getPaymentByPaymentId(paymentId: string): Promise<PaymentRow | undefined> {
   const [row] = await db.select().from(paymentTable).where(eq(paymentTable.paymentId, paymentId))
-  return row ?? null
+  return row
 }
 
 export async function markPaymentFailed(
@@ -64,7 +64,6 @@ export async function markPaymentFailed(
       status: 'failed',
       failureCode: code,
       failureMessage: message,
-      updatedAt: new Date(),
     })
     .where(and(eq(paymentTable.paymentId, paymentId), eq(paymentTable.status, 'pending')))
 }

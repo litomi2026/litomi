@@ -30,8 +30,8 @@ route.get('/', ...middlewares, async (c) => {
   }
 
   const isOwner = artist.userId === userId
-  const subscription = isOwner ? null : await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
-  const entitled = isOwner || (subscription !== null && subscription.expiresAt.getTime() > Date.now())
+  const subscription = isOwner ? undefined : await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
+  const entitled = isOwner || (subscription !== undefined && subscription.expiresAt.getTime() > Date.now())
 
   const response = {
     artist: { ...toArtistBrief(artist), description: artist.description },

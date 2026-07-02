@@ -63,9 +63,6 @@ export async function ensureOpenInvoice(input: {
 export async function voidOpenInvoice(subscriptionId: number): Promise<void> {
   await db
     .update(invoiceTable)
-    .set({
-      status: 'void',
-      updatedAt: new Date(),
-    })
+    .set({ status: 'void' })
     .where(and(eq(invoiceTable.subscriptionId, subscriptionId), eq(invoiceTable.status, 'open')))
 }

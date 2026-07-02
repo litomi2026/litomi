@@ -10,7 +10,7 @@ export interface SavePaymentMethodInput {
   cardLast4: string | null
 }
 
-export async function savePaymentMethod(input: SavePaymentMethodInput): Promise<{ id: number } | null> {
+export async function savePaymentMethod(input: SavePaymentMethodInput): Promise<{ id: number } | undefined> {
   const [row] = await db
     .insert(paymentMethodTable)
     .values({
@@ -33,7 +33,7 @@ export async function savePaymentMethod(input: SavePaymentMethodInput): Promise<
     })
     .returning({ id: paymentMethodTable.id })
 
-  return row ?? null
+  return row
 }
 
 export interface PaymentMethodBrief {
@@ -59,7 +59,7 @@ export async function listActivePaymentMethods(userId: number): Promise<PaymentM
 export async function getActivePaymentMethodForUser(
   id: number,
   userId: number,
-): Promise<{ id: number; token: string; method: string | null } | null> {
+): Promise<{ id: number; token: string; method: string | null } | undefined> {
   const [row] = await db
     .select({ id: paymentMethodTable.id, token: paymentMethodTable.token, method: paymentMethodTable.method })
     .from(paymentMethodTable)
@@ -71,25 +71,22 @@ export async function getActivePaymentMethodForUser(
       ),
     )
 
-  return row ?? null
+  return row
 }
 
-export async function getPaymentMethodToken(id: number): Promise<{ token: string; method: string | null } | null> {
+export async function getPaymentMethodToken(id: number): Promise<{ token: string; method: string | null } | undefined> {
   const [row] = await db
     .select({ token: paymentMethodTable.token, method: paymentMethodTable.method })
     .from(paymentMethodTable)
     .where(and(eq(paymentMethodTable.id, id), eq(paymentMethodTable.status, 'active')))
 
-  return row ?? null
+  return row
 }
 
 export async function markPaymentMethodDeletedByToken(token: string): Promise<void> {
   await db
     .update(paymentMethodTable)
-    .set({
-      status: 'deleted',
-      updatedAt: new Date(),
-    })
+    .set({ status: 'deleted' })
     .where(
       and(
         eq(paymentMethodTable.provider, 'portone'),
@@ -102,10 +99,7 @@ export async function markPaymentMethodDeletedByToken(token: string): Promise<vo
 export async function markPaymentMethodDeleted(id: number, userId: number): Promise<boolean> {
   const updated = await db
     .update(paymentMethodTable)
-    .set({
-      status: 'deleted',
-      updatedAt: new Date(),
-    })
+    .set({ status: 'deleted' })
     .where(
       and(
         eq(paymentMethodTable.id, id),

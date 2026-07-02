@@ -29,7 +29,10 @@ export const userPointsTable = pgTable('user_points', {
   balance: bigint('balance', { mode: 'number' }).notNull().default(0),
   totalEarned: bigint('total_earned', { mode: 'number' }).notNull().default(0),
   totalSpent: bigint('total_spent', { mode: 'number' }).notNull().default(0),
-  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 }).enableRLS()
 
 export const pointTransactionTable = pgTable(

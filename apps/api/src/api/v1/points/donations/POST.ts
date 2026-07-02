@@ -59,7 +59,6 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
         .set({
           balance: newBalance,
           totalSpent: sql`${userPointsTable.totalSpent} + ${totalAmount}`,
-          updatedAt: new Date(),
         })
         .where(eq(userPointsTable.userId, userId))
 

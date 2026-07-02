@@ -24,7 +24,10 @@ export const invoiceTable = pgTable(
     status: invoiceStatusEnum().notNull().default('open'),
     paidAt: timestamp('paid_at', { precision: 3, withTimezone: true }),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     uniqueIndex('uq_invoice_open').on(table.subscriptionId).where(sql`status = 'open'`),

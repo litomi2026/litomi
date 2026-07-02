@@ -25,7 +25,10 @@ export const readingHistoryTable = pgTable(
       .notNull(),
     mangaId: integer('manga_id').notNull(),
     lastPage: smallint('last_page').notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
@@ -44,7 +47,10 @@ export const userRatingTable = pgTable(
     mangaId: integer('manga_id').notNull(),
     rating: smallint('rating').notNull(), // 1-5 stars
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),

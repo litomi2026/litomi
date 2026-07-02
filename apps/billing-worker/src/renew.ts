@@ -87,10 +87,10 @@ async function handleDue(
     return
   }
 
-  const paymentMethod = sub.paymentMethodId ? await getPaymentMethodToken(sub.paymentMethodId) : null
+  const paymentMethod = sub.paymentMethodId ? await getPaymentMethodToken(sub.paymentMethodId) : undefined
   const artist = await getChatArtistById(sub.targetId)
 
-  if (!paymentMethod || artist === null || !artist.isActive || sub.priceAmount <= 0) {
+  if (!paymentMethod || !artist?.isActive || sub.priceAmount <= 0) {
     await applyDunning(sub, now, summary)
     return
   }

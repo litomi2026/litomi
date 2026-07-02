@@ -42,7 +42,6 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
         .set({
           balance: balanceAfterBet,
           totalSpent: sql`${userPointsTable.totalSpent} + ${bet}`,
-          updatedAt: new Date(),
         })
         .where(eq(userPointsTable.userId, userId))
 
@@ -66,7 +65,6 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
           .set({
             balance: balanceAfterPayout,
             totalEarned: sql`${userPointsTable.totalEarned} + ${payout}`,
-            updatedAt: new Date(),
           })
           .where(eq(userPointsTable.userId, userId))
 

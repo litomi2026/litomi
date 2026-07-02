@@ -17,7 +17,7 @@ export async function getChatArtistBrief(artistId: number) {
     .from(chatArtistTable)
     .where(eq(chatArtistTable.id, artistId))
 
-  return row ?? null
+  return row
 }
 
 export async function getChatArtistByHandle(handle: string) {
@@ -37,7 +37,7 @@ export async function getChatArtistByHandle(handle: string) {
     .from(chatArtistTable)
     .where(eq(chatArtistTable.handle, handle))
 
-  return row ?? null
+  return row
 }
 
 export async function getChatArtistById(artistId: number) {
@@ -52,7 +52,7 @@ export async function getChatArtistById(artistId: number) {
     .from(chatArtistTable)
     .where(eq(chatArtistTable.id, artistId))
 
-  return row ?? null
+  return row
 }
 
 export async function getChatSenderBrief(userId: number) {
@@ -64,7 +64,7 @@ export async function getChatSenderBrief(userId: number) {
     .from(userTable)
     .where(eq(userTable.id, userId))
 
-  return row ?? null
+  return row
 }
 
 export interface ChatUserBriefRow {
@@ -157,7 +157,7 @@ export async function getChatArtistByUserId(userId: number) {
     .from(chatArtistTable)
     .where(eq(chatArtistTable.userId, userId))
 
-  return row ?? null
+  return row
 }
 
 export async function hasActiveChatSubscription(userId: number, artistId: number): Promise<boolean> {

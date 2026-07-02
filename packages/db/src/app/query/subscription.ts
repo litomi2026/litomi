@@ -41,7 +41,7 @@ export async function getSubscription(
   userId: number,
   targetType: string,
   targetId: number,
-): Promise<SubscriptionState | null> {
+): Promise<SubscriptionState | undefined> {
   const [row] = await db
     .select(stateColumns)
     .from(subscriptionTable)
@@ -53,7 +53,7 @@ export async function getSubscription(
       ),
     )
 
-  return row ?? null
+  return row
 }
 
 export async function setAutoRenew(
@@ -61,13 +61,10 @@ export async function setAutoRenew(
   targetType: string,
   targetId: number,
   autoRenew: boolean,
-): Promise<SubscriptionState | null> {
+): Promise<SubscriptionState | undefined> {
   const [row] = await db
     .update(subscriptionTable)
-    .set({
-      autoRenew,
-      updatedAt: new Date(),
-    })
+    .set({ autoRenew })
     .where(
       and(
         eq(subscriptionTable.userId, userId),
@@ -77,7 +74,7 @@ export async function setAutoRenew(
     )
     .returning(stateColumns)
 
-  return row ?? null
+  return row
 }
 
 export async function confirmPayment(
@@ -94,7 +91,6 @@ export async function confirmPayment(
         providerTxnId,
         ...(method && { method }),
         paidAt,
-        updatedAt: new Date(),
       })
       .where(and(eq(paymentTable.paymentId, paymentId), eq(paymentTable.status, 'pending')))
       .returning({ invoiceId: paymentTable.invoiceId })
@@ -112,7 +108,6 @@ export async function confirmPayment(
       .set({
         status: 'paid',
         paidAt,
-        updatedAt: new Date(),
       })
       .where(and(eq(invoiceTable.id, paid.invoiceId), inArray(invoiceTable.status, ['open', 'void'])))
       .returning({
@@ -125,7 +120,6 @@ export async function confirmPayment(
         status: 'active',
         autoRenew: true,
         expiresAt: sql`greatest(${subscriptionTable.expiresAt}, ${invoice.periodEnd}::timestamptz)`,
-        updatedAt: new Date(),
       }
 
       if (paymentMethodId !== null) {
@@ -223,11 +217,5 @@ export async function listSubscriptionsDue(options: {
 }
 
 export async function markSubscriptionStatus(id: number, status: SubscriptionStatus): Promise<void> {
-  await db
-    .update(subscriptionTable)
-    .set({
-      status,
-      updatedAt: new Date(),
-    })
-    .where(eq(subscriptionTable.id, id))
+  await db.update(subscriptionTable).set({ status }).where(eq(subscriptionTable.id, id))
 }

@@ -37,7 +37,10 @@ export const pushSettingsTable = pgTable('push_settings', {
   batchEnabled: boolean('batch_enabled').notNull().default(true),
   maxDaily: smallint('max_daily').notNull().default(10),
   createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 }).enableRLS()
 
 export const notificationTable = pgTable(
@@ -75,7 +78,10 @@ export const notificationCriteriaTable = pgTable(
     isActive: boolean('is_active').notNull().default(true),
     lastMatchedAt: timestamp('last_matched_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [index('idx_notification_criteria_user_active').on(table.userId, table.isActive)],
 ).enableRLS()

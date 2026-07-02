@@ -32,7 +32,10 @@ export const paymentTable = pgTable(
     // Set when fully refunded; partial refunds live in payment_refund and keep status 'paid'.
     refundedAt: timestamp('refunded_at', { precision: 3, withTimezone: true }),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     index('idx_payment_user').on(table.userId),

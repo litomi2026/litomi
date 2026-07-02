@@ -56,7 +56,10 @@ export async function applyPaymentRefunds(paymentId: string, refunds: RemoteRefu
     if (fullyRefunded) {
       await tx
         .update(paymentTable)
-        .set({ status: 'refunded', refundedAt: lastRefundedAt, updatedAt: new Date() })
+        .set({
+          status: 'refunded',
+          refundedAt: lastRefundedAt,
+        })
         .where(and(eq(paymentTable.id, payment.id), eq(paymentTable.status, 'paid')))
     }
 
@@ -67,17 +70,13 @@ export async function applyPaymentRefunds(paymentId: string, refunds: RemoteRefu
     const [invoice] = fullyRefunded
       ? await tx
           .update(invoiceTable)
-          .set({
-            status: 'void',
-            updatedAt: new Date(),
-          })
+          .set({ status: 'void' })
           .where(and(eq(invoiceTable.id, payment.invoiceId), eq(invoiceTable.status, 'paid')))
           .returning({ subscriptionId: invoiceTable.subscriptionId })
       : await tx
           .update(invoiceTable)
           .set({
             periodEnd: sql`greatest(${invoiceTable.periodStart}, least(${invoiceTable.periodEnd}, ${lastRefundedAt}::timestamptz))`,
-            updatedAt: new Date(),
           })
           .where(and(eq(invoiceTable.id, payment.invoiceId), eq(invoiceTable.status, 'paid')))
           .returning({ subscriptionId: invoiceTable.subscriptionId })
@@ -100,7 +99,6 @@ export async function applyPaymentRefunds(paymentId: string, refunds: RemoteRefu
         autoRenew: false,
         expiresAt,
         ...(expiresAt.getTime() <= now.getTime() && { status: 'canceled' as const }),
-        updatedAt: now,
       })
       .where(eq(subscriptionTable.id, invoice.subscriptionId))
   })

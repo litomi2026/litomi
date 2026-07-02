@@ -51,7 +51,8 @@ export async function processChatMessage(event: ChatMessageEvent): Promise<void>
 
   // 3. Realtime relay. The reply sender's brief is resolved ONCE (best-effort) and reused
   //    for both the relay (studio live ticker) and the push enqueue — no extra DB call.
-  const replySender = parsed.kind === 'reply' ? await getChatSenderBrief(event.senderId).catch(() => null) : null
+  const replySender =
+    parsed.kind === 'reply' ? await getChatSenderBrief(event.senderId).catch(() => undefined) : undefined
 
   //    A broadcast relays to its own room (fans + owner subscribe). A reply fans IN to the
   //    artist's owner-only inbound channel — SAMPLED at the source via a per-artist token
@@ -83,7 +84,7 @@ type ChatSenderBrief = { nickname: string; imageURL: string | null }
 async function enqueuePush(
   event: ChatMessageEvent,
   parsed: ParsedStreamId,
-  replySender: ChatSenderBrief | null,
+  replySender: ChatSenderBrief | undefined,
 ): Promise<void> {
   const artist = await getChatArtistBrief(event.artistId)
   if (!artist) {
@@ -151,7 +152,7 @@ async function allowTickerRelay(artistId: number): Promise<boolean> {
 // Builds the wire envelope from a stored row. The target (broadcast) messageId for a reply
 // comes from the already-parsed streamId, so the client receives a semantic field and never
 // parses the internal `rb:{artistId}:{messageId}` key itself.
-function toClientMessage(row: ChatMessageRow, parsed: ParsedStreamId, sender?: ChatSenderBrief | null) {
+function toClientMessage(row: ChatMessageRow, parsed: ParsedStreamId, sender?: ChatSenderBrief) {
   const base = {
     messageId: row.messageId,
     senderId: row.senderId,

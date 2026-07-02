@@ -21,7 +21,10 @@ export const paymentMethodTable = pgTable(
     cardLast4: varchar('card_last4', { length: 4 }),
     status: paymentMethodStatusEnum().notNull().default('active'),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     uniqueIndex('uq_payment_method_provider').on(table.provider, table.token),
@@ -55,7 +58,10 @@ export const subscriptionTable = pgTable(
     autoRenew: boolean('auto_renew').notNull().default(true),
     expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     uniqueIndex('uq_subscription_user_target').on(table.userId, table.targetType, table.targetId),
