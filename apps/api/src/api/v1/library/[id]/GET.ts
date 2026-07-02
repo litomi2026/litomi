@@ -1,4 +1,4 @@
-import { type GETV1LibraryResponse, getV1LibraryIdQuerySchema, libraryIdParamSchema } from '@litomi/contracts'
+import { type GETV1LibraryResponse, getV1LibraryIdQuerySchema, idParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { intToHexColor } from '@litomi/domain/utils/color'
@@ -25,7 +25,7 @@ const sharedCacheControl = createCacheControl({
 
 routes.get(
   '/',
-  zProblemValidator('param', libraryIdParamSchema),
+  zProblemValidator('param', idParamSchema),
   zProblemValidator('query', getV1LibraryIdQuerySchema),
   async (c) => {
     const { id: libraryId } = c.req.valid('param')
@@ -79,11 +79,11 @@ routes.get(
         isPublic: library.isPublic,
         createdAt: library.createdAt.getTime(),
         itemCount: library.itemCount,
-      }
+      } satisfies GETV1LibraryResponse
 
       const cacheControl = scope === 'public' ? sharedCacheControl : privateCacheControl
 
-      return c.json<GETV1LibraryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+      return c.json(result, { headers: { 'Cache-Control': cacheControl } })
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '서재 정보를 불러오지 못했어요' })

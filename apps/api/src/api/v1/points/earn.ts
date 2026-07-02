@@ -172,11 +172,11 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
       })
     }
 
-    return c.json<POSTV1PointEarnResponse>({
+    return c.json({
       balance: result.balance,
       earned: result.earned,
       dailyRemaining: result.dailyRemaining,
-    })
+    } satisfies POSTV1PointEarnResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '포인트 적립에 실패했어요' })

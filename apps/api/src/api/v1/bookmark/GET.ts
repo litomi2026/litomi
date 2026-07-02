@@ -55,9 +55,9 @@ route.get('/', requireAuth, zProblemValidator('query', getV1BookmarkQuerySchema)
         manga: catalogMangaMap.get(mangaId),
       })),
       nextCursor,
-    }
+    } satisfies GETV1BookmarkResponse
 
-    return c.json<GETV1BookmarkResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '북마크를 불러오지 못했어요' })

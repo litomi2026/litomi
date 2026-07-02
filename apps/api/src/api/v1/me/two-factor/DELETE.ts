@@ -67,7 +67,7 @@ route.delete('/', zProblemValidator('json', deleteV1MeTwoFactorBodySchema), asyn
     switch (result.kind) {
       case 'disabled':
         await Promise.allSettled([twoFactorDisableLimiter.reward(String(userId))])
-        return c.json<DELETEV1MeTwoFactorResponse>({ message: '2단계 인증이 비활성화됐어요' })
+        return c.json({ message: '2단계 인증이 비활성화됐어요' } satisfies DELETEV1MeTwoFactorResponse)
 
       case 'invalid-token':
         return problemResponse(c, { status: 400, detail: '잘못된 인증 코드예요' })

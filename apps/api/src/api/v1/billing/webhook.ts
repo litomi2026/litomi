@@ -1,29 +1,27 @@
-import { getPaymentByPaymentId, markPaymentPaid } from '@litomi/db/app/query/payment'
-import { env } from '@litomi/env/server.common'
-import { PaymentClient, Webhook } from '@portone/server-sdk'
+import { getRemotePayment, isWebhookConfigured, verifyBillingWebhook } from '@litomi/billing'
+import { getPaymentByPaymentId } from '@litomi/db/app/query/payment'
+import { markPaymentMethodDeletedByToken } from '@litomi/db/app/query/payment-method'
+import { applyPaymentRefunds } from '@litomi/db/app/query/refund'
+import { confirmPayment } from '@litomi/db/app/query/subscription'
+import { recordWebhookEvent, wasWebhookEventProcessed } from '@litomi/db/app/query/webhook-event'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
-const { PORTONE_API_SECRET, PORTONE_WEBHOOK_SECRET } = env
-
 const route = new Hono<Env>()
 
-// PortOne V2 webhook (Standard Webhooks). Public + CSRF-exempt (see app.ts): it's a
-// server-to-server call authenticated by HMAC signature, not a user session.
-// Non-200 responses are retried by PortOne (up to 5x), so we ack (200) anything we
-// can't act on and only return an error for transient failures worth retrying.
 route.post('/portone/webhook', async (c) => {
-  if (!PORTONE_API_SECRET || !PORTONE_WEBHOOK_SECRET) {
+  if (!isWebhookConfigured()) {
     return c.body(null, 503)
   }
 
   const rawBody = await c.req.text()
+  const eventId = c.req.header('webhook-id') ?? ''
 
-  let webhook: Awaited<ReturnType<typeof Webhook.verify>>
+  let event: Awaited<ReturnType<typeof verifyBillingWebhook>>
   try {
-    webhook = await Webhook.verify(PORTONE_WEBHOOK_SECRET, rawBody, {
-      'webhook-id': c.req.header('webhook-id') ?? '',
+    event = await verifyBillingWebhook(rawBody, {
+      'webhook-id': eventId,
       'webhook-signature': c.req.header('webhook-signature') ?? '',
       'webhook-timestamp': c.req.header('webhook-timestamp') ?? '',
     })
@@ -32,44 +30,57 @@ route.post('/portone/webhook', async (c) => {
     return c.body('invalid signature', 400)
   }
 
-  if (webhook.type !== 'Transaction.Paid') {
+  if (!event) {
     return c.body(null, 200)
   }
 
-  const { paymentId } = webhook.data
-  const pending = await getPaymentByPaymentId(paymentId)
-
-  if (!pending || pending.status === 'paid') {
+  if (eventId && (await wasWebhookEventProcessed(eventId))) {
     return c.body(null, 200)
   }
 
-  let payment: Awaited<ReturnType<ReturnType<typeof PaymentClient>['getPayment']>>
-  try {
-    payment = await PaymentClient({ secret: PORTONE_API_SECRET }).getPayment({ paymentId })
-  } catch (error) {
-    console.error('billing webhook: getPayment failed', { paymentId, error })
-    return c.body(null, 500) // transient → let PortOne retry
+  if (event.type === 'billingKeyDeleted') {
+    await markPaymentMethodDeletedByToken(event.billingKey)
+  } else {
+    const payment = await getPaymentByPaymentId(event.paymentId)
+
+    if (payment && !(event.type === 'paid' && payment.status === 'paid')) {
+      let remote: Awaited<ReturnType<typeof getRemotePayment>>
+      try {
+        remote = await getRemotePayment(event.paymentId)
+      } catch (error) {
+        console.error('billing webhook: getPayment failed', { paymentId: event.paymentId, error })
+        return c.body(null, 500)
+      }
+
+      if (event.type === 'refunded') {
+        await applyPaymentRefunds(event.paymentId, remote.refunds)
+      } else if (remote.status === 'paid') {
+        if (remote.amount !== null && remote.amount !== payment.amount) {
+          console.error('billing webhook: amount mismatch', {
+            paymentId: event.paymentId,
+            expected: payment.amount,
+            actual: remote.amount,
+          })
+          return c.body(null, 200)
+        }
+
+        await confirmPayment(event.paymentId, {
+          providerTxnId: remote.providerTxnId ?? event.paymentId,
+          paidAt: remote.paidAt ?? new Date(),
+          paymentMethodId: null,
+          method: remote.method,
+        })
+      }
+    }
   }
 
-  if (payment.status !== 'PAID') {
-    return c.body(null, 200)
-  }
-
-  if (payment.amount.total !== pending.amount) {
-    console.error('billing webhook: amount mismatch', {
-      paymentId,
-      expected: pending.amount,
-      actual: payment.amount.total,
+  if (eventId) {
+    await recordWebhookEvent({
+      eventId,
+      type: event.type,
+      payload: rawBody,
     })
-    return c.body(null, 200)
   }
-
-  // pgTxId is the PG's transaction id for reconciliation; fall back to our unique
-  // paymentId if the PG didn't return one (keeps the idempotency key non-null).
-  await markPaymentPaid(paymentId, {
-    providerTxnId: payment.pgTxId ?? paymentId,
-    paidAt: new Date(),
-  })
 
   return c.body(null, 200)
 })

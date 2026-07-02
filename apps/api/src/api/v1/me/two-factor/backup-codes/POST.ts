@@ -64,7 +64,7 @@ route.post('/', zProblemValidator('json', postV1MeTwoFactorBackupCodesBodySchema
 
       case 'regenerated':
         await Promise.allSettled([twoFactorBackupCodesLimiter.reward(String(userId))])
-        return c.json<POSTV1MeTwoFactorBackupCodesResponse>({ backupCodes: result.backupCodes })
+        return c.json({ backupCodes: result.backupCodes } satisfies POSTV1MeTwoFactorBackupCodesResponse)
     }
   } catch (error) {
     console.error(error)

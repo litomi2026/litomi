@@ -1,5 +1,7 @@
 import { db } from '@litomi/db/app'
-import { chatArtistTable, chatSubscriptionTable } from '@litomi/db/app/chat'
+import { chatArtistTable } from '@litomi/db/app/chat'
+import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/db/app/query/subscription'
+import { subscriptionTable } from '@litomi/db/app/subscription'
 import { userTable } from '@litomi/db/app/user'
 
 async function getOrCreateUser(loginId: string, name: string, nickname: string, passwordHash: string) {
@@ -30,6 +32,9 @@ async function getOrCreateArtistProfile(userId: number, handle: string, displayN
         displayName,
         emoji,
         isActive: true,
+        // Priced so the subscribe flow is testable (log in as an un-seeded fan).
+        priceAmount: 4900,
+        priceCurrency: 'KRW',
       })
       .returning()
     profile = inserted
@@ -68,19 +73,23 @@ async function main() {
     const artistFans = fans.slice(c * 3, c * 3 + 3)
 
     for (const fan of artistFans) {
-      const subscription = await db.query.chatSubscriptionTable.findFirst({
-        where: (s, { eq, and }) => and(eq(s.artistId, artist.id), eq(s.userId, fan.id)),
+      const subscription = await db.query.subscriptionTable.findFirst({
+        where: (s, { eq, and }) =>
+          and(eq(s.userId, fan.id), eq(s.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST), eq(s.targetId, artist.id)),
       })
 
       if (!subscription) {
         const expiresAt = new Date()
         expiresAt.setFullYear(expiresAt.getFullYear() + 1)
-        await db.insert(chatSubscriptionTable).values({
-          artistId: artist.id,
+        await db.insert(subscriptionTable).values({
           userId: fan.id,
+          targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+          targetId: artist.id,
+          priceAmount: 1000,
+          priceCurrency: 'KRW',
           status: 'active',
-          startedAt: new Date(),
           expiresAt,
+          autoRenew: true,
         })
       }
     }

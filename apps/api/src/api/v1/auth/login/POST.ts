@@ -78,10 +78,10 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
       if (!browserExists) {
         const { authorizationCode } = await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
 
-        return c.json<POSTV1AuthLoginResponse>({
+        return c.json({
           nextStep: 'two_factor_required',
           authorizationCode,
-        })
+        } satisfies POSTV1AuthLoginResponse)
       }
     }
 
@@ -97,14 +97,14 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
 
     applyAuthCookie(c, cookieConfigs)
 
-    return c.json<POSTV1AuthLoginResponse>({
+    return c.json({
       nextStep: 'authenticated',
       id: user.id,
       loginId,
       name: user.name,
       lastLoginAt: user.lastLoginAt,
       lastLogoutAt: user.lastLogoutAt,
-    })
+    } satisfies POSTV1AuthLoginResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '로그인 중 오류가 발생했어요' })

@@ -21,7 +21,7 @@ route.delete('/', zProblemValidator('json', deleteV1CensorshipDeleteBodySchema),
       .where(and(eq(userCensorshipTable.userId, userId), inArray(userCensorshipTable.id, ids)))
       .returning({ id: userCensorshipTable.id })
 
-    return c.json<DELETEV1CensorshipDeleteResponse>({ ids: deleted.map((r) => r.id) })
+    return c.json({ ids: deleted.map((r) => r.id) } satisfies DELETEV1CensorshipDeleteResponse)
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'constraint'].some((message) => error.message.includes(message))) {

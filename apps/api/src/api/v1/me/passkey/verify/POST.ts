@@ -55,12 +55,12 @@ route.post('/', zProblemValidator('json', postV1MePasskeyVerifyBodySchema), asyn
       })
       .returning({ id: credentialTable.id, name: credentialTable.name })
 
-    return c.json<POSTV1MePasskeyVerifyResponse>({
+    return c.json({
       id: credential.id,
       credentialId,
       name,
       message: '패스키를 등록했어요',
-    })
+    } satisfies POSTV1MePasskeyVerifyResponse)
   } catch (error) {
     console.error('verifyRegistration:', error)
     return problemResponse(c, { status: 500, detail: '패스키 등록 중 오류가 발생했어요' })

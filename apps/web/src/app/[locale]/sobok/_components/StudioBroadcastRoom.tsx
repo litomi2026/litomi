@@ -186,13 +186,6 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
 
       {/* Message feed */}
       <ChatMessageList
-        banner={
-          <div className="text-center my-2">
-            <span className="bg-foreground/10 text-zinc-400 text-xs px-3 py-1.5 rounded-full font-medium">
-              여기서 보내는 메시지는 모든 팬에게 전송됩니다.
-            </span>
-          </div>
-        }
         bottomInsetClassName="pb-[var(--sobok-dock-h)]"
         dateOf={(row) => new Date(row.message.createdAt).getTime()}
         gapClassName="pb-3"

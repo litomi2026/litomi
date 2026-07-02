@@ -49,7 +49,7 @@ route.post('/', zProblemValidator('json', postV1CensorshipCreateBodySchema), asy
       return ids
     }
 
-    return c.json<POSTV1CensorshipCreateResponse>({ ids })
+    return c.json({ ids } satisfies POSTV1CensorshipCreateResponse)
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'value too long', 'duplicate key'].some((message) => error.message.includes(message))) {

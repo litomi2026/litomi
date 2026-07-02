@@ -20,10 +20,10 @@ route.delete('/', async (c) => {
 
     await revokeOtherSessionFamiliesByUserId(userId, currentFamilyId, now)
 
-    return c.json<DELETEV1MeSessionResponse>({
+    return c.json({
       clearedCurrentSession: false,
       message: currentFamilyId ? '다른 기기에서 모두 로그아웃했어요' : '표시된 기기에서 모두 로그아웃했어요',
-    })
+    } satisfies DELETEV1MeSessionResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '로그아웃 중 문제가 발생했어요' })

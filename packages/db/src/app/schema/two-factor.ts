@@ -7,10 +7,10 @@ export const twoFactorTable = pgTable('two_factor', {
     .references(() => userTable.id, { onDelete: 'cascade' })
     .notNull()
     .primaryKey(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  secret: text().notNull(),
   lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
   expiresAt: timestamp('expires_at', { withTimezone: true }),
-  secret: text().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }).enableRLS()
 
 export const twoFactorBackupCodeTable = pgTable(
@@ -31,11 +31,11 @@ export const trustedBrowserTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => twoFactorTable.userId, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
-    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
     browserId: text('browser_id').notNull(),
     browserName: text('browser_name'),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [unique('idx_trusted_browser_unique').on(table.userId, table.browserId)],
 ).enableRLS()

@@ -36,7 +36,9 @@ route.get('/:id/history', requireAuth, requireAdult, zProblemValidator('param', 
       return new Response(null, { status: 204, headers: { 'Cache-Control': privateCacheControl } })
     }
 
-    return c.json<GETV1MangaIdHistoryResponse>(history.lastPage, { headers: { 'Cache-Control': privateCacheControl } })
+    const response = history.lastPage satisfies GETV1MangaIdHistoryResponse
+
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '감상 기록을 불러오지 못했어요' })

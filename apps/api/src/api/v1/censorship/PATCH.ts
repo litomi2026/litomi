@@ -38,7 +38,7 @@ route.patch('/', zProblemValidator('json', patchV1CensorshipUpdateBodySchema), a
       })
       .returning({ id: userCensorshipTable.id })
 
-    return c.json<PATCHV1CensorshipUpdateResponse>({ ids: result.map((r) => r.id) })
+    return c.json({ ids: result.map((r) => r.id) } satisfies PATCHV1CensorshipUpdateResponse)
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'constraint', 'invalid input'].some((message) => error.message.includes(message))) {

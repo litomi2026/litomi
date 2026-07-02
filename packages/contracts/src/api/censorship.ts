@@ -2,29 +2,23 @@ import { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { CENSORSHIPS_PER_PAGE, MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/censorship/policy'
 import { z } from 'zod'
 
-export const censorshipItemSchema = z.object({
-  id: z.number(),
-  key: z.enum(CensorshipKey),
-  value: z.string(),
-  level: z.enum(CensorshipLevel),
-  createdAt: z.number(),
-})
-
-export type CensorshipItem = z.infer<typeof censorshipItemSchema>
+export interface CensorshipItem {
+  id: number
+  key: CensorshipKey
+  value: string
+  level: CensorshipLevel
+  createdAt: number
+}
 
 export const getV1CensorshipQuerySchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),
   limit: z.coerce.number().int().positive().max(MAX_CENSORSHIPS_PER_USER).default(CENSORSHIPS_PER_PAGE),
 })
 
-export type GETV1CensorshipQuery = z.infer<typeof getV1CensorshipQuerySchema>
-
-export const getV1CensorshipResponseSchema = z.object({
-  censorships: z.array(censorshipItemSchema),
-  nextCursor: z.string().nullable(),
-})
-
-export type GETV1CensorshipResponse = z.infer<typeof getV1CensorshipResponseSchema>
+export interface GETV1CensorshipResponse {
+  censorships: CensorshipItem[]
+  nextCursor: string | null
+}
 
 export const postV1CensorshipCreateBodySchema = z.object({
   items: z
@@ -39,13 +33,9 @@ export const postV1CensorshipCreateBodySchema = z.object({
     .max(100),
 })
 
-export type POSTV1CensorshipCreateBody = z.infer<typeof postV1CensorshipCreateBodySchema>
-
-export const postV1CensorshipCreateResponseSchema = z.object({
-  ids: z.array(z.number()),
-})
-
-export type POSTV1CensorshipCreateResponse = z.infer<typeof postV1CensorshipCreateResponseSchema>
+export interface POSTV1CensorshipCreateResponse {
+  ids: number[]
+}
 
 export const patchV1CensorshipUpdateBodySchema = z.object({
   items: z
@@ -61,22 +51,14 @@ export const patchV1CensorshipUpdateBodySchema = z.object({
     .max(MAX_CENSORSHIPS_PER_USER),
 })
 
-export type PATCHV1CensorshipUpdateBody = z.infer<typeof patchV1CensorshipUpdateBodySchema>
-
-export const patchV1CensorshipUpdateResponseSchema = z.object({
-  ids: z.array(z.number()),
-})
-
-export type PATCHV1CensorshipUpdateResponse = z.infer<typeof patchV1CensorshipUpdateResponseSchema>
+export interface PATCHV1CensorshipUpdateResponse {
+  ids: number[]
+}
 
 export const deleteV1CensorshipDeleteBodySchema = z.object({
   ids: z.array(z.coerce.number().int().positive()).min(1).max(MAX_CENSORSHIPS_PER_USER),
 })
 
-export type DELETEV1CensorshipDeleteBody = z.infer<typeof deleteV1CensorshipDeleteBodySchema>
-
-export const deleteV1CensorshipDeleteResponseSchema = z.object({
-  ids: z.array(z.number()),
-})
-
-export type DELETEV1CensorshipDeleteResponse = z.infer<typeof deleteV1CensorshipDeleteResponseSchema>
+export interface DELETEV1CensorshipDeleteResponse {
+  ids: number[]
+}

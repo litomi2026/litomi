@@ -1,5 +1,5 @@
 import {
-  notificationCriteriaIdParamSchema,
+  idParamSchema,
   type PATCHV1NotificationCriteriaIdResponse,
   patchV1NotificationCriteriaIdBodySchema,
 } from '@litomi/contracts'
@@ -17,7 +17,7 @@ const route = new Hono<Env>()
 
 route.patch(
   '/',
-  zProblemValidator('param', notificationCriteriaIdParamSchema),
+  zProblemValidator('param', idParamSchema),
   zProblemValidator('json', patchV1NotificationCriteriaIdBodySchema),
   async (c) => {
     const userId = c.get('userId')!
@@ -64,7 +64,7 @@ route.patch(
         return problemResponse(c, { status: 404, detail: '알림 기준을 찾을 수 없어요' })
       }
 
-      return c.json<PATCHV1NotificationCriteriaIdResponse>(result)
+      return c.json(result satisfies PATCHV1NotificationCriteriaIdResponse)
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '알림 기준 수정 중 오류가 발생했어요' })

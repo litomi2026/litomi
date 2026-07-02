@@ -42,7 +42,6 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
         .set({
           balance: balanceAfterBet,
           totalSpent: sql`${userPointsTable.totalSpent} + ${bet}`,
-          updatedAt: new Date(),
         })
         .where(eq(userPointsTable.userId, userId))
 
@@ -66,7 +65,6 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
           .set({
             balance: balanceAfterPayout,
             totalEarned: sql`${userPointsTable.totalEarned} + ${payout}`,
-            updatedAt: new Date(),
           })
           .where(eq(userPointsTable.userId, userId))
 
@@ -92,13 +90,13 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
       return problemResponse(c, { status: result.status, detail: result.detail })
     }
 
-    return c.json<POSTV1RouletteSpinResponse>({
+    return c.json({
       balance: result.balance,
       bet: result.bet,
       payout: result.payout,
       net: result.net,
       landed: result.landed,
-    })
+    } satisfies POSTV1RouletteSpinResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '룰렛에 실패했어요' })

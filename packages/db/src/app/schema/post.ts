@@ -23,10 +23,10 @@ export const postTable = pgTable(
     referredPostId: bigint('referred_post_id', { mode: 'number' }).references((): AnyPgColumn => postTable.id, {
       onDelete: 'set null',
     }),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     mangaId: integer('manga_id'),
     content: varchar({ length: 160 }),
     type: smallint().notNull(), // 'text', 'image', 'video', 'audio', 'poll', 'event', etc.
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     index('idx_post_user_id').on(table.userId),

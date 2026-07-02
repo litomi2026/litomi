@@ -167,7 +167,7 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
       passkeyAuthVerifyLimiter.reward(authentication.id),
     ])
 
-    return c.json<POSTV1AuthPasskeyVerifyResponse>(user)
+    return c.json(user satisfies POSTV1AuthPasskeyVerifyResponse)
   } catch (error) {
     console.error('verifyAuthentication:', error)
     return problemResponse(c, { status: 500, detail: '패스키 인증 중 오류가 발생했어요' })

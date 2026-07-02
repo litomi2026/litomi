@@ -43,13 +43,13 @@ route.post(
         .returning({ reportedAt: mangaReportTable.reportedAt })
 
       if (!written) {
-        return c.json<POSTV1MangaIdReportResponse>({ accepted: false, duplicated: true })
+        return c.json({ accepted: false, duplicated: true } satisfies POSTV1MangaIdReportResponse)
       }
 
-      return c.json<POSTV1MangaIdReportResponse>({ accepted: true, duplicated: false })
+      return c.json({ accepted: true, duplicated: false } satisfies POSTV1MangaIdReportResponse)
     } catch (error) {
       if (isPostgresError(error) && error.cause.code === '23505') {
-        return c.json<POSTV1MangaIdReportResponse>({ accepted: false, duplicated: true })
+        return c.json({ accepted: false, duplicated: true } satisfies POSTV1MangaIdReportResponse)
       }
 
       console.error(error)

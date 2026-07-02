@@ -77,9 +77,9 @@ route.get('/', ...middlewares, async (c) => {
       ? await buildOwnerMessages(artist.id, userId, messages, messageIds)
       : await buildFanMessages(artist.id, artist.userId, userId, messages, messageIds),
     nextCursor: messages.length === limit ? (messages.at(-1)?.messageId ?? null) : null,
-  }
+  } satisfies GETV1ChatMessagesResponse
 
-  return c.json<GETV1ChatMessagesResponse>(result, { headers: { 'Cache-Control': noStoreCacheControl } })
+  return c.json(result, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
 // Owner view: each message plus how many unread replies it has (one batched GROUP BY).

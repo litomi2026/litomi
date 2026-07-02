@@ -39,7 +39,10 @@ export const chatReadCursorTable = pgTable(
     userId: bigint('user_id', { mode: 'number' }).notNull(),
     streamId: varchar('stream_id', { length: 64 }).notNull(),
     lastReadMessageId: varchar('last_read_message_id', { length: 26 }).notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
   },
   (table) => [primaryKey({ columns: [table.userId, table.streamId] })],
 ).enableRLS()
@@ -57,7 +60,10 @@ export const chatThreadTable = pgTable('chat_thread', {
   lastContentType: varchar('last_content_type', { length: 32 }).notNull(),
   lastPreview: varchar('last_preview', { length: 200 }).notNull(),
   lastCreatedAt: timestamp('last_created_at', { precision: 3, withTimezone: true }).notNull(),
-  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 }).enableRLS()
 
 // TODO: App DB와 Chat DB 간에 물리적 FK가 없기 때문에, App DB에서 유저가 탈퇴할 때 Chat DB의 데이터는 고아(Orphan) 데이터로 남습니다.

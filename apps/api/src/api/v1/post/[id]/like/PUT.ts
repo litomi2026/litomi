@@ -1,4 +1,4 @@
-import { type PUTV1PostIdLikeResponse, postIdParamSchema } from '@litomi/contracts'
+import { idParamSchema, type PUTV1PostIdLikeResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { postLikeTable } from '@litomi/db/app/post'
 import { isPostgresError } from '@litomi/db/error'
@@ -12,7 +12,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, zProblemValidator('param', postIdParamSchema), async (c) => {
+route.put('/', requireAuth, zProblemValidator('param', idParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: postId } = c.req.valid('param')
 
@@ -23,7 +23,7 @@ route.put('/', requireAuth, zProblemValidator('param', postIdParamSchema), async
       .onConflictDoNothing()
       .returning({ postId: postLikeTable.postId })
 
-    return c.json<PUTV1PostIdLikeResponse>({ liked: true }, inserted.length > 0 ? 201 : 200)
+    return c.json({ liked: true } satisfies PUTV1PostIdLikeResponse, inserted.length > 0 ? 201 : 200)
   } catch (error) {
     if (isPostgresError(error) && error.cause.code === '23503') {
       return problemResponse(c, { status: 404, detail: '글을 찾을 수 없어요' })

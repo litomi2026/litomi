@@ -1,4 +1,4 @@
-import { type GETSearchSuggestionsResponse, getSearchSuggestionsQuerySchema } from '@litomi/contracts'
+import { type GETV1SearchSuggestionResponse, getV1SearchSuggestionQuerySchema } from '@litomi/contracts'
 import { queryBlacklist } from '@litomi/domain/search/suggestion'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
@@ -13,7 +13,7 @@ import { suggestionTrie } from './suggestion-trie'
 
 const suggestionRoutes = new Hono<Env>()
 
-suggestionRoutes.get('/', zProblemValidator('query', getSearchSuggestionsQuerySchema), async (c) => {
+suggestionRoutes.get('/', zProblemValidator('query', getV1SearchSuggestionQuerySchema), async (c) => {
   const { limit, locale, query } = c.req.valid('query')
 
   if (queryBlacklist.some((regex) => regex.test(query))) {
@@ -29,7 +29,7 @@ suggestionRoutes.get('/', zProblemValidator('query', getSearchSuggestionsQuerySc
     swr: sec('1 day'),
   })
 
-  return c.json<GETSearchSuggestionsResponse>(suggestions, { headers: { 'Cache-Control': cacheControl } })
+  return c.json(suggestions satisfies GETV1SearchSuggestionResponse, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default suggestionRoutes

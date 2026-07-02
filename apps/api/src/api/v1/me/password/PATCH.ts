@@ -101,10 +101,10 @@ route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (
         applyAuthCookie(c, getAuthCookieClearConfigs())
         await Promise.allSettled([passwordChangeLimiter.reward(String(userId))])
 
-        return c.json<PATCHV1MePasswordResponse>({
+        return c.json({
           clearedCurrentSession: true,
           message: '비밀번호가 변경됐어요',
-        })
+        } satisfies PATCHV1MePasswordResponse)
 
       case 'unauthorized':
         applyAuthCookie(c, getAuthCookieClearConfigs())

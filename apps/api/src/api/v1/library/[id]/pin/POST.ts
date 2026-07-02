@@ -1,4 +1,4 @@
-import { libraryIdParamSchema } from '@litomi/contracts'
+import { idParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
 import { problemCode } from '@litomi/http/problem-details'
@@ -17,7 +17,7 @@ import { getPinnedLibraryLimit } from './limit'
 
 const routes = new Hono<Env>()
 
-routes.post('/', requireAuth, requireAdult, zProblemValidator('param', libraryIdParamSchema), async (c) => {
+routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSchema), async (c) => {
   const { id: libraryId } = c.req.valid('param')
   const userId = c.get('userId')!
 

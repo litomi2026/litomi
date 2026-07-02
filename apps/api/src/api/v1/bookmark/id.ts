@@ -16,8 +16,9 @@ route.get('/', requireAuth, async (c) => {
 
   try {
     const bookmarkRows = await selectBookmarkId({ userId })
-    const response = { mangaIds: bookmarkRows.map(({ mangaId }) => mangaId) }
-    return c.json<GETV1BookmarkIdResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+    const response = { mangaIds: bookmarkRows.map(({ mangaId }) => mangaId) } satisfies GETV1BookmarkIdResponse
+
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '북마크 ID 목록을 불러오지 못했어요' })

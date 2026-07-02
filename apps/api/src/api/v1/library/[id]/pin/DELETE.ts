@@ -1,4 +1,4 @@
-import { libraryIdParamSchema } from '@litomi/contracts'
+import { idParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pinnedLibraryTable } from '@litomi/db/app/library'
 import { and, eq } from 'drizzle-orm'
@@ -12,7 +12,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const routes = new Hono<Env>()
 
-routes.delete('/', requireAuth, zProblemValidator('param', libraryIdParamSchema), async (c) => {
+routes.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async (c) => {
   const { id: libraryId } = c.req.valid('param')
   const userId = c.get('userId')!
 

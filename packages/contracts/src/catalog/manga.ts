@@ -1,68 +1,65 @@
-import { MangaSource } from '@litomi/domain/manga/model'
-import { z } from 'zod'
+import type { MangaSource } from '@litomi/domain/manga/model'
 
-export const imageVariantSchema = z.object({
-  url: z.string(),
-  width: z.number().optional(),
-  height: z.number().optional(),
-})
+export interface ImageVariant {
+  url: string
+  width?: number
+  height?: number
+}
 
-export const imageWithVariantsSchema = z.object({
-  original: imageVariantSchema.optional(),
-  thumbnail: imageVariantSchema.optional(),
-  medium: imageVariantSchema.optional(),
-})
+export interface ImageWithVariants {
+  original?: ImageVariant
+  thumbnail?: ImageVariant
+  medium?: ImageVariant
+}
 
-export const labeledValueSchema = z.object({
-  label: z.string(),
-  value: z.string(),
-})
+export interface LabeledValue {
+  label: string
+  value: string
+}
 
-export const labeledValueWithLinkSchema = labeledValueSchema.extend({
-  links: z.array(labeledValueSchema).optional(),
-})
+export interface LabeledValueWithLink extends LabeledValue {
+  links?: LabeledValue[]
+}
 
-export const mangaTagSchema = labeledValueSchema.extend({
-  category: z.string(),
-})
+export interface MangaTag extends LabeledValue {
+  category: string
+}
 
-export const mangaTorrentSchema = z.object({
-  added: z.number(),
-  fsize: z.number(),
-  hash: z.string(),
-  name: z.string(),
-  tsize: z.number(),
-})
+export interface MangaTorrent {
+  added: number
+  fsize: number
+  hash: string
+  name: string
+  tsize: number
+}
 
-export const catalogMangaSchema = z.object({
-  id: z.number(),
-  title: z.string(),
-  images: z.array(imageWithVariantsSchema).optional(),
-  artists: z.array(labeledValueWithLinkSchema).optional(),
-  bookmarkCount: z.number().optional(),
-  characters: z.array(labeledValueWithLinkSchema).optional(),
-  count: z.number().optional(),
-  date: z.string().optional(),
-  description: z.string().optional(),
-  filesize: z.number().optional(),
-  group: z.array(labeledValueSchema).optional(),
-  harpiId: z.string().optional(),
-  languages: z.array(labeledValueSchema).optional(),
-  like: z.number().optional(),
-  likeAnonymous: z.number().optional(),
-  lines: z.array(z.string()).optional(),
-  rating: z.number().optional(),
-  ratingCount: z.number().optional(),
-  related: z.array(z.number()).optional(),
-  series: z.array(labeledValueSchema).optional(),
-  source: z.enum(MangaSource).optional(),
-  sources: z.array(z.enum(MangaSource)).optional(),
-  tags: z.array(mangaTagSchema).optional(),
-  torrentCount: z.number().optional(),
-  torrents: z.array(mangaTorrentSchema).optional(),
-  type: labeledValueSchema.optional(),
-  uploader: z.string().optional(),
-  viewCount: z.number().optional(),
-})
-
-export type CatalogManga = z.infer<typeof catalogMangaSchema>
+export interface CatalogManga {
+  id: number
+  title: string
+  images?: ImageWithVariants[]
+  artists?: LabeledValueWithLink[]
+  bookmarkCount?: number
+  characters?: LabeledValueWithLink[]
+  count?: number
+  date?: string
+  description?: string
+  filesize?: number
+  group?: LabeledValue[]
+  harpiId?: string
+  languages?: LabeledValue[]
+  like?: number
+  likeAnonymous?: number
+  lines?: string[]
+  rating?: number
+  ratingCount?: number
+  related?: number[]
+  series?: LabeledValue[]
+  source?: MangaSource
+  sources?: MangaSource[]
+  tags?: MangaTag[]
+  torrentCount?: number
+  torrents?: MangaTorrent[]
+  type?: LabeledValue
+  uploader?: string
+  viewCount?: number
+}

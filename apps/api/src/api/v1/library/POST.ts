@@ -76,7 +76,12 @@ route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema),
       return problemResponse(c, { status: 500, detail: '서재를 생성하지 못했어요' })
     }
 
-    return c.json<POSTV1LibraryResponse>({ id: created.id, createdAt: created.createdAt.getTime() }, 201)
+    const response = {
+      id: created.id,
+      createdAt: created.createdAt.getTime(),
+    } satisfies POSTV1LibraryResponse
+
+    return c.json(response, 201)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 

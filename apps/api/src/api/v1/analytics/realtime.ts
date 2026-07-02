@@ -57,11 +57,11 @@ realtimeRoutes.get('/', async (c) => {
         activeUsers: parseInt(row.metricValues?.[0]?.value ?? '0', 10),
       })) ?? []
 
-    const response: GETV1AnalyticsRealtimeResponse = {
+    const response = {
       totalActiveUsers,
       pageRanking,
       timestamp: new Date().toISOString(),
-    }
+    } satisfies GETV1AnalyticsRealtimeResponse
 
     const cacheControl = createCacheControl({
       public: true,

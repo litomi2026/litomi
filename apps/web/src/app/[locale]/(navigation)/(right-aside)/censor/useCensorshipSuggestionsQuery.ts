@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETSearchSuggestionsResponse } from '@litomi/contracts'
+import type { GETV1SearchSuggestionResponse } from '@litomi/contracts'
 
 import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { useQuery } from '@tanstack/react-query'
@@ -14,7 +14,7 @@ import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
 type Options = {
   query: string
-  apiSuggestions: GETSearchSuggestionsResponse
+  apiSuggestions: GETV1SearchSuggestionResponse
   blindTagSuggestions: CensorshipSuggestion[]
 }
 
@@ -30,7 +30,7 @@ type Props = {
 export async function fetchCensorshipSuggestions({ query, locale }: Params) {
   const params = buildSearchParams({ locale, query })
   const url = `/api/v1/search/suggestions?${params}`
-  const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url, { credentials: 'omit' })
+  const { data } = await fetchAPIData<GETV1SearchSuggestionResponse>(url, { credentials: 'omit' })
   return data
 }
 

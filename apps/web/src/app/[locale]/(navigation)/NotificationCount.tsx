@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETUnreadCountResponse } from '@litomi/contracts'
+import type { GETV1NotificationUnreadCountResponse } from '@litomi/contracts'
 
 import { useQuery } from '@tanstack/react-query'
 import { twMerge } from 'tailwind-merge'
@@ -31,14 +31,14 @@ export default function NotificationCount() {
 
 async function fetchUnreadCount() {
   const url = '/api/v1/notification/unread-count'
-  const { data } = await fetchAPIData<GETUnreadCountResponse>(url)
+  const { data } = await fetchAPIData<GETV1NotificationUnreadCountResponse>(url)
   return data
 }
 
 function useNotificationUnreadCountQuery() {
   const { data: me } = useMeQuery()
 
-  return useQuery<GETUnreadCountResponse>({
+  return useQuery<GETV1NotificationUnreadCountResponse>({
     queryKey: QueryKeys.notificationUnreadCount,
     queryFn: fetchUnreadCount,
     enabled: hasAdultAccess(me),

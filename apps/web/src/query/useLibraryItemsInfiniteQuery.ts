@@ -1,4 +1,4 @@
-import type { GETLibraryItemsResponse } from '@litomi/contracts'
+import type { GETV1LibraryItemsResponse } from '@litomi/contracts'
 
 import { DEFAULT_LIBRARY_ITEM_SORT, type LibraryItemSort } from '@litomi/domain/library/sort'
 import { useInfiniteQuery } from '@tanstack/react-query'
@@ -25,7 +25,7 @@ interface Options {
 export async function fetchLibraryItems({ libraryId, cursor, locale, scope, sort }: FetchLibraryItemsOptions) {
   const searchParams = buildSearchParams({ locale, scope, sort, cursor })
   const url = `/api/v1/library/${libraryId}/item?${searchParams}`
-  const { data } = await fetchAPIData<GETLibraryItemsResponse>(url)
+  const { data } = await fetchAPIData<GETV1LibraryItemsResponse>(url)
   return data
 }
 

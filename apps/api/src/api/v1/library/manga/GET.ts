@@ -81,8 +81,12 @@ libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySch
         sMaxAge: sec('5 minutes'),
       })
 
-      const result = { items: [], nextCursor: null }
-      return c.json<GETV1LibraryMangaResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+      const result = {
+        items: [],
+        nextCursor: null,
+      } satisfies GETV1LibraryMangaResponse
+
+      return c.json(result, { headers: { 'Cache-Control': cacheControl } })
     }
 
     const hasNextPage = rows.length > limit
@@ -106,7 +110,10 @@ libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySch
     const nextCursor =
       hasNextPage && lastRow ? encodeLibraryIdCursor(lastRow.createdAt.getTime(), lastRow.mangaId) : null
 
-    const result = { items, nextCursor }
+    const result = {
+      items,
+      nextCursor,
+    } satisfies GETV1LibraryMangaResponse
 
     const cacheControl = createCacheControl({
       public: true,
@@ -115,7 +122,7 @@ libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySch
       swr: sec('1 day'),
     })
 
-    return c.json<GETV1LibraryMangaResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '서재 작품 목록을 불러오지 못했어요' })

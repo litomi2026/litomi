@@ -76,7 +76,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
 
     await reissueAuthCookies(c, { userId, adult: false })
 
-    return c.json<POSTV1BBatonUnlinkResponse>({ ok: true })
+    return c.json({ ok: true } satisfies POSTV1BBatonUnlinkResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '비바톤 계정 연결을 해제하지 못했어요.' })

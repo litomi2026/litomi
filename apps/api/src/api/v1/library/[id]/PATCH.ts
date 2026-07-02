@@ -1,4 +1,4 @@
-import { libraryIdParamSchema, type PATCHV1LibraryIdResponse, patchV1LibraryIdBodySchema } from '@litomi/contracts'
+import { idParamSchema, type PATCHV1LibraryIdResponse, patchV1LibraryIdBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable } from '@litomi/db/app/library'
 import { hexColorToInt } from '@litomi/domain/utils/color'
@@ -18,7 +18,7 @@ const route = new Hono<Env>()
 route.patch(
   '/',
   requireAuth,
-  zProblemValidator('param', libraryIdParamSchema),
+  zProblemValidator('param', idParamSchema),
   zProblemValidator('json', patchV1LibraryIdBodySchema),
   async (c) => {
     const userId = c.get('userId')!
@@ -46,7 +46,7 @@ route.patch(
         return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
       }
 
-      return c.json<PATCHV1LibraryIdResponse>({ id: updatedLibrary.id })
+      return c.json({ id: updatedLibrary.id } satisfies PATCHV1LibraryIdResponse)
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '서재를 수정하지 못했어요' })

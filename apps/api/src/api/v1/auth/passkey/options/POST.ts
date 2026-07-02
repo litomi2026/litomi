@@ -41,7 +41,7 @@ route.post('/', async (c) => {
 
     setCookie(c, authAttemptCookie.key, authAttemptCookie.value, authAttemptCookie.options)
 
-    return c.json<POSTV1AuthPasskeyOptionsResponse>({ options, turnstileRequired })
+    return c.json({ options, turnstileRequired } satisfies POSTV1AuthPasskeyOptionsResponse)
   } catch (error) {
     console.error('getAuthenticationOptions:', error)
     return problemResponse(c, { status: 500, detail: '패스키 인증 중 오류가 발생했어요' })

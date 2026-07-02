@@ -15,10 +15,7 @@ export const messages = {
     MangaViewer: {
       unlock: {
         title: '작품을 보려면 광고를 클릭하거나 건너뛰기 버튼을 눌러주세요.',
-        adultAction: '성인인증',
-        adultActionGuest: '로그인 후 성인인증',
-        adultSuffix: '을 하면 광고를 보지 않고도 작품을 볼 수 있어요.',
-        skipAd: '광고 건너뛰기',
+        skipAd: '건너뛰기',
       },
       metadata: {
         artist: '작가',
@@ -201,10 +198,7 @@ export const messages = {
     MangaViewer: {
       unlock: {
         title: 'Click the ad or the skip button to view this work.',
-        adultAction: 'Verify your age',
-        adultActionGuest: 'Log in and verify your age',
-        adultSuffix: ' to view works without watching an ad.',
-        skipAd: 'Skip ad',
+        skipAd: 'Skip',
       },
       metadata: {
         artist: 'Artist',
@@ -387,10 +381,7 @@ export const messages = {
     MangaViewer: {
       unlock: {
         title: '作品を見るには広告をクリックするか、スキップボタンを押してください。',
-        adultAction: '成人認証',
-        adultActionGuest: 'ログイン後に成人認証',
-        adultSuffix: 'すると、広告を見なくても作品を閲覧できます。',
-        skipAd: '広告をスキップ',
+        skipAd: 'スキップ',
       },
       metadata: {
         artist: '作家',
@@ -573,10 +564,7 @@ export const messages = {
     MangaViewer: {
       unlock: {
         title: '请点击广告或跳过按钮以查看作品。',
-        adultAction: '成人认证',
-        adultActionGuest: '登录并完成成人认证',
-        adultSuffix: '后无需观看广告即可查看作品。',
-        skipAd: '跳过广告',
+        skipAd: '跳过',
       },
       metadata: {
         artist: '作者',

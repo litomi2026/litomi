@@ -24,7 +24,7 @@ route.patch('/', zProblemValidator('json', patchV1MePushSettingsBodySchema), asy
         set: updateValues,
       })
 
-    return c.json<PATCHV1MePushSettingsResponse>({ message: '푸시 알림을 설정했어요' })
+    return c.json({ message: '푸시 알림을 설정했어요' } satisfies PATCHV1MePushSettingsResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '푸시 알림 설정 중 오류가 발생했어요' })

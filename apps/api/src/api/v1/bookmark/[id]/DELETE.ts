@@ -1,4 +1,4 @@
-import { bookmarkMangaIdParamSchema } from '@litomi/contracts'
+import { mangaIdParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { and, eq } from 'drizzle-orm'
@@ -13,7 +13,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.delete('/', requireAuth, zProblemValidator('param', bookmarkMangaIdParamSchema), async (c) => {
+route.delete('/', requireAuth, zProblemValidator('param', mangaIdParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: mangaId } = c.req.valid('param')
 

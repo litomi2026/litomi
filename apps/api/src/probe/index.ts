@@ -32,20 +32,20 @@ probeRoutes.get('/startup', (c) => {
   const { startupComplete } = getProbeStateSnapshot()
 
   if (!startupComplete) {
-    const response: StartupResponse = {
+    const response = {
       status: 'starting',
       timestamp: new Date(),
-    }
+    } satisfies StartupResponse
 
-    return c.json<StartupResponse>(response, { status: 503, headers: noStoreHeaders })
+    return c.json(response, { status: 503, headers: noStoreHeaders })
   }
 
-  const response: StartupResponse = {
+  const response = {
     status: 'started',
     timestamp: new Date(),
-  }
+  } satisfies StartupResponse
 
-  return c.json<StartupResponse>(response, { status: 200, headers: noStoreHeaders })
+  return c.json(response, { status: 200, headers: noStoreHeaders })
 })
 
 probeRoutes.get('/health', () => {
@@ -67,31 +67,31 @@ probeRoutes.get('/ready', (c) => {
   const timestamp = new Date()
 
   if (!startupComplete) {
-    const response: ReadyResponse = {
+    const response = {
       status: 'not-ready',
       reason: 'starting',
       timestamp,
-    }
+    } satisfies ReadyResponse
 
-    return c.json<ReadyResponse>(response, { status: 503, headers: noStoreHeaders })
+    return c.json(response, { status: 503, headers: noStoreHeaders })
   }
 
   if (draining) {
-    const response: ReadyResponse = {
+    const response = {
       status: 'not-ready',
       reason: 'draining',
       timestamp,
-    }
+    } satisfies ReadyResponse
 
-    return c.json<ReadyResponse>(response, { status: 503, headers: noStoreHeaders })
+    return c.json(response, { status: 503, headers: noStoreHeaders })
   }
 
-  const response: ReadyResponse = {
+  const response = {
     status: 'ready',
     timestamp,
-  }
+  } satisfies ReadyResponse
 
-  return c.json<ReadyResponse>(response, { status: 200, headers: noStoreHeaders })
+  return c.json(response, { status: 200, headers: noStoreHeaders })
 })
 
 export default probeRoutes

@@ -28,7 +28,7 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1Bookm
       return saveBookmarks(tx, userId, mangaIdEntries)
     })
 
-    return c.json<POSTV1BookmarkResponse>(result)
+    return c.json(result satisfies POSTV1BookmarkResponse)
   } catch (error) {
     if (error instanceof BookmarkLimitReachedError) {
       return problemResponse(c, {

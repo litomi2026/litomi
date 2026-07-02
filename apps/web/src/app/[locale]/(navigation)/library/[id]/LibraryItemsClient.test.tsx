@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
-import type { GETLibraryItemsResponse } from '@litomi/contracts'
+import type { GETV1LibraryItemsResponse } from '@litomi/contracts'
 import { LibraryItemSort } from '@litomi/domain/library/sort'
 import { View } from '@litomi/std'
 import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
@@ -19,7 +19,7 @@ const { default: LibraryItemsClient } = await import('./LibraryItemsClient')
 let fetchRoutes: FetchRoute[] = []
 let fetchController: ReturnType<typeof installMockFetch>
 
-const basePage: GETLibraryItemsResponse = {
+const basePage: GETV1LibraryItemsResponse = {
   items: [{ mangaId: 101, createdAt: new Date('2025-01-01T00:00:00.000Z').getTime() }],
   nextCursor: null,
 }

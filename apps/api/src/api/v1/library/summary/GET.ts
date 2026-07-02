@@ -19,7 +19,7 @@ librarySummaryRoutes.get('/', requireAuth, requireAdult, async (c) => {
   const userId = c.get('userId')!
 
   try {
-    const [counts] = await db.execute<GETV1LibrarySummaryResponse>(sql`
+    const [counts] = await db.execute<{ bookmarkCount: number; historyCount: number; ratingCount: number }>(sql`
       SELECT 
         (SELECT COUNT(*)::int FROM ${bookmarkTable} WHERE ${bookmarkTable.userId} = ${userId}) as "bookmarkCount",
         (SELECT COUNT(*)::int FROM ${readingHistoryTable} WHERE ${readingHistoryTable.userId} = ${userId}) as "historyCount",
@@ -30,11 +30,11 @@ librarySummaryRoutes.get('/', requireAuth, requireAdult, async (c) => {
       bookmarkCount: counts?.bookmarkCount ?? 0,
       historyCount: counts?.historyCount ?? 0,
       ratingCount: counts?.ratingCount ?? 0,
-    }
+    } satisfies GETV1LibrarySummaryResponse
 
     const cacheControl = createCacheControl({ private: true, maxAge: sec('1 minute') })
 
-    return c.json<GETV1LibrarySummaryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '요약 정보를 불러오지 못했어요' })

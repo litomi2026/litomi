@@ -1,4 +1,4 @@
-import { bookmarkMangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
+import { mangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { problemCode } from '@litomi/http/problem-details'
@@ -22,7 +22,7 @@ const ErrorCode = {
 
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, requireAdult, zProblemValidator('param', bookmarkMangaIdParamSchema), async (c) => {
+route.put('/', requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: mangaId } = c.req.valid('param')
 
@@ -71,7 +71,12 @@ route.put('/', requireAuth, requireAdult, zProblemValidator('param', bookmarkMan
       }
     })
 
-    return c.json<PUTV1BookmarkIdResponse>({ mangaId: result.mangaId, createdAt: result.createdAt }, result.status)
+    const response = {
+      mangaId: result.mangaId,
+      createdAt: result.createdAt,
+    } satisfies PUTV1BookmarkIdResponse
+
+    return c.json(response, result.status)
   } catch (error) {
     if (error instanceof Error && error.message === ErrorCode.BOOKMARK_LIMIT_REACHED) {
       return problemResponse(c, {

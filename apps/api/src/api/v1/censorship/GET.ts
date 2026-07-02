@@ -39,9 +39,9 @@ route.get('/', zProblemValidator('query', getV1CensorshipQuerySchema), async (c)
     const result = {
       censorships: censorships.map((row) => ({ ...row, createdAt: row.createdAt.getTime() })),
       nextCursor,
-    }
+    } satisfies GETV1CensorshipResponse
 
-    return c.json<GETV1CensorshipResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '검열 설정을 불러오지 못했어요' })

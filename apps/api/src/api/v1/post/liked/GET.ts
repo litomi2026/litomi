@@ -24,9 +24,9 @@ route.get('/', requireAuth, async (c) => {
 
     const response = {
       postIds: likedPostRows.map(({ postId }) => postId),
-    }
+    } satisfies GETV1PostLikedResponse
 
-    return c.json<GETV1PostLikedResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '좋아요한 글 목록을 불러오지 못했어요' })

@@ -40,7 +40,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PostBodySchema), as
       return problemResponse(c, { status: 500, detail: '글을 작성하지 못했어요' })
     }
 
-    return c.json<POSTV1PostResponse>({ id: createdPost.id }, 201)
+    return c.json({ id: createdPost.id } satisfies POSTV1PostResponse, 201)
   } catch (error) {
     if (isPostgresError(error) && error.cause.code === '23503') {
       return problemResponse(c, { status: 404, detail: '대상 글을 찾을 수 없어요' })

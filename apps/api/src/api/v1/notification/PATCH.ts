@@ -24,7 +24,7 @@ route.patch('/read', zProblemValidator('json', patchV1NotificationReadBodySchema
       .where(and(eq(notificationTable.userId, userId), inArray(notificationTable.id, ids)))
       .returning({ id: notificationTable.id })
 
-    return c.json<PATCHV1NotificationReadResponse>({ ids: updated.map((item) => item.id) })
+    return c.json({ ids: updated.map((item) => item.id) } satisfies PATCHV1NotificationReadResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '알림을 읽는 도중 오류가 발생했어요' })
@@ -41,7 +41,7 @@ route.patch('/read-all', async (c) => {
       .where(and(eq(notificationTable.userId, userId), eq(notificationTable.read, false)))
       .returning({ id: notificationTable.id })
 
-    return c.json<PATCHV1NotificationReadAllResponse>({ updatedCount: updated.length })
+    return c.json({ updatedCount: updated.length } satisfies PATCHV1NotificationReadAllResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '알림을 읽는 도중 오류가 발생했어요' })

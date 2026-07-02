@@ -1,4 +1,4 @@
-import { type DELETEV1MePasskeyResponse, deleteV1MePasskeyParamSchema } from '@litomi/contracts'
+import { type DELETEV1MePasskeyResponse, idParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { and, eq } from 'drizzle-orm'
@@ -11,7 +11,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.delete('/', zProblemValidator('param', deleteV1MePasskeyParamSchema), async (c) => {
+route.delete('/', zProblemValidator('param', idParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
 
@@ -25,10 +25,10 @@ route.delete('/', zProblemValidator('param', deleteV1MePasskeyParamSchema), asyn
       return problemResponse(c, { status: 404, detail: '패스키를 찾을 수 없어요' })
     }
 
-    return c.json<DELETEV1MePasskeyResponse>({
+    return c.json({
       id: deleted.id,
       message: '패스키가 삭제됐어요',
-    })
+    } satisfies DELETEV1MePasskeyResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '패스키 삭제 중 오류가 발생했어요' })

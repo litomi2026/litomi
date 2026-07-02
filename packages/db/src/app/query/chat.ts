@@ -1,7 +1,10 @@
 import { and, asc, eq, gt, inArray } from 'drizzle-orm'
 import { db } from '../db'
-import { chatArtistTable, chatSubscriptionTable } from '../schema/chat'
+import { chatArtistTable } from '../schema/chat'
+import { invoiceTable } from '../schema/invoice'
+import { subscriptionTable } from '../schema/subscription'
 import { userTable } from '../schema/user'
+import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from './subscription'
 
 export async function getChatArtistBrief(artistId: number) {
   const [row] = await db
@@ -14,7 +17,7 @@ export async function getChatArtistBrief(artistId: number) {
     .from(chatArtistTable)
     .where(eq(chatArtistTable.id, artistId))
 
-  return row ?? null
+  return row
 }
 
 export async function getChatArtistByHandle(handle: string) {
@@ -25,13 +28,31 @@ export async function getChatArtistByHandle(handle: string) {
       isActive: chatArtistTable.isActive,
       handle: chatArtistTable.handle,
       displayName: chatArtistTable.displayName,
+      description: chatArtistTable.description,
       imageURL: chatArtistTable.imageURL,
       emoji: chatArtistTable.emoji,
+      priceAmount: chatArtistTable.priceAmount,
+      priceCurrency: chatArtistTable.priceCurrency,
     })
     .from(chatArtistTable)
     .where(eq(chatArtistTable.handle, handle))
 
-  return row ?? null
+  return row
+}
+
+export async function getChatArtistById(artistId: number) {
+  const [row] = await db
+    .select({
+      id: chatArtistTable.id,
+      displayName: chatArtistTable.displayName,
+      isActive: chatArtistTable.isActive,
+      priceAmount: chatArtistTable.priceAmount,
+      priceCurrency: chatArtistTable.priceCurrency,
+    })
+    .from(chatArtistTable)
+    .where(eq(chatArtistTable.id, artistId))
+
+  return row
 }
 
 export async function getChatSenderBrief(userId: number) {
@@ -43,7 +64,7 @@ export async function getChatSenderBrief(userId: number) {
     .from(userTable)
     .where(eq(userTable.id, userId))
 
-  return row ?? null
+  return row
 }
 
 export interface ChatUserBriefRow {
@@ -86,36 +107,31 @@ export async function listEntitledSubscriptionsOfUser(userId: number, limit = 20
       imageURL: chatArtistTable.imageURL,
       emoji: chatArtistTable.emoji,
     })
-    .from(chatSubscriptionTable)
-    .innerJoin(chatArtistTable, eq(chatSubscriptionTable.artistId, chatArtistTable.id))
+    .from(subscriptionTable)
+    .innerJoin(chatArtistTable, eq(subscriptionTable.targetId, chatArtistTable.id))
     .where(
       and(
-        eq(chatSubscriptionTable.userId, userId),
-        inArray(chatSubscriptionTable.status, ENTITLED_STATUSES),
-        gt(chatSubscriptionTable.expiresAt, new Date()),
+        eq(subscriptionTable.userId, userId),
+        eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
+        gt(subscriptionTable.expiresAt, new Date()),
         eq(chatArtistTable.isActive, true),
       ),
     )
     .orderBy(asc(chatArtistTable.id))
     .limit(limit)
 }
-
-// Every artist a fan has EVER subscribed to (any status), for the chat list's
-// "history" half: a lapsed fan keeps read access (perpetual 1:1 + paid-window
-// broadcasts), so the artist must stay reachable even if they never sent a 1:1.
 export async function listSubscribedArtistIds(userId: number, limit = 500): Promise<number[]> {
   const rows = await db
-    .selectDistinct({ artistId: chatSubscriptionTable.artistId })
-    .from(chatSubscriptionTable)
-    .where(eq(chatSubscriptionTable.userId, userId))
+    .selectDistinct({ targetId: subscriptionTable.targetId })
+    .from(subscriptionTable)
+    .where(and(eq(subscriptionTable.userId, userId), eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST)))
     .limit(limit)
 
-  return rows.map((row) => row.artistId)
+  return rows.map((row) => row.targetId)
 }
 
-// Briefs for artists a fan has past history with but is no longer entitled to.
-// isActive is NOT filtered: a lapsed (or paused-artist) thread is still read-only
-// viewable, so the list can render it.
+// Briefs for artists a fan has past history with but is no longer entitled to. isActive is
+// NOT filtered: a lapsed (or paused-artist) thread is still read-only viewable.
 export async function listChatArtistBriefs(artistIds: number[]): Promise<Map<number, ChatArtistBriefRow>> {
   if (artistIds.length === 0) {
     return new Map()
@@ -141,26 +157,19 @@ export async function getChatArtistByUserId(userId: number) {
     .from(chatArtistTable)
     .where(eq(chatArtistTable.userId, userId))
 
-  return row ?? null
+  return row
 }
-
-// "Entitled" = inside a paid period. The paid period is defined by time
-// (expiresAt > now), not by status: cancelling only turns OFF auto-renew, so a
-// cancelled subscription keeps access until expiresAt. Only 'expired' (or a future
-// refunded/banned status) is excluded. This is the single source of truth for
-// send + realtime + broadcast-read entitlement across the API and WS gateway.
-const ENTITLED_STATUSES = ['active', 'cancelled'] as const
 
 export async function hasActiveChatSubscription(userId: number, artistId: number): Promise<boolean> {
   const [row] = await db
-    .select({ userId: chatSubscriptionTable.userId })
-    .from(chatSubscriptionTable)
+    .select({ id: subscriptionTable.id })
+    .from(subscriptionTable)
     .where(
       and(
-        eq(chatSubscriptionTable.artistId, artistId),
-        eq(chatSubscriptionTable.userId, userId),
-        inArray(chatSubscriptionTable.status, ENTITLED_STATUSES),
-        gt(chatSubscriptionTable.expiresAt, new Date()),
+        eq(subscriptionTable.userId, userId),
+        eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
+        eq(subscriptionTable.targetId, artistId),
+        gt(subscriptionTable.expiresAt, new Date()),
       ),
     )
 
@@ -172,32 +181,35 @@ export interface PaidInterval {
   expiresAt: Date
 }
 
-// All paid windows for (fan, artist) as disjoint [startedAt, expiresAt) intervals,
-// merged across rows. Every subscription row is a paid period (active/cancelled/expired
-// all count; a future 'refunded' status would be excluded here). Backs interval-scoped
-// broadcast read: a lapsed fan keeps the broadcasts sent while they were paying.
-// Today this is usually one row (≈ a single window); it becomes gap-exact for free once
-// renewals accrue as separate period rows (append-only) — no caller change needed.
 export async function listPaidIntervals(userId: number, artistId: number): Promise<PaidInterval[]> {
   const rows = await db
     .select({
-      startedAt: chatSubscriptionTable.startedAt,
-      expiresAt: chatSubscriptionTable.expiresAt,
+      periodStart: invoiceTable.periodStart,
+      periodEnd: invoiceTable.periodEnd,
     })
-    .from(chatSubscriptionTable)
-    .where(and(eq(chatSubscriptionTable.userId, userId), eq(chatSubscriptionTable.artistId, artistId)))
-    .orderBy(asc(chatSubscriptionTable.startedAt))
+    .from(invoiceTable)
+    .innerJoin(subscriptionTable, eq(subscriptionTable.id, invoiceTable.subscriptionId))
+    .where(
+      and(
+        eq(subscriptionTable.userId, userId),
+        eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
+        eq(subscriptionTable.targetId, artistId),
+        eq(invoiceTable.status, 'paid'),
+      ),
+    )
+    .orderBy(asc(invoiceTable.periodStart))
 
   const merged: PaidInterval[] = []
+
   for (const row of rows) {
     const last = merged.at(-1)
-    // Overlapping or adjacent window → extend; otherwise it's a new disjoint period.
-    if (last && row.startedAt <= last.expiresAt) {
-      if (row.expiresAt > last.expiresAt) {
-        last.expiresAt = row.expiresAt
+
+    if (last && row.periodStart <= last.expiresAt) {
+      if (row.periodEnd > last.expiresAt) {
+        last.expiresAt = row.periodEnd
       }
     } else {
-      merged.push({ startedAt: row.startedAt, expiresAt: row.expiresAt })
+      merged.push({ startedAt: row.periodStart, expiresAt: row.periodEnd })
     }
   }
 
@@ -219,17 +231,17 @@ export async function listActiveSubscriberUserIds(
   const afterUserId = options.afterUserId ?? 0
 
   const rows = await db
-    .select({ userId: chatSubscriptionTable.userId })
-    .from(chatSubscriptionTable)
+    .select({ userId: subscriptionTable.userId })
+    .from(subscriptionTable)
     .where(
       and(
-        eq(chatSubscriptionTable.artistId, artistId),
-        inArray(chatSubscriptionTable.status, ENTITLED_STATUSES),
-        gt(chatSubscriptionTable.expiresAt, new Date()),
-        gt(chatSubscriptionTable.userId, afterUserId),
+        eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
+        eq(subscriptionTable.targetId, artistId),
+        gt(subscriptionTable.expiresAt, new Date()),
+        gt(subscriptionTable.userId, afterUserId),
       ),
     )
-    .orderBy(asc(chatSubscriptionTable.userId))
+    .orderBy(asc(subscriptionTable.userId))
     .limit(limit)
 
   return rows.map((row) => row.userId)

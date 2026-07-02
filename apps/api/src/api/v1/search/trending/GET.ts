@@ -6,7 +6,7 @@ import { translateLanguage } from '@litomi/catalog/translation/language'
 import { translateSeriesList } from '@litomi/catalog/translation/series'
 import { translateTag } from '@litomi/catalog/translation/tag'
 import { translateType } from '@litomi/catalog/translation/type'
-import { type GETTrendingKeywordsResponse, getTrendingKeywordsQuerySchema, TrendingType } from '@litomi/contracts'
+import { type GETV1SearchTrendingResponse, getV1SearchTrendingQuerySchema, TrendingType } from '@litomi/contracts'
 import type { Locale } from '@litomi/domain/locale'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { createCacheControl } from '@litomi/http/cache-control'
@@ -162,7 +162,7 @@ function translateTrendingKeyword(keyword: string, locale: Locale): string {
   return segments.join(', ')
 }
 
-trendingRoutes.get('/', zProblemValidator('query', getTrendingKeywordsQuerySchema), async (c) => {
+trendingRoutes.get('/', zProblemValidator('query', getV1SearchTrendingQuerySchema), async (c) => {
   const { limit, locale, type } = c.req.valid('query')
 
   const { keywords = [], cacheMaxAge } = {
@@ -180,13 +180,13 @@ trendingRoutes.get('/', zProblemValidator('query', getTrendingKeywordsQuerySchem
     },
   }[type]
 
-  const response: GETTrendingKeywordsResponse = {
+  const response = {
     keywords: keywords.map(({ keyword }) => ({
       value: keyword,
       label: translateTrendingKeyword(keyword, locale),
     })),
     updatedAt: new Date(),
-  }
+  } satisfies GETV1SearchTrendingResponse
 
   const cacheControl =
     response.keywords.length > 0
@@ -203,7 +203,7 @@ trendingRoutes.get('/', zProblemValidator('query', getTrendingKeywordsQuerySchem
           swr: 0,
         })
 
-  return c.json<GETTrendingKeywordsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default trendingRoutes

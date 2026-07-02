@@ -23,9 +23,9 @@ route.get('/', async (c) => {
 
     const response = {
       userIds: followingRows.map(({ userId: followeeId }) => followeeId),
-    }
+    } satisfies GETV1MeFollowingResponse
 
-    return c.json<GETV1MeFollowingResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '팔로우한 사용자 목록을 불러오지 못했어요' })

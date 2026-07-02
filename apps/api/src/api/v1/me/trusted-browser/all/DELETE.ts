@@ -17,7 +17,7 @@ route.delete('/', async (c) => {
   try {
     await db.delete(trustedBrowserTable).where(eq(trustedBrowserTable.userId, userId))
 
-    return c.json<DELETEV1MeTrustedBrowserAllResponse>({ message: '모든 브라우저가 제거됐어요' })
+    return c.json({ message: '모든 브라우저가 제거됐어요' } satisfies DELETEV1MeTrustedBrowserAllResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '브라우저 제거에 실패했어요' })

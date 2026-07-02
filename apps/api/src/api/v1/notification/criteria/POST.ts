@@ -134,9 +134,9 @@ route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema),
       createdAt: result.createdAt.getTime(),
       isActive: result.isActive,
       name: result.name,
-    }
+    } satisfies POSTV1NotificationCriteriaResponse
 
-    return c.json<POSTV1NotificationCriteriaResponse>(response, 201)
+    return c.json(response, 201)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '키워드 알림 설정에 실패했어요' })

@@ -68,8 +68,12 @@ libraryHistoryRoutes.get(
         : privateCacheControl
 
       if (rows.length === 0) {
-        const result = { items: [], nextCursor: null }
-        return c.json<GETV1ReadingHistoryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+        const result = {
+          items: [],
+          nextCursor: null,
+        } satisfies GETV1ReadingHistoryResponse
+
+        return c.json(result, { headers: { 'Cache-Control': cacheControl } })
       }
 
       const hasNextPage = rows.length > limit
@@ -86,9 +90,9 @@ libraryHistoryRoutes.get(
           manga: catalogMangaMap.get(row.mangaId),
         })),
         nextCursor: hasNextPage ? encodeReadingHistoryCursor(lastItem.updatedAt.getTime(), lastItem.mangaId) : null,
-      }
+      } satisfies GETV1ReadingHistoryResponse
 
-      return c.json<GETV1ReadingHistoryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+      return c.json(result, { headers: { 'Cache-Control': cacheControl } })
     } catch (error) {
       console.error(error)
       return problemResponse(c, { status: 500, detail: '감상 기록을 불러오지 못했어요' })

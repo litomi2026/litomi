@@ -52,10 +52,11 @@ route.get('/recipient', zProblemValidator('query', getV1PointsDonationRecipientQ
         ),
       )
 
-    return c.json<GETV1PointsDonationRecipientResponse>(
-      { totalReceived: Number(row?.total ?? 0) },
-      { headers: { 'Cache-Control': publicDailyCacheControl } },
-    )
+    const response = {
+      totalReceived: Number(row?.total ?? 0),
+    } satisfies GETV1PointsDonationRecipientResponse
+
+    return c.json(response, { headers: { 'Cache-Control': publicDailyCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '후원 정보를 불러오지 못했어요' })
@@ -149,13 +150,12 @@ route.get('/me', requireAuth, zProblemValidator('query', getV1PointsDonationsMeQ
       recipients: recipientMap.get(d.pointTransactionId) ?? [],
     }))
 
-    return c.json<GETV1PointsDonationsMeResponse>(
-      {
-        items,
-        nextCursor: hasMore ? (donations[donations.length - 1]?.id ?? null) : null,
-      },
-      { headers: { 'Cache-Control': privateCacheControl } },
-    )
+    const response = {
+      items,
+      nextCursor: hasMore ? (donations[donations.length - 1]?.id ?? null) : null,
+    } satisfies GETV1PointsDonationsMeResponse
+
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '후원 내역을 불러오지 못했어요' })

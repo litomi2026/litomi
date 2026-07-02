@@ -59,7 +59,6 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
         .set({
           balance: newBalance,
           totalSpent: sql`${userPointsTable.totalSpent} + ${totalAmount}`,
-          updatedAt: new Date(),
         })
         .where(eq(userPointsTable.userId, userId))
 
@@ -101,12 +100,12 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
       return problemResponse(c, { status: 400, detail: '리보가 부족해요' })
     }
 
-    return c.json<POSTV1PointsDonationCreateResponse>({
+    return c.json({
       balance: result.balance,
       donationId: result.donationId,
       totalAmount,
       recipients: distribution,
-    })
+    } satisfies POSTV1PointsDonationCreateResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '후원에 실패했어요' })

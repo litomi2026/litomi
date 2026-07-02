@@ -62,7 +62,7 @@ route.post('/', zProblemValidator('json', postV1LibraryItemCopyBodySchema), asyn
       return inserted
     })
 
-    return c.json<POSTV1LibraryItemCopyResponse>({ copiedCount: result.length })
+    return c.json({ copiedCount: result.length } satisfies POSTV1LibraryItemCopyResponse)
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === LibraryItemError.NOT_FOUND) {

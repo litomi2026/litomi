@@ -69,11 +69,11 @@ route.post('/', async (c) => {
 
     const qrCodeDataURL = await generateQRCode(keyURI)
 
-    return c.json<POSTV1MeTwoFactorSetupResponse>({
+    return c.json({
       qrCode: qrCodeDataURL,
       secret: rawSecret,
       expiresAt: expiresAtString,
-    })
+    } satisfies POSTV1MeTwoFactorSetupResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '2단계 인증 설정 중 오류가 발생했어요' })

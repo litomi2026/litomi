@@ -174,11 +174,11 @@ route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), asyn
 
     await Promise.allSettled([twoFactorIpLimiter.reward(remoteIP), twoFactorUserLimiter.reward(String(userId))])
 
-    return c.json<POSTV1AuthLogin2FAResponse>({
+    return c.json({
       ...result.user,
       isBackupCode: result.isBackupCode,
       backupCodeCount: result.backupCodeCount,
-    })
+    } satisfies POSTV1AuthLogin2FAResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '2단계 인증 중 오류가 발생했어요' })

@@ -17,7 +17,6 @@ export const dmcaNoticeTable = pgTable(
   'dmca_notice',
   {
     id: uuid('id').primaryKey(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     locale: varchar('locale', { length: 8 }).notNull(),
 
     reporterName: varchar('reporter_name', { length: 128 }).notNull(),
@@ -33,6 +32,8 @@ export const dmcaNoticeTable = pgTable(
     goodFaithConfirmed: boolean('good_faith_confirmed').notNull(),
     perjuryConfirmed: boolean('perjury_confirmed').notNull(),
     signature: varchar('signature', { length: 128 }).notNull(),
+
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_dmca_notice_created_at').on(table.createdAt.desc())],
 ).enableRLS()
@@ -56,7 +57,7 @@ export const dmcaCounterNoticeTable = pgTable(
   'dmca_counter_notice',
   {
     id: uuid('id').primaryKey(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    relatedNoticeId: uuid('related_notice_id').references(() => dmcaNoticeTable.id, { onDelete: 'set null' }),
     locale: varchar('locale', { length: 8 }).notNull(),
 
     claimantName: varchar('claimant_name', { length: 128 }).notNull(),
@@ -64,13 +65,14 @@ export const dmcaCounterNoticeTable = pgTable(
     claimantAddress: text('claimant_address').notNull(),
     claimantPhone: varchar('claimant_phone', { length: 32 }).notNull(),
 
-    relatedNoticeId: uuid('related_notice_id').references(() => dmcaNoticeTable.id, { onDelete: 'set null' }),
     claimDetails: text('claim_details').notNull(),
     evidenceLinks: text('evidence_links'),
     infringingReferencesRaw: text('infringing_references_raw').notNull(),
     signature: varchar('signature', { length: 128 }).notNull(),
     goodFaithConfirmed: boolean('good_faith_confirmed').notNull(),
     perjuryConfirmed: boolean('perjury_confirmed').notNull(),
+
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_dmca_counter_notice_created_at').on(table.createdAt.desc())],
 ).enableRLS()

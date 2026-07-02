@@ -1,14 +1,9 @@
-import { BACKUP_CODE_PATTERN, PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { isSearchLanguage } from '@litomi/domain/search/language'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 import { z } from 'zod'
 
-const passwordSchema = z
-  .string()
-  .min(8, { error: '비밀번호는 최소 8자 이상이어야 해요' })
-  .max(64, { error: '비밀번호는 최대 64자까지 입력할 수 있어요' })
-  .regex(new RegExp(PASSWORD_PATTERN), { error: '비밀번호는 알파벳과 숫자를 하나 이상 포함해야 해요' })
+import { passwordSchema, twoFactorBackupCodeSchema, twoFactorTokenSchema } from '../shared'
 
 const nameSchema = z
   .string()
@@ -46,30 +41,26 @@ export enum AdultVerificationStatus {
   UNVERIFIED = 'unverified',
 }
 
-export const userSettingsSchema = z.object({
-  historySyncEnabled: z.boolean(),
-  adultVerifiedAdVisible: z.boolean(),
-  defaultCensorshipEnabled: z.boolean(),
-  searchLanguage: searchLanguageSchema,
-  autoDeletionDay: z.number().int().min(0).max(1500),
-})
+export interface UserSettings {
+  historySyncEnabled: boolean
+  adultVerifiedAdVisible: boolean
+  defaultCensorshipEnabled: boolean
+  searchLanguage: string
+  autoDeletionDay: number
+}
 
-export type UserSettings = z.infer<typeof userSettingsSchema>
-
-export const getV1MeResponseSchema = z.object({
-  id: z.number(),
-  loginId: z.string(),
-  name: z.string(),
-  nickname: z.string(),
-  imageURL: z.string().nullable(),
-  adultVerification: z.object({
-    required: z.boolean(),
-    status: z.enum(AdultVerificationStatus),
-  }),
-  settings: userSettingsSchema,
-})
-
-export type GETV1MeResponse = z.infer<typeof getV1MeResponseSchema>
+export interface GETV1MeResponse {
+  id: number
+  loginId: string
+  name: string
+  nickname: string
+  imageURL: string | null
+  adultVerification: {
+    required: boolean
+    status: AdultVerificationStatus
+  }
+  settings: UserSettings
+}
 
 export const patchV1MeBodySchema = z
   .object({
@@ -83,28 +74,24 @@ export const patchV1MeBodySchema = z
 
 export type PATCHV1MeBody = z.infer<typeof patchV1MeBodySchema>
 
-export const patchV1MeResponseSchema = z.object({
-  message: z.string(),
-  name: z.string(),
-  nickname: z.string(),
-  imageURL: z.string().nullable(),
-})
-
-export type PATCHV1MeResponse = z.infer<typeof patchV1MeResponseSchema>
+export interface PATCHV1MeResponse {
+  message: string
+  name: string
+  nickname: string
+  imageURL: string | null
+}
 
 export const deleteV1MeBodySchema = z.object({
   password: passwordSchema,
-  token: z.string().length(6).regex(/^\d+$/).optional(),
+  token: twoFactorTokenSchema.optional(),
 })
 
 export type DELETEV1MeBody = z.infer<typeof deleteV1MeBodySchema>
 
-export const deleteV1MeResponseSchema = z.object({
-  loginId: z.string(),
-  message: z.string(),
-})
-
-export type DELETEV1MeResponse = z.infer<typeof deleteV1MeResponseSchema>
+export interface DELETEV1MeResponse {
+  loginId: string
+  message: string
+}
 
 export const patchV1MeSettingsBodySchema = z
   .object({
@@ -136,61 +123,39 @@ export type POSTV1MeExportResponse = Record<string, unknown>
 export const patchV1MePasswordBodySchema = z.object({
   currentPassword: z.string().min(1, '현재 비밀번호를 입력해 주세요'),
   newPassword: passwordSchema,
-  token: z.string().length(6).regex(/^\d+$/).optional(),
+  token: twoFactorTokenSchema.optional(),
 })
 
 export type PATCHV1MePasswordBody = z.infer<typeof patchV1MePasswordBodySchema>
 
-export const patchV1MePasswordResponseSchema = z.object({
-  clearedCurrentSession: z.literal(true),
-  message: z.string(),
-})
+export interface PATCHV1MePasswordResponse {
+  clearedCurrentSession: true
+  message: string
+}
 
-export type PATCHV1MePasswordResponse = z.infer<typeof patchV1MePasswordResponseSchema>
-
-export const deleteV1MeSessionResponseSchema = z.object({
-  clearedCurrentSession: z.boolean(),
-  message: z.string(),
-})
-
-export type DELETEV1MeSessionResponse = z.infer<typeof deleteV1MeSessionResponseSchema>
+export interface DELETEV1MeSessionResponse {
+  clearedCurrentSession: boolean
+  message: string
+}
 
 export const deleteV1MeSessionParamSchema = z.object({
   id: z.uuid(),
 })
 
-export type DELETEV1MeSessionParam = z.infer<typeof deleteV1MeSessionParamSchema>
+export interface DELETEV1MeTrustedBrowserResponse {
+  id: number
+  message: string
+}
 
-export const deleteV1MeTrustedBrowserParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
+export interface DELETEV1MeTrustedBrowserAllResponse {
+  message: string
+}
 
-export type DELETEV1MeTrustedBrowserParam = z.infer<typeof deleteV1MeTrustedBrowserParamSchema>
-
-export const deleteV1MeTrustedBrowserResponseSchema = z.object({
-  id: z.number(),
-  message: z.string(),
-})
-
-export type DELETEV1MeTrustedBrowserResponse = z.infer<typeof deleteV1MeTrustedBrowserResponseSchema>
-
-export const deleteV1MeTrustedBrowserAllResponseSchema = z.object({
-  message: z.string(),
-})
-
-export type DELETEV1MeTrustedBrowserAllResponse = z.infer<typeof deleteV1MeTrustedBrowserAllResponseSchema>
-
-export const postV1MeTwoFactorSetupResponseSchema = z.object({
-  expiresAt: z.string().datetime(),
-  qrCode: z.string(),
-  secret: z.string(),
-})
-
-export type POSTV1MeTwoFactorSetupResponse = z.infer<typeof postV1MeTwoFactorSetupResponseSchema>
-
-const twoFactorTokenSchema = z.string().length(6).regex(/^\d+$/)
-
-const twoFactorBackupCodeSchema = z.string().length(9).regex(new RegExp(BACKUP_CODE_PATTERN))
+export interface POSTV1MeTwoFactorSetupResponse {
+  expiresAt: string
+  qrCode: string
+  secret: string
+}
 
 const twoFactorTokenBodySchema = z.object({
   token: twoFactorTokenSchema,
@@ -200,11 +165,9 @@ export const postV1MeTwoFactorVerifyBodySchema = twoFactorTokenBodySchema
 
 export type POSTV1MeTwoFactorVerifyBody = z.infer<typeof postV1MeTwoFactorVerifyBodySchema>
 
-export const postV1MeTwoFactorVerifyResponseSchema = z.object({
-  backupCodes: z.array(z.string()),
-})
-
-export type POSTV1MeTwoFactorVerifyResponse = z.infer<typeof postV1MeTwoFactorVerifyResponseSchema>
+export interface POSTV1MeTwoFactorVerifyResponse {
+  backupCodes: string[]
+}
 
 export const deleteV1MeTwoFactorBodySchema = z.object({
   token: z.union([twoFactorTokenSchema, twoFactorBackupCodeSchema]),
@@ -212,31 +175,17 @@ export const deleteV1MeTwoFactorBodySchema = z.object({
 
 export type DELETEV1MeTwoFactorBody = z.infer<typeof deleteV1MeTwoFactorBodySchema>
 
-export const deleteV1MeTwoFactorResponseSchema = z.object({
-  message: z.string(),
-})
-
-export type DELETEV1MeTwoFactorResponse = z.infer<typeof deleteV1MeTwoFactorResponseSchema>
+export interface DELETEV1MeTwoFactorResponse {
+  message: string
+}
 
 export const postV1MeTwoFactorBackupCodesBodySchema = twoFactorTokenBodySchema
 
 export type POSTV1MeTwoFactorBackupCodesBody = z.infer<typeof postV1MeTwoFactorBackupCodesBodySchema>
 
-export const postV1MeTwoFactorBackupCodesResponseSchema = z.object({
-  backupCodes: z.array(z.string()),
-})
-
-export type POSTV1MeTwoFactorBackupCodesResponse = z.infer<typeof postV1MeTwoFactorBackupCodesResponseSchema>
-
-export const deleteV1MePasskeyParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-export type DELETEV1MePasskeyParam = z.infer<typeof deleteV1MePasskeyParamSchema>
-
-export const patchV1MePasskeyParamSchema = deleteV1MePasskeyParamSchema
-
-export type PATCHV1MePasskeyParam = z.infer<typeof patchV1MePasskeyParamSchema>
+export interface POSTV1MeTwoFactorBackupCodesResponse {
+  backupCodes: string[]
+}
 
 export const patchV1MePasskeyBodySchema = z.object({
   name: z.string().trim().min(1, '패스키 이름을 입력해 주세요').max(32, '패스키 이름은 32자 이하여야 해요'),
@@ -244,45 +193,27 @@ export const patchV1MePasskeyBodySchema = z.object({
 
 export type PATCHV1MePasskeyBody = z.infer<typeof patchV1MePasskeyBodySchema>
 
-export const patchV1MePasskeyResponseSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  message: z.string(),
-})
+export interface PATCHV1MePasskeyResponse {
+  id: number
+  name: string
+  message: string
+}
 
-export type PATCHV1MePasskeyResponse = z.infer<typeof patchV1MePasskeyResponseSchema>
+export interface DELETEV1MePasskeyResponse {
+  id: number
+  message: string
+}
 
-export const deleteV1MePasskeyResponseSchema = z.object({
-  id: z.number(),
-  message: z.string(),
-})
+interface PublicKeyCredentialCreationOptionsJSON {
+  rp: { id?: string; name: string }
+  user: { id: string; name: string; displayName: string }
+  challenge: string
+  pubKeyCredParams: { alg: number; type: 'public-key' }[]
+}
 
-export type DELETEV1MePasskeyResponse = z.infer<typeof deleteV1MePasskeyResponseSchema>
-
-const passkeyRegistrationOptionsShapeSchema = z.object({
-  rp: z.object({
-    id: z.string().optional(),
-    name: z.string(),
-  }),
-  user: z.object({
-    id: z.string(),
-    name: z.string(),
-    displayName: z.string(),
-  }),
-  challenge: z.string(),
-  pubKeyCredParams: z.array(
-    z.object({
-      alg: z.number(),
-      type: z.literal('public-key'),
-    }),
-  ),
-})
-
-export const postV1MePasskeyOptionsResponseSchema = z.object({
-  options: passkeyRegistrationOptionsShapeSchema,
-})
-
-export type POSTV1MePasskeyOptionsResponse = z.infer<typeof postV1MePasskeyOptionsResponseSchema>
+export interface POSTV1MePasskeyOptionsResponse {
+  options: PublicKeyCredentialCreationOptionsJSON
+}
 
 const passkeyRegistrationResponseSchema = z
   .object({
@@ -308,14 +239,12 @@ export const postV1MePasskeyVerifyBodySchema = z.object({
 
 export type POSTV1MePasskeyVerifyBody = z.infer<typeof postV1MePasskeyVerifyBodySchema>
 
-export const postV1MePasskeyVerifyResponseSchema = z.object({
-  id: z.number(),
-  credentialId: z.string(),
-  name: z.string(),
-  message: z.string(),
-})
-
-export type POSTV1MePasskeyVerifyResponse = z.infer<typeof postV1MePasskeyVerifyResponseSchema>
+export interface POSTV1MePasskeyVerifyResponse {
+  id: number
+  credentialId: string
+  name: string
+  message: string
+}
 
 const pushSubscriptionSchema = z.object({
   endpoint: z.url(),
@@ -332,12 +261,10 @@ export const postV1MePushSubscriptionBodySchema = z.object({
 
 export type POSTV1MePushSubscriptionBody = z.infer<typeof postV1MePushSubscriptionBodySchema>
 
-export const postV1MePushSubscriptionResponseSchema = z.object({
-  id: z.number(),
-  message: z.string(),
-})
-
-export type POSTV1MePushSubscriptionResponse = z.infer<typeof postV1MePushSubscriptionResponseSchema>
+export interface POSTV1MePushSubscriptionResponse {
+  id: number
+  message: string
+}
 
 export const deleteV1MePushSubscriptionBodySchema = z.object({
   endpoint: z.url(),
@@ -345,24 +272,14 @@ export const deleteV1MePushSubscriptionBodySchema = z.object({
 
 export type DELETEV1MePushSubscriptionBody = z.infer<typeof deleteV1MePushSubscriptionBodySchema>
 
-export const deleteV1MePushSubscriptionResponseSchema = z.object({
-  message: z.string(),
-})
+export interface DELETEV1MePushSubscriptionResponse {
+  message: string
+}
 
-export type DELETEV1MePushSubscriptionResponse = z.infer<typeof deleteV1MePushSubscriptionResponseSchema>
-
-export const deleteV1MePushSubscriptionIdParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-export type DELETEV1MePushSubscriptionIdParam = z.infer<typeof deleteV1MePushSubscriptionIdParamSchema>
-
-export const deleteV1MePushSubscriptionIdResponseSchema = z.object({
-  id: z.number(),
-  message: z.string(),
-})
-
-export type DELETEV1MePushSubscriptionIdResponse = z.infer<typeof deleteV1MePushSubscriptionIdResponseSchema>
+export interface DELETEV1MePushSubscriptionIdResponse {
+  id: number
+  message: string
+}
 
 export const postV1MePushTestBodySchema = z.object({
   endpoint: z.url(),
@@ -371,11 +288,9 @@ export const postV1MePushTestBodySchema = z.object({
 
 export type POSTV1MePushTestBody = z.infer<typeof postV1MePushTestBodySchema>
 
-export const postV1MePushTestResponseSchema = z.object({
-  message: z.string(),
-})
-
-export type POSTV1MePushTestResponse = z.infer<typeof postV1MePushTestResponseSchema>
+export interface POSTV1MePushTestResponse {
+  message: string
+}
 
 export const patchV1MePushSettingsBodySchema = z.object({
   quietEnabled: z.boolean(),
@@ -387,14 +302,10 @@ export const patchV1MePushSettingsBodySchema = z.object({
 
 export type PATCHV1MePushSettingsBody = z.infer<typeof patchV1MePushSettingsBodySchema>
 
-export const patchV1MePushSettingsResponseSchema = z.object({
-  message: z.string(),
-})
+export interface PATCHV1MePushSettingsResponse {
+  message: string
+}
 
-export type PATCHV1MePushSettingsResponse = z.infer<typeof patchV1MePushSettingsResponseSchema>
-
-export const getV1MeFollowingResponseSchema = z.object({
-  userIds: z.array(z.number()),
-})
-
-export type GETV1MeFollowingResponse = z.infer<typeof getV1MeFollowingResponseSchema>
+export interface GETV1MeFollowingResponse {
+  userIds: number[]
+}

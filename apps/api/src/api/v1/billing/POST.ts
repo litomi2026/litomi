@@ -33,14 +33,14 @@ route.post('/test-payments', requireAuth, async (c) => {
     return problemResponse(c, { status: 500 })
   }
 
-  return c.json<POSTV1BillingTestPaymentResponse>({
+  return c.json({
     paymentId,
     storeId: PORTONE_STORE_ID,
     channelKey: PORTONE_CHANNEL_KEY,
     orderName: ORDER_NAME,
     amount: BILLING_TEST_AMOUNT,
     currency: BILLING_CURRENCY,
-  })
+  } satisfies POSTV1BillingTestPaymentResponse)
 })
 
 export default route

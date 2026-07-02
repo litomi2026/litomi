@@ -41,9 +41,9 @@ route.get('/', requireAuth, async (c) => {
 
   const remainingMs = verified.expiresAt.getTime() - Date.now()
   const expiresInSeconds = Math.max(0, Math.ceil(remainingMs / 1000))
-  const response: GETV1PointTurnstileResponse = { verified: true, expiresInSeconds }
+  const response = { verified: true, expiresInSeconds } satisfies GETV1PointTurnstileResponse
 
-  return c.json<GETV1PointTurnstileResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+  return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
 })
 
 export default route

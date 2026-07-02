@@ -1,4 +1,4 @@
-import type { GETUnreadCountResponse } from '@litomi/contracts'
+import type { GETV1NotificationUnreadCountResponse } from '@litomi/contracts'
 
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
@@ -26,7 +26,9 @@ unreadCountRoutes.get('/', async (c) => {
       maxAge: 10,
     })
 
-    return c.json<GETUnreadCountResponse>(unreadCount, { headers: { 'Cache-Control': cacheControl } })
+    const response = unreadCount satisfies GETV1NotificationUnreadCountResponse
+
+    return c.json(response, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '알림을 불러오지 못했어요' })

@@ -1,4 +1,4 @@
-import { postIdParamSchema } from '@litomi/contracts'
+import { idParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { postLikeTable } from '@litomi/db/app/post'
 import { and, eq } from 'drizzle-orm'
@@ -12,7 +12,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.delete('/', requireAuth, zProblemValidator('param', postIdParamSchema), async (c) => {
+route.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: postId } = c.req.valid('param')
 

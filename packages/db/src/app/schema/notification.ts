@@ -18,12 +18,12 @@ export const webPushTable = pgTable('web_push', {
   userId: bigint('user_id', { mode: 'number' })
     .references(() => userTable.id, { onDelete: 'cascade' })
     .notNull(),
-  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-  lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   endpoint: text().notNull().unique(),
   p256dh: text().notNull(),
   auth: text().notNull(),
   userAgent: text('user_agent'),
+  lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
 }).enableRLS()
 
 export const pushSettingsTable = pgTable('push_settings', {
@@ -31,13 +31,16 @@ export const pushSettingsTable = pgTable('push_settings', {
     .references(() => userTable.id, { onDelete: 'cascade' })
     .notNull()
     .primaryKey(),
-  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).notNull().defaultNow(),
   quietEnabled: boolean('quiet_enabled').notNull().default(true),
   quietStart: smallint('quiet_start').notNull().default(22), // 0-23
   quietEnd: smallint('quiet_end').notNull().default(7), // 0-23
   batchEnabled: boolean('batch_enabled').notNull().default(true),
   maxDaily: smallint('max_daily').notNull().default(10),
+  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 }).enableRLS()
 
 export const notificationTable = pgTable(
@@ -47,13 +50,13 @@ export const notificationTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     type: smallint().notNull(), // 'new_manga', 'bookmark_update', etc.
-    read: boolean().notNull().default(false),
     title: text().notNull(),
     body: text().notNull(),
     data: text(),
+    read: boolean().notNull().default(false),
     sentAt: timestamp('sent_at', { precision: 3, withTimezone: true }),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     // NOTE: PARTITION BY user_id ORDER BY created_at DESC, id DESC
@@ -70,12 +73,15 @@ export const notificationCriteriaTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
     name: varchar({ length: 32 }).notNull(),
+    matchCount: integer('match_count').notNull().default(0),
     isActive: boolean('is_active').notNull().default(true),
     lastMatchedAt: timestamp('last_matched_at', { withTimezone: true }),
-    matchCount: integer('match_count').notNull().default(0),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [index('idx_notification_criteria_user_active').on(table.userId, table.isActive)],
 ).enableRLS()

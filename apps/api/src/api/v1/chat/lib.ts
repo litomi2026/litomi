@@ -4,9 +4,11 @@ import type {
   ChatMessageDTO,
   ChatMessagePreview,
   ChatReplyDTO,
+  ChatSubscriptionDTO,
   POSTV1ChatMessageBody,
 } from '@litomi/contracts'
 import { type ChatArtistBriefRow, getChatArtistByHandle } from '@litomi/db/app/query/chat'
+import type { SubscriptionState } from '@litomi/db/app/query/subscription'
 import { type ChatMessageRow, type ChatThreadRow, parseStreamId } from '@litomi/db/chat/query'
 import type { Context } from 'hono'
 
@@ -57,6 +59,14 @@ export function toArtistBrief(row: ChatArtistBriefRow): ChatArtistBrief {
     displayName: row.displayName,
     imageURL: row.imageURL,
     emoji: row.emoji,
+  }
+}
+
+export function toSubscriptionDTO(sub: SubscriptionState): ChatSubscriptionDTO {
+  return {
+    status: sub.status,
+    expiresAt: sub.expiresAt.toISOString(),
+    autoRenew: sub.autoRenew,
   }
 }
 

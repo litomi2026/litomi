@@ -8,28 +8,24 @@ import {
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { z } from 'zod'
 
-export const notificationSchema = z.object({
-  id: z.number(),
-  userId: z.number(),
-  createdAt: z.date(),
-  type: z.number(),
-  read: z.boolean(),
-  title: z.string(),
-  body: z.string(),
-  data: z.string().nullable(),
-  sentAt: z.date().nullable(),
-})
+export interface NotificationItem {
+  id: number
+  userId: number
+  createdAt: Date
+  type: number
+  read: boolean
+  title: string
+  body: string
+  data: string | null
+  sentAt: Date | null
+}
 
-export const getNotificationResponseSchema = z.object({
-  notifications: z.array(notificationSchema),
-  hasNextPage: z.boolean(),
-})
+export interface GETV1NotificationResponse {
+  notifications: NotificationItem[]
+  hasNextPage: boolean
+}
 
-export type GETNotificationResponse = z.infer<typeof getNotificationResponseSchema>
-
-export const getUnreadCountResponseSchema = z.number()
-
-export type GETUnreadCountResponse = z.infer<typeof getUnreadCountResponseSchema>
+export type GETV1NotificationUnreadCountResponse = number
 
 export const deleteV1NotificationBodySchema = z.object({
   ids: z.array(z.coerce.number().int().positive()).min(1).max(MAX_NOTIFICATION_COUNT),
@@ -37,27 +33,21 @@ export const deleteV1NotificationBodySchema = z.object({
 
 export type DELETEV1NotificationBody = z.infer<typeof deleteV1NotificationBodySchema>
 
-export const deleteV1NotificationResponseSchema = z.object({
-  ids: z.array(z.number()),
-})
-
-export type DELETEV1NotificationResponse = z.infer<typeof deleteV1NotificationResponseSchema>
+export interface DELETEV1NotificationResponse {
+  ids: number[]
+}
 
 export const patchV1NotificationReadBodySchema = deleteV1NotificationBodySchema
 
 export type PATCHV1NotificationReadBody = z.infer<typeof patchV1NotificationReadBodySchema>
 
-export const patchV1NotificationReadResponseSchema = deleteV1NotificationResponseSchema
+export type PATCHV1NotificationReadResponse = DELETEV1NotificationResponse
 
-export type PATCHV1NotificationReadResponse = z.infer<typeof patchV1NotificationReadResponseSchema>
+export interface PATCHV1NotificationReadAllResponse {
+  updatedCount: number
+}
 
-export const patchV1NotificationReadAllResponseSchema = z.object({
-  updatedCount: z.number(),
-})
-
-export type PATCHV1NotificationReadAllResponse = z.infer<typeof patchV1NotificationReadAllResponseSchema>
-
-export const notificationCriteriaConditionSchema = z.object({
+const notificationCriteriaConditionSchema = z.object({
   type: z.enum(NotificationConditionType, { error: '올바른 조건 타입을 선택해 주세요' }),
   value: z
     .string()
@@ -67,7 +57,7 @@ export const notificationCriteriaConditionSchema = z.object({
   isExcluded: z.boolean().optional().default(false),
 })
 
-export const notificationCriteriaConditionsSchema = z
+const notificationCriteriaConditionsSchema = z
   .array(notificationCriteriaConditionSchema)
   .min(1, '최소 1개 조건이 필요해요')
   .max(MAX_NOTIFICATION_CRITERIA_CONDITIONS, `최대 ${MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 추가할 수 있어요`)
@@ -102,20 +92,12 @@ export const postV1NotificationCriteriaBodySchema = z.object({
 
 export type POSTV1NotificationCriteriaBody = z.input<typeof postV1NotificationCriteriaBodySchema>
 
-export const postV1NotificationCriteriaResponseSchema = z.object({
-  createdAt: z.number(),
-  id: z.number(),
-  isActive: z.boolean(),
-  name: z.string(),
-})
-
-export type POSTV1NotificationCriteriaResponse = z.infer<typeof postV1NotificationCriteriaResponseSchema>
-
-export const notificationCriteriaIdParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
-
-export type NotificationCriteriaIdParam = z.infer<typeof notificationCriteriaIdParamSchema>
+export interface POSTV1NotificationCriteriaResponse {
+  createdAt: number
+  id: number
+  isActive: boolean
+  name: string
+}
 
 export const patchV1NotificationCriteriaIdBodySchema = z
   .object({
@@ -129,25 +111,19 @@ export const patchV1NotificationCriteriaIdBodySchema = z
 
 export type PATCHV1NotificationCriteriaIdBody = z.input<typeof patchV1NotificationCriteriaIdBodySchema>
 
-export const patchV1NotificationCriteriaIdResponseSchema = z.object({
-  id: z.number(),
-  isActive: z.boolean(),
-  name: z.string(),
-})
+export interface PATCHV1NotificationCriteriaIdResponse {
+  id: number
+  isActive: boolean
+  name: string
+}
 
-export type PATCHV1NotificationCriteriaIdResponse = z.infer<typeof patchV1NotificationCriteriaIdResponseSchema>
+export interface DELETEV1NotificationCriteriaIdResponse {
+  id: number
+}
 
-export const deleteV1NotificationCriteriaIdResponseSchema = z.object({
-  id: z.number(),
-})
+const notificationFilterSchema = z.enum(NotificationFilter)
 
-export type DELETEV1NotificationCriteriaIdResponse = z.infer<typeof deleteV1NotificationCriteriaIdResponseSchema>
-
-export const notificationFilterSchema = z.enum(NotificationFilter)
-
-export const getNotificationQuerySchema = z.object({
+export const getV1NotificationQuerySchema = z.object({
   nextId: z.coerce.number().optional(),
   filter: z.union([notificationFilterSchema, z.array(notificationFilterSchema)]).optional(),
 })
-
-export type GETNotificationQuery = z.infer<typeof getNotificationQuerySchema>

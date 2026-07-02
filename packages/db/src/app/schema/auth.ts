@@ -9,12 +9,12 @@ export const authSessionFamilyTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    deviceLabel: varchar('device_label', { length: 128 }),
     lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     absoluteExpiresAt: timestamp('absolute_expires_at', { precision: 3, withTimezone: true }).notNull(),
     idleExpiresAt: timestamp('idle_expires_at', { precision: 3, withTimezone: true }).notNull(),
     revokedAt: timestamp('revoked_at', { precision: 3, withTimezone: true }),
-    deviceLabel: varchar('device_label', { length: 128 }),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     index('idx_auth_session_family_user_id').on(table.userId),
@@ -31,9 +31,9 @@ export const authSessionTokenTable = pgTable(
       .references(() => authSessionFamilyTable.id, { onDelete: 'cascade' })
       .notNull(),
     tokenHash: varchar('token_hash', { length: 64 }).notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    rotatedAt: timestamp('rotated_at', { precision: 3, withTimezone: true }),
     replacedByTokenId: uuid('replaced_by_token_id'),
+    rotatedAt: timestamp('rotated_at', { precision: 3, withTimezone: true }),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     index('idx_auth_session_token_family_id').on(table.familyId),

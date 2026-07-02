@@ -17,7 +17,7 @@ route.delete('/', zProblemValidator('json', deleteV1MePushSubscriptionBodySchema
   try {
     await notificationService.unsubscribeUser(userId, endpoint)
 
-    return c.json<DELETEV1MePushSubscriptionResponse>({ message: '이 브라우저의 푸시 알림을 비활성화했어요' })
+    return c.json({ message: '이 브라우저의 푸시 알림을 비활성화했어요' } satisfies DELETEV1MePushSubscriptionResponse)
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '푸시 알림 비활성화 중 오류가 발생했어요' })

@@ -31,18 +31,18 @@ route.get('/', requireAuth, async (c) => {
         balance: 0,
         totalEarned: 0,
         totalSpent: 0,
-      }
+      } satisfies GETV1PointsResponse
 
-      return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+      return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
     }
 
     const response = {
       balance: points.balance,
       totalEarned: points.totalEarned,
       totalSpent: points.totalSpent,
-    }
+    } satisfies GETV1PointsResponse
 
-    return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '포인트 조회에 실패했어요' })

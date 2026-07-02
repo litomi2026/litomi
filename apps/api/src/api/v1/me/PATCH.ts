@@ -38,12 +38,12 @@ route.patch('/', zProblemValidator('json', patchV1MeBodySchema), async (c) => {
       return authRequiredProblemResponse(c)
     }
 
-    return c.json<PATCHV1MeResponse>({
+    return c.json({
       message: '프로필을 수정했어요',
       name: updatedUser.name,
       nickname: updatedUser.nickname,
       imageURL: updatedUser.imageURL,
-    })
+    } satisfies PATCHV1MeResponse)
   } catch (error) {
     if (isPostgresError(error)) {
       if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_unique') {

@@ -46,10 +46,10 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1Bookm
       }
     })
 
-    return c.json<POSTV1BookmarkImportResponse>({
+    return c.json({
       imported,
       skipped,
-    })
+    } satisfies POSTV1BookmarkImportResponse)
   } catch (error) {
     if (error instanceof BookmarkLimitReachedError) {
       return problemResponse(c, {

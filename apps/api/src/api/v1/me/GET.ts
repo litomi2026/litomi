@@ -55,7 +55,7 @@ route.get('/', async (c) => {
       autoDeletionDay: user.autoDeletionDay ?? undefined,
     })
 
-    const result: GETV1MeResponse = {
+    const result = {
       id: user.id,
       loginId: user.loginId,
       name: user.name,
@@ -63,9 +63,9 @@ route.get('/', async (c) => {
       imageURL: user.imageURL,
       adultVerification: { required, status },
       settings,
-    }
+    } satisfies GETV1MeResponse
 
-    return c.json<GETV1MeResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
+    return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '사용자 정보를 불러오지 못했어요' })

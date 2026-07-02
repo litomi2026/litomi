@@ -1,7 +1,9 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
+import { revokeBillingKey } from '@litomi/billing'
 import { type DELETEV1MeResponse, deleteV1MeBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
+import { paymentMethodTable } from '@litomi/db/app/subscription'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
 import { compare } from 'bcryptjs'
@@ -72,22 +74,29 @@ route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => 
         }
       }
 
+      const billingTokens = await tx
+        .select({ token: paymentMethodTable.token })
+        .from(paymentMethodTable)
+        .where(and(eq(paymentMethodTable.userId, userId), eq(paymentMethodTable.status, 'active')))
+
       await tx.delete(userTable).where(eq(userTable.id, userId))
 
       return {
         kind: 'deleted',
         loginId: user.loginId,
+        billingTokens: billingTokens.map((row) => row.token),
       } as const
     })
 
     switch (result.kind) {
       case 'deleted':
+        await revokeBillingKeys(result.billingTokens)
         applyAuthCookie(c, getAuthCookieClearConfigs())
 
-        return c.json<DELETEV1MeResponse>({
+        return c.json({
           loginId: result.loginId,
           message: `${result.loginId} 계정을 삭제했어요`,
-        })
+        } satisfies DELETEV1MeResponse)
 
       case 'unauthorized':
         applyAuthCookie(c, getAuthCookieClearConfigs())
@@ -101,5 +110,15 @@ route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => 
     return problemResponse(c, { status: 500, detail: '계정을 삭제하지 못했어요' })
   }
 })
+
+async function revokeBillingKeys(tokens: string[]): Promise<void> {
+  const results = await Promise.allSettled(tokens.map((token) => revokeBillingKey(token)))
+
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      console.error('me delete: revokeBillingKey failed', result.reason)
+    }
+  }
+}
 
 export default route

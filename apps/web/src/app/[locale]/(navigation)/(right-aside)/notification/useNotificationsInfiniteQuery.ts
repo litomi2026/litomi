@@ -1,4 +1,4 @@
-import type { GETNotificationResponse } from '@litomi/contracts'
+import type { GETV1NotificationResponse } from '@litomi/contracts'
 
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
@@ -15,7 +15,7 @@ export async function fetchNotifications(cursor: string | null, filters: string[
   })
 
   const url = `/api/v1/notification?${searchParams}`
-  const { data } = await fetchAPIData<GETNotificationResponse>(url)
+  const { data } = await fetchAPIData<GETV1NotificationResponse>(url)
   return data
 }
 
@@ -23,7 +23,7 @@ export default function useNotificationInfiniteQuery() {
   const searchParams = useSearchParams()
   const { data: me } = useMeQuery()
 
-  return useInfiniteQuery<GETNotificationResponse, Error>({
+  return useInfiniteQuery<GETV1NotificationResponse, Error>({
     queryKey: QueryKeys.notifications(searchParams),
     queryFn: ({ pageParam }) => fetchNotifications(pageParam as string | null, searchParams.getAll('filter')),
     getNextPageParam: ({ hasNextPage, notifications }) =>
