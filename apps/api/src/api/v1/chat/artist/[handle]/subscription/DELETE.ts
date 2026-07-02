@@ -16,8 +16,6 @@ const route = new Hono<Env>()
 const factory = createFactory<Env>()
 const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', chatHandleParamSchema))
 
-// Cancel auto-renew. Access is retained until expiresAt (the renewal worker won't
-// charge, and the expiry sweep flips it to expired once the period ends).
 route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle } = c.req.valid('param')

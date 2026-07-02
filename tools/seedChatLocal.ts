@@ -1,50 +1,66 @@
 import { db } from '@litomi/db/app'
 import { chatArtistTable } from '@litomi/db/app/chat'
+import { invoiceTable } from '@litomi/db/app/invoice'
 import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/db/app/query/subscription'
 import { subscriptionTable } from '@litomi/db/app/subscription'
 import { userTable } from '@litomi/db/app/user'
+import { kafka, TOPIC_CHAT_MESSAGE, TOPIC_CHAT_PUSH_FANOUT } from '@litomi/events'
+import { hash } from 'bcryptjs'
 
 async function getOrCreateUser(loginId: string, name: string, nickname: string, passwordHash: string) {
-  let user = await db.query.userTable.findFirst({ where: (u, { eq }) => eq(u.loginId, loginId) })
-  if (!user) {
-    const [inserted] = await db
-      .insert(userTable)
-      .values({
-        loginId,
-        name,
-        nickname,
-        passwordHash,
-      })
-      .returning()
-    user = inserted
+  const user = await db.query.userTable.findFirst({ where: (u, { eq }) => eq(u.loginId, loginId) })
+
+  if (user) {
+    return user
   }
-  return user
+
+  const [inserted] = await db
+    .insert(userTable)
+    .values({
+      loginId,
+      name,
+      nickname,
+      passwordHash,
+    })
+    .returning()
+
+  return inserted
 }
 
 async function getOrCreateArtistProfile(userId: number, handle: string, displayName: string, emoji: string) {
-  let profile = await db.query.chatArtistTable.findFirst({ where: (c, { eq }) => eq(c.userId, userId) })
-  if (!profile) {
-    const [inserted] = await db
-      .insert(chatArtistTable)
-      .values({
-        userId,
-        handle,
-        displayName,
-        emoji,
-        isActive: true,
-        // Priced so the subscribe flow is testable (log in as an un-seeded fan).
-        priceAmount: 4900,
-        priceCurrency: 'KRW',
-      })
-      .returning()
-    profile = inserted
+  const profile = await db.query.chatArtistTable.findFirst({ where: (c, { eq }) => eq(c.userId, userId) })
+
+  if (profile) {
+    return profile
   }
-  return profile
+
+  const [inserted] = await db
+    .insert(chatArtistTable)
+    .values({
+      userId,
+      handle,
+      displayName,
+      emoji,
+      isActive: true,
+      priceAmount: 4900,
+      priceCurrency: 'KRW',
+    })
+    .returning()
+
+  return inserted
+}
+
+async function createChatTopics() {
+  const admin = kafka.admin()
+  await admin.connect()
+  await admin.createTopics({ topics: [{ topic: TOPIC_CHAT_MESSAGE }, { topic: TOPIC_CHAT_PUSH_FANOUT }] })
+  await admin.disconnect()
+  console.log(`Created Kafka topics: ${TOPIC_CHAT_MESSAGE}, ${TOPIC_CHAT_PUSH_FANOUT}`)
 }
 
 async function main() {
   console.log('Seeding chat test data (3 Artists, 9 Fans)...')
-  const { hash } = await import('bcryptjs')
+  await createChatTopics()
   const passwordHash = await hash('qwe123123', 10)
 
   // 1. Create 3 Artists
@@ -73,7 +89,7 @@ async function main() {
     const artistFans = fans.slice(c * 3, c * 3 + 3)
 
     for (const fan of artistFans) {
-      const subscription = await db.query.subscriptionTable.findFirst({
+      let subscription = await db.query.subscriptionTable.findFirst({
         where: (s, { eq, and }) =>
           and(eq(s.userId, fan.id), eq(s.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST), eq(s.targetId, artist.id)),
       })
@@ -81,15 +97,38 @@ async function main() {
       if (!subscription) {
         const expiresAt = new Date()
         expiresAt.setFullYear(expiresAt.getFullYear() + 1)
-        await db.insert(subscriptionTable).values({
+        const [inserted] = await db
+          .insert(subscriptionTable)
+          .values({
+            userId: fan.id,
+            targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+            targetId: artist.id,
+            priceAmount: 1000,
+            priceCurrency: 'KRW',
+            status: 'active',
+            expiresAt,
+            autoRenew: true,
+          })
+          .returning()
+        subscription = inserted
+      }
+
+      // 프로덕션 불변식(active 구독 ⟹ paid invoice)을 시드 데이터에도 유지해
+      // paid-window 접근(listPaidIntervals)이 로컬에서 동작하게 한다.
+      const paidInvoice = await db.query.invoiceTable.findFirst({
+        where: (i, { eq, and }) => and(eq(i.subscriptionId, subscription.id), eq(i.status, 'paid')),
+      })
+
+      if (!paidInvoice) {
+        await db.insert(invoiceTable).values({
+          subscriptionId: subscription.id,
           userId: fan.id,
-          targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
-          targetId: artist.id,
-          priceAmount: 1000,
-          priceCurrency: 'KRW',
-          status: 'active',
-          expiresAt,
-          autoRenew: true,
+          periodStart: subscription.createdAt,
+          periodEnd: subscription.expiresAt,
+          amount: subscription.priceAmount,
+          currency: subscription.priceCurrency,
+          status: 'paid',
+          paidAt: subscription.createdAt,
         })
       }
     }

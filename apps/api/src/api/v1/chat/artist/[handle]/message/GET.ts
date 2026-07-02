@@ -5,7 +5,7 @@ import {
   type GETV1ChatMessagesResponse,
   getV1ChatMessagesQuerySchema,
 } from '@litomi/contracts'
-import { getChatArtistByHandle, hasActiveChatSubscription, listPaidIntervals } from '@litomi/db/app/query/chat'
+import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import {
   type ChatMessageRow,
   countUnreadByStreams,
@@ -27,7 +27,7 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { mapMessage, mapReply } from '../../../lib'
+import { mapMessage, mapReply, resolveTimelineAccess } from '../../../lib'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -53,24 +53,23 @@ route.get('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 404 })
   }
 
-  const isOwner = artist.userId === userId
-  let windows: TimelineWindow[] | undefined
+  const access = await resolveTimelineAccess(userId, artist)
 
-  if (!isOwner && !(await hasActiveChatSubscription(userId, artist.id))) {
-    const intervals = await listPaidIntervals(userId, artist.id)
-
-    if (intervals.length === 0) {
-      return problemResponse(c, { status: 403 })
-    }
-
-    windows = intervals.map((interval) => ({
-      fromId: messageIdAtOrAfter(interval.startedAt),
-      toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
-    }))
+  if (!access) {
+    return problemResponse(c, { status: 403 })
   }
+
+  const windows: TimelineWindow[] | undefined =
+    access.kind === 'lapsed'
+      ? access.intervals.map((interval) => ({
+          fromId: messageIdAtOrAfter(interval.startedAt),
+          toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
+        }))
+      : undefined
 
   const messages = await listBroadcastMessages(artist.id, { windows, before, after, limit })
   const messageIds = messages.map((message) => message.messageId)
+  const isOwner = access.kind === 'owner'
 
   const result = {
     messages: isOwner

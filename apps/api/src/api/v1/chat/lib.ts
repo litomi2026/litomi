@@ -7,7 +7,13 @@ import type {
   ChatSubscriptionDTO,
   POSTV1ChatMessageBody,
 } from '@litomi/contracts'
-import { type ChatArtistBriefRow, getChatArtistByHandle } from '@litomi/db/app/query/chat'
+import {
+  type ChatArtistBriefRow,
+  getChatArtistByHandle,
+  hasActiveChatSubscription,
+  listPaidIntervals,
+  type PaidInterval,
+} from '@litomi/db/app/query/chat'
 import type { SubscriptionState } from '@litomi/db/app/query/subscription'
 import { type ChatMessageRow, type ChatThreadRow, parseStreamId } from '@litomi/db/chat/query'
 import type { Context } from 'hono'
@@ -16,7 +22,6 @@ import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
 
-// A broadcast row → the message DTO shown on the timeline.
 export function mapMessage(row: ChatMessageRow): ChatMessageDTO {
   return {
     messageId: row.messageId,
@@ -27,8 +32,6 @@ export function mapMessage(row: ChatMessageRow): ChatMessageDTO {
   }
 }
 
-// A reply row (streamId = rb:{artistId}:{messageId}) → the reply DTO. messageId is
-// recovered from the streamId so callers don't have to thread it through.
 export function mapReply(row: ChatMessageRow): ChatReplyDTO {
   const parsed = parseStreamId(row.streamId)
   return {
@@ -41,7 +44,6 @@ export function mapReply(row: ChatMessageRow): ChatReplyDTO {
   }
 }
 
-// The chat list renders from the denormalized broadcast summary, never message bodies.
 export function threadPreview(summary: ChatThreadRow): ChatMessagePreview {
   return {
     messageId: summary.lastMessageId,
@@ -70,22 +72,55 @@ export function toSubscriptionDTO(sub: SubscriptionState): ChatSubscriptionDTO {
   }
 }
 
-// Maps a validated send body to the JSON content persisted for that message kind.
 export function toContent(body: POSTV1ChatMessageBody): Record<string, unknown> {
   switch (body.contentType) {
     case 'text':
       return { text: body.text }
     case 'image':
-      return { url: body.url, width: body.width, height: body.height }
+      return {
+        url: body.url,
+        width: body.width,
+        height: body.height,
+      }
     case 'voice':
-      return { url: body.url, durationMs: body.durationMs }
+      return {
+        url: body.url,
+        durationMs: body.durationMs,
+      }
     case 'video':
-      return { url: body.url, durationMs: body.durationMs, width: body.width, height: body.height }
+      return {
+        url: body.url,
+        durationMs: body.durationMs,
+        width: body.width,
+        height: body.height,
+      }
   }
 }
 
-// Resolves the handle param to a artist the caller OWNS, else a Problem response.
-// Used by the artist-only reply-room read endpoints.
+export type TimelineAccess =
+  | { kind: 'entitled' }
+  | {
+      kind: 'lapsed'
+      intervals: PaidInterval[]
+    }
+  | { kind: 'owner' }
+
+export async function resolveTimelineAccess(
+  userId: number,
+  artist: { id: number; userId: number },
+): Promise<TimelineAccess | undefined> {
+  if (artist.userId === userId) {
+    return { kind: 'owner' }
+  }
+
+  if (await hasActiveChatSubscription(userId, artist.id)) {
+    return { kind: 'entitled' }
+  }
+
+  const intervals = await listPaidIntervals(userId, artist.id)
+  return intervals.length > 0 ? { kind: 'lapsed', intervals } : undefined
+}
+
 export async function requireOwnedArtist(c: Context<Env>) {
   const userId = c.get('userId')!
   const handle = c.req.param('handle')

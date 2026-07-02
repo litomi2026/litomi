@@ -11,6 +11,7 @@
     "./app/chat": "./src/app/schema/chat.ts",
     "./app/censorship": "./src/app/schema/censorship.ts",
     "./app/dmca": "./src/app/schema/dmca.ts",
+    "./app/invoice": "./src/app/schema/invoice.ts",
     "./app/library": "./src/app/schema/library.ts",
     "./app/recommendation": "./src/app/schema/recommendation.ts",
     "./app/notification": "./src/app/schema/notification.ts",
