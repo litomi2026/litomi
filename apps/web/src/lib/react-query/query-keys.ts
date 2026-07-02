@@ -100,6 +100,7 @@ export const QueryKeys = {
 
   chatThreads: ['chat', 'threads'],
   chatArtist: (handle: string) => ['chat', 'artist', handle],
+  paymentMethods: ['billing', 'payment-methods'],
   chatMessages: (handle: string) => ['chat', 'messages', handle],
   chatReplies: (handle: string, messageId: string) => ['chat', 'replies', handle, messageId],
 }
