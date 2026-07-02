@@ -1,51 +1,39 @@
 import { Locale } from '@litomi/domain/locale'
 import { PostFilter } from '@litomi/domain/post/filter'
-import { PostType } from '@litomi/domain/post/model'
+import type { PostType } from '@litomi/domain/post/model'
 import { MAX_POST_CONTENT_LENGTH, POST_PER_PAGE } from '@litomi/domain/post/policy'
 import { z } from 'zod'
 
-import { catalogMangaSchema } from '../catalog/manga'
-import { referredPostSchema } from '../post/referred-post'
+import type { CatalogManga } from '../catalog/manga'
+import type { ReferredPost } from '../post/referred-post'
 
-export const postIdParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
-})
+export interface Post {
+  id: number
+  createdAt: Date
+  content: string | null
+  type: PostType
+  author: {
+    id: number
+    name: string
+    nickname: string
+    imageURL: string | null
+  } | null
+  mangaId: number | null
+  manga?: CatalogManga
+  parentPostId: number | null
+  likeCount: number
+  commentCount: number
+  repostCount: number
+  viewCount?: number
+  referredPost: ReferredPost | null
+  imageURLs?: string[] | null
+  bookmarkCount?: number
+}
 
-export type PostIdParam = z.infer<typeof postIdParamSchema>
-
-export const postSchema = z.object({
-  id: z.number(),
-  createdAt: z.date(),
-  content: z.string().nullable(),
-  type: z.enum(PostType),
-  author: z
-    .object({
-      id: z.number(),
-      name: z.string(),
-      nickname: z.string(),
-      imageURL: z.string().nullable(),
-    })
-    .nullable(),
-  mangaId: z.number().nullable(),
-  manga: catalogMangaSchema.optional(),
-  parentPostId: z.number().nullable(),
-  likeCount: z.number(),
-  commentCount: z.number(),
-  repostCount: z.number(),
-  viewCount: z.number().optional(),
-  referredPost: referredPostSchema.nullable(),
-  imageURLs: z.array(z.string()).nullable().optional(),
-  bookmarkCount: z.number().optional(),
-})
-
-export type Post = z.infer<typeof postSchema>
-
-export const getV1PostResponseSchema = z.object({
-  posts: z.array(postSchema),
-  nextCursor: z.string().nullable(),
-})
-
-export type GETV1PostResponse = z.infer<typeof getV1PostResponseSchema>
+export interface GETV1PostResponse {
+  posts: Post[]
+  nextCursor: string | null
+}
 
 export const postFilterSchema = z.enum(PostFilter)
 
@@ -68,8 +56,6 @@ const getV1TimelinePostQuerySchema = getV1PostQueryBaseSchema.extend({
 
 export const getV1PostQuerySchema = z.union([getV1UserPostQuerySchema, getV1TimelinePostQuerySchema])
 
-export type GETV1PostQuery = z.infer<typeof getV1PostQuerySchema>
-
 export const postV1PostBodySchema = z.object({
   content: z.string().min(2).max(MAX_POST_CONTENT_LENGTH),
   mangaId: z.coerce.number().int().positive().nullable().optional(),
@@ -79,24 +65,18 @@ export const postV1PostBodySchema = z.object({
 
 export type POSTV1PostBody = z.infer<typeof postV1PostBodySchema>
 
-export const postV1PostResponseSchema = z.object({
-  id: z.number(),
-})
+export interface POSTV1PostResponse {
+  id: number
+}
 
-export type DELETEV1PostIdLikeResponse = void
+export type DELETEV1PostIdLikeResponse = undefined
 
-export type DELETEV1PostIdResponse = void
+export type DELETEV1PostIdResponse = undefined
 
-export type POSTV1PostResponse = z.infer<typeof postV1PostResponseSchema>
+export interface PUTV1PostIdLikeResponse {
+  liked: true
+}
 
-export const putV1PostIdLikeResponseSchema = z.object({
-  liked: z.literal(true),
-})
-
-export type PUTV1PostIdLikeResponse = z.infer<typeof putV1PostIdLikeResponseSchema>
-
-export const getV1PostLikedResponseSchema = z.object({
-  postIds: z.array(z.number()),
-})
-
-export type GETV1PostLikedResponse = z.infer<typeof getV1PostLikedResponseSchema>
+export interface GETV1PostLikedResponse {
+  postIds: number[]
+}

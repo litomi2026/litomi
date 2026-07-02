@@ -13,24 +13,18 @@ export const getV1TagQuerySchema = z.object({
   locale: z.enum(Locale),
 })
 
-export type GETV1TagQuery = z.infer<typeof getV1TagQuerySchema>
+export interface TagItem {
+  value: string
+  label: string
+  count: number
+}
 
-export const tagItemSchema = z.object({
-  value: z.string(),
-  label: z.string(),
-  count: z.number(),
-})
-
-export type TagItem = z.infer<typeof tagItemSchema>
-
-export const getV1TagResponseSchema = z.object({
-  tags: z.array(tagItemSchema),
-  pagination: z.object({
-    page: z.number(),
-    limit: z.number(),
-    total: z.number(),
-    totalPages: z.number(),
-  }),
-})
-
-export type GETV1TagResponse = z.infer<typeof getV1TagResponseSchema>
+export interface GETV1TagResponse {
+  tags: TagItem[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}

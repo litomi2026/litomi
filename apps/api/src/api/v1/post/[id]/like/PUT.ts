@@ -1,4 +1,4 @@
-import { type PUTV1PostIdLikeResponse, postIdParamSchema } from '@litomi/contracts'
+import { idParamSchema, type PUTV1PostIdLikeResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { postLikeTable } from '@litomi/db/app/post'
 import { isPostgresError } from '@litomi/db/error'
@@ -12,7 +12,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, zProblemValidator('param', postIdParamSchema), async (c) => {
+route.put('/', requireAuth, zProblemValidator('param', idParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: postId } = c.req.valid('param')
 

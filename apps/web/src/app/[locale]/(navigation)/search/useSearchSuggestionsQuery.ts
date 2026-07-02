@@ -1,4 +1,4 @@
-import type { GETSearchSuggestionsResponse } from '@litomi/contracts'
+import type { GETV1SearchSuggestionResponse } from '@litomi/contracts'
 
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@litomi/domain/search/policy'
 import { queryBlacklist } from '@litomi/domain/search/suggestion'
@@ -22,7 +22,7 @@ type Props = {
 export async function fetchSearchSuggestions({ limit, query, locale }: Params) {
   const searchParams = buildSearchParams({ locale, query, limit })
   const url = `/api/v1/search/suggestions?${searchParams}`
-  const { data } = await fetchAPIData<GETSearchSuggestionsResponse>(url, { credentials: 'omit' })
+  const { data } = await fetchAPIData<GETV1SearchSuggestionResponse>(url, { credentials: 'omit' })
   return data
 }
 

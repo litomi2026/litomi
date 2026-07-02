@@ -19,7 +19,7 @@ librarySummaryRoutes.get('/', requireAuth, requireAdult, async (c) => {
   const userId = c.get('userId')!
 
   try {
-    const [counts] = await db.execute<GETV1LibrarySummaryResponse>(sql`
+    const [counts] = await db.execute<{ bookmarkCount: number; historyCount: number; ratingCount: number }>(sql`
       SELECT 
         (SELECT COUNT(*)::int FROM ${bookmarkTable} WHERE ${bookmarkTable.userId} = ${userId}) as "bookmarkCount",
         (SELECT COUNT(*)::int FROM ${readingHistoryTable} WHERE ${readingHistoryTable.userId} = ${userId}) as "historyCount",

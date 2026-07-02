@@ -1,6 +1,6 @@
-import type { GETNotificationResponse } from '@litomi/contracts'
+import type { GETV1NotificationResponse } from '@litomi/contracts'
 
-import { getNotificationQuerySchema } from '@litomi/contracts'
+import { getV1NotificationQuerySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
 import { NotificationFilter } from '@litomi/domain/notification/filter'
@@ -17,7 +17,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.get('/', zProblemValidator('query', getNotificationQuerySchema), async (c) => {
+route.get('/', zProblemValidator('query', getV1NotificationQuerySchema), async (c) => {
   const userId = c.get('userId')!
 
   try {
@@ -47,7 +47,7 @@ route.get('/', zProblemValidator('query', getNotificationQuerySchema), async (c)
     const result = {
       notifications: results.slice(0, NOTIFICATION_PER_PAGE),
       hasNextPage: results.length > NOTIFICATION_PER_PAGE,
-    } satisfies GETNotificationResponse
+    } satisfies GETV1NotificationResponse
 
     return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {

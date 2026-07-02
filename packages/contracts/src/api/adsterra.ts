@@ -26,8 +26,6 @@ export const getV1AdsterraStatsQuerySchema = z
     { message: `최대 ${ADSTERRA_STATS_MAX_RANGE_DAYS}일까지만 조회할 수 있어요`, path: ['start_date'] },
   )
 
-export type GETV1AdsterraStatsQuery = z.infer<typeof getV1AdsterraStatsQuerySchema>
-
 export const adsterraStatsResponseSchema = z.object({
   items: z.array(
     z.object({

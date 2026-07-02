@@ -1,33 +1,21 @@
 import { BOOKMARKS_PER_PAGE, MAX_BOOKMARK_BATCH_SIZE } from '@litomi/domain/library/policy'
 import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
 import { Locale } from '@litomi/domain/locale'
-import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { z } from 'zod'
 
-import { catalogMangaSchema } from '../catalog/manga'
+import type { CatalogManga } from '../catalog/manga'
+import { mangaIdSchema } from '../shared'
 
-const mangaIdSchema = z.coerce.number().int().positive().max(MAX_MANGA_ID)
+export interface Bookmark {
+  mangaId: number
+  createdAt: number
+  manga?: CatalogManga
+}
 
-export const bookmarkMangaIdParamSchema = z.object({
-  id: mangaIdSchema,
-})
-
-export type BookmarkMangaIdParam = z.infer<typeof bookmarkMangaIdParamSchema>
-
-export const bookmarkSchema = z.object({
-  mangaId: z.number(),
-  createdAt: z.number(),
-  manga: catalogMangaSchema.optional(),
-})
-
-export type Bookmark = z.infer<typeof bookmarkSchema>
-
-export const getV1BookmarkResponseSchema = z.object({
-  bookmarks: z.array(bookmarkSchema),
-  nextCursor: z.string().nullable(),
-})
-
-export type GETV1BookmarkResponse = z.infer<typeof getV1BookmarkResponseSchema>
+export interface GETV1BookmarkResponse {
+  bookmarks: Bookmark[]
+  nextCursor: string | null
+}
 
 export const getV1BookmarkQuerySchema = z.object({
   cursor: z.string().optional(),
@@ -36,21 +24,17 @@ export const getV1BookmarkQuerySchema = z.object({
   sort: z.enum(LibraryItemSort).default(DEFAULT_LIBRARY_ITEM_SORT),
 })
 
-export type GETV1BookmarkQuery = z.infer<typeof getV1BookmarkQuerySchema>
-
 export const postV1BookmarkBodySchema = z.object({
   mangaIds: z.array(mangaIdSchema).min(1).max(MAX_BOOKMARK_BATCH_SIZE),
 })
 
 export type POSTV1BookmarkBody = z.infer<typeof postV1BookmarkBodySchema>
 
-export const postV1BookmarkResponseSchema = z.object({
-  createdMangaIds: z.array(z.number()),
-  duplicateCount: z.number(),
-  overflowCount: z.number(),
-})
-
-export type POSTV1BookmarkResponse = z.infer<typeof postV1BookmarkResponseSchema>
+export interface POSTV1BookmarkResponse {
+  createdMangaIds: number[]
+  duplicateCount: number
+  overflowCount: number
+}
 
 export const deleteV1BookmarkBodySchema = z.object({
   mangaIds: z.array(mangaIdSchema).min(1).max(MAX_BOOKMARK_BATCH_SIZE),
@@ -58,36 +42,22 @@ export const deleteV1BookmarkBodySchema = z.object({
 
 export type DELETEV1BookmarkBody = z.infer<typeof deleteV1BookmarkBodySchema>
 
-export const deleteV1BookmarkResponseSchema = z.object({
-  deletedCount: z.number(),
-})
+export interface DELETEV1BookmarkResponse {
+  deletedCount: number
+}
 
-export type DELETEV1BookmarkResponse = z.infer<typeof deleteV1BookmarkResponseSchema>
+export interface PUTV1BookmarkIdResponse {
+  mangaId: number
+  createdAt: number
+}
 
-export const putV1BookmarkIdResponseSchema = z.object({
-  mangaId: z.number(),
-  createdAt: z.number(),
-})
+export interface GETV1BookmarkIdResponse {
+  mangaIds: number[]
+}
 
-export type DELETEV1BookmarkIdResponse = void
-
-export type PUTV1BookmarkIdResponse = z.infer<typeof putV1BookmarkIdResponseSchema>
-
-export const getV1BookmarkIdResponseSchema = z.object({
-  mangaIds: z.array(z.number()),
-})
-
-export type GETV1BookmarkIdResponse = z.infer<typeof getV1BookmarkIdResponseSchema>
-
-export const exportBookmarkSchema = bookmarkSchema
-
-export type ExportBookmark = z.infer<typeof exportBookmarkSchema>
-
-export const getV1BookmarkExportResponseSchema = z.object({
-  bookmarks: z.array(exportBookmarkSchema),
-})
-
-export type GETV1BookmarkExportResponse = z.infer<typeof getV1BookmarkExportResponseSchema>
+export interface GETV1BookmarkExportResponse {
+  bookmarks: Bookmark[]
+}
 
 export const postV1BookmarkImportBodySchema = z.object({
   mode: z.enum(['merge', 'replace']),
@@ -101,11 +71,7 @@ export const postV1BookmarkImportBodySchema = z.object({
     .min(1),
 })
 
-export type POSTV1BookmarkImportBody = z.infer<typeof postV1BookmarkImportBodySchema>
-
-export const postV1BookmarkImportResponseSchema = z.object({
-  imported: z.number(),
-  skipped: z.number(),
-})
-
-export type POSTV1BookmarkImportResponse = z.infer<typeof postV1BookmarkImportResponseSchema>
+export interface POSTV1BookmarkImportResponse {
+  imported: number
+  skipped: number
+}

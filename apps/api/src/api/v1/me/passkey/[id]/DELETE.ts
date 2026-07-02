@@ -1,4 +1,4 @@
-import { type DELETEV1MePasskeyResponse, deleteV1MePasskeyParamSchema } from '@litomi/contracts'
+import { type DELETEV1MePasskeyResponse, idParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { and, eq } from 'drizzle-orm'
@@ -11,7 +11,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.delete('/', zProblemValidator('param', deleteV1MePasskeyParamSchema), async (c) => {
+route.delete('/', zProblemValidator('param', idParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
 

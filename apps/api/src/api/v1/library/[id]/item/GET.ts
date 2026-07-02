@@ -1,4 +1,4 @@
-import { type GETLibraryItemsResponse, getLibraryItemsQuerySchema, libraryIdParamSchema } from '@litomi/contracts'
+import { type GETV1LibraryItemsResponse, getV1LibraryItemsQuerySchema, idParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable } from '@litomi/db/app/library'
 import { selectLibraryItem } from '@litomi/db/app/query/library-item'
@@ -29,8 +29,8 @@ const sharedCacheControl = createCacheControl({
 
 routes.get(
   '/',
-  zProblemValidator('param', libraryIdParamSchema),
-  zProblemValidator('query', getLibraryItemsQuerySchema),
+  zProblemValidator('param', idParamSchema),
+  zProblemValidator('query', getV1LibraryItemsQuerySchema),
   async (c) => {
     const { id: libraryId } = c.req.valid('param')
     const { cursor, limit, locale, scope, sort } = c.req.valid('query')
@@ -91,7 +91,7 @@ routes.get(
 
       const lastItem = items[items.length - 1]
       const nextCursor = hasNextPage && lastItem ? getNextLibraryItemCursor(pageItems[pageItems.length - 1]) : null
-      const result = { items, nextCursor } satisfies GETLibraryItemsResponse
+      const result = { items, nextCursor } satisfies GETV1LibraryItemsResponse
       const cacheControl = isPublicScope ? sharedCacheControl : privateCacheControl
 
       return c.json(result, { headers: { 'Cache-Control': cacheControl } })

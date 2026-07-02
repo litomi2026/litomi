@@ -2,6 +2,7 @@
 
 import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@litomi/contracts'
 
+import { MangaReportReason } from '@litomi/contracts'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Flag } from 'lucide-react'
@@ -13,13 +14,6 @@ import { twMerge } from 'tailwind-merge'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { Link } from '@/i18n/navigation'
 import { fetchAPIData } from '@/utils/api-request'
-
-const MangaReportReason = {
-  DEEPFAKE: 'DEEPFAKE',
-  REAL_PERSON_MINOR: 'REAL_PERSON_MINOR',
-} as const
-
-type MangaReportReason = (typeof MangaReportReason)[keyof typeof MangaReportReason]
 
 type Props = {
   mangaId: number

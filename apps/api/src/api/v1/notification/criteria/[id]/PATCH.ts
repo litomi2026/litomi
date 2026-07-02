@@ -1,5 +1,5 @@
 import {
-  notificationCriteriaIdParamSchema,
+  idParamSchema,
   type PATCHV1NotificationCriteriaIdResponse,
   patchV1NotificationCriteriaIdBodySchema,
 } from '@litomi/contracts'
@@ -17,7 +17,7 @@ const route = new Hono<Env>()
 
 route.patch(
   '/',
-  zProblemValidator('param', notificationCriteriaIdParamSchema),
+  zProblemValidator('param', idParamSchema),
   zProblemValidator('json', patchV1NotificationCriteriaIdBodySchema),
   async (c) => {
     const userId = c.get('userId')!

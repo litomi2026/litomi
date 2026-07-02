@@ -1,31 +1,20 @@
-import { z } from 'zod'
+export interface DeletedReferredPost {
+  isDeleted: true
+}
 
-export const deletedReferredPostSchema = z.object({
-  isDeleted: z.literal(true),
-})
+export interface LiveReferredPost {
+  isDeleted?: false
+  id: number
+  createdAt: Date
+  updatedAt?: Date
+  content?: string | null
+  imageURLs?: string[] | null
+  author?: {
+    id: number
+    nickname: string
+    name: string
+    imageURL?: string | null
+  } | null
+}
 
-export type DeletedReferredPost = z.infer<typeof deletedReferredPostSchema>
-
-export const liveReferredPostSchema = z.object({
-  isDeleted: z.literal(false).optional(),
-  id: z.number(),
-  createdAt: z.date(),
-  updatedAt: z.date().optional(),
-  content: z.string().nullable().optional(),
-  imageURLs: z.array(z.string()).nullable().optional(),
-  author: z
-    .object({
-      id: z.number(),
-      nickname: z.string(),
-      name: z.string(),
-      imageURL: z.string().nullable().optional(),
-    })
-    .nullable()
-    .optional(),
-})
-
-export type LiveReferredPost = z.infer<typeof liveReferredPostSchema>
-
-export const referredPostSchema = z.union([deletedReferredPostSchema, liveReferredPostSchema])
-
-export type ReferredPost = z.infer<typeof referredPostSchema>
+export type ReferredPost = DeletedReferredPost | LiveReferredPost

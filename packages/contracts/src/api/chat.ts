@@ -1,10 +1,9 @@
 import { z } from 'zod'
 
-export const CHAT_TEXT_MAX_LENGTH = 2000
-export const CHAT_MEDIA_URL_MAX_LENGTH = 2048
+const CHAT_TEXT_MAX_LENGTH = 2000
+const CHAT_MEDIA_URL_MAX_LENGTH = 2048
 
-export const chatContentTypeSchema = z.enum(['text', 'image', 'voice', 'video'])
-export type ChatContentType = z.infer<typeof chatContentTypeSchema>
+export type ChatContentType = 'text' | 'image' | 'voice' | 'video'
 
 const MESSAGE_ID_MAX_LENGTH = 26 // ULID
 const messageIdCursorSchema = z.string().min(1).max(MESSAGE_ID_MAX_LENGTH)
@@ -13,15 +12,11 @@ export const chatHandleParamSchema = z.object({
   handle: z.string().min(1),
 })
 
-export type ChatHandleParam = z.infer<typeof chatHandleParamSchema>
-
 // A message (broadcast message) is addressed by its messageId (a ULID).
 export const chatMessageParamSchema = z.object({
   handle: z.string().min(1),
   messageId: z.string().min(1).max(MESSAGE_ID_MAX_LENGTH),
 })
-
-export type ChatMessageParam = z.infer<typeof chatMessageParamSchema>
 
 const mediaUrlSchema = z.url().max(CHAT_MEDIA_URL_MAX_LENGTH)
 
@@ -50,11 +45,9 @@ export const postV1ChatMessageBodySchema = z.discriminatedUnion('contentType', [
 
 export type POSTV1ChatMessageBody = z.infer<typeof postV1ChatMessageBodySchema>
 
-export const postV1ChatMessageResponseSchema = z.object({
-  messageId: z.string(),
-})
-
-export type POSTV1ChatMessageResponse = z.infer<typeof postV1ChatMessageResponseSchema>
+export interface POSTV1ChatMessageResponse {
+  messageId: string
+}
 
 // A fan's reply uses the same content shapes as a message.
 export const postV1ChatReplyBodySchema = postV1ChatMessageBodySchema
@@ -109,6 +102,8 @@ export interface ChatArtistBrief {
   displayName: string
   imageURL: string | null
   emoji: string | null
+  // Only populated on the artist resource (subscribe landing); omitted in list/relay contexts.
+  description?: string | null
 }
 
 export interface ChatUserBrief {
@@ -126,8 +121,6 @@ export const getV1ChatMessagesQuerySchema = z.object({
   after: messageIdCursorSchema.optional(),
   limit: z.coerce.number().int().min(1).max(100).default(30),
 })
-
-export type GETV1ChatMessagesQuery = z.infer<typeof getV1ChatMessagesQuerySchema>
 
 // One message on the timeline. Role-specific fields:
 //   - fan:   myReplies + artistReadMyReplies (whether the artist has read them)
@@ -168,6 +161,37 @@ export interface GETV1ChatThreadsResponse {
   threads: ChatThreadListItem[]
 }
 
+// --- Subscription (shared M3 billing) -----------------------------------------
+
+export type ChatSubscriptionStatus = 'incomplete' | 'active' | 'past_due' | 'canceled' | 'expired'
+
+// The viewer's own subscription to an artist. `expiresAt` is the access boundary; when
+// `autoRenew` is false a cancel is pending and access ends at that date.
+export interface ChatSubscriptionDTO {
+  status: ChatSubscriptionStatus
+  expiresAt: string
+  autoRenew: boolean
+}
+
+// The monthly price to subscribe to an artist. null = the artist is not open for subscription.
+export interface ChatArtistPrice {
+  amount: number
+  currency: string
+}
+
+// Subscribe funds the first charge from a saved billing key (issued client-side first).
+export const postV1ChatSubscriptionBodySchema = z.object({
+  paymentMethodId: z.number().int().positive(),
+})
+
+export interface POSTV1ChatSubscriptionResponse {
+  subscription: ChatSubscriptionDTO
+}
+
+export interface DELETEV1ChatSubscriptionResponse {
+  subscription: ChatSubscriptionDTO
+}
+
 // --- Artist resource (resolve handle → id + viewer's role) -------------------
 
 export interface GETV1ChatArtistResponse {
@@ -176,6 +200,10 @@ export interface GETV1ChatArtistResponse {
   isOwner: boolean
   // The viewer may currently read the live broadcast (owner or paid-up fan).
   entitled: boolean
+  // Monthly subscription price; null = not open for subscription.
+  price: ChatArtistPrice | null
+  // The viewer's subscription state (for the manage/resubscribe panel); null = never subscribed.
+  subscription: ChatSubscriptionDTO | null
 }
 
 // --- Artist reply room (all fans' replies to one message) ---------------------
@@ -184,8 +212,6 @@ export const getV1ChatRepliesQuerySchema = z.object({
   before: messageIdCursorSchema.optional(),
   limit: z.coerce.number().int().min(1).max(100).default(30),
 })
-
-export type GETV1ChatRepliesQuery = z.infer<typeof getV1ChatRepliesQuerySchema>
 
 export interface ChatReplyWithFan extends ChatReplyDTO {
   fan?: ChatUserBrief | null

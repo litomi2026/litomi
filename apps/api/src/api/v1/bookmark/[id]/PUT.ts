@@ -1,4 +1,4 @@
-import { bookmarkMangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
+import { mangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { problemCode } from '@litomi/http/problem-details'
@@ -22,7 +22,7 @@ const ErrorCode = {
 
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, requireAdult, zProblemValidator('param', bookmarkMangaIdParamSchema), async (c) => {
+route.put('/', requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: mangaId } = c.req.valid('param')
 

@@ -1,8 +1,4 @@
-import {
-  type PATCHV1MePasskeyResponse,
-  patchV1MePasskeyBodySchema,
-  patchV1MePasskeyParamSchema,
-} from '@litomi/contracts'
+import { idParamSchema, type PATCHV1MePasskeyResponse, patchV1MePasskeyBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { and, eq } from 'drizzle-orm'
@@ -17,7 +13,7 @@ const route = new Hono<Env>()
 
 route.patch(
   '/',
-  zProblemValidator('param', patchV1MePasskeyParamSchema),
+  zProblemValidator('param', idParamSchema),
   zProblemValidator('json', patchV1MePasskeyBodySchema),
   async (c) => {
     const userId = c.get('userId')!

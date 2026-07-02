@@ -1,10 +1,7 @@
 import { MAX_READING_HISTORY_LAST_PAGE } from '@litomi/domain/library/policy'
-import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
 import { z } from 'zod'
 
-export const getV1MangaIdHistoryResponseSchema = z.number()
-
-export type GETV1MangaIdHistoryResponse = z.infer<typeof getV1MangaIdHistoryResponseSchema>
+export type GETV1MangaIdHistoryResponse = number
 
 export const postV1MangaIdHistoryBodySchema = z.object({
   lastPage: z.coerce.number().int().positive().max(MAX_READING_HISTORY_LAST_PAGE),
@@ -12,37 +9,23 @@ export const postV1MangaIdHistoryBodySchema = z.object({
 
 export type POSTV1MangaIdHistoryBody = z.infer<typeof postV1MangaIdHistoryBodySchema>
 
-export const getV1MangaIdRatingResponseSchema = z
-  .object({
-    rating: z.number(),
-    updatedAt: z.number(),
-  })
-  .nullable()
-
-export type GETV1MangaIdRatingResponse = z.infer<typeof getV1MangaIdRatingResponseSchema>
+export type GETV1MangaIdRatingResponse = { rating: number; updatedAt: number } | null
 
 export const putV1MangaIdRatingRequestSchema = z.object({
   rating: z.coerce.number().int().min(1).max(5),
 })
 
-export type PUTV1MangaIdRatingRequest = z.infer<typeof putV1MangaIdRatingRequestSchema>
+export interface PUTV1MangaIdRatingResponse {
+  rating: number
+  updatedAt: number
+}
 
-export const putV1MangaIdRatingResponseSchema = z.object({
-  rating: z.number(),
-  updatedAt: z.number(),
-})
+export enum MangaReportReason {
+  DEEPFAKE = 'DEEPFAKE',
+  REAL_PERSON_MINOR = 'REAL_PERSON_MINOR',
+}
 
-export type PUTV1MangaIdRatingResponse = z.infer<typeof putV1MangaIdRatingResponseSchema>
-
-export const MangaReportReason = {
-  DEEPFAKE: 'DEEPFAKE',
-  REAL_PERSON_MINOR: 'REAL_PERSON_MINOR',
-} as const
-
-export const mangaReportReasonSchema = z.union([
-  z.literal(MangaReportReason.DEEPFAKE),
-  z.literal(MangaReportReason.REAL_PERSON_MINOR),
-])
+const mangaReportReasonSchema = z.enum(MangaReportReason)
 
 export const postV1MangaIdReportBodySchema = z.object({
   reason: mangaReportReasonSchema,
@@ -50,19 +33,11 @@ export const postV1MangaIdReportBodySchema = z.object({
 
 export type POSTV1MangaIdReportBody = z.infer<typeof postV1MangaIdReportBodySchema>
 
-export const postV1MangaIdReportResponseSchema = z.object({
-  accepted: z.boolean(),
-  duplicated: z.boolean(),
-})
+export interface POSTV1MangaIdReportResponse {
+  accepted: boolean
+  duplicated: boolean
+}
 
-export type POSTV1MangaIdReportResponse = z.infer<typeof postV1MangaIdReportResponseSchema>
-
-export const getV1MangaIdReportResponseSchema = z.object({
-  alreadyReported: z.boolean(),
-})
-
-export type GETV1MangaIdReportResponse = z.infer<typeof getV1MangaIdReportResponseSchema>
-
-export const mangaIdParamSchema = z.object({
-  id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
-})
+export interface GETV1MangaIdReportResponse {
+  alreadyReported: boolean
+}

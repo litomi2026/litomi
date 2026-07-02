@@ -1,4 +1,4 @@
-import { type PUTV1UserIdFollowResponse, userIdParamSchema } from '@litomi/contracts'
+import { idParamSchema, type PUTV1UserIdFollowResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userFollowTable } from '@litomi/db/app/user'
 import { isPostgresError } from '@litomi/db/error'
@@ -12,7 +12,7 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 
-route.put('/', requireAuth, zProblemValidator('param', userIdParamSchema), async (c) => {
+route.put('/', requireAuth, zProblemValidator('param', idParamSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: targetUserId } = c.req.valid('param')
 
