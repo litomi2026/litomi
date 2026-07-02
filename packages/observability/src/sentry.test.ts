@@ -91,6 +91,45 @@ describe('SENTRY_BROWSER_DENY_URLS — drops by foreign script origin, never our
   })
 })
 
+describe('isBrowserNoiseEvent — foreign scripts drop by throw site only', () => {
+  test('drops an error thrown inside a foreign script (our frame in the ancestry)', () => {
+    expect(
+      isBrowserNoiseEvent(
+        browserEvent('TypeError: t is not a function', {
+          frames: ['app:///_next/static/chunks/page.js', 'https://www.googletagmanager.com/gtm.js'],
+          handled: false,
+        }),
+      ),
+    ).toBe(true)
+  })
+
+  test('skips native/anonymous frames above the throw site', () => {
+    expect(
+      isBrowserNoiseEvent(
+        browserEvent('SyntaxError: Unexpected end of JSON input', {
+          frames: [
+            'app:///_next/static/chunks/page.js',
+            'app:///10/f2/5d/10f25d49efc66ff3b1091949826a6b91.js',
+            '<anonymous>',
+          ],
+          handled: false,
+        }),
+      ),
+    ).toBe(true)
+  })
+
+  test('keeps an error thrown in OUR code even with a foreign wrapper in the call ancestry', () => {
+    expect(
+      isBrowserNoiseEvent(
+        browserEvent(`TypeError: Cannot read properties of undefined (reading 'id')`, {
+          frames: ['https://www.googletagmanager.com/gtm.js', 'app:///_next/static/chunks/page.js'],
+          handled: false,
+        }),
+      ),
+    ).toBe(false)
+  })
+})
+
 describe('isBrowserNoiseEvent — CSP-blocked eval is stack-aware', () => {
   test('drops a foreign/injected eval (no first-party frame)', () => {
     expect(

@@ -174,6 +174,21 @@ function getFrameURL(frame: StackFrame): string {
   return frame.filename ?? frame.abs_path ?? frame.module ?? ''
 }
 
+// The frame that actually threw — the last one with a real script URL, mirroring the Sentry SDK's own
+// denyUrls semantics (`_getLastValidUrl`). Frames like `<anonymous>` / `[native code]` (e.g. JSON.parse) sit
+// above the culprit script and are skipped.
+function getThrowSiteURL(frames: StackFrame[]): string {
+  for (const frame of [...frames].reverse()) {
+    const url = getFrameURL(frame)
+
+    if (url && url !== '<anonymous>' && url !== '[native code]') {
+      return url
+    }
+  }
+
+  return ''
+}
+
 function getEventFrames(event: ErrorEvent): StackFrame[] {
   return event.exception?.values?.flatMap((value) => value.stacktrace?.frames ?? []) ?? []
 }
@@ -238,7 +253,9 @@ export function isBrowserNoiseEvent(event: ErrorEvent): boolean {
     return true
   }
 
-  if (frames.some((frame) => isForeignScriptURL(getFrameURL(frame)))) {
+  // Foreign scripts drop by throw site only: a third-party wrapper in the call ancestry (patched
+  // fetch/addEventListener, synthetic clicks) must not hide an error thrown in OUR code — that user impact is real.
+  if (isForeignScriptURL(getThrowSiteURL(frames))) {
     return true
   }
 
