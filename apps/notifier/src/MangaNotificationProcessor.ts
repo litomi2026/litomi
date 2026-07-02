@@ -1,7 +1,7 @@
 import { db } from '@litomi/db/app'
 import { mangaSeenTable, notificationTable } from '@litomi/db/app/notification'
 import type { Manga } from '@litomi/domain/manga/model'
-import { MAX_MANGA_TITLE_LENGTH } from '@litomi/domain/manga/policy'
+import { MANGA_TITLE_MAX_LENGTH } from '@litomi/domain/manga/policy'
 import type { NotificationData } from '@litomi/domain/notification/model'
 import { NotificationType } from '@litomi/domain/notification/model'
 import { MAX_NOTIFICATION_COUNT } from '@litomi/domain/notification/policy'
@@ -139,8 +139,8 @@ export class MangaNotificationProcessor {
               const userNotifications = userNotificationsMap.get(userId)
 
               const slicedTitle =
-                manga.title.length > MAX_MANGA_TITLE_LENGTH
-                  ? `${manga.title.slice(0, MAX_MANGA_TITLE_LENGTH - 3)}...`
+                manga.title.length > MANGA_TITLE_MAX_LENGTH
+                  ? `${manga.title.slice(0, MANGA_TITLE_MAX_LENGTH - 3)}...`
                   : manga.title
 
               const newMangaNotification: NewMangaNotification = {
