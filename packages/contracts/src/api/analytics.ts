@@ -1,6 +1,6 @@
 export interface PageRanking {
   page: string
-  activeUsers: number
+  pageViews: number
 }
 
 export interface GETV1AnalyticsRealtimeResponse {
