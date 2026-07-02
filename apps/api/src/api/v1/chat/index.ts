@@ -8,12 +8,16 @@ import messageReplyPostRoute from './artist/[handle]/message/[messageId]/reply/P
 import artistHandleMessageGetRoute from './artist/[handle]/message/GET'
 import artistHandleMessagePostRoute from './artist/[handle]/message/POST'
 import artistHandleReadPutRoute from './artist/[handle]/read/PUT'
+import subscriptionDeleteRoute from './artist/[handle]/subscription/DELETE'
+import subscriptionPostRoute from './artist/[handle]/subscription/POST'
 import threadsGetRoute from './threads/GET'
 
 const chatRoutes = new Hono<Env>()
 
 chatRoutes.route('/threads', threadsGetRoute)
 chatRoutes.route('/artist/:handle', artistHandleGetRoute)
+chatRoutes.route('/artist/:handle/subscription', subscriptionPostRoute)
+chatRoutes.route('/artist/:handle/subscription', subscriptionDeleteRoute)
 chatRoutes.route('/artist/:handle/message', artistHandleMessageGetRoute)
 chatRoutes.route('/artist/:handle/message', artistHandleMessagePostRoute)
 chatRoutes.route('/artist/:handle/read', artistHandleReadPutRoute)

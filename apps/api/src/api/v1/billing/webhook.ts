@@ -1,4 +1,5 @@
-import { getPaymentByPaymentId, markPaymentPaid } from '@litomi/db/app/query/payment'
+import { getPaymentByPaymentId } from '@litomi/db/app/query/payment'
+import { confirmPayment } from '@litomi/db/app/query/subscription'
 import { env } from '@litomi/env/server.common'
 import { PaymentClient, Webhook } from '@portone/server-sdk'
 import { Hono } from 'hono'
@@ -64,9 +65,11 @@ route.post('/portone/webhook', async (c) => {
     return c.body(null, 200)
   }
 
-  // pgTxId is the PG's transaction id for reconciliation; fall back to our unique
-  // paymentId if the PG didn't return one (keeps the idempotency key non-null).
-  await markPaymentPaid(paymentId, {
+  // The webhook is the backstop source of truth: settle the ledger and (for subscription
+  // payments) extend the entitlement. Idempotent — the sync charge path usually confirmed
+  // already, so a re-delivered webhook is a no-op. pgTxId falls back to our paymentId so the
+  // idempotency key stays non-null.
+  await confirmPayment(paymentId, {
     providerTxnId: payment.pgTxId ?? paymentId,
     paidAt: new Date(),
   })

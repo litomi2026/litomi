@@ -1,5 +1,6 @@
 import { chatHandleParamSchema, type GETV1ChatArtistResponse } from '@litomi/contracts'
-import { getChatArtistByHandle, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
+import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
+import { getSubscription, SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/db/app/query/subscription'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -10,11 +11,10 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toArtistBrief } from '../../lib'
+import { toArtistBrief, toSubscriptionDTO } from '../../lib'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
-
 const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', chatHandleParamSchema))
 
 // Resolves a handle to the artist's id and the viewer's role. The client needs the
@@ -30,12 +30,15 @@ route.get('/', ...middlewares, async (c) => {
   }
 
   const isOwner = artist.userId === userId
-  const entitled = isOwner || (await hasActiveChatSubscription(userId, artist.id))
+  const subscription = isOwner ? null : await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
+  const entitled = isOwner || (subscription !== null && subscription.expiresAt.getTime() > Date.now())
 
-  const result = {
-    artist: toArtistBrief(artist),
+  const result: GETV1ChatArtistResponse = {
+    artist: { ...toArtistBrief(artist), description: artist.description },
     isOwner,
     entitled,
+    price: artist.priceAmount > 0 ? { amount: artist.priceAmount, currency: artist.priceCurrency } : null,
+    subscription: subscription ? toSubscriptionDTO(subscription) : null,
   }
 
   return c.json<GETV1ChatArtistResponse>(result, { headers: { 'Cache-Control': noStoreCacheControl } })
