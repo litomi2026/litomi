@@ -47,7 +47,7 @@ export default function MangaPage({ id, initialManga }: Props) {
 
   if (isAdsVisible) {
     return (
-      <div className="flex h-full flex-col gap-3 items-center justify-center p-4">
+      <div className="flex h-full flex-col items-center justify-center p-4">
         <JuicyAdsBanner
           className="flex flex-col gap-3 items-center justify-center"
           layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
@@ -55,7 +55,7 @@ export default function MangaPage({ id, initialManga }: Props) {
           title={<p className="text-zinc-300 text-sm">{unlockT('title')}</p>}
         />
         <button
-          className="w-full max-w-xs text-sm text-zinc-400 underline p-2"
+          className="w-full max-w-xs text-sm text-zinc-400 underline p-4"
           onClick={() => setHasBypassedAd(true)}
           type="button"
         >
