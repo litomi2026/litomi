@@ -1,9 +1,9 @@
 import { db } from '@litomi/db/app'
 import { chatArtistTable } from '@litomi/db/app/chat'
 import { invoiceTable } from '@litomi/db/app/invoice'
-import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/db/app/query/subscription'
 import { subscriptionTable } from '@litomi/db/app/subscription'
 import { userTable } from '@litomi/db/app/user'
+import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
 import { kafka, TOPIC_CHAT_MESSAGE, TOPIC_CHAT_PUSH_FANOUT } from '@litomi/events'
 import { hash } from 'bcryptjs'
 
@@ -123,6 +123,8 @@ async function main() {
         await db.insert(invoiceTable).values({
           subscriptionId: subscription.id,
           userId: fan.id,
+          targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+          targetId: artist.id,
           periodStart: subscription.createdAt,
           periodEnd: subscription.expiresAt,
           amount: subscription.priceAmount,

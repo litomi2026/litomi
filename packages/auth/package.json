@@ -14,6 +14,7 @@
     "./pkce-server": "./src/pkce-server.ts",
     "./query/session": "./src/query/session.ts",
     "./redis-challenge": "./src/redis-challenge.ts",
+    "./secret-crypto": "./src/secret-crypto.ts",
     "./session": "./src/session.ts",
     "./session/persistent-session": "./src/session/persistent-session.ts",
     "./two-factor": "./src/two-factor.ts",
