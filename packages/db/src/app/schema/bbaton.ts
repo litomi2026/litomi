@@ -1,4 +1,5 @@
 import { bigint, boolean, index, pgEnum, pgTable, smallint, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
@@ -17,7 +18,7 @@ export const bbatonVerificationTable = pgTable(
     income: varchar('income', { length: 32 }).notNull(),
     student: boolean('student').notNull(),
     verifiedAt: timestamp('verified_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     unique('bbaton_verification_bbaton_user_id_unique').on(table.bbatonUserId),

@@ -1,4 +1,5 @@
 import { bigint, index, integer, pgTable, smallint, text, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
@@ -16,7 +17,7 @@ export const credentialTable = pgTable(
     deviceType: smallint('device_type').notNull(),
     transports: text().array(),
     lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     index('idx_credential_user_id').on(table.userId),

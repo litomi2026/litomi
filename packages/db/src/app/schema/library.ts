@@ -3,7 +3,8 @@ import {
   MAX_LIBRARY_ICON_LENGTH,
   MAX_LIBRARY_NAME_LENGTH,
 } from '@litomi/domain/library/policy'
-import { bigint, boolean, index, integer, pgTable, primaryKey, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { bigint, boolean, index, integer, pgTable, primaryKey, varchar } from 'drizzle-orm/pg-core'
+import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
@@ -19,7 +20,7 @@ export const libraryTable = pgTable(
     color: integer('color'),
     icon: varchar('icon', { length: MAX_LIBRARY_ICON_LENGTH }),
     isPublic: boolean('is_public').default(false).notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [index('idx_library_user_id').on(table.userId)],
 ).enableRLS()
@@ -31,7 +32,7 @@ export const libraryItemTable = pgTable(
       .references(() => libraryTable.id, { onDelete: 'cascade' })
       .notNull(),
     mangaId: integer('manga_id').notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     primaryKey({ columns: [table.libraryId, table.mangaId] }),
@@ -49,7 +50,7 @@ export const pinnedLibraryTable = pgTable(
     libraryId: bigint('library_id', { mode: 'number' })
       .references(() => libraryTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.libraryId] }),
