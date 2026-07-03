@@ -15,7 +15,7 @@ export async function fetchChatMessages({ handle, before }: Params) {
   return data
 }
 
-export default function useChatMessageQuery(handle: string, options?: { refetchInterval?: number; enabled?: boolean }) {
+export default function useChatMessageQuery(handle: string, options?: { refetchInterval?: number }) {
   return useInfiniteQuery({
     queryKey: QueryKeys.chatMessages(handle),
     queryFn: ({ pageParam }) =>
@@ -25,7 +25,7 @@ export default function useChatMessageQuery(handle: string, options?: { refetchI
       }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    enabled: Boolean(handle) && options?.enabled !== false,
+    enabled: Boolean(handle),
     refetchInterval: options?.refetchInterval,
     staleTime: 0,
   })
