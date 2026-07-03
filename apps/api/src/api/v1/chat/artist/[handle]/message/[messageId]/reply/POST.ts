@@ -60,7 +60,7 @@ route.post('/', ...middlewares, async (c) => {
   const gate = await getReplyGate(artist.id, messageId, userId)
 
   // The reply must target an existing message of this artist.
-  if (!gate.messageExists) {
+  if (!gate) {
     return problemResponse(c, { status: 404 })
   }
 

@@ -4,7 +4,7 @@ import {
   type POSTV1ChatSubscriptionResponse,
   postV1ChatSubscriptionBodySchema,
 } from '@litomi/contracts'
-import { getChatArtistByHandle, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
+import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { ensureOpenInvoice, voidOpenInvoice } from '@litomi/db/app/query/invoice'
 import { ensureInvoicePayment, markPaymentFailed } from '@litomi/db/app/query/payment'
 import { getActivePaymentMethodForUser } from '@litomi/db/app/query/payment-method'
@@ -26,7 +26,7 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toSubscriptionDTO } from '../../../lib'
+import { toSubscriptionDTO } from '../../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -55,18 +55,17 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 403 })
   }
 
-  if (await hasActiveChatSubscription(userId, artist.id)) {
-    const current = await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
+  // 만료 전 재구독 = 새 결제 없이 autoRenew 재개.
+  const current = await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
 
-    if (current) {
-      const resumed = current.autoRenew
-        ? current
-        : ((await setAutoRenew(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id, true)) ?? current)
+  if (current && current.expiresAt.getTime() > Date.now()) {
+    const resumed = current.autoRenew
+      ? current
+      : ((await setAutoRenew(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id, true)) ?? current)
 
-      return c.json({
-        subscription: toSubscriptionDTO(resumed),
-      } satisfies POSTV1ChatSubscriptionResponse)
-    }
+    return c.json({
+      subscription: toSubscriptionDTO(resumed),
+    } satisfies POSTV1ChatSubscriptionResponse)
   }
 
   const paymentMethod = await getActivePaymentMethodForUser(paymentMethodId, userId)
@@ -105,6 +104,8 @@ route.post('/', ...middlewares, async (c) => {
     const invoice = await ensureOpenInvoice({
       subscriptionId: subscription.id,
       userId,
+      targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+      targetId: artist.id,
       periodStart,
       periodEnd: addSubscriptionPeriod(periodStart),
       amount: artist.priceAmount,
