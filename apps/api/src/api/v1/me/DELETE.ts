@@ -3,9 +3,10 @@ import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { revokeBillingKey } from '@litomi/billing'
 import { type DELETEV1MeResponse, deleteV1MeBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
+import { chatArtistTable } from '@litomi/db/app/chat'
 import { paymentMethodTable } from '@litomi/db/app/subscription'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
-import { userTable } from '@litomi/db/app/user'
+import { userErasureTable, userTable } from '@litomi/db/app/user'
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -78,6 +79,16 @@ route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => 
         .select({ token: paymentMethodTable.token })
         .from(paymentMethodTable)
         .where(and(eq(paymentMethodTable.userId, userId), eq(paymentMethodTable.status, 'active')))
+
+      // 아티스트였다면 판매된 메시지를 보존하기 위해 아티스트 계정의 운영만 종료시킨다.
+      const [chatArtist] = await tx
+        .update(chatArtistTable)
+        .set({ isActive: false })
+        .where(eq(chatArtistTable.userId, userId))
+        .returning({ id: chatArtistTable.id })
+
+      // Chat DB(별도 클러스터)는 cascade가 닿지 않으므로 파기 outbox를 남긴다.
+      await tx.insert(userErasureTable).values({ userId, chatArtistId: chatArtist?.id ?? null })
 
       await tx.delete(userTable).where(eq(userTable.id, userId))
 
