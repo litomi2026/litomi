@@ -1,4 +1,4 @@
-import type { ChatContentType, ChatMessageContent, ChatMessageDTO, ChatRelayMessageDTO } from '@litomi/contracts'
+import type { ChatMessageDTO, ChatRelayMessageDTO, ChatReplyDTO, ChatTimelineMessage } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
 import dayjs from 'dayjs'
 
@@ -38,27 +38,6 @@ export function getChatWebSocketURL(): string {
   return `wss://${window.location.host}/ws`
 }
 
-export function textOf(content: ChatMessageContent): string {
-  return 'text' in content && typeof content.text === 'string' ? content.text : '미디어'
-}
-
-export function contentPreview(contentType: ChatContentType, content: ChatMessageContent): string {
-  if (contentType === 'text' && 'text' in content && typeof content.text === 'string') {
-    return content.text
-  }
-
-  switch (contentType) {
-    case 'image':
-      return '사진'
-    case 'voice':
-      return '음성 메시지'
-    case 'video':
-      return '동영상'
-    default:
-      return '미디어'
-  }
-}
-
 export function toChatMessageDTO(msg: ChatRelayMessageDTO): ChatMessageDTO {
   return {
     messageId: msg.messageId,
@@ -90,4 +69,100 @@ export function mergeById<T>(fetched: T[], realtime: T[], idOf: (item: T) => str
   }
 
   return [...byId.values()].sort((a, b) => idOf(a).localeCompare(idOf(b)))
+}
+
+export interface FanTimelineEntry {
+  message: ChatMessageDTO
+  myReplies: ChatReplyDTO[]
+  artistRead: boolean
+}
+
+export type FanTimelineItem =
+  | {
+      id: string
+      kind: 'message'
+      message: ChatMessageDTO
+    }
+  | {
+      id: string
+      kind: 'reply'
+      reply: ChatReplyDTO
+      read: boolean
+    }
+
+export function buildFanTimeline(
+  fetched: ChatTimelineMessage[],
+  realtime: ChatMessageDTO[],
+  optimisticReplies: Record<string, ChatReplyDTO[]>,
+): FanTimelineEntry[] {
+  const byId = new Map<string, FanTimelineEntry>()
+
+  for (const item of fetched) {
+    byId.set(item.message.messageId, {
+      message: item.message,
+      myReplies: [...(item.myReplies ?? [])],
+      artistRead: item.artistReadMyReplies ?? false,
+    })
+  }
+
+  for (const message of realtime) {
+    if (!byId.has(message.messageId)) {
+      byId.set(message.messageId, { message, myReplies: [], artistRead: false })
+    }
+  }
+
+  for (const [messageId, replies] of Object.entries(optimisticReplies)) {
+    const entry = byId.get(messageId)
+
+    if (!entry) {
+      continue
+    }
+
+    const seen = new Set(entry.myReplies.map((r) => r.messageId))
+
+    for (const reply of replies) {
+      if (!seen.has(reply.messageId)) {
+        entry.myReplies.push(reply)
+      }
+    }
+  }
+
+  const entries = [...byId.values()].sort((a, b) => a.message.messageId.localeCompare(b.message.messageId))
+
+  for (const entry of entries) {
+    entry.myReplies.sort((a, b) => a.messageId.localeCompare(b.messageId))
+  }
+
+  return entries
+}
+
+export function flattenFanTimeline(timeline: FanTimelineEntry[]): FanTimelineItem[] {
+  const items: FanTimelineItem[] = []
+
+  for (const entry of timeline) {
+    items.push({ id: entry.message.messageId, kind: 'message', message: entry.message })
+
+    for (const reply of entry.myReplies) {
+      items.push({ id: reply.messageId, kind: 'reply', reply, read: entry.artistRead })
+    }
+  }
+
+  return items.sort((a, b) => a.id.localeCompare(b.id))
+}
+
+// Replies that ended up detached from their target message in the flat order — these
+// render with a quoted preview so the fan can tell what they replied to.
+export function getQuotedReplyIds(items: FanTimelineItem[]): Set<string> {
+  const ids = new Set<string>()
+  let lastMessageId: string | null = null
+
+  for (const item of items) {
+    if (item.kind === 'message') {
+      lastMessageId = item.message.messageId
+    } else if (item.reply.targetMessageId !== lastMessageId) {
+      ids.add(item.reply.messageId)
+    }
+  }
+
+  return ids
 }

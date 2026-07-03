@@ -1,4 +1,5 @@
-import { bigint, index, integer, pgTable, primaryKey, smallint, timestamp } from 'drizzle-orm/pg-core'
+import { bigint, index, integer, pgTable, primaryKey, smallint } from 'drizzle-orm/pg-core'
+import { createdAt, timestamps, updatedAt } from '../../columns'
 
 import { userTable } from './user'
 
@@ -9,7 +10,7 @@ export const bookmarkTable = pgTable(
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
     mangaId: integer('manga_id').notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
@@ -25,10 +26,7 @@ export const readingHistoryTable = pgTable(
       .notNull(),
     mangaId: integer('manga_id').notNull(),
     lastPage: smallint('last_page').notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
+    updatedAt,
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),
@@ -46,11 +44,7 @@ export const userRatingTable = pgTable(
       .notNull(),
     mangaId: integer('manga_id').notNull(),
     rating: smallint('rating').notNull(), // 1-5 stars
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
+    ...timestamps,
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),

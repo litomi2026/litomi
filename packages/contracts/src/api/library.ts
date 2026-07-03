@@ -54,6 +54,7 @@ export interface LibraryListItem {
   isPublic: boolean
   createdAt: number
   itemCount: number
+  pinCount: number
 }
 
 export const getV1LibraryListQuerySchema = z.object({

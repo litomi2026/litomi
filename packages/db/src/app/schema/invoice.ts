@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm'
 import { bigint, index, pgEnum, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { timestamps } from '../../columns'
 import { subscriptionTable } from './subscription'
 import { userTable } from './user'
 
@@ -15,6 +16,8 @@ export const invoiceTable = pgTable(
       onDelete: 'set null',
     }),
     userId: bigint('user_id', { mode: 'number' }).references(() => userTable.id, { onDelete: 'set null' }),
+    targetType: varchar('target_type', { length: 32 }).notNull(),
+    targetId: bigint('target_id', { mode: 'number' }).notNull(),
     // The entitlement window this invoice grants once paid.
     periodStart: timestamp('period_start', { precision: 3, withTimezone: true }).notNull(),
     periodEnd: timestamp('period_end', { precision: 3, withTimezone: true }).notNull(),
@@ -23,11 +26,7 @@ export const invoiceTable = pgTable(
     currency: varchar({ length: 3 }).notNull().default('KRW'),
     status: invoiceStatusEnum().notNull().default('open'),
     paidAt: timestamp('paid_at', { precision: 3, withTimezone: true }),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
+    ...timestamps,
   },
   (table) => [
     uniqueIndex('uq_invoice_open').on(table.subscriptionId).where(sql`status = 'open'`),

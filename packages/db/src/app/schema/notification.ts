@@ -10,6 +10,7 @@ import {
   unique,
   varchar,
 } from 'drizzle-orm/pg-core'
+import { createdAt, timestamps } from '../../columns'
 
 import { userTable } from './user'
 
@@ -23,7 +24,7 @@ export const webPushTable = pgTable('web_push', {
   auth: text().notNull(),
   userAgent: text('user_agent'),
   lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  createdAt,
 }).enableRLS()
 
 export const pushSettingsTable = pgTable('push_settings', {
@@ -36,11 +37,7 @@ export const pushSettingsTable = pgTable('push_settings', {
   quietEnd: smallint('quiet_end').notNull().default(7), // 0-23
   batchEnabled: boolean('batch_enabled').notNull().default(true),
   maxDaily: smallint('max_daily').notNull().default(10),
-  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-    .notNull()
-    .defaultNow()
-    .$onUpdate(() => new Date()),
+  ...timestamps,
 }).enableRLS()
 
 export const notificationTable = pgTable(
@@ -56,7 +53,7 @@ export const notificationTable = pgTable(
     data: text(),
     read: boolean().notNull().default(false),
     sentAt: timestamp('sent_at', { precision: 3, withTimezone: true }),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     // NOTE: PARTITION BY user_id ORDER BY created_at DESC, id DESC

@@ -24,11 +24,9 @@ export default function useChatMessageQuery(handle: string, options?: { refetchI
         before: pageParam,
       }),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
     enabled: Boolean(handle),
     refetchInterval: options?.refetchInterval,
-    // Chat is realtime: override the app's 10-min default so remount/focus refetches fresh
-    // data instead of serving a stale cache until a hard refresh.
     staleTime: 0,
   })
 }

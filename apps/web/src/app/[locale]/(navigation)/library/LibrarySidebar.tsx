@@ -1,8 +1,10 @@
 'use client'
 
+import type { LibraryListItem } from '@litomi/contracts'
+
 import { DEFAULT_LIBRARY_ICON } from '@litomi/domain/library/defaults'
 import { formatNumber } from '@litomi/std'
-import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
+import { Bookmark, Clock, LibraryBig, Lock, Pin, Star } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { type RefObject, useRef } from 'react'
 
@@ -20,26 +22,8 @@ type PaginationProps = {
 }
 
 type Props = {
-  libraries: {
-    id: number
-    name: string
-    description: string | null
-    color: string | null
-    icon: string | null
-    userId: number
-    isPublic: boolean
-    itemCount: number
-  }[]
-  pinnedLibraries?: {
-    id: number
-    name: string
-    description: string | null
-    color: string | null
-    icon: string | null
-    userId: number
-    isPublic: boolean
-    itemCount: number
-  }[]
+  libraries: LibraryListItem[]
+  pinnedLibraries?: LibraryListItem[]
   userId?: number
   className?: string
   onClick?: () => void
@@ -70,6 +54,23 @@ export default function LibrarySidebar({
   const showLibrariesSkeleton = Boolean(pagination?.isPending) && libraries.length === 0
   const locale = useLocale()
   const t = useTranslations('Library')
+
+  function libraryBadge(library: LibraryListItem) {
+    if (!library.isPublic) {
+      return <Lock className="size-3 text-zinc-500 shrink-0" />
+    }
+
+    if (library.pinCount === 0) {
+      return null
+    }
+
+    return (
+      <span className="flex items-center gap-0.5 text-xs text-zinc-500 shrink-0">
+        <Pin aria-hidden className="size-3" />
+        {formatNumber(library.pinCount, locale)}
+      </span>
+    )
+  }
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: pagination?.hasNextPage && !pagination?.isFetchNextPageError,
@@ -142,13 +143,7 @@ export default function LibrarySidebar({
                 <LibrarySidebarSectionDivider label={t('sidebar.sections.myLibraries')} />
                 {ownerLibraries.map((library) => (
                   <LibrarySidebarLink
-                    badge={
-                      !library.isPublic ? (
-                        <Lock className="size-3 text-zinc-500 shrink-0" />
-                      ) : library.userId !== userId ? (
-                        <Globe className="size-3 text-zinc-500 shrink-0" />
-                      ) : null
-                    }
+                    badge={libraryBadge(library)}
                     description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
                     href={`/library/${library.id}`}
                     icon={
@@ -173,13 +168,7 @@ export default function LibrarySidebar({
                 <LibrarySidebarSectionDivider label={t('sidebar.sections.pinned')} />
                 {pinnedLibraries.map((library) => (
                   <LibrarySidebarLink
-                    badge={
-                      !library.isPublic ? (
-                        <Lock className="size-3 text-zinc-500 shrink-0" />
-                      ) : library.userId !== userId ? (
-                        <Globe className="size-3 text-zinc-500 shrink-0" />
-                      ) : null
-                    }
+                    badge={libraryBadge(library)}
                     className={!library.isPublic ? 'opacity-50' : ''}
                     description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
                     href={`/library/${library.id}`}
@@ -205,13 +194,7 @@ export default function LibrarySidebar({
                 <LibrarySidebarSectionDivider label={t('sidebar.publicLibraries')} />
                 {publicLibraries.map((library) => (
                   <LibrarySidebarLink
-                    badge={
-                      !library.isPublic ? (
-                        <Lock className="size-3 text-zinc-500 shrink-0" />
-                      ) : library.userId !== userId ? (
-                        <Globe className="size-3 text-zinc-500 shrink-0" />
-                      ) : null
-                    }
+                    badge={libraryBadge(library)}
                     description={t('common.itemCount', { count: formatNumber(library.itemCount, locale) })}
                     href={`/library/${library.id}`}
                     icon={

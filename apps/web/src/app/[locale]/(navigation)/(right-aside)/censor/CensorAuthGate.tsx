@@ -3,12 +3,12 @@
 import { useTranslations } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
+import LoginGate from '@/components/LoginGate'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 
 import Censorships from './Censorships'
 import Loading from './loading'
-import Unauthorized from './Unauthorized'
 
 export default function CensorAuthGate() {
   const { data: me } = useMeQuery()
@@ -19,7 +19,7 @@ export default function CensorAuthGate() {
   }
 
   if (me === null) {
-    return <Unauthorized />
+    return <LoginGate description={t('unauthorized.description')} />
   }
 
   if (!hasAdultAccess(me)) {

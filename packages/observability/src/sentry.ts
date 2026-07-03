@@ -63,7 +63,18 @@ export function scrubSentryEvent(event: ErrorEvent): ErrorEvent | null {
     event.request = request
   }
 
+  scrubFailedQueryParams(event)
+
   return event
+}
+
+// drizzle-orm wraps driver failures in DrizzleQueryError whose message embeds the bound parameters
+function scrubFailedQueryParams(event: ErrorEvent): void {
+  for (const exception of event.exception?.values ?? []) {
+    if (exception.value?.startsWith('Failed query: ')) {
+      exception.value = exception.value.replace(/(\nparams: )[\s\S]+$/, `$1${REDACTED_TEXT}`)
+    }
+  }
 }
 
 function sanitizeRequestCookies(cookies: RequestEventData['cookies']): RequestEventData['cookies'] {
@@ -147,6 +158,8 @@ export const SENTRY_BROWSER_DENY_URLS: RegExp[] = [
   // "app:///10/f2/5d/10f25d49efc66ff3b1091949826a6b91.js" — three 2-hex directory segments mirroring the leading
   // bytes of a 32-hex filename). Our bundles only ever live under `/_next/`, so this shape cannot be ours.
   /\/[0-9a-f]{2}\/[0-9a-f]{2}\/[0-9a-f]{2}\/[0-9a-f]{32}\.js$/i,
+  // Safari masks the script URL of extension/injected code in stack traces.
+  /^webkit-masked-url:/i,
 ]
 
 /** External request hosts whose fetch/network failures are third-party noise */
@@ -160,8 +173,10 @@ const NETWORK_ERROR_MESSAGE = /Failed to fetch|Load failed|NetworkError when att
 // CSP blocking eval()/new Function(). Foreign (injected) eval is noise; a first-party dep tripping our CSP is real.
 const CSP_EVAL_BLOCKED_MESSAGE = /Evaluating a string as JavaScript|Refused to evaluate a string as JavaScript/i
 
-// Our application bundle is served under the app:/// scheme at send time
-const FIRST_PARTY_FRAME = /^app:\/\/\//i
+// Our own bundle frames at send time. Only the /_next/ asset path is considered first-party.
+// Document-URL frames (app:///<route>) are inline scripts: Safari attributes injected/extension code
+// to the document URL, so they don't count as first-party either.
+const FIRST_PARTY_FRAME = /^app:\/\/\/_next\//i
 
 // Any frame that resolves to a real downloaded script
 const REMOTE_SCRIPT_URL = /^https?:\/\//i
@@ -226,7 +241,8 @@ function isInjectedScriptError(event: ErrorEvent): boolean {
     return false
   }
 
-  // Injected/inline scripts have neither our (app:///) nor a named third-party file (http/https).
+  // Injected/inline code has neither our bundle path (app:///_next/) nor a named remote file (http/https).
+  // Document-URL frames (app:///<route>) land here too
   return frames.every((frame) => {
     const url = getFrameURL(frame)
     return !FIRST_PARTY_FRAME.test(url) && !REMOTE_SCRIPT_URL.test(url)

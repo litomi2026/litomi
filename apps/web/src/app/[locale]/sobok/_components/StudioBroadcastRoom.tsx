@@ -1,18 +1,18 @@
 'use client'
 
 import type { ChatMessageDTO } from '@litomi/contracts'
-import { MessageCircle, Users } from 'lucide-react'
+import { Banknote, MessageCircle, Settings, Users } from 'lucide-react'
 import ms from 'ms'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { avatarURL, mergeById, textOf, toChatMessageDTO } from '../_lib/chat'
+import useRoomChannel from '../_hooks/useRoomChannel'
+import { avatarURL, mergeById, toChatMessageDTO } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useSendMessageMutation from '../_query/useSendMessageMutation'
 import ChatComposer from './ChatComposer'
 import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
-import { useChat } from './ChatProvider'
 import ComposerDock from './ComposerDock'
 
 // Rolling window of the most recent fan replies shown in the live ticker. This IS the
@@ -36,9 +36,7 @@ interface LiveReply {
 export default function StudioBroadcastRoom({ handle }: { handle: string }) {
   const [realtimeMessages, setRealtimeMessages] = useState<ChatMessageDTO[]>([])
   const [liveReplies, setLiveReplies] = useState<LiveReply[]>([])
-  const [input, setInput] = useState('')
   const listRef = useRef<ChatMessageListHandle>(null)
-  const { subscribeRoom, unsubscribeRoom, onMessage } = useChat()
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
   const { mutateAsync: sendMessage, isPending } = useSendMessageMutation(handle)
   const router = useRouter()
@@ -57,29 +55,19 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
   const artist = artistData?.artist
   const isOwner = artistData?.isOwner
 
-  async function handleSend() {
-    const text = input.trim()
-    if (!text || isPending) {
-      return
+  async function handleSend(text: string) {
+    const { messageId } = await sendMessage({ contentType: 'text', text })
+
+    const newMessage: ChatMessageDTO = {
+      messageId,
+      senderId: artist?.id ?? 0,
+      contentType: 'text',
+      content: { text },
+      createdAt: new Date().toISOString(),
     }
 
-    try {
-      const { messageId } = await sendMessage({ contentType: 'text', text })
-
-      const newMessage: ChatMessageDTO = {
-        messageId,
-        senderId: artist?.id ?? 0,
-        contentType: 'text',
-        content: { text },
-        createdAt: new Date().toISOString(),
-      }
-
-      setRealtimeMessages((prev) => (prev.some((b) => b.messageId === messageId) ? prev : [...prev, newMessage]))
-      setInput('')
-      listRef.current?.scrollToBottom()
-    } catch {
-      // Keep the text so the artist can retry.
-    }
+    setRealtimeMessages((prev) => (prev.some((b) => b.messageId === messageId) ? prev : [...prev, newMessage]))
+    listRef.current?.scrollToBottom()
   }
 
   // Non-owners don't belong in the studio.
@@ -90,53 +78,33 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
   }, [artistData, isOwner, handle, router])
 
   // Own broadcasts (b:) + the fan-in reply firehose (c:, owner-only).
-  useEffect(() => {
-    if (!artist || !isOwner) {
-      return
-    }
-
-    const broadcastRoom = `b:${artist.id}`
-    const inboundRoom = `c:${artist.id}`
-    subscribeRoom(broadcastRoom)
-    subscribeRoom(inboundRoom)
-
-    return () => {
-      unsubscribeRoom(broadcastRoom)
-      unsubscribeRoom(inboundRoom)
-    }
-  }, [artist, isOwner, subscribeRoom, unsubscribeRoom])
-
-  useEffect(() => {
-    if (!artist || !isOwner) {
-      return
-    }
-
-    const broadcastRoom = `b:${artist.id}`
-    const inboundRoom = `c:${artist.id}`
-
-    return onMessage((msgRoom, msg) => {
-      if (msgRoom === broadcastRoom && msg.kind === 'broadcast') {
+  useRoomChannel(artist && isOwner ? `b:${artist.id}` : null, {
+    onMessage: (msg) => {
+      if (msg.kind === 'broadcast') {
         setRealtimeMessages((prev) =>
           prev.some((b) => b.messageId === msg.messageId) ? prev : [...prev, toChatMessageDTO(msg)],
         )
+      }
+    },
+  })
+
+  useRoomChannel(artist && isOwner ? `c:${artist.id}` : null, {
+    onMessage: (msg) => {
+      if (msg.kind !== 'reply') {
         return
       }
 
-      if (msgRoom === inboundRoom && msg.kind === 'reply') {
-        const newReply: LiveReply = {
-          id: msg.messageId,
-          targetMessageId: msg.targetMessageId,
-          nickname: msg.sender?.nickname ?? '팬',
-          imageURL: msg.sender?.imageURL ?? null,
-          text: textOf(msg.content),
-        }
-
-        setLiveReplies((prev) =>
-          [newReply, ...prev.filter((reply) => reply.id !== msg.messageId)].slice(0, TICKER_SIZE),
-        )
+      const newReply: LiveReply = {
+        id: msg.messageId,
+        targetMessageId: msg.targetMessageId,
+        nickname: msg.sender?.nickname ?? '팬',
+        imageURL: msg.sender?.imageURL ?? null,
+        text: msg.content.text,
       }
-    })
-  }, [artist, isOwner, onMessage])
+
+      setLiveReplies((prev) => [newReply, ...prev.filter((reply) => reply.id !== msg.messageId)].slice(0, TICKER_SIZE))
+    },
+  })
 
   if (isArtistLoading || !artist || !isOwner) {
     return (
@@ -153,7 +121,21 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
         <div className="p-2 text-indigo-500 bg-indigo-500/10 rounded-xl">
           <Users className="w-5 h-5" />
         </div>
-        <h2 className="font-bold text-lg text-foreground ml-2">전체 메시지 (Broadcast)</h2>
+        <h2 className="font-bold text-lg text-foreground ml-2 flex-1">전체 메시지 (Broadcast)</h2>
+        <Link
+          href={`/sobok/studio/${handle}/earnings`}
+          className="p-2 text-zinc-400 hover:text-foreground transition-colors"
+          aria-label="정산·수익"
+        >
+          <Banknote className="w-5 h-5" />
+        </Link>
+        <Link
+          href={`/sobok/studio/${handle}/settings`}
+          className="p-2 text-zinc-400 hover:text-foreground transition-colors"
+          aria-label="스튜디오 설정"
+        >
+          <Settings className="w-5 h-5" />
+        </Link>
       </div>
 
       {/* Live fan-reply ticker (sampled: newest few across all messages) */}
@@ -195,12 +177,12 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
         items={messages}
         onLoadOlder={fetchNextPage}
         ref={listRef}
-        renderItem={(row) => (
+        renderItem={(row: MessageRow) => (
           <div className="flex justify-end w-full">
             <div className="flex flex-col items-end gap-1 max-w-[80%]">
               <div className="flex items-end gap-1.5 flex-row-reverse">
                 <div className="px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-indigo-500 text-white">
-                  {textOf(row.message.content)}
+                  {row.message.content.text}
                 </div>
                 <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
                   {new Date(row.message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -222,13 +204,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
 
       {/* Composer island */}
       <ComposerDock>
-        <ChatComposer
-          value={input}
-          onChange={setInput}
-          onSend={handleSend}
-          placeholder="팬들에게 보낼 메시지를 입력하세요..."
-          disabled={isPending}
-        />
+        <ChatComposer onSend={handleSend} placeholder="팬들에게 보낼 메시지를 입력하세요..." disabled={isPending} />
       </ComposerDock>
     </div>
   )

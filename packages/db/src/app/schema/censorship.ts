@@ -1,4 +1,5 @@
-import { bigint, index, pgTable, smallint, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { bigint, index, pgTable, smallint, varchar } from 'drizzle-orm/pg-core'
+import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
@@ -12,7 +13,7 @@ export const userCensorshipTable = pgTable(
     key: smallint().notNull(),
     value: varchar({ length: 256 }).notNull(),
     level: smallint().notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [index('idx_user_censorship_user_id').on(table.userId)],
 ).enableRLS()

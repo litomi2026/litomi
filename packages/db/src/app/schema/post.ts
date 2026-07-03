@@ -1,14 +1,5 @@
-import {
-  type AnyPgColumn,
-  bigint,
-  index,
-  integer,
-  pgTable,
-  primaryKey,
-  smallint,
-  timestamp,
-  varchar,
-} from 'drizzle-orm/pg-core'
+import { type AnyPgColumn, bigint, index, integer, pgTable, primaryKey, smallint, varchar } from 'drizzle-orm/pg-core'
+import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
@@ -26,7 +17,7 @@ export const postTable = pgTable(
     mangaId: integer('manga_id'),
     content: varchar({ length: 160 }),
     type: smallint().notNull(), // 'text', 'image', 'video', 'audio', 'poll', 'event', etc.
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     index('idx_post_user_id').on(table.userId),
@@ -45,7 +36,7 @@ export const postLikeTable = pgTable(
     postId: bigint('post_id', { mode: 'number' })
       .references(() => postTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [primaryKey({ columns: [table.userId, table.postId] }), index('idx_post_like_post_id').on(table.postId)],
 ).enableRLS()

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
+import LoginGate from '@/components/LoginGate'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import RetryGuidance from '@/components/RetryGuidance'
 import StatusState from '@/components/status/StatusState'
@@ -15,7 +16,6 @@ import usePostInfiniteQuery from '@/query/usePostsQuery'
 import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 
-import FollowingUnauthorized from './FollowingUnauthorized'
 import MasonryPostList, { MasonryPostSkeletonGrid } from './MasonryPostList'
 
 type PostListSource =
@@ -32,6 +32,7 @@ type Props = {
 
 export default function PostList({ source }: Props) {
   const guardT = useTranslations('Common.guard')
+  const postsT = useTranslations('Community.posts')
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } =
     usePostInfiniteQuery(getPostQuery(source))
@@ -62,7 +63,7 @@ export default function PostList({ source }: Props) {
       error instanceof ProblemDetailsError &&
       error.status === 401
     ) {
-      return <FollowingUnauthorized />
+      return <LoginGate description={postsT('followingUnauthorizedDescription')} />
     }
 
     return <ErrorState error={error} retry={refetch} />

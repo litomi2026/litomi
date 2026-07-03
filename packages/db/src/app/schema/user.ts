@@ -12,6 +12,7 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core'
+import { createdAt } from '../../columns'
 
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -22,7 +23,7 @@ export const userTable = pgTable('user', {
   imageURL: varchar('image_url', { length: 256 }),
   loginAt: timestamp('login_at', { precision: 3, withTimezone: true }),
   logoutAt: timestamp('logout_at', { precision: 3, withTimezone: true }),
-  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  createdAt,
 }).enableRLS()
 
 export const userSettingsTable = pgTable('user_settings', {
@@ -39,6 +40,18 @@ export const userSettingsTable = pgTable('user_settings', {
   autoDeletionDay: smallint('auto_deletion_day').notNull().default(90), // 0 = disabled
 }).enableRLS()
 
+// 탈퇴 파기 outbox — 탈퇴 트랜잭션 안에서 이 행을 남기고, chat-worker가 폴링해 Chat DB
+// (별도 클러스터, FK/cascade 불가)의 메시지·커서를 지운 뒤 행을 제거합니다. userTable로의
+// FK를 걸면 유저 삭제와 함께 cascade로 사라지므로 의도적으로 참조하지 않습니다.
+export const userErasureTable = pgTable('user_erasure', {
+  userId: bigint('user_id', { mode: 'number' }).primaryKey(),
+  // 탈퇴자가 아티스트였다면 본인 브로드캐스트 스트림(b:{id})은 파기에서 제외합니다 —
+  // 구독자에게 판매된 메시지는 탈퇴 후에도 열람 제공되는 정책. FK set-null로 매핑이
+  // 사라지기 전에 id를 스냅샷해 둡니다.
+  chatArtistId: bigint('chat_artist_id', { mode: 'number' }),
+  createdAt,
+}).enableRLS()
+
 export const userFollowTable = pgTable(
   'user_follow',
   {
@@ -48,7 +61,7 @@ export const userFollowTable = pgTable(
     followeeId: bigint('followee_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     primaryKey({ columns: [table.followerId, table.followeeId] }),

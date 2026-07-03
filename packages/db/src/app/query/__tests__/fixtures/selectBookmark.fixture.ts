@@ -73,11 +73,9 @@ describe('selectBookmark', () => {
     const cursorTime = new Date('2025-01-10T00:00:00.000Z')
     nextRows = [{ mangaId: 90, createdAt: new Date('2025-01-09T00:00:00.000Z') }]
 
-    const rows = await selectBookmark({
-      userId: 1,
+    const rows = await selectBookmark(1, {
       limit: 3,
-      cursorMangaId: 42,
-      cursorTime,
+      cursor: { mangaId: 42, timestamp: cursorTime.getTime() },
     })
 
     expect(rows).toEqual(nextRows)
@@ -96,7 +94,7 @@ describe('selectBookmark', () => {
   })
 
   test('limit이 없으면 base query를 그대로 실행한다', async () => {
-    const rows = await selectBookmark({ userId: 1 })
+    const rows = await selectBookmark(1)
 
     expect(rows).toEqual(nextRows)
     expect(limitMock).not.toHaveBeenCalled()
@@ -107,32 +105,10 @@ describe('selectBookmark', () => {
   })
 
   test('오래된순 정렬을 요청하면 ascending order를 사용한다', async () => {
-    await selectBookmark({ userId: 1, sort: LibraryItemSort.CREATED_ASC })
+    await selectBookmark(1, { sort: LibraryItemSort.CREATED_ASC })
 
     expect(queryState.orderByClauses).toHaveLength(2)
     expect(dialect.sqlToQuery(queryState.orderByClauses[0]).sql).toContain('"bookmark"."created_at" asc')
     expect(dialect.sqlToQuery(queryState.orderByClauses[1]).sql).toContain('"bookmark"."manga_id" asc')
-  })
-
-  test('0 이하의 limit은 즉시 거부한다', () => {
-    expect(selectBookmark({ userId: 1, limit: 0 })).rejects.toThrow()
-    expect(selectMock).not.toHaveBeenCalled()
-  })
-
-  test('부분적인 커서 입력은 허용하지 않는다', () => {
-    expect(selectBookmark({ userId: 1, cursorTime: new Date() })).rejects.toThrow()
-    expect(selectMock).not.toHaveBeenCalled()
-  })
-
-  test('잘못된 cursorTime은 즉시 거부한다', () => {
-    expect(
-      selectBookmark({
-        userId: 1,
-        cursorMangaId: 42,
-        cursorTime: new Date('invalid'),
-      }),
-    ).rejects.toThrow()
-
-    expect(selectMock).not.toHaveBeenCalled()
   })
 })

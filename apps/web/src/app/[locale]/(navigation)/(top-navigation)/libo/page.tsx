@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 
 import { getTranslations } from 'next-intl/server'
 
-import JuicyAdsScript from '@/components/ads/juicy-ads/JuicyAdsScript'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 
@@ -27,10 +26,5 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/libo'>):
 }
 
 export default function PointsPage() {
-  return (
-    <>
-      <JuicyAdsScript />
-      <RewardedAdSection />
-    </>
-  )
+  return <RewardedAdSection />
 }

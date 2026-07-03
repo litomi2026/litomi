@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import IconBell from '@/components/icons/IconBell'
+import LoginGate from '@/components/LoginGate'
 import StatusState, { StatusActionLink } from '@/components/status/StatusState'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -17,7 +18,6 @@ import { SearchParams } from './common'
 import NotificationCard from './NotificationCard'
 import { useNotificationSelection } from './NotificationProvider'
 import SwipeableWrapper from './SwipeableNotificationCard'
-import Unauthorized from './Unauthorized'
 import useBatcher from './useBatcher'
 import useNotificationActions from './useNotificationActions'
 import useNotificationInfiniteQuery from './useNotificationsInfiniteQuery'
@@ -66,7 +66,7 @@ export default function NotificationList() {
   }
 
   if (me === null) {
-    return <Unauthorized />
+    return <LoginGate description={t('auth.description')} />
   }
 
   if (!hasAdultAccess(me)) {

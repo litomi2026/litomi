@@ -1,6 +1,6 @@
 import { type GETV1LibraryResponse, getV1LibraryIdQuerySchema, idParamSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
-import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
+import { libraryItemTable, libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
 import { intToHexColor } from '@litomi/domain/utils/color'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
@@ -53,6 +53,7 @@ routes.get(
           isPublic: libraryTable.isPublic,
           createdAt: libraryTable.createdAt,
           itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
+          pinCount: sql<number>`(SELECT COUNT(*) FROM ${pinnedLibraryTable} WHERE ${pinnedLibraryTable.libraryId} = ${libraryTable.id})::int`,
         })
         .from(libraryTable)
         .where(conditions)
@@ -79,6 +80,7 @@ routes.get(
         isPublic: library.isPublic,
         createdAt: library.createdAt.getTime(),
         itemCount: library.itemCount,
+        pinCount: library.pinCount,
       } satisfies GETV1LibraryResponse
 
       const cacheControl = scope === 'public' ? sharedCacheControl : privateCacheControl

@@ -6,10 +6,12 @@ import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import LoginGate from '@/components/LoginGate'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import ScrollButtons from '@/components/ScrollButtons'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -19,6 +21,7 @@ import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 
 import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
@@ -29,7 +32,6 @@ import { LIBRARY_ITEM_SORT_OPTIONS } from '../sort-options'
 import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkUploadButton from './BookmarkUploadButton'
 import NotFound from './NotFound'
-import Unauthorized from './Unauthorized'
 import useBookmarkInfiniteQuery from './useBookmarkInfiniteQuery'
 
 type BookmarkGridItem =
@@ -98,9 +100,12 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
   const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
   const sortT = useTranslations('Library.sort')
+  const emptyT = useTranslations('Library.empty')
+  const guardT = useTranslations('Common.guard')
+  const canAccess = hasAdultAccess(me)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
-    useBookmarkInfiniteQuery({ enabled: Boolean(me), sort })
+    useBookmarkInfiniteQuery({ enabled: canAccess, sort })
 
   const bookmarks = data?.pages.flatMap((page) => page.bookmarks) ?? []
   const bookmarkIds = bookmarks.map((bookmark) => bookmark.mangaId)
@@ -195,7 +200,21 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
   }
 
   if (me === null) {
-    return <Unauthorized />
+    return (
+      <>
+        <LibraryHeaderSpacer />
+        <LoginGate description={emptyT('bookmarkUnauthorizedDescription')} />
+      </>
+    )
+  }
+
+  if (me && !canAccess) {
+    return (
+      <>
+        <LibraryHeaderSpacer />
+        <AdultVerificationGate description={guardT('adultDescription')} />
+      </>
+    )
   }
 
   if (data && bookmarkIds.length === 0) {

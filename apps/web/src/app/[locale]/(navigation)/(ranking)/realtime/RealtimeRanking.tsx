@@ -3,7 +3,7 @@
 import type { GETV1AnalyticsRealtimeResponse } from '@litomi/contracts'
 
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
-import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/ranking/policy'
+import { REALTIME_PAGE_RANKING_LIMIT, REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@litomi/domain/ranking/policy'
 import { useQuery } from '@tanstack/react-query'
 import { ExternalLink, Loader2, Users } from 'lucide-react'
 import ms from 'ms'
@@ -103,7 +103,7 @@ export default function RealtimeRanking() {
                     </td>
                     <td className="p-4 py-3 text-right">
                       <span className="text-sm font-semibold text-brand tabular-nums">
-                        {item.activeUsers.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
+                        {item.pageViews.toLocaleString(LOCALE_LANGUAGE_TAGS[locale])}
                       </span>
                     </td>
                   </tr>
@@ -112,9 +112,9 @@ export default function RealtimeRanking() {
             </table>
           )}
         </div>
-        {data?.pageRanking.length === 20 && (
+        {data?.pageRanking.length === REALTIME_PAGE_RANKING_LIMIT && (
           <p className="mt-2 text-center text-xs text-zinc-500">
-            {t('thresholdNotice', { count: 20, threshold: REALTIME_PAGE_VIEW_MIN_THRESHOLD })}
+            {t('thresholdNotice', { count: REALTIME_PAGE_RANKING_LIMIT, threshold: REALTIME_PAGE_VIEW_MIN_THRESHOLD })}
           </p>
         )}
       </div>

@@ -6,6 +6,7 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
+import LoginGate from '@/components/LoginGate'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 import { ProblemDetailsError } from '@/utils/fetch-response'
@@ -46,11 +47,7 @@ export default function TransactionHistory() {
   const showEmpty = isAuthReady && isLoggedIn && !isInitialLoading && !isInitialError && transactions.length === 0
 
   if (isAuthReady && !isLoggedIn) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-zinc-500">{t('loginPrompt')}</p>
-      </div>
-    )
+    return <LoginGate description={t('loginPrompt')} />
   }
 
   if (isAuthReady && isLoggedIn && !canAccess) {

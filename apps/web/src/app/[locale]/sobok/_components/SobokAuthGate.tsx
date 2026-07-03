@@ -1,10 +1,7 @@
 'use client'
 
-import { LockKeyhole } from 'lucide-react'
 import type { ReactNode } from 'react'
-import LoginButton from '@/components/LoginButton'
-import StatusState from '@/components/status/StatusState'
-import { Link } from '@/i18n/navigation'
+import LoginGate from '@/components/LoginGate'
 import useMeQuery from '@/query/useMeQuery'
 
 // Coarse login gate for the whole chat section. Auth lives entirely in the client (`useMeQuery`
@@ -22,28 +19,7 @@ export default function SobokAuthGate({ children }: { children: ReactNode }) {
   }
 
   if (me === null) {
-    return (
-      <StatusState
-        description="아티스트와 팬이 직접 소통하는 공간이에요."
-        icon={<LockKeyhole className="size-8" />}
-        intent="auth"
-        title="로그인하고 채팅을 시작하세요"
-      >
-        <div className="flex flex-col w-full items-center gap-3">
-          <LoginButton>로그인하고 시작하기</LoginButton>
-          <p className="text-sm text-zinc-500">
-            아직 계정이 없으신가요?{' '}
-            <Link
-              className="text-zinc-300 underline hover:text-zinc-100 transition"
-              href="/auth/signup"
-              prefetch={false}
-            >
-              회원가입
-            </Link>
-          </p>
-        </div>
-      </StatusState>
-    )
+    return <LoginGate />
   }
 
   return <>{children}</>

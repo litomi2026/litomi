@@ -1,15 +1,5 @@
-import {
-  boolean,
-  index,
-  integer,
-  pgEnum,
-  pgTable,
-  primaryKey,
-  text,
-  timestamp,
-  uuid,
-  varchar,
-} from 'drizzle-orm/pg-core'
+import { boolean, index, integer, pgEnum, pgTable, primaryKey, text, uuid, varchar } from 'drizzle-orm/pg-core'
+import { createdAt } from '../../columns'
 
 export const dmcaReporterRoleEnum = pgEnum('dmca_reporter_role', ['COPYRIGHT_OWNER', 'AUTHORIZED_AGENT'])
 
@@ -33,7 +23,7 @@ export const dmcaNoticeTable = pgTable(
     perjuryConfirmed: boolean('perjury_confirmed').notNull(),
     signature: varchar('signature', { length: 128 }).notNull(),
 
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [index('idx_dmca_notice_created_at').on(table.createdAt.desc())],
 ).enableRLS()
@@ -45,7 +35,7 @@ export const dmcaNoticeTargetTable = pgTable(
       .references(() => dmcaNoticeTable.id, { onDelete: 'cascade' })
       .notNull(),
     mangaId: integer('manga_id').notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     primaryKey({ columns: [table.noticeId, table.mangaId] }),
@@ -72,7 +62,7 @@ export const dmcaCounterNoticeTable = pgTable(
     goodFaithConfirmed: boolean('good_faith_confirmed').notNull(),
     perjuryConfirmed: boolean('perjury_confirmed').notNull(),
 
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [index('idx_dmca_counter_notice_created_at').on(table.createdAt.desc())],
 ).enableRLS()
@@ -84,7 +74,7 @@ export const dmcaCounterTargetTable = pgTable(
       .references(() => dmcaCounterNoticeTable.id, { onDelete: 'cascade' })
       .notNull(),
     mangaId: integer('manga_id').notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     primaryKey({ columns: [table.counterId, table.mangaId] }),

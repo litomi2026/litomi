@@ -9,6 +9,10 @@ const STALE_DEPLOYMENT_ERROR_PATTERNS: RegExp[] = [
   // Bundler ESM-interop call `(0,mod.export)` resolving to a non-function means a loaded chunk references an export a
   // sibling chunk no longer provides — the classic stale chunk graph. e.g. "(0,h.ensureSuspenseTimers) is not a function".
   /\(0,\s*\w+\.\w+\) is not a function/,
+  // Turbopack cross-build chunk mix: a chunk from another build requires a numeric module id whose factory was never
+  // registered in this runtime. e.g. "Module 927865 was instantiated because it was required from module 939727,
+  // but the module factory is not available."
+  /module factory is not available/i,
 ]
 
 const RELOAD_AT_STORAGE_KEY = 'litomi:stale-deploy-reloaded-at'

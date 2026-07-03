@@ -1,9 +1,11 @@
 import { z } from 'zod'
 
 const CHAT_TEXT_MAX_LENGTH = 2000
-const CHAT_MEDIA_URL_MAX_LENGTH = 2048
+// 답장의 정적 상한 — 팬별 동적 한도(기본 30자 + 연속 구독 보너스)의 절대 최댓값과 일치해야 합니다.
+const CHAT_REPLY_TEXT_MAX_LENGTH = 300
 
-export type ChatContentType = 'text' | 'image' | 'voice' | 'video'
+// 미디어(image/voice/video)는 자사 스토리지 업로드 파이프라인 도입 시 다시 확장합니다.
+export type ChatContentType = 'text'
 
 const MESSAGE_ID_MAX_LENGTH = 26 // ULID
 const messageIdCursorSchema = z.string().min(1).max(MESSAGE_ID_MAX_LENGTH)
@@ -18,30 +20,10 @@ export const chatMessageParamSchema = z.object({
   messageId: z.string().min(1).max(MESSAGE_ID_MAX_LENGTH),
 })
 
-const mediaUrlSchema = z.url().max(CHAT_MEDIA_URL_MAX_LENGTH)
-
-// Shared content shapes — a broadcast message and a fan reply carry the same payloads.
-export const postV1ChatMessageBodySchema = z.discriminatedUnion('contentType', [
-  z.object({ contentType: z.literal('text'), text: z.string().trim().min(1).max(CHAT_TEXT_MAX_LENGTH) }),
-  z.object({
-    contentType: z.literal('image'),
-    url: mediaUrlSchema,
-    width: z.number().int().positive().optional(),
-    height: z.number().int().positive().optional(),
-  }),
-  z.object({
-    contentType: z.literal('voice'),
-    url: mediaUrlSchema,
-    durationMs: z.number().int().positive().optional(),
-  }),
-  z.object({
-    contentType: z.literal('video'),
-    url: mediaUrlSchema,
-    durationMs: z.number().int().positive().optional(),
-    width: z.number().int().positive().optional(),
-    height: z.number().int().positive().optional(),
-  }),
-])
+export const postV1ChatMessageBodySchema = z.object({
+  contentType: z.literal('text'),
+  text: z.string().trim().min(1).max(CHAT_TEXT_MAX_LENGTH),
+})
 
 export type POSTV1ChatMessageBody = z.infer<typeof postV1ChatMessageBodySchema>
 
@@ -49,24 +31,24 @@ export interface POSTV1ChatMessageResponse {
   messageId: string
 }
 
-// A fan's reply uses the same content shapes as a message.
-export const postV1ChatReplyBodySchema = postV1ChatMessageBodySchema
-export type POSTV1ChatReplyBody = POSTV1ChatMessageBody
+// 팬 답장 — 스키마 상한은 절대 최댓값이고, 실제 허용 길이는 라우트에서 팬별 한도로 검증합니다.
+export const postV1ChatReplyBodySchema = z.object({
+  contentType: z.literal('text'),
+  text: z.string().trim().min(1).max(CHAT_REPLY_TEXT_MAX_LENGTH),
+})
+
+export type POSTV1ChatReplyBody = z.infer<typeof postV1ChatReplyBodySchema>
 export type POSTV1ChatReplyResponse = POSTV1ChatMessageResponse
 
 // --- Shared DTOs --------------------------------------------------------------
 
-export type ChatMessageContent =
-  | { text: string }
-  | { url: string; width?: number; height?: number }
-  | { url: string; durationMs?: number }
-  | { url: string; durationMs?: number; width?: number; height?: number }
+export type ChatMessageContent = { text: string }
 
 export type ChatRelayMessageDTO =
   | (ChatMessageDTO & { kind: 'broadcast' })
   | (ChatReplyDTO & {
       kind: 'reply'
-      sender: { nickname: string; imageURL: string | null } | null
+      sender?: { nickname: string; imageURL: string | null }
     })
 
 // A broadcast message as seen on the timeline.
@@ -134,8 +116,8 @@ export interface ChatTimelineMessage {
 
 export interface GETV1ChatMessagesResponse {
   messages: ChatTimelineMessage[]
-  // Pass back as `before` to load the previous page; null when the stream start is reached.
-  nextCursor?: string | null
+  // Pass back as `before` to load the previous page; absent when the stream start is reached.
+  nextCursor?: string
 }
 
 // --- Mark-as-read -------------------------------------------------------------
@@ -153,7 +135,7 @@ export interface ChatThreadListItem {
   // false = a lapsed subscription kept reachable for its paid-window broadcast archive
   // (read-only; sending disabled until re-subscribe). true = currently entitled.
   entitled: boolean
-  lastMessage?: ChatMessagePreview | null
+  lastMessage?: ChatMessagePreview
   unreadCount: number
 }
 
@@ -192,6 +174,163 @@ export interface DELETEV1ChatSubscriptionResponse {
   subscription: ChatSubscriptionDTO
 }
 
+// 청약철회 — 최근 결제를 전액 환불. 조건(결제 7일 이내 + 해당 기간 답장 미발신)은 서버가 검증한다.
+export interface POSTV1ChatSubscriptionRefundResponse {
+  subscription: ChatSubscriptionDTO
+}
+
+// --- Artist self-service (onboarding + studio settings) -----------------------
+
+// URL(/sobok/{handle})과 스튜디오 주소에 쓰이는 핸들. 변경 가능하며, 라우트 세그먼트·시스템
+// 경로와 충돌하는 이름은 예약어로 막는다.
+export const RESERVED_CHAT_HANDLES = new Set([
+  'admin',
+  'administrator',
+  'api',
+  'artist',
+  'help',
+  'litomi',
+  'me',
+  'message',
+  'moderator',
+  'new',
+  'notice',
+  'official',
+  'settings',
+  'sobok',
+  'staff',
+  'studio',
+  'support',
+  'system',
+  'threads',
+  'www',
+])
+
+const chatArtistHandleSchema = z
+  .string()
+  .regex(/^[a-z0-9_]{3,32}$/, '핸들은 영문 소문자, 숫자, 밑줄(_)로 3~32자여야 해요.')
+  .refine((handle) => !RESERVED_CHAT_HANDLES.has(handle), '사용할 수 없는 핸들이에요.')
+
+const CHAT_ARTIST_NAME_MAX_LENGTH = 64
+const CHAT_ARTIST_DESCRIPTION_MAX_LENGTH = 500
+const CHAT_ARTIST_EMOJI_MAX_LENGTH = 16
+// 0 = 구독 미오픈. 열려 있다면 1,000원 이상 1,000,000원 이하.
+const CHAT_ARTIST_PRICE_MIN = 1_000
+const CHAT_ARTIST_PRICE_MAX = 1_000_000
+
+const chatArtistPriceAmountSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(CHAT_ARTIST_PRICE_MAX)
+  .refine(
+    (amount) => amount === 0 || amount >= CHAT_ARTIST_PRICE_MIN,
+    `구독 가격은 ${CHAT_ARTIST_PRICE_MIN.toLocaleString('ko-KR')}원 이상이어야 해요.`,
+  )
+
+export const postV1ChatArtistBodySchema = z.object({
+  handle: chatArtistHandleSchema,
+  displayName: z.string().trim().min(1).max(CHAT_ARTIST_NAME_MAX_LENGTH),
+  description: z.string().trim().min(1).max(CHAT_ARTIST_DESCRIPTION_MAX_LENGTH).nullable(),
+  emoji: z.string().trim().min(1).max(CHAT_ARTIST_EMOJI_MAX_LENGTH).nullable(),
+  priceAmount: chatArtistPriceAmountSchema,
+  // 성인 콘텐츠 비허용 정책 동의 — 미동의는 온보딩 자체가 불가능하다.
+  agreeContentPolicy: z.literal(true),
+})
+
+export type POSTV1ChatArtistBody = z.infer<typeof postV1ChatArtistBodySchema>
+
+export const patchV1ChatArtistBodySchema = z
+  .object({
+    handle: chatArtistHandleSchema.optional(),
+    displayName: z.string().trim().min(1).max(CHAT_ARTIST_NAME_MAX_LENGTH).optional(),
+    description: z.string().trim().min(1).max(CHAT_ARTIST_DESCRIPTION_MAX_LENGTH).nullable().optional(),
+    emoji: z.string().trim().min(1).max(CHAT_ARTIST_EMOJI_MAX_LENGTH).nullable().optional(),
+    priceAmount: chatArtistPriceAmountSchema.optional(),
+    isActive: z.boolean().optional(),
+  })
+  .refine((body) => Object.keys(body).length > 0, '변경할 항목이 없어요.')
+
+export type PATCHV1ChatArtistBody = z.infer<typeof patchV1ChatArtistBodySchema>
+
+// 소유자 본인이 보는 자기 아티스트 프로필(스튜디오 설정의 전체 편집 상태).
+export interface ChatArtistMine {
+  id: number
+  handle: string
+  displayName: string
+  description: string | null
+  imageURL: string | null
+  emoji: string | null
+  priceAmount: number
+  priceCurrency: string
+  isActive: boolean
+}
+
+// 스튜디오 진입점 — 내 아티스트 프로필 조회. null = 아직 온보딩 전.
+export interface GETV1ChatStudioResponse {
+  artist?: ChatArtistMine
+}
+
+export interface POSTV1ChatArtistResponse {
+  artist: ChatArtistMine
+}
+
+export interface PATCHV1ChatArtistResponse {
+  artist: ChatArtistMine
+}
+
+// --- Studio earnings (월 정산 — 수수료 25%, 원천징수 3.3%, 최소 지급 1만원) -----
+
+export type ChatPayoutStatus = 'carried' | 'paid' | 'pending'
+
+// 한 달 치 정산 명세. payable = (gross − refund) − fee − withholding + carriedIn.
+export interface ChatPayoutDTO {
+  periodStart: string
+  periodEnd: string
+  grossAmount: number
+  refundAmount: number
+  feeAmount: number
+  withholdingAmount: number
+  carriedInAmount: number
+  payableAmount: number
+  currency: string
+  status: ChatPayoutStatus
+  paidAt?: string
+}
+
+export interface ChatPayoutAccountDTO {
+  bankName: string
+  // 마지막 4자리만 노출 — 원문은 서버에 암호화 저장된다.
+  accountNumberMasked: string
+  holderName: string
+}
+
+export interface GETV1ChatStudioEarningsResponse {
+  account?: ChatPayoutAccountDTO
+  // 진행 중인 이번 달(KST)의 실시간 집계 — 마감 전 추정치.
+  currentMonth: {
+    grossAmount: number
+    refundAmount: number
+    estimatedPayableAmount: number
+  }
+  payouts: ChatPayoutDTO[]
+}
+
+export const putV1ChatPayoutAccountBodySchema = z.object({
+  bankName: z.string().trim().min(1).max(32),
+  accountNumber: z
+    .string()
+    .trim()
+    .regex(/^[0-9-]{6,32}$/, '계좌번호 형식이 올바르지 않아요.'),
+  holderName: z.string().trim().min(1).max(32),
+})
+
+export type PUTV1ChatPayoutAccountBody = z.infer<typeof putV1ChatPayoutAccountBodySchema>
+
+export interface PUTV1ChatPayoutAccountResponse {
+  account: ChatPayoutAccountDTO
+}
+
 // --- Artist resource (resolve handle → id + viewer's role) -------------------
 
 export interface GETV1ChatArtistResponse {
@@ -200,10 +339,13 @@ export interface GETV1ChatArtistResponse {
   isOwner: boolean
   // The viewer may currently read the live broadcast (owner or paid-up fan).
   entitled: boolean
-  // Monthly subscription price; null = not open for subscription.
-  price: ChatArtistPrice | null
-  // The viewer's subscription state (for the manage/resubscribe panel); null = never subscribed.
-  subscription: ChatSubscriptionDTO | null
+  // Monthly subscription price; absent = not open for subscription.
+  price?: ChatArtistPrice
+  // The viewer's subscription state (for the manage/resubscribe panel); absent = never subscribed.
+  subscription?: ChatSubscriptionDTO
+  // Max reply text length (grows with continuous subscription); absent = owner or not entitled.
+  // The per-message reply count is fixed: REPLY_MAX_PER_MESSAGE in @litomi/domain/chat/policy.
+  replyTextLimit?: number
 }
 
 // --- Artist reply room (all fans' replies to one message) ---------------------
@@ -214,10 +356,10 @@ export const getV1ChatRepliesQuerySchema = z.object({
 })
 
 export interface ChatReplyWithFan extends ChatReplyDTO {
-  fan?: ChatUserBrief | null
+  fan?: ChatUserBrief
 }
 
 export interface GETV1ChatRepliesResponse {
   replies: ChatReplyWithFan[]
-  nextCursor?: string | null
+  nextCursor?: string
 }

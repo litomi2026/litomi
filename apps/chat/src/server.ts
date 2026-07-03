@@ -1,11 +1,13 @@
 import { closePubSub, connectPubSub } from '@litomi/kv/pubsub'
 import { registerShutdownHandler, registerShutdownSignals } from '@litomi/std'
 import { authenticateRequest } from './auth'
+import { EntitlementEnforcer } from './enforcement'
 import { canAccessStream } from './entitlements'
 import { encode, parseClientMessage, type SocketData } from './protocol'
 import { RoomRegistry } from './rooms'
 
 const rooms = new RoomRegistry()
+const enforcer = new EntitlementEnforcer(rooms)
 
 // Drain flag: probes report 503 and new upgrades are rejected once shutting down,
 // while existing sockets keep working until the load balancer stops routing.
@@ -58,6 +60,7 @@ const server = Bun.serve<SocketData>({
     closeOnBackpressureLimit: true,
     open: (ws) => {
       ws.subscribe('global:system')
+      enforcer.register(ws)
       ws.send(encode({ t: 'ready', userId: ws.data.userId }))
     },
     message: async (ws, raw) => {
@@ -106,12 +109,14 @@ const server = Bun.serve<SocketData>({
       }
     },
     close: async (ws) => {
+      enforcer.unregister(ws)
       await rooms.unsubscribeAll(ws)
     },
   },
 })
 
 rooms.start(server)
+await enforcer.start()
 
 registerShutdownHandler('probe', () => {
   draining = true
@@ -121,6 +126,10 @@ registerShutdownHandler('http-server', async () => {
   server.publish('global:system', encode({ t: 'reconnect' }))
   await new Promise((resolve) => setTimeout(resolve, 500))
   server.stop(true)
+})
+
+registerShutdownHandler('enforcer', () => {
+  enforcer.stop()
 })
 
 registerShutdownHandler('pubsub', () => {

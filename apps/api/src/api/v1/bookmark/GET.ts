@@ -1,7 +1,7 @@
 import { type GETV1BookmarkResponse, getV1BookmarkQuerySchema } from '@litomi/contracts'
 import { selectBookmark } from '@litomi/db/app/query/bookmark'
 import { decodeBookmarkCursor } from '@litomi/db/cursor'
-import { getNextLibraryItemCursor } from '@litomi/db/sql/library-item-sort'
+import { getNextLibraryItemCursor, type LibraryItemCursor } from '@litomi/db/sql/library-item-sort'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
@@ -20,8 +20,7 @@ route.get('/', requireAuth, zProblemValidator('query', getV1BookmarkQuerySchema)
   try {
     const { cursor, limit, locale, sort } = c.req.valid('query')
 
-    let cursorMangaId: number | undefined
-    let cursorTime: Date | undefined
+    let cursorData: LibraryItemCursor | undefined
 
     if (cursor) {
       const decoded = decodeBookmarkCursor(cursor)
@@ -30,15 +29,13 @@ route.get('/', requireAuth, zProblemValidator('query', getV1BookmarkQuerySchema)
         return problemResponse(c, { status: 400 })
       }
 
-      cursorMangaId = decoded.mangaId
-      cursorTime = new Date(decoded.timestamp)
+      cursorData = decoded
     }
 
-    const bookmarkRows = await selectBookmark({
-      userId,
+    const bookmarkRows = await selectBookmark(userId, {
       limit: limit + 1,
       sort,
-      ...(cursorTime && cursorMangaId ? { cursorMangaId, cursorTime } : {}),
+      cursor: cursorData,
     })
 
     const hasNextPage = bookmarkRows.length > limit

@@ -56,10 +56,21 @@ export async function listActivePaymentMethods(userId: number): Promise<PaymentM
     .orderBy(desc(paymentMethodTable.createdAt))
 }
 
-export async function getActivePaymentMethodForUser(
-  id: number,
-  userId: number,
-): Promise<{ id: number; token: string; method: string | null } | undefined> {
+export interface PaymentMethodKey {
+  id: number
+  userId: number
+}
+
+export interface ChargeablePaymentMethod {
+  id: number
+  token: string
+  method: string | null
+}
+
+export async function getActivePaymentMethodForUser({
+  id,
+  userId,
+}: PaymentMethodKey): Promise<ChargeablePaymentMethod | undefined> {
   const [row] = await db
     .select({ id: paymentMethodTable.id, token: paymentMethodTable.token, method: paymentMethodTable.method })
     .from(paymentMethodTable)
@@ -74,11 +85,26 @@ export async function getActivePaymentMethodForUser(
   return row
 }
 
-export async function getPaymentMethodToken(id: number): Promise<{ token: string; method: string | null } | undefined> {
+export interface GetRenewalPaymentMethodInput {
+  userId: number
+  preferredId: number | null
+}
+
+// 갱신 청구용 결제수단 — 구독에 지정된 카드가 살아 있으면 그것을, 아니면 유저의 최근 active
+// 카드를 고른다(옛 카드 삭제 → 새 카드 등록 흐름에서 갱신이 죽지 않도록).
+export async function getRenewalPaymentMethod({
+  userId,
+  preferredId,
+}: GetRenewalPaymentMethodInput): Promise<ChargeablePaymentMethod | undefined> {
   const [row] = await db
-    .select({ token: paymentMethodTable.token, method: paymentMethodTable.method })
+    .select({ id: paymentMethodTable.id, token: paymentMethodTable.token, method: paymentMethodTable.method })
     .from(paymentMethodTable)
-    .where(and(eq(paymentMethodTable.id, id), eq(paymentMethodTable.status, 'active')))
+    .where(and(eq(paymentMethodTable.userId, userId), eq(paymentMethodTable.status, 'active')))
+    .orderBy(
+      ...(preferredId === null ? [] : [desc(eq(paymentMethodTable.id, preferredId))]),
+      desc(paymentMethodTable.createdAt),
+    )
+    .limit(1)
 
   return row
 }
@@ -96,8 +122,12 @@ export async function markPaymentMethodDeletedByToken(token: string): Promise<vo
     )
 }
 
-export async function markPaymentMethodDeleted(id: number, userId: number): Promise<boolean> {
-  const updated = await db
+// 삭제 마킹과 revoke용 토큰 조회를 한 문장으로 — 삭제된 카드의 토큰을 반환한다(없으면 undefined).
+export async function markPaymentMethodDeleted({
+  id,
+  userId,
+}: PaymentMethodKey): Promise<{ token: string } | undefined> {
+  const [row] = await db
     .update(paymentMethodTable)
     .set({ status: 'deleted' })
     .where(
@@ -107,7 +137,7 @@ export async function markPaymentMethodDeleted(id: number, userId: number): Prom
         eq(paymentMethodTable.status, 'active'),
       ),
     )
-    .returning({ id: paymentMethodTable.id })
+    .returning({ token: paymentMethodTable.token })
 
-  return updated.length > 0
+  return row
 }

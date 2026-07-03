@@ -2,6 +2,7 @@ import './instrumentation'
 
 import { disconnectProducer } from '@litomi/events'
 import { closeRedis, pingRedis } from '@litomi/kv'
+import { closePubSub } from '@litomi/kv/pubsub'
 import { registerShutdownHandler, registerShutdownSignals } from '@litomi/std'
 import { shutdownAnalyticsClient } from './api/v1/analytics/realtime'
 import app from './app'
@@ -17,6 +18,7 @@ const server = Bun.serve({
 registerShutdownHandler('probe', () => markProbeDraining())
 registerShutdownHandler('http-server', () => server.stop())
 registerShutdownHandler('redis', () => closeRedis())
+registerShutdownHandler('pubsub', () => closePubSub())
 registerShutdownHandler('google-analytics', () => shutdownAnalyticsClient())
 registerShutdownHandler('opentelemetry', () => shutdownBackendOtel())
 registerShutdownHandler('kafka-producer', () => disconnectProducer())
@@ -25,4 +27,4 @@ registerShutdownSignals()
 await pingRedis()
 markProbeStartupComplete()
 
-console.info(`litomi api listening on http://${server.hostname}:${server.port}`)
+console.info(`litomi-api listening on http://${server.hostname}:${server.port}`)

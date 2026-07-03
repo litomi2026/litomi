@@ -1,4 +1,5 @@
 import { bigint, index, jsonb, pgTable, primaryKey, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { createdAt, updatedAt } from '../columns'
 
 // Chat message store — runs on a dedicated CockroachDB cluster (Postgres-wire).
 // Messages reference users only by opaque id (no FK to the app DB), so this lives
@@ -22,14 +23,12 @@ export const chatMessageTable = pgTable(
     senderId: bigint('sender_id', { mode: 'number' }).notNull(),
     contentType: varchar('content_type', { length: 32 }).notNull(),
     content: jsonb().notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     primaryKey({ columns: [table.streamId, table.messageId] }),
-    // Seek one sender's messages within a set of streams — a fan pulling their OWN
-    // replies for the messages currently on screen (`streamId IN (...) AND senderId = me`),
-    // tight even on a message with tens of thousands of replies from other fans.
     index('idx_chat_message_stream_sender').on(table.streamId, table.senderId, table.messageId),
+    index('idx_chat_message_sender_stream').on(table.senderId, table.streamId),
   ],
 ).enableRLS()
 
@@ -39,31 +38,19 @@ export const chatReadCursorTable = pgTable(
     userId: bigint('user_id', { mode: 'number' }).notNull(),
     streamId: varchar('stream_id', { length: 64 }).notNull(),
     lastReadMessageId: varchar('last_read_message_id', { length: 26 }).notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
+    updatedAt,
   },
   (table) => [primaryKey({ columns: [table.userId, table.streamId] })],
 ).enableRLS()
 
-// Per-stream conversation summary, upserted by the worker on every BROADCAST message
-// (one row per `b:{artistId}` stream). O(1) per message, so the fan chat list renders
-// its "last message" preview without scanning chat_message. Reply rooms are deliberately
-// NOT summarized here: the artist's per-message unread is counted live from chat_message
-// (bounded), and fans never enumerate reply rooms.
 export const chatThreadTable = pgTable('chat_thread', {
-  // 'b:{artistId}'
   streamId: varchar('stream_id', { length: 64 }).primaryKey(),
   lastMessageId: varchar('last_message_id', { length: 26 }).notNull(),
   lastSenderId: bigint('last_sender_id', { mode: 'number' }).notNull(),
   lastContentType: varchar('last_content_type', { length: 32 }).notNull(),
   lastPreview: varchar('last_preview', { length: 200 }).notNull(),
   lastCreatedAt: timestamp('last_created_at', { precision: 3, withTimezone: true }).notNull(),
-  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-    .defaultNow()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  updatedAt,
 }).enableRLS()
 
-// TODO: App DB와 Chat DB 간에 물리적 FK가 없기 때문에, App DB에서 유저가 탈퇴할 때 Chat DB의 데이터는 고아(Orphan) 데이터로 남습니다.
+// App DB와 Chat DB 간에는 물리적 FK가 없으므로 탈퇴 정리는 App DB의 user_erasure outbox를 chat-worker가 폴링해 수행합니다(query/erasure.ts).

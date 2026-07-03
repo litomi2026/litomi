@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import LoginGate from '@/components/LoginGate'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
@@ -24,7 +25,6 @@ import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import { getRatingSortFromSearchParams, setRatingSortToSearchParams } from '../searchParams'
 import NotFound from './NotFound'
-import Unauthorized from './Unauthorized'
 import useRatingInfiniteQuery from './useRatingInfiniteQuery'
 
 const SORT_OPTIONS = [
@@ -173,7 +173,12 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
   }
 
   if (me === null) {
-    return <Unauthorized />
+    return (
+      <>
+        <LibraryHeaderSpacer />
+        <LoginGate description={t('empty.ratingUnauthorizedDescription')} />
+      </>
+    )
   }
 
   if (data && ratingItems.length === 0) {

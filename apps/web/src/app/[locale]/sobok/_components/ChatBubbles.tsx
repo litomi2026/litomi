@@ -1,6 +1,5 @@
 import type { ChatMessageDTO, ChatReplyDTO } from '@litomi/contracts'
 import { Check, CheckCheck } from 'lucide-react'
-import { contentPreview, textOf } from '../_lib/chat'
 
 interface QuotedMessageProps {
   className?: string
@@ -58,7 +57,7 @@ export function ArtistMessageBubble({
               isTarget ? 'border-indigo-400' : 'border-foreground/10'
             } ${isHighlighted ? 'ring-2 ring-indigo-400/80' : ''}`}
           >
-            {textOf(message.content)}
+            {message.content.text}
           </button>
           <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -87,11 +86,11 @@ export function FanReplyBubble({ onQuoteClick, quoteLabel, quoteTarget, read, re
               <QuotedMessage
                 label={quoteLabel}
                 onClick={() => onQuoteClick(quoteTarget.messageId)}
-                preview={contentPreview(quoteTarget.contentType, quoteTarget.content)}
+                preview={quoteTarget.content.text}
                 variant="onMessage"
               />
             )}
-            <span className="wrap-break-word whitespace-pre-wrap">{textOf(reply.content)}</span>
+            <span className="wrap-break-word whitespace-pre-wrap">{reply.content.text}</span>
           </div>
           <div className="flex flex-col items-end mb-0.5 shrink-0">
             {read ? (

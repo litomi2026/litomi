@@ -6,7 +6,6 @@ import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import z from 'zod'
 
-import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import PageNavigation from '@/components/PageNavigation'
 import ScrollButtons from '@/components/ScrollButtons'
 import { getLocaleFromParams } from '@/i18n/server'
@@ -60,7 +59,6 @@ export default async function Page({ params }: PageProps<'/[locale]/new/[page]'>
 
   return (
     <>
-      <JuicyAdsBanner />
       <NewMangaList nativeGridSponsor={nativeGridSponsor} page={page} />
       <PageNavigation className="py-4" currentPage={page} totalPages={TOTAL_HIYOBI_PAGES} />
       <ScrollButtons />

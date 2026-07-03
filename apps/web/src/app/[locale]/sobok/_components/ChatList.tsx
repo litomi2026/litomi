@@ -79,7 +79,23 @@ export default function ChatList() {
     <div className="flex-1 flex flex-col h-full bg-background">
       {/* Header */}
       <div className="px-5 pt-14 pb-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
-        <h1 className="text-2xl font-bold text-foreground mb-4 tracking-tight">Chats</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Chats</h1>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/sobok/billing"
+              className="text-xs font-semibold text-zinc-400 hover:text-foreground transition-colors"
+            >
+              결제 관리
+            </Link>
+            <Link
+              href="/sobok/studio"
+              className="text-xs font-semibold text-indigo-500 hover:text-indigo-400 transition-colors"
+            >
+              스튜디오
+            </Link>
+          </div>
+        </div>
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
           <input

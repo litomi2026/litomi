@@ -1,5 +1,6 @@
 'use client'
 
+import type { LibraryListItem } from '@litomi/contracts'
 import type { ReactNode } from 'react'
 
 import { useMemo } from 'react'
@@ -15,18 +16,6 @@ import { LibrarySelectionProvider } from './librarySelection'
 import useLibraryListInfiniteQuery from './useLibraryListInfiniteQuery'
 import useLibrarySummaryQuery from './useLibrarySummaryQuery'
 import usePinnedLibraryListInfiniteQuery from './usePinnedLibraryListInfiniteQuery'
-
-type LibraryListItem = {
-  id: number
-  userId: number
-  name: string
-  description: string | null
-  color: string | null
-  icon: string | null
-  isPublic: boolean
-  createdAt: number
-  itemCount: number
-}
 
 type Props = {
   children: ReactNode

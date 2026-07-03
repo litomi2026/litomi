@@ -1,4 +1,5 @@
 import { bigint, foreignKey, index, pgTable, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core'
+import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
@@ -14,7 +15,7 @@ export const authSessionFamilyTable = pgTable(
     absoluteExpiresAt: timestamp('absolute_expires_at', { precision: 3, withTimezone: true }).notNull(),
     idleExpiresAt: timestamp('idle_expires_at', { precision: 3, withTimezone: true }).notNull(),
     revokedAt: timestamp('revoked_at', { precision: 3, withTimezone: true }),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     index('idx_auth_session_family_user_id').on(table.userId),
@@ -33,7 +34,7 @@ export const authSessionTokenTable = pgTable(
     tokenHash: varchar('token_hash', { length: 64 }).notNull(),
     replacedByTokenId: uuid('replaced_by_token_id'),
     rotatedAt: timestamp('rotated_at', { precision: 3, withTimezone: true }),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [
     index('idx_auth_session_token_family_id').on(table.familyId),

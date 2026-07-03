@@ -1,58 +1,38 @@
-import { and, asc, eq, gt, inArray } from 'drizzle-orm'
+import { mergePaidIntervals, type PaidInterval } from '@litomi/domain/chat/policy'
+import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
+import { and, asc, desc, eq, gt, inArray, lte, sql } from 'drizzle-orm'
 import { db } from '../db'
 import { chatArtistTable } from '../schema/chat'
 import { invoiceTable } from '../schema/invoice'
 import { subscriptionTable } from '../schema/subscription'
 import { userTable } from '../schema/user'
-import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from './subscription'
+import { type SubscriptionState, subscriptionStateColumns } from './subscription'
 
-export async function getChatArtistBrief(artistId: number) {
-  const [row] = await db
-    .select({
-      userId: chatArtistTable.userId,
-      displayName: chatArtistTable.displayName,
-      handle: chatArtistTable.handle,
-      emoji: chatArtistTable.emoji,
-    })
-    .from(chatArtistTable)
-    .where(eq(chatArtistTable.id, artistId))
+export type ChatArtistRow = typeof chatArtistTable.$inferSelect
 
+export async function getChatArtistById(artistId: number): Promise<ChatArtistRow | undefined> {
+  const [row] = await db.select().from(chatArtistTable).where(eq(chatArtistTable.id, artistId))
   return row
 }
 
-export async function getChatArtistByHandle(handle: string) {
-  const [row] = await db
-    .select({
-      id: chatArtistTable.id,
-      userId: chatArtistTable.userId,
-      isActive: chatArtistTable.isActive,
-      handle: chatArtistTable.handle,
-      displayName: chatArtistTable.displayName,
-      description: chatArtistTable.description,
-      imageURL: chatArtistTable.imageURL,
-      emoji: chatArtistTable.emoji,
-      priceAmount: chatArtistTable.priceAmount,
-      priceCurrency: chatArtistTable.priceCurrency,
-    })
-    .from(chatArtistTable)
-    .where(eq(chatArtistTable.handle, handle))
-
+export async function getChatArtistByHandle(handle: string): Promise<ChatArtistRow | undefined> {
+  const [row] = await db.select().from(chatArtistTable).where(eq(chatArtistTable.handle, handle))
   return row
 }
 
-export async function getChatArtistById(artistId: number) {
-  const [row] = await db
-    .select({
-      id: chatArtistTable.id,
-      displayName: chatArtistTable.displayName,
-      isActive: chatArtistTable.isActive,
-      priceAmount: chatArtistTable.priceAmount,
-      priceCurrency: chatArtistTable.priceCurrency,
-    })
-    .from(chatArtistTable)
-    .where(eq(chatArtistTable.id, artistId))
-
+export async function getChatArtistByUserId(userId: number): Promise<ChatArtistRow | undefined> {
+  const [row] = await db.select().from(chatArtistTable).where(eq(chatArtistTable.userId, userId))
   return row
+}
+
+export async function listChatArtistsByIds(artistIds: number[]): Promise<Map<number, ChatArtistRow>> {
+  if (artistIds.length === 0) {
+    return new Map()
+  }
+
+  const rows = await db.select().from(chatArtistTable).where(inArray(chatArtistTable.id, artistIds))
+
+  return new Map(rows.map((row) => [row.id, row]))
 }
 
 export async function getChatSenderBrief(userId: number) {
@@ -98,127 +78,210 @@ export interface ChatArtistBriefRow {
   emoji: string | null
 }
 
-export async function listEntitledSubscriptionsOfUser(userId: number, limit = 200): Promise<ChatArtistBriefRow[]> {
-  return db
+export interface ChatThreadArtistRow extends ChatArtistBriefRow {
+  entitled: boolean
+}
+
+export interface ListChatThreadArtistsOptions {
+  limit?: number
+}
+
+export async function listChatThreadArtists(
+  userId: number,
+  options: ListChatThreadArtistsOptions = {},
+): Promise<ChatThreadArtistRow[]> {
+  const { limit = 500 } = options
+  const now = new Date()
+
+  const paidNow = db
+    .selectDistinct({ targetId: invoiceTable.targetId })
+    .from(invoiceTable)
+    .where(
+      and(
+        eq(invoiceTable.userId, userId),
+        eq(invoiceTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
+        eq(invoiceTable.status, 'paid'),
+        lte(invoiceTable.periodStart, now),
+        gt(invoiceTable.periodEnd, now),
+      ),
+    )
+    .as('paid_now')
+
+  const rows = await db
     .select({
       id: chatArtistTable.id,
       handle: chatArtistTable.handle,
       displayName: chatArtistTable.displayName,
       imageURL: chatArtistTable.imageURL,
       emoji: chatArtistTable.emoji,
+      isActive: chatArtistTable.isActive,
+      paidTargetId: paidNow.targetId,
     })
     .from(subscriptionTable)
     .innerJoin(chatArtistTable, eq(subscriptionTable.targetId, chatArtistTable.id))
-    .where(
-      and(
-        eq(subscriptionTable.userId, userId),
-        eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
-        gt(subscriptionTable.expiresAt, new Date()),
-        eq(chatArtistTable.isActive, true),
-      ),
-    )
+    .leftJoin(paidNow, eq(paidNow.targetId, chatArtistTable.id))
+    .where(and(eq(subscriptionTable.userId, userId), eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST)))
     .orderBy(asc(chatArtistTable.id))
     .limit(limit)
-}
-export async function listSubscribedArtistIds(userId: number, limit = 500): Promise<number[]> {
-  const rows = await db
-    .selectDistinct({ targetId: subscriptionTable.targetId })
-    .from(subscriptionTable)
-    .where(and(eq(subscriptionTable.userId, userId), eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST)))
-    .limit(limit)
 
-  return rows.map((row) => row.targetId)
+  return rows.map(({ isActive, paidTargetId, ...brief }) => ({
+    ...brief,
+    entitled: isActive && paidTargetId !== null,
+  }))
 }
 
-// Briefs for artists a fan has past history with but is no longer entitled to. isActive is
-// NOT filtered: a lapsed (or paused-artist) thread is still read-only viewable.
-export async function listChatArtistBriefs(artistIds: number[]): Promise<Map<number, ChatArtistBriefRow>> {
-  if (artistIds.length === 0) {
-    return new Map()
-  }
-
-  const rows = await db
-    .select({
-      id: chatArtistTable.id,
-      handle: chatArtistTable.handle,
-      displayName: chatArtistTable.displayName,
-      imageURL: chatArtistTable.imageURL,
-      emoji: chatArtistTable.emoji,
-    })
-    .from(chatArtistTable)
-    .where(inArray(chatArtistTable.id, artistIds))
-
-  return new Map(rows.map((row) => [row.id, row]))
+export interface CreateChatArtistInput {
+  userId: number
+  handle: string
+  displayName: string
+  description: string | null
+  emoji: string | null
+  priceAmount: number
 }
 
-export async function getChatArtistByUserId(userId: number) {
+export async function createChatArtist(input: CreateChatArtistInput): Promise<ChatArtistRow> {
+  const [row] = await db.insert(chatArtistTable).values(input).returning()
+  return row
+}
+
+export interface ChatArtistPatch {
+  handle?: string
+  displayName?: string
+  description?: string | null
+  emoji?: string | null
+  priceAmount?: number
+  isActive?: boolean
+}
+
+export interface UpdateChatArtistInput {
+  handle: string
+  userId: number
+  patch: ChatArtistPatch
+}
+
+export async function updateChatArtist({
+  handle,
+  userId,
+  patch,
+}: UpdateChatArtistInput): Promise<ChatArtistRow | undefined> {
   const [row] = await db
-    .select({ id: chatArtistTable.id, isActive: chatArtistTable.isActive })
-    .from(chatArtistTable)
-    .where(eq(chatArtistTable.userId, userId))
+    .update(chatArtistTable)
+    .set(patch)
+    .where(and(eq(chatArtistTable.handle, handle), eq(chatArtistTable.userId, userId)))
+    .returning()
 
   return row
 }
 
-export async function hasActiveChatSubscription(userId: number, artistId: number): Promise<boolean> {
-  const [row] = await db
-    .select({ id: subscriptionTable.id })
+export interface ChatSubscriptionListRow {
+  artist: ChatArtistBriefRow
+  status: (typeof subscriptionTable.$inferSelect)['status']
+  expiresAt: Date
+  autoRenew: boolean
+  priceAmount: number
+  priceCurrency: string
+}
+
+export interface ListChatSubscriptionsOptions {
+  limit?: number
+}
+
+export async function listChatSubscriptionsOfUser(
+  userId: number,
+  options: ListChatSubscriptionsOptions = {},
+): Promise<ChatSubscriptionListRow[]> {
+  const { limit = 100 } = options
+
+  return db
+    .select({
+      artist: {
+        id: chatArtistTable.id,
+        handle: chatArtistTable.handle,
+        displayName: chatArtistTable.displayName,
+        imageURL: chatArtistTable.imageURL,
+        emoji: chatArtistTable.emoji,
+      },
+      status: subscriptionTable.status,
+      expiresAt: subscriptionTable.expiresAt,
+      autoRenew: subscriptionTable.autoRenew,
+      priceAmount: subscriptionTable.priceAmount,
+      priceCurrency: subscriptionTable.priceCurrency,
+    })
     .from(subscriptionTable)
+    .innerJoin(chatArtistTable, eq(subscriptionTable.targetId, chatArtistTable.id))
+    .where(and(eq(subscriptionTable.userId, userId), eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST)))
+    .orderBy(desc(subscriptionTable.expiresAt))
+    .limit(limit)
+}
+
+export async function stopChatSubscriptionRenewal(
+  userId: number,
+  handle: string,
+): Promise<SubscriptionState | undefined> {
+  const [row] = await db
+    .update(subscriptionTable)
+    .set({ autoRenew: false })
     .where(
       and(
         eq(subscriptionTable.userId, userId),
         eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
-        eq(subscriptionTable.targetId, artistId),
-        gt(subscriptionTable.expiresAt, new Date()),
+        eq(
+          subscriptionTable.targetId,
+          db.select({ id: chatArtistTable.id }).from(chatArtistTable).where(eq(chatArtistTable.handle, handle)),
+        ),
       ),
     )
+    .returning(subscriptionStateColumns)
 
-  return row !== undefined
+  return row
 }
 
-export interface PaidInterval {
-  startedAt: Date
-  expiresAt: Date
+export interface FanArtistKey {
+  userId: number
+  artistId: number
 }
 
-export async function listPaidIntervals(userId: number, artistId: number): Promise<PaidInterval[]> {
+export async function canAccessBroadcast({ userId, artistId }: FanArtistKey): Promise<boolean> {
+  const [row] = await db
+    .select({
+      ownerUserId: chatArtistTable.userId,
+      hasActiveSubscription: sql<boolean>`exists (
+        select 1 from ${subscriptionTable}
+        where ${subscriptionTable.userId} = ${userId}
+          and ${subscriptionTable.targetType} = ${SUBSCRIPTION_TARGET_CHAT_ARTIST}
+          and ${subscriptionTable.targetId} = ${artistId}
+          and ${subscriptionTable.expiresAt} > now()
+      )`,
+    })
+    .from(chatArtistTable)
+    .where(eq(chatArtistTable.id, artistId))
+
+  return row !== undefined && (row.ownerUserId === userId || row.hasActiveSubscription)
+}
+
+export async function listPaidIntervals({ userId, artistId }: FanArtistKey): Promise<PaidInterval[]> {
   const rows = await db
     .select({
       periodStart: invoiceTable.periodStart,
       periodEnd: invoiceTable.periodEnd,
     })
     .from(invoiceTable)
-    .innerJoin(subscriptionTable, eq(subscriptionTable.id, invoiceTable.subscriptionId))
     .where(
       and(
-        eq(subscriptionTable.userId, userId),
-        eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
-        eq(subscriptionTable.targetId, artistId),
+        eq(invoiceTable.userId, userId),
+        eq(invoiceTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
+        eq(invoiceTable.targetId, artistId),
         eq(invoiceTable.status, 'paid'),
       ),
     )
     .orderBy(asc(invoiceTable.periodStart))
 
-  const merged: PaidInterval[] = []
-
-  for (const row of rows) {
-    const last = merged.at(-1)
-
-    if (last && row.periodStart <= last.expiresAt) {
-      if (row.periodEnd > last.expiresAt) {
-        last.expiresAt = row.periodEnd
-      }
-    } else {
-      merged.push({ startedAt: row.periodStart, expiresAt: row.periodEnd })
-    }
-  }
-
-  return merged
+  return mergePaidIntervals(rows)
 }
 
 export const SUBSCRIBER_PAGE_SIZE = 1_000
 
-interface ListSubscribersOptions {
+export interface ListSubscribersOptions {
   afterUserId?: number
   limit?: number
 }
@@ -227,8 +290,7 @@ export async function listActiveSubscriberUserIds(
   artistId: number,
   options: ListSubscribersOptions = {},
 ): Promise<number[]> {
-  const limit = options.limit ?? SUBSCRIBER_PAGE_SIZE
-  const afterUserId = options.afterUserId ?? 0
+  const { afterUserId = 0, limit = SUBSCRIBER_PAGE_SIZE } = options
 
   const rows = await db
     .select({ userId: subscriptionTable.userId })

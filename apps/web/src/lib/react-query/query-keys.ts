@@ -99,7 +99,12 @@ export const QueryKeys = {
   proxyHiyobiNew: (page: number, locale: PublicLocale) => [...QueryKeys.proxyBase, 'hiyobi', 'new', page, locale],
 
   chatThreads: ['chat', 'threads'],
+  chatStudio: ['chat', 'studio'],
+  chatStudioEarnings: ['chat', 'studio', 'earnings'],
   chatArtist: (handle: string) => ['chat', 'artist', handle],
+  paymentMethods: ['billing', 'payment-methods'],
+  billingSubscriptions: ['billing', 'subscriptions'],
+  billingPayments: ['billing', 'payments'],
   chatMessages: (handle: string) => ['chat', 'messages', handle],
   chatReplies: (handle: string, messageId: string) => ['chat', 'replies', handle, messageId],
 }

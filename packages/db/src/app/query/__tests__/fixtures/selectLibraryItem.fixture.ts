@@ -72,12 +72,10 @@ describe('selectLibraryItem', () => {
   test('커서와 limit을 함께 받아 안정적인 페이지네이션 쿼리를 만든다', async () => {
     const cursorTime = new Date('2025-01-10T00:00:00.000Z')
 
-    await selectLibraryItem({
-      libraryId: 7,
+    await selectLibraryItem(7, {
       limit: 3,
       sort: LibraryItemSort.CREATED_ASC,
-      cursorMangaId: 42,
-      cursorTime,
+      cursor: { mangaId: 42, timestamp: cursorTime.getTime() },
     })
 
     expect(queryState.limit).toBe(3)
@@ -95,7 +93,7 @@ describe('selectLibraryItem', () => {
   })
 
   test('limit이 없으면 base query를 그대로 실행한다', async () => {
-    const rows = await selectLibraryItem({ libraryId: 7 })
+    const rows = await selectLibraryItem(7)
 
     expect(rows).toEqual(nextRows)
     expect(limitMock).not.toHaveBeenCalled()

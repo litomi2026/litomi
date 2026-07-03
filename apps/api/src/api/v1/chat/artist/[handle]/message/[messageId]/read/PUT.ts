@@ -8,7 +8,7 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { zProblemValidator } from '@/utils/validator'
 
-import { requireOwnedArtist } from '../../../../../lib'
+import { requireOwnedArtist } from '../../../../../access'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -31,7 +31,11 @@ route.put('/', ...middlewares, async (c) => {
     return ownership.error
   }
 
-  await setReadCursor(userId, toMessageReplyStreamId(ownership.artist.id, messageId), lastReadMessageId)
+  await setReadCursor({
+    userId,
+    streamId: toMessageReplyStreamId(ownership.artist.id, messageId),
+    lastReadMessageId,
+  })
 
   return c.body(null, 204)
 })

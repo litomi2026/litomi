@@ -1,4 +1,5 @@
 import { bigint, boolean, index, pgEnum, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { timestamps } from '../../columns'
 import { userTable } from './user'
 
 export const paymentMethodProviderEnum = pgEnum('payment_method_provider', ['portone'])
@@ -20,11 +21,7 @@ export const paymentMethodTable = pgTable(
     brand: varchar({ length: 64 }),
     cardLast4: varchar('card_last4', { length: 4 }),
     status: paymentMethodStatusEnum().notNull().default('active'),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
+    ...timestamps,
   },
   (table) => [
     uniqueIndex('uq_payment_method_provider').on(table.provider, table.token),
@@ -57,11 +54,7 @@ export const subscriptionTable = pgTable(
     status: subscriptionStatusEnum().notNull().default('incomplete'),
     autoRenew: boolean('auto_renew').notNull().default(true),
     expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
+    ...timestamps,
   },
   (table) => [
     uniqueIndex('uq_subscription_user_target').on(table.userId, table.targetType, table.targetId),

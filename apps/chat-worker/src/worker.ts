@@ -8,16 +8,19 @@ import {
 } from '@litomi/events'
 import { closePubSub, connectPubSub } from '@litomi/kv/pubsub'
 import { registerShutdownHandler, registerShutdownSignals } from '@litomi/std'
+import { startErasureLoop } from './erasure'
 import { processChatMessage } from './handler'
 import { markDraining, startHealthServer } from './health'
 
 const healthServer = startHealthServer()
 const consumer = createConsumer('chat-worker')
+const erasureLoop = startErasureLoop()
 
 registerShutdownHandler('probe', () => markDraining())
 registerShutdownHandler('kafka', () => consumer.disconnect())
 registerShutdownHandler('producer', () => disconnectProducer())
 registerShutdownHandler('pubsub', () => closePubSub())
+registerShutdownHandler('erasure', () => erasureLoop.stop())
 registerShutdownHandler('health-server', () => healthServer.stop(true))
 registerShutdownSignals()
 

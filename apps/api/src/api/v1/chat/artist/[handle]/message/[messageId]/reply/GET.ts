@@ -15,7 +15,8 @@ import { requireAuth } from '@/middleware/require-auth'
 import { noStoreCacheControl } from '@/utils/cache-control'
 import { zProblemValidator } from '@/utils/validator'
 
-import { mapReply, requireOwnedArtist } from '../../../../../lib'
+import { requireOwnedArtist } from '../../../../../access'
+import { mapReply } from '../../../../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -44,19 +45,17 @@ route.get('/', ...middlewares, async (c) => {
     const fan = fans.get(row.senderId)
     return {
       ...mapReply(row),
-      ...(fan && {
-        fan: {
-          id: fan.id,
-          nickname: fan.nickname,
-          imageURL: fan.imageURL,
-        },
-      }),
+      fan: fan && {
+        id: fan.id,
+        nickname: fan.nickname,
+        imageURL: fan.imageURL,
+      },
     }
   })
 
   const response = {
     replies,
-    nextCursor: rows.length === limit ? (rows.at(-1)?.messageId ?? null) : null,
+    nextCursor: rows.length === limit ? rows.at(-1)?.messageId : undefined,
   } satisfies GETV1ChatRepliesResponse
 
   return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })

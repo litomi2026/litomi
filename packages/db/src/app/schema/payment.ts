@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm'
 import { bigint, index, pgEnum, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { createdAt, timestamps } from '../../columns'
 import { invoiceTable } from './invoice'
 import { userTable } from './user'
 
@@ -31,16 +32,14 @@ export const paymentTable = pgTable(
     paidAt: timestamp('paid_at', { precision: 3, withTimezone: true }),
     // Set when fully refunded; partial refunds live in payment_refund and keep status 'paid'.
     refundedAt: timestamp('refunded_at', { precision: 3, withTimezone: true }),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
+    ...timestamps,
   },
   (table) => [
     index('idx_payment_user').on(table.userId),
     uniqueIndex('uq_payment_invoice_pending').on(table.invoiceId).where(sql`status = 'pending'`),
     uniqueIndex('uq_payment_provider_txn').on(table.provider, table.providerTxnId),
+    index('idx_payment_pending_created').on(table.createdAt).where(sql`status = 'pending'`),
+    index('idx_payment_paid_at').on(table.paidAt),
   ],
 ).enableRLS()
 
@@ -57,9 +56,12 @@ export const paymentRefundTable = pgTable(
     currency: varchar({ length: 3 }).notNull().default('KRW'),
     reason: varchar({ length: 256 }),
     refundedAt: timestamp('refunded_at', { precision: 3, withTimezone: true }).notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
-  (table) => [index('idx_payment_refund_payment').on(table.paymentId)],
+  (table) => [
+    index('idx_payment_refund_payment').on(table.paymentId),
+    index('idx_payment_refund_refunded_at').on(table.refundedAt),
+  ],
 ).enableRLS()
 
 export const webhookEventTable = pgTable(
@@ -71,7 +73,7 @@ export const webhookEventTable = pgTable(
     eventId: varchar('event_id', { length: 128 }).notNull(),
     type: varchar({ length: 64 }).notNull(),
     payload: varchar({ length: 4096 }),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    createdAt,
   },
   (table) => [uniqueIndex('uq_webhook_event_provider_event').on(table.provider, table.eventId)],
 ).enableRLS()

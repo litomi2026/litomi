@@ -4,19 +4,16 @@ import {
   type POSTV1ChatSubscriptionResponse,
   postV1ChatSubscriptionBodySchema,
 } from '@litomi/contracts'
-import { getChatArtistByHandle, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
+import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { ensureOpenInvoice, voidOpenInvoice } from '@litomi/db/app/query/invoice'
 import { ensureInvoicePayment, markPaymentFailed } from '@litomi/db/app/query/payment'
 import { getActivePaymentMethodForUser } from '@litomi/db/app/query/payment-method'
+import { confirmPayment, ensureSubscription, getSubscription, setAutoRenew } from '@litomi/db/app/query/subscription'
 import {
   addSubscriptionPeriod,
-  confirmPayment,
-  ensureSubscription,
-  getSubscription,
   RENEWAL_GRACE_MS,
   SUBSCRIPTION_TARGET_CHAT_ARTIST,
-  setAutoRenew,
-} from '@litomi/db/app/query/subscription'
+} from '@litomi/domain/subscription/policy'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -26,7 +23,7 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toSubscriptionDTO } from '../../../lib'
+import { toSubscriptionDTO } from '../../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -55,21 +52,27 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 403 })
   }
 
-  if (await hasActiveChatSubscription(userId, artist.id)) {
-    const current = await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
-
-    if (current) {
-      const resumed = current.autoRenew
-        ? current
-        : ((await setAutoRenew(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id, true)) ?? current)
-
-      return c.json({
-        subscription: toSubscriptionDTO(resumed),
-      } satisfies POSTV1ChatSubscriptionResponse)
-    }
+  const subscriptionKey = {
+    userId,
+    targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+    targetId: artist.id,
   }
 
-  const paymentMethod = await getActivePaymentMethodForUser(paymentMethodId, userId)
+  // 만료 전 재구독 = 새 결제 없이 autoRenew 재개.
+  const current = await getSubscription(subscriptionKey)
+
+  if (current && current.expiresAt.getTime() > Date.now()) {
+    const resumed = current.autoRenew ? current : ((await setAutoRenew(subscriptionKey, true)) ?? current)
+
+    return c.json({
+      subscription: toSubscriptionDTO(resumed),
+    } satisfies POSTV1ChatSubscriptionResponse)
+  }
+
+  const paymentMethod = await getActivePaymentMethodForUser({
+    id: paymentMethodId,
+    userId,
+  })
 
   if (!paymentMethod) {
     return problemResponse(c, {
@@ -105,6 +108,8 @@ route.post('/', ...middlewares, async (c) => {
     const invoice = await ensureOpenInvoice({
       subscriptionId: subscription.id,
       userId,
+      targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+      targetId: artist.id,
       periodStart,
       periodEnd: addSubscriptionPeriod(periodStart),
       amount: artist.priceAmount,
@@ -150,7 +155,7 @@ route.post('/', ...middlewares, async (c) => {
     }
   }
 
-  const subscription = await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
+  const subscription = await getSubscription(subscriptionKey)
 
   if (!subscription) {
     return problemResponse(c, { status: 500 })

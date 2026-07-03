@@ -1,8 +1,42 @@
-import { and, eq, max, sql, sum } from 'drizzle-orm'
+import { and, desc, eq, sql, sum } from 'drizzle-orm'
 import { db } from '../db'
 import { invoiceTable } from '../schema/invoice'
 import { paymentRefundTable, paymentTable } from '../schema/payment'
 import { subscriptionTable } from '../schema/subscription'
+import { type SubscriptionState, subscriptionStateColumns } from './subscription'
+
+export interface RefundCandidate {
+  paymentId: string
+  amount: number
+  paidAt: Date | null
+  periodStart: Date
+  periodEnd: Date
+}
+
+// 청약철회 후보 = 구독의 가장 최근 결제(현재 기간). paid invoice ⨝ paid payment.
+export async function getLatestPaidInvoicePayment(subscriptionId: number): Promise<RefundCandidate | undefined> {
+  const [row] = await db
+    .select({
+      paymentId: paymentTable.paymentId,
+      amount: paymentTable.amount,
+      paidAt: paymentTable.paidAt,
+      periodStart: invoiceTable.periodStart,
+      periodEnd: invoiceTable.periodEnd,
+    })
+    .from(invoiceTable)
+    .innerJoin(paymentTable, eq(paymentTable.invoiceId, invoiceTable.id))
+    .where(
+      and(
+        eq(invoiceTable.subscriptionId, subscriptionId),
+        eq(invoiceTable.status, 'paid'),
+        eq(paymentTable.status, 'paid'),
+      ),
+    )
+    .orderBy(desc(invoiceTable.periodStart))
+    .limit(1)
+
+  return row
+}
 
 export interface RemoteRefund {
   providerRefundId: string
@@ -11,12 +45,17 @@ export interface RemoteRefund {
   refundedAt: Date
 }
 
-export async function applyPaymentRefunds(paymentId: string, refunds: RemoteRefund[]): Promise<void> {
+// 환불을 원장에 반영하고 invoice·subscription을 재계산한다. 반환값은 갱신된 구독 상태
+// (구독과 무관한 결제 등으로 구독까지 닿지 못하면 undefined).
+export async function applyPaymentRefunds(
+  paymentId: string,
+  refunds: RemoteRefund[],
+): Promise<SubscriptionState | undefined> {
   if (refunds.length === 0) {
-    return
+    return undefined
   }
 
-  await db.transaction(async (tx) => {
+  return db.transaction(async (tx) => {
     const [payment] = await tx
       .select({
         id: paymentTable.id,
@@ -28,7 +67,7 @@ export async function applyPaymentRefunds(paymentId: string, refunds: RemoteRefu
       .where(eq(paymentTable.paymentId, paymentId))
 
     if (!payment) {
-      return
+      return undefined
     }
 
     await tx
@@ -64,42 +103,41 @@ export async function applyPaymentRefunds(paymentId: string, refunds: RemoteRefu
     }
 
     if (payment.invoiceId === null) {
-      return
+      return undefined
     }
 
+    // 재시도(웹훅이 먼저 반영한 경우 등)에도 같은 결과로 수렴하도록 status 조건 없이 갱신한다.
     const [invoice] = fullyRefunded
       ? await tx
           .update(invoiceTable)
           .set({ status: 'void' })
-          .where(and(eq(invoiceTable.id, payment.invoiceId), eq(invoiceTable.status, 'paid')))
+          .where(eq(invoiceTable.id, payment.invoiceId))
           .returning({ subscriptionId: invoiceTable.subscriptionId })
       : await tx
           .update(invoiceTable)
           .set({
             periodEnd: sql`greatest(${invoiceTable.periodStart}, least(${invoiceTable.periodEnd}, ${lastRefundedAt}::timestamptz))`,
           })
-          .where(and(eq(invoiceTable.id, payment.invoiceId), eq(invoiceTable.status, 'paid')))
+          .where(eq(invoiceTable.id, payment.invoiceId))
           .returning({ subscriptionId: invoiceTable.subscriptionId })
 
     if (!invoice || invoice.subscriptionId === null) {
-      return
+      return undefined
     }
 
-    const [remaining] = await tx
-      .select({ maxPeriodEnd: max(invoiceTable.periodEnd) })
-      .from(invoiceTable)
-      .where(and(eq(invoiceTable.subscriptionId, invoice.subscriptionId), eq(invoiceTable.status, 'paid')))
+    // 남은 paid 기간으로 만료를 재계산 — 전부 사라졌으면 즉시 canceled.
+    const remainingEnd = sql`(select max(${invoiceTable.periodEnd}) from ${invoiceTable} where ${invoiceTable.subscriptionId} = ${invoice.subscriptionId} and ${invoiceTable.status} = 'paid')`
 
-    const now = new Date()
-    const expiresAt = remaining?.maxPeriodEnd ?? now
-
-    await tx
+    const [subscription] = await tx
       .update(subscriptionTable)
       .set({
         autoRenew: false,
-        expiresAt,
-        ...(expiresAt.getTime() <= now.getTime() && { status: 'canceled' as const }),
+        expiresAt: sql`coalesce(${remainingEnd}, now())`,
+        status: sql`case when coalesce(${remainingEnd}, now()) <= now() then 'canceled' else ${subscriptionTable.status} end`,
       })
       .where(eq(subscriptionTable.id, invoice.subscriptionId))
+      .returning(subscriptionStateColumns)
+
+    return subscription
   })
 }

@@ -1,6 +1,8 @@
 import { chatHandleParamSchema, type GETV1ChatArtistResponse } from '@litomi/contracts'
-import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
-import { getSubscription, SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/db/app/query/subscription'
+import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
+import { getSubscription } from '@litomi/db/app/query/subscription'
+import { resolveReplyTextLimit } from '@litomi/domain/chat/policy'
+import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -11,15 +13,12 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toArtistBrief, toSubscriptionDTO } from '../../lib'
+import { toArtistBrief, toSubscriptionDTO } from '../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
 const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', chatHandleParamSchema))
 
-// Resolves a handle to the artist's id and the viewer's role. The client needs the
-// artistId to build realtime room ids (b:{id} / c:{id}) and the role to pick the UI
-// (studio vs fan room) — neither is derivable from the auth'd userId alone.
 route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle } = c.req.valid('param')
@@ -30,15 +29,35 @@ route.get('/', ...middlewares, async (c) => {
   }
 
   const isOwner = artist.userId === userId
-  const subscription = isOwner ? undefined : await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
-  const entitled = isOwner || (subscription !== undefined && subscription.expiresAt.getTime() > Date.now())
+
+  const [subscription, intervals] = isOwner
+    ? [undefined, []]
+    : await Promise.all([
+        getSubscription({
+          userId,
+          targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+          targetId: artist.id,
+        }),
+        listPaidIntervals({
+          userId,
+          artistId: artist.id,
+        }),
+      ])
+
+  // 열람권과 답장 길이 한도는 같은 정본(paid invoice 구간)에서 함께 나온다 — 한도가 있으면 결제 중.
+  const replyTextLimit = isOwner ? undefined : resolveReplyTextLimit(intervals, new Date())
+  const entitled = isOwner || replyTextLimit !== undefined
 
   const response = {
     artist: { ...toArtistBrief(artist), description: artist.description },
     isOwner,
     entitled,
-    price: artist.priceAmount > 0 ? { amount: artist.priceAmount, currency: artist.priceCurrency } : null,
-    subscription: subscription ? toSubscriptionDTO(subscription) : null,
+    price:
+      artist.isActive && artist.priceAmount > 0
+        ? { amount: artist.priceAmount, currency: artist.priceCurrency }
+        : undefined,
+    subscription: subscription && toSubscriptionDTO(subscription),
+    replyTextLimit,
   } satisfies GETV1ChatArtistResponse
 
   return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })

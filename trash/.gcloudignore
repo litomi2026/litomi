@@ -53,5 +53,4 @@ vercel.json
 render.yaml
 docker-compose.yml
 .prettierrc*
-.eslintrc*
 tsconfig.tsbuildinfo

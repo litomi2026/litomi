@@ -5,7 +5,7 @@ import {
   type GETV1ChatMessagesResponse,
   getV1ChatMessagesQuerySchema,
 } from '@litomi/contracts'
-import { getChatArtistByHandle, hasActiveChatSubscription, listPaidIntervals } from '@litomi/db/app/query/chat'
+import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import {
   type ChatMessageRow,
   countUnreadByStreams,
@@ -15,7 +15,6 @@ import {
   messageIdAtOrAfter,
   type TimelineWindow,
   toMessageReplyStreamId,
-  type UnreadFilter,
 } from '@litomi/db/chat/query'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -27,7 +26,8 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { mapMessage, mapReply } from '../../../lib'
+import { resolveTimelineAccess } from '../../../access'
+import { mapMessage, mapReply } from '../../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -53,30 +53,29 @@ route.get('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 404 })
   }
 
-  const isOwner = artist.userId === userId
-  let windows: TimelineWindow[] | undefined
+  const access = await resolveTimelineAccess(userId, artist)
 
-  if (!isOwner && !(await hasActiveChatSubscription(userId, artist.id))) {
-    const intervals = await listPaidIntervals(userId, artist.id)
-
-    if (intervals.length === 0) {
-      return problemResponse(c, { status: 403 })
-    }
-
-    windows = intervals.map((interval) => ({
-      fromId: messageIdAtOrAfter(interval.startedAt),
-      toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
-    }))
+  if (!access) {
+    return problemResponse(c, { status: 403 })
   }
+
+  const windows: TimelineWindow[] | undefined =
+    access.kind === 'lapsed'
+      ? access.intervals.map((interval) => ({
+          fromId: messageIdAtOrAfter(interval.startedAt),
+          toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
+        }))
+      : undefined
 
   const messages = await listBroadcastMessages(artist.id, { windows, before, after, limit })
   const messageIds = messages.map((message) => message.messageId)
+  const isOwner = access.kind === 'owner'
 
   const result = {
     messages: isOwner
       ? await buildOwnerMessages(artist.id, userId, messages, messageIds)
       : await buildFanMessages(artist.id, artist.userId, userId, messages, messageIds),
-    nextCursor: messages.length === limit ? (messages.at(-1)?.messageId ?? null) : null,
+    nextCursor: messages.length === limit ? messages.at(-1)?.messageId : undefined,
   } satisfies GETV1ChatMessagesResponse
 
   return c.json(result, { headers: { 'Cache-Control': noStoreCacheControl } })
@@ -93,16 +92,10 @@ async function buildOwnerMessages(
     return []
   }
 
-  const cursors = await getReadCursors(
+  const unread = await countUnreadByStreams(
     ownerUserId,
     messageIds.map((messageId) => toMessageReplyStreamId(artistId, messageId)),
   )
-
-  const filters: UnreadFilter[] = messageIds.map((messageId) => {
-    const streamId = toMessageReplyStreamId(artistId, messageId)
-    return { streamId, sinceMessageId: cursors.get(streamId), excludeSenderId: ownerUserId }
-  })
-  const unread = await countUnreadByStreams(filters)
 
   return messages.map((message) => ({
     message: mapMessage(message),
@@ -111,9 +104,10 @@ async function buildOwnerMessages(
 }
 
 // Fan view: each message plus the fan's own replies and whether the artist has read them.
+// artistUserId null = 탈퇴한 아티스트의 아카이브 — 읽음 커서가 파기되어 읽음 표시는 생략된다.
 async function buildFanMessages(
   artistId: number,
-  artistUserId: number,
+  artistUserId: number | null,
   fanId: number,
   messages: ChatMessageRow[],
   messageIds: string[],
@@ -122,7 +116,7 @@ async function buildFanMessages(
     return []
   }
 
-  const replyRows = await listOwnRepliesForMessages(artistId, fanId, messageIds)
+  const replyRows = await listOwnRepliesForMessages({ artistId, fanId, messageIds })
 
   // Group the fan's replies by the message they target (NOT the reply's own id), so a
   // message's myReplies can be looked up by message.messageId below.
@@ -140,12 +134,13 @@ async function buildFanMessages(
   // Read the artist's reply-room cursor only for messages the fan actually replied to,
   // to tell whether their latest reply has been read (A · room-level read receipt).
   const repliedMessageIds = [...repliesByMessage.keys()]
-  const artistCursors = repliedMessageIds.length
-    ? await getReadCursors(
-        artistUserId,
-        repliedMessageIds.map((messageId) => toMessageReplyStreamId(artistId, messageId)),
-      )
-    : new Map<string, string>()
+  const artistCursors =
+    repliedMessageIds.length && artistUserId !== null
+      ? await getReadCursors(
+          artistUserId,
+          repliedMessageIds.map((messageId) => toMessageReplyStreamId(artistId, messageId)),
+        )
+      : new Map<string, string>()
 
   return messages.map((message) => {
     const myReplies = repliesByMessage.get(message.messageId)

@@ -1,4 +1,4 @@
-import { and, count, eq, gt, inArray, ne, or, sql } from 'drizzle-orm'
+import { and, count, eq, gt, inArray, isNull, ne, or, sql } from 'drizzle-orm'
 
 import { chatDB } from '../db'
 import { chatMessageTable, chatReadCursorTable } from '../schema'
@@ -22,7 +22,13 @@ export async function getReadCursors(userId: number, streamIds: string[]): Promi
   return new Map(rows.map((row) => [row.streamId, row.lastReadMessageId]))
 }
 
-export async function setReadCursor(userId: number, streamId: string, lastReadMessageId: string): Promise<void> {
+export interface SetReadCursorInput {
+  userId: number
+  streamId: string
+  lastReadMessageId: string
+}
+
+export async function setReadCursor({ userId, streamId, lastReadMessageId }: SetReadCursorInput): Promise<void> {
   await chatDB
     .insert(chatReadCursorTable)
     .values({ userId, streamId, lastReadMessageId })
@@ -36,38 +42,24 @@ export async function setReadCursor(userId: number, streamId: string, lastReadMe
     })
 }
 
+export interface SetFanReadWatermarkInput {
+  fanId: number
+  artistId: number
+  lastReadMessageId: string
+}
+
 // 팬의 브로드캐스트 읽음 워터마크는 대표 스트림인 공지방 ID(b:{artistId})에 저장합니다.
-export function setFanReadWatermark(fanId: number, artistId: number, lastReadMessageId: string): Promise<void> {
-  return setReadCursor(fanId, toBroadcastStreamId(artistId), lastReadMessageId)
+export function setFanReadWatermark({ fanId, artistId, lastReadMessageId }: SetFanReadWatermarkInput): Promise<void> {
+  return setReadCursor({ userId: fanId, streamId: toBroadcastStreamId(artistId), lastReadMessageId })
 }
 
-export interface UnreadFilter {
-  streamId: string
-  sinceMessageId?: string | null
-  // 조회자 본인이 보낸 메시지는 안읽음 카운트에서 제외합니다.
-  excludeSenderId?: number
-}
-
-// 여러 방의 안읽음 뱃지 숫자를 단 1번의 쿼리(OR & GROUP BY)로 계산하여 N+1을 방지합니다.
+// 여러 방의 안읽음 뱃지 숫자를 읽음 커서 조인까지 포함해 단 1번의 쿼리로 계산합니다(N+1 방지).
+// 커서가 없는 방은 전체가 안읽음이고, 조회자 본인이 보낸 메시지는 세지 않습니다.
 // 안읽음이 0인 스트림은 반환 Map에 포함되지 않습니다.
-export async function countUnreadByStreams(filters: UnreadFilter[]): Promise<Map<string, number>> {
-  if (filters.length === 0) {
+export async function countUnreadByStreams(userId: number, streamIds: string[]): Promise<Map<string, number>> {
+  if (streamIds.length === 0) {
     return new Map()
   }
-
-  const predicates = filters.map((filter) => {
-    const conditions = [eq(chatMessageTable.streamId, filter.streamId)]
-
-    if (filter.sinceMessageId) {
-      conditions.push(gt(chatMessageTable.messageId, filter.sinceMessageId))
-    }
-
-    if (filter.excludeSenderId !== undefined) {
-      conditions.push(ne(chatMessageTable.senderId, filter.excludeSenderId))
-    }
-
-    return and(...conditions)
-  })
 
   const rows = await chatDB
     .select({
@@ -75,7 +67,20 @@ export async function countUnreadByStreams(filters: UnreadFilter[]): Promise<Map
       unread: count(),
     })
     .from(chatMessageTable)
-    .where(or(...predicates))
+    .leftJoin(
+      chatReadCursorTable,
+      and(eq(chatReadCursorTable.userId, userId), eq(chatReadCursorTable.streamId, chatMessageTable.streamId)),
+    )
+    .where(
+      and(
+        inArray(chatMessageTable.streamId, streamIds),
+        ne(chatMessageTable.senderId, userId),
+        or(
+          isNull(chatReadCursorTable.lastReadMessageId),
+          gt(chatMessageTable.messageId, chatReadCursorTable.lastReadMessageId),
+        ),
+      ),
+    )
     .groupBy(chatMessageTable.streamId)
 
   return new Map(rows.map((row) => [row.streamId, Number(row.unread)]))
