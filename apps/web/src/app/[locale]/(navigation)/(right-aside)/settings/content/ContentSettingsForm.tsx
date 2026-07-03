@@ -51,7 +51,7 @@ export default function ContentSettingsForm({ initialSettings }: Props) {
   return (
     <form className="grid gap-3" onSubmit={handleSubmit}>
       <SettingField
-        description="감상 기록을 자동으로 서버에 저장하여 기기간 공유해요"
+        description="감상 기록을 자동으로 서버에 저장하여 기기간 공유해요."
         icon={<History className="size-4 shrink-0 text-zinc-400" />}
         title="감상 기록 자동 저장"
       >
@@ -64,7 +64,7 @@ export default function ContentSettingsForm({ initialSettings }: Props) {
         />
       </SettingField>
       <SettingField
-        description="성인인증 완료 후 자동으로 숨겨지는 광고를 다시 표시해요"
+        description="성인인증 완료 후 자동으로 숨겨지는 광고를 다시 표시해요. 작품 뷰어 페이지에선 항상 표시돼요."
         icon={<Eye className="size-4 shrink-0 text-zinc-400" />}
         title="광고 보기"
       >

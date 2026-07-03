@@ -98,7 +98,7 @@ export async function fetchBBatonProfile(accessToken: string, tokenType = 'Beare
 
   const parsed = profileSchema.safeParse(json)
   if (!parsed.success) {
-    console.error('bbaton profile response invalid:', parsed.error)
+    console.error('bbaton profile response invalid:', parsed.error, json)
     throw new Error('BBATON_PROFILE_RESPONSE_INVALID')
   }
 

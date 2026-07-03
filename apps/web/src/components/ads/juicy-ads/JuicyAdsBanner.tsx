@@ -7,10 +7,9 @@ import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import LoginPageLink from '@/components/LoginPageLink'
-import useMounted from '@/hook/useMounted'
 import { Link } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
-import { shouldShowAds } from '@/utils/adult-verification'
+import { isAdultVerified } from '@/utils/adult-verification'
 import { JUICY_ADS_BANNER_ID } from './constants'
 import JuicyAdsScript from './JuicyAdsScript'
 import JuicyAdsSlot from './JuicyAdsSlot'
@@ -21,13 +20,13 @@ type Props = {
   className?: string
   title?: ReactNode
   layout?: readonly JuicyAdsLayoutNode[]
+  placement?: 'default' | 'viewer'
   onAdClick?: () => void
 }
 
-export default function JuicyAdsBanner({ className, title, layout, onAdClick }: Props) {
-  const isMounted = useMounted()
+export default function JuicyAdsBanner({ className, title, layout, placement, onAdClick }: Props) {
   const { data: me } = useMeQuery()
-  const adsVisible = isMounted && shouldShowAds(me)
+  const adsVisible = shouldShowAds(me) || placement === 'viewer'
 
   if (!adsVisible) {
     return null
@@ -91,4 +90,20 @@ function renderLayoutNode(node: JuicyAdsLayoutNode, key: string, onAdClick?: () 
 
 function renderLayoutNodes(layout: readonly JuicyAdsLayoutNode[], onAdClick?: () => void, path = 'layout') {
   return layout.map((node, index) => renderLayoutNode(node, `${path}-${index}`, onAdClick))
+}
+
+function shouldShowAds(me: GETV1MeResponse | null | undefined): boolean {
+  if (me === undefined) {
+    return false
+  }
+
+  if (me === null) {
+    return true
+  }
+
+  if (isAdultVerified(me)) {
+    return me.settings.adultVerifiedAdVisible
+  }
+
+  return true
 }
