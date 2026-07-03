@@ -1,7 +1,7 @@
 'use client'
 
 import type { ChatRelayMessageDTO } from '@litomi/contracts'
-import { useEffect, useRef } from 'react'
+import { useEffect, useEffectEvent } from 'react'
 import { useChat } from '../_components/ChatProvider'
 
 interface RoomChannelHandlers {
@@ -10,15 +10,12 @@ interface RoomChannelHandlers {
 }
 
 // Subscribes to one WS room for the lifetime of the component (no-op while room is null)
-// and routes that room's events to the handlers. Handlers are kept in a ref so callers
+// and routes that room's events to the handlers. Handlers are effect events, so callers
 // can pass inline closures without resubscribing every render.
 export default function useRoomChannel(room: string | null, handlers: RoomChannelHandlers) {
   const { subscribeRoom, unsubscribeRoom, onMessage, onRevoked } = useChat()
-  const handlersRef = useRef(handlers)
-
-  useEffect(() => {
-    handlersRef.current = handlers
-  })
+  const emitMessage = useEffectEvent((message: ChatRelayMessageDTO) => handlers.onMessage?.(message))
+  const emitRevoked = useEffectEvent(() => handlers.onRevoked?.())
 
   useEffect(() => {
     if (!room) {
@@ -29,13 +26,13 @@ export default function useRoomChannel(room: string | null, handlers: RoomChanne
 
     const offMessage = onMessage((msgRoom, message) => {
       if (msgRoom === room) {
-        handlersRef.current.onMessage?.(message)
+        emitMessage(message)
       }
     })
 
     const offRevoked = onRevoked((revokedRoom) => {
       if (revokedRoom === room) {
-        handlersRef.current.onRevoked?.()
+        emitRevoked()
       }
     })
 

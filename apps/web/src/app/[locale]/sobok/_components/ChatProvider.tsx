@@ -1,7 +1,7 @@
 'use client'
 
 import type { ChatRelayMessageDTO } from '@litomi/contracts'
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { getChatWebSocketURL } from '../_lib/chat'
 
 type ServerMessage =
@@ -47,16 +47,6 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
   const attemptRef = useRef(0)
   const lastActivityRef = useRef(Date.now())
   const unmountedRef = useRef(false)
-
-  const value = {
-    myUserId,
-    isConnected,
-    connectionId,
-    subscribeRoom,
-    unsubscribeRoom,
-    onMessage,
-    onRevoked,
-  }
 
   const stopHeartbeat = useCallback(() => {
     if (heartbeatTimerRef.current) {
@@ -140,52 +130,63 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     ws.onclose = () => scheduleReconnect()
   }, [stopHeartbeat])
 
-  function send(data: unknown) {
+  const send = useCallback((data: unknown) => {
     const ws = wsRef.current
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(data))
     }
-  }
+  }, [])
 
-  function subscribeRoom(room: string) {
-    const counts = roomCountsRef.current
-    const next = (counts.get(room) ?? 0) + 1
-    counts.set(room, next)
+  const subscribeRoom = useCallback(
+    (room: string) => {
+      const counts = roomCountsRef.current
+      const next = (counts.get(room) ?? 0) + 1
+      counts.set(room, next)
 
-    if (next === 1) {
-      send({ t: 'sub', room })
-    }
-  }
+      if (next === 1) {
+        send({ t: 'sub', room })
+      }
+    },
+    [send],
+  )
 
-  function unsubscribeRoom(room: string) {
-    const counts = roomCountsRef.current
-    const current = counts.get(room)
+  const unsubscribeRoom = useCallback(
+    (room: string) => {
+      const counts = roomCountsRef.current
+      const current = counts.get(room)
 
-    if (!current) {
-      return
-    }
+      if (!current) {
+        return
+      }
 
-    if (current <= 1) {
-      counts.delete(room)
-      send({ t: 'unsub', room })
-    } else {
-      counts.set(room, current - 1)
-    }
-  }
+      if (current <= 1) {
+        counts.delete(room)
+        send({ t: 'unsub', room })
+      } else {
+        counts.set(room, current - 1)
+      }
+    },
+    [send],
+  )
 
-  function onMessage(listener: RealtimeListener) {
+  const onMessage = useCallback((listener: RealtimeListener) => {
     listenersRef.current.add(listener)
     return () => {
       listenersRef.current.delete(listener)
     }
-  }
+  }, [])
 
-  function onRevoked(listener: RevokedListener) {
+  const onRevoked = useCallback((listener: RevokedListener) => {
     revokedListenersRef.current.add(listener)
     return () => {
       revokedListenersRef.current.delete(listener)
     }
-  }
+  }, [])
+
+  const value = useMemo(
+    () => ({ myUserId, isConnected, connectionId, subscribeRoom, unsubscribeRoom, onMessage, onRevoked }),
+    [myUserId, isConnected, connectionId, subscribeRoom, unsubscribeRoom, onMessage, onRevoked],
+  )
 
   function scheduleReconnect() {
     if (unmountedRef.current) {
