@@ -8,9 +8,9 @@ export default function useSubscribeMutation(handle: string) {
 
   return useMutation({
     mutationFn: async ({ paymentMethodId }: { paymentMethodId: number }) => {
-      const pathname = `/api/v1/chat/artist/${handle}/subscription`
+      const url = `/api/v1/chat/artist/${handle}/subscription`
 
-      const { data } = await fetchAPIData<POSTV1ChatSubscriptionResponse>(pathname, {
+      const { data } = await fetchAPIData<POSTV1ChatSubscriptionResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ paymentMethodId }),
@@ -21,6 +21,8 @@ export default function useSubscribeMutation(handle: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.chatArtist(handle) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.chatThreads })
+      // 재구독 시 lapsed 창(paid-window)으로 잘린 타임라인 캐시를 버리고 전체를 다시 받는다.
+      queryClient.invalidateQueries({ queryKey: QueryKeys.chatMessages(handle) })
     },
   })
 }
