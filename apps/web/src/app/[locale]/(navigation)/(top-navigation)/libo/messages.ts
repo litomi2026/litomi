@@ -43,6 +43,8 @@ export const messages = {
         tabsAriaLabel: '리보 탭',
       },
       earn: {
+        adultGateDescription: '리보를 적립하려면 익명 성인인증이 필요해요',
+        loginPrompt: '로그인하면 광고를 보고 리보를 적립할 수 있어요',
         loginToast: '로그인하면 리보가 적립돼요',
         verifyToast: '보안 검증을 완료해 주세요',
         earnedToast: '{earned} 리보 적립됐어요',
@@ -190,6 +192,8 @@ export const messages = {
         tabsAriaLabel: 'Libo Tabs',
       },
       earn: {
+        adultGateDescription: 'Anonymous adult verification is required to earn Libo.',
+        loginPrompt: 'Log in to earn Libo by viewing ads.',
         loginToast: 'Log in to earn Libo.',
         verifyToast: 'Please complete security verification.',
         earnedToast: '{earned} Libo earned.',
@@ -338,6 +342,8 @@ export const messages = {
         tabsAriaLabel: 'Libo タブ',
       },
       earn: {
+        adultGateDescription: 'Libo を獲得するには匿名成人認証が必要です',
+        loginPrompt: 'ログインすると広告を見て Libo を獲得できます。',
         loginToast: 'ログインして Libo を獲得しましょう。',
         verifyToast: 'セキュリティ認証を完了してください。',
         earnedToast: '{earned} Libo 獲得しました。',
@@ -486,6 +492,8 @@ export const messages = {
         tabsAriaLabel: 'Libo 标签页',
       },
       earn: {
+        adultGateDescription: '赚取 Libo 需要匿名成人认证。',
+        loginPrompt: '登录后即可通过观看广告赚取 Libo。',
         loginToast: '登录以赚取 Libo。',
         verifyToast: '请完成安全验证。',
         earnedToast: '赚取了 {earned} Libo。',

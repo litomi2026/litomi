@@ -5,6 +5,7 @@ import type { NativeGridSponsor } from '@litomi/domain/sponsor/native-grid'
 import { useTranslations } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
@@ -62,15 +63,18 @@ export default function NewMangaList({ nativeGridSponsor, page }: Props) {
   }
 
   return (
-    <div className={`flex-1 grid ${MANGA_GRID_COLUMN.card} gap-2`}>
-      {items.map((item) => {
-        if (item.type === 'native-grid-sponsor') {
-          return <NativeGridSponsorCard key={item.key} sponsor={item.sponsor} />
-        }
+    <>
+      <JuicyAdsBanner />
+      <div className={`flex-1 grid ${MANGA_GRID_COLUMN.card} gap-2`}>
+        {items.map((item) => {
+          if (item.type === 'native-grid-sponsor') {
+            return <NativeGridSponsorCard key={item.key} sponsor={item.sponsor} />
+          }
 
-        return <MangaCard index={item.mangaIndex} key={item.key} manga={item.manga} />
-      })}
-      <MangaCardDonation />
-    </div>
+          return <MangaCard index={item.mangaIndex} key={item.key} manga={item.manga} />
+        })}
+        <MangaCardDonation />
+      </div>
+    </>
   )
 }

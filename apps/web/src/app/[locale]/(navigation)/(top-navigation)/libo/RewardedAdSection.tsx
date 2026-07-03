@@ -10,9 +10,11 @@ import ms from 'ms'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'
 import AdsterraNativeBanner from '@/components/ads/adsterra/AdsterraNativeBanner'
 import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
+import JuicyAdsScript from '@/components/ads/juicy-ads/JuicyAdsScript'
 import JuicyAdsSlot from '@/components/ads/juicy-ads/JuicyAdsSlot'
 import type { AdClickResult } from '@/components/ads/types'
 import TurnstileWidget from '@/components/TurnstileWidget'
@@ -20,6 +22,7 @@ import { isAdultVerificationRequiredProblem } from '@/lib/react-query/QueryProvi
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import usePointsTurnstileQuery from '@/query/usePointsTurnstileQuery'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { fetchAPIData } from '@/utils/api-request'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 
@@ -30,7 +33,8 @@ export default function RewardedAdSection() {
   const turnstileRef = useRef<TurnstileInstance>(null)
   const { data: me } = useMeQuery()
   const isLoggedIn = Boolean(me)
-  const pointsTurnstile = usePointsTurnstileQuery(isLoggedIn)
+  const canAccess = hasAdultAccess(me)
+  const pointsTurnstile = usePointsTurnstileQuery(isLoggedIn && canAccess)
   const t = useTranslations('Libo.earn')
   const queryClient = useQueryClient()
 
@@ -143,6 +147,22 @@ export default function RewardedAdSection() {
     return t('turnstileRequired')
   }
 
+  if (me === undefined) {
+    return null
+  }
+
+  if (me === null) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-zinc-500">{t('loginPrompt')}</p>
+      </div>
+    )
+  }
+
+  if (!canAccess) {
+    return <AdultVerificationGate description={t('adultGateDescription')} />
+  }
+
   return (
     <div className="flex flex-col gap-4">
       {/* 안내 문구 */}
@@ -175,6 +195,7 @@ export default function RewardedAdSection() {
       </details>
 
       {/* 광고 영역 */}
+      <JuicyAdsScript />
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
         <JuicyAdsSlot
           adSlotId={AD_SLOTS.BANNER_308X286.id}
