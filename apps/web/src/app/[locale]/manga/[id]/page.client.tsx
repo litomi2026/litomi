@@ -7,14 +7,9 @@ import { useState } from 'react'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
-import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import { Link } from '@/i18n/navigation'
-import useMeQuery from '@/query/useMeQuery'
-import { shouldShowAds } from '@/utils/adult-verification'
 import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
-import { createLoadingManga } from '@/utils/manga-placeholder'
-
+import Loading from './loading'
 import MangaReader from './MangaReader'
 import usePageMetadata from './usePageMetadata'
 
@@ -28,47 +23,46 @@ type Props = {
 type Translator = ReturnType<typeof useTranslations>
 
 export default function MangaPage({ id, initialManga }: Props) {
-  const [hasBypassedAd, setHasBypassedAd] = useState(false)
-  const { data: me } = useMeQuery()
-  const isAdsVisible = shouldShowAds(me) && !hasBypassedAd
-  const shouldLoadManga = me !== undefined && !isAdsVisible
-  const mangaIds = shouldLoadManga ? [id] : []
-  const { mangaMap, errorMap } = useMangaListCachedQuery({ mangaIds })
+  const [isAdClicked, setIsAdClicked] = useState(false)
+  const { isLoading, mangaMap, errorMap } = useMangaListCachedQuery({ mangaIds: [id] })
   const unlockT = useTranslations('MangaViewer.unlock')
   const metadataT = useTranslations('MangaViewer.metadata')
   const guardT = useTranslations('Common.guard')
 
-  const data = mangaMap.get(id) ?? (shouldLoadManga && !initialManga ? createLoadingManga(id) : undefined)
-  const manga = prepareManga(data, initialManga)
+  const manga = prepareManga(mangaMap.get(id), initialManga)
   const metadata = prepareMetadata(manga, metadataT)
 
   // NOTE: 클라이언트 측에서 메타데이터를 업데이트 해요
   usePageMetadata(metadata)
 
-  if (isAdsVisible) {
+  if (isLoading) {
+    return <Loading />
+  }
+
+  if (isAdultVerificationRequiredError(errorMap.get(id))) {
+    return (
+      <div className="flex h-full">
+        <AdultVerificationGate description={guardT('adultDescription')} />
+      </div>
+    )
+  }
+
+  if (!isAdClicked) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-4">
         <JuicyAdsBanner
           className="flex flex-col gap-3 items-center justify-center"
           layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
-          onAdClick={() => setHasBypassedAd(true)}
+          onAdClick={() => setIsAdClicked(true)}
           title={<p className="text-zinc-300 text-sm">{unlockT('title')}</p>}
         />
         <button
           className="w-full max-w-xs text-sm text-zinc-400 underline p-4"
-          onClick={() => setHasBypassedAd(true)}
+          onClick={() => setIsAdClicked(true)}
           type="button"
         >
           {unlockT('skipAd')}
         </button>
-      </div>
-    )
-  }
-
-  if (isAdultVerificationRequiredError(errorMap.get(id))) {
-    return (
-      <div className="flex min-h-dvh">
-        <AdultVerificationGate description={guardT('adultDescription')} />
       </div>
     )
   }
