@@ -37,16 +37,18 @@ route.get('/', ...middlewares, async (c) => {
       ])
 
   // 열람권과 답장 한도는 같은 정본(paid invoice 구간)에서 함께 나온다 — 한도가 있으면 결제 중.
-  const replyLimit = isOwner ? null : resolveReplyLimit(intervals, new Date())
-  const entitled = isOwner || replyLimit !== null
+  const replyLimit = isOwner ? undefined : resolveReplyLimit(intervals, new Date())
+  const entitled = isOwner || replyLimit !== undefined
 
   const response = {
     artist: { ...toArtistBrief(artist), description: artist.description },
     isOwner,
     entitled,
     price:
-      artist.isActive && artist.priceAmount > 0 ? { amount: artist.priceAmount, currency: artist.priceCurrency } : null,
-    subscription: subscription ? toSubscriptionDTO(subscription) : null,
+      artist.isActive && artist.priceAmount > 0
+        ? { amount: artist.priceAmount, currency: artist.priceCurrency }
+        : undefined,
+    subscription: subscription && toSubscriptionDTO(subscription),
     replyLimit,
   } satisfies GETV1ChatArtistResponse
 

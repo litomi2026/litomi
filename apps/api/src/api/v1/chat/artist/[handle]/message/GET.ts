@@ -75,7 +75,7 @@ route.get('/', ...middlewares, async (c) => {
     messages: isOwner
       ? await buildOwnerMessages(artist.id, userId, messages, messageIds)
       : await buildFanMessages(artist.id, artist.userId, userId, messages, messageIds),
-    nextCursor: messages.length === limit ? messages.at(-1)?.messageId : null,
+    nextCursor: messages.length === limit ? messages.at(-1)?.messageId : undefined,
   } satisfies GETV1ChatMessagesResponse
 
   return c.json(result, { headers: { 'Cache-Control': noStoreCacheControl } })

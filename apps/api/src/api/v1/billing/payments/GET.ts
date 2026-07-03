@@ -29,10 +29,10 @@ route.get('/', ...middlewares, async (c) => {
       status: row.status,
       method: row.method,
       refundedAmount: row.refundedAmount,
-      paidAt: row.paidAt?.toISOString() ?? null,
+      paidAt: row.paidAt?.toISOString(),
       createdAt: row.createdAt.toISOString(),
     })),
-    nextCursor: rows.length === limit ? (rows.at(-1)?.id ?? null) : null,
+    nextCursor: rows.length === limit ? rows.at(-1)?.id : undefined,
   } satisfies GETV1BillingPaymentsResponse
 
   return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })

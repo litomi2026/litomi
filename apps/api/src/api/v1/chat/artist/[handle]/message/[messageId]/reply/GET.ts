@@ -45,19 +45,17 @@ route.get('/', ...middlewares, async (c) => {
     const fan = fans.get(row.senderId)
     return {
       ...mapReply(row),
-      ...(fan && {
-        fan: {
-          id: fan.id,
-          nickname: fan.nickname,
-          imageURL: fan.imageURL,
-        },
-      }),
+      fan: fan && {
+        id: fan.id,
+        nickname: fan.nickname,
+        imageURL: fan.imageURL,
+      },
     }
   })
 
   const response = {
     replies,
-    nextCursor: rows.length === limit ? (rows.at(-1)?.messageId ?? null) : null,
+    nextCursor: rows.length === limit ? rows.at(-1)?.messageId : undefined,
   } satisfies GETV1ChatRepliesResponse
 
   return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })
