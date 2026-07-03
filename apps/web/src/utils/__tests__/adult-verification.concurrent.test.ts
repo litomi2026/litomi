@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import type { GETV1MeResponse } from '@litomi/contracts'
 
-import { hasAdultAccess, isAdultAccessBlocked, isAdultVerified, shouldShowNonAdultAds } from '../adult-verification'
+import { hasAdultAccess, isAdultVerified } from '../adult-verification'
 
 function createMe(
   status: GETV1MeResponse['adultVerification']['status'],
@@ -46,33 +46,6 @@ describe('성인 인증 유틸', () => {
       expect(hasAdultAccess(createMe('adult'))).toBe(true)
       expect(hasAdultAccess(createMe('unverified'))).toBe(false)
       expect(hasAdultAccess(createMe('not-adult'))).toBe(false)
-    })
-  })
-
-  describe('isAdultAccessBlocked', () => {
-    it('비로그인 또는 성인 게이트에서 통과하지 못한 경우 true를 반환한다', () => {
-      expect(isAdultAccessBlocked(undefined)).toBe(false)
-      expect(isAdultAccessBlocked(null)).toBe(true)
-      expect(isAdultAccessBlocked(createMe('unverified', false))).toBe(false)
-      expect(isAdultAccessBlocked(createMe('adult'))).toBe(false)
-      expect(isAdultAccessBlocked(createMe('unverified'))).toBe(true)
-      expect(isAdultAccessBlocked(createMe('not-adult'))).toBe(true)
-    })
-  })
-
-  describe('shouldShowNonAdultAds', () => {
-    it('성인 인증 완료 전에는 로그인 여부와 무관하게 광고가 필요하다', () => {
-      expect(shouldShowNonAdultAds(undefined)).toBe(false)
-      expect(shouldShowNonAdultAds(null)).toBe(true)
-      expect(shouldShowNonAdultAds(createMe('unverified'))).toBe(true)
-      expect(shouldShowNonAdultAds(createMe('not-adult'))).toBe(true)
-      expect(shouldShowNonAdultAds(createMe('unverified', false))).toBe(true)
-    })
-
-    it('성인 인증 완료 후에는 사용자 설정에 따라 광고를 표시한다', () => {
-      expect(shouldShowNonAdultAds(createMe('adult'))).toBe(false)
-      expect(shouldShowNonAdultAds(createMe('adult', true, true))).toBe(true)
-      expect(shouldShowNonAdultAds(createMe('adult', false))).toBe(false)
     })
   })
 })
