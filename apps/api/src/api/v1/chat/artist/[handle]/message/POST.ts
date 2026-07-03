@@ -11,8 +11,6 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toContent } from '../../../lib'
-
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
 
@@ -46,7 +44,7 @@ route.post('/', ...middlewares, async (c) => {
     streamId: toBroadcastStreamId(artist.id),
     senderId: userId,
     contentType: body.contentType,
-    content: toContent(body),
+    content: { text: body.text },
   })
 
   try {

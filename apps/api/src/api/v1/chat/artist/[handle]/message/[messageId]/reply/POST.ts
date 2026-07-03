@@ -1,6 +1,12 @@
 import { chatMessageParamSchema, type POSTV1ChatReplyResponse, postV1ChatReplyBodySchema } from '@litomi/contracts'
-import { getChatArtistByHandle, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
-import { buildChatMessage, chatMessageExists, toBroadcastStreamId, toMessageReplyStreamId } from '@litomi/db/chat/query'
+import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
+import {
+  buildChatMessage,
+  chatMessageExists,
+  countOwnReplies,
+  toBroadcastStreamId,
+  toMessageReplyStreamId,
+} from '@litomi/db/chat/query'
 import { publishChatMessage } from '@litomi/events'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -11,7 +17,7 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toContent } from '../../../../../lib'
+import { resolveReplyLimit } from '../../../../../lib'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -42,20 +48,39 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 403 })
   }
 
-  if (!(await hasActiveChatSubscription(userId, artist.id))) {
+  // 답장 자격과 한도(연속 구독 보너스)는 같은 정본(paid invoice 구간)에서 나온다 —
+  // 현재 결제 구간이 없으면 한도도 없다. 길이는 코드포인트 기준으로 센다.
+  const limit = resolveReplyLimit(await listPaidIntervals(userId, artist.id), new Date())
+
+  if (!limit) {
     return problemResponse(c, { status: 403 })
   }
 
-  // The reply must target an existing message of this artist.
+  if ([...body.text].length > limit.maxTextLength) {
+    return problemResponse(c, {
+      status: 403,
+      detail: `답장은 ${limit.maxTextLength}자까지 보낼 수 있어요.`,
+    })
+  }
+
   if (!(await chatMessageExists(toBroadcastStreamId(artist.id), messageId))) {
     return problemResponse(c, { status: 404 })
   }
 
+  const replyStreamId = toMessageReplyStreamId(artist.id, messageId)
+
+  if ((await countOwnReplies(replyStreamId, userId)) >= limit.maxRepliesPerMessage) {
+    return problemResponse(c, {
+      status: 403,
+      detail: `이 메시지에는 답장을 ${limit.maxRepliesPerMessage}회까지 보낼 수 있어요.`,
+    })
+  }
+
   const message = buildChatMessage({
-    streamId: toMessageReplyStreamId(artist.id, messageId),
+    streamId: replyStreamId,
     senderId: userId,
     contentType: body.contentType,
-    content: toContent(body),
+    content: { text: body.text },
   })
 
   try {
