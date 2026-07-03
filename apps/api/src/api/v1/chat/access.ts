@@ -1,38 +1,10 @@
-import type { ChatReplyLimit } from '@litomi/contracts'
-import { getChatArtistByHandle, listPaidIntervals, type PaidInterval } from '@litomi/db/app/query/chat'
+import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
+import type { PaidInterval } from '@litomi/domain/chat/policy'
 import type { Context } from 'hono'
-import ms from 'ms'
 
 import type { Env } from '@/app'
 
 import { problemResponse } from '@/utils/problem'
-
-// 팬 답장 한도 — 기본 메시지당 3회/30자, 연속 구독 30일을 채울 때마다 +30자, 300자에서 상한.
-// "연속"의 근거는 끊김 없이 이어진 유료 기간(listPaidIntervals의 병합 구간)이므로,
-// 구독이 끊겼다 재개되면 보너스는 처음부터 다시 쌓입니다.
-// 현재 시각을 덮는 유료 구간이 없으면(=답장 자격 없음) undefined를 반환합니다.
-const REPLY_BASE_COUNT = 3
-const REPLY_BASE_TEXT_LENGTH = 30
-const REPLY_BONUS_MAX = 9
-const REPLY_BONUS_UNIT_MS = ms('30 days')
-
-export function resolveReplyLimit(intervals: PaidInterval[], now: Date): ChatReplyLimit | undefined {
-  const current = intervals.find((interval) => interval.startedAt <= now && now < interval.expiresAt)
-
-  if (!current) {
-    return undefined
-  }
-
-  const bonus = Math.min(
-    REPLY_BONUS_MAX,
-    Math.floor((now.getTime() - current.startedAt.getTime()) / REPLY_BONUS_UNIT_MS),
-  )
-
-  return {
-    maxRepliesPerMessage: REPLY_BASE_COUNT,
-    maxTextLength: REPLY_BASE_TEXT_LENGTH * (1 + bonus),
-  }
-}
 
 export type TimelineAccess =
   | { kind: 'entitled' }

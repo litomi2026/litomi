@@ -1,6 +1,7 @@
 import { chatMessageParamSchema, type POSTV1ChatReplyResponse, postV1ChatReplyBodySchema } from '@litomi/contracts'
 import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
 import { buildChatMessage, getReplyGate, toMessageReplyStreamId } from '@litomi/db/chat/query'
+import { REPLY_MAX_PER_MESSAGE, resolveReplyTextLimit } from '@litomi/domain/chat/policy'
 import { publishChatMessage } from '@litomi/events'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -10,8 +11,6 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
-
-import { resolveReplyLimit } from '../../../../../access'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -42,23 +41,23 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 403 })
   }
 
-  // 답장 자격과 한도(연속 구독 보너스)는 같은 정본(paid invoice 구간)에서 나온다 —
-  // 현재 결제 구간이 없으면 한도도 없다. 길이는 코드포인트 기준으로 센다.
+  // 답장 자격과 길이 한도(연속 구독 보너스)는 같은 정본(paid invoice 구간)에서 나온다 —
+  // 현재 결제 구간이 없으면 자격도 없다. 길이는 코드포인트 기준으로 센다.
   const intervals = await listPaidIntervals({
     userId,
     artistId: artist.id,
   })
 
-  const limit = resolveReplyLimit(intervals, new Date())
+  const maxTextLength = resolveReplyTextLimit(intervals, new Date())
 
-  if (!limit) {
+  if (maxTextLength === undefined) {
     return problemResponse(c, { status: 403 })
   }
 
-  if ([...body.text].length > limit.maxTextLength) {
+  if ([...body.text].length > maxTextLength) {
     return problemResponse(c, {
       status: 403,
-      detail: `답장은 ${limit.maxTextLength}자까지 보낼 수 있어요.`,
+      detail: `답장은 ${maxTextLength}자까지 보낼 수 있어요.`,
     })
   }
 
@@ -69,10 +68,10 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 404 })
   }
 
-  if (gate.ownReplyCount >= limit.maxRepliesPerMessage) {
+  if (gate.ownReplyCount >= REPLY_MAX_PER_MESSAGE) {
     return problemResponse(c, {
       status: 403,
-      detail: `이 메시지에는 답장을 ${limit.maxRepliesPerMessage}회까지 보낼 수 있어요.`,
+      detail: `이 메시지에는 답장을 ${REPLY_MAX_PER_MESSAGE}회까지 보낼 수 있어요.`,
     })
   }
 

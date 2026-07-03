@@ -2,13 +2,12 @@ import { decryptSecret } from '@litomi/auth/secret-crypto'
 import type { ChatPayoutDTO, GETV1ChatStudioEarningsResponse } from '@litomi/contracts'
 import { getChatArtistByUserId } from '@litomi/db/app/query/chat'
 import {
-  computeSettlement,
   getPayoutAccount,
   getSettlementActivityOfArtist,
   listPayoutsOfArtist,
-  monthWindowKST,
   type PayoutRow,
 } from '@litomi/db/app/query/payout'
+import { computeSettlement, monthWindowKST } from '@litomi/domain/payout/policy'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
@@ -42,6 +41,7 @@ route.get('/', requireAuth, async (c) => {
   // 정산 내역이 최신순이므로 첫 행이 곧 직전 정산이다.
   const latest = payouts[0]
   const carriedInAmount = latest?.status === 'carried' ? latest.payableAmount : 0
+
   const breakdown = computeSettlement({
     grossAmount: activity.grossAmount,
     refundAmount: activity.refundAmount,

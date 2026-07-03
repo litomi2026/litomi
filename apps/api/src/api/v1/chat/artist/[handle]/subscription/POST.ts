@@ -8,15 +8,12 @@ import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { ensureOpenInvoice, voidOpenInvoice } from '@litomi/db/app/query/invoice'
 import { ensureInvoicePayment, markPaymentFailed } from '@litomi/db/app/query/payment'
 import { getActivePaymentMethodForUser } from '@litomi/db/app/query/payment-method'
+import { confirmPayment, ensureSubscription, getSubscription, setAutoRenew } from '@litomi/db/app/query/subscription'
 import {
   addSubscriptionPeriod,
-  confirmPayment,
-  ensureSubscription,
-  getSubscription,
   RENEWAL_GRACE_MS,
   SUBSCRIPTION_TARGET_CHAT_ARTIST,
-  setAutoRenew,
-} from '@litomi/db/app/query/subscription'
+} from '@litomi/domain/subscription/policy'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 

@@ -1,6 +1,8 @@
 import { chatHandleParamSchema, type GETV1ChatArtistResponse } from '@litomi/contracts'
 import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
-import { getSubscription, SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/db/app/query/subscription'
+import { getSubscription } from '@litomi/db/app/query/subscription'
+import { resolveReplyTextLimit } from '@litomi/domain/chat/policy'
+import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -11,7 +13,6 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { resolveReplyLimit } from '../../access'
 import { toArtistBrief, toSubscriptionDTO } from '../../dto'
 
 const route = new Hono<Env>()
@@ -43,9 +44,9 @@ route.get('/', ...middlewares, async (c) => {
         }),
       ])
 
-  // 열람권과 답장 한도는 같은 정본(paid invoice 구간)에서 함께 나온다 — 한도가 있으면 결제 중.
-  const replyLimit = isOwner ? undefined : resolveReplyLimit(intervals, new Date())
-  const entitled = isOwner || replyLimit !== undefined
+  // 열람권과 답장 길이 한도는 같은 정본(paid invoice 구간)에서 함께 나온다 — 한도가 있으면 결제 중.
+  const replyTextLimit = isOwner ? undefined : resolveReplyTextLimit(intervals, new Date())
+  const entitled = isOwner || replyTextLimit !== undefined
 
   const response = {
     artist: { ...toArtistBrief(artist), description: artist.description },
@@ -56,7 +57,7 @@ route.get('/', ...middlewares, async (c) => {
         ? { amount: artist.priceAmount, currency: artist.priceCurrency }
         : undefined,
     subscription: subscription && toSubscriptionDTO(subscription),
-    replyLimit,
+    replyTextLimit,
   } satisfies GETV1ChatArtistResponse
 
   return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })
