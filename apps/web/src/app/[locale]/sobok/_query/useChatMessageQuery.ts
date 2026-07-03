@@ -24,7 +24,7 @@ export default function useChatMessageQuery(handle: string, options?: { refetchI
         before: pageParam,
       }),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
     enabled: Boolean(handle) && options?.enabled !== false,
     refetchInterval: options?.refetchInterval,
     staleTime: 0,

@@ -11,9 +11,11 @@ type ServerMessage =
   | { t: 'msg'; room: string; data: ChatRelayMessageDTO }
   | { t: 'pong' }
   | { t: 'err'; code: string; message: string }
+  | { t: 'revoked'; room: string }
   | { t: 'reconnect' }
 
 type RealtimeListener = (room: string, message: ChatRelayMessageDTO) => void
+type RevokedListener = (room: string) => void
 
 type ChatContextType = {
   myUserId: number | null
@@ -22,6 +24,7 @@ type ChatContextType = {
   subscribeRoom: (room: string) => void
   unsubscribeRoom: (room: string) => void
   onMessage: (listener: RealtimeListener) => () => void
+  onRevoked: (listener: RevokedListener) => () => void
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined)
@@ -38,6 +41,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
   const wsRef = useRef<WebSocket | null>(null)
   const roomCountsRef = useRef<Map<string, number>>(new Map())
   const listenersRef = useRef<Set<RealtimeListener>>(new Set())
+  const revokedListenersRef = useRef<Set<RevokedListener>>(new Set())
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const heartbeatTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const attemptRef = useRef(0)
@@ -51,6 +55,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     subscribeRoom,
     unsubscribeRoom,
     onMessage,
+    onRevoked,
   }
 
   const stopHeartbeat = useCallback(() => {
@@ -122,6 +127,10 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
         for (const listener of listenersRef.current) {
           listener(msg.room, msg.data)
         }
+      } else if (msg.t === 'revoked') {
+        for (const listener of revokedListenersRef.current) {
+          listener(msg.room)
+        }
       } else if (msg.t === 'reconnect') {
         ws.close()
       }
@@ -168,6 +177,13 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     listenersRef.current.add(listener)
     return () => {
       listenersRef.current.delete(listener)
+    }
+  }
+
+  function onRevoked(listener: RevokedListener) {
+    revokedListenersRef.current.add(listener)
+    return () => {
+      revokedListenersRef.current.delete(listener)
     }
   }
 

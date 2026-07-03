@@ -1,12 +1,12 @@
 'use client'
 
 import type { ChatMessageDTO } from '@litomi/contracts'
-import { MessageCircle, Users } from 'lucide-react'
+import { Banknote, MessageCircle, Settings, Users } from 'lucide-react'
 import ms from 'ms'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { avatarURL, mergeById, textOf, toChatMessageDTO } from '../_lib/chat'
+import { avatarURL, mergeById, toChatMessageDTO } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useSendMessageMutation from '../_query/useSendMessageMutation'
@@ -128,7 +128,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
           targetMessageId: msg.targetMessageId,
           nickname: msg.sender?.nickname ?? '팬',
           imageURL: msg.sender?.imageURL ?? null,
-          text: textOf(msg.content),
+          text: msg.content.text,
         }
 
         setLiveReplies((prev) =>
@@ -153,7 +153,21 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
         <div className="p-2 text-indigo-500 bg-indigo-500/10 rounded-xl">
           <Users className="w-5 h-5" />
         </div>
-        <h2 className="font-bold text-lg text-foreground ml-2">전체 메시지 (Broadcast)</h2>
+        <h2 className="font-bold text-lg text-foreground ml-2 flex-1">전체 메시지 (Broadcast)</h2>
+        <Link
+          href={`/sobok/studio/${handle}/earnings`}
+          className="p-2 text-zinc-400 hover:text-foreground transition-colors"
+          aria-label="정산·수익"
+        >
+          <Banknote className="w-5 h-5" />
+        </Link>
+        <Link
+          href={`/sobok/studio/${handle}/settings`}
+          className="p-2 text-zinc-400 hover:text-foreground transition-colors"
+          aria-label="스튜디오 설정"
+        >
+          <Settings className="w-5 h-5" />
+        </Link>
       </div>
 
       {/* Live fan-reply ticker (sampled: newest few across all messages) */}
@@ -200,7 +214,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
             <div className="flex flex-col items-end gap-1 max-w-[80%]">
               <div className="flex items-end gap-1.5 flex-row-reverse">
                 <div className="px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-indigo-500 text-white">
-                  {textOf(row.message.content)}
+                  {row.message.content.text}
                 </div>
                 <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
                   {new Date(row.message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

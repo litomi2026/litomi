@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 interface Props {
   artist: ChatArtistBrief
-  price: ChatArtistPrice | null
+  price: ChatArtistPrice | undefined
   onSubscribe: () => void
   isPending: boolean
   error: string | null

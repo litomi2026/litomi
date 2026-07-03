@@ -5,7 +5,7 @@ import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { avatarURL, mergeById, textOf } from '../_lib/chat'
+import { avatarURL, mergeById } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useMarkMessageReadMutation from '../_query/useMarkMessageReadMutation'
 import useMessageReplyQuery from '../_query/useMessageReplyQuery'
@@ -64,7 +64,6 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
         contentType: msg.contentType,
         content: msg.content,
         createdAt: msg.createdAt,
-        fan: null,
       }
 
       setLiveReplies((prev) => (prev.some((r) => r.messageId === msg.messageId) ? prev : [...prev, newReply]))
@@ -120,7 +119,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
                   <span className="text-xs text-zinc-400 mb-1 ml-1 font-medium tracking-tight">{fanName}</span>
                   <div className="flex items-end gap-1.5">
                     <div className="px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border border-foreground/10">
-                      {textOf(reply.content)}
+                      {reply.content.text}
                     </div>
                     <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
                       {new Date(reply.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
