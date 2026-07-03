@@ -1,4 +1,4 @@
-import { getChatArtistByUserId, hasActiveChatSubscription } from '@litomi/db/app/query/chat'
+import { canAccessBroadcast, getChatArtistByUserId } from '@litomi/db/app/query/chat'
 
 // 채팅 스트림에 대한 실시간 구독(read) 권한을 처리합니다.
 //
@@ -25,6 +25,11 @@ interface CacheEntry {
 // 가장 첫 번째 키가 가장 오래 전에 사용된(least-recently-used) 항목이 됩니다.
 const cache = new Map<string, CacheEntry>()
 
+// 강퇴 이벤트(환불) 직후 캐시된 allow가 재구독을 통과시키지 않도록 항목을 지웁니다.
+export function invalidateAccessCache(userId: number, streamId: string): void {
+  cache.delete(`${userId}:${streamId}`)
+}
+
 export async function canAccessStream(userId: number, streamId: string): Promise<boolean> {
   const key = `${userId}:${streamId}`
 
@@ -50,8 +55,8 @@ async function resolveAccess(userId: number, streamId: string): Promise<boolean>
     return ownsArtist(userId, parsed.artistId)
   }
 
-  // 브로드캐스트: 일반적인 경우는 결제한 팬이므로 구독 여부를 먼저 확인하고, 그다음 소유권(본인 스트림)을 확인합니다.
-  return (await hasActiveChatSubscription(userId, parsed.artistId)) || (await ownsArtist(userId, parsed.artistId))
+  // 브로드캐스트: 결제한 팬 또는 아티스트 본인 — 한 왕복으로 판정합니다.
+  return canAccessBroadcast({ userId, artistId: parsed.artistId })
 }
 
 async function ownsArtist(userId: number, artistId: number): Promise<boolean> {
@@ -73,6 +78,7 @@ function parseStreamId(streamId: string): ParsedStream | null {
   if (parts[0] === 'b') {
     return { kind: 'broadcast', artistId }
   }
+
   if (parts[0] === 'c') {
     return { kind: 'artistInbound', artistId }
   }

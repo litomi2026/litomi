@@ -17,6 +17,12 @@ export function toArtistInboundChannel(artistId: number): string {
   return `c:${artistId}`
 }
 
+// 한 아티스트의 모든 답장방(rb:{artistId}:*)을 잡는 streamId 반열린 범위 [from, toExclusive).
+// 상한은 프리픽스 마지막 문자 ':'(0x3A)의 다음 문자 ';'(0x3B) — 인덱스 범위 스캔용.
+export function messageReplyStreamRange(artistId: number): { from: string; toExclusive: string } {
+  return { from: `rb:${artistId}:`, toExclusive: `rb:${artistId};` }
+}
+
 export function getKindFromStreamId(streamId: string): ChatMessageKind {
   return streamId.startsWith('b:') ? 'broadcast' : 'reply'
 }

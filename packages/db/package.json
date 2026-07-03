@@ -16,6 +16,7 @@
     "./app/recommendation": "./src/app/schema/recommendation.ts",
     "./app/notification": "./src/app/schema/notification.ts",
     "./app/passkey": "./src/app/schema/passkey.ts",
+    "./app/payout": "./src/app/schema/payout.ts",
     "./app/points": "./src/app/schema/points.ts",
     "./app/post": "./src/app/schema/post.ts",
     "./app/report": "./src/app/schema/report.ts",
@@ -35,6 +36,7 @@
     "./app/query/invoice": "./src/app/query/invoice.ts",
     "./app/query/payment-method": "./src/app/query/payment-method.ts",
     "./app/query/payment": "./src/app/query/payment.ts",
+    "./app/query/payout": "./src/app/query/payout.ts",
     "./app/query/refund": "./src/app/query/refund.ts",
     "./app/query/webhook-event": "./src/app/query/webhook-event.ts",
     "./app/query/subscription": "./src/app/query/subscription.ts",
@@ -43,6 +45,7 @@
     "./app/query/post-comment": "./src/app/query/post-comment.ts",
     "./app/query/post": "./src/app/query/post.ts",
     "./app/query/user": "./src/app/query/user.ts",
+    "./app/query/user-erasure": "./src/app/query/user-erasure.ts",
     "./app/query/user-settings": "./src/app/query/user-settings.ts",
     "./sql/library-item-sort": "./src/sql/library-item-sort.ts",
     "./sql/rating-sort": "./src/sql/rating-sort.ts"

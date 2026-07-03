@@ -59,6 +59,16 @@ export async function chargeWithBillingKey(input: ChargeInput): Promise<ChargeRe
   return { providerTxnId: payment.pgTxId, paidAt: new Date(payment.paidAt) }
 }
 
+// 전액 취소(청약철회). 결과 반영은 호출부가 getRemotePayment로 대사(reconcile)한다 —
+// 이미 취소된 결제에 대해 던져도(멱등 충돌) 대사 경로가 실제 상태로 수렴시킨다.
+export async function cancelPayment(input: { paymentId: string; reason: string }): Promise<void> {
+  await PaymentClient({ secret: requireSecret() }).cancelPayment({
+    paymentId: input.paymentId,
+    reason: input.reason,
+    requester: 'Customer',
+  })
+}
+
 export type RemotePaymentStatus = 'paid' | 'failed' | 'canceled' | 'pending' | 'unknown'
 
 export interface RemoteRefund {
@@ -74,6 +84,7 @@ export interface RemotePayment {
   paidAt: Date | null
   amount: number | null
   method: string | null
+  receiptUrl: string | null
   refunds: RemoteRefund[]
 }
 
@@ -84,6 +95,7 @@ export async function getRemotePayment(paymentId: string): Promise<RemotePayment
     paidAt?: string
     amount?: { total?: number }
     method?: { type?: string }
+    receiptUrl?: string
     cancellations?: RawCancellation[]
   }
 
@@ -93,6 +105,7 @@ export async function getRemotePayment(paymentId: string): Promise<RemotePayment
     paidAt: payment.paidAt ? new Date(payment.paidAt) : null,
     amount: payment.amount?.total ?? null,
     method: normalizeMethod(payment.method?.type),
+    receiptUrl: payment.receiptUrl ?? null,
     refunds: extractRefunds(payment.cancellations),
   }
 }

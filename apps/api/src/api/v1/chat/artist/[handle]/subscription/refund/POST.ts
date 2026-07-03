@@ -74,7 +74,7 @@ route.post('/', ...middlewares, async (c) => {
     toIdExclusive: messageIdAtOrAfter(candidate.periodEnd),
   }
 
-  if (await hasOwnRepliesInWindow(userId, artist.id, window)) {
+  if (await hasOwnRepliesInWindow({ senderId: userId, artistId: artist.id, window })) {
     return problemResponse(c, {
       status: 403,
       detail: '이번 결제 기간에 답장을 보내서 환불할 수 없어요.',

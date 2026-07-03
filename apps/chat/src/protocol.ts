@@ -36,6 +36,7 @@ export type ServerMessage =
   | { t: 'msg'; room: string; data: unknown }
   | { t: 'pong' }
   | { t: 'err'; code: string; message: string }
+  | { t: 'revoked'; room: string }
   | { t: 'reconnect' }
 
 export function encode(message: ServerMessage): string {

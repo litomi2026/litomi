@@ -38,7 +38,11 @@ route.put('/', ...middlewares, async (c) => {
   }
 
   if (access.kind !== 'owner') {
-    await setFanReadWatermark(userId, artist.id, lastReadMessageId)
+    await setFanReadWatermark({
+      fanId: userId,
+      artistId: artist.id,
+      lastReadMessageId,
+    })
   }
 
   return c.body(null, 204)

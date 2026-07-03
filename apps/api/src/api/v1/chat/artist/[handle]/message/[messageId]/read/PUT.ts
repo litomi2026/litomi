@@ -31,7 +31,11 @@ route.put('/', ...middlewares, async (c) => {
     return ownership.error
   }
 
-  await setReadCursor(userId, toMessageReplyStreamId(ownership.artist.id, messageId), lastReadMessageId)
+  await setReadCursor({
+    userId,
+    streamId: toMessageReplyStreamId(ownership.artist.id, messageId),
+    lastReadMessageId,
+  })
 
   return c.body(null, 204)
 })

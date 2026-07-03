@@ -116,7 +116,7 @@ async function buildFanMessages(
     return []
   }
 
-  const replyRows = await listOwnRepliesForMessages(artistId, fanId, messageIds)
+  const replyRows = await listOwnRepliesForMessages({ artistId, fanId, messageIds })
 
   // Group the fan's replies by the message they target (NOT the reply's own id), so a
   // message's myReplies can be looked up by message.messageId below.

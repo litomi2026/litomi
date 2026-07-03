@@ -1,4 +1,4 @@
-import { getChatArtistBrief, getChatSenderBrief } from '@litomi/db/app/query/chat'
+import { getChatArtistById, getChatSenderBrief } from '@litomi/db/app/query/chat'
 import {
   type ChatMessageRow,
   type ParsedStreamId,
@@ -86,7 +86,7 @@ async function enqueuePush(
   parsed: ParsedStreamId,
   replySender: ChatSenderBrief | undefined,
 ): Promise<void> {
-  const artist = await getChatArtistBrief(event.artistId)
+  const artist = await getChatArtistById(event.artistId)
   if (!artist) {
     return
   }
@@ -108,7 +108,8 @@ async function enqueuePush(
     return
   }
 
-  if (event.senderId === artist.userId) {
+  // 아티스트가 스스로 단 답장이거나, 탈퇴한 아티스트(수신자 없음)면 푸시하지 않는다.
+  if (artist.userId === null || event.senderId === artist.userId) {
     return
   }
 
@@ -166,28 +167,24 @@ function toClientMessage(row: ChatMessageRow, parsed: ParsedStreamId, sender?: C
       ...base,
       kind: 'reply' as const,
       targetMessageId: parsed.messageId,
-      sender: sender ? { nickname: sender.nickname, imageURL: sender.imageURL } : null,
+      sender: sender && {
+        nickname: sender.nickname,
+        imageURL: sender.imageURL,
+      },
     }
   }
 
   return { ...base, kind: 'broadcast' as const }
 }
 
-const FALLBACK_PREVIEWS: Record<string, string> = {
-  image: '사진을 보냈어요',
-  voice: '음성 메시지를 보냈어요',
-  video: '동영상을 보냈어요',
-}
-
 function previewBody(event: ChatMessageEvent): string {
-  if (event.contentType === 'text') {
-    const text = extractTextContent(event.content)
-    if (text) {
-      return text.length > PUSH_BODY_MAX_LENGTH ? `${text.slice(0, PUSH_BODY_MAX_LENGTH)}…` : text
-    }
+  const text = extractTextContent(event.content)
+
+  if (!text) {
+    return '새 메시지가 도착했어요'
   }
 
-  return FALLBACK_PREVIEWS[event.contentType] ?? '새 메시지가 도착했어요'
+  return text.length > PUSH_BODY_MAX_LENGTH ? `${text.slice(0, PUSH_BODY_MAX_LENGTH)}…` : text
 }
 
 function extractTextContent(content: unknown): string {
