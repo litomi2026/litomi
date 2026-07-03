@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import type { ErrorEvent } from '@sentry/core'
 
-import { isBrowserNoiseEvent, SENTRY_BROWSER_DENY_URLS, SENTRY_BROWSER_IGNORE_ERRORS } from './sentry'
+import { isBrowserNoiseEvent, SENTRY_BROWSER_DENY_URLS, SENTRY_BROWSER_IGNORE_ERRORS, scrubSentryEvent } from './sentry'
 
 // Mirrors Sentry's `ignoreErrors` matching: a string pattern matches by substring,
 // a RegExp matches via `.test()`, against the event message/exception value.
@@ -78,6 +78,7 @@ describe('SENTRY_BROWSER_DENY_URLS — drops by foreign script origin, never our
     'safari-web-extension://abcd/x.js',
     'https://www.googletagmanager.com/gtm.js?id=GTM-XXXX',
     'https://www.google-analytics.com/analytics.js',
+    'webkit-masked-url://hidden/:2133:27',
   ])('denies foreign script: %s', (url) => {
     expect(urlIsDenied(url)).toBe(true)
   })
@@ -127,6 +128,60 @@ describe('isBrowserNoiseEvent — foreign scripts drop by throw site only', () =
         }),
       ),
     ).toBe(false)
+  })
+})
+
+describe('isBrowserNoiseEvent — injected inline code attributed to the document URL', () => {
+  const securityError =
+    'SecurityError: Blocked a frame with origin "https://litomi.cc" from accessing a cross-origin frame.'
+
+  test('drops an unhandled error whose frames are only document-URL / masked / native', () => {
+    expect(
+      isBrowserNoiseEvent(
+        browserEvent(securityError, {
+          frames: ['webkit-masked-url://hidden/:2133', '[native code]', 'app:///search'],
+          handled: false,
+        }),
+      ),
+    ).toBe(true)
+  })
+
+  test('drops a lone document-URL inline frame (served HTML has ~2 lines; these come from injected code)', () => {
+    expect(isBrowserNoiseEvent(browserEvent(securityError, { frames: ['app:///search'], handled: false }))).toBe(true)
+  })
+
+  test('keeps the identical error when our bundle is in the stack', () => {
+    expect(
+      isBrowserNoiseEvent(
+        browserEvent(securityError, {
+          frames: ['app:///search', 'app:///_next/static/chunks/page.js'],
+          handled: false,
+        }),
+      ),
+    ).toBe(false)
+  })
+})
+
+describe('scrubSentryEvent — DrizzleQueryError bound parameters', () => {
+  test('redacts the params but keeps the SQL shape', () => {
+    const event = browserEvent(
+      'Failed query: select "id" from "user" where "user"."name" = $1\nparams: secret@example.com',
+      { handled: true },
+    )
+
+    scrubSentryEvent(event)
+
+    expect(event.exception?.values?.[0]?.value).toBe(
+      'Failed query: select "id" from "user" where "user"."name" = $1\nparams: [REDACTED]',
+    )
+  })
+
+  test('leaves non-query exception messages untouched', () => {
+    const event = browserEvent('TypeError: params: is not a function', { handled: true })
+
+    scrubSentryEvent(event)
+
+    expect(event.exception?.values?.[0]?.value).toBe('TypeError: params: is not a function')
   })
 })
 
