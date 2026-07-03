@@ -10,7 +10,7 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toSubscriptionDTO } from '../../../lib'
+import { toSubscriptionDTO } from '../../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()

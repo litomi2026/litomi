@@ -8,7 +8,7 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { zProblemValidator } from '@/utils/validator'
 
-import { requireOwnedArtist } from '../../../../../lib'
+import { requireOwnedArtist } from '../../../../../access'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()

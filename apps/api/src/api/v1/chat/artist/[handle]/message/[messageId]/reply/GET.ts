@@ -15,7 +15,8 @@ import { requireAuth } from '@/middleware/require-auth'
 import { noStoreCacheControl } from '@/utils/cache-control'
 import { zProblemValidator } from '@/utils/validator'
 
-import { mapReply, requireOwnedArtist } from '../../../../../lib'
+import { requireOwnedArtist } from '../../../../../access'
+import { mapReply } from '../../../../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()

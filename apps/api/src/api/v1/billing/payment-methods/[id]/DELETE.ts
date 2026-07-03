@@ -1,5 +1,5 @@
 import { revokeBillingKey } from '@litomi/billing'
-import { getActivePaymentMethodForUser, markPaymentMethodDeleted } from '@litomi/db/app/query/payment-method'
+import { markPaymentMethodDeleted } from '@litomi/db/app/query/payment-method'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 import { z } from 'zod'
@@ -21,20 +21,17 @@ const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param
 route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
-  const method = await getActivePaymentMethodForUser(id, userId)
+  const deleted = await markPaymentMethodDeleted(id, userId)
 
-  if (!method) {
+  if (!deleted) {
     return problemResponse(c, { status: 404 })
   }
 
   try {
-    await revokeBillingKey(method.token)
+    await revokeBillingKey(deleted.token)
   } catch (error) {
-    // The token may already be gone at PortOne; drop it locally regardless.
     console.error('billing: revokeBillingKey failed', error)
   }
-
-  await markPaymentMethodDeleted(id, userId)
 
   return c.body(null, 204)
 })

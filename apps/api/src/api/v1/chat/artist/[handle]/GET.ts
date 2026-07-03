@@ -11,7 +11,8 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { resolveReplyLimit, toArtistBrief, toSubscriptionDTO } from '../../lib'
+import { resolveReplyLimit } from '../../access'
+import { toArtistBrief, toSubscriptionDTO } from '../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()

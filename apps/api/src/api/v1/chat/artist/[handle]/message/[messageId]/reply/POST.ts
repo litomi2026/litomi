@@ -1,12 +1,6 @@
 import { chatMessageParamSchema, type POSTV1ChatReplyResponse, postV1ChatReplyBodySchema } from '@litomi/contracts'
 import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
-import {
-  buildChatMessage,
-  chatMessageExists,
-  countOwnReplies,
-  toBroadcastStreamId,
-  toMessageReplyStreamId,
-} from '@litomi/db/chat/query'
+import { buildChatMessage, getReplyGate, toMessageReplyStreamId } from '@litomi/db/chat/query'
 import { publishChatMessage } from '@litomi/events'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -17,7 +11,7 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { resolveReplyLimit } from '../../../../../lib'
+import { resolveReplyLimit } from '../../../../../access'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -63,18 +57,21 @@ route.post('/', ...middlewares, async (c) => {
     })
   }
 
-  if (!(await chatMessageExists(toBroadcastStreamId(artist.id), messageId))) {
+  const gate = await getReplyGate(artist.id, messageId, userId)
+
+  // The reply must target an existing message of this artist.
+  if (!gate.messageExists) {
     return problemResponse(c, { status: 404 })
   }
 
-  const replyStreamId = toMessageReplyStreamId(artist.id, messageId)
-
-  if ((await countOwnReplies(replyStreamId, userId)) >= limit.maxRepliesPerMessage) {
+  if (gate.ownReplyCount >= limit.maxRepliesPerMessage) {
     return problemResponse(c, {
       status: 403,
       detail: `이 메시지에는 답장을 ${limit.maxRepliesPerMessage}회까지 보낼 수 있어요.`,
     })
   }
+
+  const replyStreamId = toMessageReplyStreamId(artist.id, messageId)
 
   const message = buildChatMessage({
     streamId: replyStreamId,
