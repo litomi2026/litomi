@@ -1,5 +1,7 @@
 import { createBillingGateway } from '@litomi/billing'
+import { reconcileStalePendingPayments } from './reconcile'
 import { processDueSubscriptions } from './renew'
+import { closeMonthlyPayouts } from './settle'
 
 const log = {
   info: (msg: string, ...args: unknown[]) => console.log(`[${new Date().toISOString()}] ℹ️  ${msg}`, ...args),
@@ -9,11 +11,6 @@ const log = {
 
 async function main() {
   const startTime = Date.now()
-
-  // Composition root. A billing worker that cannot charge is a broken deploy, not a quiet
-  // day — fail loudly so the CronJob shows Failed (→ alert) instead of a green run that
-  // silently bills no one. Failing before we touch a single row also means a missing secret
-  // can never expire a renewable subscription.
   const gateway = createBillingGateway()
 
   if (!gateway) {
@@ -31,6 +28,8 @@ async function main() {
 
   try {
     const summary = await processDueSubscriptions({ gateway })
+    const reconcile = await reconcileStalePendingPayments({ gateway })
+    const settle = await closeMonthlyPayouts()
     const duration = (Date.now() - startTime) / 1000
     log.success(`Billing renewal pass completed in ${duration.toFixed(2)}s`)
 
@@ -38,7 +37,12 @@ async function main() {
       JSON.stringify({
         severity: 'INFO',
         message: 'Billing renewal pass completed',
-        metrics: { duration_seconds: duration, ...summary },
+        metrics: {
+          ...summary,
+          settle,
+          reconcile,
+          duration_seconds: duration,
+        },
       }),
     )
 
