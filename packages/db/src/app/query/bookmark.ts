@@ -1,51 +1,34 @@
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
-import { getLibraryItemCursorCondition, getLibraryItemOrderByClauses } from '@litomi/db/sql/library-item-sort'
-import { DEFAULT_LIBRARY_ITEM_SORT, LibraryItemSort } from '@litomi/domain/library/sort'
-import type { SQL } from 'drizzle-orm'
+import {
+  getLibraryItemCursorCondition,
+  getLibraryItemOrderByClauses,
+  type LibraryItemCursor,
+} from '@litomi/db/sql/library-item-sort'
+import { DEFAULT_LIBRARY_ITEM_SORT, type LibraryItemSort } from '@litomi/domain/library/sort'
 import { and, eq } from 'drizzle-orm'
-import { z } from 'zod'
 
 export type BookmarkRow = {
   mangaId: number
   createdAt: Date
 }
 
-const baseParamsSchema = z.strictObject({
-  userId: z.number().int().positive(),
-  limit: z.number().int().positive().optional(),
-  sort: z.enum(LibraryItemSort).default(DEFAULT_LIBRARY_ITEM_SORT),
-})
+export interface SelectBookmarkOptions {
+  limit?: number
+  sort?: LibraryItemSort
+  cursor?: LibraryItemCursor
+}
 
-const paramsSchema = z.union([
-  baseParamsSchema.extend({
-    cursorMangaId: z.number().int().positive(),
-    cursorTime: z.date(),
-  }),
-  baseParamsSchema,
-])
-
-const bookmarkSelection = {
-  default: {
-    mangaId: bookmarkTable.mangaId,
-    createdAt: bookmarkTable.createdAt,
-  },
-  ids: {
-    mangaId: bookmarkTable.mangaId,
-  },
-} as const
-
-type Params = z.input<typeof paramsSchema>
-
-export async function selectBookmark(params: Params) {
-  const validatedParams = paramsSchema.parse(params)
-  const { limit, sort } = validatedParams
-  const whereClause = buildBookmarkWhereClause(validatedParams)
+export async function selectBookmark(userId: number, options: SelectBookmarkOptions = {}) {
+  const { limit, sort = DEFAULT_LIBRARY_ITEM_SORT, cursor } = options
 
   const query = db
-    .select(bookmarkSelection.default)
+    .select({
+      mangaId: bookmarkTable.mangaId,
+      createdAt: bookmarkTable.createdAt,
+    })
     .from(bookmarkTable)
-    .where(whereClause)
+    .where(buildBookmarkWhereClause(userId, sort, cursor))
     .orderBy(...getLibraryItemOrderByClauses(sort, bookmarkTable))
 
   if (limit) {
@@ -55,11 +38,15 @@ export async function selectBookmark(params: Params) {
   return query
 }
 
-export async function selectBookmarkId(params: Params) {
-  const validatedParams = paramsSchema.parse(params)
-  const { limit } = validatedParams
-  const whereClause = buildBookmarkWhereClause(validatedParams)
-  const query = db.select(bookmarkSelection.ids).from(bookmarkTable).where(whereClause)
+export async function selectBookmarkId(userId: number, options: SelectBookmarkOptions = {}) {
+  const { limit, sort = DEFAULT_LIBRARY_ITEM_SORT, cursor } = options
+
+  const query = db
+    .select({
+      mangaId: bookmarkTable.mangaId,
+    })
+    .from(bookmarkTable)
+    .where(buildBookmarkWhereClause(userId, sort, cursor))
 
   if (limit) {
     return query.limit(limit)
@@ -68,18 +55,10 @@ export async function selectBookmarkId(params: Params) {
   return query
 }
 
-function buildBookmarkWhereClause(params: Params) {
-  const { userId } = params
-  const conditions: (SQL | undefined)[] = [eq(bookmarkTable.userId, userId)]
+function buildBookmarkWhereClause(userId: number, sort: LibraryItemSort, cursor?: LibraryItemCursor) {
+  const conditions = [eq(bookmarkTable.userId, userId)]
 
-  if ('cursorMangaId' in params) {
-    const cursor = {
-      mangaId: params.cursorMangaId,
-      timestamp: params.cursorTime.getTime(),
-    }
-
-    const sort = params.sort ?? DEFAULT_LIBRARY_ITEM_SORT
-
+  if (cursor) {
     conditions.push(getLibraryItemCursorCondition(sort, cursor, bookmarkTable))
   }
 

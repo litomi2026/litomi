@@ -15,12 +15,16 @@ export type PostComment = {
   } | null
 }
 
-type Params = {
-  parentPostId: number
+export interface SelectPostCommentOptions {
   limit?: number
 }
 
-export default async function selectPostComment({ parentPostId, limit = 20 }: Params): Promise<PostComment[]> {
+export default async function selectPostComment(
+  parentPostId: number,
+  options: SelectPostCommentOptions = {},
+): Promise<PostComment[]> {
+  const { limit = 20 } = options
+
   const rows = await db
     .select({
       id: postTable.id,
@@ -38,17 +42,10 @@ export default async function selectPostComment({ parentPostId, limit = 20 }: Pa
     .limit(limit)
 
   return rows
-    .map(({ authorId, authorName, authorNickname, authorImageURL, ...comment }) => ({
-      ...comment,
-      author:
-        authorId !== null && authorName !== null && authorNickname !== null
-          ? {
-              id: authorId,
-              name: authorName,
-              nickname: authorNickname,
-              imageURL: authorImageURL,
-            }
-          : null,
-    }))
+    .map(({ authorId: id, authorName: name, authorNickname: nickname, authorImageURL: imageURL, ...comment }) => {
+      const author = id !== null && name !== null && nickname !== null ? { id, name, nickname, imageURL } : null
+
+      return { ...comment, author }
+    })
     .toReversed()
 }

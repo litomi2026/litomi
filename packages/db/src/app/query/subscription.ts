@@ -1,5 +1,5 @@
+import { RENEWAL_LEAD_MS } from '@litomi/domain/subscription/policy'
 import { and, asc, eq, gt, inArray, lte, notInArray, sql } from 'drizzle-orm'
-import ms from 'ms'
 import { db } from '../db'
 import { invoiceTable } from '../schema/invoice'
 import { paymentTable } from '../schema/payment'
@@ -7,80 +7,60 @@ import { subscriptionTable } from '../schema/subscription'
 
 export type SubscriptionStatus = (typeof subscriptionTable.$inferSelect)['status']
 
-export const SUBSCRIPTION_TARGET_CHAT_ARTIST = 'chat_artist'
-export const RENEWAL_LEAD_MS = ms('1 day')
-export const RENEWAL_GRACE_MS = ms('3 days')
-
-export function addSubscriptionPeriod(from: Date): Date {
-  const next = new Date(from)
-  const day = next.getUTCDate()
-  next.setUTCMonth(next.getUTCMonth() + 1)
-
-  if (next.getUTCDate() < day) {
-    next.setUTCDate(0)
-  }
-
-  return next
-}
-
 export interface SubscriptionState {
+  id: number
   status: SubscriptionStatus
   expiresAt: Date
   autoRenew: boolean
   paymentMethodId: number | null
 }
 
-const stateColumns = {
+export const subscriptionStateColumns = {
+  id: subscriptionTable.id,
   status: subscriptionTable.status,
   expiresAt: subscriptionTable.expiresAt,
   autoRenew: subscriptionTable.autoRenew,
   paymentMethodId: subscriptionTable.paymentMethodId,
 } as const
 
-export async function getSubscription(
-  userId: number,
-  targetType: string,
-  targetId: number,
-): Promise<SubscriptionState | undefined> {
-  const [row] = await db
-    .select(stateColumns)
-    .from(subscriptionTable)
-    .where(
-      and(
-        eq(subscriptionTable.userId, userId),
-        eq(subscriptionTable.targetType, targetType),
-        eq(subscriptionTable.targetId, targetId),
-      ),
-    )
+export interface SubscriptionKey {
+  userId: number
+  targetType: string
+  targetId: number
+}
+
+export async function getSubscription(key: SubscriptionKey): Promise<SubscriptionState | undefined> {
+  const [row] = await db.select(subscriptionStateColumns).from(subscriptionTable).where(subscriptionKeyCondition(key))
 
   return row
 }
 
-export async function setAutoRenew(
-  userId: number,
-  targetType: string,
-  targetId: number,
-  autoRenew: boolean,
-): Promise<SubscriptionState | undefined> {
+export async function setAutoRenew(key: SubscriptionKey, autoRenew: boolean): Promise<SubscriptionState | undefined> {
   const [row] = await db
     .update(subscriptionTable)
     .set({ autoRenew })
-    .where(
-      and(
-        eq(subscriptionTable.userId, userId),
-        eq(subscriptionTable.targetType, targetType),
-        eq(subscriptionTable.targetId, targetId),
-      ),
-    )
-    .returning(stateColumns)
+    .where(subscriptionKeyCondition(key))
+    .returning(subscriptionStateColumns)
 
   return row
 }
 
-export async function confirmPayment(
-  paymentId: string,
-  data: { providerTxnId: string; paidAt: Date; paymentMethodId: number | null; method: string | null },
-): Promise<{ confirmed: boolean }> {
+function subscriptionKeyCondition(key: SubscriptionKey) {
+  return and(
+    eq(subscriptionTable.userId, key.userId),
+    eq(subscriptionTable.targetType, key.targetType),
+    eq(subscriptionTable.targetId, key.targetId),
+  )
+}
+
+export interface ConfirmPaymentInput {
+  providerTxnId: string
+  paidAt: Date
+  paymentMethodId: number | null
+  method: string | null
+}
+
+export async function confirmPayment(paymentId: string, data: ConfirmPaymentInput): Promise<{ confirmed: boolean }> {
   const { providerTxnId, paidAt, paymentMethodId, method } = data
 
   return db.transaction(async (tx) => {
@@ -133,7 +113,7 @@ export async function confirmPayment(
   })
 }
 
-export async function ensureSubscription(input: {
+export interface EnsureSubscriptionInput {
   userId: number
   targetType: string
   targetId: number
@@ -141,7 +121,14 @@ export async function ensureSubscription(input: {
   priceAmount: number
   priceCurrency: string
   now: Date
-}): Promise<{ id: number; expiresAt: Date }> {
+}
+
+export interface EnsureSubscriptionResult {
+  id: number
+  expiresAt: Date
+}
+
+export async function ensureSubscription(input: EnsureSubscriptionInput): Promise<EnsureSubscriptionResult> {
   const [row] = await db
     .insert(subscriptionTable)
     .values({
@@ -183,11 +170,13 @@ export interface DueSubscription {
   priceCurrency: string
 }
 
-export async function listSubscriptionsDue(options: {
+export interface ListSubscriptionsDueOptions {
   now: Date
   afterId?: number
   limit?: number
-}): Promise<DueSubscription[]> {
+}
+
+export async function listSubscriptionsDue(options: ListSubscriptionsDueOptions): Promise<DueSubscription[]> {
   const { now, afterId = 0, limit = 1000 } = options
   const dueBefore = new Date(now.getTime() + RENEWAL_LEAD_MS)
 

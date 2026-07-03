@@ -10,14 +10,18 @@ export interface OpenInvoice {
   currency: string
 }
 
-export async function ensureOpenInvoice(input: {
+export interface EnsureOpenInvoiceInput {
   subscriptionId: number
   userId: number
+  targetType: string
+  targetId: number
   periodStart: Date
   periodEnd: Date
   amount: number
   currency: string
-}): Promise<OpenInvoice | null> {
+}
+
+export async function ensureOpenInvoice(input: EnsureOpenInvoiceInput): Promise<OpenInvoice | null> {
   const covered = await db
     .select({ id: invoiceTable.id })
     .from(invoiceTable)
@@ -39,6 +43,8 @@ export async function ensureOpenInvoice(input: {
     .values({
       subscriptionId: input.subscriptionId,
       userId: input.userId,
+      targetType: input.targetType,
+      targetId: input.targetId,
       periodStart: input.periodStart,
       periodEnd: input.periodEnd,
       amount: input.amount,

@@ -11,7 +11,13 @@ export async function wasWebhookEventProcessed(eventId: string): Promise<boolean
   return row !== undefined
 }
 
-export async function recordWebhookEvent(input: { eventId: string; type: string; payload: string }): Promise<void> {
+export interface RecordWebhookEventInput {
+  eventId: string
+  type: string
+  payload: string
+}
+
+export async function recordWebhookEvent(input: RecordWebhookEventInput): Promise<void> {
   await db
     .insert(webhookEventTable)
     .values({

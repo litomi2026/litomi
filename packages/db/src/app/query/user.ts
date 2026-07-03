@@ -1,6 +1,6 @@
 import { db } from '@litomi/db/app'
 import { userTable } from '@litomi/db/app/user'
-import { sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 type Params = {
   loginId?: string
@@ -8,29 +8,19 @@ type Params = {
 }
 
 export default async function selectUser({ loginId, name }: Params) {
-  if (name) {
-    return db
-      .select({
-        id: userTable.id,
-        createdAt: userTable.createdAt,
-        nickname: userTable.nickname,
-        imageURL: userTable.imageURL,
-      })
-      .from(userTable)
-      .where(sql`${userTable.name} = ${name}`)
+  const condition = name ? eq(userTable.name, name) : loginId ? eq(userTable.loginId, loginId) : null
+
+  if (!condition) {
+    throw new Error('Either loginId or name must be provided')
   }
 
-  if (loginId) {
-    return db
-      .select({
-        id: userTable.id,
-        createdAt: userTable.createdAt,
-        nickname: userTable.nickname,
-        imageURL: userTable.imageURL,
-      })
-      .from(userTable)
-      .where(sql`${userTable.loginId} = ${loginId}`)
-  }
-
-  throw new Error('Either loginId or name must be provided')
+  return db
+    .select({
+      id: userTable.id,
+      createdAt: userTable.createdAt,
+      nickname: userTable.nickname,
+      imageURL: userTable.imageURL,
+    })
+    .from(userTable)
+    .where(condition)
 }
