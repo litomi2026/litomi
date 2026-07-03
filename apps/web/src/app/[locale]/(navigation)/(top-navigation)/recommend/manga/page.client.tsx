@@ -9,12 +9,11 @@ import { useTranslations } from 'next-intl'
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
-import LoginButton from '@/components/LoginButton'
+import LoginGate from '@/components/LoginGate'
 import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import { Link } from '@/i18n/navigation'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
@@ -50,7 +49,7 @@ export default function RecommendMangaPageClient() {
   }
 
   if (me === null) {
-    return <LoginRequired />
+    return <LoginGate />
   }
 
   if (!canAccess) {
@@ -153,32 +152,5 @@ function LoadingState() {
         ))}
       </div>
     </section>
-  )
-}
-
-function LoginRequired() {
-  return (
-    <div className="flex flex-1 items-center justify-center">
-      <StatusState
-        description="로그인하면 내 취향에 맞춘 추천 작품을 볼 수 있어요"
-        icon={<Compass className="size-8" />}
-        intent="auth"
-        title="추천 작품은 로그인이 필요해요"
-      >
-        <div className="flex w-full flex-col items-center gap-3">
-          <LoginButton>로그인하기</LoginButton>
-          <p className="text-sm text-zinc-500">
-            처음이신가요?{' '}
-            <Link
-              className="text-zinc-300 underline transition hover:text-zinc-100"
-              href="/auth/signup"
-              prefetch={false}
-            >
-              회원가입
-            </Link>
-          </p>
-        </div>
-      </StatusState>
-    </div>
   )
 }

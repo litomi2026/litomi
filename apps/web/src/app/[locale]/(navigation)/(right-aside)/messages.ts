@@ -45,11 +45,6 @@ export const messages = {
     },
     Community: {
       common: {
-        login: '로그인하기',
-        loginAction: '로그인',
-        loginRequired: '로그인이 필요해요',
-        signup: '회원가입',
-        signupPrompt: '처음이신가요?',
         deletedUserShort: '탈퇴',
         deletedUser: '탈퇴한 사용자예요',
         deletedPost: '삭제된 글이에요',
@@ -82,7 +77,6 @@ export const messages = {
           deletedToast: '알림을 삭제했어요',
         },
         auth: {
-          title: '알림은 로그인이 필요해요',
           description: '로그인하면 키워드 알림과 새 소식을 한 곳에서 확인할 수 있어요',
         },
         adultGate: {
@@ -119,7 +113,6 @@ export const messages = {
         emptyFollowingDescription: '다른 사용자를 팔로우하거나 모든 글을 확인해보세요',
         emptyRecommendTitle: '추천 포스트가 없어요',
         emptyRecommendDescription: '잠시 후 다시 확인해 주세요',
-        followingUnauthorizedTitle: '팔로잉 탭은 로그인이 필요해요',
         followingUnauthorizedDescription: '계정을 만들고 팔로우한 사용자의 글만 모아보세요',
         loading: '글을 가져오는 중',
         endReached: '모든 글을 확인했어요',
@@ -272,11 +265,6 @@ export const messages = {
     },
     Community: {
       common: {
-        login: 'Log in',
-        loginAction: 'Log in',
-        loginRequired: 'Log in required',
-        signup: 'Sign up',
-        signupPrompt: 'New here?',
         deletedUserShort: 'Gone',
         deletedUser: 'Deleted user',
         deletedPost: 'This post was deleted',
@@ -309,7 +297,6 @@ export const messages = {
           deletedToast: 'Notification deleted',
         },
         auth: {
-          title: 'Log in to view notifications',
           description: 'Log in to see keyword alerts and updates in one place.',
         },
         adultGate: {
@@ -346,7 +333,6 @@ export const messages = {
         emptyFollowingDescription: 'Follow other users or check all posts',
         emptyRecommendTitle: 'No recommended posts',
         emptyRecommendDescription: 'Please check again later',
-        followingUnauthorizedTitle: 'The Following tab requires login',
         followingUnauthorizedDescription: 'Create an account to see posts from people you follow',
         loading: 'Loading posts',
         endReached: 'You have seen every post',
@@ -499,11 +485,6 @@ export const messages = {
     },
     Community: {
       common: {
-        login: 'ログイン',
-        loginAction: 'ログイン',
-        loginRequired: 'ログインが必要です',
-        signup: '新規登録',
-        signupPrompt: '初めてですか？',
         deletedUserShort: '退会済み',
         deletedUser: '退会済みのユーザーです',
         deletedPost: '削除された投稿です',
@@ -536,7 +517,6 @@ export const messages = {
           deletedToast: '通知を削除しました',
         },
         auth: {
-          title: '通知を見るにはログインが必要です',
           description: 'ログインすると、キーワード通知と新着情報をまとめて確認できます',
         },
         adultGate: {
@@ -573,7 +553,6 @@ export const messages = {
         emptyFollowingDescription: '他のユーザーをフォローするか、すべての投稿を確認しましょう',
         emptyRecommendTitle: 'おすすめ投稿がありません',
         emptyRecommendDescription: 'しばらくしてからもう一度確認してください',
-        followingUnauthorizedTitle: 'フォロー中タブにはログインが必要です',
         followingUnauthorizedDescription: 'アカウントを作成してフォロー中ユーザーの投稿だけを見ましょう',
         loading: '投稿を読み込み中',
         endReached: 'すべての投稿を確認しました',
@@ -726,11 +705,6 @@ export const messages = {
     },
     Community: {
       common: {
-        login: '登录',
-        loginAction: '登录',
-        loginRequired: '需要登录',
-        signup: '注册',
-        signupPrompt: '第一次来？',
         deletedUserShort: '已注销',
         deletedUser: '用户已注销',
         deletedPost: '这篇帖子已删除',
@@ -763,7 +737,6 @@ export const messages = {
           deletedToast: '通知已删除',
         },
         auth: {
-          title: '通知需要登录',
           description: '登录后即可在这里查看关键词通知和新消息。',
         },
         adultGate: {
@@ -800,7 +773,6 @@ export const messages = {
         emptyFollowingDescription: '关注其他用户，或查看全部帖子',
         emptyRecommendTitle: '还没有推荐帖子',
         emptyRecommendDescription: '请稍后再来看看',
-        followingUnauthorizedTitle: '关注动态需要登录',
         followingUnauthorizedDescription: '创建账号，只看你关注用户的帖子',
         loading: '正在加载帖子',
         endReached: '所有帖子都看完了',

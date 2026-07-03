@@ -1,9 +1,9 @@
 'use client'
 
-import { Bot, Cpu, LockKeyhole } from 'lucide-react'
+import { Bot, Cpu } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import LoginButton from '@/components/LoginButton'
+import LoginGate from '@/components/LoginGate'
 import StatusState from '@/components/status/StatusState'
 import { getStatusActionClassName } from '@/components/status/styles'
 import useMeQuery from '@/query/useMeQuery'
@@ -28,18 +28,7 @@ export function ChatGate({ children }: Props) {
   }
 
   if (me === null) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <StatusState
-          description="로그인하고 내 기기에서 캐릭터 AI 채팅을 시작해요"
-          icon={<LockKeyhole className="size-8" />}
-          intent="auth"
-          title="AI 채팅은 로그인이 필요해요"
-        >
-          <LoginButton>로그인하기</LoginButton>
-        </StatusState>
-      </div>
-    )
+    return <LoginGate />
   }
 
   if (tabLock.kind === 'blocked') {

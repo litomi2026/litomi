@@ -17,7 +17,10 @@ export const messages = {
     Common: {
       guard: {
         loginRequired: '로그인이 필요해요',
+        loginDescription: '로그인 후 이용할 수 있어요',
         loginAction: '로그인',
+        signupPrompt: '처음이신가요?',
+        signupAction: '회원가입',
         adultVerificationRequired: '성인인증이 필요해요',
         adultDescription: '익명 성인인증 후 이용할 수 있어요',
         anonymousAdultVerificationAction: '익명으로 성인인증하기',
@@ -225,7 +228,10 @@ export const messages = {
     Common: {
       guard: {
         loginRequired: 'Log in to continue',
+        loginDescription: 'You can continue after logging in.',
         loginAction: 'Log in',
+        signupPrompt: 'New here?',
+        signupAction: 'Sign up',
         adultVerificationRequired: 'Adult verification is required',
         adultDescription: 'You can continue after anonymous adult verification.',
         anonymousAdultVerificationAction: 'Verify anonymously',
@@ -434,7 +440,10 @@ export const messages = {
     Common: {
       guard: {
         loginRequired: 'ログインが必要です',
+        loginDescription: 'ログイン後に利用できます',
         loginAction: 'ログイン',
+        signupPrompt: '初めてですか？',
+        signupAction: '新規登録',
         adultVerificationRequired: '成人認証が必要です',
         adultDescription: '匿名の成人認証後に利用できます',
         anonymousAdultVerificationAction: '匿名で成人認証する',
@@ -641,7 +650,10 @@ export const messages = {
     Common: {
       guard: {
         loginRequired: '需要登录',
+        loginDescription: '登录后即可继续使用',
         loginAction: '登录',
+        signupPrompt: '第一次来？',
+        signupAction: '注册',
         adultVerificationRequired: '需要成人认证',
         adultDescription: '完成匿名成人认证后即可继续使用',
         anonymousAdultVerificationAction: '匿名进行成人认证',

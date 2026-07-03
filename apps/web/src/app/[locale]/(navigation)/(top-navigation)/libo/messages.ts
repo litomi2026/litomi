@@ -102,7 +102,6 @@ export const messages = {
         nextPageRetry: '다시 시도해요',
       },
       stats: {
-        loginRequiredTitle: '광고 수익 통계는 로그인한 사용자만 볼 수 있어요',
         loginRequiredDesc: '로그인하면 최근 30일 통계를 확인할 수 있어요',
         title: '광고 수익 통계',
         subtitle:
@@ -251,7 +250,6 @@ export const messages = {
         nextPageRetry: 'Retry',
       },
       stats: {
-        loginRequiredTitle: 'Ad Revenue Stats are only visible to logged-in users.',
         loginRequiredDesc: 'Log in to view stats for the last 30 days.',
         title: 'Ad Revenue Stats',
         subtitle:
@@ -401,7 +399,6 @@ export const messages = {
         nextPageRetry: '再試行',
       },
       stats: {
-        loginRequiredTitle: '広告収益統計はログインしたユーザーのみ閲覧可能です。',
         loginRequiredDesc: 'ログインすると過去30日間の統計を確認できます。',
         title: '広告収益統計',
         subtitle:
@@ -550,7 +547,6 @@ export const messages = {
         nextPageRetry: '重试',
       },
       stats: {
-        loginRequiredTitle: '广告收益统计仅对已登录用户可见。',
         loginRequiredDesc: '登录后即可查看最近 30 天的统计数据。',
         title: '广告收益统计',
         subtitle: '查看由 Adsterra 提供的统计数据。该广告收益仅供参考，在结算确认前可能与实际支付金额有所差异。',

@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react'
 
+import LoginGate from '@/components/LoginGate'
 import useClipboard from '@/hook/useClipboard'
 import useMeQuery from '@/query/useMeQuery'
 import { SexFortuneHeader } from './_components/SexFortuneHeader'
 import { SexFortuneHeroCard } from './_components/SexFortuneHeroCard'
 import { SexFortuneLoadingState } from './_components/SexFortuneLoadingState'
-import { SexFortuneLoginGate } from './_components/SexFortuneLoginGate'
 import { SexFortuneTabNav } from './_components/SexFortuneTabNav'
 import { LIBO_PAGE_LAYOUT } from './_components/sexFortuneStyles'
 import { CourseTab } from './_components/tabs/CourseTab'
@@ -46,7 +46,11 @@ export default function SexFortune({ todayKey }: Props) {
   }
 
   if (me === null) {
-    return <SexFortuneLoginGate />
+    return (
+      <div className={LIBO_PAGE_LAYOUT.container}>
+        <LoginGate />
+      </div>
+    )
   }
 
   if (!userKey) {

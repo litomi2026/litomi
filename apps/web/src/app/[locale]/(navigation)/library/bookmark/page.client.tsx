@@ -11,6 +11,7 @@ import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import LoginGate from '@/components/LoginGate'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import ScrollButtons from '@/components/ScrollButtons'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -31,7 +32,6 @@ import { LIBRARY_ITEM_SORT_OPTIONS } from '../sort-options'
 import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkUploadButton from './BookmarkUploadButton'
 import NotFound from './NotFound'
-import Unauthorized from './Unauthorized'
 import useBookmarkInfiniteQuery from './useBookmarkInfiniteQuery'
 
 type BookmarkGridItem =
@@ -100,6 +100,7 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
   const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
   const sortT = useTranslations('Library.sort')
+  const emptyT = useTranslations('Library.empty')
   const guardT = useTranslations('Common.guard')
   const canAccess = hasAdultAccess(me)
 
@@ -199,7 +200,12 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
   }
 
   if (me === null) {
-    return <Unauthorized />
+    return (
+      <>
+        <LibraryHeaderSpacer />
+        <LoginGate description={emptyT('bookmarkUnauthorizedDescription')} />
+      </>
+    )
   }
 
   if (me && !canAccess) {

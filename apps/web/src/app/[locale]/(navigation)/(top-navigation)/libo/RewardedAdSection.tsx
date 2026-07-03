@@ -17,6 +17,7 @@ import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
 import JuicyAdsScript from '@/components/ads/juicy-ads/JuicyAdsScript'
 import JuicyAdsSlot from '@/components/ads/juicy-ads/JuicyAdsSlot'
 import type { AdClickResult } from '@/components/ads/types'
+import LoginGate from '@/components/LoginGate'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { isAdultVerificationRequiredProblem } from '@/lib/react-query/QueryProvider'
 import { QueryKeys } from '@/lib/react-query/query-keys'
@@ -152,11 +153,7 @@ export default function RewardedAdSection() {
   }
 
   if (me === null) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-zinc-500">{t('loginPrompt')}</p>
-      </div>
-    )
+    return <LoginGate description={t('loginPrompt')} />
   }
 
   if (!canAccess) {

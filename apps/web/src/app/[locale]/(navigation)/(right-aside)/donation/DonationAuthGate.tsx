@@ -1,9 +1,9 @@
 'use client'
 
+import LoginGate from '@/components/LoginGate'
 import useMeQuery from '@/query/useMeQuery'
 
 import DonationClient from './DonationClient'
-import Unauthorized from './Unauthorized'
 
 export default function DonationAuthGate() {
   const { data: me } = useMeQuery()
@@ -13,7 +13,7 @@ export default function DonationAuthGate() {
   }
 
   if (me === null) {
-    return <Unauthorized />
+    return <LoginGate />
   }
 
   return <DonationClient />

@@ -127,11 +127,7 @@ export const messages = {
         action: '내 검열 설정으로 가기',
       },
       unauthorized: {
-        title: '검열 설정은 로그인이 필요해요',
         description: '로그인하면 보고 싶지 않은 작품을 줄이고 탐색 환경을 정리할 수 있어요',
-        loginAction: '로그인하고 시작하기',
-        signupPrompt: '처음이신가요?',
-        signupAction: '회원가입',
       },
       error: {
         toast: '검열 설정을 불러오는 중 오류가 발생했습니다.',
@@ -268,11 +264,7 @@ export const messages = {
         action: 'Go to my censorship settings',
       },
       unauthorized: {
-        title: 'Sign in to manage censorship settings',
         description: 'Sign in to reduce content you do not want to see and keep browsing tidy.',
-        loginAction: 'Sign in to start',
-        signupPrompt: 'New here?',
-        signupAction: 'Sign up',
       },
       error: {
         toast: 'An error occurred while loading censorship settings.',
@@ -407,11 +399,7 @@ export const messages = {
         action: '自分の検閲設定へ',
       },
       unauthorized: {
-        title: '検閲設定にはログインが必要です',
         description: 'ログインすると見たくない作品を減らし、閲覧環境を整理できます',
-        loginAction: 'ログインして始める',
-        signupPrompt: '初めてですか？',
-        signupAction: '新規登録',
       },
       error: {
         toast: '検閲設定の読み込み中にエラーが発生しました。',
@@ -546,11 +534,7 @@ export const messages = {
         action: '前往我的屏蔽设置',
       },
       unauthorized: {
-        title: '屏蔽设置需要登录',
         description: '登录后可以减少不想看到的作品，整理浏览体验',
-        loginAction: '登录后开始',
-        signupPrompt: '第一次使用？',
-        signupAction: '注册',
       },
       error: {
         toast: '加载屏蔽设置时发生错误。',

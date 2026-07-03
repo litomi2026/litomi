@@ -9,6 +9,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import LoginGate from '@/components/LoginGate'
 import useMeQuery from '@/query/useMeQuery'
 
 import { useAdsterraStatsQuery } from './useAdsterraStatsQuery'
@@ -146,14 +147,7 @@ export default function AdStats() {
   }
 
   if (me === null) {
-    return (
-      <div className="space-y-3">
-        <div className="rounded-xl bg-white/4 border border-white/7 p-4">
-          <p className="text-zinc-300 font-medium">{t('loginRequiredTitle')}</p>
-          <p className="text-sm text-zinc-500 mt-1">{t('loginRequiredDesc')}</p>
-        </div>
-      </div>
-    )
+    return <LoginGate description={t('loginRequiredDesc')} />
   }
 
   return (
