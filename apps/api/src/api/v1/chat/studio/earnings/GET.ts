@@ -42,7 +42,11 @@ route.get('/', requireAuth, async (c) => {
   // 정산 내역이 최신순이므로 첫 행이 곧 직전 정산이다.
   const latest = payouts[0]
   const carriedInAmount = latest?.status === 'carried' ? latest.payableAmount : 0
-  const breakdown = computeSettlement(activity.grossAmount, activity.refundAmount, carriedInAmount)
+  const breakdown = computeSettlement({
+    grossAmount: activity.grossAmount,
+    refundAmount: activity.refundAmount,
+    carriedInAmount,
+  })
 
   const response = {
     account: account && {

@@ -68,14 +68,10 @@ routes.get(
         return adultVerificationRequiredResponse(c)
       }
 
-      const fetchedItems = await selectLibraryItem({
-        libraryId,
+      const fetchedItems = await selectLibraryItem(libraryId, {
         limit: limit + 1,
         sort: isPublicScope ? DEFAULT_LIBRARY_ITEM_SORT : sort,
-        ...(cursorData && {
-          cursorMangaId: cursorData.mangaId,
-          cursorTime: new Date(cursorData.timestamp),
-        }),
+        cursor: cursorData ?? undefined,
       })
 
       const hasNextPage = fetchedItems.length > limit

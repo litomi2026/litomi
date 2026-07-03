@@ -23,7 +23,7 @@ export const getPost = cache(async (id: number, locale: PublicLocale) => {
 })
 
 export async function getPostComment(postId: number) {
-  return selectPostComment({ parentPostId: postId, limit: POST_DETAIL_COMMENTS_PREVIEW_LIMIT })
+  return selectPostComment(postId, { limit: POST_DETAIL_COMMENTS_PREVIEW_LIMIT })
 }
 
 export async function getPostConversation(id: number, locale: PublicLocale) {

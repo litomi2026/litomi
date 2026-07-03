@@ -53,7 +53,11 @@ export async function resolveTimelineAccess(
     return { kind: 'owner' }
   }
 
-  const intervals = await listPaidIntervals(userId, artist.id)
+  const intervals = await listPaidIntervals({
+    userId,
+    artistId: artist.id,
+  })
+
   const now = new Date()
 
   if (intervals.some((interval) => interval.startedAt <= now && now < interval.expiresAt)) {

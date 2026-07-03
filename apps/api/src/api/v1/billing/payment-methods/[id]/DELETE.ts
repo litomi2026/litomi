@@ -21,7 +21,7 @@ const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param
 route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
-  const deleted = await markPaymentMethodDeleted(id, userId)
+  const deleted = await markPaymentMethodDeleted({ id, userId })
 
   if (!deleted) {
     return problemResponse(c, { status: 404 })

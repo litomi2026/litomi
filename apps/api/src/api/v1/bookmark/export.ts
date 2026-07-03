@@ -15,7 +15,7 @@ route.get('/', requireAuth, async (c) => {
   const userId = c.get('userId')!
 
   try {
-    const bookmarkRows = await selectBookmark({ userId })
+    const bookmarkRows = await selectBookmark(userId)
 
     const response = {
       bookmarks: bookmarkRows.map(({ mangaId, createdAt }) => ({

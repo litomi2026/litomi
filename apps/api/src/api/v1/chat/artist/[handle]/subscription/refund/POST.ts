@@ -40,7 +40,11 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 404 })
   }
 
-  const subscription = await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
+  const subscription = await getSubscription({
+    userId,
+    targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+    targetId: artist.id,
+  })
 
   if (!subscription) {
     return problemResponse(c, { status: 404 })

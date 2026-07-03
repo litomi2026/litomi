@@ -32,8 +32,15 @@ route.get('/', ...middlewares, async (c) => {
   const [subscription, intervals] = isOwner
     ? [undefined, []]
     : await Promise.all([
-        getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id),
-        listPaidIntervals(userId, artist.id),
+        getSubscription({
+          userId,
+          targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+          targetId: artist.id,
+        }),
+        listPaidIntervals({
+          userId,
+          artistId: artist.id,
+        }),
       ])
 
   // 열람권과 답장 한도는 같은 정본(paid invoice 구간)에서 함께 나온다 — 한도가 있으면 결제 중.

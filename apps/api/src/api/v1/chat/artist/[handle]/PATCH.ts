@@ -27,7 +27,11 @@ route.patch('/', ...middlewares, async (c) => {
   const body = c.req.valid('json')
 
   try {
-    const updated = await updateChatArtist(handle, userId, body)
+    const updated = await updateChatArtist({
+      handle,
+      userId,
+      patch: body,
+    })
 
     if (!updated) {
       return problemResponse(c, { status: 404 })

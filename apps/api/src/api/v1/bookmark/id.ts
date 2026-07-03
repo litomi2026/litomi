@@ -15,7 +15,7 @@ route.get('/', requireAuth, async (c) => {
   const userId = c.get('userId')!
 
   try {
-    const bookmarkRows = await selectBookmarkId({ userId })
+    const bookmarkRows = await selectBookmarkId(userId)
     const response = { mangaIds: bookmarkRows.map(({ mangaId }) => mangaId) } satisfies GETV1BookmarkIdResponse
 
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })

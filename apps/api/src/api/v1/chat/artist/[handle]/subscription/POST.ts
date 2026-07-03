@@ -55,20 +55,27 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 403 })
   }
 
+  const subscriptionKey = {
+    userId,
+    targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+    targetId: artist.id,
+  }
+
   // 만료 전 재구독 = 새 결제 없이 autoRenew 재개.
-  const current = await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
+  const current = await getSubscription(subscriptionKey)
 
   if (current && current.expiresAt.getTime() > Date.now()) {
-    const resumed = current.autoRenew
-      ? current
-      : ((await setAutoRenew(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id, true)) ?? current)
+    const resumed = current.autoRenew ? current : ((await setAutoRenew(subscriptionKey, true)) ?? current)
 
     return c.json({
       subscription: toSubscriptionDTO(resumed),
     } satisfies POSTV1ChatSubscriptionResponse)
   }
 
-  const paymentMethod = await getActivePaymentMethodForUser(paymentMethodId, userId)
+  const paymentMethod = await getActivePaymentMethodForUser({
+    id: paymentMethodId,
+    userId,
+  })
 
   if (!paymentMethod) {
     return problemResponse(c, {
@@ -151,7 +158,7 @@ route.post('/', ...middlewares, async (c) => {
     }
   }
 
-  const subscription = await getSubscription(userId, SUBSCRIPTION_TARGET_CHAT_ARTIST, artist.id)
+  const subscription = await getSubscription(subscriptionKey)
 
   if (!subscription) {
     return problemResponse(c, { status: 500 })

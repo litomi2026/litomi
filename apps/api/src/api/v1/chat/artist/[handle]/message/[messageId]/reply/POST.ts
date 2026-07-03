@@ -44,7 +44,12 @@ route.post('/', ...middlewares, async (c) => {
 
   // 답장 자격과 한도(연속 구독 보너스)는 같은 정본(paid invoice 구간)에서 나온다 —
   // 현재 결제 구간이 없으면 한도도 없다. 길이는 코드포인트 기준으로 센다.
-  const limit = resolveReplyLimit(await listPaidIntervals(userId, artist.id), new Date())
+  const intervals = await listPaidIntervals({
+    userId,
+    artistId: artist.id,
+  })
+
+  const limit = resolveReplyLimit(intervals, new Date())
 
   if (!limit) {
     return problemResponse(c, { status: 403 })
