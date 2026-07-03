@@ -35,7 +35,7 @@ export default function StudioHome() {
       description: values.description,
       emoji: values.emoji,
       priceAmount: values.priceAmount,
-      agreeContentPolicy: true as const,
+      agreeContentPolicy: values.agreeContentPolicy as true,
     }
 
     createArtist(variables, {

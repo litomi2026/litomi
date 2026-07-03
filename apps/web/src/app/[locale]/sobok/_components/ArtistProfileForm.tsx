@@ -10,27 +10,15 @@ export interface ArtistProfileFormValues {
   emoji: string | null
   priceAmount: number
   isActive: boolean
+  agreeContentPolicy: boolean
 }
 
 interface Props {
-  // 없으면 온보딩(생성) 모드 — 성인 콘텐츠 금지 동의가 필수이고 isActive 토글이 없다.
   initial?: ChatArtistMine
   onSubmit: (values: ArtistProfileFormValues) => void
   isPending: boolean
   error: string | null
   submitLabel: string
-}
-
-// 핸들은 소문자 canonical — 입력 즉시 소문자로 정규화한다(state 없이 DOM 값 재작성).
-function normalizeHandleCase(e: React.InputEvent<HTMLInputElement>) {
-  const input = e.currentTarget
-  const lower = input.value.toLowerCase()
-
-  if (input.value !== lower) {
-    const { selectionStart, selectionEnd } = input
-    input.value = lower
-    input.setSelectionRange(selectionStart, selectionEnd)
-  }
 }
 
 export default function ArtistProfileForm({ initial, onSubmit, isPending, error, submitLabel }: Props) {
@@ -53,6 +41,7 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
       emoji: String(formData.get('emoji') ?? '').trim() || null,
       priceAmount: price === '' ? 0 : Number(price),
       isActive: isCreate || formData.get('isActive') === 'on',
+      agreeContentPolicy: !isCreate || formData.get('agreeContentPolicy') === 'on',
     })
   }
 
@@ -137,7 +126,7 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
 
       {isCreate ? (
         <label className="flex items-start gap-2.5 rounded-xl border border-foreground/10 p-3.5">
-          <input type="checkbox" required className="mt-0.5 h-4 w-4 accent-indigo-500" />
+          <input type="checkbox" name="agreeContentPolicy" required className="mt-0.5 h-4 w-4 accent-indigo-500" />
           <span className="text-xs leading-relaxed text-zinc-400">
             성인 콘텐츠(음란물 등)를 게시하지 않으며, 위반 시 프로필이 제한될 수 있다는 데 동의합니다. 구독자에게 판매된
             메시지는 탈퇴 후에도 해당 구독자에게 열람 제공됩니다.
@@ -170,4 +159,16 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
       </button>
     </form>
   )
+}
+
+// 핸들은 소문자 canonical — 입력 즉시 소문자로 정규화한다(state 없이 DOM 값 재작성).
+function normalizeHandleCase(e: React.InputEvent<HTMLInputElement>) {
+  const input = e.currentTarget
+  const lower = input.value.toLowerCase()
+
+  if (input.value !== lower) {
+    const { selectionStart, selectionEnd } = input
+    input.value = lower
+    input.setSelectionRange(selectionStart, selectionEnd)
+  }
 }

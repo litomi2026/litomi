@@ -5,16 +5,15 @@ import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import useRoomChannel from '../_hooks/useRoomChannel'
 import { avatarURL, mergeById } from '../_lib/chat'
 import useArtistQuery from '../_query/useArtistQuery'
 import useMarkMessageReadMutation from '../_query/useMarkMessageReadMutation'
 import useMessageReplyQuery from '../_query/useMessageReplyQuery'
 import ChatMessageList from './ChatMessageList'
-import { useChat } from './ChatProvider'
 
 export default function StudioReplyRoom({ handle, messageId }: { handle: string; messageId: string }) {
   const [liveReplies, setLiveReplies] = useState<ChatReplyWithFan[]>([])
-  const { subscribeRoom, unsubscribeRoom, onMessage } = useChat()
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useMessageReplyQuery(handle, messageId)
   const { mutate: markMessageRead } = useMarkMessageReadMutation(handle, messageId)
@@ -24,7 +23,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
   const isOwner = artistData?.isOwner
   const fetchedReplies = data?.pages.flatMap((page) => page.replies) ?? []
   const replies = mergeById(fetchedReplies, liveReplies, (reply) => reply.messageId)
-  const newestReplyId = replies.at(-1)?.messageId ?? null
+  const newestReplyId = replies.at(-1)?.messageId
 
   useEffect(() => {
     if (artistData && !isOwner) {
@@ -32,28 +31,10 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
     }
   }, [artistData, isOwner, handle, router])
 
-  useEffect(() => {
-    if (!artist || !isOwner) {
-      return
-    }
-
-    const inboundRoom = `c:${artist.id}`
-    subscribeRoom(inboundRoom)
-
-    return () => {
-      unsubscribeRoom(inboundRoom)
-    }
-  }, [artist, isOwner, subscribeRoom, unsubscribeRoom])
-
-  useEffect(() => {
-    if (!artist || !isOwner) {
-      return
-    }
-
-    const inboundRoom = `c:${artist.id}`
-
-    return onMessage((msgRoom, msg) => {
-      if (msgRoom !== inboundRoom || msg.kind !== 'reply' || msg.targetMessageId !== messageId) {
+  // The fan-in reply firehose (c:, owner-only), filtered down to this message's room.
+  useRoomChannel(artist && isOwner ? `c:${artist.id}` : null, {
+    onMessage: (msg) => {
+      if (msg.kind !== 'reply' || msg.targetMessageId !== messageId) {
         return
       }
 
@@ -67,8 +48,8 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
       }
 
       setLiveReplies((prev) => (prev.some((r) => r.messageId === msg.messageId) ? prev : [...prev, newReply]))
-    })
-  }, [artist, isOwner, messageId, onMessage])
+    },
+  })
 
   // Mark the room read up to the newest reply → fans see "read" on their reply.
   useEffect(() => {
