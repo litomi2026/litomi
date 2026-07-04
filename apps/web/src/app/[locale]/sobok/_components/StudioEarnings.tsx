@@ -1,17 +1,14 @@
 'use client'
 
-import type { ChatPayoutDTO, ChatPayoutStatus } from '@litomi/contracts'
+import type { ChatPayoutDTO } from '@litomi/contracts'
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { ChevronLeft, Loader2 } from 'lucide-react'
-import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
+import { Link } from '@/i18n/navigation'
+import { formatKRW } from '../_lib/format'
 import useSavePayoutAccountMutation from '../_query/useSavePayoutAccountMutation'
 import useStudioEarningsQuery from '../_query/useStudioEarningsQuery'
-
-const PAYOUT_STATUS_LABELS: Record<ChatPayoutStatus, string> = {
-  pending: '지급 대기',
-  paid: '지급 완료',
-  carried: '이월',
-}
 
 type Props = {
   handle: string
@@ -19,6 +16,8 @@ type Props = {
 
 export default function StudioEarnings({ handle }: Props) {
   const { data, isLoading } = useStudioEarningsQuery()
+  const t = useTranslations('Sobok.earnings')
+  const locale = useLocale()
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -26,7 +25,7 @@ export default function StudioEarnings({ handle }: Props) {
         <Link href={`/sobok/studio/${handle}`} className="p-2 text-zinc-400 hover:text-foreground transition-colors">
           <ChevronLeft className="w-6 h-6" />
         </Link>
-        <h2 className="font-bold text-lg text-foreground ml-2">정산 · 수익</h2>
+        <h2 className="font-bold text-lg text-foreground ml-2">{t('title')}</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -37,16 +36,17 @@ export default function StudioEarnings({ handle }: Props) {
         ) : (
           <div className="mx-auto w-full max-w-md space-y-8 px-5 py-6">
             <section>
-              <h3 className="text-sm font-semibold text-zinc-400">이번 달</h3>
+              <h3 className="text-sm font-semibold text-zinc-400">{t('thisMonth')}</h3>
               <div className="mt-2 rounded-2xl border border-foreground/10 bg-zinc-800/60 p-5">
-                <p className="text-sm text-zinc-400">예상 지급액</p>
+                <p className="text-sm text-zinc-400">{t('estimatedPayout')}</p>
                 <p className="mt-1 text-3xl font-bold text-foreground">
-                  {formatKRW(data.currentMonth.estimatedPayableAmount)}
+                  {formatKRW(data.currentMonth.estimatedPayableAmount, locale)}
                 </p>
                 <p className="mt-2 text-xs text-zinc-500">
-                  수납 {formatKRW(data.currentMonth.grossAmount)}
-                  {data.currentMonth.refundAmount > 0 && ` · 환불 ${formatKRW(data.currentMonth.refundAmount)}`} ·
-                  수수료 25%와 원천징수 3.3%를 뺀 금액이에요. 다음 달 초에 정산돼요.
+                  {t('gross', { amount: formatKRW(data.currentMonth.grossAmount, locale) })}
+                  {data.currentMonth.refundAmount > 0 &&
+                    ` · ${t('refund', { amount: formatKRW(data.currentMonth.refundAmount, locale) })}`}{' '}
+                  · {t('feeNote')}
                 </p>
               </div>
             </section>
@@ -54,9 +54,9 @@ export default function StudioEarnings({ handle }: Props) {
             <PayoutAccountSection account={data.account} />
 
             <section>
-              <h3 className="text-sm font-semibold text-zinc-400">정산 내역</h3>
+              <h3 className="text-sm font-semibold text-zinc-400">{t('historyTitle')}</h3>
               {data.payouts.length === 0 ? (
-                <p className="mt-2 text-sm text-zinc-500">아직 정산 내역이 없어요. 매월 초에 지난달이 정산돼요.</p>
+                <p className="mt-2 text-sm text-zinc-500">{t('historyEmpty')}</p>
               ) : (
                 <ul className="mt-2 space-y-2">
                   {data.payouts.map((payout) => (
@@ -77,6 +77,8 @@ type PayoutItemProps = {
 }
 
 function PayoutItem({ payout }: PayoutItemProps) {
+  const t = useTranslations('Sobok.earnings')
+  const locale = useLocale()
   const period = new Date(payout.periodStart)
 
   const statusTone =
@@ -86,18 +88,22 @@ function PayoutItem({ payout }: PayoutItemProps) {
     <li className="rounded-xl border border-foreground/10 p-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-foreground">
-          {period.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+          {period.toLocaleDateString(LOCALE_LANGUAGE_TAGS[locale], { year: 'numeric', month: 'long' })}
         </span>
-        <span className={`text-xs font-semibold ${statusTone}`}>{PAYOUT_STATUS_LABELS[payout.status]}</span>
+        <span className={`text-xs font-semibold ${statusTone}`}>{t(`status.${payout.status}`)}</span>
       </div>
-      <p className="mt-1 text-xl font-bold text-foreground">{formatKRW(payout.payableAmount)}</p>
+      <p className="mt-1 text-xl font-bold text-foreground">{formatKRW(payout.payableAmount, locale)}</p>
       <p className="mt-1 text-xs text-zinc-500">
-        수납 {formatKRW(payout.grossAmount)}
-        {payout.refundAmount > 0 && ` − 환불 ${formatKRW(payout.refundAmount)}`} − 수수료 {formatKRW(payout.feeAmount)}{' '}
-        − 원천징수 {formatKRW(payout.withholdingAmount)}
+        {t('gross', { amount: formatKRW(payout.grossAmount, locale) })}
+        {payout.refundAmount > 0 && ` − ${t('refund', { amount: formatKRW(payout.refundAmount, locale) })}`} −{' '}
+        {t('fee', { amount: formatKRW(payout.feeAmount, locale) })} −{' '}
+        {t('withholding', { amount: formatKRW(payout.withholdingAmount, locale) })}
         {payout.carriedInAmount !== 0 &&
-          ` ${payout.carriedInAmount > 0 ? '+' : '−'} 이월 ${formatKRW(Math.abs(payout.carriedInAmount))}`}
-        {payout.paidAt && ` · ${new Date(payout.paidAt).toLocaleDateString('ko-KR')} 지급`}
+          ` ${payout.carriedInAmount > 0 ? '+' : '−'} ${t('carriedAmount', {
+            amount: formatKRW(Math.abs(payout.carriedInAmount), locale),
+          })}`}
+        {payout.paidAt &&
+          ` · ${t('paidOn', { date: new Date(payout.paidAt).toLocaleDateString(LOCALE_LANGUAGE_TAGS[locale]) })}`}
       </p>
     </li>
   )
@@ -112,11 +118,12 @@ type PayoutAccountSectionProps = {
 }
 
 function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
-  const { mutate: saveAccount, isPending, error } = useSavePayoutAccountMutation()
   const [editing, setEditing] = useState(false)
   const [bankName, setBankName] = useState('')
-  const [accountNumber, setAccountNumber] = useState('')
   const [holderName, setHolderName] = useState('')
+  const [accountNumber, setAccountNumber] = useState('')
+  const { mutate: saveAccount, isPending, error } = useSavePayoutAccountMutation()
+  const t = useTranslations('Sobok.earnings')
 
   const canSave = !isPending && bankName.trim() && accountNumber.trim() && holderName.trim()
 
@@ -135,7 +142,7 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
 
   return (
     <section>
-      <h3 className="text-sm font-semibold text-zinc-400">입금 계좌</h3>
+      <h3 className="text-sm font-semibold text-zinc-400">{t('accountTitle')}</h3>
 
       {!editing && account && (
         <div className="mt-2 flex items-center justify-between rounded-xl border border-foreground/10 p-4">
@@ -143,27 +150,27 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
             <p className="text-sm font-medium text-foreground">
               {account.bankName} {account.accountNumberMasked}
             </p>
-            <p className="mt-0.5 text-xs text-zinc-500">예금주 {account.holderName}</p>
+            <p className="mt-0.5 text-xs text-zinc-500">{t('accountHolder', { name: account.holderName })}</p>
           </div>
           <button
             type="button"
             onClick={() => setEditing(true)}
             className="text-xs font-semibold text-indigo-500 hover:text-indigo-400 transition-colors"
           >
-            변경
+            {t('change')}
           </button>
         </div>
       )}
 
       {!editing && !account && (
         <div className="mt-2 rounded-xl border border-foreground/10 p-4">
-          <p className="text-sm text-zinc-400">정산받을 계좌를 등록해 주세요. 계좌가 없으면 지급이 보류돼요.</p>
+          <p className="text-sm text-zinc-400">{t('accountMissing')}</p>
           <button
             type="button"
             onClick={() => setEditing(true)}
             className="mt-2 text-xs font-semibold text-indigo-500 hover:text-indigo-400 transition-colors"
           >
-            계좌 등록하기
+            {t('registerAccount')}
           </button>
         </div>
       )}
@@ -174,7 +181,7 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
             type="text"
             value={bankName}
             onChange={(e) => setBankName(e.target.value)}
-            placeholder="은행명"
+            placeholder={t('bankNamePlaceholder')}
             maxLength={32}
             className="w-full rounded-lg bg-zinc-800 px-3.5 py-2.5 text-sm text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
           />
@@ -182,7 +189,7 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
             type="text"
             value={accountNumber}
             onChange={(e) => setAccountNumber(e.target.value)}
-            placeholder="계좌번호 (숫자와 - 만)"
+            placeholder={t('accountNumberPlaceholder')}
             maxLength={32}
             className="w-full rounded-lg bg-zinc-800 px-3.5 py-2.5 text-sm text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
           />
@@ -190,7 +197,7 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
             type="text"
             value={holderName}
             onChange={(e) => setHolderName(e.target.value)}
-            placeholder="예금주"
+            placeholder={t('holderNamePlaceholder')}
             maxLength={32}
             className="w-full rounded-lg bg-zinc-800 px-3.5 py-2.5 text-sm text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
           />
@@ -202,7 +209,7 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
               className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-500 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-50"
             >
               {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-              저장
+              {t('save')}
             </button>
             <button
               type="button"
@@ -210,15 +217,11 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
               disabled={isPending}
               className="flex-1 rounded-lg border border-foreground/15 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-700/50 disabled:opacity-60"
             >
-              취소
+              {t('cancel')}
             </button>
           </div>
         </form>
       )}
     </section>
   )
-}
-
-function formatKRW(amount: number): string {
-  return `${amount.toLocaleString('ko-KR')}원`
 }

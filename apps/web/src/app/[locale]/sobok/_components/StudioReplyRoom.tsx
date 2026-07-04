@@ -2,11 +2,12 @@
 
 import type { ChatReplyWithFan } from '@litomi/contracts'
 import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
+import { Link, useRouter } from '@/i18n/navigation'
 import useRoomChannel from '../_hooks/useRoomChannel'
 import { avatarURL, mergeById } from '../_lib/chat'
+import { formatTime } from '../_lib/format'
 import useArtistQuery from '../_query/useArtistQuery'
 import useMarkMessageReadMutation from '../_query/useMarkMessageReadMutation'
 import useMessageReplyQuery from '../_query/useMessageReplyQuery'
@@ -18,6 +19,8 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useMessageReplyQuery(handle, messageId)
   const { mutate: markMessageRead } = useMarkMessageReadMutation(handle, messageId)
   const router = useRouter()
+  const locale = useLocale()
+  const t = useTranslations('Sobok.replyRoom')
 
   const artist = artistData?.artist
   const isOwner = artistData?.isOwner
@@ -73,21 +76,21 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
         <Link href={`/sobok/studio/${handle}`} className="p-2 text-zinc-400 hover:text-foreground transition-colors">
           <ChevronLeft className="w-6 h-6" />
         </Link>
-        <h2 className="font-bold text-lg text-foreground ml-2">메시지 답장</h2>
+        <h2 className="font-bold text-lg text-foreground ml-2">{t('title')}</h2>
       </div>
 
       {/* Replies (all fans; the artist reads the whole room) */}
       <ChatMessageList
         bottomInsetClassName="pb-6"
         dateOf={(reply) => new Date(reply.createdAt).getTime()}
-        emptyState={<p className="text-sm text-zinc-400">아직 답장이 없어요.</p>}
+        emptyState={<p className="text-sm text-zinc-400">{t('empty')}</p>}
         hasOlder={hasNextPage}
         isLoadingOlder={isFetchingNextPage}
         itemKey={(reply) => reply.messageId}
         items={replies}
         onLoadOlder={fetchNextPage}
         renderItem={(reply) => {
-          const fanName = reply.fan?.nickname || `팬 #${reply.senderId}`
+          const fanName = reply.fan?.nickname || t('fanNumber', { id: reply.senderId })
           return (
             <div className="flex justify-start w-full">
               <div className="flex max-w-[80%] flex-row items-end gap-2">
@@ -103,7 +106,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
                       {reply.content.text}
                     </div>
                     <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
-                      {new Date(reply.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {formatTime(reply.createdAt, locale)}
                     </span>
                   </div>
                 </div>

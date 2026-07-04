@@ -1,9 +1,9 @@
 'use client'
 
 import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
+import { Link, useRouter } from '@/i18n/navigation'
 import useStudioQuery from '../_query/useStudioQuery'
 import useUpdateArtistMutation from '../_query/useUpdateArtistMutation'
 import ArtistProfileForm, { type ArtistProfileFormValues } from './ArtistProfileForm'
@@ -11,6 +11,7 @@ import ArtistProfileForm, { type ArtistProfileFormValues } from './ArtistProfile
 export default function StudioSettings({ handle }: { handle: string }) {
   const { data, isLoading } = useStudioQuery()
   const { mutate: updateArtist, isPending, error } = useUpdateArtistMutation(handle)
+  const t = useTranslations('Sobok.studio')
   const router = useRouter()
   const artist = data?.artist
 
@@ -58,7 +59,7 @@ export default function StudioSettings({ handle }: { handle: string }) {
         <Link href={`/sobok/studio/${handle}`} className="p-2 text-zinc-400 hover:text-foreground transition-colors">
           <ChevronLeft className="w-6 h-6" />
         </Link>
-        <h2 className="font-bold text-lg text-foreground ml-2">스튜디오 설정</h2>
+        <h2 className="font-bold text-lg text-foreground ml-2">{t('settingsTitle')}</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -68,7 +69,7 @@ export default function StudioSettings({ handle }: { handle: string }) {
             onSubmit={handleSubmit}
             isPending={isPending}
             error={error instanceof Error ? error.message : null}
-            submitLabel="저장하기"
+            submitLabel={t('saveSubmit')}
           />
         </div>
       </div>

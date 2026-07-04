@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { UserVisibleError } from '@/utils/api-request'
 import { requestBillingKeyIssuance } from '../_lib/billing'
@@ -9,10 +10,11 @@ import useSubscribeMutation from './useSubscribeMutation'
 
 export default function useSubscribeAction(handle: string, artistName: string, enabled = true) {
   const { data: billing } = usePaymentMethodsQuery(enabled)
-  const { mutateAsync: registerPaymentMethod } = useAddPaymentMethodMutation()
   const { mutateAsync: requestSubscribe } = useSubscribeMutation(handle)
-  const [isPending, setPending] = useState(false)
+  const { mutateAsync: registerPaymentMethod } = useAddPaymentMethodMutation()
   const [error, setError] = useState<string | null>(null)
+  const [isPending, setPending] = useState(false)
+  const t = useTranslations('Sobok')
 
   const finishWithBillingKey = useCallback(
     async (billingKey: string) => {
@@ -23,12 +25,12 @@ export default function useSubscribeAction(handle: string, artistName: string, e
         const saved = await registerPaymentMethod({ token: billingKey })
         await requestSubscribe({ paymentMethodId: saved.id })
       } catch (caught) {
-        setError(errorMessage(caught))
+        setError(errorMessage(caught, t('subscribeAction.failed')))
       } finally {
         setPending(false)
       }
     },
-    [registerPaymentMethod, requestSubscribe],
+    [registerPaymentMethod, requestSubscribe, t],
   )
 
   const start = useCallback(async () => {
@@ -44,22 +46,23 @@ export default function useSubscribeAction(handle: string, artistName: string, e
       }
 
       if (!billing?.storeId || !billing.channelKey) {
-        throw new UserVisibleError('결제가 아직 준비되지 않았어요. 잠시 후 다시 시도해 주세요.')
+        throw new UserVisibleError(t('billing.notReady'))
       }
 
       const billingKey = await requestBillingKeyIssuance({
         storeId: billing.storeId,
         channelKey: billing.channelKey,
-        issueName: `${artistName} 구독`,
+        issueName: t('subscribeAction.issueName', { name: artistName }),
+        errorMessages: { cancelled: t('billing.registerCancelled'), failed: t('billing.registerFailed') },
       })
 
       await finishWithBillingKey(billingKey)
     } catch (caught) {
-      setError(errorMessage(caught))
+      setError(errorMessage(caught, t('subscribeAction.failed')))
     } finally {
       setPending(false)
     }
-  }, [billing, requestSubscribe, finishWithBillingKey, artistName])
+  }, [billing, requestSubscribe, finishWithBillingKey, artistName, t])
 
   return {
     start,
@@ -71,9 +74,9 @@ export default function useSubscribeAction(handle: string, artistName: string, e
   }
 }
 
-function errorMessage(error: unknown): string {
+function errorMessage(error: unknown, fallback: string): string {
   if (error instanceof Error && error.message) {
     return error.message
   }
-  return '구독에 실패했어요. 잠시 후 다시 시도해 주세요.'
+  return fallback
 }

@@ -1,8 +1,9 @@
 'use client'
 
 import { Mic } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
+import { useRouter } from '@/i18n/navigation'
 import useCreateArtistMutation from '../_query/useCreateArtistMutation'
 import useStudioQuery from '../_query/useStudioQuery'
 import ArtistProfileForm, { type ArtistProfileFormValues } from './ArtistProfileForm'
@@ -11,6 +12,7 @@ import ArtistProfileForm, { type ArtistProfileFormValues } from './ArtistProfile
 export default function StudioHome() {
   const { data, isLoading } = useStudioQuery()
   const { mutate: createArtist, isPending, error } = useCreateArtistMutation()
+  const t = useTranslations('Sobok.studio')
   const router = useRouter()
   const artist = data?.artist
 
@@ -53,17 +55,15 @@ export default function StudioHome() {
         </div>
 
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">아티스트 시작하기</h1>
-          <p className="mt-2 max-w-sm text-sm text-zinc-400">
-            팬에게 메시지를 보내고 월 구독으로 수익을 만들어 보세요. 프로필은 언제든 수정할 수 있어요.
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">{t('onboardingTitle')}</h1>
+          <p className="mt-2 max-w-sm text-sm text-zinc-400">{t('onboardingDescription')}</p>
         </div>
 
         <ArtistProfileForm
           onSubmit={handleSubmit}
           isPending={isPending}
           error={error instanceof Error ? error.message : null}
-          submitLabel="아티스트 프로필 만들기"
+          submitLabel={t('onboardingSubmit')}
         />
       </div>
     </div>
