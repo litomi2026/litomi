@@ -64,12 +64,14 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required=fals
   && find apps/web/.next/static -type f -name '*.css' -exec sed -i -E 's@/\*#[[:space:]]*sourceMappingURL=.*\*/@@g' {} +
 
 # Stage 3: Runtime
-FROM oven/bun:1.3-alpine AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 
 ENV HOSTNAME=0.0.0.0
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# 75% of the 2Gi pod memory limit (litomi-ops web deployment); override via k8s env if the limit changes
+ENV NODE_OPTIONS=--max-old-space-size=1536
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -80,4 +82,4 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/
 
 USER nextjs
 
-CMD ["bun", "apps/web/server.js"]
+CMD ["node", "apps/web/server.js"]
