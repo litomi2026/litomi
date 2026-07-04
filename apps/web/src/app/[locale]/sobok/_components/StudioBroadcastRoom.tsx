@@ -76,7 +76,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
   // Non-owners don't belong in the studio.
   useEffect(() => {
     if (artistData && !isOwner) {
-      router.replace(`/sobok/${handle}`)
+      router.replace(`/sobok/@${handle}`)
     }
   }, [artistData, isOwner, handle, router])
 

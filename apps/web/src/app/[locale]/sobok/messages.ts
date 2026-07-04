@@ -58,8 +58,8 @@ export const messages = {
         saveSubmit: '저장하기',
         form: {
           handleLabel: '핸들',
-          handleTitle: '영문 소문자, 숫자, 밑줄(_)만 쓸 수 있어요.',
-          handleHelp: '영문 소문자, 숫자, 밑줄(_)로 3~32자. 나중에 바꿀 수 있어요.',
+          handleTitle: '영문 소문자, 숫자, 하이픈(-)만 쓸 수 있어요. 하이픈은 처음·끝이나 연속으로 쓸 수 없어요.',
+          handleHelp: '영문 소문자, 숫자, 하이픈(-)으로 3~32자. 나중에 바꿀 수 있어요.',
           nameLabel: '이름',
           namePlaceholder: '팬에게 보여줄 이름',
           emojiLabel: '이모지',
@@ -210,8 +210,9 @@ export const messages = {
         saveSubmit: 'Save',
         form: {
           handleLabel: 'Handle',
-          handleTitle: 'Only lowercase letters, numbers, and underscores (_) are allowed.',
-          handleHelp: '3–32 characters of lowercase letters, numbers, and underscores (_). You can change it later.',
+          handleTitle:
+            'Only lowercase letters, numbers, and hyphens (-) are allowed. Hyphens cannot start, end, or repeat.',
+          handleHelp: '3–32 characters of lowercase letters, numbers, and hyphens (-). You can change it later.',
           nameLabel: 'Name',
           namePlaceholder: 'Name shown to fans',
           emojiLabel: 'Emoji',
@@ -364,8 +365,8 @@ export const messages = {
         saveSubmit: '保存する',
         form: {
           handleLabel: 'ハンドル',
-          handleTitle: '英小文字、数字、アンダースコア（_）のみ使用できます。',
-          handleHelp: '英小文字、数字、アンダースコア（_）で3〜32文字。後から変更できます。',
+          handleTitle: '英小文字、数字、ハイフン（-）のみ使用できます。ハイフンは先頭・末尾・連続では使えません。',
+          handleHelp: '英小文字、数字、ハイフン（-）で3〜32文字。後から変更できます。',
           nameLabel: '名前',
           namePlaceholder: 'ファンに表示する名前',
           emojiLabel: '絵文字',
@@ -516,8 +517,8 @@ export const messages = {
         saveSubmit: '保存',
         form: {
           handleLabel: '标识名',
-          handleTitle: '只能使用小写英文字母、数字和下划线（_）。',
-          handleHelp: '由小写英文字母、数字和下划线（_）组成，3~32 个字符。以后可以更改。',
+          handleTitle: '只能使用小写英文字母、数字和连字符（-）。连字符不能位于开头、结尾或连续出现。',
+          handleHelp: '由小写英文字母、数字和连字符（-）组成，3~32 个字符。以后可以更改。',
           nameLabel: '名称',
           namePlaceholder: '展示给粉丝的名称',
           emojiLabel: '表情符号',

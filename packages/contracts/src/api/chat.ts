@@ -181,34 +181,31 @@ export interface POSTV1ChatSubscriptionRefundResponse {
 
 // --- Artist self-service (onboarding + studio settings) -----------------------
 
-// URL(/sobok/{handle})과 스튜디오 주소에 쓰이는 핸들. 변경 가능하며, 라우트 세그먼트·시스템
-// 경로와 충돌하는 이름은 예약어로 막는다.
+// 공개 페이지(/sobok/@{handle})와 스튜디오 주소에 쓰이는 핸들. 변경 가능. @ 네임스페이스 덕에
+// 라우트 세그먼트와 충돌하지 않으므로 예약어는 운영 주체 사칭 방지용만 남긴다. 서브도메인 승격
+// 가능성에 대비해 DNS 라벨 규칙(하이픈 구분자, 영숫자 시작·끝)을 따른다.
 export const RESERVED_CHAT_HANDLES = new Set([
   'admin',
   'administrator',
-  'api',
-  'artist',
   'help',
   'litomi',
-  'me',
-  'message',
   'moderator',
-  'new',
   'notice',
   'official',
-  'settings',
   'sobok',
   'staff',
-  'studio',
   'support',
   'system',
-  'threads',
-  'www',
 ])
 
 const chatArtistHandleSchema = z
   .string()
-  .regex(/^[a-z0-9_]{3,32}$/, '핸들은 영문 소문자, 숫자, 밑줄(_)로 3~32자여야 해요.')
+  .min(3, '핸들은 3~32자여야 해요.')
+  .max(32, '핸들은 3~32자여야 해요.')
+  .regex(
+    /^[a-z0-9](?:-?[a-z0-9])*$/,
+    '핸들은 영문 소문자, 숫자, 하이픈(-)만 쓸 수 있고, 하이픈은 처음·끝·연속으로 쓸 수 없어요.',
+  )
   .refine((handle) => !RESERVED_CHAT_HANDLES.has(handle), '사용할 수 없는 핸들이에요.')
 
 const CHAT_ARTIST_NAME_MAX_LENGTH = 64

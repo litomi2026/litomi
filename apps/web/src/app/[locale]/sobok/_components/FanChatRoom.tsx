@@ -128,6 +128,7 @@ export default function FanChatRoom({
           <h2 className="font-bold text-lg text-foreground flex items-center gap-1.5">
             {artist.displayName}
             {artist.emoji && <span>{artist.emoji}</span>}
+            <span className="text-sm font-normal text-zinc-500">@{handle}</span>
           </h2>
         </div>
         {entitled && subscription && (
