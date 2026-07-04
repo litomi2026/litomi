@@ -19,6 +19,7 @@ import {
 import { useDownload } from '@/hook/useDownload'
 import { useThrottleValue } from '@/hook/useThrottleValue'
 import { usePathname } from '@/i18n/navigation'
+import { TranslatedMessage } from '@/lib/toast'
 import { isAdultVerified } from '@/utils/adult-verification'
 
 const commonButtonStyle =
@@ -130,7 +131,7 @@ export function DownloadButtonError({ error, reset }: ErrorBoundaryFallbackProps
   const t = useTranslations('Common.mangaCard.download')
 
   useEffect(() => {
-    toast.error('다운로드 중 오류가 발생했어요')
+    toast.error(<TranslatedMessage id="Common.mangaCard.download.failed" />)
   }, [error])
 
   return (

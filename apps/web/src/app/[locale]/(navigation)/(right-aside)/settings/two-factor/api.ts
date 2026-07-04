@@ -1,8 +1,6 @@
 import type {
-  DELETEV1MeTrustedBrowserAllResponse,
   DELETEV1MeTrustedBrowserResponse,
   DELETEV1MeTwoFactorBody,
-  DELETEV1MeTwoFactorResponse,
   POSTV1MeTwoFactorBackupCodesBody,
   POSTV1MeTwoFactorBackupCodesResponse,
   POSTV1MeTwoFactorSetupResponse,
@@ -13,15 +11,11 @@ import type {
 import { fetchAPIData } from '@/utils/api-request'
 
 export async function disableTwoFactor(body: DELETEV1MeTwoFactorBody) {
-  const url = '/api/v1/me/two-factor'
-
-  const { data } = await fetchAPIData<DELETEV1MeTwoFactorResponse>(url, {
+  await fetchAPIData<undefined>('/api/v1/me/two-factor', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-
-  return data
 }
 
 export async function regenerateTwoFactorBackupCodes(body: POSTV1MeTwoFactorBackupCodesBody) {
@@ -47,13 +41,9 @@ export async function requestTwoFactorSetup() {
 }
 
 export async function revokeAllTrustedBrowsers() {
-  const url = '/api/v1/me/trusted-browser/all'
-
-  const { data } = await fetchAPIData<DELETEV1MeTrustedBrowserAllResponse>(url, {
+  await fetchAPIData<undefined>('/api/v1/me/trusted-browser/all', {
     method: 'DELETE',
   })
-
-  return data
 }
 
 export async function revokeTrustedBrowser(id: number) {

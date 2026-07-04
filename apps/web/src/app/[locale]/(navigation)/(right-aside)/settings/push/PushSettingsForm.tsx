@@ -1,6 +1,6 @@
 'use client'
 
-import type { PATCHV1MePushSettingsBody, PATCHV1MePushSettingsResponse } from '@litomi/contracts'
+import type { PATCHV1MePushSettingsBody } from '@litomi/contracts'
 import { getTimezoneOffsetHours, localToUtcHour, utcToLocalHour } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
@@ -28,10 +28,10 @@ export default function PushSettingsForm({ initialSettings }: Props) {
   const router = useRouter()
   const localQuietStart = utcToLocalHour(initialSettings.quietStart)
 
-  const updateMutation = useMutation<PATCHV1MePushSettingsResponse, ProblemDetailsError, PATCHV1MePushSettingsBody>({
+  const updateMutation = useMutation<void, ProblemDetailsError, PATCHV1MePushSettingsBody>({
     mutationFn: updatePushSettings,
-    onSuccess: ({ message }) => {
-      toast.success(message)
+    onSuccess: () => {
+      toast.success('푸시 알림을 설정했어요')
       router.refresh()
     },
   })

@@ -6,6 +6,7 @@ import { messages as rightAsideMessages } from '@/app/[locale]/(navigation)/(rig
 import { messages as settingsMessages } from '@/app/[locale]/(navigation)/(right-aside)/settings/messages'
 import { messages as liboMessages } from '@/app/[locale]/(navigation)/(top-navigation)/libo/messages'
 import { messages as topNavigationMessages } from '@/app/[locale]/(navigation)/(top-navigation)/messages'
+import { messages as aiChatMessages } from '@/app/[locale]/(navigation)/chat/messages'
 import { messages as libraryMessages } from '@/app/[locale]/(navigation)/library/messages'
 import { messages as navigationMessages } from '@/app/[locale]/(navigation)/messages'
 import { messages as searchMessages } from '@/app/[locale]/(navigation)/search/messages'
@@ -21,6 +22,7 @@ export type Messages = { [key: string]: MessageValue }
 export type MessageValue = string | { [key: string]: MessageValue }
 
 const messageModules = [
+  aiChatMessages,
   appMessages,
   authMessages,
   deterrenceMessages,

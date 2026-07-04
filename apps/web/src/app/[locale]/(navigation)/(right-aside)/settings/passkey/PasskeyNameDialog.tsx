@@ -36,8 +36,8 @@ export default function PasskeyNameDialog({
   const nameMutation = useMutation({
     mutationFn: (nextName: string) => updatePasskeyName(id, { name: nextName }),
 
-    onSuccess: ({ message }) => {
-      toast.success(message)
+    onSuccess: () => {
+      toast.success('패스키 이름을 저장했어요')
       onOpenChange(false)
       onSaved?.()
     },

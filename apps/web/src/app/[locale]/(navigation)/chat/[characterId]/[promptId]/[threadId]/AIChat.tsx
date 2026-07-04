@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { Link, useRouter } from '@/i18n/navigation'
@@ -21,6 +22,7 @@ type Props = {
 
 export default function AIChat({ character, prompt, threadId }: Props) {
   const router = useRouter()
+  const t = useTranslations('AIChat')
   const runtime = useWebLLMRuntime()
   const modelSupportsThinking = runtime.modelPreset.supportsThinking
   const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
@@ -28,7 +30,7 @@ export default function AIChat({ character, prompt, threadId }: Props) {
   const chatInputDisabled = chatInputDisabledReason !== null
 
   const outbox = useOutboxAutoFlush({
-    onUnauthorized: () => toast.warning('로그인 정보가 만료됐어요'),
+    onUnauthorized: () => toast.warning(t('sessionExpired')),
   })
 
   const chat = useCharacterChatController({
@@ -74,7 +76,7 @@ export default function AIChat({ character, prompt, threadId }: Props) {
         onInstall={runtime.install}
         onRefreshInstallState={runtime.refreshInstallState}
         onRemoveCustomModel={runtime.removeCustomModel}
-        onRemoveInstalledModel={() => runtime.removeInstalledModel().then(() => toast.success('모델을 삭제했어요'))}
+        onRemoveInstalledModel={() => runtime.removeInstalledModel().then(() => toast.success(t('modelRemoved')))}
         showThinkingTrace={runtime.showThinkingTrace}
       />
 

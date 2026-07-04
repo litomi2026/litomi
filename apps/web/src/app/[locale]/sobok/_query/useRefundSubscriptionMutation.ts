@@ -4,7 +4,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchAPIData } from '@/utils/api-request'
 
 // 청약철회 — 조건(결제 7일 이내 + 이번 기간 답장 미발신)은 서버가 검증하고,
-// 불충족 사유는 problem detail 메시지로 내려와 그대로 표시된다.
+// 불충족 사유는 problem code(refund-*)로 내려와 Errors 카탈로그 카피로 표시된다.
 export default function useRefundSubscriptionMutation(handle: string) {
   const queryClient = useQueryClient()
 

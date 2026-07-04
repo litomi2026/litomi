@@ -30,8 +30,8 @@ export default function BrowserList({ webPushes }: Props) {
 
   const deleteMutation = useMutation<DELETEV1MePushSubscriptionIdResponse, ProblemDetailsError, number>({
     mutationFn: deletePushSubscription,
-    onSuccess: ({ message }) => {
-      toast.success(message)
+    onSuccess: () => {
+      toast.success('푸시 알림을 해제했어요')
       router.refresh()
     },
   })

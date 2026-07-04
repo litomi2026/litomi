@@ -4,6 +4,7 @@ import type { GETV1MeResponse, PATCHV1MeSettingsBody } from '@litomi/contracts'
 
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { BroadcastChannelKey, type UserSettingsBroadcastMessage } from '@/storage'
@@ -16,6 +17,7 @@ type MutationContext = {
 
 export default function usePatchMySettingsMutation() {
   const queryClient = useQueryClient()
+  const t = useTranslations('Common')
 
   return useMutation<void, ProblemDetailsError, PATCHV1MeSettingsBody, MutationContext>({
     mutationFn: async (body) => {
@@ -51,7 +53,7 @@ export default function usePatchMySettingsMutation() {
         queryClient.setQueryData(QueryKeys.me, context.previousMe)
       }
 
-      toast.error('설정을 저장하지 못했어요')
+      toast.error(t('settingsSaveFailed'))
     },
 
     onSuccess: () => {

@@ -1,6 +1,7 @@
 import type { ImageWithVariants } from '@litomi/domain/manga/model'
 
 import { createLitomiProxyMangaImageURL, createThirdPartyMangaImageURLs } from '@litomi/http/image-proxy'
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -21,9 +22,11 @@ type Props = {
 }
 
 export function useDownload({ manga }: Props) {
-  const { data: me } = useMeQuery()
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadedCount, setDownloadedCount] = useState(0)
+  const { data: me } = useMeQuery()
+  const t = useTranslations('Common.mangaCard.download')
+  const tErrors = useTranslations('Errors')
 
   const downloadAllImages = useCallback(async () => {
     if (isDownloading) {
@@ -32,9 +35,9 @@ export function useDownload({ manga }: Props) {
 
     if (!isAdultVerified(me)) {
       if (me) {
-        showAdultVerificationRecommendedToast('성인인증하면 다운로드 시 광고가 제거돼요')
+        showAdultVerificationRecommendedToast(t('adultHint'))
       } else {
-        showLoginRequiredToast('로그인하면 다운로드 시 광고가 제거돼요')
+        showLoginRequiredToast(t('loginHint'))
       }
     }
 
@@ -64,20 +67,20 @@ export function useDownload({ manga }: Props) {
         onProgress: (completed) => setDownloadedCount(completed),
       })
 
-      toast.success('다운로드가 완료됐어요')
+      toast.success(t('completed'))
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        toast.info('다운로드가 취소됐어요')
+        toast.info(t('canceled'))
       } else if (navigator.onLine === false) {
-        toast.error('네트워크 연결을 확인해 주세요')
+        toast.error(tErrors('status.offline'))
       } else {
-        toast.error('다운로드에 실패했어요')
+        toast.error(t('failed'))
       }
     } finally {
       setIsDownloading(false)
       setDownloadedCount(0)
     }
-  }, [isDownloading, manga, me])
+  }, [isDownloading, manga, me, t, tErrors])
 
   return {
     isDownloading,

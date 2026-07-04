@@ -1,18 +1,24 @@
 'use client'
 
-import { isProblemType, problemCode } from '@litomi/http/problem-details'
+import { problemCode } from '@litomi/contracts'
+import { isProblemType } from '@litomi/http/problem-details'
 import { environmentManager, MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
 import MyInfoSync from '@/components/MyInfoSync'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
+import {
+  ProblemMessage,
+  showAdultVerificationRequiredToast,
+  showLiboExpansionRequiredToast,
+  showLoginRequiredToast,
+  TranslatedMessage,
+} from '@/lib/toast'
 import { isAuthenticationRequiredError, UserVisibleError } from '@/utils/api-request'
-import { HTTPResponseError } from '@/utils/fetch-response'
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import { HTTPResponseError, ProblemDetailsError } from '@/utils/fetch-response'
 
 import { handleUnauthorizedError } from './auth-state'
 
@@ -72,15 +78,15 @@ function makeQueryClient() {
           }
 
           if (error.status >= 500) {
-            toast.error(error.message || '요청 처리 중 오류가 발생했어요')
+            toast.error(<ProblemMessage problem={error.problem} />)
           } else if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
             showForbiddenProblemToast(queryClient)
           } else if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
-            showLiboExpansionRequiredToast(error.message)
+            showLiboExpansionRequiredToast()
           } else if (isAuthenticationRequiredError(error)) {
             showLoginRequiredToast()
           } else if (error.status >= 400) {
-            toast.warning(error.message || '요청을 처리할 수 없어요')
+            toast.warning(<ProblemMessage problem={error.problem} />)
           }
         }
       },
@@ -106,7 +112,7 @@ function makeQueryClient() {
           }
 
           if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
-            showLiboExpansionRequiredToast(error.message)
+            showLiboExpansionRequiredToast()
             return
           }
 
@@ -115,9 +121,9 @@ function makeQueryClient() {
           }
 
           if (error.status >= 500) {
-            toast.error(error.message || '요청 처리 중 오류가 발생했어요')
+            toast.error(<ProblemMessage problem={error.problem} />)
           } else if (error.status >= 400) {
-            toast.warning(error.message || '요청을 처리할 수 없어요')
+            toast.warning(<ProblemMessage problem={error.problem} />)
           }
           return
         }
@@ -129,9 +135,9 @@ function makeQueryClient() {
 
         if (error instanceof Error) {
           if (navigator.onLine === false) {
-            toast.error('네트워크 연결을 확인해 주세요')
+            toast.error(<TranslatedMessage id="Errors.status.offline" />)
           } else {
-            toast.error('요청 처리 중 오류가 발생했어요')
+            toast.error(<TranslatedMessage id="Errors.status.serverError" />)
           }
         }
       },

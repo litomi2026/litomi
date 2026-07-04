@@ -78,7 +78,7 @@ export default function PushSubscriptionToggle({ endpoints }: Props) {
         return
       }
 
-      const { message } = await createPushSubscription({
+      await createPushSubscription({
         subscription: {
           endpoint: subscription.endpoint,
           keys: {
@@ -90,7 +90,7 @@ export default function PushSubscriptionToggle({ endpoints }: Props) {
       })
 
       setIsSubscribed(true)
-      toast.success(message)
+      toast.success('이 브라우저의 푸시 알림을 활성화했어요')
       router.refresh()
     } catch (error) {
       if (subscription) {
@@ -111,11 +111,11 @@ export default function PushSubscriptionToggle({ endpoints }: Props) {
       return
     }
 
-    const { message } = await deletePushSubscriptionByEndpoint({ endpoint: subscription.endpoint })
+    await deletePushSubscriptionByEndpoint({ endpoint: subscription.endpoint })
     await subscription.unsubscribe().catch(() => undefined)
 
     setIsSubscribed(false)
-    toast.success(message)
+    toast.success('이 브라우저의 푸시 알림을 비활성화했어요')
     router.refresh()
   }
 
