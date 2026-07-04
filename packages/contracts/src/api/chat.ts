@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { INVALID_PARAM } from '../problem'
+
 const CHAT_TEXT_MAX_LENGTH = 2000
 // 답장의 정적 상한 — 팬별 동적 한도(기본 30자 + 연속 구독 보너스)의 절대 최댓값과 일치해야 합니다.
 const CHAT_REPLY_TEXT_MAX_LENGTH = 300
@@ -203,7 +205,7 @@ const chatArtistHandleSchema = z
   .min(3)
   .max(32)
   .regex(/^[a-z0-9](?:-?[a-z0-9])*$/)
-  .refine((handle) => !RESERVED_CHAT_HANDLES.has(handle), { params: { code: 'handle-reserved' } })
+  .refine((handle) => !RESERVED_CHAT_HANDLES.has(handle), { params: { code: INVALID_PARAM.HANDLE_RESERVED } })
 
 const CHAT_ARTIST_NAME_MAX_LENGTH = 64
 const CHAT_ARTIST_DESCRIPTION_MAX_LENGTH = 500
@@ -218,7 +220,7 @@ const chatArtistPriceAmountSchema = z
   .min(0)
   .max(CHAT_ARTIST_PRICE_MAX)
   .refine((amount) => amount === 0 || amount >= CHAT_ARTIST_PRICE_MIN, {
-    params: { code: 'price-below-minimum' },
+    params: { code: INVALID_PARAM.PRICE_BELOW_MINIMUM },
   })
 
 export const postV1ChatArtistBodySchema = z.object({

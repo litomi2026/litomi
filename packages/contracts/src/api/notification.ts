@@ -8,6 +8,8 @@ import {
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { z } from 'zod'
 
+import { INVALID_PARAM } from '../problem'
+
 export interface NotificationItem {
   id: number
   userId: number
@@ -70,7 +72,7 @@ const notificationCriteriaConditionsSchema = z
       if (seen.has(key)) {
         ctx.addIssue({
           code: 'custom',
-          params: { code: 'duplicate-condition' },
+          params: { code: INVALID_PARAM.DUPLICATE_CONDITION },
           path: [index, 'value'],
         })
         continue

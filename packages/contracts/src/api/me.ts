@@ -3,6 +3,7 @@ import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 import { z } from 'zod'
 
+import { INVALID_PARAM } from '../problem'
 import { passwordSchema, twoFactorBackupCodeSchema, twoFactorTokenSchema } from '../shared'
 
 const nameSchema = z
@@ -18,7 +19,7 @@ const searchLanguageSchema = z
   .trim()
   .min(1)
   .transform(normalizeValue)
-  .refine(isSearchLanguage, { params: { code: 'invalid-search-language' } })
+  .refine(isSearchLanguage, { params: { code: INVALID_PARAM.INVALID_SEARCH_LANGUAGE } })
 
 export const imageURLSchema = z
   .url()
@@ -32,7 +33,7 @@ export const imageURLSchema = z
         return false
       }
     },
-    { params: { code: 'invalid-protocol' } },
+    { params: { code: INVALID_PARAM.INVALID_PROTOCOL } },
   )
 
 export enum AdultVerificationStatus {

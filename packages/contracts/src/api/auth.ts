@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { INVALID_PARAM } from '../problem'
 import {
   loginIdSchema,
   nicknameSchema,
@@ -70,11 +71,11 @@ export const postV1AuthSignupRequestSchema = z
     turnstileToken: turnstileTokenSchema,
   })
   .refine((data) => data.password === data.passwordConfirm, {
-    params: { code: 'password-confirm-mismatch' },
+    params: { code: INVALID_PARAM.PASSWORD_CONFIRM_MISMATCH },
     path: ['passwordConfirm'],
   })
   .refine((data) => data.loginId !== data.password, {
-    params: { code: 'password-equals-login-id' },
+    params: { code: INVALID_PARAM.PASSWORD_EQUALS_LOGIN_ID },
     path: ['password'],
   })
 

@@ -73,19 +73,21 @@ const problemCodeByStatus: Partial<Record<number, string>> = {
   504: 'gateway-timeout',
 }
 
-const statusTitleByStatus: Partial<Record<number, string>> = {
-  400: '잘못된 요청이에요',
-  401: '로그인이 필요해요',
-  403: '권한이 없어요',
-  404: '찾을 수 없어요',
-  408: '요청 시간이 초과됐어요',
-  409: '요청이 충돌했어요',
-  429: '요청이 너무 많아요',
-  499: '요청이 취소됐어요',
-  500: '서버 오류가 발생했어요',
-  502: '외부 서비스 오류예요',
-  503: '서비스를 사용할 수 없어요',
-  504: '게이트웨이 시간이 초과됐어요',
+// title 미지정 시의 기본값 — 표준 HTTP reason phrase(로케일 중립·dev-facing). 이 패키지는 제네릭 RFC 9457
+// 빌더이므로 제품 카피(로케일 문구)를 담지 않는다. litomi API는 호출부(@litomi/contracts PROBLEM)에서 title을 준다.
+const reasonPhraseByStatus: Partial<Record<number, string>> = {
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  403: 'Forbidden',
+  404: 'Not Found',
+  408: 'Request Timeout',
+  409: 'Conflict',
+  429: 'Too Many Requests',
+  499: 'Client Closed Request',
+  500: 'Internal Server Error',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Timeout',
 }
 
 export function createProblemDetailsResponse(
@@ -195,7 +197,7 @@ function getProblemDetails(request: string | Request | URL, options: ProblemDeta
   return {
     ...options.extensions,
     type: getProblemTypeURL(url.origin, code),
-    title: options.title ?? getStatusTitle(options.status),
+    title: options.title ?? getReasonPhrase(options.status),
     status: options.status,
     detail: options.detail,
     instance,
@@ -223,22 +225,18 @@ function getRequestURL(request: string | Request | URL): URL {
   return new URL(request)
 }
 
-function getStatusTitle(status: number): string {
-  const title = statusTitleByStatus[status]
+function getReasonPhrase(status: number): string {
+  const phrase = reasonPhraseByStatus[status]
 
-  if (title) {
-    return title
-  }
-
-  if (status >= 400 && status < 500) {
-    return '요청을 처리할 수 없어요'
+  if (phrase) {
+    return phrase
   }
 
   if (status >= 500) {
-    return '서버 오류가 발생했어요'
+    return 'Internal Server Error'
   }
 
-  return '오류가 발생했어요'
+  return 'Bad Request'
 }
 
 function trimTrailingSlashes(value: string): string {

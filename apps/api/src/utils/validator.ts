@@ -1,9 +1,9 @@
 import { zValidator } from '@hono/zod-validator'
-import { problemCode } from '@litomi/contracts'
+import { PROBLEM, type ProblemSpec } from '@litomi/contracts'
 import type { InvalidParam } from '@litomi/http/problem-details'
 import type { ValidationTargets } from 'hono'
 
-import { type ProblemResponseOptions, problemResponse } from './problem'
+import { problemResponse } from './problem'
 
 type ValidationErrorLike = {
   issues: readonly ValidationIssueLike[]
@@ -19,22 +19,17 @@ type ValidationIssueLike = {
   maximum?: bigint | number
 }
 
-type ValidationProblemOptions = Pick<ProblemResponseOptions, 'code' | 'detail' | 'title'>
-
 export function zProblemValidator<
   Target extends keyof ValidationTargets,
   Schema extends Parameters<typeof zValidator>[1],
->(target: Target, schema: Schema, problem: ValidationProblemOptions = {}) {
+>(target: Target, schema: Schema, spec: ProblemSpec = PROBLEM.INVALID_INPUT) {
   return zValidator(target, schema, (result, c) => {
     if (result.success) {
       return
     }
 
     return problemResponse(c, {
-      status: 400,
-      code: problem.code ?? problemCode.INVALID_INPUT,
-      title: problem.title ?? '입력을 확인해 주세요',
-      detail: problem.detail,
+      problem: spec,
       extensions: { invalidParams: getInvalidParams(result.error) },
     })
   })
