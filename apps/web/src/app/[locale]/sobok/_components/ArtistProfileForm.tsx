@@ -2,6 +2,7 @@
 
 import type { ChatArtistMine } from '@litomi/contracts'
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export interface ArtistProfileFormValues {
   handle: string
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export default function ArtistProfileForm({ initial, onSubmit, isPending, error, submitLabel }: Props) {
+  const t = useTranslations('Sobok.studio.form')
   const isCreate = initial === undefined
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -48,7 +50,7 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
       <label className="block">
-        <span className="text-sm font-medium text-foreground">핸들</span>
+        <span className="text-sm font-medium text-foreground">{t('handleLabel')}</span>
         <div className="mt-1.5 flex items-center rounded-xl bg-zinc-800 focus-within:ring-2 focus-within:ring-indigo-500/50">
           <span className="pl-4 text-sm text-zinc-500">/sobok/</span>
           <input
@@ -61,20 +63,20 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
             minLength={3}
             maxLength={32}
             pattern="[a-z0-9_]+"
-            title="영문 소문자, 숫자, 밑줄(_)만 쓸 수 있어요."
+            title={t('handleTitle')}
             className="w-full bg-transparent py-2.5 pr-4 pl-0.5 text-base text-foreground outline-none placeholder:text-zinc-500"
           />
         </div>
-        <p className="mt-1 text-xs text-zinc-500">영문 소문자, 숫자, 밑줄(_)로 3~32자. 나중에 바꿀 수 있어요.</p>
+        <p className="mt-1 text-xs text-zinc-500">{t('handleHelp')}</p>
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium text-foreground">이름</span>
+        <span className="text-sm font-medium text-foreground">{t('nameLabel')}</span>
         <input
           type="text"
           name="displayName"
           defaultValue={initial?.displayName}
-          placeholder="팬에게 보여줄 이름"
+          placeholder={t('namePlaceholder')}
           required
           maxLength={64}
           className="mt-1.5 w-full rounded-xl bg-zinc-800 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
@@ -83,7 +85,7 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
 
       <div className="flex gap-3">
         <label className="block flex-1">
-          <span className="text-sm font-medium text-foreground">이모지</span>
+          <span className="text-sm font-medium text-foreground">{t('emojiLabel')}</span>
           <input
             type="text"
             name="emoji"
@@ -95,12 +97,12 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
         </label>
 
         <label className="block flex-2">
-          <span className="text-sm font-medium text-foreground">월 구독 가격 (원)</span>
+          <span className="text-sm font-medium text-foreground">{t('priceLabel')}</span>
           <input
             type="number"
             name="priceAmount"
             defaultValue={initial?.priceAmount}
-            placeholder="0 = 구독 미오픈"
+            placeholder={t('pricePlaceholder')}
             min={0}
             max={1_000_000}
             step={100}
@@ -108,16 +110,14 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
           />
         </label>
       </div>
-      <p className="-mt-3 text-xs text-zinc-500">
-        1,000원 이상부터 구독을 받을 수 있어요. 가격을 바꿔도 기존 구독자는 구독할 때 가격으로 유지돼요.
-      </p>
+      <p className="-mt-3 text-xs text-zinc-500">{t('priceHelp')}</p>
 
       <label className="block">
-        <span className="text-sm font-medium text-foreground">소개</span>
+        <span className="text-sm font-medium text-foreground">{t('bioLabel')}</span>
         <textarea
           name="description"
           defaultValue={initial?.description ?? undefined}
-          placeholder="팬에게 보여줄 소개를 적어 주세요."
+          placeholder={t('bioPlaceholder')}
           maxLength={500}
           rows={3}
           className="mt-1.5 w-full resize-none rounded-xl bg-zinc-800 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
@@ -127,16 +127,13 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
       {isCreate ? (
         <label className="flex items-start gap-2.5 rounded-xl border border-foreground/10 p-3.5">
           <input type="checkbox" name="agreeContentPolicy" required className="mt-0.5 h-4 w-4 accent-indigo-500" />
-          <span className="text-xs leading-relaxed text-zinc-400">
-            성인 콘텐츠(음란물 등)를 게시하지 않으며, 위반 시 프로필이 제한될 수 있다는 데 동의합니다. 구독자에게 판매된
-            메시지는 탈퇴 후에도 해당 구독자에게 열람 제공됩니다.
-          </span>
+          <span className="text-xs leading-relaxed text-zinc-400">{t('agreePolicy')}</span>
         </label>
       ) : (
         <label className="flex items-center justify-between rounded-xl border border-foreground/10 p-3.5">
           <span className="text-sm text-foreground">
-            채팅 운영 중
-            <span className="mt-0.5 block text-xs text-zinc-500">끄면 새 구독과 메시지 발송이 중단돼요.</span>
+            {t('activeLabel')}
+            <span className="mt-0.5 block text-xs text-zinc-500">{t('activeHelp')}</span>
           </span>
           <input
             type="checkbox"

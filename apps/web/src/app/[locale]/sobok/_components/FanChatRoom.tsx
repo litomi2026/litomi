@@ -3,8 +3,9 @@
 import type { ChatArtistBrief, ChatSubscriptionDTO } from '@litomi/contracts'
 import { REPLY_MAX_PER_MESSAGE } from '@litomi/domain/chat/policy'
 import { ChevronLeft, Loader2, X } from 'lucide-react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
+import { Link } from '@/i18n/navigation'
 import useFanChatRoom from '../_hooks/useFanChatRoom'
 import { avatarURL, type FanTimelineItem } from '../_lib/chat'
 import { ArtistMessageBubble, FanReplyBubble, QuotedMessage } from './ChatBubbles'
@@ -37,6 +38,8 @@ export default function FanChatRoom({
   const [replyTargetId, setReplyTargetId] = useState<string | null>(null)
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const listRef = useRef<ChatMessageListHandle>(null)
+  const tSubscribe = useTranslations('Sobok.subscribe')
+  const t = useTranslations('Sobok.fanRoom')
 
   const {
     entryById,
@@ -155,7 +158,7 @@ export default function FanChatRoom({
             <div className="flex items-center gap-2 p-4 pb-3 pr-3">
               <QuotedMessage
                 className="flex-1"
-                label={`${artist.displayName}에게 답장`}
+                label={t('replyTo', { name: artist.displayName })}
                 onClick={() => scrollToMessage(replyTarget.messageId)}
                 preview={replyTarget.content.text}
                 variant="standalone"
@@ -175,16 +178,14 @@ export default function FanChatRoom({
           <ChatComposer
             onSend={handleSend}
             placeholder={
-              repliesExhausted
-                ? `이 메시지에는 답장을 모두 보냈어요 (${REPLY_MAX_PER_MESSAGE}회)`
-                : '메시지를 입력하세요...'
+              repliesExhausted ? t('repliesExhausted', { count: REPLY_MAX_PER_MESSAGE }) : t('composerPlaceholder')
             }
             disabled={isSending || !effectiveTargetId || repliesExhausted}
             maxLength={replyTextLimit}
           />
         ) : (
           <div className="space-y-2 px-4 py-3">
-            <p className="text-center text-sm text-zinc-400">구독이 만료되어 답장을 보낼 수 없어요.</p>
+            <p className="text-center text-sm text-zinc-400">{t('expiredNotice')}</p>
             {subscribeError && <p className="text-center text-xs text-red-400">{subscribeError}</p>}
             <button
               type="button"
@@ -193,7 +194,7 @@ export default function FanChatRoom({
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-60"
             >
               {subscribing && <Loader2 className="h-4 w-4 animate-spin" />}
-              다시 구독하기
+              {tSubscribe('resubscribe')}
             </button>
           </div>
         )}

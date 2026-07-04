@@ -2,7 +2,9 @@
 
 import type { ChatArtistBrief, ChatArtistPrice } from '@litomi/contracts'
 import { ChevronLeft, Loader2 } from 'lucide-react'
-import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
+import { formatPrice } from '../_lib/format'
 
 interface Props {
   artist: ChatArtistBrief
@@ -15,6 +17,9 @@ interface Props {
 }
 
 export default function ArtistSubscribe({ artist, price, onSubscribe, isPending, error, lapsed }: Props) {
+  const t = useTranslations('Sobok.subscribe')
+  const locale = useLocale()
+
   return (
     <div className="flex flex-col h-full bg-background">
       <div className="h-14 shrink-0 flex items-center px-2 border-b border-foreground/10">
@@ -38,11 +43,9 @@ export default function ArtistSubscribe({ artist, price, onSubscribe, isPending,
         {price ? (
           <div className="w-full max-w-sm space-y-4">
             <div className="rounded-2xl border border-foreground/10 bg-zinc-800/60 p-5">
-              <p className="text-sm text-zinc-400">월 구독</p>
-              <p className="mt-1 text-3xl font-bold text-foreground">{formatPrice(price)}</p>
-              <p className="mt-2 text-xs text-zinc-500">
-                {artist.displayName}의 메시지를 실시간으로 받고 답장할 수 있어요. 언제든 해지할 수 있어요.
-              </p>
+              <p className="text-sm text-zinc-400">{t('monthly')}</p>
+              <p className="mt-1 text-3xl font-bold text-foreground">{formatPrice(price, locale)}</p>
+              <p className="mt-2 text-xs text-zinc-500">{t('pitch', { name: artist.displayName })}</p>
             </div>
 
             {error && <p className="text-sm text-red-400">{error}</p>}
@@ -54,24 +57,15 @@ export default function ArtistSubscribe({ artist, price, onSubscribe, isPending,
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-500 py-3.5 font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-60"
             >
               {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-              {lapsed ? '다시 구독하기' : `${formatPrice(price)} 구독하기`}
+              {lapsed ? t('resubscribe') : t('subscribeCta', { price: formatPrice(price, locale) })}
             </button>
 
-            <p className="text-[11px] text-zinc-500">
-              매월 자동 결제되며, 결제 시 이용약관에 동의하는 것으로 간주됩니다.
-            </p>
+            <p className="text-[11px] text-zinc-500">{t('autoRenewNotice')}</p>
           </div>
         ) : (
-          <p className="text-sm text-zinc-400">아직 구독을 받고 있지 않은 아티스트예요.</p>
+          <p className="text-sm text-zinc-400">{t('notOpen')}</p>
         )}
       </div>
     </div>
   )
-}
-
-function formatPrice(price: ChatArtistPrice): string {
-  if (price.currency === 'KRW') {
-    return `${price.amount.toLocaleString('ko-KR')}원`
-  }
-  return `${price.amount.toLocaleString()} ${price.currency}`
 }
