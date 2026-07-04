@@ -1,4 +1,5 @@
-import { env } from '@litomi/env/server.common'
+import { env } from '@litomi/auth/env'
+import { env as commonEnv } from '@litomi/env/server.common'
 import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'
 import type { JWTPayload } from 'jose'
@@ -8,7 +9,8 @@ type PointsTurnstileTokenPayload = JWTPayload & {
   userId: string
 }
 
-const { APP_ORIGIN, JWT_SECRET_TRUSTED_DEVICE } = env
+const { APP_ORIGIN } = commonEnv
+const { JWT_SECRET_TRUSTED_DEVICE } = env
 const issuer = new URL(APP_ORIGIN).hostname
 
 export const POINTS_TURNSTILE_TTL_SECONDS = sec('2 minutes')

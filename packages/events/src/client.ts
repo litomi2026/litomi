@@ -1,5 +1,6 @@
-import { env } from '@litomi/env/server.common'
 import { Kafka, logLevel, type SASLOptions } from 'kafkajs'
+
+import { env } from './env'
 
 const { KAFKA_BROKERS, KAFKA_CLIENT_ID, KAFKA_USERNAME, KAFKA_PASSWORD, KAFKA_SSL_CA } = env
 

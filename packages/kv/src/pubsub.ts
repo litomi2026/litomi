@@ -1,5 +1,6 @@
-import { env } from '@litomi/env/server.common'
 import Redis from 'ioredis'
+
+import { env } from './env'
 
 const { PUBSUB_REDIS_URL } = env
 

@@ -1,5 +1,6 @@
-import { env } from '@litomi/env/server.common'
 import { BillingKeyClient, PaymentClient, Webhook } from '@portone/server-sdk'
+
+import { env } from './env'
 
 const { PORTONE_API_SECRET, PORTONE_STORE_ID, PORTONE_CHANNEL_KEY, PORTONE_WEBHOOK_SECRET } = env
 

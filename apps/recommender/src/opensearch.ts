@@ -3,10 +3,10 @@ import type { CatalogMangaRecord } from '@litomi/db/catalog/query'
 import { mangaTable } from '@litomi/db/catalog/schema'
 import { CensorshipKey } from '@litomi/domain/censorship/model'
 import { MANGA_TYPE_VALUE_BY_ID, TagCategory } from '@litomi/domain/manga/model'
-import { env } from '@litomi/env/server.common'
 import { asc, gt } from 'drizzle-orm'
 
 import type { CensorshipRule } from './censorship'
+import { env } from './env'
 import type { FeaturePosteriorCatalogHint, FeaturePosteriorCatalogHints } from './feature-posterior'
 
 const CENSORSHIP_KEY_BY_TAG_CATEGORY: Record<TagCategory, CensorshipKey> = {

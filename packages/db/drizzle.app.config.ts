@@ -1,8 +1,8 @@
 import { env as cliEnv } from '@litomi/env/cli'
-import { env } from '@litomi/env/server.common'
 import { defineConfig } from 'drizzle-kit'
 
 import { postgresURLToDrizzleCredentials } from './drizzle.postgres'
+import { env } from './src/app/env'
 
 const { APP_POSTGRES_CERTIFICATE } = env
 const { APP_POSTGRES_URL_DIRECT } = cliEnv

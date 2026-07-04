@@ -1,5 +1,6 @@
-import { env } from '@litomi/env/server.common'
 import Redis from 'ioredis'
+
+import { env } from './env'
 
 const REDIS_COMMAND_TIMEOUT_MS = 5_000
 const REDIS_READY_TIMEOUT_MS = 2_000

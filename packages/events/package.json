@@ -10,7 +10,7 @@
     "type": "tsc --noEmit"
   },
   "dependencies": {
-    "@litomi/env": "workspace:*",
+    "@t3-oss/env-core": "^0.13.11",
     "kafkajs": "^2.2.4",
     "zod": "^4.3.6"
   },

@@ -1,9 +1,12 @@
 import crypto from 'node:crypto'
-import { env } from '@litomi/env/server.common'
+import { env as commonEnv } from '@litomi/env/server.common'
 import { verify } from 'otplib'
 import QRCode from 'qrcode'
 
-const { APP_ORIGIN, TOTP_ENCRYPTION_KEY } = env
+import { env } from './env.totp'
+
+const { APP_ORIGIN } = commonEnv
+const { TOTP_ENCRYPTION_KEY } = env
 
 export const TOTP_CONFIG = {
   issuer: new URL(APP_ORIGIN).hostname,

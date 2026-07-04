@@ -1,6 +1,7 @@
-import { env } from '@litomi/env/server.common'
 import { sleep } from '@litomi/std'
 import ms from 'ms'
+
+import { env } from './env'
 
 const { TURNSTILE_SECRET_KEY } = env
 

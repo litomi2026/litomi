@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export const env = createEnv({
   server: {
-    APP_ORIGIN: z.url().default('http://localhost:3000'),
+    TURNSTILE_SECRET_KEY: z.string().default('1x0000000000000000000000000000000AA'),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

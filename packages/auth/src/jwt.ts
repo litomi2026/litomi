@@ -1,10 +1,13 @@
-import { env } from '@litomi/env/server.common'
+import { env as commonEnv } from '@litomi/env/server.common'
 import { CookieKey } from '@litomi/http/cookie'
 import { sec } from '@litomi/std'
 import type { JWTPayload } from 'jose'
 import { jwtVerify, SignJWT } from 'jose'
 
-const { APP_ORIGIN, JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN, JWT_SECRET_TRUSTED_DEVICE } = env
+import { env } from './env'
+
+const { APP_ORIGIN } = commonEnv
+const { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN, JWT_SECRET_TRUSTED_DEVICE } = env
 
 const url = new URL(APP_ORIGIN)
 
