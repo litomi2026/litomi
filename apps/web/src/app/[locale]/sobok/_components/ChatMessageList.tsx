@@ -1,6 +1,8 @@
 'use client'
 
+import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { ChevronDown } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import type { ReactNode, Ref } from 'react'
 import { useImperativeHandle, useRef, useState } from 'react'
 import type { VirtuosoHandle } from 'react-virtuoso'
@@ -59,8 +61,16 @@ export default function ChatMessageList<TItem>({
   const virtuosoRef = useRef<VirtuosoHandle>(null)
   const firstKeyRef = useRef<string | null>(null)
   const firstItemIndexRef = useRef(START_INDEX)
+  const t = useTranslations('Sobok.messageList')
+  const locale = useLocale()
 
-  const rows = buildRows(items, itemKey, dateOf)
+  const rows = buildRows(items, itemKey, dateOf, (ts) =>
+    formatDateSeparator(ts, LOCALE_LANGUAGE_TAGS[locale], {
+      today: t('today'),
+      yesterday: t('yesterday'),
+    }),
+  )
+
   const rowsRef = useRef(rows)
   rowsRef.current = rows
 
@@ -147,7 +157,7 @@ export default function ChatMessageList<TItem>({
       />
       {!atBottom && (
         <button
-          aria-label="맨 아래로"
+          aria-label={t('scrollToBottom')}
           className={twMerge(
             'absolute z-10 flex h-10 w-10 items-center justify-center rounded-full border border-foreground/10 bg-zinc-800 text-foreground shadow-lg transition-colors hover:bg-zinc-700',
             scrollButtonClassName,
@@ -181,13 +191,19 @@ interface ChatListHeaderContext {
   isLoadingOlder: boolean
 }
 
-const CHAT_COMPONENTS = {
-  Header: ({ context }: { context: ChatListHeaderContext }) => (
+function ChatListHeader({ context }: { context: ChatListHeaderContext }) {
+  const t = useTranslations('Sobok.messageList')
+
+  return (
     <div className="pt-4">
-      {context.isLoadingOlder ? <div className="py-2 text-center text-xs text-zinc-400">불러오는 중...</div> : null}
+      {context.isLoadingOlder && <div className="py-2 text-center text-xs text-zinc-400">{t('loadingOlder')}</div>}
       {context.banner}
     </div>
-  ),
+  )
+}
+
+const CHAT_COMPONENTS = {
+  Header: ChatListHeader,
 }
 
 // A rendered row is either a message (caller-supplied) or a date separator interleaved by this list.
@@ -198,7 +214,8 @@ type Row<TItem> = { kind: 'item'; key: string; item: TItem } | { kind: 'separato
 function buildRows<TItem>(
   items: readonly TItem[],
   itemKey: (item: TItem) => string,
-  dateOf?: (item: TItem) => number,
+  dateOf: ((item: TItem) => number) | undefined,
+  formatDateLabel: (ts: number) => string,
 ): Row<TItem>[] {
   if (!dateOf) {
     return items.map((item) => ({ item, key: itemKey(item), kind: 'item' }))
@@ -212,7 +229,7 @@ function buildRows<TItem>(
     const day = dayKey(timestamp)
 
     if (day !== previousDay) {
-      rows.push({ key: `date:${day}`, kind: 'separator', label: formatDateSeparator(timestamp) })
+      rows.push({ key: `date:${day}`, kind: 'separator', label: formatDateLabel(timestamp) })
       previousDay = day
     }
 

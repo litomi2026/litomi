@@ -2,13 +2,17 @@
 
 import type { GETV1ChatThreadsResponse } from '@litomi/contracts'
 import { Search } from 'lucide-react'
-import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { avatarURL } from '../_lib/chat'
+import { formatTime } from '../_lib/format'
 import useChatThreadsQuery from '../_query/useChatThreadsQuery'
 
 type ChatThread = GETV1ChatThreadsResponse['threads'][number]
 
 function ChatThreadItem({ thread }: { thread: ChatThread }) {
+  const t = useTranslations('Sobok.chatList')
+  const locale = useLocale()
   const { artist, lastMessage, unreadCount } = thread
   const createdAt = lastMessage?.createdAt
 
@@ -31,17 +35,11 @@ function ChatThreadItem({ thread }: { thread: ChatThread }) {
             {artist.displayName}
           </h3>
           <span className="text-xs font-medium text-zinc-400 shrink-0">
-            {createdAt &&
-              new Date(createdAt).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+            {createdAt && formatTime(createdAt, locale)}
           </span>
         </div>
         <div className="flex justify-between items-center gap-2">
-          <p className="text-sm text-zinc-400 truncate flex-1">
-            {lastMessage?.preview || '새로운 메시지를 기다리고 있어요'}
-          </p>
+          <p className="text-sm text-zinc-400 truncate flex-1">{lastMessage?.preview || t('waitingForMessage')}</p>
           {unreadCount > 0 && (
             <div className="w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0">
               {unreadCount}
@@ -54,15 +52,16 @@ function ChatThreadItem({ thread }: { thread: ChatThread }) {
 }
 
 function ChatThreadList() {
+  const t = useTranslations('Sobok.chatList')
   const { data, isLoading } = useChatThreadsQuery()
   const threads = data?.threads
 
   if (isLoading) {
-    return <div className="p-4 text-center text-sm text-zinc-400">Loading chats...</div>
+    return <div className="p-4 text-center text-sm text-zinc-400">{t('loading')}</div>
   }
 
   if (!threads || threads.length === 0) {
-    return <div className="p-4 text-center text-sm text-zinc-400">No active chats</div>
+    return <div className="p-4 text-center text-sm text-zinc-400">{t('empty')}</div>
   }
 
   return (
@@ -75,24 +74,26 @@ function ChatThreadList() {
 }
 
 export default function ChatList() {
+  const t = useTranslations('Sobok.chatList')
+
   return (
     <div className="flex-1 flex flex-col h-full bg-background">
       {/* Header */}
       <div className="px-5 pt-14 pb-4 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Chats</h1>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">{t('title')}</h1>
           <div className="flex items-center gap-4">
             <Link
               href="/sobok/billing"
               className="text-xs font-semibold text-zinc-400 hover:text-foreground transition-colors"
             >
-              결제 관리
+              {t('billing')}
             </Link>
             <Link
               href="/sobok/studio"
               className="text-xs font-semibold text-indigo-500 hover:text-indigo-400 transition-colors"
             >
-              스튜디오
+              {t('studio')}
             </Link>
           </div>
         </div>
@@ -100,7 +101,7 @@ export default function ChatList() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
           <input
             type="text"
-            placeholder="Search artist..."
+            placeholder={t('searchPlaceholder')}
             className="w-full pl-10 pr-4 py-2.5 bg-zinc-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all text-base placeholder:text-zinc-400 text-foreground"
           />
         </div>

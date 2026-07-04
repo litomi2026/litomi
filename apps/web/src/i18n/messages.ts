@@ -14,6 +14,7 @@ import { messages as deterrenceMessages } from '@/app/[locale]/deterrence/messag
 import { messages as docMessages } from '@/app/[locale]/doc/messages'
 import { messages as mangaMessages } from '@/app/[locale]/manga/[id]/messages'
 import { messages as appMessages } from '@/app/[locale]/messages'
+import { messages as sobokMessages } from '@/app/[locale]/sobok/messages'
 
 export type LocalizedMessages = Record<PublicLocale, Messages>
 export type Messages = { [key: string]: MessageValue }
@@ -34,6 +35,7 @@ const messageModules = [
   libraryMessages,
   searchMessages,
   mangaMessages,
+  sobokMessages,
 ] satisfies LocalizedMessages[]
 
 const mergedMessages = Object.fromEntries(

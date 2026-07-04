@@ -1,7 +1,8 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useEffect, useEffectEvent } from 'react'
+import { useRouter } from '@/i18n/navigation'
 import { consumeBillingKeyRedirect } from '../_lib/billing'
 import useArtistQuery from '../_query/useArtistQuery'
 import useSubscribeAction from '../_query/useSubscribeAction'
@@ -14,6 +15,7 @@ type Props = {
 
 export default function ChatRoom({ handle }: Props) {
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
+  const t = useTranslations('Sobok.billing')
   const router = useRouter()
 
   const artist = artistData?.artist
@@ -32,7 +34,7 @@ export default function ChatRoom({ handle }: Props) {
 
   // 모바일 빌링키 발급의 full-page redirect 복귀 — 등록을 마저 진행하고 구독까지 잇는다.
   const resumeBillingKeyFlow = useEffectEvent(() => {
-    const result = consumeBillingKeyRedirect()
+    const result = consumeBillingKeyRedirect(t('registerFailed'))
 
     if (!result) {
       return

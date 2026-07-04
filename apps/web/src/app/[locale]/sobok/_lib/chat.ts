@@ -1,33 +1,35 @@
 import type { ChatMessageDTO, ChatRelayMessageDTO, ChatReplyDTO, ChatTimelineMessage } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
-import dayjs from 'dayjs'
-
-const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토']
 
 export function dayKey(ts: number): string {
   const d = new Date(ts)
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
 }
 
-export function formatDateSeparator(ts: number): string {
+export interface DateSeparatorLabels {
+  today: string
+  yesterday: string
+}
+
+export function formatDateSeparator(ts: number, languageTag: string, labels: DateSeparatorLabels): string {
   const target = new Date(ts)
   const now = new Date()
   const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
   const targetDay = startOfDay(target)
 
   if (targetDay === startOfDay(now)) {
-    return '오늘'
+    return labels.today
   }
 
   if (targetDay === new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime()) {
-    return '어제'
+    return labels.yesterday
   }
 
   if (target.getFullYear() === now.getFullYear()) {
-    return `${dayjs(ts).format('M월 D일')} (${WEEKDAYS_KO[target.getDay()]})`
+    return new Intl.DateTimeFormat(languageTag, { month: 'long', day: 'numeric', weekday: 'short' }).format(target)
   }
 
-  return dayjs(ts).format('YYYY년 M월 D일')
+  return new Intl.DateTimeFormat(languageTag, { year: 'numeric', month: 'long', day: 'numeric' }).format(target)
 }
 
 export function getChatWebSocketURL(): string {

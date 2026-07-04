@@ -1,5 +1,7 @@
 import type { ChatMessageDTO, ChatReplyDTO } from '@litomi/contracts'
 import { Check, CheckCheck } from 'lucide-react'
+import { useLocale } from 'next-intl'
+import { formatTime } from '../_lib/format'
 
 interface QuotedMessageProps {
   className?: string
@@ -41,6 +43,8 @@ export function ArtistMessageBubble({
   message,
   onSelect,
 }: ArtistMessageBubbleProps) {
+  const locale = useLocale()
+
   return (
     <div className="flex justify-start w-full">
       <div className="flex max-w-[80%] flex-row items-end gap-2">
@@ -60,7 +64,7 @@ export function ArtistMessageBubble({
             {message.content.text}
           </button>
           <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
-            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {formatTime(message.createdAt, locale)}
           </span>
         </div>
       </div>
@@ -77,6 +81,8 @@ interface FanReplyBubbleProps {
 }
 
 export function FanReplyBubble({ onQuoteClick, quoteLabel, quoteTarget, read, reply }: FanReplyBubbleProps) {
+  const locale = useLocale()
+
   return (
     <div className="flex justify-end w-full">
       <div className="flex max-w-[80%] flex-col items-end">
@@ -98,9 +104,7 @@ export function FanReplyBubble({ onQuoteClick, quoteLabel, quoteTarget, read, re
             ) : (
               <Check className="w-3.5 h-3.5 text-zinc-600" />
             )}
-            <span className="text-[10px] text-zinc-400 font-medium">
-              {new Date(reply.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
+            <span className="text-[10px] text-zinc-400 font-medium">{formatTime(reply.createdAt, locale)}</span>
           </div>
         </div>
       </div>

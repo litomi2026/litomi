@@ -3,11 +3,12 @@
 import type { ChatMessageDTO } from '@litomi/contracts'
 import { Banknote, MessageCircle, Settings, Users } from 'lucide-react'
 import ms from 'ms'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
+import { Link, useRouter } from '@/i18n/navigation'
 import useRoomChannel from '../_hooks/useRoomChannel'
 import { avatarURL, mergeById, toChatMessageDTO } from '../_lib/chat'
+import { formatTime } from '../_lib/format'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useSendMessageMutation from '../_query/useSendMessageMutation'
@@ -40,6 +41,8 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
   const { mutateAsync: sendMessage, isPending } = useSendMessageMutation(handle)
   const router = useRouter()
+  const locale = useLocale()
+  const t = useTranslations('Sobok.broadcast')
 
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useChatMessageQuery(handle, {
     refetchInterval: ms('20 seconds'),
@@ -97,7 +100,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
       const newReply: LiveReply = {
         id: msg.messageId,
         targetMessageId: msg.targetMessageId,
-        nickname: msg.sender?.nickname ?? '팬',
+        nickname: msg.sender?.nickname ?? t('fan'),
         imageURL: msg.sender?.imageURL ?? null,
         text: msg.content.text,
       }
@@ -121,18 +124,18 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
         <div className="p-2 text-indigo-500 bg-indigo-500/10 rounded-xl">
           <Users className="w-5 h-5" />
         </div>
-        <h2 className="font-bold text-lg text-foreground ml-2 flex-1">전체 메시지 (Broadcast)</h2>
+        <h2 className="font-bold text-lg text-foreground ml-2 flex-1">{t('title')}</h2>
         <Link
           href={`/sobok/studio/${handle}/earnings`}
           className="p-2 text-zinc-400 hover:text-foreground transition-colors"
-          aria-label="정산·수익"
+          aria-label={t('earningsAria')}
         >
           <Banknote className="w-5 h-5" />
         </Link>
         <Link
           href={`/sobok/studio/${handle}/settings`}
           className="p-2 text-zinc-400 hover:text-foreground transition-colors"
-          aria-label="스튜디오 설정"
+          aria-label={t('settingsAria')}
         >
           <Settings className="w-5 h-5" />
         </Link>
@@ -143,7 +146,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
         <div className="shrink-0 border-b border-foreground/10 bg-foreground/5 px-3 py-2">
           <div className="flex items-center gap-1.5 mb-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-xs font-semibold text-zinc-400">실시간 팬 반응</span>
+            <span className="text-xs font-semibold text-zinc-400">{t('liveReplies')}</span>
           </div>
           <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-0.5">
             {liveReplies.map((reply) => (
@@ -185,7 +188,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
                   {row.message.content.text}
                 </div>
                 <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
-                  {new Date(row.message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {formatTime(row.message.createdAt, locale)}
                 </span>
               </div>
               <Link
@@ -193,8 +196,9 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
                 className="flex items-center gap-1 text-xs font-medium text-indigo-500 hover:text-indigo-600 transition-colors"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
-                답장방
-                {renderUnreadCount(row.unreadReplyCount)}
+                {t('replyRoom')}
+                {row.unreadReplyCount > 0 &&
+                  ` · ${t('newReplies', { count: row.unreadReplyCount > 999 ? '999+' : row.unreadReplyCount })}`}
               </Link>
             </div>
           </div>
@@ -204,16 +208,8 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
 
       {/* Composer island */}
       <ComposerDock>
-        <ChatComposer onSend={handleSend} placeholder="팬들에게 보낼 메시지를 입력하세요..." disabled={isPending} />
+        <ChatComposer onSend={handleSend} placeholder={t('composerPlaceholder')} disabled={isPending} />
       </ComposerDock>
     </div>
   )
-}
-
-function renderUnreadCount(count: number) {
-  if (count <= 0) {
-    return ''
-  }
-
-  return ` · ${count > 999 ? '999+' : count} 새 답장`
 }

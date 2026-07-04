@@ -1,5 +1,10 @@
 import { UserVisibleError } from '@/utils/api-request'
 
+export interface BillingKeyErrorMessages {
+  cancelled: string
+  failed: string
+}
+
 // PortOne 빌링키 발급 — PC는 팝업/iframe으로 즉시 resolve되고, 모바일은 redirectUrl로
 // 페이지가 떠났다가 쿼리 파라미터를 들고 돌아온다(복귀 처리는 각 화면의 effect가
 // consumeBillingKeyRedirect로 수행).
@@ -7,6 +12,7 @@ export async function requestBillingKeyIssuance(input: {
   storeId: string
   channelKey: string
   issueName: string
+  errorMessages: BillingKeyErrorMessages
 }): Promise<string> {
   const { requestIssueBillingKey } = await import('@portone/browser-sdk/v2')
 
@@ -19,11 +25,11 @@ export async function requestBillingKeyIssuance(input: {
   })
 
   if (!issued) {
-    throw new UserVisibleError('결제수단 등록이 취소되었어요.')
+    throw new UserVisibleError(input.errorMessages.cancelled)
   }
 
   if (issued.code) {
-    throw new UserVisibleError(issued.message ?? '결제수단 등록에 실패했어요.')
+    throw new UserVisibleError(issued.message ?? input.errorMessages.failed)
   }
 
   return issued.billingKey
@@ -32,7 +38,7 @@ export async function requestBillingKeyIssuance(input: {
 export type BillingKeyRedirectResult = { billingKey: string } | { errorMessage: string }
 
 // 리다이렉트 복귀 파라미터를 소비(URL 정리 포함)한다. null = 복귀 상황이 아님.
-export function consumeBillingKeyRedirect(): BillingKeyRedirectResult | null {
+export function consumeBillingKeyRedirect(fallbackErrorMessage: string): BillingKeyRedirectResult | null {
   const params = new URLSearchParams(window.location.search)
   const billingKey = params.get('billingKey')
   const code = params.get('code')
@@ -47,5 +53,5 @@ export function consumeBillingKeyRedirect(): BillingKeyRedirectResult | null {
     return { billingKey }
   }
 
-  return { errorMessage: params.get('message') ?? '결제수단 등록에 실패했어요.' }
+  return { errorMessage: params.get('message') ?? fallbackErrorMessage }
 }
