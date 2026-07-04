@@ -70,7 +70,6 @@ WORKDIR /app
 ENV HOSTNAME=0.0.0.0
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-# 75% of the 2Gi pod memory limit (litomi-ops web deployment); override via k8s env if the limit changes
 ENV NODE_OPTIONS=--max-old-space-size=1536
 
 RUN addgroup --system --gid 1001 nodejs
