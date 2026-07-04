@@ -1,7 +1,6 @@
+import { env } from '@litomi/env/client'
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
-
-import { env } from './client'
 
 /**
  * Next.js build-time env validation.

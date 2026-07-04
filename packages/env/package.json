@@ -4,18 +4,13 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./cli": "./src/cli.ts",
     "./client": "./src/client.ts",
-    "./server.common": "./src/server.common.ts",
-    "./server.hono": "./src/server.hono.ts",
-    "./server.next": "./src/server.next.ts",
-    "./server.next.build": "./src/server.next.build.ts"
+    "./server.common": "./src/server.common.ts"
   },
   "scripts": {
     "type": "tsc --noEmit"
   },
   "dependencies": {
-    "@litomi/std": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
     "zod": "^4.3.6"
   }
