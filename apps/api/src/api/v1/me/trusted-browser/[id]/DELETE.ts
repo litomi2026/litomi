@@ -25,13 +25,10 @@ route.delete('/', zProblemValidator('param', idParamSchema), async (c) => {
       return problemResponse(c, { status: 404, detail: '브라우저를 찾을 수 없어요' })
     }
 
-    return c.json({
-      id: deleted.id,
-      message: '브라우저가 제거됐어요',
-    } satisfies DELETEV1MeTrustedBrowserResponse)
+    return c.json({ id: deleted.id } satisfies DELETEV1MeTrustedBrowserResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '브라우저 제거에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

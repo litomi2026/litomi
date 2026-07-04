@@ -78,7 +78,7 @@ route.get('/', requireAuth, zProblemValidator('query', getV1RatingsQuerySchema),
     return c.json(response, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '평점 목록을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -1,4 +1,4 @@
-import { type POSTV1MePushTestResponse, postV1MePushTestBodySchema } from '@litomi/contracts'
+import { postV1MePushTestBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
 import { NotificationType } from '@litomi/domain/notification/model'
@@ -35,10 +35,10 @@ route.post('/', zProblemValidator('json', postV1MePushTestBodySchema), async (c)
       sentAt: new Date(),
     })
 
-    return c.json({ message: '현재 브라우저에 테스트 알림을 보냈어요' } satisfies POSTV1MePushTestResponse)
+    return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '테스트 푸시 알림 발송 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

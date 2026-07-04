@@ -24,7 +24,7 @@ route.get('/', requireAuth, async (c) => {
     return problemResponse(c, {
       status: 403,
       code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
+      title: '보안 검증을 완료해 주세요',
     })
   }
 
@@ -35,7 +35,7 @@ route.get('/', requireAuth, async (c) => {
     return problemResponse(c, {
       status: 403,
       code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
+      title: '보안 검증을 완료해 주세요',
     })
   }
 

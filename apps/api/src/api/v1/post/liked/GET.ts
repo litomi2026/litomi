@@ -29,7 +29,7 @@ route.get('/', requireAuth, async (c) => {
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '좋아요한 글 목록을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

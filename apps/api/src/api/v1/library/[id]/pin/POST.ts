@@ -1,7 +1,6 @@
-import { idParamSchema } from '@litomi/contracts'
+import { idParamSchema, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
-import { problemCode } from '@litomi/http/problem-details'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
@@ -36,11 +35,19 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSc
       }
 
       if (library.userId === userId) {
-        return problemResponse(c, { status: 400, detail: '본인의 서재는 고정할 수 없어요' })
+        return problemResponse(c, {
+          status: 400,
+          code: problemCode.OWN_LIBRARY_PIN,
+          title: '본인의 서재는 고정할 수 없어요',
+        })
       }
 
       if (!library.isPublic) {
-        return problemResponse(c, { status: 403, detail: '비공개 서재는 고정할 수 없어요' })
+        return problemResponse(c, {
+          status: 403,
+          code: problemCode.PRIVATE_LIBRARY_PIN,
+          title: '비공개 서재는 고정할 수 없어요',
+        })
       }
 
       // 2) 기등록 여부 조회 및 개수 제한 고려
@@ -73,7 +80,7 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSc
     return result
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재를 고정하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

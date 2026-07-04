@@ -1,5 +1,5 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
-import { type PATCHV1MeResponse, patchV1MeBodySchema } from '@litomi/contracts'
+import { type PATCHV1MeResponse, patchV1MeBodySchema, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userTable } from '@litomi/db/app/user'
 import { isPostgresError } from '@litomi/db/error'
@@ -39,7 +39,6 @@ route.patch('/', zProblemValidator('json', patchV1MeBodySchema), async (c) => {
     }
 
     return c.json({
-      message: '프로필을 수정했어요',
       name: updatedUser.name,
       nickname: updatedUser.nickname,
       imageURL: updatedUser.imageURL,
@@ -49,15 +48,23 @@ route.patch('/', zProblemValidator('json', patchV1MeBodySchema), async (c) => {
       if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_unique') {
         return problemResponse(c, {
           status: 409,
-          code: 'name-conflict',
-          detail: '이미 사용 중인 이름이에요',
-          extensions: { invalidParams: [{ name: 'name', reason: '이미 사용 중인 이름이에요' }] },
+          code: problemCode.NAME_CONFLICT,
+          title: '이미 사용 중인 이름이에요',
+          extensions: {
+            invalidParams: [
+              {
+                name: 'name',
+                code: problemCode.NAME_CONFLICT,
+                reason: '이미 사용 중인 이름이에요',
+              },
+            ],
+          },
         })
       }
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '프로필 수정 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

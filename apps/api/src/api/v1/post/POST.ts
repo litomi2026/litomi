@@ -37,7 +37,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PostBodySchema), as
       .returning({ id: postTable.id })
 
     if (!createdPost) {
-      return problemResponse(c, { status: 500, detail: '글을 작성하지 못했어요' })
+      return problemResponse(c, { status: 500 })
     }
 
     return c.json({ id: createdPost.id } satisfies POSTV1PostResponse, 201)
@@ -47,7 +47,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PostBodySchema), as
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '글을 작성하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

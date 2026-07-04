@@ -3,6 +3,7 @@ import {
   chatHandleParamSchema,
   type POSTV1ChatSubscriptionResponse,
   postV1ChatSubscriptionBodySchema,
+  problemCode,
 } from '@litomi/contracts'
 import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { ensureOpenInvoice, voidOpenInvoice } from '@litomi/db/app/query/invoice'
@@ -77,7 +78,8 @@ route.post('/', ...middlewares, async (c) => {
   if (!paymentMethod) {
     return problemResponse(c, {
       status: 400,
-      detail: '결제수단을 찾을 수 없어요.',
+      code: problemCode.PAYMENT_METHOD_NOT_FOUND,
+      title: '결제수단을 찾을 수 없어요.',
     })
   }
 
@@ -150,7 +152,8 @@ route.post('/', ...middlewares, async (c) => {
     if (!(await settleAmbiguousCharge(paymentId, paymentMethodId, error))) {
       return problemResponse(c, {
         status: 402,
-        detail: '결제에 실패했어요. 카드 상태를 확인한 뒤 다시 시도해 주세요.',
+        code: problemCode.PAYMENT_FAILED,
+        title: '결제에 실패했어요. 카드 상태를 확인한 뒤 다시 시도해 주세요.',
       })
     }
   }

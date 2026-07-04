@@ -74,7 +74,7 @@ route.post(
       } satisfies POSTV1LibraryHistoryImportResponse)
     } catch (error) {
       console.error(error)
-      return problemResponse(c, { status: 500, detail: '읽기 기록 동기화 중 오류가 발생했어요' })
+      return problemResponse(c, { status: 500 })
     }
   },
 )

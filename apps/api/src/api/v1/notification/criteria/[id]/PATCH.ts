@@ -67,7 +67,7 @@ route.patch(
       return c.json(result satisfies PATCHV1NotificationCriteriaIdResponse)
     } catch (error) {
       console.error(error)
-      return problemResponse(c, { status: 500, detail: '알림 기준 수정 중 오류가 발생했어요' })
+      return problemResponse(c, { status: 500 })
     }
   },
 )

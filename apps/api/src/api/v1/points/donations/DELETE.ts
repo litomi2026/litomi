@@ -29,7 +29,7 @@ route.delete('/:id', requireAuth, zProblemValidator('param', idParamSchema), asy
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '후원 내역 삭제에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -24,7 +24,7 @@ route.delete('/', zProblemValidator('json', deleteV1NotificationBodySchema), asy
     return c.json({ ids: deleted.map((item) => item.id) } satisfies DELETEV1NotificationResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '알림 삭제 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

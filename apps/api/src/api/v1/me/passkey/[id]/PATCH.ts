@@ -34,11 +34,10 @@ route.patch(
       return c.json({
         id: updated.id,
         name,
-        message: '패스키 이름을 저장했어요',
       } satisfies PATCHV1MePasskeyResponse)
     } catch (error) {
       console.error(error)
-      return problemResponse(c, { status: 500, detail: '패스키 이름 저장 중 오류가 발생했어요' })
+      return problemResponse(c, { status: 500 })
     }
   },
 )

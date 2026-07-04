@@ -19,13 +19,12 @@ route.post('/', zProblemValidator('json', postV1MePushSubscriptionBodySchema), a
 
     const result = {
       id: savedSubscription.id,
-      message: '이 브라우저의 푸시 알림을 활성화했어요',
     } satisfies POSTV1MePushSubscriptionResponse
 
     return c.json(result, 201)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '푸시 알림을 활성화하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

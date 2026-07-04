@@ -44,7 +44,7 @@ route.post('/', requireAuth, async (c) => {
     } satisfies POSTV1BBatonAttemptResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '비바톤 인증을 시작하지 못했어요.' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

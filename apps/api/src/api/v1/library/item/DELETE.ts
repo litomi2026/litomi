@@ -45,7 +45,7 @@ route.delete('/', zProblemValidator('json', deleteV1LibraryItemBodySchema), asyn
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재에서 작품을 삭제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

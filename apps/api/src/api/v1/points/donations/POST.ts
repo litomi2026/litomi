@@ -1,4 +1,8 @@
-import { type POSTV1PointsDonationCreateResponse, postV1PointsDonationCreateRequestSchema } from '@litomi/contracts'
+import {
+  type POSTV1PointsDonationCreateResponse,
+  postV1PointsDonationCreateRequestSchema,
+  problemCode,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import {
   DONATION_RECIPIENT_TYPE,
@@ -27,13 +31,21 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
   for (const recipient of recipients) {
     const key = `${recipient.type}:${recipient.value}`
     if (recipientKeys.has(key)) {
-      return problemResponse(c, { status: 400, detail: '후원 대상이 중복돼요' })
+      return problemResponse(c, {
+        status: 400,
+        code: problemCode.DONATION_DUPLICATE_TARGET,
+        title: '후원 대상이 중복돼요',
+      })
     }
     recipientKeys.add(key)
   }
 
   if (totalAmount < recipients.length) {
-    return problemResponse(c, { status: 400, detail: '후원 금액이 너무 적어요' })
+    return problemResponse(c, {
+      status: 400,
+      code: problemCode.DONATION_AMOUNT_TOO_SMALL,
+      title: '후원 금액이 너무 적어요',
+    })
   }
 
   const perRecipient = Math.floor(totalAmount / recipients.length)
@@ -97,7 +109,11 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
     })
 
     if (!result.ok) {
-      return problemResponse(c, { status: 400, detail: '리보가 부족해요' })
+      return problemResponse(c, {
+        status: 400,
+        code: problemCode.INSUFFICIENT_POINTS,
+        title: '리보가 부족해요',
+      })
     }
 
     return c.json({
@@ -108,7 +124,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
     } satisfies POSTV1PointsDonationCreateResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '후원에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

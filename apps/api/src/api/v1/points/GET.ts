@@ -45,7 +45,7 @@ route.get('/', requireAuth, async (c) => {
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '포인트 조회에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

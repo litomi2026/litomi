@@ -145,7 +145,7 @@ route.post('/', zProblemValidator('json', postV1MeExportBodySchema), async (c) =
     return c.json(exportData)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '데이터 내보내기 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

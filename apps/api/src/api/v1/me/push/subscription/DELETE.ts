@@ -1,4 +1,4 @@
-import { type DELETEV1MePushSubscriptionResponse, deleteV1MePushSubscriptionBodySchema } from '@litomi/contracts'
+import { deleteV1MePushSubscriptionBodySchema } from '@litomi/contracts'
 import { WebPushService } from '@litomi/notifications'
 import { Hono } from 'hono'
 
@@ -17,10 +17,10 @@ route.delete('/', zProblemValidator('json', deleteV1MePushSubscriptionBodySchema
   try {
     await notificationService.unsubscribeUser(userId, endpoint)
 
-    return c.json({ message: '이 브라우저의 푸시 알림을 비활성화했어요' } satisfies DELETEV1MePushSubscriptionResponse)
+    return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '푸시 알림 비활성화 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

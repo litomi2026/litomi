@@ -1,5 +1,5 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
-import { type POSTV1BBatonUnlinkResponse, postV1BBatonUnlinkBodySchema } from '@litomi/contracts'
+import { type POSTV1BBatonUnlinkResponse, postV1BBatonUnlinkBodySchema, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
@@ -30,8 +30,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
     if (!user) {
       return problemResponse(c, {
         status: 400,
-        code: 'credential-verification-failed',
-        detail: '인증 정보가 일치하지 않아요',
+        code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
+        title: '인증 정보가 일치하지 않아요',
       })
     }
 
@@ -41,8 +41,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
     if (!isValidPassword) {
       return problemResponse(c, {
         status: 400,
-        code: 'credential-verification-failed',
-        detail: '인증 정보가 일치하지 않아요',
+        code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
+        title: '인증 정보가 일치하지 않아요',
       })
     }
 
@@ -55,8 +55,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
       if (!token) {
         return problemResponse(c, {
           status: 400,
-          code: 'credential-verification-failed',
-          detail: '인증 정보가 일치하지 않아요',
+          code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
+          title: '인증 정보가 일치하지 않아요',
         })
       }
 
@@ -66,8 +66,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
       if (!isValidToken) {
         return problemResponse(c, {
           status: 400,
-          code: 'credential-verification-failed',
-          detail: '인증 정보가 일치하지 않아요',
+          code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
+          title: '인증 정보가 일치하지 않아요',
         })
       }
     }
@@ -79,7 +79,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
     return c.json({ ok: true } satisfies POSTV1BBatonUnlinkResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '비바톤 계정 연결을 해제하지 못했어요.' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

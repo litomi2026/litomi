@@ -2,7 +2,11 @@ import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@litomi/auth/passkey/server'
 import type { PasskeyAuthenticationAttempt } from '@litomi/auth/passkey-authentication-attempt'
 import { getAndDeleteChallenge } from '@litomi/auth/redis-challenge'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
-import { type POSTV1AuthPasskeyVerifyResponse, postV1AuthPasskeyVerifyRequestSchema } from '@litomi/contracts'
+import {
+  type POSTV1AuthPasskeyVerifyResponse,
+  postV1AuthPasskeyVerifyRequestSchema,
+  problemCode,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { ChallengeType } from '@litomi/domain/auth/model'
@@ -40,7 +44,8 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     if (!authenticationAttemptId) {
       return problemResponse(c, {
         status: 400,
-        detail: '패스키를 검증할 수 없어요',
+        code: problemCode.PASSKEY_VERIFICATION_FAILED,
+        title: '패스키를 검증할 수 없어요',
       })
     }
 
@@ -52,7 +57,8 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     if (!authenticationAttempt) {
       return problemResponse(c, {
         status: 400,
-        detail: '패스키를 검증할 수 없어요',
+        code: problemCode.PASSKEY_VERIFICATION_FAILED,
+        title: '패스키를 검증할 수 없어요',
       })
     }
 
@@ -60,7 +66,8 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
       if (!turnstileToken) {
         return problemResponse(c, {
           status: 400,
-          detail: 'Cloudflare 보안 검증을 완료해 주세요',
+          code: problemCode.TURNSTILE_REQUIRED,
+          title: '보안 검증을 완료해 주세요',
         })
       }
 
@@ -75,7 +82,7 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
       if (!turnstile.success) {
         return problemResponse(c, {
           status: 400,
-          code: 'human-verification-failed',
+          code: problemCode.HUMAN_VERIFICATION_FAILED,
           detail: validator.getTurnstileErrorMessage(turnstile['error-codes']),
         })
       }
@@ -94,7 +101,8 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     if (!credential) {
       return problemResponse(c, {
         status: 404,
-        detail: '패스키를 검증할 수 없어요',
+        code: problemCode.PASSKEY_VERIFICATION_FAILED,
+        title: '패스키를 검증할 수 없어요',
       })
     }
 
@@ -113,7 +121,8 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     if (!verification?.verified || !verification.authenticationInfo) {
       return problemResponse(c, {
         status: 400,
-        detail: '패스키를 검증할 수 없어요',
+        code: problemCode.PASSKEY_VERIFICATION_FAILED,
+        title: '패스키를 검증할 수 없어요',
       })
     }
 
@@ -137,7 +146,8 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     if (!credentialUse) {
       return problemResponse(c, {
         status: 400,
-        detail: '패스키를 검증할 수 없어요',
+        code: problemCode.PASSKEY_VERIFICATION_FAILED,
+        title: '패스키를 검증할 수 없어요',
       })
     }
 
@@ -149,7 +159,8 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     if (!user) {
       return problemResponse(c, {
         status: 400,
-        detail: '패스키를 검증할 수 없어요',
+        code: problemCode.PASSKEY_VERIFICATION_FAILED,
+        title: '패스키를 검증할 수 없어요',
       })
     }
 
@@ -170,7 +181,7 @@ route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema),
     return c.json(user satisfies POSTV1AuthPasskeyVerifyResponse)
   } catch (error) {
     console.error('verifyAuthentication:', error)
-    return problemResponse(c, { status: 500, detail: '패스키 인증 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

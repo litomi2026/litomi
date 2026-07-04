@@ -53,7 +53,7 @@ route.post(
       }
 
       console.error(error)
-      return problemResponse(c, { status: 500, detail: '신고를 접수하지 못했어요' })
+      return problemResponse(c, { status: 500 })
     }
   },
 )

@@ -82,16 +82,16 @@ route.put('/', requireAuth, requireAdult, zProblemValidator('param', mangaIdPara
       return problemResponse(c, {
         status: 403,
         code: problemCode.LIBO_EXPANSION_REQUIRED,
-        detail: '북마크 저장 한도에 도달했어요',
+        title: '북마크 저장 한도에 도달했어요',
       })
     }
 
     if (error instanceof Error && error.message === ErrorCode.BOOKMARK_INSERT_FAILED) {
-      return problemResponse(c, { status: 500, detail: '북마크 저장에 실패했어요' })
+      return problemResponse(c, { status: 500 })
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '북마크 저장에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

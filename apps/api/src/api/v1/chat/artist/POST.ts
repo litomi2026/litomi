@@ -1,4 +1,4 @@
-import { type POSTV1ChatArtistResponse, postV1ChatArtistBodySchema } from '@litomi/contracts'
+import { type POSTV1ChatArtistResponse, postV1ChatArtistBodySchema, problemCode } from '@litomi/contracts'
 import { createChatArtist } from '@litomi/db/app/query/chat'
 import { isPostgresError } from '@litomi/db/error'
 import { Hono } from 'hono'
@@ -31,19 +31,34 @@ route.post('/', ...middlewares, async (c) => {
       priceAmount: body.priceAmount,
     })
 
-    return c.json({ artist: toChatArtistMine(artist) } satisfies POSTV1ChatArtistResponse, 201)
+    const response = {
+      artist: toChatArtistMine(artist),
+    } satisfies POSTV1ChatArtistResponse
+
+    return c.json(response, 201)
   } catch (error) {
     if (isPostgresError(error) && error.cause.code === '23505') {
       if (error.cause.constraint_name === 'chat_artist_handle_unique') {
         return problemResponse(c, {
           status: 409,
-          detail: '이미 사용 중인 핸들이에요.',
+          code: problemCode.HANDLE_CONFLICT,
+          title: '이미 사용 중인 핸들이에요.',
+          extensions: {
+            invalidParams: [
+              {
+                name: 'handle',
+                code: problemCode.HANDLE_CONFLICT,
+                reason: '이미 사용 중인 핸들이에요.',
+              },
+            ],
+          },
         })
       }
 
       return problemResponse(c, {
         status: 409,
-        detail: '이미 아티스트 프로필이 있어요.',
+        code: problemCode.ARTIST_PROFILE_EXISTS,
+        title: '이미 아티스트 프로필이 있어요.',
       })
     }
 

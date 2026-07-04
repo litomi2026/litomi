@@ -8,9 +8,14 @@ type ValidationErrorLike = {
   issues: readonly ValidationIssueLike[]
 }
 
+// Zod 이슈의 구조적 서브셋 — code/minimum/maximum은 이슈 종류에 따라서만 존재한다.
 type ValidationIssueLike = {
+  code?: string
   message: string
   path: readonly unknown[]
+  params?: Record<string, unknown>
+  minimum?: bigint | number
+  maximum?: bigint | number
 }
 
 type ValidationProblemOptions = Pick<ProblemResponseOptions, 'code' | 'detail' | 'title'>
@@ -27,11 +32,19 @@ export function zProblemValidator<
     return problemResponse(c, {
       status: 400,
       code: problem.code ?? 'invalid-input',
-      detail: problem.detail ?? '입력을 확인해 주세요',
-      title: problem.title,
+      title: problem.title ?? '입력을 확인해 주세요',
+      detail: problem.detail,
       extensions: { invalidParams: getInvalidParams(result.error) },
     })
   })
+}
+
+function getInvalidParamCode(issue: ValidationIssueLike): string {
+  if (issue.code === 'custom' && typeof issue.params?.code === 'string') {
+    return issue.params.code
+  }
+
+  return issue.code ?? 'custom'
 }
 
 function getInvalidParamName(issue: ValidationIssueLike): string | null {
@@ -54,7 +67,7 @@ function getInvalidParamName(issue: ValidationIssueLike): string | null {
 }
 
 function getInvalidParams(error: ValidationErrorLike): InvalidParam[] {
-  const invalidParams = new Map<string, string>()
+  const invalidParams = new Map<string, InvalidParam>()
 
   for (const issue of error.issues) {
     const name = getInvalidParamName(issue)
@@ -63,8 +76,23 @@ function getInvalidParams(error: ValidationErrorLike): InvalidParam[] {
       continue
     }
 
-    invalidParams.set(name, issue.message)
+    invalidParams.set(name, {
+      name,
+      code: getInvalidParamCode(issue),
+      reason: issue.message,
+      minimum: toFiniteNumber(issue.minimum),
+      maximum: toFiniteNumber(issue.maximum),
+    })
   }
 
-  return Array.from(invalidParams, ([name, reason]) => ({ name, reason }))
+  return Array.from(invalidParams.values())
+}
+
+function toFiniteNumber(value: bigint | number | undefined): number | undefined {
+  if (value === undefined) {
+    return undefined
+  }
+
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) ? numberValue : undefined
 }

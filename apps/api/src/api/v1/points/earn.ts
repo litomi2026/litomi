@@ -1,9 +1,8 @@
-import { type POSTV1PointEarnResponse, postV1PointEarnRequestSchema } from '@litomi/contracts'
+import { type POSTV1PointEarnResponse, postV1PointEarnRequestSchema, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { CookieKey } from '@litomi/http/cookie'
-import { problemCode } from '@litomi/http/problem-details'
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
@@ -17,7 +16,7 @@ import { zProblemValidator } from '@/utils/validator'
 import { verifyPointsTurnstileToken } from './util-turnstile-cookie'
 
 type TransactionResult =
-  | { ok: false; status: number; detail?: string; headers?: Record<string, string> }
+  | { ok: false; status: number; code?: string; title?: string; detail?: string; headers?: Record<string, string> }
   | { ok: true; balance: number; earned: number; dailyRemaining: number }
 
 const route = new Hono<Env>()
@@ -31,7 +30,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
     return problemResponse(c, {
       status: 403,
       code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
+      title: '보안 검증을 완료해 주세요',
     })
   }
 
@@ -42,7 +41,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
     return problemResponse(c, {
       status: 403,
       code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
+      title: '보안 검증을 완료해 주세요',
     })
   }
 
@@ -91,7 +90,12 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
       const todayEarnCount = todayTransactions.length
 
       if (todayEarnCount >= POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT) {
-        return { ok: false, status: 429, detail: '오늘의 적립 한도에 도달했어요' }
+        return {
+          ok: false,
+          status: 429,
+          code: problemCode.DAILY_EARN_LIMIT_REACHED,
+          title: '오늘의 적립 한도에 도달했어요',
+        }
       }
 
       // 5. 같은 광고 쿨다운 체크 (1분)
@@ -105,7 +109,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
           return {
             ok: false,
             status: 429,
-            detail: '같은 광고는 잠시 후 다시 적립할 수 있어요',
+            code: problemCode.AD_COOLDOWN,
+            title: '같은 광고는 잠시 후 다시 적립할 수 있어요',
             headers: { 'Retry-After': String(remainingSeconds) },
           }
         }
@@ -167,6 +172,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
     if (!result.ok) {
       return problemResponse(c, {
         status: result.status,
+        code: result.code,
+        title: result.title,
         detail: result.detail,
         headers: result.headers,
       })
@@ -179,7 +186,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
     } satisfies POSTV1PointEarnResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '포인트 적립에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -1,4 +1,4 @@
-import { postV1BBatonCompleteBodySchema } from '@litomi/contracts'
+import { postV1BBatonCompleteBodySchema, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { isPostgresError } from '@litomi/db/error'
@@ -40,14 +40,16 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonCompleteBodyS
     if (!attempt) {
       return problemResponse(c, {
         status: 400,
-        detail: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
+        code: problemCode.VERIFICATION_ATTEMPT_EXPIRED,
+        title: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
       })
     }
 
     if (attempt.userId !== userId) {
       return problemResponse(c, {
         status: 400,
-        detail: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
+        code: problemCode.VERIFICATION_ATTEMPT_EXPIRED,
+        title: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
       })
     }
 
@@ -85,12 +87,16 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonCompleteBodyS
         })
     } catch (error) {
       if (isDuplicateBBatonUserId(error)) {
-        return problemResponse(c, { status: 409, detail: '해당 비바톤 계정이 이미 다른 리토미 계정에 연결되어 있어요' })
+        return problemResponse(c, {
+          status: 409,
+          code: problemCode.BBATON_ALREADY_LINKED,
+          title: '해당 비바톤 계정이 이미 다른 리토미 계정에 연결되어 있어요',
+        })
       }
 
       console.error(error)
 
-      return problemResponse(c, { status: 500, detail: '비바톤 인증 정보를 저장하지 못했어요' })
+      return problemResponse(c, { status: 500 })
     }
 
     const adult = profile.adultFlag === 'Y'
@@ -102,10 +108,10 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonCompleteBodyS
     const message = error instanceof Error ? error.message : ''
 
     if (message.startsWith('BBATON_')) {
-      return problemResponse(c, { status: 502, detail: '비바톤 인증에 실패했어요' })
+      return problemResponse(c, { status: 502 })
     }
 
-    return problemResponse(c, { status: 500, detail: '비바톤 인증 정보를 저장하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

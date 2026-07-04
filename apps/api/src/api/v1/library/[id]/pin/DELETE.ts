@@ -24,7 +24,7 @@ routes.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async
     return c.json({ result: 'ok' })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재 고정을 해제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

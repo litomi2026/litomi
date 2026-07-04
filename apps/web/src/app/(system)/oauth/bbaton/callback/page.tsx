@@ -92,10 +92,12 @@ export default function BBatonCallbackPage() {
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof ProblemDetailsError) {
+    const summary = error.problem.detail ?? error.problem.title
+
     if (error.status === 409) {
-      return `${error.message} 기존 계정에서 연동을 해제한 뒤 다시 시도해 주세요.`
+      return `${summary} 기존 계정에서 연동을 해제한 뒤 다시 시도해 주세요.`
     }
-    return error.message
+    return summary
   }
 
   if (error instanceof Error) {

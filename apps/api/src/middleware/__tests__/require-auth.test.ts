@@ -23,8 +23,7 @@ describe('requireAuth', () => {
 
     expect(body).toMatchObject({
       status: 401,
-      title: '로그인이 필요해요',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
     })
   })
 

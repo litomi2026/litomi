@@ -57,7 +57,7 @@ route.get('/', requireAuth, zProblemValidator('query', getV1BookmarkQuerySchema)
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '북마크를 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

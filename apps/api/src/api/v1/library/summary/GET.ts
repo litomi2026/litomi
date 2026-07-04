@@ -37,7 +37,7 @@ librarySummaryRoutes.get('/', requireAuth, requireAdult, async (c) => {
     return c.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '요약 정보를 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

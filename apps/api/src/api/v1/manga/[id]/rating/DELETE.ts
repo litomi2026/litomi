@@ -30,7 +30,7 @@ route.delete('/:id/rating', requireAuth, zProblemValidator('param', mangaIdParam
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '평가 삭제에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

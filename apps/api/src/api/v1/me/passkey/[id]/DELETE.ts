@@ -25,13 +25,10 @@ route.delete('/', zProblemValidator('param', idParamSchema), async (c) => {
       return problemResponse(c, { status: 404, detail: '패스키를 찾을 수 없어요' })
     }
 
-    return c.json({
-      id: deleted.id,
-      message: '패스키가 삭제됐어요',
-    } satisfies DELETEV1MePasskeyResponse)
+    return c.json({ id: deleted.id } satisfies DELETEV1MePasskeyResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '패스키 삭제 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

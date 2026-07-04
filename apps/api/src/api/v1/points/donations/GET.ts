@@ -59,7 +59,7 @@ route.get('/recipient', zProblemValidator('query', getV1PointsDonationRecipientQ
     return c.json(response, { headers: { 'Cache-Control': publicDailyCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '후원 정보를 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 
@@ -158,7 +158,7 @@ route.get('/me', requireAuth, zProblemValidator('query', getV1PointsDonationsMeQ
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '후원 내역을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

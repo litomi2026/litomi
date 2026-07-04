@@ -29,7 +29,7 @@ route.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async 
     return c.json({ id: deletedLibrary.id } satisfies DELETEV1LibraryIdResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재를 삭제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -1,6 +1,6 @@
 import { initiatePKCEChallenge } from '@litomi/auth/pkce-server'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
-import { type POSTV1AuthLoginResponse, postV1AuthLoginRequestSchema } from '@litomi/contracts'
+import { type POSTV1AuthLoginResponse, postV1AuthLoginRequestSchema, problemCode } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
@@ -34,7 +34,7 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
   if (!turnstile.success) {
     return problemResponse(c, {
       status: 400,
-      code: 'human-verification-failed',
+      code: problemCode.HUMAN_VERIFICATION_FAILED,
       detail: validator.getTurnstileErrorMessage(turnstile['error-codes']),
     })
   }
@@ -56,8 +56,8 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
     if (!user || !isValidPassword) {
       return problemResponse(c, {
         status: 401,
-        code: 'invalid-credentials',
-        detail: '아이디 또는 비밀번호가 일치하지 않아요',
+        code: problemCode.INVALID_CREDENTIALS,
+        title: '아이디 또는 비밀번호가 일치하지 않아요',
       })
     }
 
@@ -107,7 +107,7 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
     } satisfies POSTV1AuthLoginResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '로그인 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

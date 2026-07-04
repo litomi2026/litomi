@@ -26,7 +26,7 @@ describe('requireAdult', () => {
 
     expect(body).toMatchObject({
       type: `https://localhost/problems/${problemCode.ADULT_VERIFICATION_REQUIRED}`,
-      detail: '성인인증이 필요해요',
+      title: '성인인증이 필요해요',
       status: 403,
     })
   })

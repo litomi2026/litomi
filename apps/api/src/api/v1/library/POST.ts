@@ -73,7 +73,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema),
     })
 
     if (!created) {
-      return problemResponse(c, { status: 500, detail: '서재를 생성하지 못했어요' })
+      return problemResponse(c, { status: 500 })
     }
 
     const response = {
@@ -89,12 +89,12 @@ route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema),
       return problemResponse(c, {
         status: 403,
         code: problemCode.LIBO_EXPANSION_REQUIRED,
-        detail: '서재 개수 제한에 도달했어요',
+        title: '서재 개수 제한에 도달했어요',
       })
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재를 생성하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

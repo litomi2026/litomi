@@ -47,7 +47,7 @@ route.patch('/', zProblemValidator('json', patchV1CensorshipUpdateBodySchema), a
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '업데이트 도중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -1,7 +1,7 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { revokeBillingKey } from '@litomi/billing'
-import { type DELETEV1MeResponse, deleteV1MeBodySchema } from '@litomi/contracts'
+import { type DELETEV1MeResponse, deleteV1MeBodySchema, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { chatArtistTable } from '@litomi/db/app/chat'
 import { paymentMethodTable } from '@litomi/db/app/subscription'
@@ -103,22 +103,21 @@ route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => 
       case 'deleted':
         await revokeBillingKeys(result.billingTokens)
         applyAuthCookie(c, getAuthCookieClearConfigs())
-
-        return c.json({
-          loginId: result.loginId,
-          message: `${result.loginId} 계정을 삭제했어요`,
-        } satisfies DELETEV1MeResponse)
+        return c.json({ loginId: result.loginId } satisfies DELETEV1MeResponse)
 
       case 'unauthorized':
         applyAuthCookie(c, getAuthCookieClearConfigs())
         return authRequiredProblemResponse(c)
 
       case 'verification-failed':
-        return problemResponse(c, { status: 400 })
+        return problemResponse(c, {
+          status: 400,
+          code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
+        })
     }
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '계정을 삭제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

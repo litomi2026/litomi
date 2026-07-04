@@ -46,7 +46,7 @@ route.patch('/', zProblemValidator('json', patchV1MeSettingsBodySchema), async (
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '설정을 저장하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

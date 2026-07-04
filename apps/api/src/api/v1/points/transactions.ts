@@ -66,7 +66,7 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1PointT
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '거래 내역을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

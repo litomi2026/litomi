@@ -26,7 +26,7 @@ route.delete('/', requireAuth, zProblemValidator('json', deleteV1LibraryRatingBo
     return c.json({ deletedCount: deleted.length } satisfies DELETEV1LibraryRatingResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '평가 삭제에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

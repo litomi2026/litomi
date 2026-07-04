@@ -16,7 +16,7 @@ export function authRequiredProblemResponse(
   return problemResponse(c, {
     status: 401,
     code: problemCode.AUTHENTICATION_REQUIRED,
-    detail: '로그인 정보가 없거나 만료됐어요',
+    title: '로그인 정보가 없거나 만료됐어요',
     ...options,
   })
 }

@@ -30,7 +30,7 @@ route.delete('/', zProblemValidator('json', deleteV1CensorshipDeleteBodySchema),
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

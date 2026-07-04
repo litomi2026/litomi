@@ -22,7 +22,7 @@ route.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async 
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '좋아요를 처리하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

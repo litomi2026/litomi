@@ -28,7 +28,7 @@ route.delete('/', requireAuth, zProblemValidator('param', mangaIdParamSchema), a
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '북마크 삭제에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

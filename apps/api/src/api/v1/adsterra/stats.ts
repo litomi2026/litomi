@@ -20,7 +20,7 @@ const route = new Hono<Env>()
 
 route.get('/stats', requireAuth, zProblemValidator('query', getV1AdsterraStatsQuerySchema), async (c) => {
   if (!ADSTERRA_API_KEY) {
-    return problemResponse(c, { status: 502, detail: '통계를 불러오지 못했어요' })
+    return problemResponse(c, { status: 502 })
   }
 
   const { start_date, finish_date } = c.req.valid('query')
@@ -37,7 +37,7 @@ route.get('/stats', requireAuth, zProblemValidator('query', getV1AdsterraStatsQu
 
     if (!res.ok) {
       console.error('Adsterra stats upstream error:', res.status, res.statusText)
-      return problemResponse(c, { status: 502, detail: '통계를 불러오지 못했어요' })
+      return problemResponse(c, { status: 502 })
     }
 
     const json: unknown = await res.json()
@@ -45,7 +45,7 @@ route.get('/stats', requireAuth, zProblemValidator('query', getV1AdsterraStatsQu
 
     if (!parsed.success) {
       console.error('Adsterra stats invalid response:', parsed.error.message)
-      return problemResponse(c, { status: 502, detail: '통계를 불러오지 못했어요' })
+      return problemResponse(c, { status: 502 })
     }
 
     const cacheControl = createCacheControl({
@@ -58,11 +58,11 @@ route.get('/stats', requireAuth, zProblemValidator('query', getV1AdsterraStatsQu
     return c.json(parsed.data satisfies GETV1AdsterraStatsResponse, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      return problemResponse(c, { status: 499, detail: '요청이 취소됐어요' })
+      return problemResponse(c, { status: 499 })
     }
 
     console.error('Adsterra stats error:', error instanceof Error ? error.message : String(error))
-    return problemResponse(c, { status: 500, detail: '통계를 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

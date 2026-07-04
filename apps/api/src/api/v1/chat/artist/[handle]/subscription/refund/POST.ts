@@ -1,5 +1,5 @@
 import { cancelPayment, getRemotePayment, isBillingConfigured } from '@litomi/billing'
-import { chatHandleParamSchema, type POSTV1ChatSubscriptionRefundResponse } from '@litomi/contracts'
+import { chatHandleParamSchema, type POSTV1ChatSubscriptionRefundResponse, problemCode } from '@litomi/contracts'
 import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { applyPaymentRefunds, getLatestPaidInvoicePayment } from '@litomi/db/app/query/refund'
 import { getSubscription } from '@litomi/db/app/query/subscription'
@@ -56,7 +56,8 @@ route.post('/', ...middlewares, async (c) => {
   if (!candidate?.paidAt) {
     return problemResponse(c, {
       status: 400,
-      detail: '환불할 결제가 없어요.',
+      code: problemCode.REFUND_NO_PAYMENT,
+      title: '환불할 결제가 없어요.',
     })
   }
 
@@ -65,7 +66,8 @@ route.post('/', ...middlewares, async (c) => {
   if (now.getTime() - candidate.paidAt.getTime() > REFUND_WINDOW_MS) {
     return problemResponse(c, {
       status: 403,
-      detail: '결제일로부터 7일이 지나 환불할 수 없어요.',
+      code: problemCode.REFUND_WINDOW_EXPIRED,
+      title: '결제일로부터 7일이 지나 환불할 수 없어요.',
     })
   }
 
@@ -77,7 +79,8 @@ route.post('/', ...middlewares, async (c) => {
   if (await hasOwnRepliesInWindow({ senderId: userId, artistId: artist.id, window })) {
     return problemResponse(c, {
       status: 403,
-      detail: '이번 결제 기간에 답장을 보내서 환불할 수 없어요.',
+      code: problemCode.REFUND_FORFEITED_BY_REPLY,
+      title: '이번 결제 기간에 답장을 보내서 환불할 수 없어요.',
     })
   }
 
@@ -105,7 +108,6 @@ route.post('/', ...middlewares, async (c) => {
 
     return problemResponse(c, {
       status: 502,
-      detail: '환불 상태를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.',
     })
   }
 
@@ -115,7 +117,8 @@ route.post('/', ...middlewares, async (c) => {
   if (refundedTotal < candidate.amount) {
     return problemResponse(c, {
       status: 402,
-      detail: '환불이 완료되지 않았어요. 잠시 후 다시 시도해 주세요.',
+      code: problemCode.REFUND_INCOMPLETE,
+      title: '환불이 완료되지 않았어요. 잠시 후 다시 시도해 주세요.',
     })
   }
 

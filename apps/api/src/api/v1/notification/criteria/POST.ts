@@ -2,6 +2,7 @@ import {
   type POSTV1NotificationCriteriaBody,
   type POSTV1NotificationCriteriaResponse,
   postV1NotificationCriteriaBodySchema,
+  problemCode,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'
@@ -112,15 +113,16 @@ route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema),
     if (result.kind === 'limit') {
       return problemResponse(c, {
         status: 403,
-        code: 'notification-criteria-limit-reached',
-        detail: `최대 ${MAX_CRITERIA_PER_USER}개까지만 추가할 수 있어요`,
+        code: problemCode.NOTIFICATION_CRITERIA_LIMIT_REACHED,
+        title: `최대 ${MAX_CRITERIA_PER_USER}개까지만 추가할 수 있어요`,
+        extensions: { limit: MAX_CRITERIA_PER_USER },
       })
     }
 
     if (result.kind === 'conflict') {
       return problemResponse(c, {
         status: 409,
-        code: 'notification-criteria-conflict',
+        code: problemCode.NOTIFICATION_CRITERIA_CONFLICT,
         detail: `이미 동일한 키워드 알림이 존재해요: ${result.criteriaName}`,
         extensions: {
           existingCriteriaId: result.criteriaId,
@@ -139,7 +141,7 @@ route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema),
     return c.json(response, 201)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '키워드 알림 설정에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

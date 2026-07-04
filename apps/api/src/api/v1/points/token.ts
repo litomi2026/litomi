@@ -1,9 +1,8 @@
-import { type POSTV1PointTokenResponse, postV1PointTokenRequestSchema } from '@litomi/contracts'
+import { type POSTV1PointTokenResponse, postV1PointTokenRequestSchema, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { adImpressionTokenTable, pointTransactionTable } from '@litomi/db/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { CookieKey } from '@litomi/http/cookie'
-import { problemCode } from '@litomi/http/problem-details'
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
@@ -27,7 +26,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
     return problemResponse(c, {
       status: 403,
       code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
+      title: '보안 검증을 완료해 주세요',
     })
   }
 
@@ -38,7 +37,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
     return problemResponse(c, {
       status: 403,
       code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
+      title: '보안 검증을 완료해 주세요',
     })
   }
 
@@ -72,7 +71,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
 
       return problemResponse(c, {
         status: 429,
-        detail: '오늘의 적립 한도에 도달했어요',
+        code: problemCode.DAILY_EARN_LIMIT_REACHED,
+        title: '오늘의 적립 한도에 도달했어요',
         headers: { 'Retry-After': String(remainingSeconds) },
       })
     }
@@ -116,7 +116,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
       })
 
     if (!result) {
-      return problemResponse(c, { status: 500, detail: '토큰 생성에 실패했어요' })
+      return problemResponse(c, { status: 500 })
     }
 
     if (result.lastEarnedAt && result.lastEarnedAt > adSlotCooldownTime) {
@@ -125,7 +125,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
 
       return problemResponse(c, {
         status: 429,
-        detail: '같은 광고는 잠시 후 다시 적립할 수 있어요',
+        code: problemCode.AD_COOLDOWN,
+        title: '같은 광고는 잠시 후 다시 적립할 수 있어요',
         headers: { 'Retry-After': String(remainingSeconds) },
       })
     }
@@ -137,7 +138,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
     } satisfies POSTV1PointTokenResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '토큰 생성에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

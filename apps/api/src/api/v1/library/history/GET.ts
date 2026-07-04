@@ -95,7 +95,7 @@ libraryHistoryRoutes.get(
       return c.json(result, { headers: { 'Cache-Control': cacheControl } })
     } catch (error) {
       console.error(error)
-      return problemResponse(c, { status: 500, detail: '감상 기록을 불러오지 못했어요' })
+      return problemResponse(c, { status: 500 })
     }
   },
 )

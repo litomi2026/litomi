@@ -43,7 +43,7 @@ route.put('/', requireAuth, zProblemValidator('param', idParamSchema), async (c)
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '팔로우를 처리하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

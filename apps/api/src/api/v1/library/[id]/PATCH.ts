@@ -49,7 +49,7 @@ route.patch(
       return c.json({ id: updatedLibrary.id } satisfies PATCHV1LibraryIdResponse)
     } catch (error) {
       console.error(error)
-      return problemResponse(c, { status: 500, detail: '서재를 수정하지 못했어요' })
+      return problemResponse(c, { status: 500 })
     }
   },
 )

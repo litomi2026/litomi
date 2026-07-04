@@ -59,7 +59,7 @@ route.get(
       return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
     } catch (error) {
       console.error(error)
-      return problemResponse(c, { status: 500, detail: '추천 작품을 불러오지 못했어요' })
+      return problemResponse(c, { status: 500 })
     }
   },
 )

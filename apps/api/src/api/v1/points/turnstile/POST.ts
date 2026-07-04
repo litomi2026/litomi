@@ -1,4 +1,4 @@
-import { type POSTV1PointTurnstileResponse, postV1PointTurnstileRequestSchema } from '@litomi/contracts'
+import { type POSTV1PointTurnstileResponse, postV1PointTurnstileRequestSchema, problemCode } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
@@ -32,8 +32,8 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTurnstileReque
   if (!turnstile.success) {
     return problemResponse(c, {
       status: 400,
-      code: 'human-verification-failed',
-      detail: '보안 확인에 실패했어요',
+      code: problemCode.HUMAN_VERIFICATION_FAILED,
+      title: '보안 확인에 실패했어요',
     })
   }
 
