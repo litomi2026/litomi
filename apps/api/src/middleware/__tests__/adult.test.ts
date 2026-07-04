@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
-import { PROBLEM_CONTENT_TYPE, problemCode } from '@litomi/http/problem-details'
+import { problemCode } from '@litomi/contracts'
+import { PROBLEM_CONTENT_TYPE } from '@litomi/http/problem-details'
 import { Hono } from 'hono'
 
 import { requireAdult } from '../require-adult'

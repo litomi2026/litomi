@@ -1,8 +1,5 @@
-import {
-  type CreateProblemDetailsResponseOptions,
-  createProblemDetailsResponse,
-  problemCode,
-} from '@litomi/http/problem-details'
+import { problemCode } from '@litomi/contracts'
+import { type CreateProblemDetailsResponseOptions, createProblemDetailsResponse } from '@litomi/http/problem-details'
 import type { Context } from 'hono'
 
 import { noStoreCacheControl } from './cache-control'

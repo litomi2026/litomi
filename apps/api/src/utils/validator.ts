@@ -1,4 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
+import { problemCode } from '@litomi/contracts'
 import type { InvalidParam } from '@litomi/http/problem-details'
 import type { ValidationTargets } from 'hono'
 
@@ -31,7 +32,7 @@ export function zProblemValidator<
 
     return problemResponse(c, {
       status: 400,
-      code: problem.code ?? 'invalid-input',
+      code: problem.code ?? problemCode.INVALID_INPUT,
       title: problem.title ?? '입력을 확인해 주세요',
       detail: problem.detail,
       extensions: { invalidParams: getInvalidParams(result.error) },

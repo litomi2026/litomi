@@ -4,10 +4,13 @@ export type CreateProblemDetailsResponseOptions = ProblemDetailsOptions & {
 
 export type InvalidParam = {
   name: string
-  reason: string
+  /** 기계 판별용 코드 — Zod 이슈 코드(too_small 등) 또는 refine params.code. 클라이언트가 로케일 카피로 변환한다. */
+  code: string
+  /** dev-facing 진단 문구 — 사용자에게 표시하지 않는다. */
+  reason?: string
+  minimum?: number
+  maximum?: number
 }
-
-export type ProblemCode = (typeof problemCode)[keyof typeof problemCode]
 
 export type ProblemDetails = {
   /**
@@ -16,8 +19,8 @@ export type ProblemDetails = {
    */
   type: string
   /**
-   * A short, human-readable summary of the problem type.
-   * Should be stable and "minimally understandable".
+   * 문제 유형(code)의 사람용 요약 — 발생 건마다 바뀌지 않는다(RFC 9457).
+   * code 없는 generic 문제는 status phrase가 기본값. dev-facing이며 사용자에게 표시하지 않는다.
    */
   title: string
   /**
@@ -25,8 +28,8 @@ export type ProblemDetails = {
    */
   status: number
   /**
-   * A human-readable explanation specific to this occurrence of the problem.
-   * (UI message: friendly ~요 style)
+   * 이 발생 건(occurrence)에 특정한 dev-facing 진단 — 동적 값이나 코드 없는 분기 설명.
+   * 사용자에게 표시하지 않는다(사용자 카피는 웹이 code로 변환).
    */
   detail?: string
   /**
@@ -52,39 +55,22 @@ export type ValidationProblemDetails = ProblemDetails & {
   invalidParams?: InvalidParam[]
 }
 
-export const problemCode = {
-  ADULT_VERIFICATION_REQUIRED: 'adult-verification-required',
-  AUTHENTICATION_REQUIRED: 'authentication-required',
-  BAD_GATEWAY: 'bad-gateway',
-  BAD_REQUEST: 'bad-request',
-  CLIENT_ABORTED: 'client-aborted',
-  CONFLICT: 'conflict',
-  FORBIDDEN: 'forbidden',
-  GATEWAY_TIMEOUT: 'gateway-timeout',
-  INTERNAL_SERVER_ERROR: 'internal-server-error',
-  LIBO_EXPANSION_REQUIRED: 'libo-expansion-required',
-  NOT_FOUND: 'not-found',
-  REQUEST_TIMEOUT: 'request-timeout',
-  SERVICE_UNAVAILABLE: 'service-unavailable',
-  TOO_MANY_REQUESTS: 'too-many-requests',
-  TURNSTILE_REQUIRED: 'turnstile-required',
-  UNAUTHORIZED: 'unauthorized',
-} as const
-
 export const PROBLEM_CONTENT_TYPE = 'application/problem+json'
 
-const problemCodeByStatus: Partial<Record<number, ProblemCode>> = {
-  400: problemCode.BAD_REQUEST,
-  401: problemCode.UNAUTHORIZED,
-  403: problemCode.FORBIDDEN,
-  404: problemCode.NOT_FOUND,
-  408: problemCode.REQUEST_TIMEOUT,
-  409: problemCode.CONFLICT,
-  429: problemCode.TOO_MANY_REQUESTS,
-  499: problemCode.CLIENT_ABORTED,
-  502: problemCode.BAD_GATEWAY,
-  503: problemCode.SERVICE_UNAVAILABLE,
-  504: problemCode.GATEWAY_TIMEOUT,
+// status에서 자동 파생되는 generic slug 테이블 — 명시적으로 부여하는 코드 카탈로그는
+// @litomi/contracts의 problemCode이며, 두 집합은 겹치지 않는다.
+const problemCodeByStatus: Partial<Record<number, string>> = {
+  400: 'bad-request',
+  401: 'unauthorized',
+  403: 'forbidden',
+  404: 'not-found',
+  408: 'request-timeout',
+  409: 'conflict',
+  429: 'too-many-requests',
+  499: 'client-aborted',
+  502: 'bad-gateway',
+  503: 'service-unavailable',
+  504: 'gateway-timeout',
 }
 
 const statusTitleByStatus: Partial<Record<number, string>> = {
@@ -132,8 +118,30 @@ export function getInvalidParams(problem: ProblemDetails | null | undefined): In
     }
 
     const record = param as Record<string, unknown>
-    return typeof record.name === 'string' && typeof record.reason === 'string'
+    return typeof record.name === 'string' && typeof record.code === 'string'
   })
+}
+
+/** problem `type` URL(`https://<origin>/problems/<code>`)에서 code slug를 추출한다. */
+export function getProblemCode(typeUrl: string): string | null {
+  const marker = '/problems/'
+  const index = typeUrl.lastIndexOf(marker)
+
+  if (index === -1) {
+    return null
+  }
+
+  const slug = typeUrl.slice(index + marker.length)
+
+  if (slug.length === 0 || slug.includes('/')) {
+    return null
+  }
+
+  try {
+    return decodeURIComponent(slug)
+  } catch {
+    return slug
+  }
 }
 
 export function isProblemDetails(value: unknown): value is ProblemDetails {
@@ -155,7 +163,7 @@ export function isProblemDetailsContentType(contentType: string | null | undefin
   return contentType?.toLowerCase().split(';', 1)[0].trim() === PROBLEM_CONTENT_TYPE
 }
 
-export function isProblemType(typeUrl: string, code: string | ProblemCode): boolean {
+export function isProblemType(typeUrl: string, code: string): boolean {
   const suffix = `/problems/${encodeURIComponent(code)}`
 
   try {
@@ -165,7 +173,7 @@ export function isProblemType(typeUrl: string, code: string | ProblemCode): bool
   }
 }
 
-function getProblemCodeFromStatus(status: number): ProblemCode {
+function getProblemCodeFromStatus(status: number): string {
   const code = problemCodeByStatus[status]
 
   if (code) {
@@ -173,10 +181,10 @@ function getProblemCodeFromStatus(status: number): ProblemCode {
   }
 
   if (status >= 400 && status < 500) {
-    return problemCode.BAD_REQUEST
+    return 'bad-request'
   }
 
-  return problemCode.INTERNAL_SERVER_ERROR
+  return 'internal-server-error'
 }
 
 function getProblemDetails(request: string | Request | URL, options: ProblemDetailsOptions): ProblemDetails {

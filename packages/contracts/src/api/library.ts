@@ -20,24 +20,17 @@ import { mangaIdSchema } from '../shared'
 const libraryIconSchema = z
   .string()
   .trim()
-  .max(MAX_LIBRARY_ICON_LENGTH, '이모지는 하나만 입력할 수 있어요')
-  .refine(isSingleEmoji, '이모지는 하나만 입력할 수 있어요')
+  .max(MAX_LIBRARY_ICON_LENGTH)
+  .refine(isSingleEmoji, { params: { code: 'invalid-emoji' } })
   .nullable()
   .optional()
 
 const libraryMutationBodySchema = z.object({
-  name: z
-    .string()
-    .min(1, '서재 이름을 입력해 주세요')
-    .max(MAX_LIBRARY_NAME_LENGTH, `이름은 ${MAX_LIBRARY_NAME_LENGTH}자 이하여야 해요`),
-  description: z
-    .string()
-    .max(MAX_LIBRARY_DESCRIPTION_LENGTH, `설명은 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자 이하여야 해요`)
-    .nullable()
-    .optional(),
+  name: z.string().min(1).max(MAX_LIBRARY_NAME_LENGTH),
+  description: z.string().max(MAX_LIBRARY_DESCRIPTION_LENGTH).nullable().optional(),
   color: z
     .string()
-    .regex(/^#[0-9A-F]{6}$/i, '올바른 색상 코드를 입력해 주세요')
+    .regex(/^#[0-9A-F]{6}$/i)
     .nullable()
     .optional(),
   icon: libraryIconSchema,
@@ -144,17 +137,11 @@ export interface DELETEV1ReadingHistoryResponse {
 }
 
 const positiveIntegerSchema = z.number().int().positive()
-const mangaIdsArraySchema = z
-  .array(mangaIdSchema)
-  .min(1, '선택한 작품이 없어요')
-  .max(100, '최대 100개까지 선택할 수 있어요')
+const mangaIdsArraySchema = z.array(mangaIdSchema).min(1).max(100)
 
 export const postV1LibraryItemAddBodySchema = z.object({
   mangaId: mangaIdSchema,
-  libraryIds: z
-    .array(positiveIntegerSchema)
-    .min(1, '서재를 선택해 주세요')
-    .max(20, '최대 20개 서재까지 선택할 수 있어요'),
+  libraryIds: z.array(positiveIntegerSchema).min(1).max(20),
 })
 
 export type POSTV1LibraryItemAddBody = z.infer<typeof postV1LibraryItemAddBodySchema>
@@ -181,7 +168,7 @@ export const postV1LibraryItemMoveBodySchema = z
     mangaIds: mangaIdsArraySchema,
   })
   .refine((data) => data.fromLibraryId !== data.toLibraryId, {
-    error: '같은 서재로는 이동할 수 없어요',
+    params: { code: 'same-library' },
     path: ['toLibraryId'],
   })
 

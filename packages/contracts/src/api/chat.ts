@@ -200,13 +200,10 @@ export const RESERVED_CHAT_HANDLES = new Set([
 
 const chatArtistHandleSchema = z
   .string()
-  .min(3, '핸들은 3~32자여야 해요.')
-  .max(32, '핸들은 3~32자여야 해요.')
-  .regex(
-    /^[a-z0-9](?:-?[a-z0-9])*$/,
-    '핸들은 영문 소문자, 숫자, 하이픈(-)만 쓸 수 있고, 하이픈은 처음·끝·연속으로 쓸 수 없어요.',
-  )
-  .refine((handle) => !RESERVED_CHAT_HANDLES.has(handle), '사용할 수 없는 핸들이에요.')
+  .min(3)
+  .max(32)
+  .regex(/^[a-z0-9](?:-?[a-z0-9])*$/)
+  .refine((handle) => !RESERVED_CHAT_HANDLES.has(handle), { params: { code: 'handle-reserved' } })
 
 const CHAT_ARTIST_NAME_MAX_LENGTH = 64
 const CHAT_ARTIST_DESCRIPTION_MAX_LENGTH = 500
@@ -220,10 +217,9 @@ const chatArtistPriceAmountSchema = z
   .int()
   .min(0)
   .max(CHAT_ARTIST_PRICE_MAX)
-  .refine(
-    (amount) => amount === 0 || amount >= CHAT_ARTIST_PRICE_MIN,
-    `구독 가격은 ${CHAT_ARTIST_PRICE_MIN.toLocaleString('ko-KR')}원 이상이어야 해요.`,
-  )
+  .refine((amount) => amount === 0 || amount >= CHAT_ARTIST_PRICE_MIN, {
+    params: { code: 'price-below-minimum' },
+  })
 
 export const postV1ChatArtistBodySchema = z.object({
   handle: chatArtistHandleSchema,
@@ -246,7 +242,7 @@ export const patchV1ChatArtistBodySchema = z
     priceAmount: chatArtistPriceAmountSchema.optional(),
     isActive: z.boolean().optional(),
   })
-  .refine((body) => Object.keys(body).length > 0, '변경할 항목이 없어요.')
+  .refine((body) => Object.keys(body).length > 0)
 
 export type PATCHV1ChatArtistBody = z.infer<typeof patchV1ChatArtistBodySchema>
 
@@ -318,7 +314,7 @@ export const putV1ChatPayoutAccountBodySchema = z.object({
   accountNumber: z
     .string()
     .trim()
-    .regex(/^[0-9-]{6,32}$/, '계좌번호 형식이 올바르지 않아요.'),
+    .regex(/^[0-9-]{6,32}$/),
   holderName: z.string().trim().min(1).max(32),
 })
 

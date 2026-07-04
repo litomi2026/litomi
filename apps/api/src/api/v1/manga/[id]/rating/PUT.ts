@@ -1,10 +1,14 @@
-import { mangaIdParamSchema, type PUTV1MangaIdRatingResponse, putV1MangaIdRatingRequestSchema } from '@litomi/contracts'
+import {
+  mangaIdParamSchema,
+  type PUTV1MangaIdRatingResponse,
+  problemCode,
+  putV1MangaIdRatingRequestSchema,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { userExpansionTable } from '@litomi/db/app/points'
 import { MAX_RATINGS_PER_USER } from '@litomi/domain/library/policy'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/points/model'
-import { problemCode } from '@litomi/http/problem-details'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'

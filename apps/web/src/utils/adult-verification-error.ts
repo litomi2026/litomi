@@ -1,4 +1,5 @@
-import { isProblemType, problemCode } from '@litomi/http/problem-details'
+import { problemCode } from '@litomi/contracts'
+import { isProblemType } from '@litomi/http/problem-details'
 
 import { HTTPResponseError, ProblemDetailsError } from '@/utils/fetch-response'
 

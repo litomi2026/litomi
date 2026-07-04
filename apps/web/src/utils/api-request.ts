@@ -1,5 +1,6 @@
+import { problemCode } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
-import { isProblemType, problemCode } from '@litomi/http/problem-details'
+import { isProblemType } from '@litomi/http/problem-details'
 import Cookies from 'js-cookie'
 
 import { fetchResponseData, ProblemDetailsError } from '@/utils/fetch-response'

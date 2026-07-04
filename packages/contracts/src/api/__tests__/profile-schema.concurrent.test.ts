@@ -15,9 +15,7 @@ describe('프로필 스키마', () => {
       expect(result.success).toBe(false)
 
       if (!result.success) {
-        expect(result.error.issues.some((issue) => issue.message === '프로필 이미지 주소가 URL 형식이 아니에요')).toBe(
-          true,
-        )
+        expect(result.error.issues.some((issue) => issue.code === 'invalid_format')).toBe(true)
       }
     })
 
@@ -34,7 +32,9 @@ describe('프로필 스키마', () => {
         expect(result.success).toBe(false)
 
         if (!result.success) {
-          expect(result.error.issues[0]?.message).toBe('프로필 이미지 URL은 http 또는 https만 사용할 수 있어요')
+          const issue = result.error.issues[0]
+          expect(issue?.code).toBe('custom')
+          expect(issue && 'params' in issue ? issue.params : undefined).toEqual({ code: 'invalid-protocol' })
         }
       }
     })

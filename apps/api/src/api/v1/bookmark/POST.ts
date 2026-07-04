@@ -1,6 +1,5 @@
-import { type POSTV1BookmarkResponse, postV1BookmarkBodySchema } from '@litomi/contracts'
+import { type POSTV1BookmarkResponse, postV1BookmarkBodySchema, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
-import { problemCode } from '@litomi/http/problem-details'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

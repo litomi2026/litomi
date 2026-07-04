@@ -1,7 +1,6 @@
-import type { GETV1PointTurnstileResponse } from '@litomi/contracts'
+import { type GETV1PointTurnstileResponse, problemCode } from '@litomi/contracts'
 
 import { CookieKey } from '@litomi/http/cookie'
-import { problemCode } from '@litomi/http/problem-details'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 

@@ -1,4 +1,4 @@
-import { problemCode } from '@litomi/http/problem-details'
+import { problemCode } from '@litomi/contracts'
 import type { Context } from 'hono'
 
 import { privateCacheControl } from '@/utils/cache-control'

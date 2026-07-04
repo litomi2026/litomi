@@ -1,7 +1,6 @@
-import { mangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
+import { mangaIdParamSchema, type PUTV1BookmarkIdResponse, problemCode } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
-import { problemCode } from '@litomi/http/problem-details'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
