@@ -1,4 +1,4 @@
-import { problemCode } from '@litomi/contracts'
+import { PROBLEM } from '@litomi/contracts'
 import type { Context } from 'hono'
 
 import { privateCacheControl } from '@/utils/cache-control'
@@ -11,9 +11,7 @@ type AdultGateContextSource = Pick<Context, 'req'> & {
 
 export function adultVerificationRequiredResponse(c: Context): Response {
   return problemResponse(c, {
-    status: 403,
-    code: problemCode.ADULT_VERIFICATION_REQUIRED,
-    title: '성인인증이 필요해요',
+    problem: PROBLEM.ADULT_VERIFICATION_REQUIRED,
     headers: { 'Cache-Control': privateCacheControl },
   })
 }

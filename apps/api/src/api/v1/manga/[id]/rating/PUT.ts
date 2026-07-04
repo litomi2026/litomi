@@ -1,7 +1,7 @@
 import {
   mangaIdParamSchema,
+  PROBLEM,
   type PUTV1MangaIdRatingResponse,
-  problemCode,
   putV1MangaIdRatingRequestSchema,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
@@ -111,11 +111,7 @@ route.put('/:id/rating', ...middlewares, async (c) => {
     return c.json(result satisfies PUTV1MangaIdRatingResponse)
   } catch (error) {
     if (error instanceof Error && error.message === ErrorCode.RATING_LIMIT_REACHED) {
-      return problemResponse(c, {
-        status: 403,
-        code: problemCode.LIBO_EXPANSION_REQUIRED,
-        title: '평가 저장 한도에 도달했어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.LIBO_EXPANSION_REQUIRED })
     }
 
     if (error instanceof Error && error.message === ErrorCode.RATING_INSERT_FAILED) {

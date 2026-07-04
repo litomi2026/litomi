@@ -1,4 +1,4 @@
-import { type POSTV1RouletteSpinResponse, postV1RouletteSpinRequestSchema, problemCode } from '@litomi/contracts'
+import { type POSTV1RouletteSpinResponse, PROBLEM, postV1RouletteSpinRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
 import { TRANSACTION_TYPE } from '@litomi/domain/points/model'
@@ -34,9 +34,7 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
       if (!points || points.balance < bet) {
         return {
           ok: false as const,
-          status: 400 as const,
-          code: problemCode.INSUFFICIENT_POINTS,
-          title: '리보가 부족해요',
+          problem: PROBLEM.INSUFFICIENT_POINTS,
         }
       }
 
@@ -96,11 +94,7 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
     })
 
     if (!result.ok) {
-      return problemResponse(c, {
-        status: result.status,
-        code: result.code,
-        title: result.title,
-      })
+      return problemResponse(c, result)
     }
 
     return c.json({

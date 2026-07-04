@@ -1,7 +1,7 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { PASSWORD_HASH_COST } from '@litomi/auth/password'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
-import { type PATCHV1MePasswordResponse, patchV1MePasswordBodySchema, problemCode } from '@litomi/contracts'
+import { type PATCHV1MePasswordResponse, PROBLEM, patchV1MePasswordBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
@@ -41,7 +41,7 @@ route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (
         invalidParams: [
           {
             name: 'newPassword',
-            code: problemCode.PASSWORD_SAME_AS_CURRENT,
+            code: PROBLEM.PASSWORD_SAME_AS_CURRENT.slug,
             reason: '현재 비밀번호와 새 비밀번호가 같아요',
           },
         ],
@@ -113,11 +113,7 @@ route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (
         return authRequiredProblemResponse(c)
 
       case 'verification-failed':
-        return problemResponse(c, {
-          status: 400,
-          code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
-          title: '현재 인증 정보를 확인해 주세요',
-        })
+        return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
     }
   } catch (error) {
     console.error(error)

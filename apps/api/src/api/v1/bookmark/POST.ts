@@ -1,4 +1,4 @@
-import { type POSTV1BookmarkResponse, postV1BookmarkBodySchema, problemCode } from '@litomi/contracts'
+import { type POSTV1BookmarkResponse, PROBLEM, postV1BookmarkBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { Hono } from 'hono'
 
@@ -30,11 +30,7 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1Bookm
     return c.json(result satisfies POSTV1BookmarkResponse)
   } catch (error) {
     if (error instanceof BookmarkLimitReachedError) {
-      return problemResponse(c, {
-        status: 403,
-        code: problemCode.LIBO_EXPANSION_REQUIRED,
-        title: '북마크 저장 한도에 도달했어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.LIBO_EXPANSION_REQUIRED })
     }
 
     console.error(error)

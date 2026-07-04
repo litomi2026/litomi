@@ -1,4 +1,4 @@
-import { idParamSchema, problemCode } from '@litomi/contracts'
+import { idParamSchema, PROBLEM } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
 import { eq } from 'drizzle-orm'
@@ -35,19 +35,11 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSc
       }
 
       if (library.userId === userId) {
-        return problemResponse(c, {
-          status: 400,
-          code: problemCode.OWN_LIBRARY_PIN,
-          title: '본인의 서재는 고정할 수 없어요',
-        })
+        return problemResponse(c, { problem: PROBLEM.OWN_LIBRARY_PIN })
       }
 
       if (!library.isPublic) {
-        return problemResponse(c, {
-          status: 403,
-          code: problemCode.PRIVATE_LIBRARY_PIN,
-          title: '비공개 서재는 고정할 수 없어요',
-        })
+        return problemResponse(c, { problem: PROBLEM.PRIVATE_LIBRARY_PIN })
       }
 
       // 2) 기등록 여부 조회 및 개수 제한 고려
@@ -65,8 +57,7 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSc
 
       if (pinnedList.length >= limit) {
         return problemResponse(c, {
-          status: 403,
-          code: problemCode.LIBO_EXPANSION_REQUIRED,
+          problem: PROBLEM.LIBO_EXPANSION_REQUIRED,
           detail: `현재 ${limit}개까지만 추가할 수 있어요`,
         })
       }

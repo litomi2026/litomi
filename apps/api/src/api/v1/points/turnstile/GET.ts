@@ -1,4 +1,4 @@
-import { type GETV1PointTurnstileResponse, problemCode } from '@litomi/contracts'
+import { type GETV1PointTurnstileResponse, PROBLEM } from '@litomi/contracts'
 
 import { CookieKey } from '@litomi/http/cookie'
 import { Hono } from 'hono'
@@ -20,22 +20,14 @@ route.get('/', requireAuth, async (c) => {
   const cookieValue = getCookie(c, CookieKey.POINTS_TURNSTILE)
 
   if (!cookieValue) {
-    return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      title: '보안 검증을 완료해 주세요',
-    })
+    return problemResponse(c, { problem: PROBLEM.TURNSTILE_REQUIRED })
   }
 
   const verified = await verifyPointsTurnstileToken(cookieValue)
 
   if (!verified || verified.userId !== userId) {
     deleteCookie(c, CookieKey.POINTS_TURNSTILE, { path: '/api/v1/points', secure: true })
-    return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      title: '보안 검증을 완료해 주세요',
-    })
+    return problemResponse(c, { problem: PROBLEM.TURNSTILE_REQUIRED })
   }
 
   const remainingMs = verified.expiresAt.getTime() - Date.now()

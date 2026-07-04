@@ -1,4 +1,4 @@
-import { type POSTV1CensorshipCreateResponse, postV1CensorshipCreateBodySchema, problemCode } from '@litomi/contracts'
+import { type POSTV1CensorshipCreateResponse, PROBLEM, postV1CensorshipCreateBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/censorship/policy'
@@ -32,8 +32,7 @@ route.post('/', zProblemValidator('json', postV1CensorshipCreateBodySchema), asy
 
       if (censorshipCount + censorships.length > MAX_CENSORSHIPS_PER_USER) {
         return problemResponse(c, {
-          status: 400,
-          code: problemCode.CENSORSHIP_LIMIT_REACHED,
+          problem: PROBLEM.CENSORSHIP_LIMIT_REACHED,
           detail: `검열 규칙은 최대 ${MAX_CENSORSHIPS_PER_USER}개까지만 추가할 수 있어요. (현재 ${censorshipCount}개)`,
           extensions: {
             limit: MAX_CENSORSHIPS_PER_USER,

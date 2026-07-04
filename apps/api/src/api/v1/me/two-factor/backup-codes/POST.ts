@@ -2,8 +2,8 @@ import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { generateBackupCodes } from '@litomi/auth/two-factor-backup-code'
 import {
   type POSTV1MeTwoFactorBackupCodesResponse,
+  PROBLEM,
   postV1MeTwoFactorBackupCodesBodySchema,
-  problemCode,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
@@ -61,18 +61,10 @@ route.post('/', zProblemValidator('json', postV1MeTwoFactorBackupCodesBodySchema
 
     switch (result.kind) {
       case 'invalid-token':
-        return problemResponse(c, {
-          status: 400,
-          code: problemCode.TWO_FACTOR_TOKEN_INVALID,
-          title: '잘못된 인증 코드예요',
-        })
+        return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_TOKEN_INVALID })
 
       case 'not-found':
-        return problemResponse(c, {
-          status: 404,
-          code: problemCode.TWO_FACTOR_NOT_ENABLED,
-          title: '활성화된 2단계 인증이 없어요',
-        })
+        return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_NOT_ENABLED })
 
       case 'regenerated':
         await Promise.allSettled([twoFactorBackupCodesLimiter.reward(String(userId))])

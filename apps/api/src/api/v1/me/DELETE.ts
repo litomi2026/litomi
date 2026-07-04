@@ -1,7 +1,7 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { revokeBillingKey } from '@litomi/billing'
-import { type DELETEV1MeResponse, deleteV1MeBodySchema, problemCode } from '@litomi/contracts'
+import { type DELETEV1MeResponse, deleteV1MeBodySchema, PROBLEM } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { chatArtistTable } from '@litomi/db/app/chat'
 import { paymentMethodTable } from '@litomi/db/app/subscription'
@@ -110,10 +110,7 @@ route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => 
         return authRequiredProblemResponse(c)
 
       case 'verification-failed':
-        return problemResponse(c, {
-          status: 400,
-          code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
-        })
+        return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
     }
   } catch (error) {
     console.error(error)

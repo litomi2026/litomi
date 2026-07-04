@@ -1,8 +1,8 @@
 import {
   type POSTV1NotificationCriteriaBody,
   type POSTV1NotificationCriteriaResponse,
+  PROBLEM,
   postV1NotificationCriteriaBodySchema,
-  problemCode,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'
@@ -112,17 +112,14 @@ route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema),
 
     if (result.kind === 'limit') {
       return problemResponse(c, {
-        status: 403,
-        code: problemCode.NOTIFICATION_CRITERIA_LIMIT_REACHED,
-        title: `최대 ${MAX_CRITERIA_PER_USER}개까지만 추가할 수 있어요`,
+        problem: PROBLEM.NOTIFICATION_CRITERIA_LIMIT_REACHED,
         extensions: { limit: MAX_CRITERIA_PER_USER },
       })
     }
 
     if (result.kind === 'conflict') {
       return problemResponse(c, {
-        status: 409,
-        code: problemCode.NOTIFICATION_CRITERIA_CONFLICT,
+        problem: PROBLEM.NOTIFICATION_CRITERIA_CONFLICT,
         detail: `이미 동일한 키워드 알림이 존재해요: ${result.criteriaName}`,
         extensions: {
           existingCriteriaId: result.criteriaId,

@@ -1,4 +1,4 @@
-import { type POSTV1LibraryItemAddResponse, postV1LibraryItemAddBodySchema, problemCode } from '@litomi/contracts'
+import { type POSTV1LibraryItemAddResponse, PROBLEM, postV1LibraryItemAddBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
@@ -75,11 +75,7 @@ route.post('/', zProblemValidator('json', postV1LibraryItemAddBodySchema), async
       }
 
       if (error.message === LibraryItemError.NO_VALID_LIBRARIES) {
-        return problemResponse(c, {
-          status: 403,
-          code: problemCode.LIBRARY_ITEM_CONFLICT,
-          title: '이미 모든 서재에 있거나 서재가 가득 찼어요',
-        })
+        return problemResponse(c, { problem: PROBLEM.LIBRARY_ITEM_CONFLICT })
       }
     }
 

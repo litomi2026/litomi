@@ -1,8 +1,4 @@
-import {
-  postV1TurnstileClearanceRequestSchema,
-  problemCode,
-  TURNSTILE_ORIGIN_PROTECTION_ACTION,
-} from '@litomi/contracts'
+import { PROBLEM, postV1TurnstileClearanceRequestSchema, TURNSTILE_ORIGIN_PROTECTION_ACTION } from '@litomi/contracts'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { Hono } from 'hono'
@@ -31,11 +27,7 @@ route.post('/', zProblemValidator('json', postV1TurnstileClearanceRequestSchema)
   })
 
   if (!turnstile.success) {
-    return problemResponse(c, {
-      status: 400,
-      code: problemCode.HUMAN_VERIFICATION_FAILED,
-      title: '보안 확인에 실패했어요',
-    })
+    return problemResponse(c, { problem: PROBLEM.HUMAN_VERIFICATION_FAILED })
   }
 
   return c.body(null, 204)

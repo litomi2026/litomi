@@ -100,7 +100,10 @@ export function createProblemDetailsResponse(
   const headers = new Headers(headersInit)
   headers.set('Content-Type', PROBLEM_CONTENT_TYPE)
 
-  return new Response(JSON.stringify(problem), { status: options.status, headers })
+  return new Response(JSON.stringify(problem), {
+    status: options.status,
+    headers,
+  })
 }
 
 export function getInvalidParams(problem: ProblemDetails | null | undefined): InvalidParam[] {

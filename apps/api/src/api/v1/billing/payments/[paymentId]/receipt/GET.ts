@@ -1,5 +1,5 @@
 import { getRemotePayment, isBillingConfigured } from '@litomi/billing'
-import { problemCode } from '@litomi/contracts'
+import { PROBLEM } from '@litomi/contracts'
 import { getPaymentByPaymentId } from '@litomi/db/app/query/payment'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -42,11 +42,7 @@ route.get('/', ...middlewares, async (c) => {
   }
 
   if (!remote.receiptUrl) {
-    return problemResponse(c, {
-      status: 404,
-      code: problemCode.RECEIPT_NOT_READY,
-      title: '영수증이 아직 준비되지 않았어요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.RECEIPT_NOT_READY })
   }
 
   return c.redirect(remote.receiptUrl, 302)

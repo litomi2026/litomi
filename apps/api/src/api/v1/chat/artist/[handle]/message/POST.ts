@@ -1,8 +1,8 @@
 import {
   chatHandleParamSchema,
   type POSTV1ChatMessageResponse,
+  PROBLEM,
   postV1ChatMessageBodySchema,
-  problemCode,
 } from '@litomi/contracts'
 import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { buildChatMessage, toBroadcastStreamId } from '@litomi/db/chat/query'
@@ -60,11 +60,7 @@ route.post('/', ...middlewares, async (c) => {
     })
   } catch (error) {
     console.error('chat message publish failed', error)
-    return problemResponse(c, {
-      status: 503,
-      code: problemCode.MESSAGE_SEND_FAILED,
-      title: '메시지 전송에 실패했어요. 잠시 후 다시 시도해 주세요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.MESSAGE_SEND_FAILED })
   }
 
   const response = {

@@ -1,6 +1,6 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { verifyBackupCode } from '@litomi/auth/two-factor-backup-code'
-import { deleteV1MeTwoFactorBodySchema, problemCode } from '@litomi/contracts'
+import { deleteV1MeTwoFactorBodySchema, PROBLEM } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { and, eq, isNull } from 'drizzle-orm'
@@ -70,18 +70,10 @@ route.delete('/', zProblemValidator('json', deleteV1MeTwoFactorBodySchema), asyn
         return c.body(null, 204)
 
       case 'invalid-token':
-        return problemResponse(c, {
-          status: 400,
-          code: problemCode.TWO_FACTOR_TOKEN_INVALID,
-          title: '잘못된 인증 코드예요',
-        })
+        return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_TOKEN_INVALID })
 
       case 'not-found':
-        return problemResponse(c, {
-          status: 404,
-          code: problemCode.TWO_FACTOR_NOT_ENABLED,
-          title: '활성화된 2단계 인증이 없어요',
-        })
+        return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_NOT_ENABLED })
     }
   } catch (error) {
     console.error(error)

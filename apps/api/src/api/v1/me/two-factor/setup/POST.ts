@@ -1,5 +1,5 @@
 import { encryptTOTPSecret, generateQRCode, TOTP_CONFIG } from '@litomi/auth/two-factor'
-import { type POSTV1MeTwoFactorSetupResponse, problemCode } from '@litomi/contracts'
+import { type POSTV1MeTwoFactorSetupResponse, PROBLEM } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
@@ -58,11 +58,7 @@ route.post('/', async (c) => {
       .returning({ expiresAt: twoFactorTable.expiresAt })
 
     if (!setup) {
-      return problemResponse(c, {
-        status: 409,
-        code: problemCode.TWO_FACTOR_ALREADY_ENABLED,
-        title: '이미 2단계 인증이 활성화됐어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_ALREADY_ENABLED })
     }
 
     const keyURI = generateURI({

@@ -1,8 +1,8 @@
 import {
   chatHandleParamSchema,
   type PATCHV1ChatArtistResponse,
+  PROBLEM,
   patchV1ChatArtistBodySchema,
-  problemCode,
 } from '@litomi/contracts'
 import { updateChatArtist } from '@litomi/db/app/query/chat'
 import { isPostgresError } from '@litomi/db/error'
@@ -48,14 +48,12 @@ route.patch('/', ...middlewares, async (c) => {
   } catch (error) {
     if (isPostgresError(error) && error.cause.code === '23505') {
       return problemResponse(c, {
-        status: 409,
-        code: problemCode.HANDLE_CONFLICT,
-        title: '이미 사용 중인 핸들이에요.',
+        problem: PROBLEM.HANDLE_CONFLICT,
         extensions: {
           invalidParams: [
             {
               name: 'handle',
-              code: problemCode.HANDLE_CONFLICT,
+              code: PROBLEM.HANDLE_CONFLICT.slug,
               reason: '이미 사용 중인 핸들이에요.',
             },
           ],

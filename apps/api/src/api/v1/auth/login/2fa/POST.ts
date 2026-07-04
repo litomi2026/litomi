@@ -2,7 +2,7 @@ import { verifyPKCEChallenge } from '@litomi/auth/pkce-server'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { verifyBackupCode } from '@litomi/auth/two-factor-backup-code'
-import { type POSTV1AuthLogin2FAResponse, postV1AuthLogin2FARequestSchema, problemCode } from '@litomi/contracts'
+import { type POSTV1AuthLogin2FAResponse, PROBLEM, postV1AuthLogin2FARequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import { Hono } from 'hono'
@@ -45,11 +45,7 @@ route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), asyn
   const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 
   if (!challengeData.valid) {
-    return problemResponse(c, {
-      status: 401,
-      code: problemCode.LOGIN_CHALLENGE_EXPIRED,
-      title: '인증이 만료됐어요. 새로고침 후 시도해 주세요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.LOGIN_CHALLENGE_EXPIRED })
   }
 
   const { userId } = challengeData
@@ -72,9 +68,7 @@ route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), asyn
       if (!twoFactor) {
         return {
           ok: false,
-          status: 401,
-          code: problemCode.LOGIN_CHALLENGE_EXPIRED,
-          title: '인증이 만료됐어요. 새로고침 후 시도해 주세요.',
+          problem: PROBLEM.LOGIN_CHALLENGE_EXPIRED,
         } as const
       }
 
@@ -189,7 +183,5 @@ export default route
 
 const INVALID_TOKEN_RESPONSE = {
   ok: false,
-  status: 400,
-  code: problemCode.TWO_FACTOR_TOKEN_INVALID,
-  title: '인증 코드를 확인해 주세요',
+  problem: PROBLEM.TWO_FACTOR_TOKEN_INVALID,
 } as const

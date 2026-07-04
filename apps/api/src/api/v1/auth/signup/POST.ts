@@ -1,5 +1,5 @@
 import { PASSWORD_HASH_COST } from '@litomi/auth/password'
-import { type POSTV1AuthSignupResponse, postV1AuthSignupRequestSchema, problemCode } from '@litomi/contracts'
+import { type POSTV1AuthSignupResponse, PROBLEM, postV1AuthSignupRequestSchema } from '@litomi/contracts'
 import { generateRandomNickname, generateRandomProfileImage } from '@litomi/domain/utils/nickname'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
@@ -33,11 +33,7 @@ route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async 
   })
 
   if (!turnstile.success) {
-    return problemResponse(c, {
-      status: 400,
-      code: problemCode.HUMAN_VERIFICATION_FAILED,
-      title: '보안 확인에 실패했어요',
-    })
+    return problemResponse(c, { problem: PROBLEM.HUMAN_VERIFICATION_FAILED })
   }
 
   const { allowed, retryAfter } = await signupLimiter.check(remoteIP)
@@ -58,14 +54,12 @@ route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async 
 
     if (!result) {
       return problemResponse(c, {
-        status: 409,
-        code: problemCode.LOGIN_ID_CONFLICT,
-        title: '이미 사용 중인 아이디예요',
+        problem: PROBLEM.LOGIN_ID_CONFLICT,
         extensions: {
           invalidParams: [
             {
               name: 'loginId',
-              code: problemCode.LOGIN_ID_CONFLICT,
+              code: PROBLEM.LOGIN_ID_CONFLICT.slug,
               reason: '이미 사용 중인 아이디예요',
             },
           ],

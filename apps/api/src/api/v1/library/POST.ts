@@ -1,4 +1,4 @@
-import { type POSTV1LibraryResponse, postV1LibraryBodySchema, problemCode } from '@litomi/contracts'
+import { type POSTV1LibraryResponse, PROBLEM, postV1LibraryBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable } from '@litomi/db/app/library'
 import { userExpansionTable } from '@litomi/db/app/points'
@@ -85,11 +85,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema),
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
     if (message === ErrorCode.LIBRARY_LIMIT_REACHED) {
-      return problemResponse(c, {
-        status: 403,
-        code: problemCode.LIBO_EXPANSION_REQUIRED,
-        title: '서재 개수 제한에 도달했어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.LIBO_EXPANSION_REQUIRED })
     }
 
     console.error(error)

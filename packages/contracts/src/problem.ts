@@ -98,7 +98,7 @@ export const PROBLEM = {
   },
   TURNSTILE_REQUIRED: {
     slug: 'turnstile-required',
-    status: 400,
+    status: 403,
     title: '보안 검증을 완료해 주세요',
   },
 

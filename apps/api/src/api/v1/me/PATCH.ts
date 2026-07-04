@@ -1,5 +1,5 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
-import { type PATCHV1MeResponse, patchV1MeBodySchema, problemCode } from '@litomi/contracts'
+import { type PATCHV1MeResponse, PROBLEM, patchV1MeBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userTable } from '@litomi/db/app/user'
 import { isPostgresError } from '@litomi/db/error'
@@ -47,14 +47,12 @@ route.patch('/', zProblemValidator('json', patchV1MeBodySchema), async (c) => {
     if (isPostgresError(error)) {
       if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_unique') {
         return problemResponse(c, {
-          status: 409,
-          code: problemCode.NAME_CONFLICT,
-          title: '이미 사용 중인 이름이에요',
+          problem: PROBLEM.NAME_CONFLICT,
           extensions: {
             invalidParams: [
               {
                 name: 'name',
-                code: problemCode.NAME_CONFLICT,
+                code: PROBLEM.NAME_CONFLICT.slug,
                 reason: '이미 사용 중인 이름이에요',
               },
             ],

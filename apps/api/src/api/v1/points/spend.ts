@@ -1,4 +1,4 @@
-import { type POSTV1PointSpendResponse, postV1PointSpendRequestSchema, problemCode } from '@litomi/contracts'
+import { type POSTV1PointSpendResponse, PROBLEM, postV1PointSpendRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pointTransactionTable, userExpansionTable, userItemTable, userPointsTable } from '@litomi/db/app/points'
 import { ITEM_TYPE, TRANSACTION_TYPE } from '@litomi/domain/points/model'
@@ -8,7 +8,7 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { problemResponse } from '@/utils/problem'
+import { type ProblemResponseOptions, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 import { getExpansionConfig, getSpendMeta, isBookmarkItemId } from './util'
@@ -18,9 +18,7 @@ const route = new Hono<Env>()
 route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSchema), async (c) => {
   const userId = c.get('userId')!
 
-  type TransactionResult =
-    | { ok: false; status: number; code?: string; title?: string }
-    | { ok: true; balance: number; spent: number }
+  type TransactionResult = ({ ok: false } & ProblemResponseOptions) | { ok: true; balance: number; spent: number }
 
   try {
     const { type, itemId } = c.req.valid('json')
@@ -99,9 +97,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSc
       if (!points || points.balance < spendMeta.price) {
         return {
           ok: false,
-          status: 400,
-          code: problemCode.INSUFFICIENT_POINTS,
-          title: '리보가 부족해요',
+          problem: PROBLEM.INSUFFICIENT_POINTS,
         }
       }
 
@@ -120,9 +116,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSc
         if (currentTotal + expansionAmount > maxExpansion) {
           return {
             ok: false,
-            status: 400,
-            code: problemCode.EXPANSION_MAXED,
-            title: '최대 확장에 도달했어요',
+            problem: PROBLEM.EXPANSION_MAXED,
           }
         }
 
@@ -145,9 +139,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSc
         if (existingItem) {
           return {
             ok: false,
-            status: 400,
-            code: problemCode.ITEM_ALREADY_OWNED,
-            title: '이미 보유한 아이템이에요',
+            problem: PROBLEM.ITEM_ALREADY_OWNED,
           }
         }
 
@@ -181,11 +173,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSc
     })
 
     if (!result.ok) {
-      return problemResponse(c, {
-        status: result.status,
-        code: result.code,
-        title: result.title,
-      })
+      return problemResponse(c, result)
     }
 
     return c.json({

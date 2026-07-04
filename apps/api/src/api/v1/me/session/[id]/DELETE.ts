@@ -1,4 +1,4 @@
-import { type DELETEV1MeSessionResponse, deleteV1MeSessionParamSchema, problemCode } from '@litomi/contracts'
+import { type DELETEV1MeSessionResponse, deleteV1MeSessionParamSchema, PROBLEM } from '@litomi/contracts'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
@@ -20,11 +20,7 @@ route.delete('/', zProblemValidator('param', deleteV1MeSessionParamSchema), asyn
     const currentFamilyId = await getCurrentSessionFamilyId(c, userId)
 
     if (currentFamilyId === id) {
-      return problemResponse(c, {
-        status: 400,
-        code: problemCode.CURRENT_SESSION_NOT_REMOVABLE,
-        title: '지금 사용 중인 기기는 여기서 로그아웃할 수 없어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.CURRENT_SESSION_NOT_REMOVABLE })
     }
 
     const family = await revokeSessionFamilyByIdForUser(userId, id, now)

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { problemCode } from '@litomi/contracts'
+import { PROBLEM } from '@litomi/contracts'
 import { PROBLEM_CONTENT_TYPE } from '@litomi/http/problem-details'
 import { Hono } from 'hono'
 
@@ -26,7 +26,7 @@ describe('requireAdult', () => {
     expect(response.headers.get('Content-Type')).toBe(PROBLEM_CONTENT_TYPE)
 
     expect(body).toMatchObject({
-      type: `https://localhost/problems/${problemCode.ADULT_VERIFICATION_REQUIRED}`,
+      type: `https://localhost/problems/${PROBLEM.ADULT_VERIFICATION_REQUIRED.slug}`,
       title: '성인인증이 필요해요',
       status: 403,
     })

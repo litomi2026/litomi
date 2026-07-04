@@ -1,4 +1,4 @@
-import { type POSTV1LibraryItemCopyResponse, postV1LibraryItemCopyBodySchema, problemCode } from '@litomi/contracts'
+import { type POSTV1LibraryItemCopyResponse, PROBLEM, postV1LibraryItemCopyBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
@@ -73,19 +73,11 @@ route.post('/', zProblemValidator('json', postV1LibraryItemCopyBodySchema), asyn
       }
 
       if (error.message === LibraryItemError.LIBRARY_FULL) {
-        return problemResponse(c, {
-          status: 403,
-          code: problemCode.LIBRARY_FULL,
-          title: '서재가 가득 찼어요',
-        })
+        return problemResponse(c, { problem: PROBLEM.LIBRARY_FULL })
       }
 
       if (error.message === LibraryItemError.NO_NEW_MANGA) {
-        return problemResponse(c, {
-          status: 403,
-          code: problemCode.LIBRARY_ITEM_CONFLICT,
-          title: '이미 서재에 있는 작품이에요',
-        })
+        return problemResponse(c, { problem: PROBLEM.LIBRARY_ITEM_CONFLICT })
       }
     }
 

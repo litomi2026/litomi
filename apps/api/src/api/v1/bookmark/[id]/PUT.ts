@@ -1,4 +1,4 @@
-import { mangaIdParamSchema, type PUTV1BookmarkIdResponse, problemCode } from '@litomi/contracts'
+import { mangaIdParamSchema, PROBLEM, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { and, count, eq } from 'drizzle-orm'
@@ -78,11 +78,7 @@ route.put('/', requireAuth, requireAdult, zProblemValidator('param', mangaIdPara
     return c.json(response, result.status)
   } catch (error) {
     if (error instanceof Error && error.message === ErrorCode.BOOKMARK_LIMIT_REACHED) {
-      return problemResponse(c, {
-        status: 403,
-        code: problemCode.LIBO_EXPANSION_REQUIRED,
-        title: '북마크 저장 한도에 도달했어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.LIBO_EXPANSION_REQUIRED })
     }
 
     if (error instanceof Error && error.message === ErrorCode.BOOKMARK_INSERT_FAILED) {

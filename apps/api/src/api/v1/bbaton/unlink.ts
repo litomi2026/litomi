@@ -1,5 +1,5 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
-import { type POSTV1BBatonUnlinkResponse, postV1BBatonUnlinkBodySchema, problemCode } from '@litomi/contracts'
+import { type POSTV1BBatonUnlinkResponse, PROBLEM, postV1BBatonUnlinkBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
@@ -28,22 +28,14 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
       .where(eq(userTable.id, userId))
 
     if (!user) {
-      return problemResponse(c, {
-        status: 400,
-        code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
-        title: '인증 정보가 일치하지 않아요',
-      })
+      return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
     }
 
     const { password, token } = c.req.valid('json')
     const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
 
     if (!isValidPassword) {
-      return problemResponse(c, {
-        status: 400,
-        code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
-        title: '인증 정보가 일치하지 않아요',
-      })
+      return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
     }
 
     const [twoFactor] = await db
@@ -53,27 +45,18 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
 
     if (twoFactor) {
       if (!token) {
-        return problemResponse(c, {
-          status: 400,
-          code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
-          title: '인증 정보가 일치하지 않아요',
-        })
+        return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
       }
 
       const secret = decryptTOTPSecret(twoFactor.secret)
       const isValidToken = await verifyTOTPToken(token, secret)
 
       if (!isValidToken) {
-        return problemResponse(c, {
-          status: 400,
-          code: problemCode.CREDENTIAL_VERIFICATION_FAILED,
-          title: '인증 정보가 일치하지 않아요',
-        })
+        return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
       }
     }
 
     await db.delete(bbatonVerificationTable).where(eq(bbatonVerificationTable.userId, userId))
-
     await reissueAuthCookies(c, { userId, adult: false })
 
     return c.json({ ok: true } satisfies POSTV1BBatonUnlinkResponse)

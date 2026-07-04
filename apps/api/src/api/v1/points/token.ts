@@ -1,4 +1,4 @@
-import { type POSTV1PointTokenResponse, postV1PointTokenRequestSchema, problemCode } from '@litomi/contracts'
+import { type POSTV1PointTokenResponse, PROBLEM, postV1PointTokenRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { adImpressionTokenTable, pointTransactionTable } from '@litomi/db/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
@@ -23,22 +23,14 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
   const turnstileCookie = getCookie(c, CookieKey.POINTS_TURNSTILE)
 
   if (!turnstileCookie) {
-    return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      title: '보안 검증을 완료해 주세요',
-    })
+    return problemResponse(c, { problem: PROBLEM.TURNSTILE_REQUIRED })
   }
 
   const verified = await verifyPointsTurnstileToken(turnstileCookie)
 
   if (!verified || verified.userId !== userId) {
     deleteCookie(c, CookieKey.POINTS_TURNSTILE, { path: '/api/v1/points', secure: true })
-    return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      title: '보안 검증을 완료해 주세요',
-    })
+    return problemResponse(c, { problem: PROBLEM.TURNSTILE_REQUIRED })
   }
 
   try {
@@ -70,9 +62,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
       const remainingSeconds = Math.max(1, Math.ceil(remainingMs / 1000))
 
       return problemResponse(c, {
-        status: 429,
-        code: problemCode.DAILY_EARN_LIMIT_REACHED,
-        title: '오늘의 적립 한도에 도달했어요',
+        problem: PROBLEM.DAILY_EARN_LIMIT_REACHED,
         headers: { 'Retry-After': String(remainingSeconds) },
       })
     }
@@ -124,9 +114,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
       const remainingSeconds = Math.max(1, Math.ceil(remainingMs / 1000))
 
       return problemResponse(c, {
-        status: 429,
-        code: problemCode.AD_COOLDOWN,
-        title: '같은 광고는 잠시 후 다시 적립할 수 있어요',
+        problem: PROBLEM.AD_COOLDOWN,
         headers: { 'Retry-After': String(remainingSeconds) },
       })
     }

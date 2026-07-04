@@ -1,4 +1,4 @@
-import { type POSTV1PointEarnResponse, postV1PointEarnRequestSchema, problemCode } from '@litomi/contracts'
+import { type POSTV1PointEarnResponse, PROBLEM, postV1PointEarnRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
@@ -10,13 +10,13 @@ import { deleteCookie, getCookie } from 'hono/cookie'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { problemResponse } from '@/utils/problem'
+import { type ProblemResponseOptions, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 import { verifyPointsTurnstileToken } from './util-turnstile-cookie'
 
 type TransactionResult =
-  | { ok: false; status: number; code?: string; title?: string; detail?: string; headers?: Record<string, string> }
+  | ({ ok: false } & ProblemResponseOptions)
   | { ok: true; balance: number; earned: number; dailyRemaining: number }
 
 const route = new Hono<Env>()
@@ -28,9 +28,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
 
   if (!turnstileCookie) {
     return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      title: '보안 검증을 완료해 주세요',
+      problem: PROBLEM.TURNSTILE_REQUIRED,
     })
   }
 
@@ -39,9 +37,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
   if (!verified || verified.userId !== userId) {
     deleteCookie(c, CookieKey.POINTS_TURNSTILE, { path: '/api/v1/points', secure: true })
     return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      title: '보안 검증을 완료해 주세요',
+      problem: PROBLEM.TURNSTILE_REQUIRED,
     })
   }
 
@@ -92,9 +88,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
       if (todayEarnCount >= POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT) {
         return {
           ok: false,
-          status: 429,
-          code: problemCode.DAILY_EARN_LIMIT_REACHED,
-          title: '오늘의 적립 한도에 도달했어요',
+          problem: PROBLEM.DAILY_EARN_LIMIT_REACHED,
         }
       }
 
@@ -108,9 +102,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
 
           return {
             ok: false,
-            status: 429,
-            code: problemCode.AD_COOLDOWN,
-            title: '같은 광고는 잠시 후 다시 적립할 수 있어요',
+            problem: PROBLEM.AD_COOLDOWN,
             headers: { 'Retry-After': String(remainingSeconds) },
           }
         }
@@ -170,13 +162,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSch
     })
 
     if (!result.ok) {
-      return problemResponse(c, {
-        status: result.status,
-        code: result.code,
-        title: result.title,
-        detail: result.detail,
-        headers: result.headers,
-      })
+      return problemResponse(c, result)
     }
 
     return c.json({
