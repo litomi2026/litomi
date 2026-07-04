@@ -5,7 +5,10 @@ import { and, eq, inArray, sql } from 'drizzle-orm'
 import type { PushSubscription } from 'web-push'
 import webpush from 'web-push'
 
-const { APP_ORIGIN, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } = commonEnv
+import { env } from './env'
+
+const { APP_ORIGIN } = commonEnv
+const { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } = env
 
 const WEB_PUSH_CONCURRENCY = 25
 const vapidSubject = new URL(APP_ORIGIN)

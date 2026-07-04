@@ -1,5 +1,6 @@
-import { env } from '@litomi/env/server.hono'
 import { z } from 'zod'
+
+import { env } from '@/env'
 
 const { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET } = env
 

@@ -3,13 +3,13 @@ import {
   type GETV1AdsterraStatsResponse,
   getV1AdsterraStatsQuerySchema,
 } from '@litomi/contracts'
-import { env } from '@litomi/env/server.hono'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
+import { env } from '@/env'
 import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'

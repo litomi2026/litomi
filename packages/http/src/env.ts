@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export const env = createEnv({
   server: {
-    VAPID_PRIVATE_KEY: z.string().default('pL4WSwlV1gHQUYZOOq7N1oEq0Gbj-_dWnRwph1-Ju0k'),
+    TURNSTILE_SECRET_KEY: z.string().default('1x0000000000000000000000000000000AA'),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

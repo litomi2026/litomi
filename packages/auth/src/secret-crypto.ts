@@ -1,5 +1,6 @@
 import crypto from 'node:crypto'
-import { env } from '@litomi/env/server.common'
+
+import { env } from './env.totp'
 
 // 범용 secret 저장 암호화(AES-256-CBC, `iv:ciphertext` hex) — 정산 계좌번호처럼 조회 시
 // 원문이 필요한 민감 문자열용. 키는 TOTP_ENCRYPTION_KEY를 공유한다(전용 키/KMS 분리는

@@ -1,7 +1,8 @@
 import crypto from 'node:crypto'
-import { env } from '@litomi/env/server.common'
 import { sec } from '@litomi/std'
 import { userAgent as parseUserAgent } from 'next/server'
+
+import { env } from './env'
 
 const { JWT_SECRET_REFRESH_TOKEN } = env
 

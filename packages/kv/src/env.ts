@@ -3,7 +3,8 @@ import { z } from 'zod'
 
 export const env = createEnv({
   server: {
-    APP_ORIGIN: z.url().default('http://localhost:3000'),
+    PUBSUB_REDIS_URL: z.url().default('redis://localhost:6381'),
+    REDIS_URL: z.url().default('redis://localhost:6380'),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

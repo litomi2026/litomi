@@ -1,6 +1,6 @@
+import { env } from '@litomi/billing/env'
 import type { GETV1PaymentMethodsResponse } from '@litomi/contracts'
 import { listActivePaymentMethods } from '@litomi/db/app/query/payment-method'
-import { env } from '@litomi/env/server.common'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

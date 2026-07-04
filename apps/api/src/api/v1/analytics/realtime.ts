@@ -6,13 +6,13 @@ import {
   REALTIME_PAGE_RANKING_LIMIT,
   REALTIME_PAGE_VIEW_MIN_THRESHOLD,
 } from '@litomi/domain/ranking/policy'
-import { env } from '@litomi/env/server.hono'
 import { createCacheControlHeaders } from '@litomi/http/cache-control'
 import { GaxiosError } from 'gaxios'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
+import { env } from '@/env'
 import { problemResponse } from '@/utils/problem'
 
 const { GA_PROPERTY_ID } = env

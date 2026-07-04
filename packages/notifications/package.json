@@ -12,8 +12,10 @@
   "dependencies": {
     "@litomi/db": "workspace:*",
     "@litomi/env": "workspace:*",
+    "@t3-oss/env-core": "^0.13.11",
     "drizzle-orm": "^0.45.2",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/web-push": "^3.6.4"

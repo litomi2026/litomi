@@ -3,8 +3,9 @@
 import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { env } from '@litomi/env/cli'
 import postgres from 'postgres'
+
+import { env } from '../../src/env.cli'
 
 type PgCronExtension = {
   defaultVersion: string | null

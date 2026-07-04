@@ -1,6 +1,6 @@
+import { env } from '@litomi/billing/env'
 import { BILLING_CURRENCY, BILLING_TEST_AMOUNT, type POSTV1BillingTestPaymentResponse } from '@litomi/contracts'
 import { createPendingPayment } from '@litomi/db/app/query/payment'
-import { env } from '@litomi/env/server.common'
 import { Hono } from 'hono'
 
 import type { Env } from '@/app'

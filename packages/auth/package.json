@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./cookie": "./src/cookie.ts",
+    "./env": "./src/env.ts",
     "./jwt": "./src/jwt.ts",
     "./passkey": "./src/passkey.ts",
     "./passkey/server": "./src/passkey/server.ts",
@@ -30,12 +31,14 @@
     "@litomi/http": "workspace:*",
     "@litomi/kv": "workspace:*",
     "@litomi/std": "workspace:*",
+    "@t3-oss/env-core": "^0.13.11",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "jose": "^6.2.3",
     "next": "16.2.9",
     "otplib": "^13.4.1",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@simplewebauthn/server": "^13.3.2",

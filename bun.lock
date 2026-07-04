@@ -54,6 +54,7 @@
         "@opentelemetry/exporter-trace-otlp-http": "^0.219.0",
         "@opentelemetry/sdk-node": "^0.219.0",
         "@simplewebauthn/server": "^13.3.2",
+        "@t3-oss/env-core": "^0.13.11",
         "bcryptjs": "^3.0.3",
         "drizzle-orm": "^0.45.2",
         "gaxios": "^7.1.5",
@@ -207,8 +208,9 @@
         "@litomi/catalog": "workspace:*",
         "@litomi/db": "workspace:*",
         "@litomi/domain": "workspace:*",
-        "@litomi/env": "workspace:*",
+        "@t3-oss/env-core": "^0.13.11",
         "drizzle-orm": "^0.45.2",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
         "@types/bun": "^1.3.12",
@@ -246,6 +248,7 @@
         "@simplewebauthn/browser": "^13.3.0",
         "@simplewebauthn/server": "^13.3.2",
         "@suspensive/react": "^3.21.2",
+        "@t3-oss/env-core": "^0.13.11",
         "@tanstack/react-query": "^5.101.1",
         "@tanstack/react-query-devtools": "^5.101.1",
         "@vercel/otel": "^2.1.3",
@@ -303,12 +306,14 @@
         "@litomi/http": "workspace:*",
         "@litomi/kv": "workspace:*",
         "@litomi/std": "workspace:*",
+        "@t3-oss/env-core": "^0.13.11",
         "bcryptjs": "^3.0.3",
         "drizzle-orm": "^0.45.2",
         "jose": "^6.2.3",
         "next": "16.2.9",
         "otplib": "^13.4.1",
         "qrcode": "^1.5.4",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
         "@simplewebauthn/server": "^13.3.2",
@@ -319,8 +324,9 @@
       "name": "@litomi/billing",
       "version": "1.0.0",
       "dependencies": {
-        "@litomi/env": "workspace:*",
         "@portone/server-sdk": "^0.19.0",
+        "@t3-oss/env-core": "^0.13.11",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
         "typescript": "^6.0.3",
@@ -365,8 +371,8 @@
       "version": "1.1.0",
       "dependencies": {
         "@litomi/domain": "workspace:*",
-        "@litomi/env": "workspace:*",
         "@litomi/std": "workspace:*",
+        "@t3-oss/env-core": "^0.13.11",
         "drizzle-orm": "^0.45.2",
         "postgres": "^3.4.9",
         "ulid": "^3.0.1",
@@ -388,7 +394,6 @@
       "name": "@litomi/env",
       "version": "1.1.0",
       "dependencies": {
-        "@litomi/std": "workspace:*",
         "@t3-oss/env-core": "^0.13.11",
         "zod": "^4.3.6",
       },
@@ -397,7 +402,7 @@
       "name": "@litomi/events",
       "version": "1.0.0",
       "dependencies": {
-        "@litomi/env": "workspace:*",
+        "@t3-oss/env-core": "^0.13.11",
         "kafkajs": "^2.2.4",
         "zod": "^4.3.6",
       },
@@ -411,7 +416,9 @@
       "dependencies": {
         "@litomi/env": "workspace:*",
         "@litomi/std": "workspace:*",
+        "@t3-oss/env-core": "^0.13.11",
         "ms": "^2.1.3",
+        "zod": "^4.3.6",
       },
     },
     "packages/image-reader": {
@@ -441,8 +448,9 @@
       "name": "@litomi/kv",
       "version": "1.1.0",
       "dependencies": {
-        "@litomi/env": "workspace:*",
+        "@t3-oss/env-core": "^0.13.11",
         "ioredis": "^5.11.1",
+        "zod": "^4.3.6",
       },
     },
     "packages/notifications": {
@@ -451,8 +459,10 @@
       "dependencies": {
         "@litomi/db": "workspace:*",
         "@litomi/env": "workspace:*",
+        "@t3-oss/env-core": "^0.13.11",
         "drizzle-orm": "^0.45.2",
         "web-push": "^3.6.7",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
         "@types/web-push": "^3.6.4",

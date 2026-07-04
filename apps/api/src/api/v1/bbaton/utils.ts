@@ -1,6 +1,7 @@
 import { env as commonEnv } from '@litomi/env/server.common'
-import { env } from '@litomi/env/server.hono'
 import { sec } from '@litomi/std'
+
+import { env } from '@/env'
 
 const { APP_ORIGIN } = commonEnv
 const { BBATON_CLIENT_ID } = env
