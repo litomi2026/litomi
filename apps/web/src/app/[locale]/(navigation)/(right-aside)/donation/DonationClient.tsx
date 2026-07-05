@@ -6,29 +6,26 @@ import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { formatDistanceToNow, formatLocalDate, formatNumber } from '@litomi/std'
 import { HeartHandshake, Trash2 } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 import StatusState from '@/components/status/StatusState'
 import { Link } from '@/i18n/navigation'
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import { getErrorMessage } from '@/lib/error-message'
 
 import useDeleteDonationMutation from './useDeleteDonationMutation'
 import useMyDonationsInfiniteQuery from './useMyDonationsInfiniteQuery'
 
 export default function DonationClient() {
   const locale = useLocale()
+  const tErrors = useTranslations('Errors')
+  const tDonation = useTranslations('Donation')
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useMyDonationsInfiniteQuery(true)
   const deleteMutation = useDeleteDonationMutation()
   const items = data?.pages.flatMap((p) => p.items) ?? []
 
-  const errorMessage =
-    error instanceof ProblemDetailsError
-      ? (error.problem.detail ?? error.problem.title)
-      : error instanceof Error
-        ? error.message
-        : null
+  const errorMessage = getErrorMessage(tErrors, error)
 
   return (
     <div className="max-w-3xl w-full mx-auto grid gap-4 p-6">
@@ -78,7 +75,7 @@ export default function DonationClient() {
                         aria-label="후원 내역 삭제"
                         className="shrink-0 rounded-full p-2 text-zinc-500 transition hover:bg-zinc-900/60 hover:text-zinc-200"
                         onClick={() => {
-                          const ok = window.confirm('후원 내역을 삭제할까요?\n포인트는 돌아오지 않아요.')
+                          const ok = window.confirm(tDonation('deleteConfirm'))
                           if (!ok) return
                           deleteMutation.mutate({ donationId: item.id })
                         }}

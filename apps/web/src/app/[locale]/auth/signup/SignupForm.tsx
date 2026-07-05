@@ -11,16 +11,17 @@ import { twMerge } from 'tailwind-merge'
 import IconLogo from '@/components/icons/LogoLitomi'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { Link } from '@/i18n/navigation'
+import { applyInvalidParams } from '@/lib/apply-invalid-params'
 import { getAuthRedirectHref, getCurrentAuthRedirect } from '@/lib/auth-redirect'
 
 import {
-  applySignupProblem,
   clearSignupInputValidity,
   clearSignupLoginId,
   clearSignupValidity,
   getSignupErrorMessage,
   getSignupInput,
   reportInputValidity,
+  signupInputNames,
   toggleSignupPasswordVisibility,
 } from './signup-form'
 import useSignupMutation, { SIGNUP_LOCAL_ERROR_STATUSES } from './useSignupMutation'
@@ -31,6 +32,7 @@ export default function SignupForm() {
   const turnstileRef = useRef<TurnstileInstance>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const t = useTranslations('Auth.signup')
+  const tErrors = useTranslations('Errors')
 
   function resetTurnstile() {
     turnstileRef.current?.reset()
@@ -49,7 +51,7 @@ export default function SignupForm() {
       window.requestAnimationFrame(() => {
         const form = formRef.current
 
-        if (applySignupProblem(form, error.problem)) {
+        if (applyInvalidParams(form, error.problem, tErrors, signupInputNames)) {
           return
         }
 
@@ -57,7 +59,7 @@ export default function SignupForm() {
           return
         }
 
-        toast.warning(getSignupErrorMessage(error, t('fallbackError')))
+        toast.warning(getSignupErrorMessage(error, tErrors, t('fallbackError')))
       })
     },
   })

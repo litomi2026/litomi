@@ -163,6 +163,9 @@ export const messages = {
         unsupported: '위치 기능은 현재 지원하지 않아요',
       },
     },
+    Donation: {
+      deleteConfirm: '후원 내역을 삭제할까요?\n포인트는 돌아오지 않아요.',
+    },
     Profile: {
       navigation: {
         myLitomi: '내 리토미',
@@ -220,6 +223,8 @@ export const messages = {
           '클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어 변경 사항이 반영되는데 최대 1분이 소요될 수 있어요',
         reset: '초기화',
         save: '저장',
+        success: '프로필을 수정했어요',
+        emptyPatch: '수정할 정보를 입력해 주세요',
       },
     },
   },
@@ -383,6 +388,9 @@ export const messages = {
         unsupported: 'Location is not supported yet',
       },
     },
+    Donation: {
+      deleteConfirm: 'Delete this donation record?\nPoints will not be refunded.',
+    },
     Profile: {
       navigation: {
         myLitomi: 'Profile',
@@ -440,6 +448,8 @@ export const messages = {
           'To reduce cloud costs, server traffic is rate-limited. Changes can take up to 1 minute to appear.',
         reset: 'Reset',
         save: 'Save',
+        success: 'Profile updated.',
+        emptyPatch: 'Enter the information to update.',
       },
     },
   },
@@ -603,6 +613,9 @@ export const messages = {
         unsupported: '位置情報機能は現在対応していません',
       },
     },
+    Donation: {
+      deleteConfirm: 'この応援履歴を削除しますか？\nポイントは戻りません。',
+    },
     Profile: {
       navigation: {
         myLitomi: 'マイリトミ',
@@ -660,6 +673,8 @@ export const messages = {
           'クラウド費用を抑えるためサーバートラフィックを制限しており、変更の反映に最大1分かかることがあります。',
         reset: 'リセット',
         save: '保存',
+        success: 'プロフィールを更新しました',
+        emptyPatch: '変更する情報を入力してください',
       },
     },
   },
@@ -822,6 +837,9 @@ export const messages = {
         unsupported: '位置功能暂未支持',
       },
     },
+    Donation: {
+      deleteConfirm: '要删除这条应援记录吗？\n积分不会退还。',
+    },
     Profile: {
       navigation: {
         myLitomi: '我的莉托米',
@@ -878,6 +896,8 @@ export const messages = {
         propagationNotice: '为降低云成本，服务器流量受到限制，变更最多可能需要 1 分钟才会显示。',
         reset: '重置',
         save: '保存',
+        success: '已更新个人资料',
+        emptyPatch: '请输入要修改的信息',
       },
     },
   },

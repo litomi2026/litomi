@@ -4,6 +4,7 @@ import type { ChatSubscriptionDTO } from '@litomi/contracts'
 import { Loader2, Settings } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
+import { getErrorMessage } from '@/lib/error-message'
 import { formatDate } from '../_lib/format'
 import useCancelSubscriptionMutation from '../_query/useCancelSubscriptionMutation'
 import useRefundSubscriptionMutation from '../_query/useRefundSubscriptionMutation'
@@ -23,10 +24,11 @@ export default function SubscriptionMenu({ handle, subscription, onResume, resum
   const { mutate: cancelSubscription, isPending: cancelling } = useCancelSubscriptionMutation(handle)
   const { mutate: refundSubscription, isPending: refunding, error } = useRefundSubscriptionMutation(handle)
   const t = useTranslations('Sobok.subscription')
+  const tErrors = useTranslations('Errors')
   const locale = useLocale()
 
   const isBusy = cancelling || refunding || resuming
-  const refundError = error ? error.message : null
+  const refundError = getErrorMessage(tErrors, error)
   const endsAt = new Date(subscription.expiresAt)
 
   function close() {

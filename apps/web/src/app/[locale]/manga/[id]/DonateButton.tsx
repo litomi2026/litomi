@@ -13,9 +13,8 @@ import { twMerge } from 'tailwind-merge'
 
 import { usePointsQuery } from '@/app/[locale]/(navigation)/(top-navigation)/libo/usePointsQuery'
 import { useRouter } from '@/i18n/navigation'
-import { getProblemMessage } from '@/lib/error-message'
+import { getErrorMessage } from '@/lib/error-message'
 import useMeQuery from '@/query/useMeQuery'
-import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import usePointsDonateMutation from './usePointsDonateMutation'
 
@@ -84,19 +83,6 @@ export default function DonateButton({ manga, ...props }: Props) {
     setLocalMessage(null)
   }
 
-  function getErrorMessage(error: unknown): string | null {
-    if (!error) {
-      return null
-    }
-    if (error instanceof ProblemDetailsError) {
-      return getProblemMessage(tErrors, error.problem)
-    }
-    if (error instanceof Error) {
-      return tErrors('status.serverError')
-    }
-    return t('fallbackError')
-  }
-
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     setLocalMessage(null)
@@ -136,12 +122,12 @@ export default function DonateButton({ manga, ...props }: Props) {
         })
       },
       onError: (err) => {
-        setLocalMessage(getErrorMessage(err) ?? t('failure'))
+        setLocalMessage(getErrorMessage(tErrors, err) ?? t('failure'))
       },
     })
   }
 
-  const pointsErrorMessage = getErrorMessage(pointsError)
+  const pointsErrorMessage = getErrorMessage(tErrors, pointsError)
 
   return (
     <>

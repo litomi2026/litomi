@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import { getProblemCodeMessage } from '@/lib/error-message'
 import useMeQuery from '@/query/useMeQuery'
 
 import { useRouletteSpinMutation } from './useRouletteSpinMutation'
@@ -31,6 +32,7 @@ export default function RoulettePageClient() {
   const locale = useLocale()
   const t = useTranslations('Libo.roulette')
   const tNav = useTranslations('Libo.navigation')
+  const tErrors = useTranslations('Errors')
 
   const result = spin.data
   const hasRevealedResult = Boolean(result && isResultRevealed)
@@ -261,7 +263,9 @@ export default function RoulettePageClient() {
 
             {spin.isError && (
               <div className="rounded-xl bg-white/3 border border-white/10 px-3 py-2">
-                <p className="text-sm text-zinc-300">{spin.error.problem.detail ?? t('spinFailed')}</p>
+                <p className="text-sm text-zinc-300">
+                  {getProblemCodeMessage(tErrors, spin.error.problem) ?? t('spinFailed')}
+                </p>
               </div>
             )}
           </form>

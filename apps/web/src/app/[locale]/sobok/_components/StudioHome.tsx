@@ -4,6 +4,7 @@ import { Mic } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import { useRouter } from '@/i18n/navigation'
+import { getErrorMessage } from '@/lib/error-message'
 import useCreateArtistMutation from '../_query/useCreateArtistMutation'
 import useStudioQuery from '../_query/useStudioQuery'
 import ArtistProfileForm, { type ArtistProfileFormValues } from './ArtistProfileForm'
@@ -13,6 +14,7 @@ export default function StudioHome() {
   const { data, isLoading } = useStudioQuery()
   const { mutate: createArtist, isPending, error } = useCreateArtistMutation()
   const t = useTranslations('Sobok.studio')
+  const tErrors = useTranslations('Errors')
   const router = useRouter()
   const artist = data?.artist
 
@@ -62,7 +64,7 @@ export default function StudioHome() {
         <ArtistProfileForm
           onSubmit={handleSubmit}
           isPending={isPending}
-          error={error instanceof Error ? error.message : null}
+          error={getErrorMessage(tErrors, error)}
           submitLabel={t('onboardingSubmit')}
         />
       </div>

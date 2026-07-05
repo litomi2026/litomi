@@ -10,11 +10,12 @@ import { type SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import OneTimeCodeInput from '@/app/[locale]/(navigation)/(right-aside)/settings/two-factor/components/OneTimeCodeInput'
+import { applyInvalidParams } from '@/lib/apply-invalid-params'
 import { getProblemCodeMessage } from '@/lib/error-message'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { verifyTwoFactorLogin } from './api'
-import { applyTwoFactorProblem, clearTwoFactorValidity } from './util'
+import { clearTwoFactorValidity, twoFactorInputNames } from './util'
 
 const TWO_FACTOR_LOCAL_ERROR_STATUSES = [400, 401]
 
@@ -49,7 +50,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
       window.requestAnimationFrame(() => {
         const form = formRef.current
 
-        if (applyTwoFactorProblem(form, error.problem, tErrors)) {
+        if (applyInvalidParams(form, error.problem, tErrors, twoFactorInputNames)) {
           return
         }
 
