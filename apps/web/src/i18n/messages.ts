@@ -6,12 +6,14 @@ import { messages as rightAsideMessages } from '@/app/[locale]/(navigation)/(rig
 import { messages as settingsMessages } from '@/app/[locale]/(navigation)/(right-aside)/settings/messages'
 import { messages as liboMessages } from '@/app/[locale]/(navigation)/(top-navigation)/libo/messages'
 import { messages as topNavigationMessages } from '@/app/[locale]/(navigation)/(top-navigation)/messages'
+import { messages as aiChatMessages } from '@/app/[locale]/(navigation)/chat/messages'
 import { messages as libraryMessages } from '@/app/[locale]/(navigation)/library/messages'
 import { messages as navigationMessages } from '@/app/[locale]/(navigation)/messages'
 import { messages as searchMessages } from '@/app/[locale]/(navigation)/search/messages'
 import { messages as authMessages } from '@/app/[locale]/auth/messages'
 import { messages as deterrenceMessages } from '@/app/[locale]/deterrence/messages'
 import { messages as docMessages } from '@/app/[locale]/doc/messages'
+import { messages as errorMessages } from '@/app/[locale]/errors.messages'
 import { messages as mangaMessages } from '@/app/[locale]/manga/[id]/messages'
 import { messages as appMessages } from '@/app/[locale]/messages'
 import { messages as sobokMessages } from '@/app/[locale]/sobok/messages'
@@ -21,10 +23,12 @@ export type Messages = { [key: string]: MessageValue }
 export type MessageValue = string | { [key: string]: MessageValue }
 
 const messageModules = [
+  aiChatMessages,
   appMessages,
   authMessages,
   deterrenceMessages,
   docMessages,
+  errorMessages,
   navigationMessages,
   rankingMessages,
   rightAsideMessages,

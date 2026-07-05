@@ -44,7 +44,7 @@ route.post('/', async (c) => {
     return c.json({ options, turnstileRequired } satisfies POSTV1AuthPasskeyOptionsResponse)
   } catch (error) {
     console.error('getAuthenticationOptions:', error)
-    return problemResponse(c, { status: 500, detail: '패스키 인증 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

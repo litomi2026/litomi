@@ -1,5 +1,5 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
-import { type POSTV1BBatonUnlinkResponse, postV1BBatonUnlinkBodySchema } from '@litomi/contracts'
+import { type POSTV1BBatonUnlinkResponse, PROBLEM, postV1BBatonUnlinkBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
@@ -7,6 +7,7 @@ import { userTable } from '@litomi/db/app/user'
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -17,8 +18,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { reissueAuthCookies } from './query'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySchema))
 
-route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   try {
@@ -28,22 +31,14 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
       .where(eq(userTable.id, userId))
 
     if (!user) {
-      return problemResponse(c, {
-        status: 400,
-        code: 'credential-verification-failed',
-        detail: '인증 정보가 일치하지 않아요',
-      })
+      return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
     }
 
     const { password, token } = c.req.valid('json')
     const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
 
     if (!isValidPassword) {
-      return problemResponse(c, {
-        status: 400,
-        code: 'credential-verification-failed',
-        detail: '인증 정보가 일치하지 않아요',
-      })
+      return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
     }
 
     const [twoFactor] = await db
@@ -53,33 +48,24 @@ route.post('/', requireAuth, zProblemValidator('json', postV1BBatonUnlinkBodySch
 
     if (twoFactor) {
       if (!token) {
-        return problemResponse(c, {
-          status: 400,
-          code: 'credential-verification-failed',
-          detail: '인증 정보가 일치하지 않아요',
-        })
+        return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
       }
 
       const secret = decryptTOTPSecret(twoFactor.secret)
       const isValidToken = await verifyTOTPToken(token, secret)
 
       if (!isValidToken) {
-        return problemResponse(c, {
-          status: 400,
-          code: 'credential-verification-failed',
-          detail: '인증 정보가 일치하지 않아요',
-        })
+        return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
       }
     }
 
     await db.delete(bbatonVerificationTable).where(eq(bbatonVerificationTable.userId, userId))
-
     await reissueAuthCookies(c, { userId, adult: false })
 
     return c.json({ ok: true } satisfies POSTV1BBatonUnlinkResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '비바톤 계정 연결을 해제하지 못했어요.' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

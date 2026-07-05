@@ -1,6 +1,5 @@
+import type { LibraryItemSort, RatingSort } from '@litomi/domain/library/sort'
 import type { PublicLocale } from '@litomi/domain/locale'
-
-import { LibraryItemSort, RatingSort } from '@litomi/domain/library/sort'
 import { PostFilter } from '@litomi/domain/post/filter'
 
 export const QueryKeys = {

@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'bun:test'
 import { EXPANSION_TYPE } from '@litomi/domain/points/model'
-import { problemCode } from '@litomi/http/problem-details'
 import { installBackendIntegrationHooks } from '@test/backend/setup'
 import { requestBackend } from '@test/backend/setup/app'
 import { seedBookmark, seedBookmarks, seedUser, seedUserExpansion } from '@test/backend/setup/db'
@@ -24,7 +23,7 @@ describe('POST /api/v1/bookmark', () => {
     const problem = await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/bookmark',
     })
 
@@ -139,7 +138,7 @@ describe('POST /api/v1/bookmark', () => {
     const problem = await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/bookmark',
     })
 
@@ -168,8 +167,8 @@ describe('POST /api/v1/bookmark', () => {
 
     await expectProblemResponse(response, {
       status: 403,
-      code: problemCode.LIBO_EXPANSION_REQUIRED,
-      detail: '북마크 저장 한도에 도달했어요',
+      code: 'libo-expansion-required',
+      title: '저장 한도에 도달했어요',
       instance: '/api/v1/bookmark',
     })
 

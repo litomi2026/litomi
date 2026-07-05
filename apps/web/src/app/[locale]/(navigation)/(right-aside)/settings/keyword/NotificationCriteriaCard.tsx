@@ -7,12 +7,13 @@ import { formatDistanceToNow } from '@litomi/std'
 import { Toggle } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { BellOff, Edit3, Trash2 } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import IconBell from '@/components/icons/IconBell'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { useRouter } from '@/i18n/navigation'
+import { getProblemCodeMessage } from '@/lib/error-message'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { deleteNotificationCriteria, updateNotificationCriteria } from './api'
 import type { NotificationCriteria } from './types'
@@ -38,6 +39,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
   const locale = useLocale()
   const router = useRouter()
   const { guardAdultAccess } = useAdultAccessGuard()
+  const tErrors = useTranslations('Errors')
 
   const toggleMutation = useMutation<
     PATCHV1NotificationCriteriaIdResponse,
@@ -56,7 +58,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
 
     onError: (error) => {
       if (isLocalMutationError(error.status)) {
-        toast.warning(error.problem.detail ?? '알림 기준 상태를 변경하지 못했어요')
+        toast.warning(getProblemCodeMessage(tErrors, error.problem) ?? '알림 기준 상태를 변경하지 못했어요')
       }
     },
 
@@ -74,7 +76,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
 
     onError: (error) => {
       if (isLocalMutationError(error.status)) {
-        toast.warning(error.problem.detail ?? '알림 기준을 삭제하지 못했어요')
+        toast.warning(getProblemCodeMessage(tErrors, error.problem) ?? '알림 기준을 삭제하지 못했어요')
       }
     },
 

@@ -8,6 +8,8 @@ import {
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 import { z } from 'zod'
 
+import { INVALID_PARAM } from '../problem'
+
 export interface NotificationItem {
   id: number
   userId: number
@@ -48,19 +50,19 @@ export interface PATCHV1NotificationReadAllResponse {
 }
 
 const notificationCriteriaConditionSchema = z.object({
-  type: z.enum(NotificationConditionType, { error: '올바른 조건 타입을 선택해 주세요' }),
+  type: z.enum(NotificationConditionType),
   value: z
     .string()
-    .min(1, '조건 값을 입력해 주세요')
-    .max(100, '조건 값은 100자 이하여야 해요')
+    .min(1)
+    .max(100)
     .transform((value) => normalizeValue(value)),
   isExcluded: z.boolean().optional().default(false),
 })
 
 const notificationCriteriaConditionsSchema = z
   .array(notificationCriteriaConditionSchema)
-  .min(1, '최소 1개 조건이 필요해요')
-  .max(MAX_NOTIFICATION_CRITERIA_CONDITIONS, `최대 ${MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 추가할 수 있어요`)
+  .min(1)
+  .max(MAX_NOTIFICATION_CRITERIA_CONDITIONS)
   .superRefine((conditions, ctx) => {
     const seen = new Set<string>()
 
@@ -70,7 +72,7 @@ const notificationCriteriaConditionsSchema = z
       if (seen.has(key)) {
         ctx.addIssue({
           code: 'custom',
-          message: '같은 조건은 한 번만 추가할 수 있어요',
+          params: { code: INVALID_PARAM.DUPLICATE_CONDITION },
           path: [index, 'value'],
         })
         continue
@@ -81,11 +83,7 @@ const notificationCriteriaConditionsSchema = z
   })
 
 export const postV1NotificationCriteriaBodySchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, '알림 이름을 입력해 주세요')
-    .max(MAX_CRITERIA_NAME_LENGTH, `알림 이름은 ${MAX_CRITERIA_NAME_LENGTH}자 이하여야 해요`),
+  name: z.string().trim().min(1).max(MAX_CRITERIA_NAME_LENGTH),
   conditions: notificationCriteriaConditionsSchema,
   isActive: z.boolean().optional().default(true),
 })
@@ -105,9 +103,7 @@ export const patchV1NotificationCriteriaIdBodySchema = z
     conditions: notificationCriteriaConditionsSchema.optional(),
     isActive: z.boolean().optional(),
   })
-  .refine((value) => Object.values(value).some((item) => item !== undefined), {
-    message: '변경할 알림 기준 정보를 입력해 주세요',
-  })
+  .refine((value) => Object.values(value).some((item) => item !== undefined))
 
 export type PATCHV1NotificationCriteriaIdBody = z.input<typeof patchV1NotificationCriteriaIdBodySchema>
 

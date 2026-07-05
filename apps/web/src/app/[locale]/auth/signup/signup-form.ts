@@ -1,47 +1,11 @@
-import type { ProblemDetails } from '@litomi/http/problem-details'
-
-import { getInvalidParams } from '@litomi/http/problem-details'
-
-import type { ProblemDetailsError } from '@/utils/fetch-response'
-
 type SignupFormFieldName = 'cf-turnstile-response' | 'login-id' | 'nickname' | 'password-confirm' | 'password'
 type SignupPasswordFieldName = 'password-confirm' | 'password'
-type SignupServerFieldName = 'loginId' | 'nickname' | 'password' | 'passwordConfirm'
 
-const signupInputNames: Record<SignupServerFieldName, SignupFormFieldName> = {
+export const signupInputNames: Record<string, SignupFormFieldName> = {
   loginId: 'login-id',
   nickname: 'nickname',
   password: 'password',
   passwordConfirm: 'password-confirm',
-}
-
-export function applySignupProblem(form: HTMLFormElement | null, problem: ProblemDetails) {
-  let firstInvalidInput: HTMLInputElement | null = null
-
-  for (const param of getInvalidParams(problem)) {
-    if (!isSignupServerFieldName(param.name)) {
-      continue
-    }
-
-    const input = getSignupInput(form, signupInputNames[param.name])
-    if (!input) {
-      continue
-    }
-
-    input.setCustomValidity(param.reason)
-
-    if (!firstInvalidInput) {
-      firstInvalidInput = input
-    }
-  }
-
-  if (!firstInvalidInput) {
-    return false
-  }
-
-  firstInvalidInput.focus()
-  firstInvalidInput.reportValidity()
-  return true
 }
 
 export function clearSignupInputValidity(form: HTMLFormElement | null, target: EventTarget | null) {
@@ -79,10 +43,6 @@ export function clearSignupValidity(form: HTMLFormElement | null) {
   getSignupInput(form, signupInputNames.passwordConfirm)?.setCustomValidity('')
 }
 
-export function getSignupErrorMessage(error: ProblemDetailsError, fallback: string) {
-  return typeof error.problem.detail === 'string' ? error.problem.detail : fallback
-}
-
 export function getSignupInput(form: HTMLFormElement | null, field: SignupFormFieldName) {
   const input = form?.elements.namedItem(field)
   return input instanceof HTMLInputElement ? input : null
@@ -118,8 +78,4 @@ export function toggleSignupPasswordVisibility(
   }
 
   input.focus()
-}
-
-function isSignupServerFieldName(name: string): name is SignupServerFieldName {
-  return name === 'loginId' || name === 'nickname' || name === 'password' || name === 'passwordConfirm'
 }

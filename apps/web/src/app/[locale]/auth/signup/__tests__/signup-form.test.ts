@@ -3,13 +3,21 @@ import '@test/setup.dom'
 import { afterEach, describe, expect, test } from 'bun:test'
 import type { ProblemDetails } from '@litomi/http/problem-details'
 
+import { applyInvalidParams } from '@/lib/apply-invalid-params'
+import type { ErrorsTranslator } from '@/lib/error-message'
+
 import {
-  applySignupProblem,
   clearSignupInputValidity,
   clearSignupLoginId,
+  signupInputNames,
   toggleSignupPasswordVisibility,
-  validateSignupRequest,
 } from '../signup-form'
+
+// invalidParams[].code → 카탈로그 카피 변환은 error-message 리졸버 소관이므로, 폼 DOM 매핑만 검증하도록
+// 키를 그대로 돌려주는 fake 번역기를 쓴다(코드 → 표시 메시지의 결정성만 보장).
+const fakeErrorsTranslator = Object.assign((key: string) => `msg:${key}`, {
+  has: () => true,
+}) as unknown as ErrorsTranslator
 
 function createSignupForm() {
   document.body.innerHTML = `
@@ -51,22 +59,6 @@ afterEach(() => {
 })
 
 describe('회원가입 폼 헬퍼', () => {
-  test('비밀번호 확인 불일치 오류를 확인 필드에 표시한다', () => {
-    const { form, passwordConfirm } = createSignupForm()
-
-    const isValid = validateSignupRequest(form, {
-      loginId: 'litomi',
-      nickname: '',
-      password: 'password123',
-      passwordConfirm: 'password456',
-      turnstileToken: 'token-123',
-    })
-
-    expect(isValid).toBe(false)
-    expect(passwordConfirm.validationMessage).toBe('비밀번호와 비밀번호 확인 값이 일치하지 않아요')
-    expect(document.activeElement).toBe(passwordConfirm)
-  })
-
   test('비밀번호가 바뀌면 연관된 사용자 지정 유효성 메시지를 지운다', () => {
     const { form, password, passwordConfirm } = createSignupForm()
 
@@ -87,14 +79,14 @@ describe('회원가입 폼 헬퍼', () => {
       title: '잘못된 요청이에요',
       status: 400,
       invalidParams: [
-        { name: 'loginId', reason: '이미 사용 중인 아이디예요' },
-        { name: 'nickname', reason: '닉네임을 확인해 주세요' },
+        { name: 'loginId', code: 'login-id-conflict' },
+        { name: 'nickname', code: 'invalid_type' },
       ],
     }
 
-    expect(applySignupProblem(form, problem)).toBe(true)
-    expect(loginId.validationMessage).toBe('이미 사용 중인 아이디예요')
-    expect(nickname.validationMessage).toBe('닉네임을 확인해 주세요')
+    expect(applyInvalidParams(form, problem, fakeErrorsTranslator, signupInputNames)).toBe(true)
+    expect(loginId.validationMessage).toBe('msg:field.login-id-conflict')
+    expect(nickname.validationMessage).toBe('msg:field.invalid_type')
     expect(document.activeElement).toBe(loginId)
   })
 

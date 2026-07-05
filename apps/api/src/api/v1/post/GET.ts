@@ -7,6 +7,7 @@ import { PostFilter } from '@litomi/domain/post/filter'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -16,8 +17,10 @@ import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('query', getV1PostQuerySchema))
 
-route.get('/', zProblemValidator('query', getV1PostQuerySchema), async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const { cursor, limit, locale, mangaId, filter, username } = c.req.valid('query')
   const decodedCursor = cursor ? decodePostCursor(cursor) : null
   const currentUserId = c.get('userId')

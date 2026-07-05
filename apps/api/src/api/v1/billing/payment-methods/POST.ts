@@ -1,5 +1,5 @@
 import { inspectBillingKey, isBillingConfigured } from '@litomi/billing'
-import { type POSTV1PaymentMethodResponse, postV1PaymentMethodBodySchema } from '@litomi/contracts'
+import { type POSTV1PaymentMethodResponse, PROBLEM, postV1PaymentMethodBodySchema } from '@litomi/contracts'
 import { savePaymentMethod } from '@litomi/db/app/query/payment-method'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -12,8 +12,8 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
-
 const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PaymentMethodBodySchema))
+
 route.post('/', ...middlewares, async (c) => {
   if (!isBillingConfigured()) {
     return problemResponse(c, { status: 503 })
@@ -39,10 +39,7 @@ route.post('/', ...middlewares, async (c) => {
   })
 
   if (!saved) {
-    return problemResponse(c, {
-      status: 409,
-      detail: '이미 다른 계정에 등록된 결제수단이에요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.PAYMENT_METHOD_CONFLICT })
   }
 
   return c.json({

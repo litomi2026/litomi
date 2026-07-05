@@ -1,9 +1,10 @@
-import { type POSTV1LibraryItemMoveResponse, postV1LibraryItemMoveBodySchema } from '@litomi/contracts'
+import { type POSTV1LibraryItemMoveResponse, PROBLEM, postV1LibraryItemMoveBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
 import { and, count, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -13,8 +14,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { LibraryItemError } from './error'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1LibraryItemMoveBodySchema))
 
-route.post('/', zProblemValidator('json', postV1LibraryItemMoveBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { fromLibraryId, mangaIds, toLibraryId } = c.req.valid('json')
   const requestedMangaIds = [...new Set(mangaIds)]
@@ -86,24 +89,27 @@ route.post('/', zProblemValidator('json', postV1LibraryItemMoveBodySchema), asyn
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === LibraryItemError.NOT_FOUND) {
-        return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
+        return problemResponse(c, {
+          status: 404,
+          detail: '서재를 찾을 수 없어요',
+        })
       }
 
       if (error.message === LibraryItemError.LIBRARY_FULL) {
-        return problemResponse(c, { status: 403, detail: '대상 서재가 가득 찼어요' })
+        return problemResponse(c, { problem: PROBLEM.LIBRARY_FULL })
       }
 
       if (error.message === LibraryItemError.NO_SOURCE_ITEMS) {
-        return problemResponse(c, { status: 403, detail: '이동할 작품을 찾을 수 없어요' })
+        return problemResponse(c, { problem: PROBLEM.LIBRARY_ITEMS_MISSING })
       }
 
       if (error.message === LibraryItemError.NO_MOVABLE_ITEMS) {
-        return problemResponse(c, { status: 403, detail: '이미 대상 서재에 있는 작품이에요' })
+        return problemResponse(c, { problem: PROBLEM.LIBRARY_ITEM_CONFLICT })
       }
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재에 작품을 이동하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

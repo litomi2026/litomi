@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { pointDonationTable } from '@litomi/db/app/points'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -11,8 +12,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', idParamSchema))
 
-route.delete('/:id', requireAuth, zProblemValidator('param', idParamSchema), async (c) => {
+route.delete('/:id', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
 
@@ -29,7 +32,7 @@ route.delete('/:id', requireAuth, zProblemValidator('param', idParamSchema), asy
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '후원 내역 삭제에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

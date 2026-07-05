@@ -1,9 +1,10 @@
-import { type POSTV1PointTurnstileResponse, postV1PointTurnstileRequestSchema } from '@litomi/contracts'
+import { type POSTV1PointTurnstileResponse, PROBLEM, postV1PointTurnstileRequestSchema } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 import ms from 'ms'
 
 import type { Env } from '@/app'
@@ -15,10 +16,11 @@ import { zProblemValidator } from '@/utils/validator'
 import { POINTS_TURNSTILE_TTL_SECONDS, signPointsTurnstileToken } from '../util-turnstile-cookie'
 
 const route = new Hono<Env>()
-
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PointTurnstileRequestSchema))
 const turnstileValidator = new TurnstileValidator(ms('10 seconds'), 1)
 
-route.post('/', requireAuth, zProblemValidator('json', postV1PointTurnstileRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { token } = c.req.valid('json')
   const remoteIP = getRequestIP(c.req.raw.headers)
@@ -30,11 +32,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTurnstileReque
   })
 
   if (!turnstile.success) {
-    return problemResponse(c, {
-      status: 400,
-      code: 'human-verification-failed',
-      detail: '보안 확인에 실패했어요',
-    })
+    return problemResponse(c, { problem: PROBLEM.HUMAN_VERIFICATION_FAILED })
   }
 
   const signedCookie = await signPointsTurnstileToken(userId)

@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import LoginGate from '@/components/LoginGate'
+import { getProblemCodeMessage } from '@/lib/error-message'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 import { ProblemDetailsError } from '@/utils/fetch-response'
@@ -22,6 +23,7 @@ export default function TransactionHistory() {
   const { data: me, isPending: isMePending } = useMeQuery()
   const tNav = useTranslations('Libo.navigation')
   const t = useTranslations('Libo.history')
+  const tErrors = useTranslations('Errors')
   const locale = useLocale()
 
   const isLoggedIn = Boolean(me)
@@ -59,12 +61,12 @@ export default function TransactionHistory() {
       if (error.status === 401) {
         return {
           title: t('loginRequiredTitle'),
-          message: error.problem.detail ?? t('loginRequiredDesc'),
+          message: t('loginRequiredDesc'),
         }
       }
 
       return {
-        title: error.problem.detail ?? t('errorTitle'),
+        title: getProblemCodeMessage(tErrors, error.problem) ?? t('errorTitle'),
         message: t('errorDesc'),
       }
     }

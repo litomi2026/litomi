@@ -1,13 +1,14 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { PASSWORD_HASH_COST } from '@litomi/auth/password'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
-import { type PATCHV1MePasswordResponse, patchV1MePasswordBodySchema } from '@litomi/contracts'
+import { type PATCHV1MePasswordResponse, PROBLEM, patchV1MePasswordBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorTable } from '@litomi/db/app/two-factor'
 import { userTable } from '@litomi/db/app/user'
 import { compare, hash } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -24,8 +25,10 @@ const passwordChangeLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', patchV1MePasswordBodySchema))
 
-route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (c) => {
+route.patch('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { currentPassword, newPassword, token } = c.req.valid('json')
   const { allowed, retryAfter } = await passwordChangeLimiter.check(String(userId))
@@ -38,7 +41,13 @@ route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (
     return problemResponse(c, {
       status: 400,
       extensions: {
-        invalidParams: [{ name: 'newPassword', reason: '현재 비밀번호와 새 비밀번호가 같아요' }],
+        invalidParams: [
+          {
+            name: 'newPassword',
+            code: PROBLEM.PASSWORD_SAME_AS_CURRENT.slug,
+            reason: '현재 비밀번호와 새 비밀번호가 같아요',
+          },
+        ],
       },
     })
   }
@@ -100,25 +109,18 @@ route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (
       case 'changed':
         applyAuthCookie(c, getAuthCookieClearConfigs())
         await Promise.allSettled([passwordChangeLimiter.reward(String(userId))])
-
-        return c.json({
-          clearedCurrentSession: true,
-          message: '비밀번호가 변경됐어요',
-        } satisfies PATCHV1MePasswordResponse)
+        return c.json({ clearedCurrentSession: true } satisfies PATCHV1MePasswordResponse)
 
       case 'unauthorized':
         applyAuthCookie(c, getAuthCookieClearConfigs())
         return authRequiredProblemResponse(c)
 
       case 'verification-failed':
-        return problemResponse(c, {
-          status: 400,
-          detail: '현재 인증 정보를 확인해 주세요',
-        })
+        return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
     }
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '비밀번호 변경 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

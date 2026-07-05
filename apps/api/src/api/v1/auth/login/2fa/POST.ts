@@ -2,11 +2,12 @@ import { verifyPKCEChallenge } from '@litomi/auth/pkce-server'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { verifyBackupCode } from '@litomi/auth/two-factor-backup-code'
-import { type POSTV1AuthLogin2FAResponse, postV1AuthLogin2FARequestSchema } from '@litomi/contracts'
+import { type POSTV1AuthLogin2FAResponse, PROBLEM, postV1AuthLogin2FARequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/api/v1/auth/query'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import type { Env } from '@/app'
@@ -39,17 +40,15 @@ type TokenVerificationResult =
     }
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1AuthLogin2FARequestSchema))
 
-route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const { authorizationCode, codeVerifier, fingerprint, remember, token, trustBrowser } = c.req.valid('json')
   const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 
   if (!challengeData.valid) {
-    return problemResponse(c, {
-      status: 401,
-      code: 'login-challenge-expired',
-      detail: '인증이 만료됐어요. 새로고침 후 시도해 주세요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.LOGIN_CHALLENGE_EXPIRED })
   }
 
   const { userId } = challengeData
@@ -72,9 +71,7 @@ route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), asyn
       if (!twoFactor) {
         return {
           ok: false,
-          status: 401,
-          code: 'login-challenge-expired',
-          detail: '인증이 만료됐어요. 새로고침 후 시도해 주세요.',
+          problem: PROBLEM.LOGIN_CHALLENGE_EXPIRED,
         } as const
       }
 
@@ -181,7 +178,7 @@ route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), asyn
     } satisfies POSTV1AuthLogin2FAResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '2단계 인증 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 
@@ -189,6 +186,5 @@ export default route
 
 const INVALID_TOKEN_RESPONSE = {
   ok: false,
-  status: 400,
-  detail: '인증 코드를 확인해 주세요',
+  problem: PROBLEM.TWO_FACTOR_TOKEN_INVALID,
 } as const

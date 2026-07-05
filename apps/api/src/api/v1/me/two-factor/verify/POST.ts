@@ -1,10 +1,11 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { generateBackupCodes } from '@litomi/auth/two-factor-backup-code'
-import { type POSTV1MeTwoFactorVerifyResponse, postV1MeTwoFactorVerifyBodySchema } from '@litomi/contracts'
+import { type POSTV1MeTwoFactorVerifyResponse, PROBLEM, postV1MeTwoFactorVerifyBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { and, eq, gt } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -18,8 +19,10 @@ const twoFactorVerifyLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1MeTwoFactorVerifyBodySchema))
 
-route.post('/', zProblemValidator('json', postV1MeTwoFactorVerifyBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { token } = c.req.valid('json')
   const { allowed, retryAfter } = await twoFactorVerifyLimiter.check(String(userId))
@@ -76,10 +79,10 @@ route.post('/', zProblemValidator('json', postV1MeTwoFactorVerifyBodySchema), as
 
     switch (result.kind) {
       case 'expired':
-        return problemResponse(c, { status: 403, detail: '2단계 인증 설정이 만료됐어요' })
+        return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_SETUP_EXPIRED })
 
       case 'invalid-token':
-        return problemResponse(c, { status: 400, detail: '잘못된 인증 코드예요' })
+        return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_TOKEN_INVALID })
 
       case 'verified':
         await Promise.allSettled([twoFactorVerifyLimiter.reward(String(userId))])
@@ -87,7 +90,7 @@ route.post('/', zProblemValidator('json', postV1MeTwoFactorVerifyBodySchema), as
     }
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '2단계 인증 활성화 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

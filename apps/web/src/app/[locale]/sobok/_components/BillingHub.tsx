@@ -76,7 +76,7 @@ function SubscriptionItem({ item }: { item: BillingSubscriptionItemDTO }) {
   return (
     <li>
       <Link
-        href={`/sobok/${artist.handle}`}
+        href={`/sobok/@${artist.handle}`}
         className="flex items-center gap-3 rounded-xl border border-foreground/10 p-3.5 transition-colors hover:bg-foreground/5"
       >
         <img

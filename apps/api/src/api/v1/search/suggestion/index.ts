@@ -3,6 +3,7 @@ import { queryBlacklist } from '@litomi/domain/search/suggestion'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -12,8 +13,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { suggestionTrie } from './suggestion-trie'
 
 const suggestionRoutes = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('query', getV1SearchSuggestionQuerySchema))
 
-suggestionRoutes.get('/', zProblemValidator('query', getV1SearchSuggestionQuerySchema), async (c) => {
+suggestionRoutes.get('/', ...middlewares, async (c) => {
   const { limit, locale, query } = c.req.valid('query')
 
   if (queryBlacklist.some((regex) => regex.test(query))) {

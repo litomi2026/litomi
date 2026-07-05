@@ -49,7 +49,6 @@ route.post('/', async (c) => {
 
     return problemResponse(c, {
       status: 500,
-      detail: '로그인 정보를 갱신하지 못했어요',
       headers: { 'Cache-Control': noStoreCacheControl },
     })
   }

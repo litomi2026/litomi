@@ -1,6 +1,6 @@
 import { WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@litomi/auth/passkey/server'
 import { storeChallenge } from '@litomi/auth/redis-challenge'
-import type { POSTV1MePasskeyOptionsResponse } from '@litomi/contracts'
+import { type POSTV1MePasskeyOptionsResponse, PROBLEM } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { credentialTable } from '@litomi/db/app/passkey'
 import { userTable } from '@litomi/db/app/user'
@@ -46,8 +46,8 @@ route.post('/', async (c) => {
 
     if (credentials.length >= MAX_CREDENTIALS_PER_USER) {
       return problemResponse(c, {
-        status: 400,
-        detail: `최대 ${MAX_CREDENTIALS_PER_USER}개의 패스키만 등록할 수 있어요`,
+        problem: PROBLEM.PASSKEY_LIMIT_REACHED,
+        extensions: { limit: MAX_CREDENTIALS_PER_USER },
       })
     }
 
@@ -75,7 +75,7 @@ route.post('/', async (c) => {
     return c.json({ options } satisfies POSTV1MePasskeyOptionsResponse)
   } catch (error) {
     console.error('getRegistrationOptions:', error)
-    return problemResponse(c, { status: 500, detail: '패스키 등록 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

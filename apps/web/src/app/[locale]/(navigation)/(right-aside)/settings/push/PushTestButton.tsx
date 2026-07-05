@@ -1,6 +1,6 @@
 'use client'
 
-import type { POSTV1MePushTestBody, POSTV1MePushTestResponse } from '@litomi/contracts'
+import type { POSTV1MePushTestBody } from '@litomi/contracts'
 
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -24,10 +24,10 @@ export default function PushTestButton({ endpoints }: Props) {
   const [hasTestedOnce, setHasTestedOnce] = useState(false)
   const queryClient = useQueryClient()
 
-  const testMutation = useMutation<POSTV1MePushTestResponse, ProblemDetailsError, POSTV1MePushTestBody>({
+  const testMutation = useMutation<void, ProblemDetailsError, POSTV1MePushTestBody>({
     mutationFn: sendTestPushNotification,
-    onSuccess: ({ message }) => {
-      toast.success(message)
+    onSuccess: () => {
+      toast.success('현재 브라우저에 테스트 알림을 보냈어요')
       setHasTestedOnce(true)
       queryClient.invalidateQueries({ queryKey: QueryKeys.notification })
     },

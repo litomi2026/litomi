@@ -19,6 +19,7 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, inArray, lt, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -28,6 +29,7 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
 
 const publicDailyCacheControl = createCacheControl({
   public: true,
@@ -36,7 +38,9 @@ const publicDailyCacheControl = createCacheControl({
   swr: sec('1 day'),
 })
 
-route.get('/recipient', zProblemValidator('query', getV1PointsDonationRecipientQuerySchema), async (c) => {
+const recipientMiddlewares = factory.createHandlers(zProblemValidator('query', getV1PointsDonationRecipientQuerySchema))
+
+route.get('/recipient', ...recipientMiddlewares, async (c) => {
   const { type, value } = c.req.valid('query')
   const recipientValue = value.trim()
   const recipientType = type === 'artist' ? DONATION_RECIPIENT_TYPE.ARTIST : DONATION_RECIPIENT_TYPE.GROUP
@@ -59,13 +63,15 @@ route.get('/recipient', zProblemValidator('query', getV1PointsDonationRecipientQ
     return c.json(response, { headers: { 'Cache-Control': publicDailyCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '후원 정보를 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 
 const PER_PAGE = 20
 
-route.get('/me', requireAuth, zProblemValidator('query', getV1PointsDonationsMeQuerySchema), async (c) => {
+const meMiddlewares = factory.createHandlers(requireAuth, zProblemValidator('query', getV1PointsDonationsMeQuerySchema))
+
+route.get('/me', ...meMiddlewares, async (c) => {
   const userId = c.get('userId')!
   const { cursor, locale } = c.req.valid('query')
 
@@ -158,7 +164,7 @@ route.get('/me', requireAuth, zProblemValidator('query', getV1PointsDonationsMeQ
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '후원 내역을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

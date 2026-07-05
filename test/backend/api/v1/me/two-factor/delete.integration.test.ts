@@ -35,7 +35,7 @@ describe('DELETE /api/v1/me/two-factor', () => {
 
     const response = await disableTwoFactor({ cookies: cookieHeader, json: { token: codes[0]! } })
 
-    expect(response.status).toBe(200)
+    expect(response.status).toBe(204)
     expect(await readTwoFactorByUserId(user.id)).toBeNull()
     expect(await readTwoFactorBackupCodes(user.id)).toHaveLength(0)
   })
@@ -63,7 +63,7 @@ describe('DELETE /api/v1/me/two-factor', () => {
       const token = generateSync({ secret: TEST_TOTP_SECRET, strategy: 'totp' })
       const response = await disableTwoFactor({ cookies: cookieHeader, json: { token } })
 
-      expect(response.status).toBe(200)
+      expect(response.status).toBe(204)
     } finally {
       setSystemTime()
     }

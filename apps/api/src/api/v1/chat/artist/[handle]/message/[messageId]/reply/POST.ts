@@ -1,4 +1,9 @@
-import { chatMessageParamSchema, type POSTV1ChatReplyResponse, postV1ChatReplyBodySchema } from '@litomi/contracts'
+import {
+  chatMessageParamSchema,
+  type POSTV1ChatReplyResponse,
+  PROBLEM,
+  postV1ChatReplyBodySchema,
+} from '@litomi/contracts'
 import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
 import { buildChatMessage, getReplyGate, toMessageReplyStreamId } from '@litomi/db/chat/query'
 import { REPLY_MAX_PER_MESSAGE, resolveReplyTextLimit } from '@litomi/domain/chat/policy'
@@ -56,8 +61,9 @@ route.post('/', ...middlewares, async (c) => {
 
   if ([...body.text].length > maxTextLength) {
     return problemResponse(c, {
-      status: 403,
+      problem: PROBLEM.REPLY_TOO_LONG,
       detail: `답장은 ${maxTextLength}자까지 보낼 수 있어요.`,
+      extensions: { limit: maxTextLength },
     })
   }
 
@@ -74,8 +80,8 @@ route.post('/', ...middlewares, async (c) => {
 
   if (gate.ownReplyCount >= REPLY_MAX_PER_MESSAGE) {
     return problemResponse(c, {
-      status: 403,
-      detail: `이 메시지에는 답장을 ${REPLY_MAX_PER_MESSAGE}회까지 보낼 수 있어요.`,
+      problem: PROBLEM.REPLY_LIMIT_REACHED,
+      extensions: { limit: REPLY_MAX_PER_MESSAGE },
     })
   }
 
@@ -96,7 +102,7 @@ route.post('/', ...middlewares, async (c) => {
     })
   } catch (error) {
     console.error('chat reply publish failed', error)
-    return problemResponse(c, { status: 503, detail: '메시지 전송에 실패했어요. 잠시 후 다시 시도해 주세요.' })
+    return problemResponse(c, { problem: PROBLEM.MESSAGE_SEND_FAILED })
   }
 
   const response = {

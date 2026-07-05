@@ -13,8 +13,8 @@ import { twMerge } from 'tailwind-merge'
 
 import { usePointsQuery } from '@/app/[locale]/(navigation)/(top-navigation)/libo/usePointsQuery'
 import { useRouter } from '@/i18n/navigation'
+import { getErrorMessage } from '@/lib/error-message'
 import useMeQuery from '@/query/useMeQuery'
-import { ProblemDetailsError } from '@/utils/fetch-response'
 
 import usePointsDonateMutation from './usePointsDonateMutation'
 
@@ -39,6 +39,7 @@ export default function DonateButton({ manga, ...props }: Props) {
   const router = useRouter()
   const { data: me } = useMeQuery()
   const t = useTranslations('MangaViewer.donate')
+  const tErrors = useTranslations('Errors')
   const donateMutation = usePointsDonateMutation()
   const { data: points, error: pointsError, isLoading: isPointsLoading } = usePointsQuery({ enabled: open })
 
@@ -82,13 +83,6 @@ export default function DonateButton({ manga, ...props }: Props) {
     setLocalMessage(null)
   }
 
-  function getErrorMessage(error: unknown): string | null {
-    if (!error) return null
-    if (error instanceof ProblemDetailsError) return error.problem.detail ?? error.problem.title
-    if (error instanceof Error) return error.message
-    return t('fallbackError')
-  }
-
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     setLocalMessage(null)
@@ -128,12 +122,12 @@ export default function DonateButton({ manga, ...props }: Props) {
         })
       },
       onError: (err) => {
-        setLocalMessage(getErrorMessage(err) ?? t('failure'))
+        setLocalMessage(getErrorMessage(tErrors, err) ?? t('failure'))
       },
     })
   }
 
-  const pointsErrorMessage = getErrorMessage(pointsError)
+  const pointsErrorMessage = getErrorMessage(tErrors, pointsError)
 
   return (
     <>

@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { mangaReportTable } from '@litomi/db/app/report'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 import ms from 'ms'
 
 import type { Env } from '@/app'
@@ -16,8 +17,10 @@ import { zProblemValidator } from '@/utils/validator'
 const REPORT_DEDUPE_TTL_MS = ms('30 days')
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema))
 
-route.get('/:id/report', requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema), async (c) => {
+route.get('/:id/report', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const { id: mangaId } = c.req.valid('param')
@@ -35,7 +38,7 @@ route.get('/:id/report', requireAuth, requireAdult, zProblemValidator('param', m
     return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '신고 내역을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

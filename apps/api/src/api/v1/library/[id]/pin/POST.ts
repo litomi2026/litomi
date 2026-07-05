@@ -1,9 +1,9 @@
-import { idParamSchema } from '@litomi/contracts'
+import { idParamSchema, PROBLEM } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
-import { problemCode } from '@litomi/http/problem-details'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -16,8 +16,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { getPinnedLibraryLimit } from './limit'
 
 const routes = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, requireAdult, zProblemValidator('param', idParamSchema))
 
-routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSchema), async (c) => {
+routes.post('/', ...middlewares, async (c) => {
   const { id: libraryId } = c.req.valid('param')
   const userId = c.get('userId')!
 
@@ -36,11 +38,11 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSc
       }
 
       if (library.userId === userId) {
-        return problemResponse(c, { status: 400, detail: '본인의 서재는 고정할 수 없어요' })
+        return problemResponse(c, { problem: PROBLEM.OWN_LIBRARY_PIN })
       }
 
       if (!library.isPublic) {
-        return problemResponse(c, { status: 403, detail: '비공개 서재는 고정할 수 없어요' })
+        return problemResponse(c, { problem: PROBLEM.PRIVATE_LIBRARY_PIN })
       }
 
       // 2) 기등록 여부 조회 및 개수 제한 고려
@@ -58,8 +60,7 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSc
 
       if (pinnedList.length >= limit) {
         return problemResponse(c, {
-          status: 403,
-          code: problemCode.LIBO_EXPANSION_REQUIRED,
+          problem: PROBLEM.LIBO_EXPANSION_REQUIRED,
           detail: `현재 ${limit}개까지만 추가할 수 있어요`,
         })
       }
@@ -73,7 +74,7 @@ routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSc
     return result
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재를 고정하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

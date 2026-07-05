@@ -3,14 +3,17 @@
 import type { DELETEV1MeBody, DELETEV1MeResponse } from '@litomi/contracts'
 
 import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
-import { getInvalidParams, type ProblemDetails } from '@litomi/http/problem-details'
+
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle, Check, Eye, EyeOff, Loader2, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import { useRouter } from '@/i18n/navigation'
+import { applyInvalidParams } from '@/lib/apply-invalid-params'
+import { getProblemMessage } from '@/lib/error-message'
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 
@@ -57,6 +60,7 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [token, setToken] = useState('')
   const queryClient = useQueryClient()
+  const tErrors = useTranslations('Errors')
   const formRef = useRef<HTMLFormElement | null>(null)
 
   const expectedConfirmText = `${loginId} 계정을 삭제해요`
@@ -69,7 +73,7 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
 
     onSuccess: (data) => {
       handleUnauthorizedError(queryClient)
-      toast.success(data.message)
+      toast.success(`${data.loginId} 계정을 삭제했어요`)
       router.replace('/')
     },
 
@@ -83,7 +87,7 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
         return
       }
 
-      const applied = applyAccountDeletionProblem(formRef.current, error.problem)
+      const applied = applyInvalidParams(formRef.current, error.problem, tErrors, accountDeletionInputNames)
 
       if (applied) {
         return
@@ -93,7 +97,7 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
         setPassword('')
         setIsPasswordVisible(false)
         setToken('')
-        toast.warning(error.message)
+        toast.warning(getProblemMessage(tErrors, error.problem))
         return
       }
     },
@@ -314,35 +318,7 @@ export default function AccountDeletionForm({ loginId, isTwoFactorEnabled }: Pro
   )
 }
 
-function applyAccountDeletionProblem(form: HTMLFormElement | null, problem: ProblemDetails) {
-  let firstInvalidInput: HTMLInputElement | null = null
-
-  for (const param of getInvalidParams(problem)) {
-    if (param.name !== 'password' && param.name !== 'token') {
-      continue
-    }
-
-    const input = form?.elements.namedItem(param.name)
-
-    if (!(input instanceof HTMLInputElement)) {
-      continue
-    }
-
-    input.setCustomValidity(param.reason)
-
-    if (!firstInvalidInput) {
-      firstInvalidInput = input
-    }
-  }
-
-  if (!firstInvalidInput) {
-    return false
-  }
-
-  firstInvalidInput.focus()
-  firstInvalidInput.reportValidity()
-  return true
-}
+const accountDeletionInputNames: Record<string, string> = { password: 'password', token: 'token' }
 
 function clearDeletionInputValidity(target: EventTarget | null) {
   if (target instanceof HTMLInputElement) {

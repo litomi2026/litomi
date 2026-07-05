@@ -106,7 +106,7 @@ realtimeRoutes.get('/', async (c) => {
     return c.json(response, { headers: cacheControlHeaders })
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      return problemResponse(c, { status: 499, detail: '요청이 취소됐어요' })
+      return problemResponse(c, { status: 499 })
     }
 
     if (error instanceof GaxiosError) {

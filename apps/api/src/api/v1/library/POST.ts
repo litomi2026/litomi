@@ -1,14 +1,14 @@
-import { type POSTV1LibraryResponse, postV1LibraryBodySchema } from '@litomi/contracts'
+import { type POSTV1LibraryResponse, PROBLEM, postV1LibraryBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryTable } from '@litomi/db/app/library'
 import { userExpansionTable } from '@litomi/db/app/points'
 import { MAX_LIBRARIES_PER_USER } from '@litomi/domain/library/policy'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@litomi/domain/points/model'
 import { hexColorToInt } from '@litomi/domain/utils/color'
-import { problemCode } from '@litomi/http/problem-details'
 import { normalizeString } from '@litomi/std'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -23,8 +23,10 @@ const ErrorCode = {
 } as const
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1LibraryBodySchema))
 
-route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { name, description, color, icon, isPublic } = c.req.valid('json')
 
@@ -73,7 +75,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema),
     })
 
     if (!created) {
-      return problemResponse(c, { status: 500, detail: '서재를 생성하지 못했어요' })
+      return problemResponse(c, { status: 500 })
     }
 
     const response = {
@@ -86,15 +88,11 @@ route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema),
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
     if (message === ErrorCode.LIBRARY_LIMIT_REACHED) {
-      return problemResponse(c, {
-        status: 403,
-        code: problemCode.LIBO_EXPANSION_REQUIRED,
-        detail: '서재 개수 제한에 도달했어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.LIBO_EXPANSION_REQUIRED })
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재를 생성하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

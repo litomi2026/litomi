@@ -1,12 +1,13 @@
 import { initiatePKCEChallenge } from '@litomi/auth/pkce-server'
 import { buildSessionDeviceLabel } from '@litomi/auth/session'
-import { type POSTV1AuthLoginResponse, postV1AuthLoginRequestSchema } from '@litomi/contracts'
+import { type POSTV1AuthLoginResponse, PROBLEM, postV1AuthLoginRequestSchema } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { compare } from 'bcryptjs'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 import { readAdultFlag, touchUserLoginAt } from '@/api/v1/auth/query'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import type { Env } from '@/app'
@@ -19,8 +20,10 @@ import { DUMMY_PASSWORD_HASH, ensureAllowed, loginIdLimiter, loginIpLimiter } fr
 import { verifyTrustedBrowserToken } from './util'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1AuthLoginRequestSchema))
 
-route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const { codeChallenge, fingerprint, loginId, password, remember, turnstileToken } = c.req.valid('json')
   const remoteIP = getRequestIP(c.req.raw.headers)
   const validator = new TurnstileValidator()
@@ -33,8 +36,7 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
 
   if (!turnstile.success) {
     return problemResponse(c, {
-      status: 400,
-      code: 'human-verification-failed',
+      problem: PROBLEM.HUMAN_VERIFICATION_FAILED,
       detail: validator.getTurnstileErrorMessage(turnstile['error-codes']),
     })
   }
@@ -54,11 +56,7 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
     const isValidPassword = await compare(password, passwordHash)
 
     if (!user || !isValidPassword) {
-      return problemResponse(c, {
-        status: 401,
-        code: 'invalid-credentials',
-        detail: '아이디 또는 비밀번호가 일치하지 않아요',
-      })
+      return problemResponse(c, { problem: PROBLEM.INVALID_CREDENTIALS })
     }
 
     if (await hasActiveTwoFactor(user.id)) {
@@ -107,7 +105,7 @@ route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (
     } satisfies POSTV1AuthLoginResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '로그인 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

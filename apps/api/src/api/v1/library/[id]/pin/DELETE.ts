@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { pinnedLibraryTable } from '@litomi/db/app/library'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -11,8 +12,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const routes = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', idParamSchema))
 
-routes.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async (c) => {
+routes.delete('/', ...middlewares, async (c) => {
   const { id: libraryId } = c.req.valid('param')
   const userId = c.get('userId')!
 
@@ -24,7 +27,7 @@ routes.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async
     return c.json({ result: 'ok' })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재 고정을 해제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

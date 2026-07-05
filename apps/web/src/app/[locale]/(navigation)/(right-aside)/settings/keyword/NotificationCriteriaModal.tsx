@@ -13,11 +13,13 @@ import { getInvalidParams } from '@litomi/http/problem-details'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@litomi/ui'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import useAdultAccessGuard from '@/hook/useAdultAccessGuard'
 import { useRouter } from '@/i18n/navigation'
+import { getInvalidParamMessage, getProblemMessage } from '@/lib/error-message'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { createNotificationCriteria, updateNotificationCriteria } from './api'
 import ConditionInput, { type ConditionInputRow } from './ConditionInput'
@@ -53,6 +55,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
   const router = useRouter()
   const nameId = useId()
   const { guardAdultAccess } = useAdultAccessGuard()
+  const tErrors = useTranslations('Errors')
 
   const formKey = `${isOpen ? 'open' : 'closed'}:${editingCriteria?.id ?? 'new'}:${editingCriteria?.updatedAt.getTime() ?? 0}`
   const labelClassName = 'block text-sm font-medium text-zinc-300 mb-1'
@@ -78,10 +81,14 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
     },
 
     onError: (error) => {
-      setFieldErrors(Object.fromEntries(getInvalidParams(error.problem).map((param) => [param.name, param.reason])))
+      setFieldErrors(
+        Object.fromEntries(
+          getInvalidParams(error.problem).map((param) => [param.name, getInvalidParamMessage(tErrors, param)]),
+        ),
+      )
 
       if (LOCAL_MUTATION_ERROR_STATUSES.includes(error.status)) {
-        toast.warning(error.problem.detail || '입력을 확인해 주세요')
+        toast.warning(getProblemMessage(tErrors, error.problem))
       }
     },
 

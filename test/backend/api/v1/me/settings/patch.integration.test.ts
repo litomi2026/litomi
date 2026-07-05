@@ -19,7 +19,7 @@ describe('PATCH /api/v1/me/settings', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: '/api/v1/me/settings',
     })
   })
@@ -37,7 +37,7 @@ describe('PATCH /api/v1/me/settings', () => {
     await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/me/settings',
     })
 
@@ -78,7 +78,7 @@ describe('PATCH /api/v1/me/settings', () => {
     const problem = await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/me/settings',
     })
 

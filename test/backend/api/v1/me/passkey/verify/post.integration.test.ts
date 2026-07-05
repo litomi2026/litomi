@@ -48,7 +48,6 @@ describe('POST /api/v1/me/passkey/verify', () => {
       id: expect.any(Number),
       credentialId: 'test-me-passkey-platform',
       name: '이 기기의 패스키',
-      message: '패스키를 등록했어요',
     })
 
     expect(await readPasskeyCredentialByCredentialId('test-me-passkey-platform')).toMatchObject({

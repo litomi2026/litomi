@@ -1,4 +1,9 @@
-import { isProblemDetails, isProblemDetailsContentType, type ProblemDetails } from '@litomi/http/problem-details'
+import {
+  getProblemCode,
+  isProblemDetails,
+  isProblemDetailsContentType,
+  type ProblemDetails,
+} from '@litomi/http/problem-details'
 
 export class HTTPResponseError extends Error {
   readonly name = 'HTTPResponseError'
@@ -39,11 +44,15 @@ export class ProblemDetailsError extends Error {
     return this.problem.type
   }
 
+  // message는 진단용(Sentry·로그) — 사용자 표시는 problem code를 Errors 카탈로그로 변환한다.
   constructor(
     public readonly problem: ProblemDetails,
     public readonly response?: Response,
   ) {
-    super(problem.detail ?? problem.title)
+    const code = getProblemCode(problem.type)
+    const summary = problem.detail ?? problem.title
+    const meta = [problem.status, code].filter(Boolean).join(' ')
+    super(`[${meta}] ${summary}`)
   }
 }
 

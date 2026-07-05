@@ -1,6 +1,7 @@
 import type { POSTV1BBatonAttemptResponse } from '@litomi/contracts'
 
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -24,8 +25,10 @@ const bbatonAttemptLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth)
 
-route.post('/', requireAuth, async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   try {
@@ -44,7 +47,7 @@ route.post('/', requireAuth, async (c) => {
     } satisfies POSTV1BBatonAttemptResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '비바톤 인증을 시작하지 못했어요.' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

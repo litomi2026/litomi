@@ -17,7 +17,9 @@ import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { Link, useRouter } from '@/i18n/navigation'
 import { identify, track } from '@/lib/analytics/browser'
+import { applyInvalidParams } from '@/lib/apply-invalid-params'
 import { getAuthRedirectHref, getAuthSuccessRedirect, getCurrentAuthRedirect } from '@/lib/auth-redirect'
+import { getProblemCodeMessage } from '@/lib/error-message'
 import { resetAdultGatedQueries } from '@/lib/react-query/adult-gated-queries'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { getMeQueryFetchOptions } from '@/query/useMeQuery'
@@ -27,7 +29,7 @@ import { getLocalReadingHistoryArray, removeLocalReadingHistory } from '@/utils/
 
 import { importReadingHistory, login } from './api'
 import TwoFactorVerification from './TwoFactorVerification'
-import { applyLoginProblem, clearLoginId, clearLoginValidity } from './util'
+import { clearLoginId, clearLoginValidity, loginInputNames } from './util'
 
 type TwoFactorData = {
   fingerprint: string
@@ -48,6 +50,7 @@ export default function LoginForm() {
   const turnstileRef = useRef<TurnstileInstance>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const t = useTranslations('Auth.login')
+  const tErrors = useTranslations('Errors')
   const queryClient = useQueryClient()
   const router = useRouter()
 
@@ -60,7 +63,7 @@ export default function LoginForm() {
       window.requestAnimationFrame(() => {
         const form = formRef.current
 
-        if (applyLoginProblem(form, error.problem)) {
+        if (applyInvalidParams(form, error.problem, tErrors, loginInputNames)) {
           return
         }
 
@@ -68,7 +71,7 @@ export default function LoginForm() {
           return
         }
 
-        toast.warning(error.problem.detail ?? t('fallbackError'))
+        toast.warning(getProblemCodeMessage(tErrors, error.problem) ?? t('fallbackError'))
       })
     },
     onSuccess: (data, variables) => {

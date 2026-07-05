@@ -59,7 +59,7 @@ export default function SessionList({ sessions, hasCurrentPersistentSession }: P
       clearMeCache(queryClient)
     }
 
-    toast.success(data.message)
+    toast.success(data.clearedCurrentSession ? '모든 기기에서 로그아웃했어요' : '선택한 기기에서 로그아웃했어요')
     router.refresh()
   }
 

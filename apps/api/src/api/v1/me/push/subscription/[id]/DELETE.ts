@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { webPushTable } from '@litomi/db/app/notification'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -10,8 +11,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('param', idParamSchema))
 
-route.delete('/', zProblemValidator('param', idParamSchema), async (c) => {
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
 
@@ -25,13 +28,10 @@ route.delete('/', zProblemValidator('param', idParamSchema), async (c) => {
       return problemResponse(c, { status: 404, detail: '브라우저를 찾을 수 없어요' })
     }
 
-    return c.json({
-      id: deleted.id,
-      message: '푸시 알림을 해제했어요',
-    } satisfies DELETEV1MePushSubscriptionIdResponse)
+    return c.json({ id: deleted.id } satisfies DELETEV1MePushSubscriptionIdResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '푸시 알림을 해제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -4,6 +4,7 @@ import { readUserSettings } from '@litomi/db/app/query/user-settings'
 import { userSettingsTable } from '@litomi/db/app/user'
 import { patchUserSettings } from '@litomi/domain/utils/user-settings'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -11,8 +12,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', patchV1MeSettingsBodySchema))
 
-route.patch('/', zProblemValidator('json', patchV1MeSettingsBodySchema), async (c) => {
+route.patch('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const patch = c.req.valid('json')
 
@@ -46,7 +49,7 @@ route.patch('/', zProblemValidator('json', patchV1MeSettingsBodySchema), async (
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '설정을 저장하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

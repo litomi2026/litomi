@@ -1,7 +1,8 @@
-import { type PATCHV1MePushSettingsResponse, patchV1MePushSettingsBodySchema } from '@litomi/contracts'
+import { patchV1MePushSettingsBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pushSettingsTable } from '@litomi/db/app/notification'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -9,8 +10,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', patchV1MePushSettingsBodySchema))
 
-route.patch('/', zProblemValidator('json', patchV1MePushSettingsBodySchema), async (c) => {
+route.patch('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const settings = c.req.valid('json')
   const updateValues = { ...settings, updatedAt: new Date() }
@@ -24,10 +27,10 @@ route.patch('/', zProblemValidator('json', patchV1MePushSettingsBodySchema), asy
         set: updateValues,
       })
 
-    return c.json({ message: '푸시 알림을 설정했어요' } satisfies PATCHV1MePushSettingsResponse)
+    return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '푸시 알림 설정 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -12,8 +13,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', deleteV1BookmarkBodySchema))
 
-route.delete('/', requireAuth, zProblemValidator('json', deleteV1BookmarkBodySchema), async (c) => {
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { mangaIds } = c.req.valid('json')
   const requestedMangaIds = [...new Set(mangaIds)]
@@ -33,7 +36,7 @@ route.delete('/', requireAuth, zProblemValidator('json', deleteV1BookmarkBodySch
     return c.json({ deletedCount } satisfies DELETEV1BookmarkResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '북마크 삭제에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -9,6 +9,7 @@ import {
 } from '@litomi/db/app/query/payout'
 import { computeSettlement, monthWindowKST } from '@litomi/domain/payout/policy'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -19,9 +20,11 @@ import { problemResponse } from '@/utils/problem'
 import { maskAccountNumber } from '../lib'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth)
 
 // 아티스트 수익 대시보드 — 이번 달(KST) 실시간 집계 + 월 정산 내역 + 입금 계좌.
-route.get('/', requireAuth, async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const artist = await getChatArtistByUserId(userId)
 

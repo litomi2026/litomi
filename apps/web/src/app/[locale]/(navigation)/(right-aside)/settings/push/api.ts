@@ -1,13 +1,10 @@
 import type {
   DELETEV1MePushSubscriptionBody,
   DELETEV1MePushSubscriptionIdResponse,
-  DELETEV1MePushSubscriptionResponse,
   PATCHV1MePushSettingsBody,
-  PATCHV1MePushSettingsResponse,
   POSTV1MePushSubscriptionBody,
   POSTV1MePushSubscriptionResponse,
   POSTV1MePushTestBody,
-  POSTV1MePushTestResponse,
 } from '@litomi/contracts'
 
 import { fetchAPIData } from '@/utils/api-request'
@@ -35,37 +32,25 @@ export async function deletePushSubscription(id: number) {
 }
 
 export async function deletePushSubscriptionByEndpoint(body: DELETEV1MePushSubscriptionBody) {
-  const url = '/api/v1/me/push/subscription'
-
-  const { data } = await fetchAPIData<DELETEV1MePushSubscriptionResponse>(url, {
+  await fetchAPIData<undefined>('/api/v1/me/push/subscription', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-
-  return data
 }
 
 export async function sendTestPushNotification(body: POSTV1MePushTestBody) {
-  const url = '/api/v1/me/push/test'
-
-  const { data } = await fetchAPIData<POSTV1MePushTestResponse>(url, {
+  await fetchAPIData<undefined>('/api/v1/me/push/test', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-
-  return data
 }
 
 export async function updatePushSettings(body: PATCHV1MePushSettingsBody) {
-  const url = '/api/v1/me/push/settings'
-
-  const { data } = await fetchAPIData<PATCHV1MePushSettingsResponse>(url, {
+  await fetchAPIData<undefined>('/api/v1/me/push/settings', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-
-  return data
 }

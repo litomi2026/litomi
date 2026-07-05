@@ -4,6 +4,7 @@ import { WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
+import { TranslatedMessage } from '@/lib/toast'
 import { checkCapacitorApp } from '@/utils/browser'
 
 const ONLINE_OFFLINE_TOAST_ID = 'online-offline-toast'
@@ -31,12 +32,12 @@ export default function ServiceWorkerRegistrar() {
 
     function handleOnline() {
       setIsOffline(false)
-      toast.success('인터넷 연결이 복원됐어요', { id: ONLINE_OFFLINE_TOAST_ID })
+      toast.success(<TranslatedMessage id="Common.network.online" />, { id: ONLINE_OFFLINE_TOAST_ID })
     }
 
     function handleOffline() {
       setIsOffline(true)
-      toast.warning('오프라인 모드로 전환됐어요', { id: ONLINE_OFFLINE_TOAST_ID })
+      toast.warning(<TranslatedMessage id="Common.network.offline" />, { id: ONLINE_OFFLINE_TOAST_ID })
     }
 
     window.addEventListener('online', handleOnline)

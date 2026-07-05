@@ -52,7 +52,7 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
       <label className="block">
         <span className="text-sm font-medium text-foreground">{t('handleLabel')}</span>
         <div className="mt-1.5 flex items-center rounded-xl bg-zinc-800 focus-within:ring-2 focus-within:ring-indigo-500/50">
-          <span className="pl-4 text-sm text-zinc-500">/sobok/</span>
+          <span className="pl-4 text-sm text-zinc-500">/sobok/@</span>
           <input
             type="text"
             name="handle"
@@ -62,7 +62,7 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
             required
             minLength={3}
             maxLength={32}
-            pattern="[a-z0-9_]+"
+            pattern="[a-z0-9](?:-?[a-z0-9])*"
             title={t('handleTitle')}
             className="w-full bg-transparent py-2.5 pr-4 pl-0.5 text-base text-foreground outline-none placeholder:text-zinc-500"
           />

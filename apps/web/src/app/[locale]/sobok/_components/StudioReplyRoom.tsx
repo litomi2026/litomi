@@ -30,7 +30,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
 
   useEffect(() => {
     if (artistData && !isOwner) {
-      router.replace(`/sobok/${handle}`)
+      router.replace(`/sobok/@${handle}`)
     }
   }, [artistData, isOwner, handle, router])
 

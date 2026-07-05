@@ -3,6 +3,7 @@
 import { env } from '@litomi/env/client'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { Ref } from 'react'
 import { toast } from 'sonner'
 
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export default function TurnstileWidget({ className = '', hasToken, id, onTokenChange, turnstileRef, options }: Props) {
+  const t = useTranslations('Common.turnstile')
+
   return (
     <div className="h-[65px] flex items-center justify-center relative overflow-hidden">
       {!hasToken && (
@@ -27,11 +30,11 @@ export default function TurnstileWidget({ className = '', hasToken, id, onTokenC
         className={`h-[65px] relative z-10 overflow-x-auto overflow-y-hidden scrollbar-hidden ${className}`}
         id={id}
         onError={() => {
-          toast.error('Cloudflare 보안 검증에 실패했어요')
+          toast.error(t('failed'))
           onTokenChange('')
         }}
         onExpire={() => {
-          toast.warning('Cloudflare 보안 검증이 만료됐어요')
+          toast.warning(t('expired'))
           onTokenChange('')
         }}
         onSuccess={onTokenChange}

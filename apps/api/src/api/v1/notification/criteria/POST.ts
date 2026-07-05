@@ -1,6 +1,7 @@
 import {
   type POSTV1NotificationCriteriaBody,
   type POSTV1NotificationCriteriaResponse,
+  PROBLEM,
   postV1NotificationCriteriaBodySchema,
 } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
@@ -8,6 +9,7 @@ import { notificationConditionTable, notificationCriteriaTable } from '@litomi/d
 import { MAX_CRITERIA_PER_USER } from '@litomi/domain/notification/policy'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 import { areNotificationCriteriaConditionsEqual } from '@/api/v1/notification/criteria/util'
 import type { Env } from '@/app'
 import { lockUserRowForUpdate } from '@/utils/lock-user-row'
@@ -40,8 +42,10 @@ type TransactionResult =
     }
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1NotificationCriteriaBodySchema))
 
-route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { conditions, isActive, name } = c.req.valid('json')
 
@@ -111,16 +115,14 @@ route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema),
 
     if (result.kind === 'limit') {
       return problemResponse(c, {
-        status: 403,
-        code: 'notification-criteria-limit-reached',
-        detail: `최대 ${MAX_CRITERIA_PER_USER}개까지만 추가할 수 있어요`,
+        problem: PROBLEM.NOTIFICATION_CRITERIA_LIMIT_REACHED,
+        extensions: { limit: MAX_CRITERIA_PER_USER },
       })
     }
 
     if (result.kind === 'conflict') {
       return problemResponse(c, {
-        status: 409,
-        code: 'notification-criteria-conflict',
+        problem: PROBLEM.NOTIFICATION_CRITERIA_CONFLICT,
         detail: `이미 동일한 키워드 알림이 존재해요: ${result.criteriaName}`,
         extensions: {
           existingCriteriaId: result.criteriaId,
@@ -139,7 +141,7 @@ route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema),
     return c.json(response, 201)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '키워드 알림 설정에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

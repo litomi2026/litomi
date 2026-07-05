@@ -1,10 +1,11 @@
-import { type POSTV1RouletteSpinResponse, postV1RouletteSpinRequestSchema } from '@litomi/contracts'
+import { type POSTV1RouletteSpinResponse, PROBLEM, postV1RouletteSpinRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { pointTransactionTable, userPointsTable } from '@litomi/db/app/points'
 import { TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { assertRouletteConfig, ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/points/roulette'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -15,8 +16,10 @@ import { zProblemValidator } from '@/utils/validator'
 assertRouletteConfig(ROULETTE_CONFIG)
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1RouletteSpinRequestSchema))
 
-route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinRequestSchema), async (c) => {
+route.post('/spin', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { bet } = c.req.valid('json')
 
@@ -32,11 +35,15 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
         .for('update')
 
       if (!points || points.balance < bet) {
-        return { ok: false as const, status: 400 as const, detail: '리보가 부족해요' }
+        return {
+          ok: false as const,
+          problem: PROBLEM.INSUFFICIENT_POINTS,
+        }
       }
 
       // 1) 배팅 차감
       const balanceAfterBet = points.balance - bet
+
       await tx
         .update(userPointsTable)
         .set({
@@ -54,7 +61,6 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
 
       // 2) 결과 결정 (서버 RNG)
       const landed = pickRouletteSegment(ROULETTE_CONFIG.segments)
-
       const payout = Math.floor((bet * landed.payoutMultiplierX100) / 100)
       const balanceAfterPayout = balanceAfterBet + payout
 
@@ -82,12 +88,16 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
         bet,
         payout,
         net: payout - bet,
-        landed: { id: landed.id, label: landed.label, payoutMultiplierX100: landed.payoutMultiplierX100 },
+        landed: {
+          id: landed.id,
+          label: landed.label,
+          payoutMultiplierX100: landed.payoutMultiplierX100,
+        },
       }
     })
 
     if (!result.ok) {
-      return problemResponse(c, { status: result.status, detail: result.detail })
+      return problemResponse(c, result)
     }
 
     return c.json({
@@ -99,7 +109,7 @@ route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinReq
     } satisfies POSTV1RouletteSpinResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '룰렛에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

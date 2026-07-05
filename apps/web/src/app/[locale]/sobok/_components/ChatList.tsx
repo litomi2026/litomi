@@ -18,7 +18,7 @@ function ChatThreadItem({ thread }: { thread: ChatThread }) {
 
   return (
     <Link
-      href={`/sobok/${artist.handle}`}
+      href={`/sobok/@${artist.handle}`}
       className="flex items-center gap-4 p-3 rounded-2xl transition-all active:scale-[0.98] active:bg-foreground/5"
     >
       <div className="relative shrink-0">

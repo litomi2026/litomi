@@ -53,7 +53,7 @@ describe('DELETE /api/v1/bookmark/:id', () => {
     const problem = await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/bookmark/0',
     })
 

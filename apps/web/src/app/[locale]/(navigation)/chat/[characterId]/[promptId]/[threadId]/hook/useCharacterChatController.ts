@@ -3,6 +3,7 @@
 import type { ChatCompletionRequestBase, WebWorkerMLCEngine } from '@mlc-ai/web-llm'
 
 import ms from 'ms'
+import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -94,6 +95,7 @@ export function useCharacterChatController({
   onOutboxFlush,
   resetChat,
 }: Options) {
+  const t = useTranslations('AIChat')
   const [messages, setMessages, messagesRef] = useStateWithRef<ChatMessage[]>([])
   const [input, setInput, inputRef] = useStateWithRef('')
   const [isGenerating, setIsGenerating, isGeneratingRef] = useStateWithRef(false)
@@ -608,9 +610,9 @@ export function useCharacterChatController({
         errorMessage.includes('lost')
 
       if (isGpuLost) {
-        toast.error('GPU 연결이 끊겼어요. 다시 시도해 주세요')
+        toast.error(t('gpuDisconnected'))
       } else {
-        toast.error('응답을 생성하지 못했어요')
+        toast.error(t('generateFailed'))
       }
 
       setMessages((prev) => prev.filter((m) => m.id !== assistantId))

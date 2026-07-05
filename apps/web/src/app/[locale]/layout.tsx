@@ -111,16 +111,15 @@ export default async function RootLayout({ children, params }: Props) {
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <ThemeProvider />
         <CapacitorNativeEffects />
-        <OverlayHost>
-          <Toaster
-            className="pointer-events-auto notranslate"
-            mobileOffset={{ top: 'calc(1rem + var(--safe-area-top))' }}
-            position="top-center"
-            theme="system"
-            toastOptions={{ className: 'notranslate' }}
-          />
-        </OverlayHost>
         <NextIntlClientProvider>
+          <OverlayHost>
+            <Toaster
+              className="pointer-events-auto notranslate"
+              mobileOffset={{ top: 'calc(1rem + var(--safe-area-top))' }}
+              position="top-center"
+              theme="system"
+            />
+          </OverlayHost>
           <QueryProvider>
             {children}
             <LibraryModal />

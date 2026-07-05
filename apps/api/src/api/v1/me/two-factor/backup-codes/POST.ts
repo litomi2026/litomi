@@ -1,10 +1,15 @@
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { generateBackupCodes } from '@litomi/auth/two-factor-backup-code'
-import { type POSTV1MeTwoFactorBackupCodesResponse, postV1MeTwoFactorBackupCodesBodySchema } from '@litomi/contracts'
+import {
+  type POSTV1MeTwoFactorBackupCodesResponse,
+  PROBLEM,
+  postV1MeTwoFactorBackupCodesBodySchema,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -18,8 +23,10 @@ const twoFactorBackupCodesLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1MeTwoFactorBackupCodesBodySchema))
 
-route.post('/', zProblemValidator('json', postV1MeTwoFactorBackupCodesBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { token } = c.req.valid('json')
   const { allowed, retryAfter } = await twoFactorBackupCodesLimiter.check(String(userId))
@@ -57,10 +64,10 @@ route.post('/', zProblemValidator('json', postV1MeTwoFactorBackupCodesBodySchema
 
     switch (result.kind) {
       case 'invalid-token':
-        return problemResponse(c, { status: 400, detail: '잘못된 인증 코드예요' })
+        return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_TOKEN_INVALID })
 
       case 'not-found':
-        return problemResponse(c, { status: 404, detail: '활성화된 2단계 인증이 없어요' })
+        return problemResponse(c, { problem: PROBLEM.TWO_FACTOR_NOT_ENABLED })
 
       case 'regenerated':
         await Promise.allSettled([twoFactorBackupCodesLimiter.reward(String(userId))])
@@ -68,7 +75,7 @@ route.post('/', zProblemValidator('json', postV1MeTwoFactorBackupCodesBodySchema
     }
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '복구 코드 재생성 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

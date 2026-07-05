@@ -1,6 +1,5 @@
-import type { Metadata } from 'next'
-
 import { MAX_MANGA_ID } from '@litomi/domain/manga/policy'
+import type { Metadata } from 'next'
 
 import { SearchParam as SearchPageSearchParam } from '@/app/[locale]/(navigation)/search/constants'
 

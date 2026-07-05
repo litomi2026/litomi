@@ -1,6 +1,6 @@
 'use client'
 
-import type { DELETEV1MeTrustedBrowserAllResponse, DELETEV1MeTrustedBrowserResponse } from '@litomi/contracts'
+import type { DELETEV1MeTrustedBrowserResponse } from '@litomi/contracts'
 
 import { formatDistanceFromNow, formatDistanceToNow } from '@litomi/std'
 import { useMutation } from '@tanstack/react-query'
@@ -24,17 +24,17 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
 
   const revokeSingleMutation = useMutation<DELETEV1MeTrustedBrowserResponse, ProblemDetailsError, number>({
     mutationFn: revokeTrustedBrowser,
-    onSuccess: ({ id, message }) => {
+    onSuccess: ({ id }) => {
       setBrowsers((prev) => prev.filter((browser) => browser.id !== id))
-      toast.success(message)
+      toast.success('브라우저가 제거됐어요')
     },
   })
 
-  const revokeAllMutation = useMutation<DELETEV1MeTrustedBrowserAllResponse, ProblemDetailsError>({
+  const revokeAllMutation = useMutation<void, ProblemDetailsError>({
     mutationFn: revokeAllTrustedBrowsers,
-    onSuccess: ({ message }) => {
+    onSuccess: () => {
       setBrowsers([])
-      toast.success(message)
+      toast.success('모든 브라우저가 제거됐어요')
     },
   })
 

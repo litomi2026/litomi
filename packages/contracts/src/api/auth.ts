@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { INVALID_PARAM } from '../problem'
 import {
   loginIdSchema,
   nicknameSchema,
@@ -70,11 +71,11 @@ export const postV1AuthSignupRequestSchema = z
     turnstileToken: turnstileTokenSchema,
   })
   .refine((data) => data.password === data.passwordConfirm, {
-    error: '비밀번호와 비밀번호 확인 값이 일치하지 않아요',
+    params: { code: INVALID_PARAM.PASSWORD_CONFIRM_MISMATCH },
     path: ['passwordConfirm'],
   })
   .refine((data) => data.loginId !== data.password, {
-    error: '아이디와 비밀번호는 같을 수 없어요',
+    params: { code: INVALID_PARAM.PASSWORD_EQUALS_LOGIN_ID },
     path: ['password'],
   })
 

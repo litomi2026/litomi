@@ -1,6 +1,7 @@
 import { type POSTV1MePushSubscriptionResponse, postV1MePushSubscriptionBodySchema } from '@litomi/contracts'
 import { WebPushService } from '@litomi/notifications'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -8,8 +9,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1MePushSubscriptionBodySchema))
 
-route.post('/', zProblemValidator('json', postV1MePushSubscriptionBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { subscription, userAgent } = c.req.valid('json')
   const notificationService = WebPushService.getInstance()
@@ -19,13 +22,12 @@ route.post('/', zProblemValidator('json', postV1MePushSubscriptionBodySchema), a
 
     const result = {
       id: savedSubscription.id,
-      message: '이 브라우저의 푸시 알림을 활성화했어요',
     } satisfies POSTV1MePushSubscriptionResponse
 
     return c.json(result, 201)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '푸시 알림을 활성화하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

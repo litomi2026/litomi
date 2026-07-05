@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 
 import useCooldown from '@/hook/useCooldown'
 import { usePathname } from '@/i18n/navigation'
+import { getErrorMessage } from '@/lib/error-message'
 import { reloadIfStaleDeployment } from '@/utils/stale-deployment'
 
 type Props = {
@@ -18,6 +19,7 @@ export default function ErrorPage({ error, reset }: Props) {
   const pathname = usePathname()
   const cooldown = useCooldown()
   const t = useTranslations('MangaViewer.error')
+  const tErrors = useTranslations('Errors')
 
   useEffect(() => {
     if (reloadIfStaleDeployment(error)) {
@@ -38,7 +40,7 @@ export default function ErrorPage({ error, reset }: Props) {
       </h1>
       <div className="grid gap-2">
         <span className="text-sm">{error.digest}</span>
-        <p className="text-red-600">{error.message}</p>
+        <p className="text-red-600">{getErrorMessage(tErrors, error) ?? tErrors('status.serverError')}</p>
       </div>
       <button
         type="button"

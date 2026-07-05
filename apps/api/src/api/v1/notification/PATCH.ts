@@ -5,6 +5,7 @@ import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -12,8 +13,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', patchV1NotificationReadBodySchema))
 
-route.patch('/read', zProblemValidator('json', patchV1NotificationReadBodySchema), async (c) => {
+route.patch('/read', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { ids } = c.req.valid('json')
 
@@ -27,7 +30,7 @@ route.patch('/read', zProblemValidator('json', patchV1NotificationReadBodySchema
     return c.json({ ids: updated.map((item) => item.id) } satisfies PATCHV1NotificationReadResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '알림을 읽는 도중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 
@@ -44,7 +47,7 @@ route.patch('/read-all', async (c) => {
     return c.json({ updatedCount: updated.length } satisfies PATCHV1NotificationReadAllResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '알림을 읽는 도중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

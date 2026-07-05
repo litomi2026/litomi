@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl'
 import { twMerge } from 'tailwind-merge'
 
 import { Link } from '@/i18n/navigation'
+import { type ErrorsTranslator, getErrorMessage } from '@/lib/error-message'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 
 type Props = {
@@ -12,8 +13,9 @@ type Props = {
 
 export default function SearchResultError({ error, isRetrying, onRetry }: Props) {
   const t = useTranslations('Search.resultError')
-  const info = getSearchErrorInfo(error)
-  const title = info.title || t('fallbackTitle')
+  const tErrors = useTranslations('Errors')
+  const info = getSearchErrorInfo(error, tErrors)
+  const title = t('fallbackTitle')
   const description = info.message && info.message.trim() !== title.trim() ? info.message : t('fallbackDescription')
 
   return (
@@ -48,23 +50,9 @@ export default function SearchResultError({ error, isRetrying, onRetry }: Props)
   )
 }
 
-function getSearchErrorInfo(error: unknown) {
-  if (error instanceof ProblemDetailsError) {
-    return {
-      title: error.problem.title,
-      message: error.problem.detail,
-      canRetry: error.isRetryable,
-    }
-  }
-
-  if (error instanceof Error) {
-    return {
-      message: error.message,
-      canRetry: true,
-    }
-  }
-
+function getSearchErrorInfo(error: unknown, t: ErrorsTranslator) {
   return {
-    canRetry: true,
+    message: getErrorMessage(t, error) ?? undefined,
+    canRetry: error instanceof ProblemDetailsError ? error.isRetryable : true,
   }
 }

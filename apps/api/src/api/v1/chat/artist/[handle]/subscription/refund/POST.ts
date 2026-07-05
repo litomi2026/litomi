@@ -1,5 +1,5 @@
 import { cancelPayment, getRemotePayment, isBillingConfigured } from '@litomi/billing'
-import { chatHandleParamSchema, type POSTV1ChatSubscriptionRefundResponse } from '@litomi/contracts'
+import { chatHandleParamSchema, type POSTV1ChatSubscriptionRefundResponse, PROBLEM } from '@litomi/contracts'
 import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { applyPaymentRefunds, getLatestPaidInvoicePayment } from '@litomi/db/app/query/refund'
 import { getSubscription } from '@litomi/db/app/query/subscription'
@@ -54,19 +54,13 @@ route.post('/', ...middlewares, async (c) => {
   const candidate = await getLatestPaidInvoicePayment(subscription.id)
 
   if (!candidate?.paidAt) {
-    return problemResponse(c, {
-      status: 400,
-      detail: '환불할 결제가 없어요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.REFUND_NO_PAYMENT })
   }
 
   const now = new Date()
 
   if (now.getTime() - candidate.paidAt.getTime() > REFUND_WINDOW_MS) {
-    return problemResponse(c, {
-      status: 403,
-      detail: '결제일로부터 7일이 지나 환불할 수 없어요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.REFUND_WINDOW_EXPIRED })
   }
 
   const window = {
@@ -75,10 +69,7 @@ route.post('/', ...middlewares, async (c) => {
   }
 
   if (await hasOwnRepliesInWindow({ senderId: userId, artistId: artist.id, window })) {
-    return problemResponse(c, {
-      status: 403,
-      detail: '이번 결제 기간에 답장을 보내서 환불할 수 없어요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.REFUND_FORFEITED_BY_REPLY })
   }
 
   // 취소 요청이 던져도(이미 취소됨 등) 아래 대사가 실제 상태로 수렴시키므로 삼키고 진행한다.
@@ -105,7 +96,6 @@ route.post('/', ...middlewares, async (c) => {
 
     return problemResponse(c, {
       status: 502,
-      detail: '환불 상태를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.',
     })
   }
 
@@ -113,10 +103,7 @@ route.post('/', ...middlewares, async (c) => {
   const refundedTotal = remote.refunds.reduce((total, refund) => total + refund.amount, 0)
 
   if (refundedTotal < candidate.amount) {
-    return problemResponse(c, {
-      status: 402,
-      detail: '환불이 완료되지 않았어요. 잠시 후 다시 시도해 주세요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.REFUND_INCOMPLETE })
   }
 
   await publishEntitlementRevoked(userId, artist.id)

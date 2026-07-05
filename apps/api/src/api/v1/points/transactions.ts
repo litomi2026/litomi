@@ -9,6 +9,7 @@ import { LOCALE_LANGUAGE_TAGS, Locale } from '@litomi/domain/locale'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -18,11 +19,18 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-const route = new Hono<Env>()
-
 const PER_PAGE = 20
 
-route.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1PointTransactionQuerySchema), async (c) => {
+const route = new Hono<Env>()
+const factory = createFactory<Env>()
+
+const middlewares = factory.createHandlers(
+  requireAuth,
+  requireAdult,
+  zProblemValidator('query', getV1PointTransactionQuerySchema),
+)
+
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { cursor, locale } = c.req.valid('query')
 
@@ -66,7 +74,7 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', getV1PointT
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '거래 내역을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

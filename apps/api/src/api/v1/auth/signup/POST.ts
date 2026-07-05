@@ -1,10 +1,11 @@
 import { PASSWORD_HASH_COST } from '@litomi/auth/password'
-import { type POSTV1AuthSignupResponse, postV1AuthSignupRequestSchema } from '@litomi/contracts'
+import { type POSTV1AuthSignupResponse, PROBLEM, postV1AuthSignupRequestSchema } from '@litomi/contracts'
 import { generateRandomNickname, generateRandomProfileImage } from '@litomi/domain/utils/nickname'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { hash } from 'bcryptjs'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import { createUser } from '@/api/v1/auth/signup/query'
 import type { Env } from '@/app'
@@ -19,8 +20,10 @@ const signupLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1AuthSignupRequestSchema))
 
-route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const { loginId, nickname: requestedNickname, password, turnstileToken } = c.req.valid('json')
   const nickname = requestedNickname ? requestedNickname : generateRandomNickname()
   const validator = new TurnstileValidator()
@@ -33,11 +36,7 @@ route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async 
   })
 
   if (!turnstile.success) {
-    return problemResponse(c, {
-      status: 400,
-      code: 'human-verification-failed',
-      detail: '보안 확인에 실패했어요',
-    })
+    return problemResponse(c, { problem: PROBLEM.HUMAN_VERIFICATION_FAILED })
   }
 
   const { allowed, retryAfter } = await signupLimiter.check(remoteIP)
@@ -58,11 +57,15 @@ route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async 
 
     if (!result) {
       return problemResponse(c, {
-        status: 409,
-        code: 'login-id-conflict',
-        detail: '이미 사용 중인 아이디예요',
+        problem: PROBLEM.LOGIN_ID_CONFLICT,
         extensions: {
-          invalidParams: [{ name: 'loginId', reason: '이미 사용 중인 아이디예요' }],
+          invalidParams: [
+            {
+              name: 'loginId',
+              code: PROBLEM.LOGIN_ID_CONFLICT.slug,
+              reason: '이미 사용 중인 아이디예요',
+            },
+          ],
         },
       })
     }
@@ -85,7 +88,7 @@ route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async 
     return c.json(response, 201)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '회원가입 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

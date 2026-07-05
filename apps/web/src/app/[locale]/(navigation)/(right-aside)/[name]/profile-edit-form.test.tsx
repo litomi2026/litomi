@@ -3,12 +3,20 @@ import '@test/setup.dom'
 import { describe, expect, test } from 'bun:test'
 import type { ProblemDetails } from '@litomi/http/problem-details'
 
+import type { ErrorsTranslator } from '@/lib/error-message'
+
 import {
   applyProfileProblem,
   buildProfileEditPatch,
   clearProfileValidity,
   getProfileProblemFieldErrors,
 } from './profile-edit-form'
+
+// invalidParams[].code → 카탈로그 카피 변환은 error-message 리졸버 소관이므로, 필드 매핑만 검증하도록
+// 키를 그대로 돌려주는 fake 번역기를 쓴다.
+const fakeErrorsTranslator = Object.assign((key: string) => `msg:${key}`, {
+  has: () => true,
+}) as unknown as ErrorsTranslator
 
 describe('profile-edit-form', () => {
   test('변경이 없으면 patch를 생략하고, 빈 imageURL은 null로 정규화한다', () => {
@@ -68,18 +76,18 @@ describe('profile-edit-form', () => {
       status: 400,
       detail: '입력을 확인해 주세요',
       invalidParams: [
-        { name: 'name', reason: '이미 사용 중인 이름이에요' },
-        { name: 'imageURL', reason: '프로필 이미지 주소가 URL 형식이 아니에요' },
+        { name: 'name', code: 'name-conflict' },
+        { name: 'imageURL', code: 'invalid-protocol' },
       ],
     }
 
-    expect(getProfileProblemFieldErrors(problem)).toEqual({
-      name: '이미 사용 중인 이름이에요',
-      imageURL: '프로필 이미지 주소가 URL 형식이 아니에요',
+    expect(getProfileProblemFieldErrors(problem, fakeErrorsTranslator)).toEqual({
+      name: 'msg:field.name-conflict',
+      imageURL: 'msg:field.invalid-protocol',
     })
-    expect(applyProfileProblem(form, problem)).toBe(true)
-    expect(nameInput.validationMessage).toBe('이미 사용 중인 이름이에요')
-    expect(imageURLInput.validationMessage).toBe('프로필 이미지 주소가 URL 형식이 아니에요')
+    expect(applyProfileProblem(form, problem, fakeErrorsTranslator)).toBe(true)
+    expect(nameInput.validationMessage).toBe('msg:field.name-conflict')
+    expect(imageURLInput.validationMessage).toBe('msg:field.invalid-protocol')
 
     clearProfileValidity(form)
 

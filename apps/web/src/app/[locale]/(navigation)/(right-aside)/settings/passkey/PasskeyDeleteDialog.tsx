@@ -30,13 +30,13 @@ export default function PasskeyDeleteDialog({ credentialId, id, open, onOpenChan
   const deleteMutation = useMutation<DELETEV1MePasskeyResponse, ProblemDetailsError, number>({
     mutationFn: deletePasskey,
 
-    onSuccess: async ({ message }) => {
+    onSuccess: async () => {
       await signalCurrentPasskeyUserDetails({
         ...passkeySignalData,
         credentialIds: passkeySignalData.credentialIds.filter((id) => id !== credentialId),
       })
 
-      toast.success(message)
+      toast.success('패스키가 삭제됐어요')
       onOpenChange(false)
       router.refresh()
     },

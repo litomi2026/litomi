@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { postTable } from '@litomi/db/app/post'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -11,8 +12,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', idParamSchema))
 
-route.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async (c) => {
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id: postId } = c.req.valid('param')
 
@@ -29,7 +32,7 @@ route.delete('/', requireAuth, zProblemValidator('param', idParamSchema), async 
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '글을 삭제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

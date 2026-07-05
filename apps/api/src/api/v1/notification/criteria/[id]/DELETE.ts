@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { notificationCriteriaTable } from '@litomi/db/app/notification'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -10,8 +11,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('param', idParamSchema))
 
-route.delete('/', zProblemValidator('param', idParamSchema), async (c) => {
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id: criteriaId } = c.req.valid('param')
 
@@ -28,7 +31,7 @@ route.delete('/', zProblemValidator('param', idParamSchema), async (c) => {
     return c.json(deleted satisfies DELETEV1NotificationCriteriaIdResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '알림 기준 삭제 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

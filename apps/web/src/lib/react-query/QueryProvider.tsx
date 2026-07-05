@@ -1,27 +1,30 @@
 'use client'
 
-import { isProblemType, problemCode } from '@litomi/http/problem-details'
+import { PROBLEM } from '@litomi/contracts'
+import { isProblemType } from '@litomi/http/problem-details'
 import { environmentManager, MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
 import MyInfoSync from '@/components/MyInfoSync'
+import { getErrorToastKind } from '@/lib/error-policy'
 import { QueryKeys } from '@/lib/react-query/query-keys'
-import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import { isAuthenticationRequiredError, UserVisibleError } from '@/utils/api-request'
-import { HTTPResponseError } from '@/utils/fetch-response'
-import { ProblemDetailsError } from '@/utils/fetch-response'
+import {
+  ProblemMessage,
+  showAdultVerificationRequiredToast,
+  showLiboExpansionRequiredToast,
+  showLoginRequiredToast,
+  TranslatedMessage,
+} from '@/lib/toast'
+import { UserVisibleError } from '@/utils/api-request'
+import { HTTPResponseError, ProblemDetailsError } from '@/utils/fetch-response'
 
 import { handleUnauthorizedError } from './auth-state'
 
 export function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
-  return isProblemType(typeUrl, problemCode.ADULT_VERIFICATION_REQUIRED)
-}
-
-export function isLiboExpansionRequiredProblem(typeUrl: string): boolean {
-  return isProblemType(typeUrl, problemCode.LIBO_EXPANSION_REQUIRED)
+  return isProblemType(typeUrl, PROBLEM.ADULT_VERIFICATION_REQUIRED.slug)
 }
 
 export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
@@ -59,7 +62,9 @@ function makeQueryClient() {
     queryCache: new QueryCache({
       onError: (error, query) => {
         if (error instanceof ProblemDetailsError) {
-          if (isAuthenticationRequiredError(error)) {
+          const kind = getErrorToastKind(error.type)
+
+          if (kind === 'authRequired') {
             handleUnauthorizedError(queryClient)
           }
 
@@ -71,16 +76,16 @@ function makeQueryClient() {
             return
           }
 
-          if (error.status >= 500) {
-            toast.error(error.message || '요청 처리 중 오류가 발생했어요')
-          } else if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
-            showForbiddenProblemToast(queryClient)
-          } else if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
-            showLiboExpansionRequiredToast(error.message)
-          } else if (isAuthenticationRequiredError(error)) {
+          if (kind === 'authRequired') {
             showLoginRequiredToast()
+          } else if (kind === 'adultOrLogin') {
+            showForbiddenProblemToast(queryClient)
+          } else if (kind === 'liboExpansion') {
+            showLiboExpansionRequiredToast()
+          } else if (error.status >= 500) {
+            toast.error(<ProblemMessage problem={error.problem} />)
           } else if (error.status >= 400) {
-            toast.warning(error.message || '요청을 처리할 수 없어요')
+            toast.warning(<ProblemMessage problem={error.problem} />)
           }
         }
       },
@@ -88,9 +93,10 @@ function makeQueryClient() {
     mutationCache: new MutationCache({
       onError: (error, _variables, _onMutateResult, mutation) => {
         if (error instanceof ProblemDetailsError) {
+          const kind = getErrorToastKind(error.type)
           const isSuppressed = mutation.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status) === true
 
-          if (isAuthenticationRequiredError(error)) {
+          if (kind === 'authRequired') {
             handleUnauthorizedError(queryClient)
 
             if (!isSuppressed) {
@@ -100,13 +106,14 @@ function makeQueryClient() {
             return
           }
 
-          if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
+          // adult/libo 전용 토스트는 원본과 동일하게 suppress 를 무시하고 항상 표시한다.
+          if (kind === 'adultOrLogin') {
             showForbiddenProblemToast(queryClient)
             return
           }
 
-          if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
-            showLiboExpansionRequiredToast(error.message)
+          if (kind === 'liboExpansion') {
+            showLiboExpansionRequiredToast()
             return
           }
 
@@ -115,9 +122,9 @@ function makeQueryClient() {
           }
 
           if (error.status >= 500) {
-            toast.error(error.message || '요청 처리 중 오류가 발생했어요')
+            toast.error(<ProblemMessage problem={error.problem} />)
           } else if (error.status >= 400) {
-            toast.warning(error.message || '요청을 처리할 수 없어요')
+            toast.warning(<ProblemMessage problem={error.problem} />)
           }
           return
         }
@@ -129,9 +136,9 @@ function makeQueryClient() {
 
         if (error instanceof Error) {
           if (navigator.onLine === false) {
-            toast.error('네트워크 연결을 확인해 주세요')
+            toast.error(<TranslatedMessage id="Errors.status.offline" />)
           } else {
-            toast.error('요청 처리 중 오류가 발생했어요')
+            toast.error(<TranslatedMessage id="Errors.status.serverError" />)
           }
         }
       },

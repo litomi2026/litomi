@@ -1,4 +1,8 @@
-import { type POSTV1PointsDonationCreateResponse, postV1PointsDonationCreateRequestSchema } from '@litomi/contracts'
+import {
+  type POSTV1PointsDonationCreateResponse,
+  PROBLEM,
+  postV1PointsDonationCreateRequestSchema,
+} from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import {
   DONATION_RECIPIENT_TYPE,
@@ -10,6 +14,7 @@ import {
 import { TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -18,8 +23,14 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
 
-route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreateRequestSchema), async (c) => {
+const middlewares = factory.createHandlers(
+  requireAuth,
+  zProblemValidator('json', postV1PointsDonationCreateRequestSchema),
+)
+
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { totalAmount, recipients } = c.req.valid('json')
   const recipientKeys = new Set<string>()
@@ -27,13 +38,13 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
   for (const recipient of recipients) {
     const key = `${recipient.type}:${recipient.value}`
     if (recipientKeys.has(key)) {
-      return problemResponse(c, { status: 400, detail: '후원 대상이 중복돼요' })
+      return problemResponse(c, { problem: PROBLEM.DONATION_DUPLICATE_TARGET })
     }
     recipientKeys.add(key)
   }
 
   if (totalAmount < recipients.length) {
-    return problemResponse(c, { status: 400, detail: '후원 금액이 너무 적어요' })
+    return problemResponse(c, { problem: PROBLEM.DONATION_AMOUNT_TOO_SMALL })
   }
 
   const perRecipient = Math.floor(totalAmount / recipients.length)
@@ -97,7 +108,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
     })
 
     if (!result.ok) {
-      return problemResponse(c, { status: 400, detail: '리보가 부족해요' })
+      return problemResponse(c, { problem: PROBLEM.INSUFFICIENT_POINTS })
     }
 
     return c.json({
@@ -108,7 +119,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointsDonationCreat
     } satisfies POSTV1PointsDonationCreateResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '후원에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

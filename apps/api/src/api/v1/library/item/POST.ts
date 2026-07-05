@@ -1,9 +1,10 @@
-import { type POSTV1LibraryItemAddResponse, postV1LibraryItemAddBodySchema } from '@litomi/contracts'
+import { type POSTV1LibraryItemAddResponse, PROBLEM, postV1LibraryItemAddBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -13,8 +14,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { LibraryItemError } from './error'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1LibraryItemAddBodySchema))
 
-route.post('/', zProblemValidator('json', postV1LibraryItemAddBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { mangaId, libraryIds } = c.req.valid('json')
   const requestedLibraryIds = [...new Set(libraryIds)].sort((a, b) => a - b)
@@ -75,12 +78,12 @@ route.post('/', zProblemValidator('json', postV1LibraryItemAddBodySchema), async
       }
 
       if (error.message === LibraryItemError.NO_VALID_LIBRARIES) {
-        return problemResponse(c, { status: 403, detail: '이미 모든 서재에 있거나 서재가 가득 찼어요' })
+        return problemResponse(c, { problem: PROBLEM.LIBRARY_ITEM_CONFLICT })
       }
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재에 작품을 추가하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

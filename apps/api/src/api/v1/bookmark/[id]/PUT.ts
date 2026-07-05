@@ -1,9 +1,9 @@
-import { mangaIdParamSchema, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
+import { mangaIdParamSchema, PROBLEM, type PUTV1BookmarkIdResponse } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
-import { problemCode } from '@litomi/http/problem-details'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -21,8 +21,10 @@ const ErrorCode = {
 } as const
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema))
 
-route.put('/', requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema), async (c) => {
+route.put('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id: mangaId } = c.req.valid('param')
 
@@ -79,19 +81,15 @@ route.put('/', requireAuth, requireAdult, zProblemValidator('param', mangaIdPara
     return c.json(response, result.status)
   } catch (error) {
     if (error instanceof Error && error.message === ErrorCode.BOOKMARK_LIMIT_REACHED) {
-      return problemResponse(c, {
-        status: 403,
-        code: problemCode.LIBO_EXPANSION_REQUIRED,
-        detail: '북마크 저장 한도에 도달했어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.LIBO_EXPANSION_REQUIRED })
     }
 
     if (error instanceof Error && error.message === ErrorCode.BOOKMARK_INSERT_FAILED) {
-      return problemResponse(c, { status: 500, detail: '북마크 저장에 실패했어요' })
+      return problemResponse(c, { status: 500 })
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '북마크 저장에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

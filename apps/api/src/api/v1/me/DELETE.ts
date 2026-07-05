@@ -1,7 +1,7 @@
 import { getAuthCookieClearConfigs } from '@litomi/auth/cookie'
 import { decryptTOTPSecret, verifyTOTPToken } from '@litomi/auth/two-factor'
 import { revokeBillingKey } from '@litomi/billing'
-import { type DELETEV1MeResponse, deleteV1MeBodySchema } from '@litomi/contracts'
+import { type DELETEV1MeResponse, deleteV1MeBodySchema, PROBLEM } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { chatArtistTable } from '@litomi/db/app/chat'
 import { paymentMethodTable } from '@litomi/db/app/subscription'
@@ -10,6 +10,7 @@ import { userErasureTable, userTable } from '@litomi/db/app/user'
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -25,8 +26,10 @@ const accountDeletionLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', deleteV1MeBodySchema))
 
-route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => {
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { password, token } = c.req.valid('json')
   const { allowed, retryAfter } = await accountDeletionLimiter.check(String(userId))
@@ -103,22 +106,18 @@ route.delete('/', zProblemValidator('json', deleteV1MeBodySchema), async (c) => 
       case 'deleted':
         await revokeBillingKeys(result.billingTokens)
         applyAuthCookie(c, getAuthCookieClearConfigs())
-
-        return c.json({
-          loginId: result.loginId,
-          message: `${result.loginId} 계정을 삭제했어요`,
-        } satisfies DELETEV1MeResponse)
+        return c.json({ loginId: result.loginId } satisfies DELETEV1MeResponse)
 
       case 'unauthorized':
         applyAuthCookie(c, getAuthCookieClearConfigs())
         return authRequiredProblemResponse(c)
 
       case 'verification-failed':
-        return problemResponse(c, { status: 400 })
+        return problemResponse(c, { problem: PROBLEM.CREDENTIAL_VERIFICATION_FAILED })
     }
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '계정을 삭제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

@@ -1,7 +1,7 @@
-import { type POSTV1BookmarkResponse, postV1BookmarkBodySchema } from '@litomi/contracts'
+import { type POSTV1BookmarkResponse, PROBLEM, postV1BookmarkBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
-import { problemCode } from '@litomi/http/problem-details'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -14,8 +14,15 @@ import { zProblemValidator } from '@/utils/validator'
 import { BookmarkLimitReachedError, saveBookmarks } from './save'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
 
-route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1BookmarkBodySchema), async (c) => {
+const middlewares = factory.createHandlers(
+  requireAuth,
+  requireAdult,
+  zProblemValidator('json', postV1BookmarkBodySchema),
+)
+
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { mangaIds } = c.req.valid('json')
 
@@ -31,15 +38,11 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1Bookm
     return c.json(result satisfies POSTV1BookmarkResponse)
   } catch (error) {
     if (error instanceof BookmarkLimitReachedError) {
-      return problemResponse(c, {
-        status: 403,
-        code: problemCode.LIBO_EXPANSION_REQUIRED,
-        detail: '북마크 저장 한도에 도달했어요',
-      })
+      return problemResponse(c, { problem: PROBLEM.LIBO_EXPANSION_REQUIRED })
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '북마크 저장에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

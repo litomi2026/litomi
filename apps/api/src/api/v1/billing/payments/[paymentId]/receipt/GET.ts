@@ -1,4 +1,5 @@
 import { getRemotePayment, isBillingConfigured } from '@litomi/billing'
+import { PROBLEM } from '@litomi/contracts'
 import { getPaymentByPaymentId } from '@litomi/db/app/query/payment'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -37,17 +38,11 @@ route.get('/', ...middlewares, async (c) => {
     remote = await getRemotePayment(paymentId)
   } catch (error) {
     console.error('billing: receipt getPayment failed', { paymentId, error })
-    return problemResponse(c, {
-      status: 502,
-      detail: '영수증을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',
-    })
+    return problemResponse(c, { status: 502 })
   }
 
   if (!remote.receiptUrl) {
-    return problemResponse(c, {
-      status: 404,
-      detail: '영수증이 아직 준비되지 않았어요.',
-    })
+    return problemResponse(c, { problem: PROBLEM.RECEIPT_NOT_READY })
   }
 
   return c.redirect(remote.receiptUrl, 302)

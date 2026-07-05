@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -12,8 +13,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { LibraryItemError } from './error'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', deleteV1LibraryItemBodySchema))
 
-route.delete('/', zProblemValidator('json', deleteV1LibraryItemBodySchema), async (c) => {
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { libraryId, mangaIds } = c.req.valid('json')
   const requestedMangaIds = [...new Set(mangaIds)]
@@ -45,7 +48,7 @@ route.delete('/', zProblemValidator('json', deleteV1LibraryItemBodySchema), asyn
     }
 
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '서재에서 작품을 삭제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

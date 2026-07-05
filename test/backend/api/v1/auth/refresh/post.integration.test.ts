@@ -36,7 +36,7 @@ describe('POST /api/v1/auth/refresh', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: REFRESH_PATH,
     })
   })
@@ -118,7 +118,7 @@ describe('POST /api/v1/auth/refresh', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: REFRESH_PATH,
     })
   })
@@ -152,7 +152,7 @@ describe('POST /api/v1/auth/refresh', () => {
       await expectProblemResponse(replayResponse, {
         status: 401,
         code: 'authentication-required',
-        detail: '로그인 정보가 없거나 만료됐어요',
+        title: '로그인 정보가 없거나 만료됐어요',
         instance: REFRESH_PATH,
       })
 
@@ -272,7 +272,7 @@ describe('POST /api/v1/auth/refresh', () => {
       await expectProblemResponse(delayedStaleResponse, {
         status: 401,
         code: 'authentication-required',
-        detail: '로그인 정보가 없거나 만료됐어요',
+        title: '로그인 정보가 없거나 만료됐어요',
         instance: REFRESH_PATH,
       })
 
@@ -289,7 +289,7 @@ describe('POST /api/v1/auth/refresh', () => {
       await expectProblemResponse(nextForegroundResponse, {
         status: 401,
         code: 'authentication-required',
-        detail: '로그인 정보가 없거나 만료됐어요',
+        title: '로그인 정보가 없거나 만료됐어요',
         instance: '/api/v1/me',
       })
 
@@ -349,7 +349,7 @@ describe('POST /api/v1/auth/refresh', () => {
       await expectProblemResponse(delayedGrandparentReplay, {
         status: 401,
         code: 'authentication-required',
-        detail: '로그인 정보가 없거나 만료됐어요',
+        title: '로그인 정보가 없거나 만료됐어요',
         instance: REFRESH_PATH,
       })
 
@@ -366,7 +366,7 @@ describe('POST /api/v1/auth/refresh', () => {
       await expectProblemResponse(nextForegroundResponse, {
         status: 401,
         code: 'authentication-required',
-        detail: '로그인 정보가 없거나 만료됐어요',
+        title: '로그인 정보가 없거나 만료됐어요',
         instance: '/api/v1/me',
       })
 

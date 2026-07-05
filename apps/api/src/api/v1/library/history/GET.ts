@@ -6,6 +6,7 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, lt, or, type SQL } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -17,87 +18,88 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const libraryHistoryRoutes = new Hono<Env>()
+const factory = createFactory<Env>()
 
-libraryHistoryRoutes.get(
-  '/',
+const middlewares = factory.createHandlers(
   requireAuth,
   requireAdult,
   zProblemValidator('query', getV1ReadingHistoryQuerySchema),
-  async (c) => {
-    const userId = c.get('userId')!
-    const { cursor, limit, locale } = c.req.valid('query')
-    const decodedCursor = cursor ? decodeReadingHistoryCursor(cursor) : null
+)
 
-    if (cursor && !decodedCursor) {
-      return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
-    }
+libraryHistoryRoutes.get('/', ...middlewares, async (c) => {
+  const userId = c.get('userId')!
+  const { cursor, limit, locale } = c.req.valid('query')
+  const decodedCursor = cursor ? decodeReadingHistoryCursor(cursor) : null
 
-    const conditions: (SQL | undefined)[] = [eq(readingHistoryTable.userId, userId)]
+  if (cursor && !decodedCursor) {
+    return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
+  }
 
-    if (decodedCursor) {
-      conditions.push(
-        or(
-          lt(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
-          and(
-            eq(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
-            lt(readingHistoryTable.mangaId, decodedCursor.mangaId),
-          ),
+  const conditions: (SQL | undefined)[] = [eq(readingHistoryTable.userId, userId)]
+
+  if (decodedCursor) {
+    conditions.push(
+      or(
+        lt(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
+        and(
+          eq(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
+          lt(readingHistoryTable.mangaId, decodedCursor.mangaId),
         ),
-      )
-    }
+      ),
+    )
+  }
 
-    const query = db
-      .select({
-        mangaId: readingHistoryTable.mangaId,
-        lastPage: readingHistoryTable.lastPage,
-        updatedAt: readingHistoryTable.updatedAt,
-      })
-      .from(readingHistoryTable)
-      .where(and(...conditions))
-      .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
-      .limit(limit + 1)
+  const query = db
+    .select({
+      mangaId: readingHistoryTable.mangaId,
+      lastPage: readingHistoryTable.lastPage,
+      updatedAt: readingHistoryTable.updatedAt,
+    })
+    .from(readingHistoryTable)
+    .where(and(...conditions))
+    .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
+    .limit(limit + 1)
 
-    try {
-      const rows = await query
+  try {
+    const rows = await query
 
-      const cacheControl = decodedCursor
-        ? createCacheControl({
-            private: true,
-            maxAge: sec('1 hour'),
-          })
-        : privateCacheControl
+    const cacheControl = decodedCursor
+      ? createCacheControl({
+          private: true,
+          maxAge: sec('1 hour'),
+        })
+      : privateCacheControl
 
-      if (rows.length === 0) {
-        const result = {
-          items: [],
-          nextCursor: null,
-        } satisfies GETV1ReadingHistoryResponse
-
-        return c.json(result, { headers: { 'Cache-Control': cacheControl } })
-      }
-
-      const hasNextPage = rows.length > limit
-      const items = hasNextPage ? rows.slice(0, limit) : rows
-      const lastItem = items[items.length - 1]
-      const mangaIds = items.map(({ mangaId }) => mangaId)
-      const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
-
+    if (rows.length === 0) {
       const result = {
-        items: items.map((row) => ({
-          mangaId: row.mangaId,
-          lastPage: row.lastPage,
-          updatedAt: row.updatedAt.getTime(),
-          manga: catalogMangaMap.get(row.mangaId),
-        })),
-        nextCursor: hasNextPage ? encodeReadingHistoryCursor(lastItem.updatedAt.getTime(), lastItem.mangaId) : null,
+        items: [],
+        nextCursor: null,
       } satisfies GETV1ReadingHistoryResponse
 
       return c.json(result, { headers: { 'Cache-Control': cacheControl } })
-    } catch (error) {
-      console.error(error)
-      return problemResponse(c, { status: 500, detail: '감상 기록을 불러오지 못했어요' })
     }
-  },
-)
+
+    const hasNextPage = rows.length > limit
+    const items = hasNextPage ? rows.slice(0, limit) : rows
+    const lastItem = items[items.length - 1]
+    const mangaIds = items.map(({ mangaId }) => mangaId)
+    const catalogMangaMap = await getCatalogMangaMap(mangaIds, locale)
+
+    const result = {
+      items: items.map((row) => ({
+        mangaId: row.mangaId,
+        lastPage: row.lastPage,
+        updatedAt: row.updatedAt.getTime(),
+        manga: catalogMangaMap.get(row.mangaId),
+      })),
+      nextCursor: hasNextPage ? encodeReadingHistoryCursor(lastItem.updatedAt.getTime(), lastItem.mangaId) : null,
+    } satisfies GETV1ReadingHistoryResponse
+
+    return c.json(result, { headers: { 'Cache-Control': cacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500 })
+  }
+})
 
 export default libraryHistoryRoutes

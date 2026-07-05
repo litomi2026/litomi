@@ -33,14 +33,14 @@ export default function PasskeyRegisterButton({ passkeySignalData }: Props) {
         return
       }
 
-      const { credentialId, message } = result
+      const { credentialId } = result
 
       await signalCurrentPasskeyUserDetails({
         ...passkeySignalData,
         credentialIds: [...passkeySignalData.credentialIds, credentialId].sort(),
       })
 
-      toast.success(message)
+      toast.success('패스키를 등록했어요')
       setRegisteredPasskey({ id: result.id, name: result.name })
     },
   })

@@ -1,39 +1,9 @@
-import type { ProblemDetails } from '@litomi/http/problem-details'
-
-import { getInvalidParams } from '@litomi/http/problem-details'
-
 type PasswordChangeFormFieldName = 'confirmPassword' | 'currentPassword' | 'newPassword' | 'token'
-type PasswordChangeServerFieldName = 'currentPassword' | 'newPassword' | 'token'
 
-export function applyPasswordChangeProblem(form: HTMLFormElement | null, problem: ProblemDetails) {
-  let firstInvalidInput: HTMLInputElement | null = null
-
-  for (const param of getInvalidParams(problem)) {
-    if (!isPasswordChangeServerFieldName(param.name)) {
-      continue
-    }
-
-    const input = getPasswordChangeInput(form, param.name)
-
-    if (!input) {
-      continue
-    }
-
-    input.setCustomValidity(param.reason)
-
-    if (!firstInvalidInput) {
-      firstInvalidInput = input
-    }
-  }
-
-  if (!firstInvalidInput) {
-    return false
-  }
-
-  firstInvalidInput.focus()
-  firstInvalidInput.reportValidity()
-
-  return true
+export const passwordChangeInputNames: Record<string, PasswordChangeFormFieldName> = {
+  currentPassword: 'currentPassword',
+  newPassword: 'newPassword',
+  token: 'token',
 }
 
 export function clearPasswordChangeInputValidity(form: HTMLFormElement | null, target: EventTarget | null) {
@@ -67,8 +37,4 @@ export function clearPasswordChangeValidity(form: HTMLFormElement | null) {
 export function getPasswordChangeInput(form: HTMLFormElement | null, field: PasswordChangeFormFieldName) {
   const input = form?.elements.namedItem(field)
   return input instanceof HTMLInputElement ? input : null
-}
-
-function isPasswordChangeServerFieldName(name: string): name is PasswordChangeServerFieldName {
-  return name === 'currentPassword' || name === 'newPassword' || name === 'token'
 }

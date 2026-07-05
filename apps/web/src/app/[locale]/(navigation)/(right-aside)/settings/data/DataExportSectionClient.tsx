@@ -5,10 +5,11 @@ import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Bookmark, Check, Clock, Download, Library, Loader2, ShieldCheck, Star } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
+import { getProblemMessage } from '@/lib/error-message'
 import { downloadBlob } from '@/utils/download'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 
@@ -41,6 +42,7 @@ const DATA_TYPE_VALUES = new Set<string>(ALL_TYPES)
 
 export default function DataExportSectionClient({ counts }: Props) {
   const locale = useLocale()
+  const tErrors = useTranslations('Errors')
 
   const exportMutation = useMutation<POSTV1MeExportResponse, ProblemDetailsError, POSTV1MeExportBody>({
     mutationFn: exportUserData,
@@ -53,7 +55,7 @@ export default function DataExportSectionClient({ counts }: Props) {
 
     onError: (error) => {
       if (error.status === 400) {
-        toast.warning(error.problem.detail || '요청을 처리할 수 없어요')
+        toast.warning(getProblemMessage(tErrors, error.problem))
       }
     },
 

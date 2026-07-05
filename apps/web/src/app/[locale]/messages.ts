@@ -15,6 +15,19 @@ export const messages = {
       },
     },
     Common: {
+      clipboard: {
+        copied: '클립보드에 복사됐어요',
+        copyFailed: '복사에 실패했어요',
+      },
+      network: {
+        online: '인터넷 연결이 복원됐어요',
+        offline: '오프라인 모드로 전환됐어요',
+      },
+      settingsSaveFailed: '설정을 저장하지 못했어요',
+      turnstile: {
+        failed: 'Cloudflare 보안 검증에 실패했어요',
+        expired: 'Cloudflare 보안 검증이 만료됐어요',
+      },
       guard: {
         loginRequired: '로그인이 필요해요',
         loginDescription: '로그인 후 이용할 수 있어요',
@@ -61,6 +74,11 @@ export const messages = {
           languageAria: '{language} 작품 보기',
         },
         download: {
+          completed: '다운로드가 완료됐어요',
+          canceled: '다운로드가 취소됐어요',
+          failed: '다운로드에 실패했어요',
+          adultHint: '성인인증하면 다운로드 시 광고가 제거돼요',
+          loginHint: '로그인하면 다운로드 시 광고가 제거돼요',
           error: '오류',
           noImages: '이미지 없음',
           noImagesTitle: '다운로드할 이미지가 없어요',
@@ -195,7 +213,7 @@ export const messages = {
         warning:
           '이 정보 내용은 청소년유해매체물로서 "정보통신망 이용촉진 및 정보보호 등에 관한 법률" 및 "청소년 보호법"에 따라 19세 미만의 청소년이 이용할 수 없습니다.',
         description:
-          '본 웹사이트에는 19세 이상 전용의 성인 콘텐츠(성인 만화 등)가 포함되어 있습니다. 대한민국 지역 접속자는 익명 성인인증이 완료되지 않으면 성인 콘텐츠를 볼 수 없습니다. 만약 성인인증을 완료하지 않았음에도 콘텐츠 열람이 가능한 경우, 즉시 운영진에게 알려주시기 바랍니다.',
+          '본 웹사이트에는 19세 이상 전용의 성인 콘텐츠(성인 만화 등)가 포함되어 있습니다. 관련 법률에 따라 "대한민국 지역"에서 접속한 사용자는 익명 성인인증이 완료되지 않으면 성인 콘텐츠를 이용하실 수 없습니다. 만약 인증을 거치지 않았는데도 성인 콘텐츠가 노출된다면 즉시 운영진에게 알려주시기 바랍니다.',
         enterAction: '19세 이상 성인입니다',
         leaveAction: '19세 미만 나가기',
       },
@@ -226,6 +244,19 @@ export const messages = {
       },
     },
     Common: {
+      clipboard: {
+        copied: 'Copied to clipboard.',
+        copyFailed: 'Could not copy.',
+      },
+      network: {
+        online: 'Back online.',
+        offline: 'Switched to offline mode.',
+      },
+      settingsSaveFailed: 'Could not save settings.',
+      turnstile: {
+        failed: 'Cloudflare security check failed.',
+        expired: 'The Cloudflare security check expired.',
+      },
       guard: {
         loginRequired: 'Log in to continue',
         loginDescription: 'You can continue after logging in.',
@@ -272,6 +303,11 @@ export const messages = {
           languageAria: 'View {language} works',
         },
         download: {
+          completed: 'Download complete.',
+          canceled: 'Download canceled.',
+          failed: 'Download failed.',
+          adultHint: 'Verify your age to remove ads when downloading.',
+          loginHint: 'Log in to remove ads when downloading.',
           error: 'Error',
           noImages: 'No images',
           noImagesTitle: 'No images to download',
@@ -407,7 +443,7 @@ export const messages = {
         warning:
           'This content is restricted to adults and may not be used by anyone under 19 or under the age of majority in their jurisdiction.',
         description:
-          'This website contains adult-only content, including adult comics. By selecting "I am an adult", you confirm that you are at least 19 years old or legally an adult where you live, and that you agree to access this content.',
+          'This website contains adult-only content (such as adult comics) intended for users 19 and older. Users connecting from the "Republic of Korea" region cannot access adult content unless anonymous adult verification is completed. If adult content is exposed even without verification, please notify the administrators immediately.',
         enterAction: 'I am an adult',
         leaveAction: 'Leave',
       },
@@ -438,6 +474,19 @@ export const messages = {
       },
     },
     Common: {
+      clipboard: {
+        copied: 'クリップボードにコピーしました',
+        copyFailed: 'コピーできませんでした',
+      },
+      network: {
+        online: 'インターネット接続が復元されました',
+        offline: 'オフラインモードに切り替わりました',
+      },
+      settingsSaveFailed: '設定を保存できませんでした',
+      turnstile: {
+        failed: 'Cloudflareセキュリティ確認に失敗しました',
+        expired: 'Cloudflareセキュリティ確認の有効期限が切れました',
+      },
       guard: {
         loginRequired: 'ログインが必要です',
         loginDescription: 'ログイン後に利用できます',
@@ -484,6 +533,11 @@ export const messages = {
           languageAria: '{language} 作品を見る',
         },
         download: {
+          completed: 'ダウンロードが完了しました',
+          canceled: 'ダウンロードをキャンセルしました',
+          failed: 'ダウンロードに失敗しました',
+          adultHint: '成人認証をするとダウンロード時の広告が消えます',
+          loginHint: 'ログインするとダウンロード時の広告が消えます',
           error: 'エラー',
           noImages: '画像なし',
           noImagesTitle: 'ダウンロードできる画像がありません',
@@ -617,7 +671,7 @@ export const messages = {
       ageGate: {
         warning: 'この情報内容は青少年有害媒体物であり、関連法令により19歳未満の青少年は利用できません。',
         description:
-          'このウェブサイトには19歳以上向けの成人コンテンツ (成人漫画など) が含まれます。「19歳以上の成人です」ボタンをクリックすると、19歳以上または居住地の法令上成人であること、および当該コンテンツの利用に同意したものとみなされます。',
+          '本ウェブサイトには19歳以上向けの成人コンテンツ(成人漫画など)が含まれています。「大韓民国地域」からアクセスするユーザーは、匿名の成人認証が完了しない限り、成人コンテンツを利用できません。もし認証を経ていないにもかかわらず成人コンテンツが表示される場合は、直ちに運営チームにお知らせください。',
         enterAction: '19歳以上の成人です',
         leaveAction: '19歳未満なので退出',
       },
@@ -648,6 +702,19 @@ export const messages = {
       },
     },
     Common: {
+      clipboard: {
+        copied: '已复制到剪贴板',
+        copyFailed: '复制失败',
+      },
+      network: {
+        online: '网络连接已恢复',
+        offline: '已切换到离线模式',
+      },
+      settingsSaveFailed: '设置保存失败',
+      turnstile: {
+        failed: 'Cloudflare 安全验证失败',
+        expired: 'Cloudflare 安全验证已过期',
+      },
       guard: {
         loginRequired: '需要登录',
         loginDescription: '登录后即可继续使用',
@@ -694,6 +761,11 @@ export const messages = {
           languageAria: '查看{language}作品',
         },
         download: {
+          completed: '下载完成',
+          canceled: '下载已取消',
+          failed: '下载失败',
+          adultHint: '完成成人认证后下载时不再显示广告',
+          loginHint: '登录后下载时不再显示广告',
           error: '错误',
           noImages: '没有图片',
           noImagesTitle: '没有可下载的图片',
@@ -826,7 +898,7 @@ export const messages = {
       ageGate: {
         warning: '本内容属于成人限制内容，未满 19 岁或未达到当地法定成年年龄者不得使用。',
         description:
-          '本网站包含仅限成人的内容，包括成人漫画等。点击“我是成人”按钮即表示你确认自己已满 19 岁或在当地法律下已成年，并同意访问这些内容。',
+          '本网站包含仅限 19 岁以上用户观看的成人内容（如成人漫画等）。从“韩国地区”访问的用户必须完成匿名成人认证后才能访问成人内容。如果未经认证却依然显示成人内容，请立即通知运营团队。',
         enterAction: '我是 19 岁以上成人',
         leaveAction: '未满 19 岁，离开',
       },

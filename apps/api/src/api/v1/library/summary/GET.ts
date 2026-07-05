@@ -6,6 +6,7 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -14,8 +15,10 @@ import { requireAuth } from '@/middleware/require-auth'
 import { problemResponse } from '@/utils/problem'
 
 const librarySummaryRoutes = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, requireAdult)
 
-librarySummaryRoutes.get('/', requireAuth, requireAdult, async (c) => {
+librarySummaryRoutes.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   try {
@@ -37,7 +40,7 @@ librarySummaryRoutes.get('/', requireAuth, requireAdult, async (c) => {
     return c.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '요약 정보를 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

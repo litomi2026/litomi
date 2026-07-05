@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -13,8 +14,15 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
 
-route.delete('/', requireAuth, requireAdult, zProblemValidator('json', deleteV1ReadingHistoryBodySchema), async (c) => {
+const middlewares = factory.createHandlers(
+  requireAuth,
+  requireAdult,
+  zProblemValidator('json', deleteV1ReadingHistoryBodySchema),
+)
+
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const body = c.req.valid('json')
 
@@ -44,7 +52,7 @@ route.delete('/', requireAuth, requireAdult, zProblemValidator('json', deleteV1R
     return c.json({ deletedCount } satisfies DELETEV1ReadingHistoryResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '감상 기록을 삭제하지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

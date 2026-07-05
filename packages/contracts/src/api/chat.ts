@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { INVALID_PARAM } from '../problem'
+
 const CHAT_TEXT_MAX_LENGTH = 2000
 // 답장의 정적 상한 — 팬별 동적 한도(기본 30자 + 연속 구독 보너스)의 절대 최댓값과 일치해야 합니다.
 const CHAT_REPLY_TEXT_MAX_LENGTH = 300
@@ -181,35 +183,29 @@ export interface POSTV1ChatSubscriptionRefundResponse {
 
 // --- Artist self-service (onboarding + studio settings) -----------------------
 
-// URL(/sobok/{handle})과 스튜디오 주소에 쓰이는 핸들. 변경 가능하며, 라우트 세그먼트·시스템
-// 경로와 충돌하는 이름은 예약어로 막는다.
+// 공개 페이지(/sobok/@{handle})와 스튜디오 주소에 쓰이는 핸들. 변경 가능. @ 네임스페이스 덕에
+// 라우트 세그먼트와 충돌하지 않으므로 예약어는 운영 주체 사칭 방지용만 남긴다. 서브도메인 승격
+// 가능성에 대비해 DNS 라벨 규칙(하이픈 구분자, 영숫자 시작·끝)을 따른다.
 export const RESERVED_CHAT_HANDLES = new Set([
   'admin',
   'administrator',
-  'api',
-  'artist',
   'help',
   'litomi',
-  'me',
-  'message',
   'moderator',
-  'new',
   'notice',
   'official',
-  'settings',
   'sobok',
   'staff',
-  'studio',
   'support',
   'system',
-  'threads',
-  'www',
 ])
 
 const chatArtistHandleSchema = z
   .string()
-  .regex(/^[a-z0-9_]{3,32}$/, '핸들은 영문 소문자, 숫자, 밑줄(_)로 3~32자여야 해요.')
-  .refine((handle) => !RESERVED_CHAT_HANDLES.has(handle), '사용할 수 없는 핸들이에요.')
+  .min(3)
+  .max(32)
+  .regex(/^[a-z0-9](?:-?[a-z0-9])*$/)
+  .refine((handle) => !RESERVED_CHAT_HANDLES.has(handle), { params: { code: INVALID_PARAM.HANDLE_RESERVED } })
 
 const CHAT_ARTIST_NAME_MAX_LENGTH = 64
 const CHAT_ARTIST_DESCRIPTION_MAX_LENGTH = 500
@@ -223,10 +219,9 @@ const chatArtistPriceAmountSchema = z
   .int()
   .min(0)
   .max(CHAT_ARTIST_PRICE_MAX)
-  .refine(
-    (amount) => amount === 0 || amount >= CHAT_ARTIST_PRICE_MIN,
-    `구독 가격은 ${CHAT_ARTIST_PRICE_MIN.toLocaleString('ko-KR')}원 이상이어야 해요.`,
-  )
+  .refine((amount) => amount === 0 || amount >= CHAT_ARTIST_PRICE_MIN, {
+    params: { code: INVALID_PARAM.PRICE_BELOW_MINIMUM },
+  })
 
 export const postV1ChatArtistBodySchema = z.object({
   handle: chatArtistHandleSchema,
@@ -249,7 +244,7 @@ export const patchV1ChatArtistBodySchema = z
     priceAmount: chatArtistPriceAmountSchema.optional(),
     isActive: z.boolean().optional(),
   })
-  .refine((body) => Object.keys(body).length > 0, '변경할 항목이 없어요.')
+  .refine((body) => Object.keys(body).length > 0)
 
 export type PATCHV1ChatArtistBody = z.infer<typeof patchV1ChatArtistBodySchema>
 
@@ -321,7 +316,7 @@ export const putV1ChatPayoutAccountBodySchema = z.object({
   accountNumber: z
     .string()
     .trim()
-    .regex(/^[0-9-]{6,32}$/, '계좌번호 형식이 올바르지 않아요.'),
+    .regex(/^[0-9-]{6,32}$/),
   holderName: z.string().trim().min(1).max(32),
 })
 

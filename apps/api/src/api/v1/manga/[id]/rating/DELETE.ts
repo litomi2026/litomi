@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -11,8 +12,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', mangaIdParamSchema))
 
-route.delete('/:id/rating', requireAuth, zProblemValidator('param', mangaIdParamSchema), async (c) => {
+route.delete('/:id/rating', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const { id: mangaId } = c.req.valid('param')
@@ -30,7 +33,7 @@ route.delete('/:id/rating', requireAuth, zProblemValidator('param', mangaIdParam
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '평가 삭제에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

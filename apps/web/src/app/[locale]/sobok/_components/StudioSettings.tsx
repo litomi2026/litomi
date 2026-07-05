@@ -4,6 +4,7 @@ import { ChevronLeft } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import { Link, useRouter } from '@/i18n/navigation'
+import { getErrorMessage } from '@/lib/error-message'
 import useStudioQuery from '../_query/useStudioQuery'
 import useUpdateArtistMutation from '../_query/useUpdateArtistMutation'
 import ArtistProfileForm, { type ArtistProfileFormValues } from './ArtistProfileForm'
@@ -12,6 +13,7 @@ export default function StudioSettings({ handle }: { handle: string }) {
   const { data, isLoading } = useStudioQuery()
   const { mutate: updateArtist, isPending, error } = useUpdateArtistMutation(handle)
   const t = useTranslations('Sobok.studio')
+  const tErrors = useTranslations('Errors')
   const router = useRouter()
   const artist = data?.artist
 
@@ -68,7 +70,7 @@ export default function StudioSettings({ handle }: { handle: string }) {
             initial={artist}
             onSubmit={handleSubmit}
             isPending={isPending}
-            error={error instanceof Error ? error.message : null}
+            error={getErrorMessage(tErrors, error)}
             submitLabel={t('saveSubmit')}
           />
         </div>

@@ -6,6 +6,7 @@ import { credentialTable } from '@litomi/db/app/passkey'
 import { ChallengeType, encodeDeviceType, getDefaultPasskeyName } from '@litomi/domain/auth/model'
 import { verifyRegistrationResponse } from '@simplewebauthn/server'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -13,8 +14,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1MePasskeyVerifyBodySchema))
 
-route.post('/', zProblemValidator('json', postV1MePasskeyVerifyBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { registration } = c.req.valid('json')
 
@@ -59,11 +62,10 @@ route.post('/', zProblemValidator('json', postV1MePasskeyVerifyBodySchema), asyn
       id: credential.id,
       credentialId,
       name,
-      message: '패스키를 등록했어요',
     } satisfies POSTV1MePasskeyVerifyResponse)
   } catch (error) {
     console.error('verifyRegistration:', error)
-    return problemResponse(c, { status: 500, detail: '패스키 등록 중 오류가 발생했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

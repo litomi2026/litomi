@@ -2,6 +2,7 @@ import type { GETV1BookmarkExportResponse } from '@litomi/contracts'
 
 import { selectBookmark } from '@litomi/db/app/query/bookmark'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -10,8 +11,10 @@ import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth)
 
-route.get('/', requireAuth, async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   try {
@@ -27,7 +30,7 @@ route.get('/', requireAuth, async (c) => {
     return c.json(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '북마크 내보내기 목록을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

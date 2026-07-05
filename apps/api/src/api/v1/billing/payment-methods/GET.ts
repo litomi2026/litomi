@@ -2,6 +2,7 @@ import { env } from '@litomi/billing/env'
 import type { GETV1PaymentMethodsResponse } from '@litomi/contracts'
 import { listActivePaymentMethods } from '@litomi/db/app/query/payment-method'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -11,8 +12,10 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 const { PORTONE_STORE_ID, PORTONE_CHANNEL_KEY } = env
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth)
 
-route.get('/', requireAuth, async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const methods = await listActivePaymentMethods(userId)
 

@@ -1,9 +1,9 @@
-import type { GETV1PointTurnstileResponse } from '@litomi/contracts'
+import { type GETV1PointTurnstileResponse, PROBLEM } from '@litomi/contracts'
 
 import { CookieKey } from '@litomi/http/cookie'
-import { problemCode } from '@litomi/http/problem-details'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -14,29 +14,23 @@ import { problemResponse } from '@/utils/problem'
 import { verifyPointsTurnstileToken } from '../util-turnstile-cookie'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth)
 
-route.get('/', requireAuth, async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const cookieValue = getCookie(c, CookieKey.POINTS_TURNSTILE)
 
   if (!cookieValue) {
-    return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
-    })
+    return problemResponse(c, { problem: PROBLEM.TURNSTILE_REQUIRED })
   }
 
   const verified = await verifyPointsTurnstileToken(cookieValue)
 
   if (!verified || verified.userId !== userId) {
     deleteCookie(c, CookieKey.POINTS_TURNSTILE, { path: '/api/v1/points', secure: true })
-    return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
-    })
+    return problemResponse(c, { problem: PROBLEM.TURNSTILE_REQUIRED })
   }
 
   const remainingMs = verified.expiresAt.getTime() - Date.now()

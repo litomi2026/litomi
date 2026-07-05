@@ -1,12 +1,12 @@
-import { type POSTV1PointTokenResponse, postV1PointTokenRequestSchema } from '@litomi/contracts'
+import { type POSTV1PointTokenResponse, PROBLEM, postV1PointTokenRequestSchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { adImpressionTokenTable, pointTransactionTable } from '@litomi/db/app/points'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { CookieKey } from '@litomi/http/cookie'
-import { problemCode } from '@litomi/http/problem-details'
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -17,29 +17,23 @@ import { zProblemValidator } from '@/utils/validator'
 import { verifyPointsTurnstileToken } from './util-turnstile-cookie'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PointTokenRequestSchema))
 
-route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const turnstileCookie = getCookie(c, CookieKey.POINTS_TURNSTILE)
 
   if (!turnstileCookie) {
-    return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
-    })
+    return problemResponse(c, { problem: PROBLEM.TURNSTILE_REQUIRED })
   }
 
   const verified = await verifyPointsTurnstileToken(turnstileCookie)
 
   if (!verified || verified.userId !== userId) {
     deleteCookie(c, CookieKey.POINTS_TURNSTILE, { path: '/api/v1/points', secure: true })
-    return problemResponse(c, {
-      status: 403,
-      code: problemCode.TURNSTILE_REQUIRED,
-      detail: '보안 검증을 완료해 주세요',
-    })
+    return problemResponse(c, { problem: PROBLEM.TURNSTILE_REQUIRED })
   }
 
   try {
@@ -71,8 +65,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
       const remainingSeconds = Math.max(1, Math.ceil(remainingMs / 1000))
 
       return problemResponse(c, {
-        status: 429,
-        detail: '오늘의 적립 한도에 도달했어요',
+        problem: PROBLEM.DAILY_EARN_LIMIT_REACHED,
         headers: { 'Retry-After': String(remainingSeconds) },
       })
     }
@@ -116,7 +109,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
       })
 
     if (!result) {
-      return problemResponse(c, { status: 500, detail: '토큰 생성에 실패했어요' })
+      return problemResponse(c, { status: 500 })
     }
 
     if (result.lastEarnedAt && result.lastEarnedAt > adSlotCooldownTime) {
@@ -124,8 +117,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
       const remainingSeconds = Math.max(1, Math.ceil(remainingMs / 1000))
 
       return problemResponse(c, {
-        status: 429,
-        detail: '같은 광고는 잠시 후 다시 적립할 수 있어요',
+        problem: PROBLEM.AD_COOLDOWN,
         headers: { 'Retry-After': String(remainingSeconds) },
       })
     }
@@ -137,7 +129,7 @@ route.post('/', requireAuth, zProblemValidator('json', postV1PointTokenRequestSc
     } satisfies POSTV1PointTokenResponse)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '토큰 생성에 실패했어요' })
+    return problemResponse(c, { status: 500 })
   }
 })
 

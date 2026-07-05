@@ -1,7 +1,8 @@
-import { postV1TurnstileClearanceRequestSchema, TURNSTILE_ORIGIN_PROTECTION_ACTION } from '@litomi/contracts'
+import { PROBLEM, postV1TurnstileClearanceRequestSchema, TURNSTILE_ORIGIN_PROTECTION_ACTION } from '@litomi/contracts'
 import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 import ms from 'ms'
 
 import type { Env } from '@/app'
@@ -11,11 +12,12 @@ import { APP_ORIGIN } from '@/utils/request-origin'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
-
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1TurnstileClearanceRequestSchema))
 const turnstileValidator = new TurnstileValidator(ms('10 seconds'), 1)
 const expectedHostname = new URL(APP_ORIGIN).hostname
 
-route.post('/', zProblemValidator('json', postV1TurnstileClearanceRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const { token } = c.req.valid('json')
   const remoteIP = getRequestIP(c.req.raw.headers)
 
@@ -27,11 +29,7 @@ route.post('/', zProblemValidator('json', postV1TurnstileClearanceRequestSchema)
   })
 
   if (!turnstile.success) {
-    return problemResponse(c, {
-      status: 400,
-      code: 'human-verification-failed',
-      detail: '보안 확인에 실패했어요',
-    })
+    return problemResponse(c, { problem: PROBLEM.HUMAN_VERIFICATION_FAILED })
   }
 
   return c.body(null, 204)
