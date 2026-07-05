@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { bbatonVerificationTable } from '@litomi/db/app/bbaton'
 import { isPostgresError } from '@litomi/db/error'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -23,8 +24,10 @@ const bbatonCompleteLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1BBatonCompleteBodySchema))
 
-route.post('/', requireAuth, zProblemValidator('json', postV1BBatonCompleteBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   try {

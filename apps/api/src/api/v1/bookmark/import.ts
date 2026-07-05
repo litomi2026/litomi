@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -15,8 +16,15 @@ import { zProblemValidator } from '@/utils/validator'
 import { BookmarkLimitReachedError, saveBookmarks } from './save'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
 
-route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1BookmarkImportBodySchema), async (c) => {
+const middlewares = factory.createHandlers(
+  requireAuth,
+  requireAdult,
+  zProblemValidator('json', postV1BookmarkImportBodySchema),
+)
+
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const { bookmarks, mode } = c.req.valid('json')

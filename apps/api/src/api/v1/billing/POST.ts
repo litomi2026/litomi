@@ -2,6 +2,7 @@ import { env } from '@litomi/billing/env'
 import { BILLING_CURRENCY, BILLING_TEST_AMOUNT, type POSTV1BillingTestPaymentResponse } from '@litomi/contracts'
 import { createPendingPayment } from '@litomi/db/app/query/payment'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -12,8 +13,10 @@ const { PORTONE_STORE_ID, PORTONE_CHANNEL_KEY } = env
 const ORDER_NAME = 'litomi 결제 테스트'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth)
 
-route.post('/test-payments', requireAuth, async (c) => {
+route.post('/test-payments', ...middlewares, async (c) => {
   if (!PORTONE_STORE_ID || !PORTONE_CHANNEL_KEY) {
     return problemResponse(c, { status: 503 })
   }

@@ -13,6 +13,7 @@ import { verifyAuthenticationResponse } from '@simplewebauthn/server'
 import { and, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/api/v1/auth/query'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import type { Env } from '@/app'
@@ -23,8 +24,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { passkeyAuthOptionLimiter, passkeyAuthVerifyLimiter } from '../rate-limit'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema))
 
-route.post('/', zProblemValidator('json', postV1AuthPasskeyVerifyRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const remoteIP = getRequestIP(c.req.raw.headers)
   const { authentication, remember, turnstileToken } = c.req.valid('json')
   const { allowed, retryAfter } = await passkeyAuthVerifyLimiter.check(authentication.id)

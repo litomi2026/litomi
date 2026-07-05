@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -10,8 +11,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', patchV1CensorshipUpdateBodySchema))
 
-route.patch('/', zProblemValidator('json', patchV1CensorshipUpdateBodySchema), async (c) => {
+route.patch('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { items } = c.req.valid('json')
 

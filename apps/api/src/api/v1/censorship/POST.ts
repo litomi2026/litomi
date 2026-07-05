@@ -4,6 +4,7 @@ import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { MAX_CENSORSHIPS_PER_USER } from '@litomi/domain/censorship/policy'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -11,8 +12,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1CensorshipCreateBodySchema))
 
-route.post('/', zProblemValidator('json', postV1CensorshipCreateBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { items } = c.req.valid('json')
 

@@ -5,6 +5,7 @@ import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { hash } from 'bcryptjs'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import { createUser } from '@/api/v1/auth/signup/query'
 import type { Env } from '@/app'
@@ -19,8 +20,10 @@ const signupLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1AuthSignupRequestSchema))
 
-route.post('/', zProblemValidator('json', postV1AuthSignupRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const { loginId, nickname: requestedNickname, password, turnstileToken } = c.req.valid('json')
   const nickname = requestedNickname ? requestedNickname : generateRandomNickname()
   const validator = new TurnstileValidator()

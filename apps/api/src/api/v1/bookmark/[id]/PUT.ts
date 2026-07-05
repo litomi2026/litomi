@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -20,8 +21,10 @@ const ErrorCode = {
 } as const
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema))
 
-route.put('/', requireAuth, requireAdult, zProblemValidator('param', mangaIdParamSchema), async (c) => {
+route.put('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id: mangaId } = c.req.valid('param')
 

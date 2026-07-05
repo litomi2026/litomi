@@ -1,6 +1,7 @@
 import { type POSTV1BookmarkResponse, PROBLEM, postV1BookmarkBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -13,8 +14,15 @@ import { zProblemValidator } from '@/utils/validator'
 import { BookmarkLimitReachedError, saveBookmarks } from './save'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
 
-route.post('/', requireAuth, requireAdult, zProblemValidator('json', postV1BookmarkBodySchema), async (c) => {
+const middlewares = factory.createHandlers(
+  requireAuth,
+  requireAdult,
+  zProblemValidator('json', postV1BookmarkBodySchema),
+)
+
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { mangaIds } = c.req.valid('json')
 

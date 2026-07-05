@@ -7,6 +7,7 @@ import TurnstileValidator from '@litomi/http/turnstile'
 import { compare } from 'bcryptjs'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 import { readAdultFlag, touchUserLoginAt } from '@/api/v1/auth/query'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import type { Env } from '@/app'
@@ -19,8 +20,10 @@ import { DUMMY_PASSWORD_HASH, ensureAllowed, loginIdLimiter, loginIpLimiter } fr
 import { verifyTrustedBrowserToken } from './util'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1AuthLoginRequestSchema))
 
-route.post('/', zProblemValidator('json', postV1AuthLoginRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const { codeChallenge, fingerprint, loginId, password, remember, turnstileToken } = c.req.valid('json')
   const remoteIP = getRequestIP(c.req.raw.headers)
   const validator = new TurnstileValidator()

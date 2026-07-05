@@ -6,6 +6,7 @@ import {
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -17,8 +18,10 @@ import { zProblemValidator } from '@/utils/validator'
 const { ADSTERRA_API_KEY } = env
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('query', getV1AdsterraStatsQuerySchema))
 
-route.get('/stats', requireAuth, zProblemValidator('query', getV1AdsterraStatsQuerySchema), async (c) => {
+route.get('/stats', ...middlewares, async (c) => {
   if (!ADSTERRA_API_KEY) {
     return problemResponse(c, { status: 502 })
   }

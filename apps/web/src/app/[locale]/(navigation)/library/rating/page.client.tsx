@@ -7,7 +7,7 @@ import { Star } from 'lucide-react'
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoginGate from '@/components/LoginGate'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
@@ -17,9 +17,9 @@ import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
+import { hasAdultAccess } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
-
 import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -94,40 +94,17 @@ export default function RatingPageClient() {
   )
 }
 
-function MangaList({ showLoadingSkeleton, isSelectionMode, items, mangaMap, ratingIndexMap, view }: MangaListProps) {
-  return (
-    <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
-      {items.map(({ mangaId, rating }) => {
-        const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
-        const index = ratingIndexMap.get(mangaId) ?? 0
-
-        if (!isSelectionMode) {
-          return (
-            <div className="relative group overflow-hidden" key={mangaId}>
-              <div className="absolute top-0.5 left-0.5 right-0.5 z-10 flex justify-center p-2 rounded-t-xl bg-background/60 pointer-events-none">
-                <StarRating rating={rating} />
-              </div>
-              <MangaCard className="h-full" index={index} manga={manga} variant={view} />
-            </div>
-          )
-        }
-
-        return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
-      })}
-      {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
-    </div>
-  )
-}
-
 function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps) {
   const { exit, isSelectionMode } = useLibrarySelection()
   const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
   const t = useTranslations('Library')
   const sortT = useTranslations('Library.sort')
+  const guardT = useTranslations('Common.guard')
+  const canAccess = hasAdultAccess(me)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
-    useRatingInfiniteQuery({ enabled: Boolean(me), sort })
+    useRatingInfiniteQuery({ enabled: canAccess, sort })
 
   const ratingItems = data?.pages?.flatMap((page) => page.items) ?? []
 
@@ -177,6 +154,15 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
       <>
         <LibraryHeaderSpacer />
         <LoginGate description={t('empty.ratingUnauthorizedDescription')} />
+      </>
+    )
+  }
+
+  if (me && !canAccess) {
+    return (
+      <>
+        <LibraryHeaderSpacer />
+        <AdultVerificationGate description={guardT('adultDescription')} />
       </>
     )
   }
@@ -237,6 +223,31 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
       {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
       {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
     </>
+  )
+}
+
+function MangaList({ showLoadingSkeleton, isSelectionMode, items, mangaMap, ratingIndexMap, view }: MangaListProps) {
+  return (
+    <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
+      {items.map(({ mangaId, rating }) => {
+        const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
+        const index = ratingIndexMap.get(mangaId) ?? 0
+
+        if (!isSelectionMode) {
+          return (
+            <div className="relative group overflow-hidden" key={mangaId}>
+              <div className="absolute top-0.5 left-0.5 right-0.5 z-10 flex justify-center p-2 rounded-t-xl bg-background/60 pointer-events-none">
+                <StarRating rating={rating} />
+              </div>
+              <MangaCard className="h-full" index={index} manga={manga} variant={view} />
+            </div>
+          )
+        }
+
+        return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
+      })}
+      {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
+    </div>
   )
 }
 

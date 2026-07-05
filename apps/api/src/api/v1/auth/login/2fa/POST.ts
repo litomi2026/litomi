@@ -7,6 +7,7 @@ import { db } from '@litomi/db/app'
 import { getRequestIP, getRequestUserAgent } from '@litomi/http/request'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 import { readAdultFlag, touchUserLoginAtAndReturnProfile } from '@/api/v1/auth/query'
 import { issueAuthCookies } from '@/api/v1/auth/session.query'
 import type { Env } from '@/app'
@@ -39,8 +40,10 @@ type TokenVerificationResult =
     }
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1AuthLogin2FARequestSchema))
 
-route.post('/', zProblemValidator('json', postV1AuthLogin2FARequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const { authorizationCode, codeVerifier, fingerprint, remember, token, trustBrowser } = c.req.valid('json')
   const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 

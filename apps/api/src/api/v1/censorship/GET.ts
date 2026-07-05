@@ -4,6 +4,7 @@ import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { encodeCensorshipCursor } from '@litomi/db/cursor'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -12,8 +13,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('query', getV1CensorshipQuerySchema))
 
-route.get('/', zProblemValidator('query', getV1CensorshipQuerySchema), async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { cursor, limit } = c.req.valid('query')
 

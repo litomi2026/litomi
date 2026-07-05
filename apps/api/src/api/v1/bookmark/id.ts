@@ -2,16 +2,19 @@ import type { GETV1BookmarkIdResponse } from '@litomi/contracts'
 
 import { selectBookmarkId } from '@litomi/db/app/query/bookmark'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
-
+import { requireAdult } from '@/middleware/require-adult'
 import { requireAuth } from '@/middleware/require-auth'
 import { privateCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, requireAdult)
 
-route.get('/', requireAuth, async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   try {
