@@ -99,7 +99,7 @@ export async function confirmPayment(paymentId: string, data: ConfirmPaymentInpu
       const set: Record<string, unknown> = {
         status: 'active',
         autoRenew: true,
-        expiresAt: sql`greatest(${subscriptionTable.expiresAt}, ${invoice.periodEnd}::timestamptz)`,
+        expiresAt: sql`greatest(${subscriptionTable.expiresAt}, ${invoice.periodEnd.toISOString()}::timestamptz)`,
       }
 
       if (paymentMethodId !== null) {
