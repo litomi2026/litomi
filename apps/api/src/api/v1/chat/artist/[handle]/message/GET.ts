@@ -1,20 +1,14 @@
-import {
-  type ChatReplyDTO,
-  type ChatTimelineMessage,
-  chatHandleParamSchema,
-  type GETV1ChatMessagesResponse,
-  getV1ChatMessagesQuerySchema,
-} from '@litomi/contracts'
+import { chatHandleParamSchema, type GETV1ChatMessagesResponse, getV1ChatMessagesQuerySchema } from '@litomi/contracts'
 import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import {
-  type ChatMessageRow,
-  countUnreadByStreams,
-  getReadCursors,
-  listBroadcastMessages,
-  listOwnRepliesForMessages,
+  type ChatBroadcastRow,
+  type ChatDmMessageRow,
+  countReplyRoomUnread,
+  getDmMessagesByIds,
+  listBroadcast,
+  listFanTimeline,
   messageIdAtOrAfter,
   type TimelineWindow,
-  toMessageReplyStreamId,
 } from '@litomi/db/chat/query'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -27,7 +21,7 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 import { resolveTimelineAccess } from '../../../access'
-import { mapMessage, mapReply } from '../../../dto'
+import { toBroadcastFeedItem, toDmFeedItem, toQuotedPreview } from '../../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -38,11 +32,11 @@ const middlewares = factory.createHandlers(
   zProblemValidator('query', getV1ChatMessagesQuerySchema),
 )
 
-// The timeline is the artist's broadcast feed (messages). Per message:
-//   - fan view   → the fan's own replies + whether the artist has read them
-//   - owner view → the message's unread reply count
-// Access: owner / entitled fan → full broadcast; lapsed fan → broadcast sent during
-// the windows they paid for; never-subscribed → 403.
+// The fan timeline is the artist's broadcast feed woven together with the fan's 1:1 messages
+// (their replies + the artist's answers), merged in messageId (time) order. The owner instead
+// gets just their broadcast feed plus each bubble's unread-reply count.
+// Access: owner / entitled fan → full broadcast; lapsed fan → broadcast sent during the
+// windows they paid for; never-subscribed → 403. The 1:1 history is always readable.
 route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle } = c.req.valid('param')
@@ -59,7 +53,26 @@ route.get('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 403 })
   }
 
-  const windows: TimelineWindow[] | undefined =
+  if (access.kind === 'owner') {
+    const broadcasts = await listBroadcast(artist.id, { before, after, limit })
+
+    const unread = await countReplyRoomUnread(
+      userId,
+      artist.id,
+      broadcasts.map((row) => row.messageId),
+    )
+
+    const ownerTimeline = {
+      items: broadcasts.map(toBroadcastFeedItem),
+      replyUnread: Object.fromEntries(unread),
+      nextCursor: broadcasts.length === limit ? broadcasts.at(-1)?.messageId : undefined,
+    }
+
+    return c.json(ownerTimeline, { headers: { 'Cache-Control': noStoreCacheControl } })
+  }
+
+  // 만료(lapsed) 팬은 결제했던 기간에 발송된 방송만 열람할 수 있다.
+  const windows =
     access.kind === 'lapsed'
       ? access.intervals.map((interval) => ({
           fromId: messageIdAtOrAfter(interval.startedAt),
@@ -67,97 +80,83 @@ route.get('/', ...middlewares, async (c) => {
         }))
       : undefined
 
-  const messages = await listBroadcastMessages(artist.id, { windows, before, after, limit })
-  const messageIds = messages.map((message) => message.messageId)
-  const isOwner = access.kind === 'owner'
-
-  const result = {
-    messages: isOwner
-      ? await buildOwnerMessages(artist.id, userId, messages, messageIds)
-      : await buildFanMessages(artist.id, artist.userId, userId, messages, messageIds),
-    nextCursor: messages.length === limit ? messages.at(-1)?.messageId : undefined,
-  } satisfies GETV1ChatMessagesResponse
-
-  return c.json(result, { headers: { 'Cache-Control': noStoreCacheControl } })
+  const fanTimeline = await buildFanTimeline(artist.id, userId, { before, after, limit, windows })
+  return c.json(fanTimeline, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
-// Owner view: each message plus how many unread replies it has (one batched GROUP BY).
-async function buildOwnerMessages(
-  artistId: number,
-  ownerUserId: number,
-  messages: ChatMessageRow[],
-  messageIds: string[],
-): Promise<ChatTimelineMessage[]> {
-  if (messageIds.length === 0) {
-    return []
-  }
-
-  const unread = await countUnreadByStreams(
-    ownerUserId,
-    messageIds.map((messageId) => toMessageReplyStreamId(artistId, messageId)),
-  )
-
-  return messages.map((message) => ({
-    message: mapMessage(message),
-    unreadReplyCount: unread.get(toMessageReplyStreamId(artistId, message.messageId)) ?? 0,
-  }))
+interface PageOptions {
+  before?: string
+  after?: string
+  limit: number
 }
 
-// Fan view: each message plus the fan's own replies and whether the artist has read them.
-// artistUserId null = 탈퇴한 아티스트의 아카이브 — 읽음 커서가 파기되어 읽음 표시는 생략된다.
-async function buildFanMessages(
+interface TaggedRow {
+  messageId: string
+  broadcast?: ChatBroadcastRow
+  dm?: ChatDmMessageRow
+}
+
+// Fan view: merge two keyset streams (broadcast feed + the fan's 1:1 messages). For backward
+// paging we only emit down to the highest "last id" among the SATURATED sources — beyond that
+// a source may still hold newer-than-cursor rows we didn't fetch, so we page there next round.
+// This guarantees the merge never skips an item. (Duplicates across pages dedupe by id client-side.)
+async function buildFanTimeline(
   artistId: number,
-  artistUserId: number | null,
   fanId: number,
-  messages: ChatMessageRow[],
-  messageIds: string[],
-): Promise<ChatTimelineMessage[]> {
-  if (messageIds.length === 0) {
-    return []
+  { before, after, limit, windows }: PageOptions & { windows?: TimelineWindow[] },
+): Promise<GETV1ChatMessagesResponse> {
+  const isForward = Boolean(after) && !before
+
+  const [broadcasts, dmRows] = await Promise.all([
+    listBroadcast(artistId, { windows, before, after, limit }),
+    listFanTimeline({ artistId, fanId, before, after, limit }),
+  ])
+
+  let threshold: string | null = null
+
+  if (!isForward) {
+    const lasts: string[] = []
+
+    if (broadcasts.length === limit) {
+      lasts.push(broadcasts[broadcasts.length - 1].messageId)
+    }
+
+    if (dmRows.length === limit) {
+      lasts.push(dmRows[dmRows.length - 1].messageId)
+    }
+
+    threshold = lasts.length ? lasts.reduce((a, b) => (a > b ? a : b)) : null
   }
 
-  const replyRows = await listOwnRepliesForMessages({ artistId, fanId, messageIds })
+  let tagged: TaggedRow[] = [
+    ...broadcasts.map((row) => ({ messageId: row.messageId, broadcast: row })),
+    ...dmRows.map((row) => ({ messageId: row.messageId, dm: row })),
+  ]
 
-  // Group the fan's replies by the message they target (NOT the reply's own id), so a
-  // message's myReplies can be looked up by message.messageId below.
-  const repliesByMessage = new Map<string, ChatReplyDTO[]>()
-  for (const row of replyRows) {
-    const reply = mapReply(row)
-    const list = repliesByMessage.get(reply.targetMessageId)
-    if (list) {
-      list.push(reply)
-    } else {
-      repliesByMessage.set(reply.targetMessageId, [reply])
-    }
+  tagged.sort((a, b) => (isForward ? a.messageId.localeCompare(b.messageId) : b.messageId.localeCompare(a.messageId)))
+
+  if (threshold) {
+    tagged = tagged.filter((row) => row.messageId >= threshold!)
   }
 
-  // Read the artist's reply-room cursor only for messages the fan actually replied to,
-  // to tell whether their latest reply has been read (A · room-level read receipt).
-  const repliedMessageIds = [...repliesByMessage.keys()]
-  const artistCursors =
-    repliedMessageIds.length && artistUserId !== null
-      ? await getReadCursors(
-          artistUserId,
-          repliedMessageIds.map((messageId) => toMessageReplyStreamId(artistId, messageId)),
-        )
-      : new Map<string, string>()
+  // Resolve quoted-message previews in one batch (both quote targets live in this (artist,fan)
+  // conversation). The client decides whether to actually render the quote (only if not adjacent).
+  const quotedIds = [...new Set(tagged.filter((row) => row.dm?.quotedMessageId).map((row) => row.dm!.quotedMessageId!))]
+  const quotedRows = await getDmMessagesByIds(artistId, fanId, quotedIds)
 
-  return messages.map((message) => {
-    const myReplies = repliesByMessage.get(message.messageId)
-
-    if (!myReplies || myReplies.length === 0) {
-      return { message: mapMessage(message) }
+  const items = tagged.map((row) => {
+    if (row.broadcast) {
+      return toBroadcastFeedItem(row.broadcast)
     }
 
-    const lastOwnReplyId = myReplies[myReplies.length - 1].messageId
-    const artistCursor = artistCursors.get(toMessageReplyStreamId(artistId, message.messageId))
-
-    return {
-      message: mapMessage(message),
-      myReplies,
-      artistReadMyReplies: artistCursor !== undefined && artistCursor >= lastOwnReplyId,
-    }
+    const quotedRow = row.dm!.quotedMessageId ? quotedRows.get(row.dm!.quotedMessageId) : undefined
+    return toDmFeedItem(row.dm!, quotedRow && toQuotedPreview(quotedRow))
   })
+
+  return {
+    items,
+    nextCursor: threshold ?? undefined,
+  }
 }
 
 export default route

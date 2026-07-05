@@ -16,10 +16,19 @@ export const chatHandleParamSchema = z.object({
   handle: z.string().min(1),
 })
 
-// A message (broadcast message) is addressed by its messageId (a ULID).
+// A message is addressed by its messageId (a ULID). For a fan reply, messageId is the
+// target broadcast bubble (the conversation's context). The client chooses it — defaulting
+// to its latest-seen broadcast — so the server never has to infer "latest".
 export const chatMessageParamSchema = z.object({
   handle: z.string().min(1),
   messageId: z.string().min(1).max(MESSAGE_ID_MAX_LENGTH),
+})
+
+// An artist's 1:1 answer targets both the context bubble (messageId) and the recipient fan.
+export const chatArtistReplyParamSchema = z.object({
+  handle: z.string().min(1),
+  messageId: z.string().min(1).max(MESSAGE_ID_MAX_LENGTH),
+  fanId: z.coerce.number().int().positive(),
 })
 
 export const postV1ChatMessageBodySchema = z.object({
@@ -34,48 +43,76 @@ export interface POSTV1ChatMessageResponse {
 }
 
 // 팬 답장 — 스키마 상한은 절대 최댓값이고, 실제 허용 길이는 라우트에서 팬별 한도로 검증합니다.
+// quotedMessageId는 아티스트의 특정 1:1 답장에 이어 답할 때(핑퐁) 그 메시지를 가리킨다.
 export const postV1ChatReplyBodySchema = z.object({
   contentType: z.literal('text'),
   text: z.string().trim().min(1).max(CHAT_REPLY_TEXT_MAX_LENGTH),
+  quotedMessageId: messageIdCursorSchema.optional(),
 })
 
 export type POSTV1ChatReplyBody = z.infer<typeof postV1ChatReplyBodySchema>
 export type POSTV1ChatReplyResponse = POSTV1ChatMessageResponse
 
+// 아티스트 1:1 답장 — 답장방에서 특정 팬 메시지(quotedMessageId)에 되답장. 무제한·무료이며
+// 길이는 방송과 같은 상한(CHAT_TEXT_MAX_LENGTH). quotedMessageId는 그 팬의 실제 답장이어야 한다.
+export const postV1ArtistReplyBodySchema = z.object({
+  contentType: z.literal('text'),
+  text: z.string().trim().min(1).max(CHAT_TEXT_MAX_LENGTH),
+  quotedMessageId: messageIdCursorSchema,
+})
+
+export type POSTV1ArtistReplyBody = z.infer<typeof postV1ArtistReplyBodySchema>
+export type POSTV1ArtistReplyResponse = POSTV1ChatMessageResponse
+
 // --- Shared DTOs --------------------------------------------------------------
 
 export type ChatMessageContent = { text: string }
 
+export type ChatSenderRole = 'artist' | 'fan'
+
+// A short preview of the message another message quotes (shown when they aren't adjacent).
+export interface ChatQuotedPreview {
+  messageId: string
+  senderRole: ChatSenderRole
+  preview: string
+}
+
+// --- Realtime relay (chat-worker → gateway → client) --------------------------
+// Wire payloads; must match the builders in apps/chat-worker/src/handler.ts. Routed by kind:
+//   broadcast   → fan's `b:` room  → appended to the fan timeline as a bubble
+//   fanReply    → artist's `c:`/`rr:` rooms → the studio reply room
+//   artistReply → fan's `fc:` room → appended to the fan timeline as the artist's answer
 export type ChatRelayMessageDTO =
-  | (ChatMessageDTO & { kind: 'broadcast' })
-  | (ChatReplyDTO & {
-      kind: 'reply'
-      sender?: { nickname: string; imageURL: string | null }
-    })
-
-// A broadcast message as seen on the timeline.
-export interface ChatMessageDTO {
-  messageId: string
-  senderId: number
-  contentType: ChatContentType
-  content: ChatMessageContent
-  createdAt: string
-}
-
-// A fan's reply to a specific message.
-export interface ChatReplyDTO {
-  messageId: string
-  targetMessageId: string
-  senderId: number
-  contentType: ChatContentType
-  content: ChatMessageContent
-  createdAt: string
-}
+  | {
+      kind: 'broadcast'
+      messageId: string
+      contentType: ChatContentType
+      content: ChatMessageContent
+      createdAt: string
+    }
+  | {
+      kind: 'fanReply'
+      messageId: string
+      contextMessageId: string
+      fanId: number
+      quotedMessageId: string | null
+      contentType: ChatContentType
+      content: ChatMessageContent
+      createdAt: string
+      fan?: { nickname: string; imageURL: string | null }
+    }
+  | {
+      kind: 'artistReply'
+      messageId: string
+      contextMessageId: string
+      quotedMessageId: string | null
+      contentType: ChatContentType
+      content: ChatMessageContent
+      createdAt: string
+    }
 
 export interface ChatMessagePreview {
   messageId: string
-  senderId: number
-  contentType: ChatContentType
   preview: string
   createdAt: string
 }
@@ -96,7 +133,7 @@ export interface ChatUserBrief {
   imageURL: string | null
 }
 
-// --- Timeline (message-centric) ------------------------------------------------
+// --- Fan timeline (broadcast feed + 1:1, merged by messageId) ------------------
 
 export const getV1ChatMessagesQuerySchema = z.object({
   // Page backwards in time (older than this messageId) — the default scroll-up behavior.
@@ -106,18 +143,44 @@ export const getV1ChatMessagesQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(30),
 })
 
-// One message on the timeline. Role-specific fields:
-//   - fan:   myReplies + artistReadMyReplies (whether the artist has read them)
-//   - owner: unreadReplyCount (new replies on this message, capped)
-export interface ChatTimelineMessage {
-  message: ChatMessageDTO
-  myReplies?: ChatReplyDTO[]
-  artistReadMyReplies?: boolean
-  unreadReplyCount?: number
-}
+// One item on the fan's continuous timeline: a broadcast bubble, the fan's own reply, or the
+// artist's 1:1 answer — all merged in messageId (time) order. `contextMessageId` anchors a
+// 1:1 message to the broadcast it belongs to; `quoted` is populated when the answered message
+// isn't visually adjacent, so the client can render a quote header.
+export type ChatFeedItem =
+  | {
+      kind: 'broadcast'
+      messageId: string
+      contentType: ChatContentType
+      content: ChatMessageContent
+      createdAt: string
+    }
+  | {
+      kind: 'fanReply'
+      messageId: string
+      contextMessageId: string
+      quotedMessageId?: string
+      quoted?: ChatQuotedPreview
+      contentType: ChatContentType
+      content: ChatMessageContent
+      createdAt: string
+    }
+  | {
+      kind: 'artistReply'
+      messageId: string
+      contextMessageId: string
+      quotedMessageId?: string
+      quoted?: ChatQuotedPreview
+      contentType: ChatContentType
+      content: ChatMessageContent
+      createdAt: string
+    }
 
 export interface GETV1ChatMessagesResponse {
-  messages: ChatTimelineMessage[]
+  items: ChatFeedItem[]
+  // Owner-only sidecar: messageId → new (unread) fan-reply count for that broadcast's reply
+  // room, so the studio can badge each bubble. Absent/empty in the fan view.
+  replyUnread?: Record<string, number>
   // Pass back as `before` to load the previous page; absent when the stream start is reached.
   nextCursor?: string
 }
@@ -343,18 +406,32 @@ export interface GETV1ChatArtistResponse {
   replyTextLimit?: number
 }
 
-// --- Artist reply room (all fans' replies to one message) ---------------------
+// --- Artist reply room (fan replies to one message, with the artist's answers) ---
 
 export const getV1ChatRepliesQuerySchema = z.object({
   before: messageIdCursorSchema.optional(),
   limit: z.coerce.number().int().min(1).max(100).default(30),
 })
 
-export interface ChatReplyWithFan extends ChatReplyDTO {
+export interface ChatReplyRoomMessage {
+  messageId: string
+  quotedMessageId: string | null
+  contentType: ChatContentType
+  content: ChatMessageContent
+  createdAt: string
+}
+
+// One fan's reply to message M (newest-first list), plus the artist's 1:1 answers that quote
+// it (threaded under, oldest→newest). Only the artist reads this room. `fanId` is the reply
+// target for the artist's answer (independent of whether the fan's brief resolved).
+export interface ChatReplyRoomEntry {
+  fanId: number
+  reply: ChatReplyRoomMessage
   fan?: ChatUserBrief
+  answers: ChatReplyRoomMessage[]
 }
 
 export interface GETV1ChatRepliesResponse {
-  replies: ChatReplyWithFan[]
+  entries: ChatReplyRoomEntry[]
   nextCursor?: string
 }

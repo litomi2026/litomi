@@ -22,6 +22,7 @@ export const messages = {
       },
       fanRoom: {
         replyTo: '{name}에게 답장',
+        you: '나',
         repliesExhausted: '이 메시지에는 답장을 모두 보냈어요 ({count}회)',
         composerPlaceholder: '메시지를 입력하세요...',
         expiredNotice: '구독이 만료되어 답장을 보낼 수 없어요.',
@@ -88,6 +89,10 @@ export const messages = {
         title: '메시지 답장',
         empty: '아직 답장이 없어요.',
         fanNumber: '팬 #{id}',
+        reply: '답장',
+        answering: '{name}에게 답장',
+        answerPlaceholder: '{name}에게 답장…',
+        selectToAnswer: '답장할 팬을 선택하세요',
       },
       earnings: {
         title: '정산 · 수익',
@@ -175,6 +180,7 @@ export const messages = {
       },
       fanRoom: {
         replyTo: 'Reply to {name}',
+        you: 'You',
         repliesExhausted: 'You have used all replies to this message ({count})',
         composerPlaceholder: 'Type a message...',
         expiredNotice: 'Your subscription has expired, so you can no longer reply.',
@@ -243,6 +249,10 @@ export const messages = {
         title: 'Message replies',
         empty: 'No replies yet.',
         fanNumber: 'Fan #{id}',
+        reply: 'Reply',
+        answering: 'Reply to {name}',
+        answerPlaceholder: 'Reply to {name}…',
+        selectToAnswer: 'Pick a fan to reply to',
       },
       earnings: {
         title: 'Payouts & earnings',
@@ -331,6 +341,7 @@ export const messages = {
       },
       fanRoom: {
         replyTo: '{name}に返信',
+        you: '自分',
         repliesExhausted: 'このメッセージへの返信をすべて送りました（{count}回）',
         composerPlaceholder: 'メッセージを入力...',
         expiredNotice: 'サブスクの期限が切れているため、返信を送れません。',
@@ -398,6 +409,10 @@ export const messages = {
         title: 'メッセージへの返信',
         empty: 'まだ返信がありません。',
         fanNumber: 'ファン #{id}',
+        reply: '返信',
+        answering: '{name}に返信',
+        answerPlaceholder: '{name}に返信…',
+        selectToAnswer: '返信するファンを選んでください',
       },
       earnings: {
         title: '精算・収益',
@@ -486,6 +501,7 @@ export const messages = {
       },
       fanRoom: {
         replyTo: '回复 {name}',
+        you: '我',
         repliesExhausted: '你已用完对这条消息的全部回复（{count}次）',
         composerPlaceholder: '输入消息...',
         expiredNotice: '订阅已到期，无法发送回复。',
@@ -550,6 +566,10 @@ export const messages = {
         title: '消息回复',
         empty: '还没有回复。',
         fanNumber: '粉丝 #{id}',
+        reply: '回复',
+        answering: '回复 {name}',
+        answerPlaceholder: '回复 {name}…',
+        selectToAnswer: '选择要回复的粉丝',
       },
       earnings: {
         title: '结算 · 收益',

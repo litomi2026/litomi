@@ -2,99 +2,123 @@ import { and, asc, desc, eq, gt, gte, inArray, lt, or, sql } from 'drizzle-orm'
 import { encodeTime, ulid } from 'ulid'
 
 import { chatDB } from '../db'
-import { chatMessageTable } from '../schema'
+import { chatBroadcastTable, chatDmMessageTable } from '../schema'
 import { clampPageSize } from './common'
-import { messageReplyStreamRange, toBroadcastStreamId, toMessageReplyStreamId } from './stream'
 
-export type ChatMessageRow = typeof chatMessageTable.$inferSelect
+export type ChatBroadcastRow = typeof chatBroadcastTable.$inferSelect
+export type ChatDmMessageRow = typeof chatDmMessageTable.$inferSelect
+export type ChatSenderRole = 'artist' | 'fan'
 
 const ULID_TIME_LENGTH = 10
 const ULID_RANDOM_MIN = '0'.repeat(16)
 
+// The smallest ULID whose time component is `date` — used to turn a time window into a
+// messageId range (e.g. a lapsed fan's paid-interval bounds).
 export function messageIdAtOrAfter(date: Date): string {
   return encodeTime(date.getTime(), ULID_TIME_LENGTH) + ULID_RANDOM_MIN
 }
 
-export interface AppendMessageInput {
-  streamId: string
-  senderId: number
+// --- Broadcast feed -----------------------------------------------------------
+
+export interface AppendBroadcastInput {
+  artistId: number
   contentType: string
   content: unknown
 }
 
-export function buildChatMessage(input: AppendMessageInput): ChatMessageRow {
-  return {
-    ...input,
-    messageId: ulid(),
-    createdAt: new Date(),
-  }
+// The api mints the id/timestamp (so it can return the id and publish to Kafka); the
+// chat-worker persists the built row. Split so both sides agree on the same messageId.
+export function buildBroadcast(input: AppendBroadcastInput): ChatBroadcastRow {
+  return { ...input, messageId: ulid(), createdAt: new Date() }
 }
 
-export async function putChatMessage(row: ChatMessageRow): Promise<void> {
+export async function putBroadcast(row: ChatBroadcastRow): Promise<void> {
   await chatDB
-    .insert(chatMessageTable)
+    .insert(chatBroadcastTable)
     .values(row)
-    .onConflictDoNothing({ target: [chatMessageTable.streamId, chatMessageTable.messageId] })
+    .onConflictDoNothing({ target: [chatBroadcastTable.artistId, chatBroadcastTable.messageId] })
 }
 
-export async function appendChatMessage(input: AppendMessageInput): Promise<ChatMessageRow> {
-  const row = buildChatMessage(input)
-  await putChatMessage(row)
-  return row
+// --- 1:1 direct messages ------------------------------------------------------
+
+export interface AppendDmMessageInput {
+  artistId: number
+  fanId: number
+  contextMessageId: string
+  senderRole: ChatSenderRole
+  quotedMessageId: string | null
+  contentType: string
+  content: unknown
 }
 
-export interface ReplyGate {
+export function buildDmMessage(input: AppendDmMessageInput): ChatDmMessageRow {
+  return { ...input, messageId: ulid(), createdAt: new Date() }
+}
+
+export async function putDmMessage(row: ChatDmMessageRow): Promise<void> {
+  await chatDB
+    .insert(chatDmMessageTable)
+    .values(row)
+    .onConflictDoNothing({
+      target: [chatDmMessageTable.artistId, chatDmMessageTable.fanId, chatDmMessageTable.messageId],
+    })
+}
+
+export interface FanReplyGate {
   ownReplyCount: number
 }
 
-export interface ReplyGateKey {
+export interface FanReplyGateKey {
   artistId: number
-  messageId: string
-  senderId: number
+  contextMessageId: string
+  fanId: number
 }
 
-// 답장 수신 게이트 — 답장 대상 말풍선(b:) 행을 앵커로 점조회(PK)하면서, 이 팬이 답장방(rb:)에
-// 이미 보낸 답장 수(idx_chat_message_stream_sender seek)를 스칼라 서브쿼리로 함께 읽습니다
-// (한 왕복). 원본 말풍선이 없으면 undefined.
-export async function getReplyGate({ artistId, messageId, senderId }: ReplyGateKey): Promise<ReplyGate | undefined> {
-  const replyStreamId = toMessageReplyStreamId(artistId, messageId)
-
+// Reply gate — anchors on the target broadcast bubble (chat_broadcast PK point-lookup) and,
+// in the same round-trip, reads how many replies THIS fan already sent to it (reply-room
+// index seek). The count is self-contained (no correlation to the anchor row), so the
+// subquery keeps its qualifiers. Returns undefined when the target bubble doesn't exist.
+export async function getFanReplyGate({
+  artistId,
+  contextMessageId,
+  fanId,
+}: FanReplyGateKey): Promise<FanReplyGate | undefined> {
   const ownReplyCount = sql<number>`(
-    select count(*) from ${chatMessageTable}
-    where ${chatMessageTable.streamId} = ${replyStreamId} and ${chatMessageTable.senderId} = ${senderId}
+    select count(*) from ${chatDmMessageTable}
+    where ${chatDmMessageTable.artistId} = ${artistId}
+      and ${chatDmMessageTable.contextMessageId} = ${contextMessageId}
+      and ${chatDmMessageTable.fanId} = ${fanId}
+      and ${chatDmMessageTable.senderRole} = 'fan'
   )`.mapWith(Number)
 
   const [row] = await chatDB
     .select({ ownReplyCount })
-    .from(chatMessageTable)
-    .where(and(eq(chatMessageTable.streamId, toBroadcastStreamId(artistId)), eq(chatMessageTable.messageId, messageId)))
+    .from(chatBroadcastTable)
+    .where(and(eq(chatBroadcastTable.artistId, artistId), eq(chatBroadcastTable.messageId, contextMessageId)))
 
   return row
 }
 
-// messageId(ULID) 기준의 반열린 구간 [fromId, toIdExclusive). 시간 창을 messageId 범위로 변환할 때 씁니다.
+// --- Reads --------------------------------------------------------------------
+
+// messageId(ULID) 반열린 구간 [fromId, toIdExclusive). 시간 창을 messageId 범위로 변환할 때 사용.
 export interface TimelineWindow {
   fromId: string
   toIdExclusive: string
 }
 
-export interface ListMessagesOptions {
-  // windows가 주어지면 그 messageId 범위에 드는 말풍선만 포함합니다(예: 만료된 구독 팬은
-  // 결제했던 기간에 발송된 브로드캐스트만). 빈 배열이면 결과 없음. 미지정이면 전체.
+export interface ListBroadcastOptions {
+  // windows가 주어지면 그 messageId 범위에 드는 말풍선만(예: 만료 팬은 결제 기간 방송만).
+  // 빈 배열이면 결과 없음. 미지정이면 전체.
   windows?: TimelineWindow[]
-  // 과거로 페이지 넘김: 이 id보다 더 오래된 말풍선만.
   before?: string
-  // 미래로 페이지 넘김: 이 id보다 더 최신인 말풍선만.
   after?: string
   limit?: number
 }
 
-// 아티스트의 브로드캐스트(말풍선) 타임라인을 시간 순으로 읽어옵니다.
-export async function listBroadcastMessages(
-  artistId: number,
-  options: ListMessagesOptions = {},
-): Promise<ChatMessageRow[]> {
-  const conditions = [eq(chatMessageTable.streamId, toBroadcastStreamId(artistId))]
+// 아티스트 브로드캐스트 피드를 시간순으로 읽는다(팬 타임라인의 방송 축).
+export async function listBroadcast(artistId: number, options: ListBroadcastOptions = {}): Promise<ChatBroadcastRow[]> {
+  const conditions = [eq(chatBroadcastTable.artistId, artistId)]
 
   if (options.windows) {
     if (options.windows.length === 0) {
@@ -102,26 +126,26 @@ export async function listBroadcastMessages(
     }
 
     const windowConditions = options.windows.map((window) =>
-      and(gte(chatMessageTable.messageId, window.fromId), lt(chatMessageTable.messageId, window.toIdExclusive)),
+      and(gte(chatBroadcastTable.messageId, window.fromId), lt(chatBroadcastTable.messageId, window.toIdExclusive)),
     )
 
     conditions.push(or(...windowConditions)!)
   }
 
   if (options.before) {
-    conditions.push(lt(chatMessageTable.messageId, options.before))
+    conditions.push(lt(chatBroadcastTable.messageId, options.before))
   }
 
   if (options.after) {
-    conditions.push(gt(chatMessageTable.messageId, options.after))
+    conditions.push(gt(chatBroadcastTable.messageId, options.after))
   }
 
   const isForwardSync = Boolean(options.after) && !options.before
-  const order = isForwardSync ? asc(chatMessageTable.messageId) : desc(chatMessageTable.messageId)
+  const order = isForwardSync ? asc(chatBroadcastTable.messageId) : desc(chatBroadcastTable.messageId)
 
   const rows = await chatDB
     .select()
-    .from(chatMessageTable)
+    .from(chatBroadcastTable)
     .where(and(...conditions))
     .orderBy(order)
     .limit(clampPageSize(options.limit))
@@ -133,81 +157,172 @@ export async function listBroadcastMessages(
   return rows
 }
 
-export interface ListOwnRepliesInput {
+export interface ListFanTimelineInput {
   artistId: number
   fanId: number
-  messageIds: string[]
+  before?: string
+  after?: string
+  limit?: number
 }
 
-// 한 팬이 주어진 말풍선들에 단 "자기 자신의" 답장들. 화면에 보이는 말풍선들에 인라인으로 붙이기 위해
-// 페이지 단위(보통 ≤30개 messageId)로만 호출됩니다 → idx_chat_message_stream_sender 정확 seek.
-export async function listOwnRepliesForMessages({
-  artistId,
-  fanId,
-  messageIds,
-}: ListOwnRepliesInput): Promise<ChatMessageRow[]> {
-  if (messageIds.length === 0) {
-    return []
+// 한 팬의 아티스트와의 1:1 메시지(팬 답장 + 아티스트 답장, 양방향)를 시간순으로 읽는다
+// (팬 타임라인의 1:1 축). PK (artistId, fanId, messageId) 정확 범위 스캔. 열람권과 무관하게
+// 항상 조회 가능(히스토리는 팬 개인 자산).
+export async function listFanTimeline(input: ListFanTimelineInput): Promise<ChatDmMessageRow[]> {
+  const conditions = [eq(chatDmMessageTable.artistId, input.artistId), eq(chatDmMessageTable.fanId, input.fanId)]
+
+  if (input.before) {
+    conditions.push(lt(chatDmMessageTable.messageId, input.before))
   }
 
-  const streamIds = messageIds.map((messageId) => toMessageReplyStreamId(artistId, messageId))
+  if (input.after) {
+    conditions.push(gt(chatDmMessageTable.messageId, input.after))
+  }
+
+  const isForwardSync = Boolean(input.after) && !input.before
+  const order = isForwardSync ? asc(chatDmMessageTable.messageId) : desc(chatDmMessageTable.messageId)
+
+  const rows = await chatDB
+    .select()
+    .from(chatDmMessageTable)
+    .where(and(...conditions))
+    .orderBy(order)
+    .limit(clampPageSize(input.limit))
+
+  if (isForwardSync) {
+    rows.reverse()
+  }
+
+  return rows
+}
+
+export interface ListReplyRoomOptions {
+  before?: string
+  limit?: number
+}
+
+// 말풍선 M의 답장방 최상위 목록: 그 M에 온 팬 답장들만(senderRole='fan') 최신순으로 읽는다
+// (아티스트만). reply-room 인덱스 (artistId, contextMessageId, ...) 범위 스캔. keyset은 messageId.
+export async function listFanRepliesToMessage(
+  artistId: number,
+  contextMessageId: string,
+  options: ListReplyRoomOptions = {},
+): Promise<ChatDmMessageRow[]> {
+  const conditions = [
+    eq(chatDmMessageTable.artistId, artistId),
+    eq(chatDmMessageTable.contextMessageId, contextMessageId),
+    eq(chatDmMessageTable.senderRole, 'fan'),
+  ]
+
+  if (options.before) {
+    conditions.push(lt(chatDmMessageTable.messageId, options.before))
+  }
 
   return chatDB
     .select()
-    .from(chatMessageTable)
-    .where(and(inArray(chatMessageTable.streamId, streamIds), eq(chatMessageTable.senderId, fanId)))
-    .orderBy(asc(chatMessageTable.messageId))
+    .from(chatDmMessageTable)
+    .where(and(...conditions))
+    .orderBy(desc(chatDmMessageTable.messageId))
+    .limit(clampPageSize(options.limit))
 }
 
-export interface HasOwnRepliesInput {
-  senderId: number
+// 주어진 팬 답장들(quotedMessageId 대상)에 아티스트가 단 1:1 답장들 — 답장방에서 각 팬 답장
+// 아래에 스레드로 붙이기 위함. (artistId, contextMessageId) 파티션 내 스캔.
+export async function listArtistAnswers(
+  artistId: number,
+  contextMessageId: string,
+  quotedMessageIds: string[],
+): Promise<ChatDmMessageRow[]> {
+  if (quotedMessageIds.length === 0) {
+    return []
+  }
+
+  return chatDB
+    .select()
+    .from(chatDmMessageTable)
+    .where(
+      and(
+        eq(chatDmMessageTable.artistId, artistId),
+        eq(chatDmMessageTable.contextMessageId, contextMessageId),
+        eq(chatDmMessageTable.senderRole, 'artist'),
+        inArray(chatDmMessageTable.quotedMessageId, quotedMessageIds),
+      ),
+    )
+    .orderBy(asc(chatDmMessageTable.messageId))
+}
+
+// 팬의 아티스트별 "가장 최근 아티스트 1:1 답장" 한 건씩 — 팬 채팅 리스트에서 최신 활동/프리뷰를
+// 방송 요약과 비교(max)하기 위함. DISTINCT ON으로 아티스트당 최신 한 행만.
+export async function getLatestArtistDmPerArtist(
+  fanId: number,
+  artistIds: number[],
+): Promise<Map<number, ChatDmMessageRow>> {
+  if (artistIds.length === 0) {
+    return new Map()
+  }
+
+  const rows = await chatDB
+    .selectDistinctOn([chatDmMessageTable.artistId])
+    .from(chatDmMessageTable)
+    .where(
+      and(
+        inArray(chatDmMessageTable.artistId, artistIds),
+        eq(chatDmMessageTable.fanId, fanId),
+        eq(chatDmMessageTable.senderRole, 'artist'),
+      ),
+    )
+    .orderBy(asc(chatDmMessageTable.artistId), desc(chatDmMessageTable.messageId))
+
+  return new Map(rows.map((row) => [row.artistId, row]))
+}
+
+// (artistId, fanId) 대화에서 주어진 messageId들의 행을 일괄 조회 — 팬 타임라인의 인용
+// 프리뷰(quotedMessageId → 원문)를 해석하기 위함. PK 정확 조회.
+export async function getDmMessagesByIds(
+  artistId: number,
+  fanId: number,
+  messageIds: string[],
+): Promise<Map<string, ChatDmMessageRow>> {
+  if (messageIds.length === 0) {
+    return new Map()
+  }
+
+  const rows = await chatDB
+    .select()
+    .from(chatDmMessageTable)
+    .where(
+      and(
+        eq(chatDmMessageTable.artistId, artistId),
+        eq(chatDmMessageTable.fanId, fanId),
+        inArray(chatDmMessageTable.messageId, messageIds),
+      ),
+    )
+
+  return new Map(rows.map((row) => [row.messageId, row]))
+}
+
+export interface HasFanRepliesInput {
+  fanId: number
   artistId: number
   window: TimelineWindow
 }
 
-// 한 팬이 한 아티스트의 답장방들에서 주어진 messageId 시간 창 안에 보낸 답장이 있는지 —
-// 청약철회 조건("해당 결제 기간 답장 미발신") 판정용(idx_chat_message_sender_stream seek).
-export async function hasOwnRepliesInWindow({ senderId, artistId, window }: HasOwnRepliesInput): Promise<boolean> {
-  const range = messageReplyStreamRange(artistId)
-
+// 한 팬이 한 아티스트에게 주어진 messageId 시간 창 안에 보낸 답장이 있는지 —
+// 청약철회 조건("해당 결제 기간 답장 미발신") 판정용.
+export async function hasFanRepliesInWindow({ fanId, artistId, window }: HasFanRepliesInput): Promise<boolean> {
   const [row] = await chatDB
-    .select({ messageId: chatMessageTable.messageId })
-    .from(chatMessageTable)
+    .select({ messageId: chatDmMessageTable.messageId })
+    .from(chatDmMessageTable)
     .where(
       and(
-        eq(chatMessageTable.senderId, senderId),
-        gte(chatMessageTable.streamId, range.from),
-        lt(chatMessageTable.streamId, range.toExclusive),
-        gte(chatMessageTable.messageId, window.fromId),
-        lt(chatMessageTable.messageId, window.toIdExclusive),
+        eq(chatDmMessageTable.artistId, artistId),
+        eq(chatDmMessageTable.fanId, fanId),
+        eq(chatDmMessageTable.senderRole, 'fan'),
+        gte(chatDmMessageTable.messageId, window.fromId),
+        lt(chatDmMessageTable.messageId, window.toIdExclusive),
       ),
     )
     .limit(1)
 
   return row !== undefined
-}
-
-export interface ListRepliesOptions {
-  before?: string
-  limit?: number
-}
-
-// 한 말풍선의 답장방: 모든 팬의 답장(아티스트만 읽음). 최신순 keyset 페이지네이션.
-export async function listMessageReplies(
-  artistId: number,
-  messageId: string,
-  options: ListRepliesOptions = {},
-): Promise<ChatMessageRow[]> {
-  const conditions = [eq(chatMessageTable.streamId, toMessageReplyStreamId(artistId, messageId))]
-
-  if (options.before) {
-    conditions.push(lt(chatMessageTable.messageId, options.before))
-  }
-
-  return chatDB
-    .select()
-    .from(chatMessageTable)
-    .where(and(...conditions))
-    .orderBy(desc(chatMessageTable.messageId))
-    .limit(clampPageSize(options.limit))
 }

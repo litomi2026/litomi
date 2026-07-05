@@ -1,87 +1,150 @@
-import { and, count, eq, gt, inArray, isNull, ne, or, sql } from 'drizzle-orm'
+import { and, count, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 import { chatDB } from '../db'
-import { chatMessageTable, chatReadCursorTable } from '../schema'
-import { toBroadcastStreamId } from './stream'
+import { chatBroadcastTable, chatDmMessageTable, chatReadCursorTable, chatReplyReadCursorTable } from '../schema'
 
-// 한 사용자가 참여 중인 여러 스트림의 읽음 커서를 일괄 조회합니다.
-// 한 번도 읽지 않은 스트림은 반환되는 Map에 아예 포함되지 않습니다.
-export async function getReadCursors(userId: number, streamIds: string[]): Promise<Map<string, string>> {
-  if (streamIds.length === 0) {
-    return new Map()
-  }
-
-  const rows = await chatDB
-    .select({
-      streamId: chatReadCursorTable.streamId,
-      lastReadMessageId: chatReadCursorTable.lastReadMessageId,
-    })
-    .from(chatReadCursorTable)
-    .where(and(eq(chatReadCursorTable.userId, userId), inArray(chatReadCursorTable.streamId, streamIds)))
-
-  return new Map(rows.map((row) => [row.streamId, row.lastReadMessageId]))
-}
-
-export interface SetReadCursorInput {
-  userId: number
-  streamId: string
+export interface FanWatermarkInput {
+  fanId: number
+  artistId: number
   lastReadMessageId: string
 }
 
-export async function setReadCursor({ userId, streamId, lastReadMessageId }: SetReadCursorInput): Promise<void> {
+// 팬의 통합 타임라인 읽음 워터마크를 전진시킨다. GREATEST로 늦게 도착한 과거 요청이 커서를
+// 뒤로 돌리지 못하게 항상 앞으로만 전진시킨다.
+export async function setFanWatermark({ fanId, artistId, lastReadMessageId }: FanWatermarkInput): Promise<void> {
   await chatDB
     .insert(chatReadCursorTable)
-    .values({ userId, streamId, lastReadMessageId })
+    .values({ userId: fanId, artistId, lastReadMessageId })
     .onConflictDoUpdate({
-      target: [chatReadCursorTable.userId, chatReadCursorTable.streamId],
+      target: [chatReadCursorTable.userId, chatReadCursorTable.artistId],
       set: {
-        // GREATEST로 과거의 읽기 요청이 늦게 도착해도 커서가 항상 앞으로만 전진하도록 보장합니다.
         lastReadMessageId: sql`GREATEST(${chatReadCursorTable.lastReadMessageId}, ${lastReadMessageId})`,
         updatedAt: new Date(),
       },
     })
 }
 
-export interface SetFanReadWatermarkInput {
-  fanId: number
+export interface ReplyRoomWatermarkInput {
+  artistUserId: number
   artistId: number
+  messageId: string
   lastReadMessageId: string
 }
 
-// 팬의 브로드캐스트 읽음 워터마크는 대표 스트림인 공지방 ID(b:{artistId})에 저장합니다.
-export function setFanReadWatermark({ fanId, artistId, lastReadMessageId }: SetFanReadWatermarkInput): Promise<void> {
-  return setReadCursor({ userId: fanId, streamId: toBroadcastStreamId(artistId), lastReadMessageId })
+// 아티스트의 한 말풍선 답장방 읽음 워터마크(오너 userId 기준).
+export async function setReplyRoomWatermark({
+  artistUserId,
+  artistId,
+  messageId,
+  lastReadMessageId,
+}: ReplyRoomWatermarkInput): Promise<void> {
+  await chatDB
+    .insert(chatReplyReadCursorTable)
+    .values({ userId: artistUserId, artistId, contextMessageId: messageId, lastReadMessageId })
+    .onConflictDoUpdate({
+      target: [
+        chatReplyReadCursorTable.userId,
+        chatReplyReadCursorTable.artistId,
+        chatReplyReadCursorTable.contextMessageId,
+      ],
+      set: {
+        lastReadMessageId: sql`GREATEST(${chatReplyReadCursorTable.lastReadMessageId}, ${lastReadMessageId})`,
+        updatedAt: new Date(),
+      },
+    })
 }
 
-// 여러 방의 안읽음 뱃지 숫자를 읽음 커서 조인까지 포함해 단 1번의 쿼리로 계산합니다(N+1 방지).
-// 커서가 없는 방은 전체가 안읽음이고, 조회자 본인이 보낸 메시지는 세지 않습니다.
-// 안읽음이 0인 스트림은 반환 Map에 포함되지 않습니다.
-export async function countUnreadByStreams(userId: number, streamIds: string[]): Promise<Map<string, number>> {
-  if (streamIds.length === 0) {
+// 팬의 아티스트별 브로드캐스트 안읽음 수 — 커서 조인까지 한 쿼리로(N+1 방지). 커서 없는 방은
+// 전체가 안읽음. 방송은 항상 아티스트 발신이므로 자기 메시지 제외 불필요. 0인 아티스트는 Map 제외.
+export async function countBroadcastUnread(fanId: number, artistIds: number[]): Promise<Map<number, number>> {
+  if (artistIds.length === 0) {
     return new Map()
   }
 
   const rows = await chatDB
-    .select({
-      streamId: chatMessageTable.streamId,
-      unread: count(),
-    })
-    .from(chatMessageTable)
+    .select({ artistId: chatBroadcastTable.artistId, unread: count() })
+    .from(chatBroadcastTable)
     .leftJoin(
       chatReadCursorTable,
-      and(eq(chatReadCursorTable.userId, userId), eq(chatReadCursorTable.streamId, chatMessageTable.streamId)),
+      and(eq(chatReadCursorTable.userId, fanId), eq(chatReadCursorTable.artistId, chatBroadcastTable.artistId)),
     )
     .where(
       and(
-        inArray(chatMessageTable.streamId, streamIds),
-        ne(chatMessageTable.senderId, userId),
+        inArray(chatBroadcastTable.artistId, artistIds),
         or(
           isNull(chatReadCursorTable.lastReadMessageId),
-          gt(chatMessageTable.messageId, chatReadCursorTable.lastReadMessageId),
+          gt(chatBroadcastTable.messageId, chatReadCursorTable.lastReadMessageId),
         ),
       ),
     )
-    .groupBy(chatMessageTable.streamId)
+    .groupBy(chatBroadcastTable.artistId)
 
-  return new Map(rows.map((row) => [row.streamId, Number(row.unread)]))
+  return new Map(rows.map((row) => [row.artistId, Number(row.unread)]))
+}
+
+// 팬의 아티스트별 1:1 안읽음 수 — 아티스트가 이 팬에게 보낸(senderRole='artist') 답장만 센다.
+// 팬 통합 커서(chatReadCursorTable)를 그대로 재사용한다(방송과 같은 읽음 위치).
+export async function countDmUnread(fanId: number, artistIds: number[]): Promise<Map<number, number>> {
+  if (artistIds.length === 0) {
+    return new Map()
+  }
+
+  const rows = await chatDB
+    .select({ artistId: chatDmMessageTable.artistId, unread: count() })
+    .from(chatDmMessageTable)
+    .leftJoin(
+      chatReadCursorTable,
+      and(eq(chatReadCursorTable.userId, fanId), eq(chatReadCursorTable.artistId, chatDmMessageTable.artistId)),
+    )
+    .where(
+      and(
+        inArray(chatDmMessageTable.artistId, artistIds),
+        eq(chatDmMessageTable.fanId, fanId),
+        eq(chatDmMessageTable.senderRole, 'artist'),
+        or(
+          isNull(chatReadCursorTable.lastReadMessageId),
+          gt(chatDmMessageTable.messageId, chatReadCursorTable.lastReadMessageId),
+        ),
+      ),
+    )
+    .groupBy(chatDmMessageTable.artistId)
+
+  return new Map(rows.map((row) => [row.artistId, Number(row.unread)]))
+}
+
+// 아티스트의 말풍선별 답장방 안읽음 수 — 새 팬 답장(senderRole='fan')만 센다(오너 커서 기준).
+export async function countReplyRoomUnread(
+  artistUserId: number,
+  artistId: number,
+  contextMessageIds: string[],
+): Promise<Map<string, number>> {
+  if (contextMessageIds.length === 0) {
+    return new Map()
+  }
+
+  const rows = await chatDB
+    .select({ contextMessageId: chatDmMessageTable.contextMessageId, unread: count() })
+    .from(chatDmMessageTable)
+    .leftJoin(
+      chatReplyReadCursorTable,
+      and(
+        eq(chatReplyReadCursorTable.userId, artistUserId),
+        eq(chatReplyReadCursorTable.artistId, chatDmMessageTable.artistId),
+        eq(chatReplyReadCursorTable.contextMessageId, chatDmMessageTable.contextMessageId),
+      ),
+    )
+    .where(
+      and(
+        eq(chatDmMessageTable.artistId, artistId),
+        inArray(chatDmMessageTable.contextMessageId, contextMessageIds),
+        eq(chatDmMessageTable.senderRole, 'fan'),
+        or(
+          isNull(chatReplyReadCursorTable.lastReadMessageId),
+          gt(chatDmMessageTable.messageId, chatReplyReadCursorTable.lastReadMessageId),
+        ),
+      ),
+    )
+    .groupBy(chatDmMessageTable.contextMessageId)
+
+  return new Map(rows.map((row) => [row.contextMessageId, Number(row.unread)]))
 }

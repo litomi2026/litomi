@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import type { Env } from '@/app'
 import artistHandleGetRoute from './artist/[handle]/GET'
 import messageReadPutRoute from './artist/[handle]/message/[messageId]/read/PUT'
+import artistReplyPostRoute from './artist/[handle]/message/[messageId]/reply/[fanId]/POST'
 import messageReplyGetRoute from './artist/[handle]/message/[messageId]/reply/GET'
 import messageReplyPostRoute from './artist/[handle]/message/[messageId]/reply/POST'
 import artistHandleMessageGetRoute from './artist/[handle]/message/GET'
@@ -35,6 +36,7 @@ chatRoutes.route('/artist/:handle/message', artistHandleMessagePostRoute)
 chatRoutes.route('/artist/:handle/read', artistHandleReadPutRoute)
 chatRoutes.route('/artist/:handle/message/:messageId/reply', messageReplyGetRoute)
 chatRoutes.route('/artist/:handle/message/:messageId/reply', messageReplyPostRoute)
+chatRoutes.route('/artist/:handle/message/:messageId/reply/:fanId', artistReplyPostRoute)
 chatRoutes.route('/artist/:handle/message/:messageId/read', messageReadPutRoute)
 
 export default chatRoutes

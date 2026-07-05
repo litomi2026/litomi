@@ -5,11 +5,11 @@ import { isWithinQuietHours, type WebPushMessage, WebPushService } from '@litomi
 const webPush = WebPushService.getInstance()
 
 // Consumes push fan-out jobs. A broadcast job is ONE keyset page of subscribers that
-// re-enqueues its successor, so each invocation is bounded work; a reply is a single push.
+// re-enqueues its successor, so each invocation is bounded work; a direct job is a single push.
 // Throwing triggers a Kafka retry (at-least-once); duplicate deliveries are collapsed on
 // the device by the payload `tag`, so we optimize for never DROPPING a recipient.
 export async function processPushFanout(event: ChatPushFanoutEvent): Promise<void> {
-  if (event.kind === 'reply') {
+  if (event.kind === 'direct') {
     await deliver([event.recipientUserId], event.payload)
   } else if (event.kind === 'broadcast') {
     await processBroadcastPage(event)

@@ -1,6 +1,6 @@
 import { chatHandleParamSchema, putV1ChatReadBodySchema } from '@litomi/contracts'
 import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
-import { setFanReadWatermark } from '@litomi/db/chat/query'
+import { setFanWatermark } from '@litomi/db/chat/query'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -37,12 +37,10 @@ route.put('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 403 })
   }
 
+  // 팬 타임라인은 방송 + 아티스트 1:1 답장이 messageId(ULID)로 머지되므로, 통합 커서 하나로
+  // 두 축(방송 안읽음·1:1 안읽음)을 함께 전진시킨다.
   if (access.kind !== 'owner') {
-    await setFanReadWatermark({
-      fanId: userId,
-      artistId: artist.id,
-      lastReadMessageId,
-    })
+    await setFanWatermark({ fanId: userId, artistId: artist.id, lastReadMessageId })
   }
 
   return c.body(null, 204)

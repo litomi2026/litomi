@@ -5,8 +5,8 @@ import {
   postV1ChatMessageBodySchema,
 } from '@litomi/contracts'
 import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
-import { buildChatMessage, toBroadcastStreamId } from '@litomi/db/chat/query'
-import { publishChatMessage } from '@litomi/events'
+import { buildBroadcast } from '@litomi/db/chat/query'
+import { publishChatBroadcast } from '@litomi/events'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -45,17 +45,19 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 403 })
   }
 
-  const message = buildChatMessage({
-    streamId: toBroadcastStreamId(artist.id),
-    senderId: userId,
+  const message = buildBroadcast({
+    artistId: artist.id,
     contentType: body.contentType,
     content: { text: body.text },
   })
 
   try {
-    await publishChatMessage({
-      ...message,
+    await publishChatBroadcast({
+      kind: 'broadcast',
       artistId: artist.id,
+      messageId: message.messageId,
+      contentType: message.contentType,
+      content: message.content,
       createdAt: message.createdAt.toISOString(),
     })
   } catch (error) {

@@ -1,17 +1,45 @@
 import { z } from 'zod'
 
-// A persisted-and-fanned-out Chat message. The api mints messageId/createdAt
-// and emits this; the worker validates, persists to NoSQL, relays to Valkey, and
-// pushes. `streamId` is the NoSQL shard key; `artistId` drives subscriber fan-out.
-export const chatMessageEventSchema = z.object({
-  messageId: z.string().min(1),
+// A persisted-and-relayed chat message on TOPIC_CHAT_MESSAGE. The api mints
+// messageId/createdAt and emits this; the chat-worker validates, persists to CockroachDB,
+// relays to Valkey, and enqueues push. Discriminated by `kind`:
+//   - broadcast: the artist's one-to-many feed message (fan-out-on-read).
+//   - dm:        one message of a private 1:1 conversation (fan reply OR artist answer),
+//                anchored to the broadcast bubble it started from (contextMessageId).
+// Kafka key (producer.ts) = the conversation id, so a conversation's messages stay ordered
+// on one partition: `b:{artistId}` for broadcast, `dm:{artistId}:{fanId}` for dm.
+
+export const chatBroadcastEventSchema = z.object({
+  kind: z.literal('broadcast'),
   artistId: z.number().int().positive(),
-  streamId: z.string().min(1),
-  senderId: z.number().int().positive(),
+  messageId: z.string().min(1),
   contentType: z.string().min(1),
   content: z.unknown(),
   createdAt: z.iso.datetime(),
 })
+
+export type ChatBroadcastEvent = z.infer<typeof chatBroadcastEventSchema>
+
+export const chatDirectMessageEventSchema = z.object({
+  kind: z.literal('dm'),
+  artistId: z.number().int().positive(),
+  fanId: z.number().int().positive(),
+  contextMessageId: z.string().min(1),
+  messageId: z.string().min(1),
+  senderRole: z.enum(['artist', 'fan']),
+  // The specific message this one answers (for the "far apart → quote" UI); null = no quote.
+  quotedMessageId: z.string().nullable(),
+  contentType: z.string().min(1),
+  content: z.unknown(),
+  createdAt: z.iso.datetime(),
+})
+
+export type ChatDirectMessageEvent = z.infer<typeof chatDirectMessageEventSchema>
+
+export const chatMessageEventSchema = z.discriminatedUnion('kind', [
+  chatBroadcastEventSchema,
+  chatDirectMessageEventSchema,
+])
 
 export type ChatMessageEvent = z.infer<typeof chatMessageEventSchema>
 
@@ -34,7 +62,8 @@ export type ChatPushPayload = z.infer<typeof chatPushPayloadSchema>
 //   - broadcast: ONE keyset page of an artist's subscribers. The push worker delivers the
 //     page and re-enqueues the next (afterUserId = last id) until a short page ends the
 //     chain — so each job is bounded work and a mega-broadcast never holds a partition.
-//   - reply: a single push to the artist for a fan's reply (no fan-out).
+//   - direct: a single push to ONE recipient (a fan's reply → the artist, or the artist's
+//     1:1 answer → the fan). No fan-out.
 export const chatPushFanoutEventSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('broadcast'),
@@ -47,9 +76,9 @@ export const chatPushFanoutEventSchema = z.discriminatedUnion('kind', [
     payload: chatPushPayloadSchema,
   }),
   z.object({
-    kind: z.literal('reply'),
+    kind: z.literal('direct'),
+    // Partition/ordering key — the conversation's artist.
     artistId: z.number().int().positive(),
-    messageId: z.string().min(1),
     recipientUserId: z.number().int().positive(),
     payload: chatPushPayloadSchema,
   }),

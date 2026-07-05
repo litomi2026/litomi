@@ -1,5 +1,5 @@
 import { chatMessageParamSchema, putV1ChatReadBodySchema } from '@litomi/contracts'
-import { setReadCursor, toMessageReplyStreamId } from '@litomi/db/chat/query'
+import { setReplyRoomWatermark } from '@litomi/db/chat/query'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -31,9 +31,10 @@ route.put('/', ...middlewares, async (c) => {
     return ownership.error
   }
 
-  await setReadCursor({
-    userId,
-    streamId: toMessageReplyStreamId(ownership.artist.id, messageId),
+  await setReplyRoomWatermark({
+    artistUserId: userId,
+    artistId: ownership.artist.id,
+    messageId,
     lastReadMessageId,
   })
 

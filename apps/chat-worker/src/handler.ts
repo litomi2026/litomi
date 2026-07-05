@@ -1,138 +1,176 @@
 import { getChatArtistById, getChatSenderBrief } from '@litomi/db/app/query/chat'
 import {
-  type ChatMessageRow,
-  type ParsedStreamId,
-  parseStreamId,
-  putChatMessage,
-  toArtistInboundChannel,
-  upsertChatThread,
+  artistAggregateRoom,
+  broadcastRoom,
+  type ChatBroadcastRow,
+  type ChatDmMessageRow,
+  fanInboundRoom,
+  putBroadcast,
+  putDmMessage,
+  replyRoom,
+  upsertBroadcastSummary,
 } from '@litomi/db/chat/query'
-import { type ChatMessageEvent, type ChatPushPayload, publishPushFanout } from '@litomi/events'
+import {
+  type ChatBroadcastEvent,
+  type ChatDirectMessageEvent,
+  type ChatMessageEvent,
+  type ChatPushPayload,
+  publishPushFanout,
+} from '@litomi/events'
 import { roomChannel } from '@litomi/kv/channels'
 import { publisherClient } from '@litomi/kv/pubsub'
 
 const PUSH_BODY_MAX_LENGTH = 120
 
-// The core path: durably record the message, relay it in realtime, and emit a push
-// INTENT. It never sends web push itself — all delivery is owned by the chat-push worker,
-// so a huge fan-out can never delay this latency-sensitive path.
+// The core path: durably record the message, relay it in realtime, and emit a push INTENT.
+// It never sends web push itself — all delivery is owned by the chat-push worker, so a huge
+// fan-out can never delay this latency-sensitive path. Throwing triggers a Kafka retry;
+// persist is idempotent and the push enqueue is best-effort (swallowed).
 export async function processChatMessage(event: ChatMessageEvent): Promise<void> {
-  const parsed = parseStreamId(event.streamId)
-  if (!parsed) {
-    console.error('chat-worker: dropping message with invalid streamId', { streamId: event.streamId })
-    return
+  if (event.kind === 'broadcast') {
+    await processBroadcast(event)
+  } else {
+    await processDirectMessage(event)
   }
+}
 
-  const row: ChatMessageRow = {
-    streamId: event.streamId,
+async function processBroadcast(event: ChatBroadcastEvent): Promise<void> {
+  const row: ChatBroadcastRow = {
+    artistId: event.artistId,
     messageId: event.messageId,
-    senderId: event.senderId,
     contentType: event.contentType,
     content: event.content,
     createdAt: new Date(event.createdAt),
   }
 
-  // Critical path (throwing here triggers a Kafka retry):
-  // 1. Persist — idempotent on (streamId, messageId).
-  await putChatMessage(row)
+  // Persist (idempotent on PK) then summarize (drives the fan chat list) — both on the
+  // critical path so a failure retries the whole message.
+  await putBroadcast(row)
 
-  // 2. Only the broadcast feed is summarized (it drives the fan chat list). Reply rooms
-  //    are not: the artist's per-message unread is counted live, and fans never list them.
-  if (parsed.kind === 'broadcast') {
-    await upsertChatThread({
-      streamId: event.streamId,
-      lastMessageId: event.messageId,
-      lastSenderId: event.senderId,
-      lastContentType: event.contentType,
-      lastPreview: previewBody(event),
-      lastCreatedAt: row.createdAt,
-    })
-  }
+  await upsertBroadcastSummary({
+    artistId: event.artistId,
+    lastMessageId: event.messageId,
+    lastPreview: previewBody(event.content),
+    lastCreatedAt: row.createdAt,
+  })
 
-  // 3. Realtime relay. The reply sender's brief is resolved ONCE (best-effort) and reused
-  //    for both the relay (studio live ticker) and the push enqueue — no extra DB call.
-  const replySender =
-    parsed.kind === 'reply' ? await getChatSenderBrief(event.senderId).catch(() => undefined) : undefined
+  // Relay to the broadcast room (fans + owner subscribe).
+  await publisherClient.publish(roomChannel(broadcastRoom(event.artistId)), JSON.stringify(toBroadcastRelay(row)))
 
-  //    A broadcast relays to its own room (fans + owner subscribe). A reply fans IN to the
-  //    artist's owner-only inbound channel — SAMPLED at the source via a per-artist token
-  //    bucket so a reply storm can never flood the artist's socket. A dropped relay is
-  //    still persisted, counted (server-side unread), and pushed.
-  if (parsed.kind === 'broadcast') {
-    await publisherClient.publish(roomChannel(event.streamId), JSON.stringify(toClientMessage(row, parsed)))
-  } else if (await allowTickerRelay(parsed.artistId)) {
-    await publisherClient.publish(
-      roomChannel(toArtistInboundChannel(parsed.artistId)),
-      JSON.stringify(toClientMessage(row, parsed, replySender)),
-    )
-  }
-
-  // 4. Hand ALL push delivery to the chat-push worker. Best-effort: a failed enqueue must
-  //    not retry the whole message (persist + relay already succeeded).
+  // Hand the audience fan-out to chat-push. Best-effort — a failed enqueue must not retry
+  // the whole message (persist + relay already succeeded).
   try {
-    await enqueuePush(event, parsed, replySender)
-  } catch (error) {
-    console.error('chat-worker: enqueue push failed', { messageId: event.messageId, error })
-  }
-}
+    const artist = await getChatArtistById(event.artistId)
+    if (!artist) {
+      return
+    }
 
-type ChatSenderBrief = { nickname: string; imageURL: string | null }
-
-// Renders the push payload ONCE on the cheap control path and enqueues a fan-out job.
-// Broadcast → first keyset page (afterUserId 0); the push worker walks the rest. Reply →
-// a single push to the artist (skipped when the artist somehow authored it).
-async function enqueuePush(
-  event: ChatMessageEvent,
-  parsed: ParsedStreamId,
-  replySender: ChatSenderBrief | undefined,
-): Promise<void> {
-  const artist = await getChatArtistById(event.artistId)
-  if (!artist) {
-    return
-  }
-
-  if (parsed.kind === 'broadcast') {
     await publishPushFanout({
       kind: 'broadcast',
       artistId: event.artistId,
       messageId: event.messageId,
-      excludeUserId: event.senderId,
+      excludeUserId: artist.userId ?? event.artistId,
       afterUserId: 0,
       payload: {
         title: artist.emoji ? `${artist.emoji} ${artist.displayName}` : artist.displayName,
-        body: previewBody(event),
+        body: previewBody(event.content),
         url: `/sobok/${artist.handle}`,
         tag: `chat:${event.artistId}`,
       },
     })
-    return
+  } catch (error) {
+    console.error('chat-worker: broadcast push enqueue failed', { messageId: event.messageId, error })
   }
-
-  // 아티스트가 스스로 단 답장이거나, 탈퇴한 아티스트(수신자 없음)면 푸시하지 않는다.
-  if (artist.userId === null || event.senderId === artist.userId) {
-    return
-  }
-
-  const payload: ChatPushPayload = {
-    title: replySender?.nickname ?? '팬',
-    body: previewBody(event),
-    url: `/sobok/studio/${artist.handle}`,
-    tag: `chat-reply:${event.artistId}`,
-    ...(replySender?.imageURL && { icon: replySender.imageURL }),
-  }
-
-  await publishPushFanout({
-    kind: 'reply',
-    artistId: event.artistId,
-    messageId: event.messageId,
-    recipientUserId: artist.userId,
-    payload,
-  })
 }
 
-// The live ticker is a sampled view: cap the reply relay to TICKER_SAMPLE_PER_SEC per
-// artist (fixed 1s window) so a burst can't flood the artist socket. Best-effort — a
-// counter hiccup must never break the relay, so it fails open.
+async function processDirectMessage(event: ChatDirectMessageEvent): Promise<void> {
+  const row: ChatDmMessageRow = {
+    artistId: event.artistId,
+    fanId: event.fanId,
+    contextMessageId: event.contextMessageId,
+    messageId: event.messageId,
+    senderRole: event.senderRole,
+    quotedMessageId: event.quotedMessageId,
+    contentType: event.contentType,
+    content: event.content,
+    createdAt: new Date(event.createdAt),
+  }
+
+  // Persist (idempotent) on the critical path.
+  await putDmMessage(row)
+
+  if (event.senderRole === 'fan') {
+    await relayFanReply(event, row)
+  } else {
+    await relayArtistReply(event, row)
+  }
+}
+
+// Fan's reply → the artist. Relay to the focused reply room (un-sampled: the artist may have
+// it open) always, and to the artist's aggregate inbound channel SAMPLED (a reply storm can
+// never flood the artist's inbox badge). Then push to the artist.
+async function relayFanReply(event: ChatDirectMessageEvent, row: ChatDmMessageRow): Promise<void> {
+  const fan = await getChatSenderBrief(event.fanId).catch(() => undefined)
+  const payload = JSON.stringify(toFanReplyRelay(row, fan))
+
+  await publisherClient.publish(roomChannel(replyRoom(event.artistId, event.contextMessageId)), payload)
+
+  if (await allowTickerRelay(event.artistId)) {
+    await publisherClient.publish(roomChannel(artistAggregateRoom(event.artistId)), payload)
+  }
+
+  try {
+    const artist = await getChatArtistById(event.artistId)
+    // 탈퇴한 아티스트(수신자 없음)이거나 아티스트 스스로 보낸 답장이면 푸시하지 않는다.
+    if (!artist || artist.userId === null || artist.userId === event.fanId) {
+      return
+    }
+
+    await pushDirect(event.artistId, artist.userId, {
+      title: fan?.nickname ?? '팬',
+      body: previewBody(event.content),
+      url: `/sobok/studio/${artist.handle}`,
+      tag: `chat-reply:${event.artistId}`,
+      ...(fan?.imageURL && { icon: fan.imageURL }),
+    })
+  } catch (error) {
+    console.error('chat-worker: fan reply push enqueue failed', { messageId: event.messageId, error })
+  }
+}
+
+// Artist's 1:1 answer → the one fan. Relay to that fan's inbound channel (un-sampled: one
+// artist writing, no storm), then push to the fan.
+async function relayArtistReply(event: ChatDirectMessageEvent, row: ChatDmMessageRow): Promise<void> {
+  await publisherClient.publish(
+    roomChannel(fanInboundRoom(event.artistId, event.fanId)),
+    JSON.stringify(toArtistReplyRelay(row)),
+  )
+
+  try {
+    const artist = await getChatArtistById(event.artistId)
+    if (!artist) {
+      return
+    }
+
+    await pushDirect(event.artistId, event.fanId, {
+      title: artist.emoji ? `${artist.emoji} ${artist.displayName}` : artist.displayName,
+      body: previewBody(event.content),
+      url: `/sobok/${artist.handle}`,
+      tag: `chat-dm:${event.artistId}`,
+      ...(artist.imageURL && { icon: artist.imageURL }),
+    })
+  } catch (error) {
+    console.error('chat-worker: artist reply push enqueue failed', { messageId: event.messageId, error })
+  }
+}
+
+function pushDirect(artistId: number, recipientUserId: number, payload: ChatPushPayload): Promise<void> {
+  return publishPushFanout({ kind: 'direct', artistId, recipientUserId, payload })
+}
+
+// The artist inbound aggregate is a sampled view: cap the fan-reply relay to
+// TICKER_SAMPLE_PER_SEC per artist (fixed 1s window) so a burst can't flood the socket.
+// Best-effort — a counter hiccup must never break the relay, so it fails open.
 const TICKER_SAMPLE_PER_SEC = 5
 
 async function allowTickerRelay(artistId: number): Promise<boolean> {
@@ -150,35 +188,48 @@ async function allowTickerRelay(artistId: number): Promise<boolean> {
   }
 }
 
-// Builds the wire envelope from a stored row. The target (broadcast) messageId for a reply
-// comes from the already-parsed streamId, so the client receives a semantic field and never
-// parses the internal `rb:{artistId}:{messageId}` key itself.
-function toClientMessage(row: ChatMessageRow, parsed: ParsedStreamId, sender?: ChatSenderBrief) {
-  const base = {
+// --- Wire relay builders (must match @litomi/contracts ChatRelayMessageDTO) ---------------
+
+function toBroadcastRelay(row: ChatBroadcastRow) {
+  return {
+    kind: 'broadcast' as const,
     messageId: row.messageId,
-    senderId: row.senderId,
     contentType: row.contentType,
     content: row.content,
     createdAt: row.createdAt.toISOString(),
   }
-
-  if (parsed.kind === 'reply') {
-    return {
-      ...base,
-      kind: 'reply' as const,
-      targetMessageId: parsed.messageId,
-      sender: sender && {
-        nickname: sender.nickname,
-        imageURL: sender.imageURL,
-      },
-    }
-  }
-
-  return { ...base, kind: 'broadcast' as const }
 }
 
-function previewBody(event: ChatMessageEvent): string {
-  const text = extractTextContent(event.content)
+type ChatSenderBrief = { nickname: string; imageURL: string | null }
+
+function toFanReplyRelay(row: ChatDmMessageRow, fan?: ChatSenderBrief) {
+  return {
+    kind: 'fanReply' as const,
+    messageId: row.messageId,
+    contextMessageId: row.contextMessageId,
+    fanId: row.fanId,
+    quotedMessageId: row.quotedMessageId,
+    contentType: row.contentType,
+    content: row.content,
+    createdAt: row.createdAt.toISOString(),
+    ...(fan && { fan: { nickname: fan.nickname, imageURL: fan.imageURL } }),
+  }
+}
+
+function toArtistReplyRelay(row: ChatDmMessageRow) {
+  return {
+    kind: 'artistReply' as const,
+    messageId: row.messageId,
+    contextMessageId: row.contextMessageId,
+    quotedMessageId: row.quotedMessageId,
+    contentType: row.contentType,
+    content: row.content,
+    createdAt: row.createdAt.toISOString(),
+  }
+}
+
+function previewBody(content: unknown): string {
+  const text = extractTextContent(content)
 
   if (!text) {
     return '새 메시지가 도착했어요'
