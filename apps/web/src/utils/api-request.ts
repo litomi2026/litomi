@@ -1,4 +1,4 @@
-import { problemCode } from '@litomi/contracts'
+import { PROBLEM } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
 import { isProblemType } from '@litomi/http/problem-details'
 import Cookies from 'js-cookie'
@@ -53,7 +53,7 @@ export function isAuthenticationRequiredError(error: unknown): boolean {
   return (
     error instanceof ProblemDetailsError &&
     error.status === 401 &&
-    isProblemType(error.type, problemCode.AUTHENTICATION_REQUIRED)
+    isProblemType(error.type, PROBLEM.AUTHENTICATION_REQUIRED.slug)
   )
 }
 

@@ -13,6 +13,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { usePointsQuery } from '@/app/[locale]/(navigation)/(top-navigation)/libo/usePointsQuery'
 import { useRouter } from '@/i18n/navigation'
+import { getProblemMessage } from '@/lib/error-message'
 import useMeQuery from '@/query/useMeQuery'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 
@@ -39,6 +40,7 @@ export default function DonateButton({ manga, ...props }: Props) {
   const router = useRouter()
   const { data: me } = useMeQuery()
   const t = useTranslations('MangaViewer.donate')
+  const tErrors = useTranslations('Errors')
   const donateMutation = usePointsDonateMutation()
   const { data: points, error: pointsError, isLoading: isPointsLoading } = usePointsQuery({ enabled: open })
 
@@ -83,9 +85,15 @@ export default function DonateButton({ manga, ...props }: Props) {
   }
 
   function getErrorMessage(error: unknown): string | null {
-    if (!error) return null
-    if (error instanceof ProblemDetailsError) return error.problem.detail ?? error.problem.title
-    if (error instanceof Error) return error.message
+    if (!error) {
+      return null
+    }
+    if (error instanceof ProblemDetailsError) {
+      return getProblemMessage(tErrors, error.problem)
+    }
+    if (error instanceof Error) {
+      return tErrors('status.serverError')
+    }
     return t('fallbackError')
   }
 

@@ -10,6 +10,7 @@ import { type SubmitEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import OneTimeCodeInput from '@/app/[locale]/(navigation)/(right-aside)/settings/two-factor/components/OneTimeCodeInput'
+import { getProblemCodeMessage } from '@/lib/error-message'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import { verifyTwoFactorLogin } from './api'
@@ -38,6 +39,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
   const [isBackupCode, setIsBackupCode] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const t = useTranslations('Auth.twoFactor')
+  const tErrors = useTranslations('Errors')
 
   const { mutate: submitTwoFactor, isPending } = useMutation({
     mutationFn: verifyTwoFactorLogin,
@@ -47,7 +49,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
       window.requestAnimationFrame(() => {
         const form = formRef.current
 
-        if (applyTwoFactorProblem(form, error.problem)) {
+        if (applyTwoFactorProblem(form, error.problem, tErrors)) {
           return
         }
 
@@ -55,7 +57,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           return
         }
 
-        toast.warning(error.problem.detail ?? t('fallbackError'))
+        toast.warning(getProblemCodeMessage(tErrors, error.problem) ?? t('fallbackError'))
       })
     },
     onSuccess: (data) => {

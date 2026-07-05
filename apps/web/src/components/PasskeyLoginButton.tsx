@@ -9,6 +9,7 @@ import { type RefObject, useEffect, useEffectEvent, useRef, useState } from 'rea
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { requestPasskeyAuthenticationOptions, verifyPasskeyAuthentication } from '@/app/[locale]/auth/login/api'
+import { getProblemCodeMessage } from '@/lib/error-message'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 import { ProblemDetailsError as ProblemDetailsErrorClass } from '@/utils/fetch-response'
 
@@ -36,6 +37,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
   const [supportsAutofill, setSupportsAutofill] = useState(false)
   const lastCredentialIdRef = useRef<string | null>(null)
   const t = useTranslations('Auth.loginButton')
+  const tErrors = useTranslations('Errors')
 
   const { mutate: verifyPasskey, isPending } = useMutation({
     mutationFn: verifyPasskeyAuthentication,
@@ -51,7 +53,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
         return
       }
 
-      toast.warning(error.problem.detail ?? t('error.verificationFailed'))
+      toast.warning(getProblemCodeMessage(tErrors, error.problem) ?? t('error.verificationFailed'))
     },
     onSuccess,
     meta: { suppressGlobalErrorToastForStatuses: PASSKEY_LOCAL_ERROR_STATUSES },
@@ -89,7 +91,7 @@ export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turns
         if (error.status >= 500) {
           toast.error(t('error.authError'))
         } else {
-          toast.warning(error.problem.detail ?? t('error.startFailed'))
+          toast.warning(getProblemCodeMessage(tErrors, error.problem) ?? t('error.startFailed'))
         }
 
         return null

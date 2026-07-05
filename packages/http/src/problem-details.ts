@@ -57,8 +57,8 @@ export type ValidationProblemDetails = ProblemDetails & {
 
 export const PROBLEM_CONTENT_TYPE = 'application/problem+json'
 
-// status에서 자동 파생되는 generic slug 테이블 — 명시적으로 부여하는 코드 카탈로그는
-// @litomi/contracts의 problemCode이며, 두 집합은 겹치지 않는다.
+// status에서 자동 파생되는 generic HTTP slug 테이블(제네릭 빌더 기본값). 도메인 코드 카탈로그는
+// @litomi/contracts의 PROBLEM 이 소유하며, litomi API 호출부는 거기서 slug 를 명시적으로 준다.
 const problemCodeByStatus: Partial<Record<number, string>> = {
   400: 'bad-request',
   401: 'unauthorized',

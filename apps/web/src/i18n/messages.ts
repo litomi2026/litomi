@@ -13,6 +13,7 @@ import { messages as searchMessages } from '@/app/[locale]/(navigation)/search/m
 import { messages as authMessages } from '@/app/[locale]/auth/messages'
 import { messages as deterrenceMessages } from '@/app/[locale]/deterrence/messages'
 import { messages as docMessages } from '@/app/[locale]/doc/messages'
+import { messages as errorMessages } from '@/app/[locale]/errors.messages'
 import { messages as mangaMessages } from '@/app/[locale]/manga/[id]/messages'
 import { messages as appMessages } from '@/app/[locale]/messages'
 import { messages as sobokMessages } from '@/app/[locale]/sobok/messages'
@@ -27,6 +28,7 @@ const messageModules = [
   authMessages,
   deterrenceMessages,
   docMessages,
+  errorMessages,
   navigationMessages,
   rankingMessages,
   rightAsideMessages,
