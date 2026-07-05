@@ -54,7 +54,6 @@ export default function MangaPage({ id, initialManga }: Props) {
           className="flex flex-col gap-3 items-center justify-center"
           layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
           onAdClick={() => setIsAdClicked(true)}
-          placement="viewer"
           title={<p className="text-zinc-300 text-sm">{unlockT('title')}</p>}
         />
         <button
