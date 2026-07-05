@@ -1,15 +1,9 @@
 'use client'
 
-import type { GETV1MeResponse } from '@litomi/contracts'
-import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import LoginPageLink from '@/components/LoginPageLink'
-import { Link } from '@/i18n/navigation'
-import useMeQuery from '@/query/useMeQuery'
-import { isAdultVerified } from '@/utils/adult-verification'
 import { JUICY_ADS_BANNER_ID } from './constants'
 import JuicyAdsScript from './JuicyAdsScript'
 import JuicyAdsSlot from './JuicyAdsSlot'
@@ -20,43 +14,18 @@ type Props = {
   className?: string
   title?: ReactNode
   layout?: readonly JuicyAdsLayoutNode[]
-  placement?: 'default' | 'viewer'
   onAdClick?: () => void
 }
 
-export default function JuicyAdsBanner({ className, title, layout, placement, onAdClick }: Props) {
-  const { data: me } = useMeQuery()
-  const adsVisible = shouldShowAds(me) || placement === 'viewer'
-
-  if (!adsVisible) {
-    return null
-  }
-
+export default function JuicyAdsBanner({ className, title, layout, onAdClick }: Props) {
   return (
     <section className={twMerge('flex flex-col gap-2', className)}>
-      <div className="text-center text-xs text-zinc-400 font-medium">{title || <DefaultTitle me={me} />}</div>
+      {title && <div className="text-center text-xs text-zinc-400 font-medium">{title}</div>}
       <JuicyAdsScript />
       <div className="flex flex-wrap justify-center gap-1.5 self-stretch" id={JUICY_ADS_BANNER_ID}>
         {renderLayoutNodes(layout ?? DEFAULT_NON_ADULT_AD_LAYOUT, onAdClick)}
       </div>
     </section>
-  )
-}
-
-function DefaultTitle({ me }: { me?: GETV1MeResponse | null }) {
-  const t = useTranslations('Common.ads')
-
-  return (
-    <>
-      {me ? (
-        <Link className="font-bold text-foreground p-2 -m-2" href="/settings#adult">
-          {t('action')}
-        </Link>
-      ) : (
-        <LoginPageLink className="text-foreground">{t('actionGuest')}</LoginPageLink>
-      )}
-      {t('suffix')}
-    </>
   )
 }
 
@@ -90,20 +59,4 @@ function renderLayoutNode(node: JuicyAdsLayoutNode, key: string, onAdClick?: () 
 
 function renderLayoutNodes(layout: readonly JuicyAdsLayoutNode[], onAdClick?: () => void, path = 'layout') {
   return layout.map((node, index) => renderLayoutNode(node, `${path}-${index}`, onAdClick))
-}
-
-function shouldShowAds(me: GETV1MeResponse | null | undefined): boolean {
-  if (me === undefined) {
-    return false
-  }
-
-  if (me === null) {
-    return true
-  }
-
-  if (isAdultVerified(me)) {
-    return me.settings.adultVerifiedAdVisible
-  }
-
-  return true
 }

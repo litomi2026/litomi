@@ -2,24 +2,24 @@ import { Hono } from 'hono'
 
 import type { Env } from '@/app'
 
-import bookmarkIdDeleteRoute from './[id]/DELETE'
-import bookmarkIdPutRoute from './[id]/PUT'
-import bookmarkDeleteRoute from './DELETE'
-import exportBookmarksRoute from './export'
-import getBookmarksRoute from './GET'
-import getBookmarkIdsRoute from './id'
-import importBookmarksRoute from './import'
-import postBookmarksRoute from './POST'
+import idDeleteRoute from './[id]/DELETE'
+import idPutRoute from './[id]/PUT'
+import deleteRoute from './DELETE'
+import exportGetRoute from './export/GET'
+import getRoute from './GET'
+import idGetRoute from './id/GET'
+import importPostRoute from './import/POST'
+import postRoute from './POST'
 
 const bookmarkRoutes = new Hono<Env>()
 
-bookmarkRoutes.route('/', getBookmarksRoute)
-bookmarkRoutes.route('/', bookmarkDeleteRoute)
-bookmarkRoutes.route('/', postBookmarksRoute)
-bookmarkRoutes.route('/id', getBookmarkIdsRoute)
-bookmarkRoutes.route('/export', exportBookmarksRoute)
-bookmarkRoutes.route('/import', importBookmarksRoute)
-bookmarkRoutes.route('/:id', bookmarkIdPutRoute)
-bookmarkRoutes.route('/:id', bookmarkIdDeleteRoute)
+bookmarkRoutes.route('/', getRoute)
+bookmarkRoutes.route('/', deleteRoute)
+bookmarkRoutes.route('/', postRoute)
+bookmarkRoutes.route('/id', idGetRoute)
+bookmarkRoutes.route('/export', exportGetRoute)
+bookmarkRoutes.route('/import', importPostRoute)
+bookmarkRoutes.route('/:id', idPutRoute)
+bookmarkRoutes.route('/:id', idDeleteRoute)
 
 export default bookmarkRoutes

@@ -13,7 +13,7 @@ import { lockUserRowForUpdate } from '@/utils/lock-user-row'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { BookmarkLimitReachedError, saveBookmarks } from './save'
+import { BookmarkLimitReachedError, saveBookmarks } from '../save'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
