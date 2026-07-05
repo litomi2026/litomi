@@ -109,6 +109,7 @@ app.onError((err, c) => {
     })
   }
 
+  console.error('unhandled error', err)
   return problemResponse(c, { status: 500 })
 })
 

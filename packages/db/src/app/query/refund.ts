@@ -116,7 +116,7 @@ export async function applyPaymentRefunds(
       : await tx
           .update(invoiceTable)
           .set({
-            periodEnd: sql`greatest(${invoiceTable.periodStart}, least(${invoiceTable.periodEnd}, ${lastRefundedAt}::timestamptz))`,
+            periodEnd: sql`greatest(${invoiceTable.periodStart}, least(${invoiceTable.periodEnd}, ${lastRefundedAt.toISOString()}::timestamptz))`,
           })
           .where(eq(invoiceTable.id, payment.invoiceId))
           .returning({ subscriptionId: invoiceTable.subscriptionId })
