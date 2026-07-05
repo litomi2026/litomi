@@ -13,12 +13,12 @@ import TurnstileWidget from '@/components/TurnstileWidget'
 import { Link } from '@/i18n/navigation'
 import { applyInvalidParams } from '@/lib/apply-invalid-params'
 import { getAuthRedirectHref, getCurrentAuthRedirect } from '@/lib/auth-redirect'
+import { getProblemCodeMessage } from '@/lib/error-message'
 
 import {
   clearSignupInputValidity,
   clearSignupLoginId,
   clearSignupValidity,
-  getSignupErrorMessage,
   getSignupInput,
   reportInputValidity,
   signupInputNames,
@@ -59,7 +59,7 @@ export default function SignupForm() {
           return
         }
 
-        toast.warning(getSignupErrorMessage(error, tErrors, t('fallbackError')))
+        toast.warning(getProblemCodeMessage(tErrors, error.problem) ?? t('fallbackError'))
       })
     },
   })

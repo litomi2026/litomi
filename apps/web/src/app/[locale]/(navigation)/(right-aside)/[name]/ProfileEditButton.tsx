@@ -41,6 +41,7 @@ export default function ProfileEditButton({ me }: Props) {
   const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
   const formRef = useRef<HTMLFormElement | null>(null)
   const t = useTranslations('Profile.edit')
+  const tErrors = useTranslations('Errors')
   const router = useRouter()
 
   const editMutation = usePatchMyProfileMutation({
@@ -54,10 +55,10 @@ export default function ProfileEditButton({ me }: Props) {
         return
       }
 
-      const nextFieldErrors = getProfileProblemFieldErrors(error.problem)
+      const nextFieldErrors = getProfileProblemFieldErrors(error.problem, tErrors)
       setFieldErrors(nextFieldErrors)
 
-      if (applyProfileProblem(formRef.current, error.problem)) {
+      if (applyProfileProblem(formRef.current, error.problem, tErrors)) {
         return
       }
     },
@@ -85,7 +86,7 @@ export default function ProfileEditButton({ me }: Props) {
         })
       }
 
-      toast.success(data.message)
+      toast.success(t('success'))
 
       if (data.name !== previousProfile.name) {
         router.replace(`/@${data.name}`)
@@ -134,7 +135,7 @@ export default function ProfileEditButton({ me }: Props) {
     const patch = buildProfileEditPatch(currentMe, formData)
 
     if (!patch) {
-      toast.warning('수정할 정보를 입력해 주세요')
+      toast.warning(t('emptyPatch'))
       return
     }
 

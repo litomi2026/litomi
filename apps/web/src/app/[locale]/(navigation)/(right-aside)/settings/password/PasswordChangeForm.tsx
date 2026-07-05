@@ -5,21 +5,24 @@ import type { PATCHV1MePasswordBody, PATCHV1MePasswordResponse } from '@litomi/c
 import { PASSWORD_PATTERN } from '@litomi/domain/auth/policy'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import { useRouter } from '@/i18n/navigation'
+import { applyInvalidParams } from '@/lib/apply-invalid-params'
+import { getProblemMessage } from '@/lib/error-message'
 import { handleUnauthorizedError } from '@/lib/react-query/auth-state'
 import type { ProblemDetailsError } from '@/utils/fetch-response'
 
 import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'
 import { changeMyPassword } from './api'
 import {
-  applyPasswordChangeProblem,
   clearPasswordChangeInputValidity,
   clearPasswordChangeValidity,
   getPasswordChangeInput,
+  passwordChangeInputNames,
 } from './password-form'
 
 type Props = {
@@ -29,6 +32,7 @@ type Props = {
 export default function PasswordChangeForm({ isTwoFactorEnabled }: Props) {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const tErrors = useTranslations('Errors')
   const formRef = useRef<HTMLFormElement | null>(null)
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
@@ -50,10 +54,10 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Props) {
   const changePasswordMutation = useMutation<PATCHV1MePasswordResponse, ProblemDetailsError, PATCHV1MePasswordBody>({
     mutationFn: changeMyPassword,
 
-    onSuccess: (data) => {
+    onSuccess: () => {
       clearSensitiveInputs()
       handleUnauthorizedError(queryClient)
-      toast.success(data.message)
+      toast.success('비밀번호가 변경됐어요')
       router.replace('/auth/login')
     },
 
@@ -65,7 +69,7 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Props) {
         return
       }
 
-      const applied = applyPasswordChangeProblem(formRef.current, error.problem)
+      const applied = applyInvalidParams(formRef.current, error.problem, tErrors, passwordChangeInputNames)
 
       if (applied) {
         return
@@ -73,7 +77,7 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Props) {
 
       if (error.status === 400) {
         clearSensitiveInputs()
-        toast.warning(error.message)
+        toast.warning(getProblemMessage(tErrors, error.problem))
         return
       }
     },

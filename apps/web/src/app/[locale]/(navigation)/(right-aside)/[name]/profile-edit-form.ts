@@ -3,6 +3,10 @@ import type { ProblemDetails } from '@litomi/http/problem-details'
 
 import { getInvalidParams } from '@litomi/http/problem-details'
 
+import type { ErrorsTranslator } from '@/lib/error-message'
+
+import { getInvalidParamMessage } from '@/lib/error-message'
+
 export type EditableProfile = {
   id: number
   loginId: string
@@ -21,8 +25,8 @@ const profileInputNames: Record<ProfileFieldName, ProfileFieldName> = {
   imageURL: 'imageURL',
 }
 
-export function applyProfileProblem(form: HTMLFormElement | null, problem: ProblemDetails) {
-  const fieldErrors = getProfileProblemFieldErrors(problem)
+export function applyProfileProblem(form: HTMLFormElement | null, problem: ProblemDetails, t: ErrorsTranslator) {
+  const fieldErrors = getProfileProblemFieldErrors(problem, t)
   let firstInvalidInput: HTMLInputElement | null = null
 
   for (const [field, reason] of Object.entries(fieldErrors)) {
@@ -88,7 +92,7 @@ export function encodePasskeyUserId(userId: number) {
   return btoa(String(userId)).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '')
 }
 
-export function getProfileProblemFieldErrors(problem: ProblemDetails): ProfileFieldErrors {
+export function getProfileProblemFieldErrors(problem: ProblemDetails, t: ErrorsTranslator): ProfileFieldErrors {
   const fieldErrors: ProfileFieldErrors = {}
 
   for (const param of getInvalidParams(problem)) {
@@ -96,7 +100,7 @@ export function getProfileProblemFieldErrors(problem: ProblemDetails): ProfileFi
       continue
     }
 
-    fieldErrors[param.name] = param.reason
+    fieldErrors[param.name] = getInvalidParamMessage(t, param)
   }
 
   return fieldErrors
