@@ -244,7 +244,7 @@ describe('POST /api/v1/auth/login/2fa', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
+      code: 'two-factor-token-invalid',
       instance: '/api/v1/auth/login/2fa',
     })
 

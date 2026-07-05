@@ -102,7 +102,7 @@ describe('POST /api/v1/auth/passkey/options', () => {
     await expectProblemResponse(response, {
       status: 500,
       code: 'internal-server-error',
-      detail: '패스키 인증 중 오류가 발생했어요',
+      title: '서버 오류가 발생했어요',
       instance: '/api/v1/auth/passkey/options',
     })
   })

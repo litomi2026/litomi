@@ -26,7 +26,7 @@ installBackendIntegrationHooks({ redis: true })
 
 const PASSWORD_PATH = '/api/v1/me/password'
 const NEXT_PASSWORD = 'NewPassword123'
-const VERIFICATION_FAILED_DETAIL = '현재 인증 정보를 확인해 주세요'
+const VERIFICATION_FAILED_TITLE = '인증 정보가 일치하지 않아요'
 
 function expectAuthCookiesNotCleared(response: Response) {
   const clearedCookies = getSetCookieStrings(response).filter((cookie) => cookie.includes('Max-Age=0'))
@@ -72,7 +72,7 @@ describe('PATCH /api/v1/me/password', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: PASSWORD_PATH,
     })
   })
@@ -92,7 +92,7 @@ describe('PATCH /api/v1/me/password', () => {
     const problem = await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: PASSWORD_PATH,
     })
 
@@ -166,8 +166,8 @@ describe('PATCH /api/v1/me/password', () => {
 
       const problem = await expectProblemResponse(response, {
         status: 400,
-        code: 'bad-request',
-        detail: VERIFICATION_FAILED_DETAIL,
+        code: 'credential-verification-failed',
+        title: VERIFICATION_FAILED_TITLE,
         instance: PASSWORD_PATH,
       })
 
@@ -201,7 +201,6 @@ describe('PATCH /api/v1/me/password', () => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({
       clearedCurrentSession: true,
-      message: '비밀번호가 변경됐어요',
     })
     expectAuthCookiesCleared(response)
 
@@ -255,7 +254,7 @@ describe('PATCH /api/v1/me/password', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: PASSWORD_PATH,
     })
     expectAuthCookiesCleared(response)
@@ -276,8 +275,8 @@ describe('PATCH /api/v1/me/password', () => {
 
       await expectProblemResponse(response, {
         status: 400,
-        code: 'bad-request',
-        detail: VERIFICATION_FAILED_DETAIL,
+        code: 'credential-verification-failed',
+        title: VERIFICATION_FAILED_TITLE,
         instance: PASSWORD_PATH,
       })
     }
@@ -290,7 +289,7 @@ describe('PATCH /api/v1/me/password', () => {
     await expectProblemResponse(response, {
       status: 429,
       code: 'too-many-requests',
-      detail: '요청이 너무 많아요. 잠시 후 다시 시도해 주세요.',
+      title: '요청이 너무 많아요',
       instance: PASSWORD_PATH,
     })
 

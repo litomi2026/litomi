@@ -20,7 +20,7 @@ describe('PATCH /api/v1/me', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: '/api/v1/me',
     })
   })
@@ -38,7 +38,7 @@ describe('PATCH /api/v1/me', () => {
     await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/me',
     })
 
@@ -66,7 +66,7 @@ describe('PATCH /api/v1/me', () => {
     const problem = await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/me',
     })
 
@@ -92,7 +92,7 @@ describe('PATCH /api/v1/me', () => {
     const problem = await expectProblemResponse(response, {
       status: 409,
       code: 'name-conflict',
-      detail: '이미 사용 중인 이름이에요',
+      title: '이미 사용 중인 이름이에요',
       instance: '/api/v1/me',
     })
 
@@ -115,7 +115,6 @@ describe('PATCH /api/v1/me', () => {
 
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({
-      message: '프로필을 수정했어요',
       name: user.name,
       nickname: 'Updated Nickname',
       imageURL: 'https://example.com/original.png',
@@ -143,7 +142,6 @@ describe('PATCH /api/v1/me', () => {
 
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({
-      message: '프로필을 수정했어요',
       name: user.name,
       nickname: user.nickname,
       imageURL: null,
@@ -167,7 +165,7 @@ describe('PATCH /api/v1/me', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: '/api/v1/me',
     })
     expectAuthCookiesCleared(response)

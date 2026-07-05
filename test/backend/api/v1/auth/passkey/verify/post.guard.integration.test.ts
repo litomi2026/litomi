@@ -67,8 +67,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      detail: '패스키를 검증할 수 없어요',
+      code: 'passkey-verification-failed',
+      title: '패스키를 검증할 수 없어요',
       instance: '/api/v1/auth/passkey/verify',
     })
   })
@@ -95,8 +95,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      detail: '패스키를 검증할 수 없어요',
+      code: 'passkey-verification-failed',
+      title: '패스키를 검증할 수 없어요',
       instance: '/api/v1/auth/passkey/verify',
     })
   })
@@ -126,8 +126,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      detail: 'Cloudflare 보안 검증을 완료해 주세요',
+      code: 'turnstile-required',
+      title: '보안 검증을 완료해 주세요',
       instance: '/api/v1/auth/passkey/verify',
     })
   })
@@ -227,8 +227,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     await expectProblemResponse(response, {
       status: 404,
-      code: 'not-found',
-      detail: '패스키를 검증할 수 없어요',
+      code: 'passkey-verification-failed',
+      title: '패스키를 검증할 수 없어요',
       instance: '/api/v1/auth/passkey/verify',
     })
   })
@@ -264,8 +264,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      detail: '패스키를 검증할 수 없어요',
+      code: 'passkey-verification-failed',
+      title: '패스키를 검증할 수 없어요',
       instance: '/api/v1/auth/passkey/verify',
     })
 
@@ -312,8 +312,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      detail: '패스키를 검증할 수 없어요',
+      code: 'passkey-verification-failed',
+      title: '패스키를 검증할 수 없어요',
       instance: '/api/v1/auth/passkey/verify',
     })
 
@@ -398,8 +398,8 @@ describe('POST /api/v1/auth/passkey/verify', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      detail: '패스키를 검증할 수 없어요',
+      code: 'passkey-verification-failed',
+      title: '패스키를 검증할 수 없어요',
       instance: '/api/v1/auth/passkey/verify',
     })
 

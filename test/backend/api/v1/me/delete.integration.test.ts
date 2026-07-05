@@ -28,7 +28,7 @@ describe('DELETE /api/v1/me', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: '/api/v1/me',
     })
   })
@@ -46,7 +46,7 @@ describe('DELETE /api/v1/me', () => {
     const problem = await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/me',
     })
 
@@ -66,8 +66,8 @@ describe('DELETE /api/v1/me', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      title: '잘못된 요청이에요',
+      code: 'credential-verification-failed',
+      title: '인증 정보가 일치하지 않아요',
       instance: '/api/v1/me',
     })
 
@@ -87,8 +87,8 @@ describe('DELETE /api/v1/me', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      title: '잘못된 요청이에요',
+      code: 'credential-verification-failed',
+      title: '인증 정보가 일치하지 않아요',
       instance: '/api/v1/me',
     })
 
@@ -108,8 +108,8 @@ describe('DELETE /api/v1/me', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      title: '잘못된 요청이에요',
+      code: 'credential-verification-failed',
+      title: '인증 정보가 일치하지 않아요',
       instance: '/api/v1/me',
     })
 
@@ -130,7 +130,6 @@ describe('DELETE /api/v1/me', () => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({
       loginId: user.loginId,
-      message: `${user.loginId} 계정을 삭제했어요`,
     })
     expectAuthCookiesCleared(response)
     expect(await readUserById(user.id)).toBeNull()
@@ -167,7 +166,7 @@ describe('DELETE /api/v1/me', () => {
     await expectProblemResponse(response, {
       status: 401,
       code: 'authentication-required',
-      detail: '로그인 정보가 없거나 만료됐어요',
+      title: '로그인 정보가 없거나 만료됐어요',
       instance: '/api/v1/me',
     })
     expectAuthCookiesCleared(response)
@@ -197,7 +196,7 @@ describe('DELETE /api/v1/me', () => {
     await expectProblemResponse(response, {
       status: 429,
       code: 'too-many-requests',
-      detail: '요청이 너무 많아요. 잠시 후 다시 시도해 주세요.',
+      title: '요청이 너무 많아요',
       instance: '/api/v1/me',
     })
     expect(response.headers.get('Retry-After')).toBeTruthy()

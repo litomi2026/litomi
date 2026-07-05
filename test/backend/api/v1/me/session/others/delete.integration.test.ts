@@ -26,7 +26,6 @@ describe('DELETE /api/v1/me/session/others', () => {
     expect(getSetCookieNames(response)).toEqual([])
     expect(await response.json()).toEqual({
       clearedCurrentSession: false,
-      message: '다른 기기에서 모두 로그아웃했어요',
     })
 
     const sessionFamilies = await readSessionFamiliesForUser(user.id)
@@ -55,7 +54,6 @@ describe('DELETE /api/v1/me/session/others', () => {
     expect(getSetCookieNames(response)).toEqual([])
     expect(await response.json()).toEqual({
       clearedCurrentSession: false,
-      message: '표시된 기기에서 모두 로그아웃했어요',
     })
 
     const sessionFamilies = await readSessionFamiliesForUser(user.id)

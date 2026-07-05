@@ -28,7 +28,6 @@ describe('PATCH /api/v1/me/passkey/:id', () => {
     expect(await response.json()).toEqual({
       id: credential.id,
       name: '내 iPhone',
-      message: '패스키 이름을 저장했어요',
     })
 
     expect(await readPasskeyCredentialByCredentialId('test-me-passkey-rename')).toMatchObject({
@@ -54,7 +53,7 @@ describe('PATCH /api/v1/me/passkey/:id', () => {
     const emptyProblem = await expectProblemResponse(emptyResponse, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: `/api/v1/me/passkey/${credential.id}`,
     })
     expectInvalidParams(emptyProblem, [{ name: 'name' }])
@@ -69,7 +68,7 @@ describe('PATCH /api/v1/me/passkey/:id', () => {
     const longProblem = await expectProblemResponse(longResponse, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: `/api/v1/me/passkey/${credential.id}`,
     })
     expectInvalidParams(longProblem, [{ name: 'name' }])

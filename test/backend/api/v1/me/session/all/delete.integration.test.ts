@@ -24,7 +24,6 @@ describe('DELETE /api/v1/me/session/all', () => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({
       clearedCurrentSession: true,
-      message: '모든 기기에서 로그아웃했어요',
     })
     expectAuthCookiesCleared(response)
 
@@ -54,7 +53,6 @@ describe('DELETE /api/v1/me/session/all', () => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({
       clearedCurrentSession: true,
-      message: '모든 기기에서 로그아웃했어요',
     })
     expectAuthCookiesCleared(response)
 

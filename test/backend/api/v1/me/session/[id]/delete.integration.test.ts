@@ -22,7 +22,7 @@ describe('DELETE /api/v1/me/session/:id', () => {
     const problem = await expectProblemResponse(response, {
       status: 400,
       code: 'invalid-input',
-      detail: '입력을 확인해 주세요',
+      title: '입력을 확인해 주세요',
       instance: '/api/v1/me/session/not-a-uuid',
     })
 
@@ -43,8 +43,8 @@ describe('DELETE /api/v1/me/session/:id', () => {
 
     await expectProblemResponse(response, {
       status: 400,
-      code: 'bad-request',
-      detail: '지금 사용 중인 기기는 여기서 로그아웃할 수 없어요',
+      code: 'current-session-not-removable',
+      title: '지금 사용 중인 기기는 여기서 로그아웃할 수 없어요',
       instance: `/api/v1/me/session/${session.familyId}`,
     })
 
@@ -93,7 +93,6 @@ describe('DELETE /api/v1/me/session/:id', () => {
     expect(getSetCookieNames(response)).toEqual([])
     expect(await response.json()).toEqual({
       clearedCurrentSession: false,
-      message: '선택한 기기에서 로그아웃했어요',
     })
 
     const sessionFamilies = await readSessionFamiliesForUser(user.id)
@@ -121,7 +120,6 @@ describe('DELETE /api/v1/me/session/:id', () => {
     expect(getSetCookieNames(response)).toEqual([])
     expect(await response.json()).toEqual({
       clearedCurrentSession: false,
-      message: '선택한 기기에서 로그아웃했어요',
     })
 
     const sessionFamilies = await readSessionFamiliesForUser(user.id)
