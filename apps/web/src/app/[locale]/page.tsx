@@ -31,8 +31,8 @@ export default async function Home({ params }: PageProps<'/[locale]'>) {
           19
         </text>
       </svg>
-      <h1 className="text-lg font-bold max-w-prose">{t('warning')}</h1>
-      <h2 className="max-w-prose">{t('description')}</h2>
+      <h1 className="text-lg font-bold max-w-prose break-keep">{t('warning')}</h1>
+      <h2 className="max-w-prose break-keep">{t('description')}</h2>
       <div className="grid gap-2">
         <Link
           className={`${linkClassName} bg-brand-gradient relative text-background before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40`}
