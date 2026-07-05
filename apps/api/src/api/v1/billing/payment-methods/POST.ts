@@ -12,8 +12,8 @@ import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
-
 const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PaymentMethodBodySchema))
+
 route.post('/', ...middlewares, async (c) => {
   if (!isBillingConfigured()) {
     return problemResponse(c, { status: 503 })

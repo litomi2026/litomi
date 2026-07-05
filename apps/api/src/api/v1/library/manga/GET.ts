@@ -7,6 +7,7 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, desc, eq, lt, or } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -15,8 +16,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const libraryMangaRoutes = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('query', getV1LibraryMangaQuerySchema))
 
-libraryMangaRoutes.get('/', zProblemValidator('query', getV1LibraryMangaQuerySchema), async (c) => {
+libraryMangaRoutes.get('/', ...middlewares, async (c) => {
   const { cursor, limit, locale } = c.req.valid('query')
   const decodedCursor = cursor ? decodeLibraryIdCursor(cursor) : null
 

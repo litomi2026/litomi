@@ -6,6 +6,7 @@ import { CookieKey } from '@litomi/http/cookie'
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -20,8 +21,10 @@ type TransactionResult =
   | { ok: true; balance: number; earned: number; dailyRemaining: number }
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PointEarnRequestSchema))
 
-route.post('/', requireAuth, zProblemValidator('json', postV1PointEarnRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const turnstileCookie = getCookie(c, CookieKey.POINTS_TURNSTILE)

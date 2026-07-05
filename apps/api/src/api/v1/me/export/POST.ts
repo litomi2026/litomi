@@ -7,6 +7,7 @@ import { userTable } from '@litomi/db/app/user'
 import { compare } from 'bcryptjs'
 import { eq, inArray } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -14,8 +15,10 @@ import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1MeExportBodySchema))
 
-route.post('/', zProblemValidator('json', postV1MeExportBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const { password, includeHistory, includeBookmarks, includeRatings, includeLibraries, includeCensorships } =

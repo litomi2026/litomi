@@ -8,6 +8,7 @@ import { userTable } from '@litomi/db/app/user'
 import { compare, hash } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -24,8 +25,10 @@ const passwordChangeLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', patchV1MePasswordBodySchema))
 
-route.patch('/', zProblemValidator('json', patchV1MePasswordBodySchema), async (c) => {
+route.patch('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { currentPassword, newPassword, token } = c.req.valid('json')
   const { allowed, retryAfter } = await passwordChangeLimiter.check(String(userId))

@@ -1,6 +1,7 @@
 import { deleteV1MePushSubscriptionBodySchema } from '@litomi/contracts'
 import { WebPushService } from '@litomi/notifications'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -8,8 +9,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', deleteV1MePushSubscriptionBodySchema))
 
-route.delete('/', zProblemValidator('json', deleteV1MePushSubscriptionBodySchema), async (c) => {
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { endpoint } = c.req.valid('json')
   const notificationService = WebPushService.getInstance()

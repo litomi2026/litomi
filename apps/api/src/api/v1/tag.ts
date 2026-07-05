@@ -6,6 +6,7 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -28,8 +29,10 @@ type TotalCountRow = {
 }
 
 const tagRoutes = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('query', getV1TagQuerySchema))
 
-tagRoutes.get('/', zProblemValidator('query', getV1TagQuerySchema), async (c) => {
+tagRoutes.get('/', ...middlewares, async (c) => {
   const { category, page, limit, locale } = c.req.valid('query')
   const categoryNumber = categoryToNumber[category]
   const offset = (page - 1) * limit

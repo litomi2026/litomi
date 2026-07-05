@@ -2,6 +2,7 @@ import type { ChatThreadListItem, GETV1ChatThreadsResponse } from '@litomi/contr
 import { listChatThreadArtists } from '@litomi/db/app/query/chat'
 import { countUnreadByStreams, getThreadSummaries, toBroadcastStreamId } from '@litomi/db/chat/query'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -11,11 +12,13 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 import { threadPreview, toArtistBrief } from '../dto'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth)
 
 // A fan's chat list = every artist they ever subscribed to. Entitled rows show the last
 // broadcast + unread; lapsed rows stay reachable read-only (broadcast hidden, sending
 // disabled) for the paid-window archive.
-route.get('/', requireAuth, async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const artists = await listChatThreadArtists(userId)
 

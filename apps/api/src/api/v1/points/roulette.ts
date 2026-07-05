@@ -5,6 +5,7 @@ import { TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { assertRouletteConfig, ROULETTE_CONFIG, type RouletteSegment } from '@litomi/domain/points/roulette'
 import { eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -15,8 +16,10 @@ import { zProblemValidator } from '@/utils/validator'
 assertRouletteConfig(ROULETTE_CONFIG)
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1RouletteSpinRequestSchema))
 
-route.post('/spin', requireAuth, zProblemValidator('json', postV1RouletteSpinRequestSchema), async (c) => {
+route.post('/spin', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { bet } = c.req.valid('json')
 

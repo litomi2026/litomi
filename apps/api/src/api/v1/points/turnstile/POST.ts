@@ -4,6 +4,7 @@ import { getRequestIP } from '@litomi/http/request'
 import TurnstileValidator from '@litomi/http/turnstile'
 import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 import ms from 'ms'
 
 import type { Env } from '@/app'
@@ -15,9 +16,11 @@ import { zProblemValidator } from '@/utils/validator'
 import { POINTS_TURNSTILE_TTL_SECONDS, signPointsTurnstileToken } from '../util-turnstile-cookie'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PointTurnstileRequestSchema))
 const turnstileValidator = new TurnstileValidator(ms('10 seconds'), 1)
 
-route.post('/', requireAuth, zProblemValidator('json', postV1PointTurnstileRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { token } = c.req.valid('json')
   const remoteIP = getRequestIP(c.req.raw.headers)

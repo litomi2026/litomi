@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { libraryTable, pinnedLibraryTable } from '@litomi/db/app/library'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -15,8 +16,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { getPinnedLibraryLimit } from './limit'
 
 const routes = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, requireAdult, zProblemValidator('param', idParamSchema))
 
-routes.post('/', requireAuth, requireAdult, zProblemValidator('param', idParamSchema), async (c) => {
+routes.post('/', ...middlewares, async (c) => {
   const { id: libraryId } = c.req.valid('param')
   const userId = c.get('userId')!
 

@@ -6,6 +6,7 @@ import { selectCatalogMangaRecordsByIds } from '@litomi/db/catalog/query'
 import { decodeMangaRecommendationReasonMask } from '@litomi/domain/manga-recommendation/reason'
 import { asc, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -16,52 +17,53 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
 
-route.get(
-  '/',
+const middlewares = factory.createHandlers(
   requireAuth,
   requireAdult,
   zProblemValidator('query', getV1MangaRecommendationQuerySchema),
-  async (c) => {
-    const userId = c.get('userId')!
-    const { limit, locale } = c.req.valid('query')
-
-    try {
-      const rows = await db
-        .select({
-          mangaId: mangaRecommendationTable.mangaId,
-          rank: mangaRecommendationTable.rank,
-          reasonMask: mangaRecommendationTable.reasonMask,
-          score: mangaRecommendationTable.score,
-          generatedAt: mangaRecommendationSetTable.generatedAt,
-        })
-        .from(mangaRecommendationTable)
-        .innerJoin(mangaRecommendationSetTable, eq(mangaRecommendationSetTable.userId, mangaRecommendationTable.userId))
-        .where(eq(mangaRecommendationTable.userId, userId))
-        .orderBy(asc(mangaRecommendationTable.rank))
-        .limit(limit)
-
-      const mangaIds = rows.map(({ mangaId }) => mangaId)
-      const mangaList = await selectCatalogMangaRecordsByIds(mangaIds)
-      const mangaMap = catalogMangaRecordsToMangaMap(mangaList, locale)
-
-      const result = {
-        items: rows.map((row) => ({
-          mangaId: row.mangaId,
-          rank: row.rank,
-          score: row.score,
-          reasons: decodeMangaRecommendationReasonMask(row.reasonMask),
-          generatedAt: row.generatedAt.getTime(),
-          manga: mangaMap.get(row.mangaId),
-        })),
-      } satisfies GETV1MangaRecommendationResponse
-
-      return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
-    } catch (error) {
-      console.error(error)
-      return problemResponse(c, { status: 500 })
-    }
-  },
 )
+
+route.get('/', ...middlewares, async (c) => {
+  const userId = c.get('userId')!
+  const { limit, locale } = c.req.valid('query')
+
+  try {
+    const rows = await db
+      .select({
+        mangaId: mangaRecommendationTable.mangaId,
+        rank: mangaRecommendationTable.rank,
+        reasonMask: mangaRecommendationTable.reasonMask,
+        score: mangaRecommendationTable.score,
+        generatedAt: mangaRecommendationSetTable.generatedAt,
+      })
+      .from(mangaRecommendationTable)
+      .innerJoin(mangaRecommendationSetTable, eq(mangaRecommendationSetTable.userId, mangaRecommendationTable.userId))
+      .where(eq(mangaRecommendationTable.userId, userId))
+      .orderBy(asc(mangaRecommendationTable.rank))
+      .limit(limit)
+
+    const mangaIds = rows.map(({ mangaId }) => mangaId)
+    const mangaList = await selectCatalogMangaRecordsByIds(mangaIds)
+    const mangaMap = catalogMangaRecordsToMangaMap(mangaList, locale)
+
+    const result = {
+      items: rows.map((row) => ({
+        mangaId: row.mangaId,
+        rank: row.rank,
+        score: row.score,
+        reasons: decodeMangaRecommendationReasonMask(row.reasonMask),
+        generatedAt: row.generatedAt.getTime(),
+        manga: mangaMap.get(row.mangaId),
+      })),
+    } satisfies GETV1MangaRecommendationResponse
+
+    return c.json(result, { headers: { 'Cache-Control': privateCacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500 })
+  }
+})
 
 export default route

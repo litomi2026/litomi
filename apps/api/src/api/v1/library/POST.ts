@@ -8,6 +8,7 @@ import { hexColorToInt } from '@litomi/domain/utils/color'
 import { normalizeString } from '@litomi/std'
 import { and, count, eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -22,8 +23,10 @@ const ErrorCode = {
 } as const
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1LibraryBodySchema))
 
-route.post('/', requireAuth, zProblemValidator('json', postV1LibraryBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { name, description, color, icon, isPublic } = c.req.valid('json')
 

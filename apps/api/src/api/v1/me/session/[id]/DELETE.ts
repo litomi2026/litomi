@@ -1,5 +1,6 @@
 import { type DELETEV1MeSessionResponse, deleteV1MeSessionParamSchema, PROBLEM } from '@litomi/contracts'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -10,8 +11,10 @@ import { revokeSessionFamilyByIdForUser } from '../query'
 import { getCurrentSessionFamilyId } from '../shared'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('param', deleteV1MeSessionParamSchema))
 
-route.delete('/', zProblemValidator('param', deleteV1MeSessionParamSchema), async (c) => {
+route.delete('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { id } = c.req.valid('param')
   const now = new Date()

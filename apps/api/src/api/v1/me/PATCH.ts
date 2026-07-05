@@ -5,6 +5,7 @@ import { userTable } from '@litomi/db/app/user'
 import { isPostgresError } from '@litomi/db/error'
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -13,8 +14,10 @@ import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', patchV1MeBodySchema))
 
-route.patch('/', zProblemValidator('json', patchV1MeBodySchema), async (c) => {
+route.patch('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const patch = c.req.valid('json')
 

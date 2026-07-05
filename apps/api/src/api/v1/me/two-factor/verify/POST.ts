@@ -5,6 +5,7 @@ import { db } from '@litomi/db/app'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@litomi/db/app/two-factor'
 import { and, eq, gt } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -18,8 +19,10 @@ const twoFactorVerifyLimiter = new RedisRateLimiter({
 })
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1MeTwoFactorVerifyBodySchema))
 
-route.post('/', zProblemValidator('json', postV1MeTwoFactorVerifyBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { token } = c.req.valid('json')
   const { allowed, retryAfter } = await twoFactorVerifyLimiter.check(String(userId))

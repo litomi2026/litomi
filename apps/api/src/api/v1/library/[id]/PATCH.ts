@@ -5,6 +5,7 @@ import { hexColorToInt } from '@litomi/domain/utils/color'
 import { normalizeString } from '@litomi/std'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -14,44 +15,45 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
 
-route.patch(
-  '/',
+const middlewares = factory.createHandlers(
   requireAuth,
   zProblemValidator('param', idParamSchema),
   zProblemValidator('json', patchV1LibraryIdBodySchema),
-  async (c) => {
-    const userId = c.get('userId')!
-    const { id: libraryId } = c.req.valid('param')
-    const { name, description, color, icon, isPublic } = c.req.valid('json')
-
-    if (isPublic === false && shouldBlockAdultGate(c)) {
-      return adultVerificationRequiredResponse(c)
-    }
-
-    try {
-      const [updatedLibrary] = await db
-        .update(libraryTable)
-        .set({
-          name: name.trim(),
-          description: normalizeString(description),
-          color: color ? hexColorToInt(color) : null,
-          icon: icon || null,
-          isPublic,
-        })
-        .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId)))
-        .returning({ id: libraryTable.id })
-
-      if (!updatedLibrary) {
-        return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
-      }
-
-      return c.json({ id: updatedLibrary.id } satisfies PATCHV1LibraryIdResponse)
-    } catch (error) {
-      console.error(error)
-      return problemResponse(c, { status: 500 })
-    }
-  },
 )
+
+route.patch('/', ...middlewares, async (c) => {
+  const userId = c.get('userId')!
+  const { id: libraryId } = c.req.valid('param')
+  const { name, description, color, icon, isPublic } = c.req.valid('json')
+
+  if (isPublic === false && shouldBlockAdultGate(c)) {
+    return adultVerificationRequiredResponse(c)
+  }
+
+  try {
+    const [updatedLibrary] = await db
+      .update(libraryTable)
+      .set({
+        name: name.trim(),
+        description: normalizeString(description),
+        color: color ? hexColorToInt(color) : null,
+        icon: icon || null,
+        isPublic,
+      })
+      .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId)))
+      .returning({ id: libraryTable.id })
+
+    if (!updatedLibrary) {
+      return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
+    }
+
+    return c.json({ id: updatedLibrary.id } satisfies PATCHV1LibraryIdResponse)
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500 })
+  }
+})
 
 export default route

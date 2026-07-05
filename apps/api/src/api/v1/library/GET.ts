@@ -7,6 +7,7 @@ import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
 import { and, count, desc, eq, gt, lt, ne, or, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 import ms from 'ms'
 
 import type { Env } from '@/app'
@@ -16,8 +17,10 @@ import { authRequiredProblemResponse, problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const libraryListRoutes = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('query', getV1LibraryListQuerySchema))
 
-libraryListRoutes.get('/', zProblemValidator('query', getV1LibraryListQuerySchema), async (c) => {
+libraryListRoutes.get('/', ...middlewares, async (c) => {
   const { cursor, limit, scope: listScope } = c.req.valid('query')
   const userId = c.get('userId')
 

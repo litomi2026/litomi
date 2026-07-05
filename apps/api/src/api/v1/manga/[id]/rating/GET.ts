@@ -3,6 +3,7 @@ import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -12,8 +13,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('param', mangaIdParamSchema))
 
-route.get('/:id/rating', requireAuth, zProblemValidator('param', mangaIdParamSchema), async (c) => {
+route.get('/:id/rating', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const { id: mangaId } = c.req.valid('param')

@@ -4,6 +4,7 @@ import { postTable } from '@litomi/db/app/post'
 import { isPostgresError } from '@litomi/db/error'
 import { PostType } from '@litomi/domain/post/model'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -12,8 +13,10 @@ import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PostBodySchema))
 
-route.post('/', requireAuth, zProblemValidator('json', postV1PostBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { content, mangaId, parentPostId, referredPostId } = c.req.valid('json')
 

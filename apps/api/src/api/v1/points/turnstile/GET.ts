@@ -3,6 +3,7 @@ import { type GETV1PointTurnstileResponse, PROBLEM } from '@litomi/contracts'
 import { CookieKey } from '@litomi/http/cookie'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -13,8 +14,10 @@ import { problemResponse } from '@/utils/problem'
 import { verifyPointsTurnstileToken } from '../util-turnstile-cookie'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth)
 
-route.get('/', requireAuth, async (c) => {
+route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   const cookieValue = getCookie(c, CookieKey.POINTS_TURNSTILE)

@@ -9,6 +9,7 @@ import { notificationConditionTable, notificationCriteriaTable } from '@litomi/d
 import { MAX_CRITERIA_PER_USER } from '@litomi/domain/notification/policy'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 import { areNotificationCriteriaConditionsEqual } from '@/api/v1/notification/criteria/util'
 import type { Env } from '@/app'
 import { lockUserRowForUpdate } from '@/utils/lock-user-row'
@@ -41,8 +42,10 @@ type TransactionResult =
     }
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(zProblemValidator('json', postV1NotificationCriteriaBodySchema))
 
-route.post('/', zProblemValidator('json', postV1NotificationCriteriaBodySchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { conditions, isActive, name } = c.req.valid('json')
 

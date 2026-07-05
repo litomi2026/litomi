@@ -4,6 +4,7 @@ import { pointTransactionTable, userExpansionTable, userItemTable, userPointsTab
 import { ITEM_TYPE, TRANSACTION_TYPE } from '@litomi/domain/points/model'
 import { and, eq, sql, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { createFactory } from 'hono/factory'
 
 import type { Env } from '@/app'
 
@@ -14,8 +15,10 @@ import { zProblemValidator } from '@/utils/validator'
 import { getExpansionConfig, getSpendMeta, isBookmarkItemId } from './util'
 
 const route = new Hono<Env>()
+const factory = createFactory<Env>()
+const middlewares = factory.createHandlers(requireAuth, zProblemValidator('json', postV1PointSpendRequestSchema))
 
-route.post('/', requireAuth, zProblemValidator('json', postV1PointSpendRequestSchema), async (c) => {
+route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
 
   type TransactionResult = ({ ok: false } & ProblemResponseOptions) | { ok: true; balance: number; spent: number }
