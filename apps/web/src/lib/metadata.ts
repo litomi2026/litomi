@@ -1,7 +1,6 @@
-import type { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
-
 import { APP_METADATA } from '@litomi/domain/app/metadata'
 import { DEFAULT_LOCALE, LOCALE_OPEN_GRAPH_TAGS, PUBLIC_LOCALES, type PublicLocale } from '@litomi/domain/locale'
+import type { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
 
 import { getPathname } from '@/i18n/navigation'
 
