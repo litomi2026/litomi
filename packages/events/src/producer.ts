@@ -1,5 +1,5 @@
 import { kafka } from './client'
-import type { ChatMessageEvent, ChatPushFanoutEvent } from './schema'
+import type { ChatBroadcastEvent, ChatDirectMessageEvent, ChatPushFanoutEvent } from './schema'
 import { TOPIC_CHAT_MESSAGE, TOPIC_CHAT_PUSH_FANOUT } from './topics'
 
 export const producer = kafka.producer({ allowAutoTopicCreation: false })
@@ -33,9 +33,15 @@ export async function publishEvent(topic: string, key: string, payload: unknown)
   })
 }
 
-// streamId를 기준으로 같은 채팅방(스트림)의 메시지들이 동일한 파티션에 적재되어 처리 순서가 보장되도록 함
-export async function publishChatMessage(event: ChatMessageEvent): Promise<void> {
-  await publishEvent(TOPIC_CHAT_MESSAGE, event.streamId, event)
+// key=b:{artistId} — 한 아티스트의 브로드캐스트가 한 파티션에 직렬화되어 순서 보장.
+export async function publishChatBroadcast(event: ChatBroadcastEvent): Promise<void> {
+  await publishEvent(TOPIC_CHAT_MESSAGE, `b:${event.artistId}`, event)
+}
+
+// key=dm:{artistId}:{fanId} — 한 1:1 대화(팬 답장 + 아티스트 답장)가 한 파티션에 직렬화되어
+// 두 방향이 섞여도 순서가 보장된다.
+export async function publishChatDirectMessage(event: ChatDirectMessageEvent): Promise<void> {
+  await publishEvent(TOPIC_CHAT_MESSAGE, `dm:${event.artistId}:${event.fanId}`, event)
 }
 
 // artistId로 키잉 — 한 아티스트의 fan-out 페이지들이 같은 파티션에 직렬화되어 continuation

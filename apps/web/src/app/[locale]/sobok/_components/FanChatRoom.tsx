@@ -1,14 +1,14 @@
 'use client'
 
-import type { ChatArtistBrief, ChatSubscriptionDTO } from '@litomi/contracts'
+import type { ChatArtistBrief, ChatFeedItem, ChatSubscriptionDTO } from '@litomi/contracts'
 import { REPLY_MAX_PER_MESSAGE } from '@litomi/domain/chat/policy'
 import { ChevronLeft, Loader2, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from '@/i18n/navigation'
-import useFanChatRoom from '../_hooks/useFanChatRoom'
-import { avatarURL, type FanTimelineItem } from '../_lib/chat'
-import { ArtistMessageBubble, FanReplyBubble, QuotedMessage } from './ChatBubbles'
+import useFanChatRoom, { type ReplyTarget } from '../_hooks/useFanChatRoom'
+import { avatarURL } from '../_lib/chat'
+import { ArtistBubble, type BubbleQuote, FanReplyBubble, QuotedMessage } from './ChatBubbles'
 import ChatComposer from './ChatComposer'
 import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import ComposerDock from './ComposerDock'
@@ -35,71 +35,92 @@ export default function FanChatRoom({
   subscribing,
   subscription,
 }: Props) {
-  const [replyTargetId, setReplyTargetId] = useState<string | null>(null)
+  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null)
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const listRef = useRef<ChatMessageListHandle>(null)
   const tSubscribe = useTranslations('Sobok.subscribe')
   const t = useTranslations('Sobok.fanRoom')
 
   const {
-    entryById,
     fetchNextPage,
-    flatItems,
     hasNextPage,
     isFetchingNextPage,
     isSending,
-    latestMessageId,
-    quotedReplyIds,
+    itemById,
+    items,
+    latestBroadcastId,
+    quotes,
+    replyCountFor,
     sendReply,
   } = useFanChatRoom({ artistId: artist.id, entitled, handle })
 
-  const effectiveTargetId = replyTargetId ?? latestMessageId
-  const replyingToOlder = replyTargetId !== null && replyTargetId !== latestMessageId
-  const replyTarget = replyTargetId ? entryById.get(replyTargetId)?.message : null
-  const usedReplies = effectiveTargetId ? (entryById.get(effectiveTargetId)?.myReplies.length ?? 0) : 0
+  const effectiveContextId = replyTarget?.contextMessageId ?? latestBroadcastId
+  const usedReplies = effectiveContextId ? replyCountFor(effectiveContextId) : 0
   const repliesExhausted = replyTextLimit !== undefined && usedReplies >= REPLY_MAX_PER_MESSAGE
+  const targetPreview = replyTarget ? itemById.get(replyTarget.quotedMessageId ?? replyTarget.contextMessageId) : null
 
-  // Jump to the message a reply quotes and flash it briefly. The target may be virtualized out of
-  // the DOM, so we scroll by index through the list rather than holding a node ref.
+  // Jump to a quoted message and flash it briefly. It may be virtualized out of the DOM, so we
+  // scroll by key through the list rather than holding a node ref.
   function scrollToMessage(messageId: string) {
     listRef.current?.scrollToKey(messageId, { align: 'center' })
     setHighlightedId(messageId)
   }
 
   async function handleSend(text: string) {
-    if (!effectiveTargetId) {
+    if (!effectiveContextId) {
       return
     }
 
-    await sendReply(effectiveTargetId, text)
-    setReplyTargetId(null)
+    await sendReply(replyTarget ?? { contextMessageId: effectiveContextId }, text)
+    setReplyTarget(null)
     listRef.current?.scrollToBottom()
   }
 
-  function renderTimelineItem(item: FanTimelineItem) {
-    if (item.kind === 'message') {
-      return (
-        <ArtistMessageBubble
-          avatarSrc={avatarURL(artist.displayName, artist.imageURL)}
-          isHighlighted={highlightedId === item.message.messageId}
-          isTarget={replyTargetId === item.message.messageId}
-          message={item.message}
-          onSelect={() => setReplyTargetId(item.message.messageId === latestMessageId ? null : item.message.messageId)}
-        />
-      )
+  function quoteFor(item: ChatFeedItem): BubbleQuote | undefined {
+    const quote = quotes.get(item.messageId)
+
+    if (!quote) {
+      return undefined
     }
 
-    const quoteTarget = quotedReplyIds.has(item.reply.messageId)
-      ? (entryById.get(item.reply.targetMessageId)?.message ?? null)
-      : null
+    return {
+      targetId: quote.targetId,
+      preview: quote.preview,
+      label: quote.isMine ? t('you') : artist.displayName,
+    }
+  }
+
+  function renderItem(item: ChatFeedItem) {
+    if (item.kind === 'fanReply') {
+      return <FanReplyBubble message={item} onQuoteClick={scrollToMessage} quote={quoteFor(item)} />
+    }
+
+    // Broadcast bubble or the artist's 1:1 answer — both selectable to reply.
+    const target: ReplyTarget =
+      item.kind === 'artistReply'
+        ? { contextMessageId: item.contextMessageId, quotedMessageId: item.messageId }
+        : { contextMessageId: item.messageId }
+
+    const isTarget =
+      item.kind === 'artistReply'
+        ? replyTarget?.quotedMessageId === item.messageId
+        : replyTarget?.contextMessageId === item.messageId && !replyTarget.quotedMessageId
 
     return (
-      <FanReplyBubble
+      <ArtistBubble
+        avatarSrc={avatarURL(artist.displayName, artist.imageURL)}
+        isHighlighted={highlightedId === item.messageId}
+        isTarget={isTarget}
+        message={item}
         onQuoteClick={scrollToMessage}
-        quoteLabel={artist.displayName}
-        quoteTarget={quoteTarget}
-        read={item.read}
-        reply={item.reply}
+        onSelect={() =>
+          setReplyTarget((prev) =>
+            prev?.contextMessageId === target.contextMessageId && prev?.quotedMessageId === target.quotedMessageId
+              ? null
+              : target,
+          )
+        }
+        quote={quoteFor(item)}
       />
     )
   }
@@ -139,34 +160,34 @@ export default function FanChatRoom({
       {/* Messages */}
       <ChatMessageList
         bottomInsetClassName="pb-[var(--sobok-dock-h)]"
-        dateOf={(item) => new Date(item.kind === 'message' ? item.message.createdAt : item.reply.createdAt).getTime()}
+        dateOf={(item) => new Date(item.createdAt).getTime()}
         hasOlder={hasNextPage}
         isLoadingOlder={isFetchingNextPage}
-        itemKey={(item) => item.id}
-        items={flatItems}
+        itemKey={(item) => item.messageId}
+        items={items}
         onLoadOlder={fetchNextPage}
         ref={listRef}
-        renderItem={renderTimelineItem}
+        renderItem={renderItem}
         scrollButtonClassName="bottom-[calc(var(--sobok-dock-h)+0.75rem)] right-4"
       />
 
-      {/* Composer island — reply-target chip docks above the input on the same surface */}
+      {/* Composer island — the reply-target chip docks above the input on the same surface */}
       <ComposerDock
         preview={
           entitled &&
-          replyingToOlder &&
-          replyTarget && (
+          replyTarget &&
+          targetPreview && (
             <div className="flex items-center gap-2 p-4 pb-3 pr-3">
               <QuotedMessage
                 className="flex-1"
                 label={t('replyTo', { name: artist.displayName })}
-                onClick={() => scrollToMessage(replyTarget.messageId)}
-                preview={replyTarget.content.text}
+                onClick={() => scrollToMessage(targetPreview.messageId)}
+                preview={targetPreview.content.text}
                 variant="standalone"
               />
               <button
                 type="button"
-                onClick={() => setReplyTargetId(null)}
+                onClick={() => setReplyTarget(null)}
                 className="p-1 shrink-0 text-indigo-500 hover:text-indigo-400"
               >
                 <X className="w-4 h-4" />
@@ -181,7 +202,7 @@ export default function FanChatRoom({
             placeholder={
               repliesExhausted ? t('repliesExhausted', { count: REPLY_MAX_PER_MESSAGE }) : t('composerPlaceholder')
             }
-            disabled={isSending || !effectiveTargetId || repliesExhausted}
+            disabled={isSending || !effectiveContextId || repliesExhausted}
             maxLength={replyTextLimit}
           />
         ) : (

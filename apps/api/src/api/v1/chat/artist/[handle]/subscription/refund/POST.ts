@@ -3,7 +3,7 @@ import { chatHandleParamSchema, type POSTV1ChatSubscriptionRefundResponse, PROBL
 import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { applyPaymentRefunds, getLatestPaidInvoicePayment } from '@litomi/db/app/query/refund'
 import { getSubscription } from '@litomi/db/app/query/subscription'
-import { hasOwnRepliesInWindow, messageIdAtOrAfter } from '@litomi/db/chat/query'
+import { hasFanRepliesInWindow, messageIdAtOrAfter } from '@litomi/db/chat/query'
 import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
 import { ENTITLEMENT_CHANNEL, type EntitlementRevokedEvent } from '@litomi/kv/channels'
 import { connectPubSub, publisherClient } from '@litomi/kv/pubsub'
@@ -68,7 +68,7 @@ route.post('/', ...middlewares, async (c) => {
     toIdExclusive: messageIdAtOrAfter(candidate.periodEnd),
   }
 
-  if (await hasOwnRepliesInWindow({ senderId: userId, artistId: artist.id, window })) {
+  if (await hasFanRepliesInWindow({ fanId: userId, artistId: artist.id, window })) {
     return problemResponse(c, { problem: PROBLEM.REFUND_FORFEITED_BY_REPLY })
   }
 

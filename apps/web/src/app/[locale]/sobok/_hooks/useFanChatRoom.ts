@@ -1,11 +1,11 @@
 'use client'
 
-import type { ChatMessageDTO, ChatReplyDTO } from '@litomi/contracts'
+import type { ChatFeedItem } from '@litomi/contracts'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { useChat } from '../_components/ChatProvider'
-import { buildFanTimeline, flattenFanTimeline, getQuotedReplyIds, toChatMessageDTO } from '../_lib/chat'
+import { computeQuotes, mergeFeedItems } from '../_lib/chat'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useMarkReadMutation from '../_query/useMarkReadMutation'
 import useSendReplyMutation from '../_query/useSendReplyMutation'
@@ -17,11 +17,19 @@ interface UseFanChatRoomInput {
   handle: string
 }
 
-// Everything the fan room needs from the data layer: paged history ∪ realtime broadcasts
-// ∪ optimistic replies as one memoized timeline, plus read-marking and reply sending.
+// A reply always targets a broadcast bubble (contextMessageId); it may additionally quote a
+// specific artist answer (quotedMessageId) for ping-pong.
+export interface ReplyTarget {
+  contextMessageId: string
+  quotedMessageId?: string
+}
+
+// Everything the fan room needs: paged history ∪ realtime (broadcasts on b:, the artist's 1:1
+// answers on fc:) ∪ optimistic replies, as one merged ChatFeedItem timeline, plus read-marking
+// and reply sending.
 export default function useFanChatRoom({ artistId, entitled, handle }: UseFanChatRoomInput) {
-  const [optimisticReplies, setOptimisticReplies] = useState<Record<string, ChatReplyDTO[]>>({})
-  const [realtimeMessages, setRealtimeMessages] = useState<ChatMessageDTO[]>([])
+  const [realtimeItems, setRealtimeItems] = useState<ChatFeedItem[]>([])
+  const [optimisticItems, setOptimisticItems] = useState<ChatFeedItem[]>([])
   const { myUserId, connectionId } = useChat()
   const prevConnectionIdRef = useRef(connectionId)
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useChatMessageQuery(handle)
@@ -29,54 +37,66 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
   const { mutate: markRead } = useMarkReadMutation(handle)
   const queryClient = useQueryClient()
 
-  const timeline = buildFanTimeline(
-    data?.pages.flatMap((page) => page.messages) ?? [],
-    realtimeMessages,
-    optimisticReplies,
-  )
+  const items = mergeFeedItems(data?.pages.flatMap((page) => page.items) ?? [], realtimeItems, optimisticItems)
+  const quotes = computeQuotes(items)
+  const itemById = new Map(items.map((item) => [item.messageId, item]))
+  const latestBroadcastId = findLastBroadcastId(items)
+  const latestMessageId = items.at(-1)?.messageId ?? null
 
-  const flatItems = flattenFanTimeline(timeline)
-  const entryById = new Map(timeline.map((entry) => [entry.message.messageId, entry]))
-  const quotedReplyIds = getQuotedReplyIds(flatItems)
-  const latestMessageId = timeline.at(-1)?.message.messageId ?? null
-  const room = entitled ? `b:${artistId}` : null
+  // How many replies the fan has already sent to a bubble in the loaded feed (UI hint; the
+  // server enforces the real per-message cap).
+  function replyCountFor(contextMessageId: string): number {
+    return items.reduce(
+      (total, item) => total + (item.kind === 'fanReply' && item.contextMessageId === contextMessageId ? 1 : 0),
+      0,
+    )
+  }
 
   // Rejects on failure so the composer keeps the draft for retry.
-  async function sendReply(targetMessageId: string, text: string) {
+  async function sendReply(target: ReplyTarget, text: string) {
     if (!myUserId) {
       throw new Error('아직 연결되지 않았어요.')
     }
 
     const { messageId } = await postReply({
-      messageId: targetMessageId,
-      body: {
-        contentType: 'text',
-        text,
-      },
+      messageId: target.contextMessageId,
+      body: { contentType: 'text', text, quotedMessageId: target.quotedMessageId },
     })
 
-    const reply: ChatReplyDTO = {
+    addOptimistic({
+      kind: 'fanReply',
       messageId,
-      targetMessageId,
-      senderId: myUserId,
+      contextMessageId: target.contextMessageId,
+      quotedMessageId: target.quotedMessageId,
       contentType: 'text',
       content: { text },
       createdAt: new Date().toISOString(),
-    }
-
-    setOptimisticReplies((prev) => ({
-      ...prev,
-      [targetMessageId]: [...prev[targetMessageId], reply],
-    }))
+    })
   }
 
-  useRoomChannel(room, {
-    // Append new broadcasts; the fan never receives other fans' replies.
+  function addRealtime(item: ChatFeedItem) {
+    setRealtimeItems((prev) =>
+      prev.some((existing) => existing.messageId === item.messageId) ? prev : [...prev, item],
+    )
+  }
+
+  function addOptimistic(item: ChatFeedItem) {
+    setOptimisticItems((prev) =>
+      prev.some((existing) => existing.messageId === item.messageId) ? prev : [...prev, item],
+    )
+  }
+
+  useRoomChannel(entitled ? `b:${artistId}` : null, {
+    // New broadcasts; the fan never receives other fans' replies here.
     onMessage: (msg) => {
       if (msg.kind === 'broadcast') {
-        setRealtimeMessages((prev) =>
-          prev.some((b) => b.messageId === msg.messageId) ? prev : [...prev, toChatMessageDTO(msg)],
-        )
+        addRealtime({
+          kind: 'broadcast',
+          messageId: msg.messageId,
+          contentType: msg.contentType,
+          content: msg.content,
+          createdAt: msg.createdAt,
+        })
       }
     },
     // 서버가 자격 상실(만료/환불)로 방에서 내보내면 구독 상태를 다시 조회해 UI를 전환한다.
@@ -85,14 +105,31 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
     },
   })
 
+  // The artist's 1:1 answers to me — always subscribed (readable regardless of entitlement).
+  useRoomChannel(myUserId ? `fc:${artistId}:${myUserId}` : null, {
+    onMessage: (msg) => {
+      if (msg.kind === 'artistReply') {
+        addRealtime({
+          kind: 'artistReply',
+          messageId: msg.messageId,
+          contextMessageId: msg.contextMessageId,
+          quotedMessageId: msg.quotedMessageId ?? undefined,
+          contentType: msg.contentType,
+          content: msg.content,
+          createdAt: msg.createdAt,
+        })
+      }
+    },
+  })
+
   useEffect(() => {
-    if (entitled && latestMessageId) {
+    if (latestMessageId) {
       markRead({ lastReadMessageId: latestMessageId })
     }
-  }, [entitled, latestMessageId, markRead])
+  }, [latestMessageId, markRead])
 
-  // Broadcasts sent while the socket was down never replay — refetch on reconnect to close
-  // the gap. connectionId increments per successful open, so >1 means a reconnect.
+  // Messages relayed while the socket was down never replay — refetch on reconnect to close the
+  // gap. connectionId increments per successful open, so >1 means a reconnect.
   useEffect(() => {
     if (connectionId > prevConnectionIdRef.current && prevConnectionIdRef.current > 0) {
       queryClient.invalidateQueries({ queryKey: QueryKeys.chatMessages(handle) })
@@ -101,14 +138,24 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
   }, [connectionId, handle, queryClient])
 
   return {
-    entryById,
     fetchNextPage,
-    flatItems,
     hasNextPage,
     isFetchingNextPage,
     isSending,
-    latestMessageId,
-    quotedReplyIds,
+    itemById,
+    items,
+    latestBroadcastId,
+    quotes,
+    replyCountFor,
     sendReply,
   }
+}
+
+function findLastBroadcastId(items: ChatFeedItem[]): string | null {
+  for (let i = items.length - 1; i >= 0; i--) {
+    if (items[i].kind === 'broadcast') {
+      return items[i].messageId
+    }
+  }
+  return null
 }

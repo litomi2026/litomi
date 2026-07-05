@@ -1,6 +1,11 @@
 // Canonical Valkey Pub/Sub channel naming — the contract between message
-// publishers (api/worker) and the chat gateway subscriber. Single-sourced here
+// publishers (chat-worker) and the chat gateway subscriber. Single-sourced here
 // so a divergent string can't silently break realtime delivery.
+//
+// roomId is opaque to this layer; its taxonomy lives in @litomi/db/chat/query/channel
+// (b:/c:/fc:/rr:). Because roomId is what a subscriber SUBSCRIBEs on, it is also the
+// natural shard key: to move Valkey to cluster mode, switch the subscriber to SSUBSCRIBE
+// and the publisher to SPUBLISH keyed on roomId (single-instance today, so plain (P)SUB).
 
 const ROOM_CHANNEL_PREFIX = 'litomi:chat:room:'
 

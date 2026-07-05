@@ -1,5 +1,3 @@
-import type { ChatMessageDTO, ChatReplyDTO } from '@litomi/contracts'
-import { Check, CheckCheck } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { formatTime } from '../_lib/format'
 
@@ -28,21 +26,40 @@ export function QuotedMessage({ className = '', label, onClick, preview, variant
   )
 }
 
-interface ArtistMessageBubbleProps {
+// The minimal shape every bubble needs from a feed item.
+interface BubbleMessage {
+  messageId: string
+  content: { text: string }
+  createdAt: string
+}
+
+export interface BubbleQuote {
+  targetId: string
+  label: string
+  preview: string
+}
+
+// An artist message on the left: a broadcast bubble or a 1:1 answer. Both are selectable (tap
+// to reply). A 1:1 answer additionally carries a quote of the fan message it answers.
+interface ArtistBubbleProps {
   avatarSrc: string
   isHighlighted: boolean
   isTarget: boolean
-  message: ChatMessageDTO
+  message: BubbleMessage
+  onQuoteClick?: (messageId: string) => void
   onSelect: () => void
+  quote?: BubbleQuote
 }
 
-export function ArtistMessageBubble({
+export function ArtistBubble({
   avatarSrc,
   isHighlighted,
   isTarget,
   message,
+  onQuoteClick,
   onSelect,
-}: ArtistMessageBubbleProps) {
+  quote,
+}: ArtistBubbleProps) {
   const locale = useLocale()
 
   return (
@@ -57,11 +74,19 @@ export function ArtistMessageBubble({
           <button
             type="button"
             onClick={onSelect}
-            className={`text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border transition-all ${
+            className={`flex flex-col gap-1.5 text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border transition-all ${
               isTarget ? 'border-indigo-400' : 'border-foreground/10'
             } ${isHighlighted ? 'ring-2 ring-indigo-400/80' : ''}`}
           >
-            {message.content.text}
+            {quote && (
+              <QuotedMessage
+                label={quote.label}
+                onClick={() => onQuoteClick?.(quote.targetId)}
+                preview={quote.preview}
+                variant="onMessage"
+              />
+            )}
+            <span>{message.content.text}</span>
           </button>
           <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
             {formatTime(message.createdAt, locale)}
@@ -72,15 +97,14 @@ export function ArtistMessageBubble({
   )
 }
 
+// The fan's own reply on the right.
 interface FanReplyBubbleProps {
-  onQuoteClick: (messageId: string) => void
-  quoteLabel: string
-  quoteTarget: ChatMessageDTO | null
-  read: boolean
-  reply: ChatReplyDTO
+  message: BubbleMessage
+  onQuoteClick?: (messageId: string) => void
+  quote?: BubbleQuote
 }
 
-export function FanReplyBubble({ onQuoteClick, quoteLabel, quoteTarget, read, reply }: FanReplyBubbleProps) {
+export function FanReplyBubble({ message, onQuoteClick, quote }: FanReplyBubbleProps) {
   const locale = useLocale()
 
   return (
@@ -88,24 +112,19 @@ export function FanReplyBubble({ onQuoteClick, quoteLabel, quoteTarget, read, re
       <div className="flex max-w-[80%] flex-col items-end">
         <div className="flex items-end gap-1.5 flex-row-reverse">
           <div className="flex flex-col gap-1.5 px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed bg-indigo-500 text-white">
-            {quoteTarget && (
+            {quote && (
               <QuotedMessage
-                label={quoteLabel}
-                onClick={() => onQuoteClick(quoteTarget.messageId)}
-                preview={quoteTarget.content.text}
+                label={quote.label}
+                onClick={() => onQuoteClick?.(quote.targetId)}
+                preview={quote.preview}
                 variant="onMessage"
               />
             )}
-            <span className="wrap-break-word whitespace-pre-wrap">{reply.content.text}</span>
+            <span className="wrap-break-word whitespace-pre-wrap">{message.content.text}</span>
           </div>
-          <div className="flex flex-col items-end mb-0.5 shrink-0">
-            {read ? (
-              <CheckCheck className="w-3.5 h-3.5 text-indigo-400" />
-            ) : (
-              <Check className="w-3.5 h-3.5 text-zinc-600" />
-            )}
-            <span className="text-[10px] text-zinc-400 font-medium">{formatTime(reply.createdAt, locale)}</span>
-          </div>
+          <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
+            {formatTime(message.createdAt, locale)}
+          </span>
         </div>
       </div>
     </div>

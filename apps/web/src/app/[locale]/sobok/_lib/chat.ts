@@ -1,4 +1,4 @@
-import type { ChatMessageDTO, ChatRelayMessageDTO, ChatReplyDTO, ChatTimelineMessage } from '@litomi/contracts'
+import type { ChatFeedItem } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
 
 export function dayKey(ts: number): string {
@@ -40,23 +40,13 @@ export function getChatWebSocketURL(): string {
   return `wss://${window.location.host}/ws`
 }
 
-export function toChatMessageDTO(msg: ChatRelayMessageDTO): ChatMessageDTO {
-  return {
-    messageId: msg.messageId,
-    senderId: msg.senderId,
-    contentType: msg.contentType,
-    content: msg.content,
-    createdAt: msg.createdAt,
-  }
-}
-
 export function avatarURL(name: string, imageURL: string | null | undefined): string {
   return imageURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
 }
 
 // Merges fetched items with realtime ones, deduped by id (fetched wins), sorted ascending by
-// id. Chat ids are ULIDs, so id order is chronological — this is the canonical "infinite-query
-// pages ∪ realtime stream" reconciliation used by the studio rooms.
+// id. Chat ids are ULIDs, so id order is chronological — the canonical "infinite-query pages ∪
+// realtime stream" reconciliation used by the studio rooms.
 export function mergeById<T>(fetched: T[], realtime: T[], idOf: (item: T) => string): T[] {
   const byId = new Map<string, T>()
 
@@ -73,98 +63,77 @@ export function mergeById<T>(fetched: T[], realtime: T[], idOf: (item: T) => str
   return [...byId.values()].sort((a, b) => idOf(a).localeCompare(idOf(b)))
 }
 
-export interface FanTimelineEntry {
-  message: ChatMessageDTO
-  myReplies: ChatReplyDTO[]
-  artistRead: boolean
-}
+// The fan timeline is broadcasts + the fan's replies + the artist's 1:1 answers, already merged
+// server-side into ChatFeedItem[]. Client-side we union the fetched pages with realtime and
+// optimistic items, deduped by messageId (fetched is authoritative), sorted chronologically.
+export function mergeFeedItems(
+  fetched: ChatFeedItem[],
+  realtime: ChatFeedItem[],
+  optimistic: ChatFeedItem[],
+): ChatFeedItem[] {
+  const byId = new Map<string, ChatFeedItem>()
 
-export type FanTimelineItem =
-  | {
-      id: string
-      kind: 'message'
-      message: ChatMessageDTO
-    }
-  | {
-      id: string
-      kind: 'reply'
-      reply: ChatReplyDTO
-      read: boolean
-    }
-
-export function buildFanTimeline(
-  fetched: ChatTimelineMessage[],
-  realtime: ChatMessageDTO[],
-  optimisticReplies: Record<string, ChatReplyDTO[]>,
-): FanTimelineEntry[] {
-  const byId = new Map<string, FanTimelineEntry>()
-
+  // Later sets win, so seed with the least-authoritative first.
+  for (const item of optimistic) {
+    byId.set(item.messageId, item)
+  }
+  for (const item of realtime) {
+    byId.set(item.messageId, item)
+  }
   for (const item of fetched) {
-    byId.set(item.message.messageId, {
-      message: item.message,
-      myReplies: [...(item.myReplies ?? [])],
-      artistRead: item.artistReadMyReplies ?? false,
-    })
+    byId.set(item.messageId, item)
   }
 
-  for (const message of realtime) {
-    if (!byId.has(message.messageId)) {
-      byId.set(message.messageId, { message, myReplies: [], artistRead: false })
-    }
-  }
-
-  for (const [messageId, replies] of Object.entries(optimisticReplies)) {
-    const entry = byId.get(messageId)
-
-    if (!entry) {
-      continue
-    }
-
-    const seen = new Set(entry.myReplies.map((r) => r.messageId))
-
-    for (const reply of replies) {
-      if (!seen.has(reply.messageId)) {
-        entry.myReplies.push(reply)
-      }
-    }
-  }
-
-  const entries = [...byId.values()].sort((a, b) => a.message.messageId.localeCompare(b.message.messageId))
-
-  for (const entry of entries) {
-    entry.myReplies.sort((a, b) => a.messageId.localeCompare(b.messageId))
-  }
-
-  return entries
+  return [...byId.values()].sort((a, b) => a.messageId.localeCompare(b.messageId))
 }
 
-export function flattenFanTimeline(timeline: FanTimelineEntry[]): FanTimelineItem[] {
-  const items: FanTimelineItem[] = []
-
-  for (const entry of timeline) {
-    items.push({ id: entry.message.messageId, kind: 'message', message: entry.message })
-
-    for (const reply of entry.myReplies) {
-      items.push({ id: reply.messageId, kind: 'reply', reply, read: entry.artistRead })
-    }
-  }
-
-  return items.sort((a, b) => a.id.localeCompare(b.id))
+export interface QuoteInfo {
+  // The messageId this item answers (scroll/highlight target).
+  targetId: string
+  // The answered message's text (from the loaded timeline, else the server-embedded preview).
+  preview: string
+  // The quoted message is the fan's own (→ label "me"); otherwise it's the artist's.
+  isMine: boolean
 }
 
-// Replies that ended up detached from their target message in the flat order — these
-// render with a quoted preview so the fan can tell what they replied to.
-export function getQuotedReplyIds(items: FanTimelineItem[]): Set<string> {
-  const ids = new Set<string>()
-  let lastMessageId: string | null = null
+// Which items should render a quote header, and what it points at. A reply quotes the message
+// it answers (a fan reply → its context bubble unless it explicitly quotes; an artist answer →
+// the fan message it quotes). We hide the quote when the answered message is the OTHER party's
+// most recent message before this one — i.e. skipping the sender's own consecutive messages,
+// they're effectively adjacent. It only shows when they're genuinely "far apart" (another
+// other-party message sits between them, or the answered message isn't loaded).
+export function computeQuotes(items: ChatFeedItem[]): Map<string, QuoteInfo> {
+  const byId = new Map(items.map((item) => [item.messageId, item]))
+  const quotes = new Map<string, QuoteInfo>()
+
+  // Most recent messageId seen per party as we scan forward (the fan vs. the artist).
+  let lastFanId: string | undefined
+  let lastArtistId: string | undefined
 
   for (const item of items) {
-    if (item.kind === 'message') {
-      lastMessageId = item.message.messageId
-    } else if (item.reply.targetMessageId !== lastMessageId) {
-      ids.add(item.reply.messageId)
+    const isFan = item.kind === 'fanReply'
+    // The nearest preceding message from the OTHER party (skips this sender's own run).
+    const nearestOtherId = isFan ? lastArtistId : lastFanId
+
+    if (item.kind !== 'broadcast') {
+      const answeredId = item.quotedMessageId ?? (isFan ? item.contextMessageId : undefined)
+
+      if (answeredId && nearestOtherId !== answeredId) {
+        const target = byId.get(answeredId)
+        quotes.set(item.messageId, {
+          targetId: answeredId,
+          preview: target ? target.content.text : (item.quoted?.preview ?? ''),
+          isMine: target ? target.kind === 'fanReply' : item.quoted?.senderRole === 'fan',
+        })
+      }
+    }
+
+    if (isFan) {
+      lastFanId = item.messageId
+    } else {
+      lastArtistId = item.messageId
     }
   }
 
-  return ids
+  return quotes
 }

@@ -1,45 +1,88 @@
 import type {
   ChatArtistBrief,
   ChatArtistMine,
+  ChatContentType,
+  ChatFeedItem,
   ChatMessageContent,
-  ChatMessageDTO,
   ChatMessagePreview,
-  ChatReplyDTO,
+  ChatQuotedPreview,
+  ChatReplyRoomMessage,
+  ChatSenderRole,
   ChatSubscriptionDTO,
 } from '@litomi/contracts'
 import type { ChatArtistBriefRow, ChatArtistRow } from '@litomi/db/app/query/chat'
 import type { SubscriptionState } from '@litomi/db/app/query/subscription'
-import { type ChatMessageRow, type ChatThreadRow, parseStreamId } from '@litomi/db/chat/query'
+import type { ChatBroadcastRow, ChatBroadcastSummaryRow, ChatDmMessageRow } from '@litomi/db/chat/query'
 
-export function mapMessage(row: ChatMessageRow): ChatMessageDTO {
+const QUOTE_PREVIEW_MAX = 80
+
+function textOf(content: unknown): string {
+  return (content as ChatMessageContent | null)?.text ?? ''
+}
+
+function truncate(text: string): string {
+  return text.length > QUOTE_PREVIEW_MAX ? `${text.slice(0, QUOTE_PREVIEW_MAX)}…` : text
+}
+
+// A broadcast bubble as a fan-timeline item.
+export function toBroadcastFeedItem(row: ChatBroadcastRow): ChatFeedItem {
   return {
+    kind: 'broadcast',
     messageId: row.messageId,
-    senderId: row.senderId,
-    contentType: row.contentType as ChatMessageDTO['contentType'],
+    contentType: row.contentType as ChatContentType,
     content: row.content as ChatMessageContent,
     createdAt: row.createdAt.toISOString(),
   }
 }
 
-export function mapReply(row: ChatMessageRow): ChatReplyDTO {
-  const parsed = parseStreamId(row.streamId)
+// A 1:1 message as a fan-timeline item (fanReply for the fan's own, artistReply otherwise).
+// `quoted` is the resolved preview of the answered message; the client shows it only when the
+// quoted message isn't visually adjacent.
+export function toDmFeedItem(row: ChatDmMessageRow, quoted?: ChatQuotedPreview): ChatFeedItem {
+  const base = {
+    messageId: row.messageId,
+    contextMessageId: row.contextMessageId,
+    ...(row.quotedMessageId && { quotedMessageId: row.quotedMessageId }),
+    ...(quoted && { quoted }),
+    contentType: row.contentType as ChatContentType,
+    content: row.content as ChatMessageContent,
+    createdAt: row.createdAt.toISOString(),
+  }
+
+  return row.senderRole === 'artist' ? { kind: 'artistReply', ...base } : { kind: 'fanReply', ...base }
+}
+
+export function toReplyRoomMessage(row: ChatDmMessageRow): ChatReplyRoomMessage {
   return {
     messageId: row.messageId,
-    targetMessageId: parsed?.kind === 'reply' ? parsed.messageId : '',
-    senderId: row.senderId,
-    contentType: row.contentType as ChatReplyDTO['contentType'],
+    quotedMessageId: row.quotedMessageId,
+    contentType: row.contentType as ChatContentType,
     content: row.content as ChatMessageContent,
     createdAt: row.createdAt.toISOString(),
   }
 }
 
-export function threadPreview(summary: ChatThreadRow): ChatMessagePreview {
+export function toQuotedPreview(row: ChatDmMessageRow): ChatQuotedPreview {
+  return {
+    messageId: row.messageId,
+    senderRole: row.senderRole as ChatSenderRole,
+    preview: truncate(textOf(row.content)),
+  }
+}
+
+export function broadcastSummaryPreview(summary: ChatBroadcastSummaryRow): ChatMessagePreview {
   return {
     messageId: summary.lastMessageId,
-    senderId: summary.lastSenderId,
-    contentType: summary.lastContentType as ChatMessagePreview['contentType'],
     preview: summary.lastPreview,
     createdAt: summary.lastCreatedAt.toISOString(),
+  }
+}
+
+export function dmPreview(row: ChatDmMessageRow): ChatMessagePreview {
+  return {
+    messageId: row.messageId,
+    preview: truncate(textOf(row.content)),
+    createdAt: row.createdAt.toISOString(),
   }
 }
 

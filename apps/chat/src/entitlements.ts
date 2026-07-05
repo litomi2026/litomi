@@ -1,15 +1,18 @@
 import { canAccessBroadcast, getChatArtistByUserId } from '@litomi/db/app/query/chat'
 
-// 채팅 스트림에 대한 실시간 구독(read) 권한을 처리합니다.
-//
-// 실시간 룸은 단 두 종류뿐이고, 접근 정책이 룸 id에 인코딩되어 있습니다:
-//   b:{artistId}   브로드캐스트 — 활성 구독자(결제 중) 또는 아티스트 본인만
-//   c:{artistId}   아티스트 인바운드 집계(모든 팬 답장 fan-in) — 아티스트 본인만
-//
-// 답장 저장 스트림 rb:{artistId}:{messageId}는 실시간 룸이 아닙니다 — 팬은 b:만, 아티스트는
-// c:만 구독합니다. 따라서 rb:(또는 그 외 무엇이든) 구독 시도는 전부 거부됩니다.
+// 채팅 룸에 대한 실시간 구독(read) 권한을 처리합니다. 접근 정책은 룸 id에 인코딩됩니다:
+//   b:{artistId}            브로드캐스트 — 활성 구독자(결제 중) 또는 아티스트 본인만
+//   c:{artistId}            아티스트 인바운드 집계(모든 팬 답장 fan-in) — 아티스트 본인만
+//   rr:{artistId}:{msgId}   포커스한 답장방 실시간 — 아티스트 본인만
+//   fc:{artistId}:{fanId}   팬 인바운드(아티스트의 1:1 답장) — 그 팬 본인만(구독 무관: 1:1
+//                           히스토리는 항상 열람이므로 결제 상태를 확인하지 않는다)
+// 그 외 룸 id는 전부 거부됩니다.
 
-type ParsedStream = { kind: 'broadcast'; artistId: number } | { kind: 'artistInbound'; artistId: number }
+type ParsedStream =
+  | { kind: 'broadcast'; artistId: number }
+  | { kind: 'artistInbound'; artistId: number }
+  | { kind: 'replyRoom'; artistId: number }
+  | { kind: 'fanInbound'; artistId: number; fanId: number }
 
 // 'sub' 요청 폭주나 무작위 streamId 탐색이 데이터베이스에 과부하를 주지 않도록 권한 결정 결과는 짧은 시간 동안 캐시됩니다.
 const AUTHZ_CACHE_TTL_MS = 30_000
@@ -50,13 +53,18 @@ async function resolveAccess(userId: number, streamId: string): Promise<boolean>
     return false
   }
 
-  // 인바운드 집계 채널은 오직 아티스트 본인만 구독할 수 있습니다.
-  if (parsed.kind === 'artistInbound') {
-    return ownsArtist(userId, parsed.artistId)
+  switch (parsed.kind) {
+    // 인바운드 집계·포커스 답장방은 오직 아티스트 본인만 구독할 수 있습니다.
+    case 'artistInbound':
+    case 'replyRoom':
+      return ownsArtist(userId, parsed.artistId)
+    // 팬 인바운드는 그 팬 본인만 — 결제 상태와 무관(히스토리 열람은 항상 허용).
+    case 'fanInbound':
+      return userId === parsed.fanId
+    // 브로드캐스트: 결제한 팬 또는 아티스트 본인 — 한 왕복으로 판정합니다.
+    case 'broadcast':
+      return canAccessBroadcast({ userId, artistId: parsed.artistId })
   }
-
-  // 브로드캐스트: 결제한 팬 또는 아티스트 본인 — 한 왕복으로 판정합니다.
-  return canAccessBroadcast({ userId, artistId: parsed.artistId })
 }
 
 async function ownsArtist(userId: number, artistId: number): Promise<boolean> {
@@ -66,21 +74,31 @@ async function ownsArtist(userId: number, artistId: number): Promise<boolean> {
 
 function parseStreamId(streamId: string): ParsedStream | null {
   const parts = streamId.split(':')
-  if (parts.length !== 2) {
-    return null
-  }
-
   const artistId = toId(parts[1])
+
   if (artistId === null) {
     return null
   }
 
-  if (parts[0] === 'b') {
-    return { kind: 'broadcast', artistId }
+  if (parts.length === 2) {
+    if (parts[0] === 'b') {
+      return { kind: 'broadcast', artistId }
+    }
+    if (parts[0] === 'c') {
+      return { kind: 'artistInbound', artistId }
+    }
+    return null
   }
 
-  if (parts[0] === 'c') {
-    return { kind: 'artistInbound', artistId }
+  // 3-part rooms. messageId(ULID)는 콜론을 포함하지 않으므로 split이 정확히 3조각이 된다.
+  if (parts.length === 3) {
+    if (parts[0] === 'fc') {
+      const fanId = toId(parts[2])
+      return fanId === null ? null : { kind: 'fanInbound', artistId, fanId }
+    }
+    if (parts[0] === 'rr') {
+      return parts[2] ? { kind: 'replyRoom', artistId } : null
+    }
   }
 
   return null

@@ -1,13 +1,13 @@
 'use client'
 
-import type { ChatMessageDTO } from '@litomi/contracts'
+import type { ChatFeedItem } from '@litomi/contracts'
 import { Banknote, MessageCircle, Settings, Users } from 'lucide-react'
 import ms from 'ms'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useRouter } from '@/i18n/navigation'
 import useRoomChannel from '../_hooks/useRoomChannel'
-import { avatarURL, mergeById, toChatMessageDTO } from '../_lib/chat'
+import { avatarURL, mergeById } from '../_lib/chat'
 import { formatTime } from '../_lib/format'
 import useArtistQuery from '../_query/useArtistQuery'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
@@ -17,25 +17,20 @@ import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import ComposerDock from './ComposerDock'
 
 // Rolling window of the most recent fan replies shown in the live ticker. This IS the
-// client-side sampling: under a burst the artist only ever sees the latest few, not a
-// firehose (server-side rate sampling on c:{artistId} is a scale-time follow-up).
+// client-side sampling: under a burst the artist only ever sees the latest few (server-side
+// rate sampling on c:{artistId} caps the firehose upstream too).
 const TICKER_SIZE = 6
-
-interface MessageRow {
-  message: ChatMessageDTO
-  unreadReplyCount: number
-}
 
 interface LiveReply {
   id: string
-  targetMessageId: string
+  contextMessageId: string
   nickname: string
   imageURL: string | null
   text: string
 }
 
 export default function StudioBroadcastRoom({ handle }: { handle: string }) {
-  const [realtimeMessages, setRealtimeMessages] = useState<ChatMessageDTO[]>([])
+  const [realtimeMessages, setRealtimeMessages] = useState<ChatFeedItem[]>([])
   const [liveReplies, setLiveReplies] = useState<LiveReply[]>([])
   const listRef = useRef<ChatMessageListHandle>(null)
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
@@ -48,28 +43,25 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
     refetchInterval: ms('20 seconds'),
   })
 
-  const fetchedRows: MessageRow[] = (data?.pages.flatMap((page) => page.messages) ?? []).map((item) => ({
-    message: item.message,
-    unreadReplyCount: item.unreadReplyCount ?? 0,
-  }))
-
-  const realtimeRows: MessageRow[] = realtimeMessages.map((message) => ({ message, unreadReplyCount: 0 }))
-  const messages = mergeById(fetchedRows, realtimeRows, (row) => row.message.messageId)
+  const pages = data?.pages ?? []
+  const fetchedItems = pages.flatMap((page) => page.items)
+  const messages = mergeById(fetchedItems, realtimeMessages, (item) => item.messageId)
+  const replyUnread: Record<string, number> = pages.reduce((acc, page) => Object.assign(acc, page.replyUnread), {})
   const artist = artistData?.artist
   const isOwner = artistData?.isOwner
 
   async function handleSend(text: string) {
     const { messageId } = await sendMessage({ contentType: 'text', text })
 
-    const newMessage: ChatMessageDTO = {
+    const newMessage: ChatFeedItem = {
+      kind: 'broadcast',
       messageId,
-      senderId: artist?.id ?? 0,
       contentType: 'text',
       content: { text },
       createdAt: new Date().toISOString(),
     }
 
-    setRealtimeMessages((prev) => (prev.some((b) => b.messageId === messageId) ? prev : [...prev, newMessage]))
+    setRealtimeMessages((prev) => (prev.some((m) => m.messageId === messageId) ? prev : [...prev, newMessage]))
     listRef.current?.scrollToBottom()
   }
 
@@ -80,28 +72,40 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
     }
   }, [artistData, isOwner, handle, router])
 
-  // Own broadcasts (b:) + the fan-in reply firehose (c:, owner-only).
+  // Own broadcasts (b:).
   useRoomChannel(artist && isOwner ? `b:${artist.id}` : null, {
     onMessage: (msg) => {
       if (msg.kind === 'broadcast') {
         setRealtimeMessages((prev) =>
-          prev.some((b) => b.messageId === msg.messageId) ? prev : [...prev, toChatMessageDTO(msg)],
+          prev.some((m) => m.messageId === msg.messageId)
+            ? prev
+            : [
+                ...prev,
+                {
+                  kind: 'broadcast',
+                  messageId: msg.messageId,
+                  contentType: msg.contentType,
+                  content: msg.content,
+                  createdAt: msg.createdAt,
+                },
+              ],
         )
       }
     },
   })
 
+  // The fan-in reply firehose (c:, owner-only) drives the live ticker.
   useRoomChannel(artist && isOwner ? `c:${artist.id}` : null, {
     onMessage: (msg) => {
-      if (msg.kind !== 'reply') {
+      if (msg.kind !== 'fanReply') {
         return
       }
 
       const newReply: LiveReply = {
         id: msg.messageId,
-        targetMessageId: msg.targetMessageId,
-        nickname: msg.sender?.nickname ?? t('fan'),
-        imageURL: msg.sender?.imageURL ?? null,
+        contextMessageId: msg.contextMessageId,
+        nickname: msg.fan?.nickname ?? t('fan'),
+        imageURL: msg.fan?.imageURL ?? null,
         text: msg.content.text,
       }
 
@@ -153,7 +157,7 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
               <button
                 key={reply.id}
                 type="button"
-                onClick={() => router.push(`/sobok/studio/${handle}/message/${reply.targetMessageId}`)}
+                onClick={() => router.push(`/sobok/studio/${handle}/message/${reply.contextMessageId}`)}
                 className="flex items-center gap-1.5 shrink-0 max-w-60 bg-zinc-800 rounded-full pl-1 pr-3 py-1 hover:bg-zinc-700 transition-colors"
               >
                 <img
@@ -172,37 +176,39 @@ export default function StudioBroadcastRoom({ handle }: { handle: string }) {
       {/* Message feed */}
       <ChatMessageList
         bottomInsetClassName="pb-[var(--sobok-dock-h)]"
-        dateOf={(row) => new Date(row.message.createdAt).getTime()}
+        dateOf={(item) => new Date(item.createdAt).getTime()}
         gapClassName="pb-3"
         hasOlder={hasNextPage}
         isLoadingOlder={isFetchingNextPage}
-        itemKey={(row) => row.message.messageId}
+        itemKey={(item) => item.messageId}
         items={messages}
         onLoadOlder={fetchNextPage}
         ref={listRef}
-        renderItem={(row: MessageRow) => (
-          <div className="flex justify-end w-full">
-            <div className="flex flex-col items-end gap-1 max-w-[80%]">
-              <div className="flex items-end gap-1.5 flex-row-reverse">
-                <div className="px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-indigo-500 text-white">
-                  {row.message.content.text}
+        renderItem={(item: ChatFeedItem) => {
+          const unread = replyUnread[item.messageId] ?? 0
+          return (
+            <div className="flex justify-end w-full">
+              <div className="flex flex-col items-end gap-1 max-w-[80%]">
+                <div className="flex items-end gap-1.5 flex-row-reverse">
+                  <div className="px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-indigo-500 text-white">
+                    {item.content.text}
+                  </div>
+                  <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
+                    {formatTime(item.createdAt, locale)}
+                  </span>
                 </div>
-                <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
-                  {formatTime(row.message.createdAt, locale)}
-                </span>
+                <Link
+                  href={`/sobok/studio/${handle}/message/${item.messageId}`}
+                  className="flex items-center gap-1 text-xs font-medium text-indigo-500 hover:text-indigo-600 transition-colors"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  {t('replyRoom')}
+                  {unread > 0 && ` · ${t('newReplies', { count: unread > 999 ? '999+' : unread })}`}
+                </Link>
               </div>
-              <Link
-                href={`/sobok/studio/${handle}/message/${row.message.messageId}`}
-                className="flex items-center gap-1 text-xs font-medium text-indigo-500 hover:text-indigo-600 transition-colors"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                {t('replyRoom')}
-                {row.unreadReplyCount > 0 &&
-                  ` · ${t('newReplies', { count: row.unreadReplyCount > 999 ? '999+' : row.unreadReplyCount })}`}
-              </Link>
             </div>
-          </div>
-        )}
+          )
+        }}
         scrollButtonClassName="bottom-[calc(var(--sobok-dock-h)+0.75rem)] right-4"
       />
 

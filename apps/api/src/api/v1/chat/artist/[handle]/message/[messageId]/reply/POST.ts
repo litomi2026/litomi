@@ -5,9 +5,9 @@ import {
   postV1ChatReplyBodySchema,
 } from '@litomi/contracts'
 import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
-import { buildChatMessage, getReplyGate, toMessageReplyStreamId } from '@litomi/db/chat/query'
+import { buildDmMessage, getFanReplyGate } from '@litomi/db/chat/query'
 import { REPLY_MAX_PER_MESSAGE, resolveReplyTextLimit } from '@litomi/domain/chat/policy'
-import { publishChatMessage } from '@litomi/events'
+import { publishChatDirectMessage } from '@litomi/events'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -26,8 +26,9 @@ const middlewares = factory.createHandlers(
   zProblemValidator('json', postV1ChatReplyBodySchema),
 )
 
-// A fan replies to one specific message. The artist broadcasts (they never reply into a
-// fan room), so the owner is rejected here. Requires a live subscription + a real message.
+// A fan replies to one broadcast bubble (messageId = the conversation context). The client
+// chooses that bubble — defaulting to its latest-seen — so the server never infers "latest".
+// The owner is rejected here (they answer via the reply room). Requires a live subscription.
 route.post('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle, messageId } = c.req.valid('param')
@@ -48,11 +49,7 @@ route.post('/', ...middlewares, async (c) => {
 
   // 답장 자격과 길이 한도(연속 구독 보너스)는 같은 정본(paid invoice 구간)에서 나온다 —
   // 현재 결제 구간이 없으면 자격도 없다. 길이는 코드포인트 기준으로 센다.
-  const intervals = await listPaidIntervals({
-    userId,
-    artistId: artist.id,
-  })
-
+  const intervals = await listPaidIntervals({ userId, artistId: artist.id })
   const maxTextLength = resolveReplyTextLimit(intervals, new Date())
 
   if (maxTextLength === undefined) {
@@ -67,13 +64,9 @@ route.post('/', ...middlewares, async (c) => {
     })
   }
 
-  const gate = await getReplyGate({
-    artistId: artist.id,
-    messageId,
-    senderId: userId,
-  })
+  const gate = await getFanReplyGate({ artistId: artist.id, contextMessageId: messageId, fanId: userId })
 
-  // The reply must target an existing message of this artist.
+  // The reply must target an existing broadcast bubble of this artist.
   if (!gate) {
     return problemResponse(c, { status: 404 })
   }
@@ -85,19 +78,27 @@ route.post('/', ...middlewares, async (c) => {
     })
   }
 
-  const replyStreamId = toMessageReplyStreamId(artist.id, messageId)
-
-  const message = buildChatMessage({
-    streamId: replyStreamId,
-    senderId: userId,
+  const message = buildDmMessage({
+    artistId: artist.id,
+    fanId: userId,
+    contextMessageId: messageId,
+    senderRole: 'fan',
+    quotedMessageId: body.quotedMessageId ?? null,
     contentType: body.contentType,
     content: { text: body.text },
   })
 
   try {
-    await publishChatMessage({
-      ...message,
+    await publishChatDirectMessage({
+      kind: 'dm',
       artistId: artist.id,
+      fanId: userId,
+      contextMessageId: messageId,
+      messageId: message.messageId,
+      senderRole: 'fan',
+      quotedMessageId: message.quotedMessageId,
+      contentType: message.contentType,
+      content: message.content,
       createdAt: message.createdAt.toISOString(),
     })
   } catch (error) {
