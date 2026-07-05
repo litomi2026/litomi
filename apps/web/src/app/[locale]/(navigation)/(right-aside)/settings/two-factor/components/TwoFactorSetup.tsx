@@ -2,7 +2,7 @@
 
 import { useMutation } from '@tanstack/react-query'
 import { Check, Copy, Loader2 } from 'lucide-react'
-import type { FormEvent } from 'react'
+import type { SubmitEvent } from 'react'
 import { toast } from 'sonner'
 
 import useClipboard from '@/hook/useClipboard'
@@ -27,7 +27,7 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
     },
   })
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!event.currentTarget.reportValidity()) {

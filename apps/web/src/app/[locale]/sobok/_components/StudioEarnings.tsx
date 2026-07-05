@@ -6,6 +6,7 @@ import { ChevronLeft, Loader2 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { Link } from '@/i18n/navigation'
+import { getErrorMessage } from '@/lib/error-message'
 import { formatKRW } from '../_lib/format'
 import useSavePayoutAccountMutation from '../_query/useSavePayoutAccountMutation'
 import useStudioEarningsQuery from '../_query/useStudioEarningsQuery'
@@ -119,25 +120,27 @@ type PayoutAccountSectionProps = {
 
 function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
   const [editing, setEditing] = useState(false)
-  const [bankName, setBankName] = useState('')
-  const [holderName, setHolderName] = useState('')
-  const [accountNumber, setAccountNumber] = useState('')
   const { mutate: saveAccount, isPending, error } = useSavePayoutAccountMutation()
   const t = useTranslations('Sobok.earnings')
+  const tErrors = useTranslations('Errors')
+  const errorMessage = getErrorMessage(tErrors, error)
 
-  const canSave = !isPending && bankName.trim() && accountNumber.trim() && holderName.trim()
-
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if (!canSave) {
+    if (isPending) {
       return
     }
 
-    saveAccount(
-      { bankName: bankName.trim(), accountNumber: accountNumber.trim(), holderName: holderName.trim() },
-      { onSuccess: () => setEditing(false) },
-    )
+    const formData = new FormData(e.currentTarget)
+
+    const variables = {
+      bankName: String(formData.get('bankName') ?? '').trim(),
+      accountNumber: String(formData.get('accountNumber') ?? '').trim(),
+      holderName: String(formData.get('holderName') ?? '').trim(),
+    }
+
+    saveAccount(variables, { onSuccess: () => setEditing(false) })
   }
 
   return (
@@ -179,33 +182,35 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
         <form onSubmit={handleSubmit} className="mt-2 space-y-3 rounded-xl border border-foreground/10 p-4">
           <input
             type="text"
-            value={bankName}
-            onChange={(e) => setBankName(e.target.value)}
+            name="bankName"
             placeholder={t('bankNamePlaceholder')}
+            required
             maxLength={32}
             className="w-full rounded-lg bg-zinc-800 px-3.5 py-2.5 text-sm text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
           />
           <input
             type="text"
-            value={accountNumber}
-            onChange={(e) => setAccountNumber(e.target.value)}
+            name="accountNumber"
             placeholder={t('accountNumberPlaceholder')}
+            required
+            pattern="[0-9-]{6,32}"
             maxLength={32}
+            title={t('invalidAccountNumber')}
             className="w-full rounded-lg bg-zinc-800 px-3.5 py-2.5 text-sm text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
           />
           <input
             type="text"
-            value={holderName}
-            onChange={(e) => setHolderName(e.target.value)}
+            name="holderName"
             placeholder={t('holderNamePlaceholder')}
+            required
             maxLength={32}
             className="w-full rounded-lg bg-zinc-800 px-3.5 py-2.5 text-sm text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
           />
-          {error instanceof Error && <p className="text-xs text-red-400">{error.message}</p>}
+          {errorMessage && <p className="text-xs text-red-400">{errorMessage}</p>}
           <div className="flex gap-2">
             <button
               type="submit"
-              disabled={!canSave}
+              disabled={isPending}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-500 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-50"
             >
               {isPending && <Loader2 className="h-4 w-4 animate-spin" />}

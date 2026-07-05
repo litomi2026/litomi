@@ -4,7 +4,7 @@ import { BACKUP_CODE_PATTERN } from '@litomi/domain/auth/policy'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Key, Loader2 } from 'lucide-react'
-import { type FormEvent, useState } from 'react'
+import { type SubmitEvent, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { disableTwoFactor, regenerateTwoFactorBackupCodes } from '../api'
@@ -195,7 +195,7 @@ function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCode
     onSuccess: ({ backupCodes }) => onSuccess(backupCodes),
   })
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!event.currentTarget.reportValidity()) {

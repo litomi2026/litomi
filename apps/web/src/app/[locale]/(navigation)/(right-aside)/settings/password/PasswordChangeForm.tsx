@@ -100,7 +100,7 @@ export default function PasswordChangeForm({ isTwoFactorEnabled }: Props) {
     setShowConfirmPassword(false)
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     const formElement = e.currentTarget
