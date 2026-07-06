@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { bigint, index, pgEnum, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { bigint, index, pgEnum, pgTable, text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 import { createdAt, timestamps } from '../../columns'
 import { invoiceTable } from './invoice'
 import { userTable } from './user'
@@ -72,7 +72,7 @@ export const webhookEventTable = pgTable(
     // Standard Webhooks `webhook-id`: stable across retries of the same delivery.
     eventId: varchar('event_id', { length: 128 }).notNull(),
     type: varchar({ length: 64 }).notNull(),
-    payload: varchar({ length: 4096 }),
+    payload: text().notNull(),
     createdAt,
   },
   (table) => [uniqueIndex('uq_webhook_event_provider_event').on(table.provider, table.eventId)],

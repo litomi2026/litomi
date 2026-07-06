@@ -23,6 +23,8 @@ export const messages = {
       fanRoom: {
         replyTo: '{name}에게 답장',
         you: '나',
+        read: '읽음',
+        sent: '전송됨',
         repliesExhausted: '이 메시지에는 답장을 모두 보냈어요 ({count}회)',
         composerPlaceholder: '메시지를 입력하세요...',
         expiredNotice: '구독이 만료되어 답장을 보낼 수 없어요.',
@@ -181,6 +183,8 @@ export const messages = {
       fanRoom: {
         replyTo: 'Reply to {name}',
         you: 'You',
+        read: 'Read',
+        sent: 'Sent',
         repliesExhausted: 'You have used all replies to this message ({count})',
         composerPlaceholder: 'Type a message...',
         expiredNotice: 'Your subscription has expired, so you can no longer reply.',
@@ -342,6 +346,8 @@ export const messages = {
       fanRoom: {
         replyTo: '{name}に返信',
         you: '自分',
+        read: '既読',
+        sent: '送信済み',
         repliesExhausted: 'このメッセージへの返信をすべて送りました（{count}回）',
         composerPlaceholder: 'メッセージを入力...',
         expiredNotice: 'サブスクの期限が切れているため、返信を送れません。',
@@ -502,6 +508,8 @@ export const messages = {
       fanRoom: {
         replyTo: '回复 {name}',
         you: '我',
+        read: '已读',
+        sent: '已发送',
         repliesExhausted: '你已用完对这条消息的全部回复（{count}次）',
         composerPlaceholder: '输入消息...',
         expiredNotice: '订阅已到期，无法发送回复。',

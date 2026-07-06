@@ -5,6 +5,7 @@ import { ChevronLeft, Reply, X } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { Link, useRouter } from '@/i18n/navigation'
+import useReadWatermark from '../_hooks/useReadWatermark'
 import useRoomChannel from '../_hooks/useRoomChannel'
 import { avatarURL } from '../_lib/chat'
 import { formatTime } from '../_lib/format'
@@ -42,19 +43,6 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
   const entries = mergeEntries(fetchedEntries, liveEntries, optimisticAnswers)
   const newestReplyId = entries.at(-1)?.reply.messageId
 
-  useEffect(() => {
-    if (artistData && !isOwner) {
-      router.replace(`/sobok/@${handle}`)
-    }
-  }, [artistData, isOwner, handle, router])
-
-  // Mark the room read up to the newest fan reply → clears the studio's unread badge.
-  useEffect(() => {
-    if (newestReplyId) {
-      markMessageRead({ lastReadMessageId: newestReplyId })
-    }
-  }, [newestReplyId, markMessageRead])
-
   async function sendAnswer(text: string) {
     if (!answerTarget) {
       return
@@ -81,6 +69,12 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
     setAnswerTarget(null)
   }
 
+  useEffect(() => {
+    if (artistData && !isOwner) {
+      router.replace(`/sobok/@${handle}`)
+    }
+  }, [artistData, isOwner, handle, router])
+
   // Focused reply room (rr:, un-sampled): live fan replies to THIS message.
   useRoomChannel(artist && isOwner ? `rr:${artist.id}:${messageId}` : null, {
     onMessage: (msg) => {
@@ -104,6 +98,10 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
       setLiveEntries((prev) => (prev.some((e) => e.reply.messageId === msg.messageId) ? prev : [...prev, entry]))
     },
   })
+
+  // Mark the room read up to the newest fan reply → clears the studio's unread badge and
+  // surfaces as the fan's "읽음" receipt. Gated on tab visibility + throttled by the hook.
+  useReadWatermark(newestReplyId, (lastReadMessageId) => markMessageRead({ lastReadMessageId }))
 
   if (isArtistLoading || !artist || !isOwner) {
     return (

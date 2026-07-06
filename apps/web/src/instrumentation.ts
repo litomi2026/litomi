@@ -9,8 +9,15 @@ export async function register() {
     // that env can't supply here are added in code.
     registerOTel({
       attributes: {
+        'k8s.namespace.name': process.env.K8S_NAMESPACE_NAME,
         'k8s.node.name': process.env.K8S_NODE_NAME,
+        'k8s.pod.name': process.env.K8S_POD_NAME,
         'service.version': process.env.NEXT_PUBLIC_COMMIT_SHA,
+      },
+      instrumentationConfig: {
+        fetch: {
+          ignoreUrls: [/sentry\.io/, /grafana\.net/],
+        },
       },
     })
 

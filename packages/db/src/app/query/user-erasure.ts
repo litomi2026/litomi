@@ -4,15 +4,11 @@ import { userErasureTable } from '../schema/user'
 
 export interface UserErasureRow {
   userId: number
-  chatArtistId: number | null
 }
 
 export async function listUserErasures(limit: number): Promise<UserErasureRow[]> {
   return db
-    .select({
-      userId: userErasureTable.userId,
-      chatArtistId: userErasureTable.chatArtistId,
-    })
+    .select({ userId: userErasureTable.userId })
     .from(userErasureTable)
     .orderBy(userErasureTable.createdAt)
     .limit(limit)

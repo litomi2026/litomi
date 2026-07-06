@@ -54,6 +54,9 @@ export const subscriptionTable = pgTable(
     status: subscriptionStatusEnum().notNull().default('incomplete'),
     autoRenew: boolean('auto_renew').notNull().default(true),
     expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
+    // 자동갱신이 꺼진(취소 요청·환불·아티스트 이탈) 시각 — 자발/비자발 churn 분석의 유일한
+    // 비파생 신호(autoRenew는 이력이 없다). 재개(autoRenew=true) 시 null로 되돌린다.
+    canceledAt: timestamp('canceled_at', { precision: 3, withTimezone: true }),
     ...timestamps,
   },
   (table) => [

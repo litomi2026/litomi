@@ -38,7 +38,10 @@ export async function getSubscription(key: SubscriptionKey): Promise<Subscriptio
 export async function setAutoRenew(key: SubscriptionKey, autoRenew: boolean): Promise<SubscriptionState | undefined> {
   const [row] = await db
     .update(subscriptionTable)
-    .set({ autoRenew })
+    .set({
+      autoRenew,
+      canceledAt: autoRenew ? null : new Date(),
+    })
     .where(subscriptionKeyCondition(key))
     .returning(subscriptionStateColumns)
 
@@ -51,6 +54,19 @@ function subscriptionKeyCondition(key: SubscriptionKey) {
     eq(subscriptionTable.targetType, key.targetType),
     eq(subscriptionTable.targetId, key.targetId),
   )
+}
+
+// 열람권 프로젝션의 유일한 정의 — subscription.expiresAt는 invoice 원장 위의 파생 뷰다.
+// 구독은 "가장 최근 paid invoice의 periodEnd까지" 열람권을 가진다. invoice의 paid 상태를
+// 바꾸는 모든 경로는 expiresAt를 이 식으로만 세팅해, 정본(원장)과 워터마크(파생)가 어긋날 수
+// 없게 한다. paid invoice가 하나도 없으면(전액 환불 등) now()로 바닥을 깔아 즉시 만료로 수렴한다.
+export function paidThroughExpiry(subscriptionId: number) {
+  return sql`coalesce((
+    select max(${invoiceTable.periodEnd})
+    from ${invoiceTable}
+    where ${invoiceTable.subscriptionId} = ${subscriptionId}
+      and ${invoiceTable.status} = 'paid'
+  ), now())`
 }
 
 export interface ConfirmPaymentInput {
@@ -90,16 +106,14 @@ export async function confirmPayment(paymentId: string, data: ConfirmPaymentInpu
         paidAt,
       })
       .where(and(eq(invoiceTable.id, paid.invoiceId), inArray(invoiceTable.status, ['open', 'void'])))
-      .returning({
-        subscriptionId: invoiceTable.subscriptionId,
-        periodEnd: invoiceTable.periodEnd,
-      })
+      .returning({ subscriptionId: invoiceTable.subscriptionId })
 
     if (invoice && invoice.subscriptionId !== null) {
       const set: Record<string, unknown> = {
         status: 'active',
         autoRenew: true,
-        expiresAt: sql`greatest(${subscriptionTable.expiresAt}, ${invoice.periodEnd.toISOString()}::timestamptz)`,
+        canceledAt: null,
+        expiresAt: paidThroughExpiry(invoice.subscriptionId),
       }
 
       if (paymentMethodId !== null) {
@@ -146,10 +160,11 @@ export async function ensureSubscription(input: EnsureSubscriptionInput): Promis
       target: [subscriptionTable.userId, subscriptionTable.targetType, subscriptionTable.targetId],
       set: {
         autoRenew: true,
-        ...(input.paymentMethodId !== null && { paymentMethodId: input.paymentMethodId }),
+        canceledAt: null,
+        updatedAt: input.now,
         priceAmount: input.priceAmount,
         priceCurrency: input.priceCurrency,
-        updatedAt: input.now,
+        ...(input.paymentMethodId !== null && { paymentMethodId: input.paymentMethodId }),
       },
     })
     .returning({ id: subscriptionTable.id, expiresAt: subscriptionTable.expiresAt })

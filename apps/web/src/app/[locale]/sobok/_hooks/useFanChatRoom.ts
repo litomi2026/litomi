@@ -9,6 +9,7 @@ import { computeQuotes, mergeFeedItems } from '../_lib/chat'
 import useChatMessageQuery from '../_query/useChatMessageQuery'
 import useMarkReadMutation from '../_query/useMarkReadMutation'
 import useSendReplyMutation from '../_query/useSendReplyMutation'
+import useReadWatermark from './useReadWatermark'
 import useRoomChannel from './useRoomChannel'
 
 interface UseFanChatRoomInput {
@@ -41,7 +42,18 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
   const quotes = computeQuotes(items)
   const itemById = new Map(items.map((item) => [item.messageId, item]))
   const latestBroadcastId = findLastBroadcastId(items)
-  const latestMessageId = items.at(-1)?.messageId ?? null
+  const latestMessageId = items.at(-1)?.messageId
+  const replyReadCursor = mergeReplyReadCursors(data?.pages.map((page) => page.replyReadCursor) ?? [])
+
+  // Room-level receipt: 아티스트의 답장방 워터마크가 내 답장 위치를 지났으면 읽힌 것.
+  function isReadByArtist(item: ChatFeedItem): boolean {
+    if (item.kind !== 'fanReply') {
+      return false
+    }
+
+    const watermark = replyReadCursor.get(item.contextMessageId)
+    return Boolean(watermark && item.messageId <= watermark)
+  }
 
   // How many replies the fan has already sent to a bubble in the loaded feed (UI hint; the
   // server enforces the real per-message cap).
@@ -86,6 +98,15 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
     )
   }
 
+  // Messages relayed while the socket was down never replay — refetch on reconnect to close the
+  // gap. connectionId increments per successful open, so >1 means a reconnect.
+  useEffect(() => {
+    if (connectionId > prevConnectionIdRef.current && prevConnectionIdRef.current > 0) {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.chatMessages(handle) })
+    }
+    prevConnectionIdRef.current = connectionId
+  }, [connectionId, handle, queryClient])
+
   useRoomChannel(entitled ? `b:${artistId}` : null, {
     // New broadcasts; the fan never receives other fans' replies here.
     onMessage: (msg) => {
@@ -113,7 +134,7 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
           kind: 'artistReply',
           messageId: msg.messageId,
           contextMessageId: msg.contextMessageId,
-          quotedMessageId: msg.quotedMessageId ?? undefined,
+          quotedMessageId: msg.quotedMessageId,
           contentType: msg.contentType,
           content: msg.content,
           createdAt: msg.createdAt,
@@ -122,25 +143,13 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
     },
   })
 
-  useEffect(() => {
-    if (latestMessageId) {
-      markRead({ lastReadMessageId: latestMessageId })
-    }
-  }, [latestMessageId, markRead])
-
-  // Messages relayed while the socket was down never replay — refetch on reconnect to close the
-  // gap. connectionId increments per successful open, so >1 means a reconnect.
-  useEffect(() => {
-    if (connectionId > prevConnectionIdRef.current && prevConnectionIdRef.current > 0) {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.chatMessages(handle) })
-    }
-    prevConnectionIdRef.current = connectionId
-  }, [connectionId, handle, queryClient])
+  useReadWatermark(latestMessageId, (lastReadMessageId) => markRead({ lastReadMessageId }))
 
   return {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isReadByArtist,
     isSending,
     itemById,
     items,
@@ -151,11 +160,30 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
   }
 }
 
-function findLastBroadcastId(items: ChatFeedItem[]): string | null {
+function findLastBroadcastId(items: ChatFeedItem[]): string | undefined {
   for (let i = items.length - 1; i >= 0; i--) {
     if (items[i].kind === 'broadcast') {
       return items[i].messageId
     }
   }
-  return null
+
+  return undefined
+}
+
+// 페이지별 사이드카를 방(contextMessageId) 단위로 합친다. 페이지마다 조회 시점이 달라
+// 워터마크가 어긋날 수 있으므로 항상 더 나중 값(GREATEST)을 취한다.
+function mergeReplyReadCursors(pages: (Record<string, string> | undefined)[]): Map<string, string> {
+  const merged = new Map<string, string>()
+
+  for (const page of pages) {
+    for (const [contextMessageId, watermark] of Object.entries(page ?? {})) {
+      const existing = merged.get(contextMessageId)
+
+      if (!existing || watermark > existing) {
+        merged.set(contextMessageId, watermark)
+      }
+    }
+  }
+
+  return merged
 }

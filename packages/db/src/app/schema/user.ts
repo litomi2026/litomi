@@ -45,10 +45,6 @@ export const userSettingsTable = pgTable('user_settings', {
 // FK를 걸면 유저 삭제와 함께 cascade로 사라지므로 의도적으로 참조하지 않습니다.
 export const userErasureTable = pgTable('user_erasure', {
   userId: bigint('user_id', { mode: 'number' }).primaryKey(),
-  // 탈퇴자가 아티스트였다면 본인 브로드캐스트 스트림(b:{id})은 파기에서 제외합니다 —
-  // 구독자에게 판매된 메시지는 탈퇴 후에도 열람 제공되는 정책. FK set-null로 매핑이
-  // 사라지기 전에 id를 스냅샷해 둡니다.
-  chatArtistId: bigint('chat_artist_id', { mode: 'number' }),
   createdAt,
 }).enableRLS()
 

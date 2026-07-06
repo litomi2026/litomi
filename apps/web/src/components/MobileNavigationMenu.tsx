@@ -8,6 +8,7 @@ import {
   Flame,
   HeartHandshake,
   History,
+  MessageCircleHeart,
   PiggyBank,
   ScanEye,
   Settings,
@@ -178,6 +179,13 @@ export default function MobileNavigationMenu({ onClose }: Props) {
             onClose={onClose}
             pathname={pathname}
             title={t('fortune')}
+          />
+          <MobileMenuLink
+            href="/sobok"
+            icon={<MessageCircleHeart />}
+            onClose={onClose}
+            pathname={pathname}
+            title={t('sobok')}
           />
           <MobileMenuLink
             href="/settings"

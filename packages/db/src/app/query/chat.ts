@@ -220,7 +220,10 @@ export async function stopChatSubscriptionRenewal(
 ): Promise<SubscriptionState | undefined> {
   const [row] = await db
     .update(subscriptionTable)
-    .set({ autoRenew: false })
+    .set({
+      autoRenew: false,
+      canceledAt: new Date(),
+    })
     .where(
       and(
         eq(subscriptionTable.userId, userId),

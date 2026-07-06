@@ -95,7 +95,7 @@ export type ChatRelayMessageDTO =
       messageId: string
       contextMessageId: string
       fanId: number
-      quotedMessageId: string | null
+      quotedMessageId?: string
       contentType: ChatContentType
       content: ChatMessageContent
       createdAt: string
@@ -105,7 +105,7 @@ export type ChatRelayMessageDTO =
       kind: 'artistReply'
       messageId: string
       contextMessageId: string
-      quotedMessageId: string | null
+      quotedMessageId?: string
       contentType: ChatContentType
       content: ChatMessageContent
       createdAt: string
@@ -181,6 +181,10 @@ export interface GETV1ChatMessagesResponse {
   // Owner-only sidecar: messageId → new (unread) fan-reply count for that broadcast's reply
   // room, so the studio can badge each bubble. Absent/empty in the fan view.
   replyUnread?: Record<string, number>
+  // Fan-only sidecar: contextMessageId → the artist's reply-room read watermark (a messageId).
+  // A fan reply is read when its messageId <= the watermark — room-level receipt, the artist
+  // marks the whole room, never individual messages. Rooms without a cursor are absent.
+  replyReadCursor?: Record<string, string>
   // Pass back as `before` to load the previous page; absent when the stream start is reached.
   nextCursor?: string
 }
@@ -415,7 +419,7 @@ export const getV1ChatRepliesQuerySchema = z.object({
 
 export interface ChatReplyRoomMessage {
   messageId: string
-  quotedMessageId: string | null
+  quotedMessageId?: string
   contentType: ChatContentType
   content: ChatMessageContent
   createdAt: string

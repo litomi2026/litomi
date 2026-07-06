@@ -5,6 +5,7 @@ import {
   type ChatDmMessageRow,
   countReplyRoomUnread,
   getDmMessagesByIds,
+  getReplyRoomWatermarks,
   listBroadcast,
   listFanTimeline,
   messageIdAtOrAfter,
@@ -80,7 +81,8 @@ route.get('/', ...middlewares, async (c) => {
         }))
       : undefined
 
-  const fanTimeline = await buildFanTimeline(artist.id, userId, { before, after, limit, windows })
+  const fanTimeline = await buildFanTimeline(artist, userId, { before, after, limit, windows })
+
   return c.json(fanTimeline, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
@@ -101,10 +103,12 @@ interface TaggedRow {
 // a source may still hold newer-than-cursor rows we didn't fetch, so we page there next round.
 // This guarantees the merge never skips an item. (Duplicates across pages dedupe by id client-side.)
 async function buildFanTimeline(
-  artistId: number,
+  // artist.userId null = 탈퇴한 아티스트 tombstone — 읽음 커서도 파기되었으므로 receipt 없음.
+  artist: { id: number; userId: number | null },
   fanId: number,
   { before, after, limit, windows }: PageOptions & { windows?: TimelineWindow[] },
 ): Promise<GETV1ChatMessagesResponse> {
+  const artistId = artist.id
   const isForward = Boolean(after) && !before
 
   const [broadcasts, dmRows] = await Promise.all([
@@ -112,7 +116,7 @@ async function buildFanTimeline(
     listFanTimeline({ artistId, fanId, before, after, limit }),
   ])
 
-  let threshold: string | null = null
+  let threshold: string | undefined
 
   if (!isForward) {
     const lasts: string[] = []
@@ -125,7 +129,7 @@ async function buildFanTimeline(
       lasts.push(dmRows[dmRows.length - 1].messageId)
     }
 
-    threshold = lasts.length ? lasts.reduce((a, b) => (a > b ? a : b)) : null
+    threshold = lasts.length ? lasts.reduce((a, b) => (a > b ? a : b)) : undefined
   }
 
   let tagged: TaggedRow[] = [
@@ -142,7 +146,19 @@ async function buildFanTimeline(
   // Resolve quoted-message previews in one batch (both quote targets live in this (artist,fan)
   // conversation). The client decides whether to actually render the quote (only if not adjacent).
   const quotedIds = [...new Set(tagged.filter((row) => row.dm?.quotedMessageId).map((row) => row.dm!.quotedMessageId!))]
-  const quotedRows = await getDmMessagesByIds(artistId, fanId, quotedIds)
+
+  // Room-level receipt: the artist's reply-room watermark for each room this page's fan replies
+  // belong to, so the fan can render "읽음" on replies at or below the watermark.
+  const fanReplyContextIds = [
+    ...new Set(tagged.filter((row) => row.dm?.senderRole === 'fan').map((row) => row.dm!.contextMessageId)),
+  ]
+
+  const [quotedRows, watermarks] = await Promise.all([
+    getDmMessagesByIds(artistId, fanId, quotedIds),
+    artist.userId === null
+      ? new Map<string, string>()
+      : getReplyRoomWatermarks({ artistUserId: artist.userId, artistId, contextMessageIds: fanReplyContextIds }),
+  ])
 
   const items = tagged.map((row) => {
     if (row.broadcast) {
@@ -155,7 +171,8 @@ async function buildFanTimeline(
 
   return {
     items,
-    nextCursor: threshold ?? undefined,
+    nextCursor: threshold,
+    ...(watermarks.size > 0 && { replyReadCursor: Object.fromEntries(watermarks) }),
   }
 }
 

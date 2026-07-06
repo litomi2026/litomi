@@ -89,7 +89,7 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
           <input
             type="text"
             name="emoji"
-            defaultValue={initial?.emoji ?? undefined}
+            defaultValue={initial?.emoji ?? ''}
             placeholder="✨"
             maxLength={16}
             className="mt-1.5 w-full rounded-xl bg-zinc-800 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
@@ -116,7 +116,7 @@ export default function ArtistProfileForm({ initial, onSubmit, isPending, error,
         <span className="text-sm font-medium text-foreground">{t('bioLabel')}</span>
         <textarea
           name="description"
-          defaultValue={initial?.description ?? undefined}
+          defaultValue={initial?.description ?? ''}
           placeholder={t('bioPlaceholder')}
           maxLength={500}
           rows={3}

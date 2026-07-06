@@ -23,7 +23,7 @@ export async function recordWebhookEvent(input: RecordWebhookEventInput): Promis
     .values({
       eventId: input.eventId,
       type: input.type.slice(0, 64),
-      payload: input.payload.slice(0, 4096),
+      payload: input.payload,
     })
     .onConflictDoNothing({ target: [webhookEventTable.provider, webhookEventTable.eventId] })
 }

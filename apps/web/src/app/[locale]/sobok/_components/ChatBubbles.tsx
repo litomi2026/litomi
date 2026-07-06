@@ -1,4 +1,5 @@
-import { useLocale } from 'next-intl'
+import { Check, CheckCheck } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import { formatTime } from '../_lib/format'
 
 interface QuotedMessageProps {
@@ -97,15 +98,19 @@ export function ArtistBubble({
   )
 }
 
-// The fan's own reply on the right.
+// The fan's own reply on the right, with a Telegram-style two-state receipt above the time:
+// single gray check = sent (persisted), double indigo check = the artist's reply-room watermark
+// has passed this message (room-level receipt). No delivered state — there is no per-device ack.
 interface FanReplyBubbleProps {
+  isRead: boolean
   message: BubbleMessage
   onQuoteClick?: (messageId: string) => void
   quote?: BubbleQuote
 }
 
-export function FanReplyBubble({ message, onQuoteClick, quote }: FanReplyBubbleProps) {
+export function FanReplyBubble({ isRead, message, onQuoteClick, quote }: FanReplyBubbleProps) {
   const locale = useLocale()
+  const t = useTranslations('Sobok.fanRoom')
 
   return (
     <div className="flex justify-end w-full">
@@ -122,9 +127,14 @@ export function FanReplyBubble({ message, onQuoteClick, quote }: FanReplyBubbleP
             )}
             <span className="wrap-break-word whitespace-pre-wrap">{message.content.text}</span>
           </div>
-          <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
-            {formatTime(message.createdAt, locale)}
-          </span>
+          <div className="flex flex-col items-end mb-0.5 shrink-0">
+            {isRead ? (
+              <CheckCheck aria-label={t('read')} className="w-3.5 h-3.5 text-indigo-400" role="img" />
+            ) : (
+              <Check aria-label={t('sent')} className="w-3.5 h-3.5 text-zinc-600" role="img" />
+            )}
+            <span className="text-[10px] text-zinc-400 font-medium">{formatTime(message.createdAt, locale)}</span>
+          </div>
         </div>
       </div>
     </div>

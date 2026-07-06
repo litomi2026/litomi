@@ -3,7 +3,7 @@ import { db } from '../db'
 import { invoiceTable } from '../schema/invoice'
 import { paymentRefundTable, paymentTable } from '../schema/payment'
 import { subscriptionTable } from '../schema/subscription'
-import { type SubscriptionState, subscriptionStateColumns } from './subscription'
+import { paidThroughExpiry, type SubscriptionState, subscriptionStateColumns } from './subscription'
 
 export interface RefundCandidate {
   paymentId: string
@@ -125,15 +125,16 @@ export async function applyPaymentRefunds(
       return undefined
     }
 
-    // 남은 paid 기간으로 만료를 재계산 — 전부 사라졌으면 즉시 canceled.
-    const remainingEnd = sql`(select max(${invoiceTable.periodEnd}) from ${invoiceTable} where ${invoiceTable.subscriptionId} = ${invoice.subscriptionId} and ${invoiceTable.status} = 'paid')`
+    // 만료는 invoice 원장에서 파생 — 남은 paid 기간이 없으면(전액 환불) 즉시 canceled로 수렴.
+    const expiry = paidThroughExpiry(invoice.subscriptionId)
 
     const [subscription] = await tx
       .update(subscriptionTable)
       .set({
         autoRenew: false,
-        expiresAt: sql`coalesce(${remainingEnd}, now())`,
-        status: sql`case when coalesce(${remainingEnd}, now()) <= now() then 'canceled' else ${subscriptionTable.status} end`,
+        canceledAt: new Date(),
+        expiresAt: expiry,
+        status: sql`case when ${expiry} <= now() then 'canceled' else ${subscriptionTable.status} end`,
       })
       .where(eq(subscriptionTable.id, invoice.subscriptionId))
       .returning(subscriptionStateColumns)
