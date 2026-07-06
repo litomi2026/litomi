@@ -74,6 +74,7 @@ export function ArtistBubble({
         <div className="flex items-end gap-1.5">
           <button
             type="button"
+            aria-pressed={isTarget}
             onClick={onSelect}
             className={`flex flex-col gap-1.5 text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border transition-all ${
               isTarget ? 'border-indigo-400' : 'border-foreground/10'

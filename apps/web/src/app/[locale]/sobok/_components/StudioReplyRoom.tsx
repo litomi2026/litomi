@@ -1,7 +1,7 @@
 'use client'
 
 import type { ChatReplyRoomEntry, ChatReplyRoomMessage } from '@litomi/contracts'
-import { ChevronLeft, Reply, X } from 'lucide-react'
+import { ChevronLeft, X } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { Link, useRouter } from '@/i18n/navigation'
@@ -148,32 +148,33 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
                   <div className="flex flex-col items-start">
                     <span className="text-xs text-zinc-400 mb-1 ml-1 font-medium tracking-tight">{fanName}</span>
                     <div className="flex items-end gap-1.5">
-                      <div
-                        className={`px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border transition-colors ${
+                      {/* Tap to pick this reply as the answer target (toggles) — same grammar as
+                          the fan room's tappable bubbles. */}
+                      <button
+                        type="button"
+                        aria-pressed={isTarget}
+                        onClick={() =>
+                          setAnswerTarget((prev) =>
+                            prev?.replyMessageId === entry.reply.messageId
+                              ? null
+                              : {
+                                  fanId: entry.fanId,
+                                  replyMessageId: entry.reply.messageId,
+                                  fanName,
+                                  preview: entry.reply.content.text,
+                                },
+                          )
+                        }
+                        className={`text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border transition-colors ${
                           isTarget ? 'border-indigo-400' : 'border-foreground/10'
                         }`}
                       >
                         {entry.reply.content.text}
-                      </div>
+                      </button>
                       <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
                         {formatTime(entry.reply.createdAt, locale)}
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setAnswerTarget({
-                          fanId: entry.fanId,
-                          replyMessageId: entry.reply.messageId,
-                          fanName,
-                          preview: entry.reply.content.text,
-                        })
-                      }
-                      className="mt-1 ml-1 flex items-center gap-1 text-xs font-medium text-indigo-500 hover:text-indigo-400 transition-colors"
-                    >
-                      <Reply className="w-3.5 h-3.5" />
-                      {t('reply')}
-                    </button>
                   </div>
                 </div>
               </div>
