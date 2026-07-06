@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gt, gte, inArray, lt, or, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, gt, gte, inArray, lt, max, or } from 'drizzle-orm'
 import { encodeTime, ulid } from 'ulid'
 
 import { chatDB } from '../db'
@@ -65,7 +65,8 @@ export async function putDmMessage(row: ChatDmMessageRow): Promise<void> {
 }
 
 export interface FanReplyGate {
-  ownReplyCount: number
+  // 아티스트의 마지막 메시지(전체 방송 ∪ 이 팬에게 온 1:1 답장 중 더 최신) 이후 이 팬이 보낸 답장 수.
+  repliesSinceLastArtistMessage: number
 }
 
 export interface FanReplyGateKey {
@@ -74,29 +75,59 @@ export interface FanReplyGateKey {
   fanId: number
 }
 
-// Reply gate — anchors on the target broadcast bubble (chat_broadcast PK point-lookup) and,
-// in the same round-trip, reads how many replies THIS fan already sent to it (reply-room
-// index seek). The count is self-contained (no correlation to the anchor row), so the
-// subquery keeps its qualifiers. Returns undefined when the target bubble doesn't exist.
+// Reply gate — 쿼터의 기준점은 "아티스트의 마지막 메시지"(아티스트가 새 메시지를 보내면 쿼터가
+// 다시 채워진다). 1차 왕복: 대상 말풍선 존재(anchor) + 마지막 방송 id + 이 팬에게 온 마지막 1:1
+// 답장 id를 병렬 조회, 2차: 그 기준점 이후 팬 답장 수를 PK 꼬리 스캔으로 센다(쿼터가 3이라 꼬리는
+// 항상 몇 행 이내). 대상 말풍선이 없으면 undefined.
 export async function getFanReplyGate({
   artistId,
   contextMessageId,
   fanId,
 }: FanReplyGateKey): Promise<FanReplyGate | undefined> {
-  const ownReplyCount = sql<number>`(
-    select count(*) from ${chatDmMessageTable}
-    where ${chatDmMessageTable.artistId} = ${artistId}
-      and ${chatDmMessageTable.contextMessageId} = ${contextMessageId}
-      and ${chatDmMessageTable.fanId} = ${fanId}
-      and ${chatDmMessageTable.senderRole} = 'fan'
-  )`.mapWith(Number)
+  const [anchorRows, lastBroadcastRows, lastAnswerRows] = await Promise.all([
+    chatDB
+      .select({ messageId: chatBroadcastTable.messageId })
+      .from(chatBroadcastTable)
+      .where(and(eq(chatBroadcastTable.artistId, artistId), eq(chatBroadcastTable.messageId, contextMessageId)))
+      .limit(1),
+    chatDB
+      .select({ messageId: max(chatBroadcastTable.messageId) })
+      .from(chatBroadcastTable)
+      .where(eq(chatBroadcastTable.artistId, artistId)),
+    chatDB
+      .select({ messageId: max(chatDmMessageTable.messageId) })
+      .from(chatDmMessageTable)
+      .where(
+        and(
+          eq(chatDmMessageTable.artistId, artistId),
+          eq(chatDmMessageTable.fanId, fanId),
+          eq(chatDmMessageTable.senderRole, 'artist'),
+        ),
+      ),
+  ])
+
+  if (anchorRows.length === 0) {
+    return undefined
+  }
+
+  // anchor가 존재하므로 방송 max는 항상 있다 — ULID는 사전순 = 시간순이라 문자열 비교로 충분.
+  const lastBroadcastId = lastBroadcastRows[0]?.messageId ?? ''
+  const lastAnswerId = lastAnswerRows[0]?.messageId ?? ''
+  const lastArtistMessageId = lastBroadcastId > lastAnswerId ? lastBroadcastId : lastAnswerId
 
   const [row] = await chatDB
-    .select({ ownReplyCount })
-    .from(chatBroadcastTable)
-    .where(and(eq(chatBroadcastTable.artistId, artistId), eq(chatBroadcastTable.messageId, contextMessageId)))
+    .select({ replies: count() })
+    .from(chatDmMessageTable)
+    .where(
+      and(
+        eq(chatDmMessageTable.artistId, artistId),
+        eq(chatDmMessageTable.fanId, fanId),
+        eq(chatDmMessageTable.senderRole, 'fan'),
+        gt(chatDmMessageTable.messageId, lastArtistMessageId),
+      ),
+    )
 
-  return row
+  return { repliesSinceLastArtistMessage: Number(row?.replies ?? 0) }
 }
 
 // --- Reads --------------------------------------------------------------------
@@ -201,9 +232,10 @@ export interface ListReplyRoomOptions {
   limit?: number
 }
 
-// 말풍선 M의 답장방 최상위 목록: 그 M에 온 팬 답장들만(senderRole='fan') 최신순으로 읽는다
-// (아티스트만). reply-room 인덱스 (artistId, contextMessageId, ...) 범위 스캔. keyset은 messageId.
-export async function listFanRepliesToMessage(
+// 말풍선 M의 답장방 타임라인: 그 방의 모든 1:1 메시지(모든 팬의 답장 ∪ 아티스트의 답장)를
+// 하나의 시간순 스트림으로 최신순 읽는다(아티스트만). reply-room 인덱스
+// (artistId, contextMessageId, messageId) 역스캔. keyset은 messageId.
+export async function listReplyRoomTimeline(
   artistId: number,
   contextMessageId: string,
   options: ListReplyRoomOptions = {},
@@ -211,7 +243,6 @@ export async function listFanRepliesToMessage(
   const conditions = [
     eq(chatDmMessageTable.artistId, artistId),
     eq(chatDmMessageTable.contextMessageId, contextMessageId),
-    eq(chatDmMessageTable.senderRole, 'fan'),
   ]
 
   if (options.before) {
@@ -226,29 +257,29 @@ export async function listFanRepliesToMessage(
     .limit(clampPageSize(options.limit))
 }
 
-// 주어진 팬 답장들(quotedMessageId 대상)에 아티스트가 단 1:1 답장들 — 답장방에서 각 팬 답장
-// 아래에 스레드로 붙이기 위함. (artistId, contextMessageId) 파티션 내 스캔.
-export async function listArtistAnswers(
+// 같은 답장방 파티션에서 인용 대상 원문 일괄 조회 — 인용 프리뷰용. 인용 관계는 항상 같은
+// (artistId, contextMessageId) 안에 있다(아티스트 답장 ↔ 그 팬의 답장).
+export async function getReplyRoomMessagesByIds(
   artistId: number,
   contextMessageId: string,
-  quotedMessageIds: string[],
-): Promise<ChatDmMessageRow[]> {
-  if (quotedMessageIds.length === 0) {
-    return []
+  messageIds: string[],
+): Promise<Map<string, ChatDmMessageRow>> {
+  if (messageIds.length === 0) {
+    return new Map()
   }
 
-  return chatDB
+  const rows = await chatDB
     .select()
     .from(chatDmMessageTable)
     .where(
       and(
         eq(chatDmMessageTable.artistId, artistId),
         eq(chatDmMessageTable.contextMessageId, contextMessageId),
-        eq(chatDmMessageTable.senderRole, 'artist'),
-        inArray(chatDmMessageTable.quotedMessageId, quotedMessageIds),
+        inArray(chatDmMessageTable.messageId, messageIds),
       ),
     )
-    .orderBy(asc(chatDmMessageTable.messageId))
+
+  return new Map(rows.map((row) => [row.messageId, row]))
 }
 
 // 팬의 아티스트별 "가장 최근 아티스트 1:1 답장" 한 건씩 — 팬 채팅 리스트에서 최신 활동/프리뷰를
