@@ -55,10 +55,10 @@ export function toDmFeedItem(row: ChatDmMessageRow, quoted?: ChatQuotedPreview):
 export function toReplyRoomMessage(row: ChatDmMessageRow): ChatReplyRoomMessage {
   return {
     messageId: row.messageId,
-    quotedMessageId: row.quotedMessageId,
     contentType: row.contentType as ChatContentType,
     content: row.content as ChatMessageContent,
     createdAt: row.createdAt.toISOString(),
+    ...(row.quotedMessageId && { quotedMessageId: row.quotedMessageId }),
   }
 }
 

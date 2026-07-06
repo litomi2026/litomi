@@ -208,11 +208,16 @@ function toFanReplyRelay(row: ChatDmMessageRow, fan?: ChatSenderBrief) {
     messageId: row.messageId,
     contextMessageId: row.contextMessageId,
     fanId: row.fanId,
-    quotedMessageId: row.quotedMessageId,
     contentType: row.contentType,
     content: row.content,
     createdAt: row.createdAt.toISOString(),
-    ...(fan && { fan: { nickname: fan.nickname, imageURL: fan.imageURL } }),
+    ...(row.quotedMessageId && { quotedMessageId: row.quotedMessageId }),
+    ...(fan && {
+      fan: {
+        nickname: fan.nickname,
+        imageURL: fan.imageURL,
+      },
+    }),
   }
 }
 
@@ -221,10 +226,10 @@ function toArtistReplyRelay(row: ChatDmMessageRow) {
     kind: 'artistReply' as const,
     messageId: row.messageId,
     contextMessageId: row.contextMessageId,
-    quotedMessageId: row.quotedMessageId,
     contentType: row.contentType,
     content: row.content,
     createdAt: row.createdAt.toISOString(),
+    ...(row.quotedMessageId && { quotedMessageId: row.quotedMessageId }),
   }
 }
 

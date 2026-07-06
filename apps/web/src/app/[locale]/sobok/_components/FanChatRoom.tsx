@@ -45,6 +45,7 @@ export default function FanChatRoom({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isReadByArtist,
     isSending,
     itemById,
     items,
@@ -92,7 +93,14 @@ export default function FanChatRoom({
 
   function renderItem(item: ChatFeedItem) {
     if (item.kind === 'fanReply') {
-      return <FanReplyBubble message={item} onQuoteClick={scrollToMessage} quote={quoteFor(item)} />
+      return (
+        <FanReplyBubble
+          isRead={isReadByArtist(item)}
+          message={item}
+          onQuoteClick={scrollToMessage}
+          quote={quoteFor(item)}
+        />
+      )
     }
 
     // Broadcast bubble or the artist's 1:1 answer — both selectable to reply.

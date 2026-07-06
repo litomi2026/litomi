@@ -54,6 +54,40 @@ export async function setReplyRoomWatermark({
     })
 }
 
+export interface GetReplyRoomWatermarksInput {
+  artistUserId: number
+  artistId: number
+  contextMessageIds: string[]
+}
+
+// 아티스트의 말풍선별 답장방 워터마크를 읽는다 — 팬 타임라인에 room-level 읽음 표시를
+// 내려주기 위한 읽기축. contextMessageId → lastReadMessageId. 커서 없는 방은 Map에서 빠진다.
+export async function getReplyRoomWatermarks({
+  artistUserId,
+  artistId,
+  contextMessageIds,
+}: GetReplyRoomWatermarksInput): Promise<Map<string, string>> {
+  if (contextMessageIds.length === 0) {
+    return new Map()
+  }
+
+  const rows = await chatDB
+    .select({
+      contextMessageId: chatReplyReadCursorTable.contextMessageId,
+      lastReadMessageId: chatReplyReadCursorTable.lastReadMessageId,
+    })
+    .from(chatReplyReadCursorTable)
+    .where(
+      and(
+        eq(chatReplyReadCursorTable.userId, artistUserId),
+        eq(chatReplyReadCursorTable.artistId, artistId),
+        inArray(chatReplyReadCursorTable.contextMessageId, contextMessageIds),
+      ),
+    )
+
+  return new Map(rows.map((row) => [row.contextMessageId, row.lastReadMessageId]))
+}
+
 // 팬의 아티스트별 브로드캐스트 안읽음 수 — 커서 조인까지 한 쿼리로(N+1 방지). 커서 없는 방은
 // 전체가 안읽음. 방송은 항상 아티스트 발신이므로 자기 메시지 제외 불필요. 0인 아티스트는 Map 제외.
 export async function countBroadcastUnread(fanId: number, artistIds: number[]): Promise<Map<number, number>> {
