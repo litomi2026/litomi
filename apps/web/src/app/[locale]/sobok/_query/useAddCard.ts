@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useCallback } from 'react'
 import { UserVisibleError } from '@/utils/api-request'
 import { requestBillingKeyIssuance } from '../_lib/billing'
 import useAddPaymentMethodMutation from './useAddPaymentMethodMutation'
@@ -18,23 +17,20 @@ export default function useAddCard(enabled = true) {
 
   // Issue a billing key then register it. Returns the saved method; throws UserVisibleError when
   // billing isn't configured, or the issuance/register error.
-  const addCard = useCallback(
-    async (issueName: string) => {
-      if (!billing?.storeId || !billing.channelKey) {
-        throw new UserVisibleError(t('notReady'))
-      }
+  async function addCard(issueName: string) {
+    if (!billing?.storeId || !billing.channelKey) {
+      throw new UserVisibleError(t('notReady'))
+    }
 
-      const billingKey = await requestBillingKeyIssuance({
-        storeId: billing.storeId,
-        channelKey: billing.channelKey,
-        issueName,
-        errorMessages: { cancelled: t('registerCancelled'), failed: t('registerFailed') },
-      })
+    const billingKey = await requestBillingKeyIssuance({
+      storeId: billing.storeId,
+      channelKey: billing.channelKey,
+      issueName,
+      errorMessages: { cancelled: t('registerCancelled'), failed: t('registerFailed') },
+    })
 
-      return registerCard({ token: billingKey })
-    },
-    [billing, registerCard, t],
-  )
+    return registerCard({ token: billingKey })
+  }
 
   return {
     billing,

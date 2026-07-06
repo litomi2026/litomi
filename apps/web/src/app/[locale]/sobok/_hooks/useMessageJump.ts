@@ -1,6 +1,6 @@
 'use client'
 
-import { type RefObject, useCallback, useEffect, useState } from 'react'
+import { type RefObject, useEffect, useState } from 'react'
 import type { ChatMessageListHandle } from '../_components/ChatMessageList'
 
 const HIGHLIGHT_MS = 1500
@@ -10,13 +10,10 @@ const HIGHLIGHT_MS = 1500
 export default function useMessageJump(listRef: RefObject<ChatMessageListHandle | null>) {
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
 
-  const jumpTo = useCallback(
-    (messageId: string) => {
-      listRef.current?.scrollToKey(messageId, { align: 'center' })
-      setHighlightedId(messageId)
-    },
-    [listRef],
-  )
+  function jumpTo(messageId: string) {
+    listRef.current?.scrollToKey(messageId, { align: 'center' })
+    setHighlightedId(messageId)
+  }
 
   // Clear the flash after it plays.
   useEffect(() => {

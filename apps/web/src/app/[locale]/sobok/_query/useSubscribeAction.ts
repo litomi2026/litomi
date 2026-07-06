@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import useAddCard from './useAddCard'
 import useSubscribeMutation from './useSubscribeMutation'
 
@@ -14,24 +14,21 @@ export default function useSubscribeAction(handle: string, artistName: string, e
 
   // Mobile redirect resume: the billing key was already issued before the full-page redirect,
   // so just register it and subscribe.
-  const finishWithBillingKey = useCallback(
-    async (billingKey: string) => {
-      setPending(true)
-      setError(null)
+  async function finishWithBillingKey(billingKey: string) {
+    setPending(true)
+    setError(null)
 
-      try {
-        const saved = await registerCard({ token: billingKey })
-        await requestSubscribe({ paymentMethodId: saved.id })
-      } catch (caught) {
-        setError(errorMessage(caught, t('subscribeAction.failed')))
-      } finally {
-        setPending(false)
-      }
-    },
-    [registerCard, requestSubscribe, t],
-  )
+    try {
+      const saved = await registerCard({ token: billingKey })
+      await requestSubscribe({ paymentMethodId: saved.id })
+    } catch (caught) {
+      setError(errorMessage(caught, t('subscribeAction.failed')))
+    } finally {
+      setPending(false)
+    }
+  }
 
-  const start = useCallback(async () => {
+  async function start() {
     setPending(true)
     setError(null)
 
@@ -50,7 +47,7 @@ export default function useSubscribeAction(handle: string, artistName: string, e
     } finally {
       setPending(false)
     }
-  }, [billing, addCard, requestSubscribe, artistName, t])
+  }
 
   return {
     start,
