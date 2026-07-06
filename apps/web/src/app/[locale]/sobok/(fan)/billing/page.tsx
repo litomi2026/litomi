@@ -1,4 +1,4 @@
-import BillingHub from '../_components/BillingHub'
+import BillingHub from '../../_components/BillingHub'
 
 export default function BillingHubPage() {
   return <BillingHub />
