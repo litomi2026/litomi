@@ -4,8 +4,9 @@ import type { ChatArtistBrief, ChatFeedItem, ChatSubscriptionDTO } from '@litomi
 import { REPLY_MAX_PER_ARTIST_MESSAGE } from '@litomi/domain/chat/policy'
 import { X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import useFanChatRoom, { type ReplyTarget } from '../_hooks/useFanChatRoom'
+import useMessageJump from '../_hooks/useMessageJump'
 import { avatarURL } from '../_lib/chat'
 import { type BubbleQuote, IncomingBubble, OutgoingBubble, QuotedMessage } from './ChatBubbles'
 import ChatComposer from './ChatComposer'
@@ -34,8 +35,8 @@ interface Props {
 
 export default function FanChatRoom({ artist, entitled, handle, replyTextLimit, subscription, subscribe }: Props) {
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null)
-  const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const listRef = useRef<ChatMessageListHandle>(null)
+  const { highlightedId, jumpTo } = useMessageJump(listRef)
   const tSubscribe = useTranslations('Sobok.subscribe')
   const t = useTranslations('Sobok.fanRoom')
 
@@ -59,13 +60,6 @@ export default function FanChatRoom({ artist, entitled, handle, replyTextLimit, 
   const effectiveTarget = replyTarget ?? latestArtistTarget
   const repliesExhausted = replyTextLimit !== undefined && usedReplies >= REPLY_MAX_PER_ARTIST_MESSAGE
   const targetPreview = replyTarget ? itemById.get(replyTarget.quotedMessageId ?? replyTarget.contextMessageId) : null
-
-  // Jump to a quoted message and flash it briefly. It may be virtualized out of the DOM, so we
-  // scroll by key through the list rather than holding a node ref.
-  function scrollToMessage(messageId: string) {
-    listRef.current?.scrollToKey(messageId, { align: 'center' })
-    setHighlightedId(messageId)
-  }
 
   async function handleSend(text: string) {
     if (!effectiveTarget) {
@@ -97,7 +91,7 @@ export default function FanChatRoom({ artist, entitled, handle, replyTextLimit, 
         <OutgoingBubble
           createdAt={item.createdAt}
           isHighlighted={highlightedId === item.messageId}
-          onQuoteClick={scrollToMessage}
+          onQuoteClick={jumpTo}
           quote={quoteFor(item)}
           receipt={isReadByArtist(item) ? 'read' : 'sent'}
           text={item.content.text}
@@ -122,7 +116,7 @@ export default function FanChatRoom({ artist, entitled, handle, replyTextLimit, 
         createdAt={item.createdAt}
         isHighlighted={highlightedId === item.messageId}
         isSelected={isTarget}
-        onQuoteClick={scrollToMessage}
+        onQuoteClick={jumpTo}
         onSelect={() =>
           setReplyTarget((prev) =>
             prev?.contextMessageId === target.contextMessageId && prev?.quotedMessageId === target.quotedMessageId
@@ -135,19 +129,6 @@ export default function FanChatRoom({ artist, entitled, handle, replyTextLimit, 
       />
     )
   }
-
-  // Clear the jump highlight after it flashes.
-  useEffect(() => {
-    if (!highlightedId) {
-      return
-    }
-
-    const timer = window.setTimeout(() => setHighlightedId(null), 1500)
-
-    return () => {
-      window.clearTimeout(timer)
-    }
-  }, [highlightedId])
 
   return (
     <div className="flex flex-col h-full bg-background relative">
@@ -205,7 +186,7 @@ export default function FanChatRoom({ artist, entitled, handle, replyTextLimit, 
               <QuotedMessage
                 className="flex-1"
                 label={t('replyTo', { name: artist.displayName })}
-                onClick={() => scrollToMessage(targetPreview.messageId)}
+                onClick={() => jumpTo(targetPreview.messageId)}
                 preview={targetPreview.content.text}
                 variant="standalone"
               />

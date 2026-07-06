@@ -98,21 +98,27 @@ export interface QuoteInfo {
   targetId: string
   // The answered message's text (from the loaded timeline, else the server-embedded preview).
   preview: string
-  // The quoted message is the fan's own (→ label "me"); otherwise it's the artist's.
+  // The quoted message is the viewer's own (→ label "me"); otherwise the other party's.
   isMine: boolean
 }
 
-// Which items should render a quote header, and what it points at. A reply quotes the message
-// it answers (a fan reply → its context bubble unless it explicitly quotes; an artist answer →
-// the fan message it quotes). We hide the quote when the answered message is the OTHER party's
-// most recent message before this one — i.e. skipping the sender's own consecutive messages,
-// they're effectively adjacent. It only shows when they're genuinely "far apart" (another
-// other-party message sits between them, or the answered message isn't loaded).
-// 답장방(플랫 멀티팬 타임라인)의 인용 계산 — 명시적 quotedMessageId가 있는 메시지만 대상이다
-// (인용 없는 팬 답장은 방 자체가 컨텍스트). 인용 대상이 그 시점의 "상대편(팬측↔아티스트측)
-// 마지막 메시지"면 시각적으로 인접하므로 숨기고, 그렇지 않을 때만 인용 헤더를 보여준다.
-// isMine은 아티스트(뷰어) 자신의 메시지를 인용했는지 여부.
-export function computeReplyRoomQuotes(items: ChatReplyRoomItem[]): Map<string, QuoteInfo> {
+type Side = 'artist' | 'fan'
+
+// Each timeline projects into this normalized shape, then one algorithm resolves quotes for both.
+interface QuoteScanItem {
+  messageId: string
+  side: Side
+  text: string
+  // The message this one answers — undefined renders no quote header.
+  answeredId?: string
+  // Server-embedded preview, used when the answered message isn't in the loaded window.
+  fallback?: { preview: string; side: Side }
+}
+
+// A message shows a quote header only when the message it answers is NOT the other party's most
+// recent message before it (skipping the sender's own consecutive run) — otherwise they're
+// visually adjacent. `mineSide` is the viewer's side, so a quote of their own reads as "me".
+function resolveQuotes(items: QuoteScanItem[], mineSide: Side): Map<string, QuoteInfo> {
   const byId = new Map(items.map((item) => [item.messageId, item]))
   const quotes = new Map<string, QuoteInfo>()
 
@@ -120,19 +126,18 @@ export function computeReplyRoomQuotes(items: ChatReplyRoomItem[]): Map<string, 
   let lastArtistId: string | undefined
 
   for (const item of items) {
-    const isFan = item.senderRole === 'fan'
-    const nearestOtherId = isFan ? lastArtistId : lastFanId
+    const nearestOtherId = item.side === 'fan' ? lastArtistId : lastFanId
 
-    if (item.quotedMessageId && item.quotedMessageId !== nearestOtherId) {
-      const target = byId.get(item.quotedMessageId)
+    if (item.answeredId && item.answeredId !== nearestOtherId) {
+      const target = byId.get(item.answeredId)
       quotes.set(item.messageId, {
-        targetId: item.quotedMessageId,
-        preview: target ? target.content.text : (item.quoted?.preview ?? ''),
-        isMine: target ? target.senderRole === 'artist' : item.quoted?.senderRole === 'artist',
+        targetId: item.answeredId,
+        preview: target ? target.text : (item.fallback?.preview ?? ''),
+        isMine: (target ? target.side : item.fallback?.side) === mineSide,
       })
     }
 
-    if (isFan) {
+    if (item.side === 'fan') {
       lastFanId = item.messageId
     } else {
       lastArtistId = item.messageId
@@ -142,38 +147,47 @@ export function computeReplyRoomQuotes(items: ChatReplyRoomItem[]): Map<string, 
   return quotes
 }
 
+// Fan timeline: broadcasts (no quote), the fan's replies (answer their context bubble unless they
+// explicitly quote an artist answer), the artist's answers (quote the fan message). Viewer = fan.
 export function computeQuotes(items: ChatFeedItem[]): Map<string, QuoteInfo> {
-  const byId = new Map(items.map((item) => [item.messageId, item]))
-  const quotes = new Map<string, QuoteInfo>()
+  return resolveQuotes(
+    items.map((item) => {
+      const side: Side = item.kind === 'fanReply' ? 'fan' : 'artist'
 
-  // Most recent messageId seen per party as we scan forward (the fan vs. the artist).
-  let lastFanId: string | undefined
-  let lastArtistId: string | undefined
-
-  for (const item of items) {
-    const isFan = item.kind === 'fanReply'
-    // The nearest preceding message from the OTHER party (skips this sender's own run).
-    const nearestOtherId = isFan ? lastArtistId : lastFanId
-
-    if (item.kind !== 'broadcast') {
-      const answeredId = item.quotedMessageId ?? (isFan ? item.contextMessageId : undefined)
-
-      if (answeredId && nearestOtherId !== answeredId) {
-        const target = byId.get(answeredId)
-        quotes.set(item.messageId, {
-          targetId: answeredId,
-          preview: target ? target.content.text : (item.quoted?.preview ?? ''),
-          isMine: target ? target.kind === 'fanReply' : item.quoted?.senderRole === 'fan',
-        })
+      return {
+        messageId: item.messageId,
+        side,
+        text: item.content.text,
+        answeredId:
+          item.kind === 'broadcast'
+            ? undefined
+            : (item.quotedMessageId ?? (side === 'fan' ? item.contextMessageId : undefined)),
+        fallback:
+          item.kind !== 'broadcast' && item.quoted
+            ? { preview: item.quoted.preview, side: item.quoted.senderRole }
+            : undefined,
       }
-    }
+    }),
+    'fan',
+  )
+}
 
-    if (isFan) {
-      lastFanId = item.messageId
-    } else {
-      lastArtistId = item.messageId
-    }
-  }
-
-  return quotes
+// Reply room: a flat cross-fan timeline; only explicit quotes (the room itself is the context).
+// Viewer = the artist.
+export function computeReplyRoomQuotes(items: ChatReplyRoomItem[]): Map<string, QuoteInfo> {
+  return resolveQuotes(
+    items.map((item) => ({
+      messageId: item.messageId,
+      side: item.senderRole,
+      text: item.content.text,
+      answeredId: item.quotedMessageId,
+      fallback: item.quoted
+        ? {
+            preview: item.quoted.preview,
+            side: item.quoted.senderRole,
+          }
+        : undefined,
+    })),
+    'artist',
+  )
 }

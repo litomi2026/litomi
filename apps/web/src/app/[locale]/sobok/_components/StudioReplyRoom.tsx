@@ -3,7 +3,8 @@
 import type { ChatReplyRoomItem } from '@litomi/contracts'
 import { X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import useMessageJump from '../_hooks/useMessageJump'
 import useReplyRoom from '../_hooks/useReplyRoom'
 import { avatarURL } from '../_lib/chat'
 import { type BubbleQuote, IncomingBubble, OutgoingBubble, QuotedMessage } from './ChatBubbles'
@@ -24,8 +25,8 @@ interface AnswerTarget {
 // 흐른다. 데이터·실시간·낙관·읽음은 useReplyRoom이 소유하고, 여기선 뷰(선택·하이라이트·스크롤)만.
 export default function StudioReplyRoom({ handle, messageId }: { handle: string; messageId: string }) {
   const [answerTarget, setAnswerTarget] = useState<AnswerTarget | null>(null)
-  const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const listRef = useRef<ChatMessageListHandle>(null)
+  const { highlightedId, jumpTo } = useMessageJump(listRef)
   const t = useTranslations('Sobok.replyRoom')
 
   const { items, quotes, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, sendAnswer, isAnswering } =
@@ -43,12 +44,6 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
     }
 
     return { targetId: quote.targetId, preview: quote.preview, label: quote.isMine ? t('you') : fanNameOf(item) }
-  }
-
-  // Jump to a quoted message and flash it briefly (it may be virtualized out of the DOM).
-  function scrollToMessage(targetId: string) {
-    listRef.current?.scrollToKey(targetId, { align: 'center' })
-    setHighlightedId(targetId)
   }
 
   async function handleSend(text: string) {
@@ -69,7 +64,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
         <OutgoingBubble
           createdAt={item.createdAt}
           isHighlighted={isHighlighted}
-          onQuoteClick={scrollToMessage}
+          onQuoteClick={jumpTo}
           quote={quoteFor(item)}
           text={item.content.text}
         />
@@ -84,7 +79,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
         createdAt={item.createdAt}
         isHighlighted={isHighlighted}
         isSelected={answerTarget?.replyMessageId === item.messageId}
-        onQuoteClick={scrollToMessage}
+        onQuoteClick={jumpTo}
         onSelect={() =>
           setAnswerTarget((prev) =>
             prev?.replyMessageId === item.messageId
@@ -98,19 +93,6 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
       />
     )
   }
-
-  // Clear the jump highlight after it flashes.
-  useEffect(() => {
-    if (!highlightedId) {
-      return
-    }
-
-    const timer = window.setTimeout(() => setHighlightedId(null), 1500)
-
-    return () => {
-      window.clearTimeout(timer)
-    }
-  }, [highlightedId])
 
   return (
     <div className="flex flex-col h-full bg-background relative">
@@ -147,7 +129,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
               <QuotedMessage
                 className="flex-1"
                 label={t('answering', { name: answerTarget.fanName })}
-                onClick={() => scrollToMessage(answerTarget.replyMessageId)}
+                onClick={() => jumpTo(answerTarget.replyMessageId)}
                 preview={answerTarget.preview}
                 variant="standalone"
               />
