@@ -38,7 +38,10 @@ export async function getSubscription(key: SubscriptionKey): Promise<Subscriptio
 export async function setAutoRenew(key: SubscriptionKey, autoRenew: boolean): Promise<SubscriptionState | undefined> {
   const [row] = await db
     .update(subscriptionTable)
-    .set({ autoRenew })
+    .set({
+      autoRenew,
+      canceledAt: autoRenew ? null : new Date(),
+    })
     .where(subscriptionKeyCondition(key))
     .returning(subscriptionStateColumns)
 
@@ -109,6 +112,7 @@ export async function confirmPayment(paymentId: string, data: ConfirmPaymentInpu
       const set: Record<string, unknown> = {
         status: 'active',
         autoRenew: true,
+        canceledAt: null,
         expiresAt: paidThroughExpiry(invoice.subscriptionId),
       }
 
@@ -156,10 +160,11 @@ export async function ensureSubscription(input: EnsureSubscriptionInput): Promis
       target: [subscriptionTable.userId, subscriptionTable.targetType, subscriptionTable.targetId],
       set: {
         autoRenew: true,
-        ...(input.paymentMethodId !== null && { paymentMethodId: input.paymentMethodId }),
+        canceledAt: null,
+        updatedAt: input.now,
         priceAmount: input.priceAmount,
         priceCurrency: input.priceCurrency,
-        updatedAt: input.now,
+        ...(input.paymentMethodId !== null && { paymentMethodId: input.paymentMethodId }),
       },
     })
     .returning({ id: subscriptionTable.id, expiresAt: subscriptionTable.expiresAt })

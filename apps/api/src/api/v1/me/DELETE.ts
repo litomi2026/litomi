@@ -98,7 +98,11 @@ route.delete('/', ...middlewares, async (c) => {
         // 브로드캐스트로 존중한다(무환불).
         await tx
           .update(subscriptionTable)
-          .set({ autoRenew: false, status: 'canceled' })
+          .set({
+            autoRenew: false,
+            status: 'canceled',
+            canceledAt: new Date(),
+          })
           .where(
             and(
               eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),

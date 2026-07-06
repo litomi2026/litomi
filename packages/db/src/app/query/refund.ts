@@ -132,6 +132,7 @@ export async function applyPaymentRefunds(
       .update(subscriptionTable)
       .set({
         autoRenew: false,
+        canceledAt: new Date(),
         expiresAt: expiry,
         status: sql`case when ${expiry} <= now() then 'canceled' else ${subscriptionTable.status} end`,
       })
