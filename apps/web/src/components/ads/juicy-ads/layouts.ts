@@ -11,10 +11,10 @@ function slot(slot: AdSlotDefinition, className?: string): JuicyAdsLayoutNode {
 
 export const DEFAULT_NON_ADULT_AD_LAYOUT = [
   slot(AD_SLOTS.BANNER_308X286),
-  slot(AD_SLOTS.BANNER_300X100, 'md:hidden'),
-  slot(AD_SLOTS.BANNER_308X286_2, 'hidden md:flex'),
+  slot(AD_SLOTS.BANNER_300X100, 'min-[720px]:hidden'),
+  slot(AD_SLOTS.BANNER_308X286_2, 'hidden min-[720px]:flex'),
   slot(AD_SLOTS.BANNER_300X250, 'hidden lg:flex'),
-  group('hidden 2xl:flex flex-col gap-0.5', [
+  group('hidden min-[1350px]:flex flex-col gap-0.5', [
     slot(AD_SLOTS.BANNER_300X100),
     slot(AD_SLOTS.BANNER_300X100_2),
     slot(AD_SLOTS.BANNER_300X100_3),
