@@ -26,7 +26,7 @@ export default function useReplyRoom(handle: string, messageId: string) {
   const fetched = data?.pages.flatMap((page) => page.items) ?? []
   const items = mergeById(fetched, [...liveItems, ...optimisticItems], (item) => item.messageId)
   const quotes = computeReplyRoomQuotes(items)
-  const newestFanReplyId = findLastFanReplyId(items)
+  const newestFanReplyId = items.findLast((item) => item.senderRole === 'fan')?.messageId
 
   async function sendAnswer(target: { fanId: number; replyMessageId: string }, text: string) {
     const { messageId: answerId } = await postAnswer({
@@ -83,14 +83,4 @@ export default function useReplyRoom(handle: string, messageId: string) {
     sendAnswer,
     isAnswering,
   }
-}
-
-function findLastFanReplyId(items: ChatReplyRoomItem[]): string | undefined {
-  for (let i = items.length - 1; i >= 0; i--) {
-    if (items[i].senderRole === 'fan') {
-      return items[i].messageId
-    }
-  }
-
-  return undefined
 }

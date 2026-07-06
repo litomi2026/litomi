@@ -1,6 +1,7 @@
 import { Check, CheckCheck } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
+import type { QuoteInfo } from '../_lib/chat'
 import { formatTime } from '../_lib/format'
 
 interface QuotedMessageProps {
@@ -47,6 +48,23 @@ export interface BubbleQuote {
   targetId: string
   label: string
   preview: string
+}
+
+// Attach a label to a computed quote — "me" when it's the viewer's own message, else the other
+// party's name (a constant in the fan room, per-fan in the reply room).
+export function toBubbleQuote(
+  quote: QuoteInfo | undefined,
+  labels: { mine: string; other: string },
+): BubbleQuote | undefined {
+  if (!quote) {
+    return undefined
+  }
+
+  return {
+    targetId: quote.targetId,
+    preview: quote.preview,
+    label: quote.isMine ? labels.mine : labels.other,
+  }
 }
 
 function QuoteHeader({ quote, onQuoteClick }: { quote: BubbleQuote; onQuoteClick?: (targetId: string) => void }) {

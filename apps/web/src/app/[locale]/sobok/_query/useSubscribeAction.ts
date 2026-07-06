@@ -2,27 +2,25 @@
 
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
-import { UserVisibleError } from '@/utils/api-request'
-import { requestBillingKeyIssuance } from '../_lib/billing'
-import useAddPaymentMethodMutation from './useAddPaymentMethodMutation'
-import usePaymentMethodsQuery from './usePaymentMethodsQuery'
+import useAddCard from './useAddCard'
 import useSubscribeMutation from './useSubscribeMutation'
 
 export default function useSubscribeAction(handle: string, artistName: string, enabled = true) {
-  const { data: billing } = usePaymentMethodsQuery(enabled)
+  const { billing, addCard, registerCard } = useAddCard(enabled)
   const { mutateAsync: requestSubscribe } = useSubscribeMutation(handle)
-  const { mutateAsync: registerPaymentMethod } = useAddPaymentMethodMutation()
   const [error, setError] = useState<string | null>(null)
   const [isPending, setPending] = useState(false)
   const t = useTranslations('Sobok')
 
+  // Mobile redirect resume: the billing key was already issued before the full-page redirect,
+  // so just register it and subscribe.
   const finishWithBillingKey = useCallback(
     async (billingKey: string) => {
       setPending(true)
       setError(null)
 
       try {
-        const saved = await registerPaymentMethod({ token: billingKey })
+        const saved = await registerCard({ token: billingKey })
         await requestSubscribe({ paymentMethodId: saved.id })
       } catch (caught) {
         setError(errorMessage(caught, t('subscribeAction.failed')))
@@ -30,7 +28,7 @@ export default function useSubscribeAction(handle: string, artistName: string, e
         setPending(false)
       }
     },
-    [registerPaymentMethod, requestSubscribe, t],
+    [registerCard, requestSubscribe, t],
   )
 
   const start = useCallback(async () => {
@@ -45,24 +43,14 @@ export default function useSubscribeAction(handle: string, artistName: string, e
         return
       }
 
-      if (!billing?.storeId || !billing.channelKey) {
-        throw new UserVisibleError(t('billing.notReady'))
-      }
-
-      const billingKey = await requestBillingKeyIssuance({
-        storeId: billing.storeId,
-        channelKey: billing.channelKey,
-        issueName: t('subscribeAction.issueName', { name: artistName }),
-        errorMessages: { cancelled: t('billing.registerCancelled'), failed: t('billing.registerFailed') },
-      })
-
-      await finishWithBillingKey(billingKey)
+      const method = await addCard(t('subscribeAction.issueName', { name: artistName }))
+      await requestSubscribe({ paymentMethodId: method.id })
     } catch (caught) {
       setError(errorMessage(caught, t('subscribeAction.failed')))
     } finally {
       setPending(false)
     }
-  }, [billing, requestSubscribe, finishWithBillingKey, artistName, t])
+  }, [billing, addCard, requestSubscribe, artistName, t])
 
   return {
     start,

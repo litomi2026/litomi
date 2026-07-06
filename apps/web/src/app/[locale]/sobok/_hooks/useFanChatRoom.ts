@@ -51,7 +51,7 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
   const itemById = new Map(items.map((item) => [item.messageId, item]))
   const latestMessageId = items.at(-1)?.messageId
   const replyReadCursor = mergeReplyReadCursors(data?.pages.map((page) => page.replyReadCursor) ?? [])
-  const lastArtistMessage = findLastArtistMessage(items)
+  const lastArtistMessage = items.findLast((item): item is ArtistFeedItem => item.kind !== 'fanReply')
 
   const usedReplies = items.filter(
     (item) => item.kind === 'fanReply' && (!lastArtistMessage || item.messageId > lastArtistMessage.messageId),
@@ -169,18 +169,6 @@ export default function useFanChatRoom({ artistId, entitled, handle }: UseFanCha
 }
 
 type ArtistFeedItem = Exclude<ChatFeedItem, { kind: 'fanReply' }>
-
-function findLastArtistMessage(items: ChatFeedItem[]): ArtistFeedItem | undefined {
-  for (let i = items.length - 1; i >= 0; i--) {
-    const item = items[i]
-
-    if (item.kind !== 'fanReply') {
-      return item
-    }
-  }
-
-  return undefined
-}
 
 // 페이지별 사이드카를 방(contextMessageId) 단위로 합친다. 페이지마다 조회 시점이 달라
 // 워터마크가 어긋날 수 있으므로 항상 더 나중 값(GREATEST)을 취한다.

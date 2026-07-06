@@ -6,9 +6,8 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { Link } from '@/i18n/navigation'
 import useBillingKeyRedirect from '../_hooks/useBillingKeyRedirect'
-import { requestBillingKeyIssuance } from '../_lib/billing'
 import { formatDate, formatKRW } from '../_lib/format'
-import useAddPaymentMethodMutation from '../_query/useAddPaymentMethodMutation'
+import useAddCard from '../_query/useAddCard'
 import useBillingSubscriptionsQuery from '../_query/useBillingSubscriptionsQuery'
 import useDeletePaymentMethodMutation from '../_query/useDeletePaymentMethodMutation'
 import usePaymentHistoryQuery from '../_query/usePaymentHistoryQuery'
@@ -133,8 +132,7 @@ function SubscriptionItem({ item }: { item: BillingSubscriptionItemDTO }) {
 }
 
 function PaymentMethodsSection({ loading }: { loading: boolean }) {
-  const { data } = usePaymentMethodsQuery()
-  const { mutateAsync: registerPaymentMethod, error: registerError } = useAddPaymentMethodMutation()
+  const { billing, addCard, registerCard, registerError } = useAddCard()
   const { mutate: deletePaymentMethod, isPending: deleting } = useDeletePaymentMethodMutation()
   const [confirmingId, setConfirmingId] = useState<number | null>(null)
   const [issuing, setIssuing] = useState(false)
@@ -143,23 +141,11 @@ function PaymentMethodsSection({ loading }: { loading: boolean }) {
   const errorMessage = issueError ?? (registerError instanceof Error ? registerError.message : null)
 
   async function handleAddCard() {
-    if (!data?.storeId || !data.channelKey) {
-      setIssueError(t('notReady'))
-      return
-    }
-
     setIssuing(true)
     setIssueError(null)
 
     try {
-      const billingKey = await requestBillingKeyIssuance({
-        storeId: data.storeId,
-        channelKey: data.channelKey,
-        issueName: t('issueName'),
-        errorMessages: { cancelled: t('registerCancelled'), failed: t('registerFailed') },
-      })
-
-      await registerPaymentMethod({ token: billingKey })
+      await addCard(t('issueName'))
     } catch (caught) {
       setIssueError(caught instanceof Error ? caught.message : t('registerFailed'))
     } finally {
@@ -171,7 +157,7 @@ function PaymentMethodsSection({ loading }: { loading: boolean }) {
   useBillingKeyRedirect({
     failedMessage: t('registerFailed'),
     onBillingKey: (billingKey) =>
-      registerPaymentMethod({ token: billingKey }).catch((caught) => {
+      registerCard({ token: billingKey }).catch((caught) => {
         setIssueError(caught instanceof Error ? caught.message : t('registerFailed'))
       }),
     onError: setIssueError,
@@ -185,7 +171,7 @@ function PaymentMethodsSection({ loading }: { loading: boolean }) {
         </div>
       ) : (
         <ul className="space-y-2">
-          {data?.paymentMethods.map((method) => (
+          {billing?.paymentMethods.map((method) => (
             <li key={method.id} className="flex items-center gap-3 rounded-xl border border-foreground/10 p-3.5">
               <CreditCard className="h-5 w-5 shrink-0 text-zinc-400" />
               <div className="min-w-0 flex-1">

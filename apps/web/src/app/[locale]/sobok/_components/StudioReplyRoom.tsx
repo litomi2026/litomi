@@ -7,7 +7,7 @@ import { useRef, useState } from 'react'
 import useMessageJump from '../_hooks/useMessageJump'
 import useReplyRoom from '../_hooks/useReplyRoom'
 import { avatarURL } from '../_lib/chat'
-import { type BubbleQuote, IncomingBubble, OutgoingBubble, QuotedMessage } from './ChatBubbles'
+import { type BubbleQuote, IncomingBubble, OutgoingBubble, QuotedMessage, toBubbleQuote } from './ChatBubbles'
 import ChatComposer from './ChatComposer'
 import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import ComposerDock from './ComposerDock'
@@ -37,13 +37,7 @@ export default function StudioReplyRoom({ handle, messageId }: { handle: string;
   }
 
   function quoteFor(item: ChatReplyRoomItem): BubbleQuote | undefined {
-    const quote = quotes.get(item.messageId)
-
-    if (!quote) {
-      return undefined
-    }
-
-    return { targetId: quote.targetId, preview: quote.preview, label: quote.isMine ? t('you') : fanNameOf(item) }
+    return toBubbleQuote(quotes.get(item.messageId), { mine: t('you'), other: fanNameOf(item) })
   }
 
   async function handleSend(text: string) {

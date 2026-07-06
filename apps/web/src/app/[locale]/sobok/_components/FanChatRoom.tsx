@@ -8,7 +8,7 @@ import { useRef, useState } from 'react'
 import useFanChatRoom, { type ReplyTarget } from '../_hooks/useFanChatRoom'
 import useMessageJump from '../_hooks/useMessageJump'
 import { avatarURL } from '../_lib/chat'
-import { type BubbleQuote, IncomingBubble, OutgoingBubble, QuotedMessage } from './ChatBubbles'
+import { type BubbleQuote, IncomingBubble, OutgoingBubble, QuotedMessage, toBubbleQuote } from './ChatBubbles'
 import ChatComposer from './ChatComposer'
 import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import ComposerDock from './ComposerDock'
@@ -72,17 +72,7 @@ export default function FanChatRoom({ artist, entitled, handle, replyTextLimit, 
   }
 
   function quoteFor(item: ChatFeedItem): BubbleQuote | undefined {
-    const quote = quotes.get(item.messageId)
-
-    if (!quote) {
-      return undefined
-    }
-
-    return {
-      targetId: quote.targetId,
-      preview: quote.preview,
-      label: quote.isMine ? t('you') : artist.displayName,
-    }
+    return toBubbleQuote(quotes.get(item.messageId), { mine: t('you'), other: artist.displayName })
   }
 
   function renderItem(item: ChatFeedItem) {
