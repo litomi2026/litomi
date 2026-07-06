@@ -1,10 +1,10 @@
 'use client'
 
 import type { ChatArtistBrief, ChatArtistPrice } from '@litomi/contracts'
-import { ChevronLeft, Loader2 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
-import { Link } from '@/i18n/navigation'
 import { formatPrice } from '../_lib/format'
+import Button from './ui/Button'
+import PageHeader, { HeaderBackLink } from './ui/PageHeader'
 
 interface Props {
   artist: ChatArtistBrief
@@ -21,15 +21,11 @@ export default function ArtistSubscribe({ artist, price, onSubscribe, isPending,
   const locale = useLocale()
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="h-14 shrink-0 flex items-center px-2 border-b border-foreground/10">
-        <Link href="/sobok" className="p-2 text-zinc-400 hover:text-foreground transition-colors">
-          <ChevronLeft className="w-6 h-6" />
-        </Link>
-      </div>
+    <div className="flex h-full flex-col bg-background">
+      <PageHeader back={<HeaderBackLink className="lg:hidden" href="/sobok" />} title={null} />
 
-      <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center gap-6 p-8 text-center">
-        <div className="w-24 h-24 rounded-full bg-linear-to-br from-indigo-500/30 to-indigo-500/5 flex items-center justify-center text-4xl">
+      <div className="flex flex-1 flex-col items-center justify-center gap-6 overflow-y-auto p-8 text-center">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-indigo-500/30 to-indigo-500/5 text-4xl">
           {artist.emoji ?? artist.displayName.charAt(0)}
         </div>
 
@@ -50,15 +46,9 @@ export default function ArtistSubscribe({ artist, price, onSubscribe, isPending,
 
             {error && <p className="text-sm text-red-400">{error}</p>}
 
-            <button
-              type="button"
-              onClick={onSubscribe}
-              disabled={isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-500 py-3.5 font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-60"
-            >
-              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+            <Button busy={isPending} className="w-full rounded-2xl py-3.5 text-base" onClick={onSubscribe}>
               {lapsed ? t('resubscribe') : t('subscribeCta', { price: formatPrice(price, locale) })}
-            </button>
+            </Button>
 
             <p className="text-[11px] text-zinc-500">{t('autoRenewNotice')}</p>
           </div>

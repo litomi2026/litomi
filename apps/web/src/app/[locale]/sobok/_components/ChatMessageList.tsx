@@ -143,7 +143,9 @@ export default function ChatMessageList<TItem>({
 
           const isBottomItem = row.key === rows[rows.length - 1].key
           return (
-            <div className={twMerge('px-4', isBottomItem ? bottomInsetClassName : gapClassName)}>
+            <div
+              className={twMerge('mx-auto w-full max-w-2xl px-4', isBottomItem ? bottomInsetClassName : gapClassName)}
+            >
               {renderItem(row.item)}
             </div>
           )
@@ -195,7 +197,7 @@ function ChatListHeader({ context }: { context: ChatListHeaderContext }) {
   const t = useTranslations('Sobok.messageList')
 
   return (
-    <div className="pt-4">
+    <div className="mx-auto w-full max-w-2xl pt-4">
       {context.isLoadingOlder && <div className="py-2 text-center text-xs text-zinc-400">{t('loadingOlder')}</div>}
       {context.banner}
     </div>

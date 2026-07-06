@@ -10,20 +10,34 @@ interface QuotedMessageProps {
   variant: 'onMessage' | 'standalone'
 }
 
+// standalone(컴포저 위 미리보기 칩)만 진짜 버튼. onMessage는 말풍선 안에 중첩되는데 말풍선
+// 자체가 버튼인 경우가 있어(선택-답장) button>button 중첩이 invalid HTML — span + 전파 차단으로
+// 포인터 점프 어포던스만 제공하고, 키보드 기본 동작은 바깥 말풍선(선택)이 갖는다.
 export function QuotedMessage({ className = '', label, onClick, preview, variant }: QuotedMessageProps) {
-  const accent = variant === 'onMessage' ? 'border-white/45' : 'border-indigo-400'
-  const labelTone = variant === 'onMessage' ? 'text-white' : 'text-indigo-500'
-  const previewTone = variant === 'onMessage' ? 'text-white/75' : 'text-zinc-400'
+  const shared = 'flex min-w-0 flex-col items-start border-l-2 pl-2 text-left transition-opacity hover:opacity-70'
+
+  if (variant === 'standalone') {
+    return (
+      <button type="button" onClick={onClick} className={`${shared} border-indigo-400 ${className}`}>
+        <span className="max-w-full truncate text-xs font-semibold text-indigo-500">{label}</span>
+        <span className="line-clamp-1 max-w-full text-xs leading-snug text-zinc-400">{preview}</span>
+      </button>
+    )
+  }
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex min-w-0 flex-col items-start border-l-2 pl-2 text-left transition-opacity hover:opacity-70 ${accent} ${className}`}
+    // 부모 말풍선이 버튼이라 여기에 role/tabIndex를 주면 다시 interactive content 중첩이 된다 —
+    // 점프는 포인터 전용 보조 어포던스로 두고, 키보드 기본 동작은 말풍선(선택)에 남긴다.
+    <span
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick()
+      }}
+      className={`${shared} cursor-pointer border-white/45 ${className}`}
     >
-      <span className={`max-w-full truncate text-xs font-semibold ${labelTone}`}>{label}</span>
-      <span className={`line-clamp-1 max-w-full text-xs leading-snug ${previewTone}`}>{preview}</span>
-    </button>
+      <span className="max-w-full truncate text-xs font-semibold text-white">{label}</span>
+      <span className="line-clamp-1 max-w-full text-xs leading-snug text-white/75">{preview}</span>
+    </span>
   )
 }
 
@@ -75,10 +89,9 @@ export function ArtistBubble({
           <button
             type="button"
             aria-pressed={isTarget}
+            data-highlighted={isHighlighted || undefined}
             onClick={onSelect}
-            className={`flex flex-col gap-1.5 text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border transition-all ${
-              isTarget ? 'border-indigo-400' : 'border-foreground/10'
-            } ${isHighlighted ? 'ring-2 ring-indigo-400/80' : ''}`}
+            className="flex flex-col gap-1.5 text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border border-foreground/10 transition-all aria-pressed:border-indigo-400 data-[highlighted]:ring-2 data-[highlighted]:ring-indigo-400/80"
           >
             {quote && (
               <QuotedMessage
@@ -103,13 +116,14 @@ export function ArtistBubble({
 // single gray check = sent (persisted), double indigo check = the artist's reply-room watermark
 // has passed this message (room-level receipt). No delivered state — there is no per-device ack.
 interface FanReplyBubbleProps {
+  isHighlighted: boolean
   isRead: boolean
   message: BubbleMessage
   onQuoteClick?: (messageId: string) => void
   quote?: BubbleQuote
 }
 
-export function FanReplyBubble({ isRead, message, onQuoteClick, quote }: FanReplyBubbleProps) {
+export function FanReplyBubble({ isHighlighted, isRead, message, onQuoteClick, quote }: FanReplyBubbleProps) {
   const locale = useLocale()
   const t = useTranslations('Sobok.fanRoom')
 
@@ -117,7 +131,10 @@ export function FanReplyBubble({ isRead, message, onQuoteClick, quote }: FanRepl
     <div className="flex justify-end w-full">
       <div className="flex max-w-[80%] flex-col items-end">
         <div className="flex items-end gap-1.5 flex-row-reverse">
-          <div className="flex flex-col gap-1.5 px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed bg-indigo-500 text-white">
+          <div
+            data-highlighted={isHighlighted || undefined}
+            className="flex flex-col gap-1.5 px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed bg-indigo-500 text-white data-[highlighted]:ring-2 data-[highlighted]:ring-indigo-300/80"
+          >
             {quote && (
               <QuotedMessage
                 label={quote.label}

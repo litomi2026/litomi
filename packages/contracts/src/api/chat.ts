@@ -406,36 +406,35 @@ export interface GETV1ChatArtistResponse {
   // The viewer's subscription state (for the manage/resubscribe panel); absent = never subscribed.
   subscription?: ChatSubscriptionDTO
   // Max reply text length (grows with continuous subscription); absent = owner or not entitled.
-  // The per-message reply count is fixed: REPLY_MAX_PER_MESSAGE in @litomi/domain/chat/policy.
+  // The reply count is quota-per-artist's-last-message: REPLY_MAX_PER_ARTIST_MESSAGE in
+  // @litomi/domain/chat/policy (the quota refills whenever the artist sends anything new).
   replyTextLimit?: number
 }
 
-// --- Artist reply room (fan replies to one message, with the artist's answers) ---
+// --- Artist reply room (one flat cross-fan timeline for one broadcast bubble) ---
 
 export const getV1ChatRepliesQuerySchema = z.object({
   before: messageIdCursorSchema.optional(),
   limit: z.coerce.number().int().min(1).max(100).default(30),
 })
 
-export interface ChatReplyRoomMessage {
+// One message on the reply room's flat timeline (newest-first pages; the client renders
+// oldest→newest). `fanId` is the fan side of the 1:1 this message belongs to — for an artist
+// answer that's the fan being answered. `quoted` is the resolved preview of the answered
+// message; the client shows it only when the quoted message isn't visually adjacent.
+export interface ChatReplyRoomItem {
   messageId: string
+  senderRole: ChatSenderRole
+  fanId: number
+  fan?: ChatUserBrief
   quotedMessageId?: string
+  quoted?: ChatQuotedPreview
   contentType: ChatContentType
   content: ChatMessageContent
   createdAt: string
 }
 
-// One fan's reply to message M (newest-first list), plus the artist's 1:1 answers that quote
-// it (threaded under, oldest→newest). Only the artist reads this room. `fanId` is the reply
-// target for the artist's answer (independent of whether the fan's brief resolved).
-export interface ChatReplyRoomEntry {
-  fanId: number
-  reply: ChatReplyRoomMessage
-  fan?: ChatUserBrief
-  answers: ChatReplyRoomMessage[]
-}
-
 export interface GETV1ChatRepliesResponse {
-  entries: ChatReplyRoomEntry[]
+  items: ChatReplyRoomItem[]
   nextCursor?: string
 }

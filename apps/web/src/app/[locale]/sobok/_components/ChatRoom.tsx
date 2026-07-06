@@ -8,6 +8,8 @@ import useArtistQuery from '../_query/useArtistQuery'
 import useSubscribeAction from '../_query/useSubscribeAction'
 import ArtistSubscribe from './ArtistSubscribe'
 import FanChatRoom from './FanChatRoom'
+import RoomSkeleton from './RoomSkeleton'
+import PageHeader, { HeaderBackLink } from './ui/PageHeader'
 
 type Props = {
   handle: string
@@ -16,6 +18,7 @@ type Props = {
 export default function ChatRoom({ handle }: Props) {
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
   const t = useTranslations('Sobok.billing')
+  const tRoom = useTranslations('Sobok.fanRoom')
   const router = useRouter()
 
   const artist = artistData?.artist
@@ -58,10 +61,17 @@ export default function ChatRoom({ handle }: Props) {
     }
   }, [isOwner, handle, router])
 
-  if (isArtistLoading || !artist || isOwner) {
+  if (isArtistLoading || isOwner) {
+    return <RoomSkeleton />
+  }
+
+  if (!artist) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-background">
-        <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-500/30" />
+      <div className="flex h-full flex-col bg-background">
+        <PageHeader back={<HeaderBackLink className="lg:hidden" href="/sobok" />} title={null} />
+        <div className="flex flex-1 items-center justify-center px-8">
+          <p className="text-sm text-zinc-400">{tRoom('artistNotFound')}</p>
+        </div>
       </div>
     )
   }

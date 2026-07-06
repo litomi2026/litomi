@@ -1,63 +1,93 @@
 'use client'
 
-import type { BillingSubscriptionItemDTO, PaymentHistoryItemDTO } from '@litomi/contracts'
-import { ChevronLeft, CreditCard, Loader2, Plus, Receipt, Trash2 } from 'lucide-react'
+import type { BillingSubscriptionItemDTO, PaymentHistoryItemDTO, PaymentHistoryStatus } from '@litomi/contracts'
+import { CreditCard, Plus, Receipt, Trash2 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useEffectEvent, useState } from 'react'
 import { Link } from '@/i18n/navigation'
 import { consumeBillingKeyRedirect, requestBillingKeyIssuance } from '../_lib/billing'
-import { avatarURL } from '../_lib/chat'
 import { formatDate, formatKRW } from '../_lib/format'
 import useAddPaymentMethodMutation from '../_query/useAddPaymentMethodMutation'
 import useBillingSubscriptionsQuery from '../_query/useBillingSubscriptionsQuery'
 import useDeletePaymentMethodMutation from '../_query/useDeletePaymentMethodMutation'
 import usePaymentHistoryQuery from '../_query/usePaymentHistoryQuery'
 import usePaymentMethodsQuery from '../_query/usePaymentMethodsQuery'
+import Avatar from './ui/Avatar'
+import Button from './ui/Button'
+import PageHeader, { HeaderBackLink } from './ui/PageHeader'
+import Section from './ui/Section'
+import Skeleton from './ui/Skeleton'
 
 export default function BillingHub() {
+  // 섹션별 쿼리가 제각각 도착하면 위 섹션의 높이 변화가 아래 섹션들을 여러 번 밀어낸다 —
+  // 셋 다 준비될 때까지 스켈레톤을 유지해 스왑을 한 번으로 모은다(섹션 내부 훅과는
+  // react-query가 dedupe하므로 요청이 늘지 않는다).
+  const { isLoading: loadingSubscriptions } = useBillingSubscriptionsQuery()
+  const { isLoading: loadingMethods } = usePaymentMethodsQuery()
+  const { isLoading: loadingHistory } = usePaymentHistoryQuery()
   const t = useTranslations('Sobok.billing')
+  const settling = loadingSubscriptions || loadingMethods || loadingHistory
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="h-14 shrink-0 flex items-center px-2 border-b border-foreground/10 bg-background/80">
-        <Link href="/sobok" className="p-2 text-zinc-400 hover:text-foreground transition-colors">
-          <ChevronLeft className="w-6 h-6" />
-        </Link>
-        <h2 className="font-bold text-lg text-foreground ml-2">{t('title')}</h2>
-      </div>
+    <div className="flex h-full flex-col bg-background">
+      <PageHeader
+        back={<HeaderBackLink className="lg:hidden" href="/sobok" />}
+        title={<h2 className="text-lg font-bold text-foreground">{t('title')}</h2>}
+      />
 
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-md space-y-8 px-5 py-6">
-          <SubscriptionsSection />
-          <PaymentMethodsSection />
-          <PaymentHistorySection />
+        <div className="mx-auto w-full max-w-xl space-y-8 px-5 py-6">
+          <SubscriptionsSection loading={settling} />
+          <PaymentMethodsSection loading={settling} />
+          <PaymentHistorySection loading={settling} />
         </div>
       </div>
     </div>
   )
 }
 
-function SubscriptionsSection() {
-  const { data, isLoading } = useBillingSubscriptionsQuery()
+// Same footprint as a two-line card row, so the skeleton→content swap doesn't move the page.
+function CardRowSkeleton({ avatar = false }: { avatar?: boolean }) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-foreground/10 p-3.5">
+      {avatar && <Skeleton className="h-10 w-10 rounded-full" />}
+      <div className="flex-1 space-y-1.5">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-3 w-44 max-w-full" />
+      </div>
+    </div>
+  )
+}
+
+function SubscriptionsSection({ loading }: { loading: boolean }) {
+  const { data } = useBillingSubscriptionsQuery()
   const t = useTranslations('Sobok.billing')
   const subscriptions = data?.subscriptions ?? []
 
-  return (
-    <section>
-      <h3 className="text-sm font-semibold text-zinc-400">{t('subscriptionsTitle')}</h3>
-      {isLoading ? (
-        <p className="mt-2 text-sm text-zinc-500">{t('loading')}</p>
-      ) : subscriptions.length === 0 ? (
-        <p className="mt-2 text-sm text-zinc-500">{t('subscriptionsEmpty')}</p>
-      ) : (
-        <ul className="mt-2 space-y-2">
-          {subscriptions.map((item) => (
-            <SubscriptionItem key={item.artist.id} item={item} />
-          ))}
-        </ul>
-      )}
-    </section>
-  )
+  function renderBody() {
+    if (loading) {
+      return (
+        <div className="space-y-2">
+          <CardRowSkeleton avatar />
+          <CardRowSkeleton avatar />
+        </div>
+      )
+    }
+
+    if (subscriptions.length === 0) {
+      return <p className="text-sm text-zinc-500">{t('subscriptionsEmpty')}</p>
+    }
+
+    return (
+      <ul className="space-y-2">
+        {subscriptions.map((item) => (
+          <SubscriptionItem key={item.artist.id} item={item} />
+        ))}
+      </ul>
+    )
+  }
+
+  return <Section title={t('subscriptionsTitle')}>{renderBody()}</Section>
 }
 
 function SubscriptionItem({ item }: { item: BillingSubscriptionItemDTO }) {
@@ -66,12 +96,19 @@ function SubscriptionItem({ item }: { item: BillingSubscriptionItemDTO }) {
   const { artist, subscription } = item
   const expiresAt = new Date(subscription.expiresAt)
   const live = expiresAt.getTime() > Date.now()
+  const label = statusLabel()
 
-  const label = live
-    ? subscription.autoRenew
-      ? t('nextBilling', { date: formatDate(expiresAt, locale), price: formatKRW(item.priceAmount, locale) })
-      : t('cancelScheduled', { date: formatDate(expiresAt, locale) })
-    : t('expired')
+  function statusLabel() {
+    if (!live) {
+      return t('expired')
+    }
+
+    if (subscription.autoRenew) {
+      return t('nextBilling', { date: formatDate(expiresAt, locale), price: formatKRW(item.priceAmount, locale) })
+    }
+
+    return t('cancelScheduled', { date: formatDate(expiresAt, locale) })
+  }
 
   return (
     <li>
@@ -79,25 +116,23 @@ function SubscriptionItem({ item }: { item: BillingSubscriptionItemDTO }) {
         href={`/sobok/@${artist.handle}`}
         className="flex items-center gap-3 rounded-xl border border-foreground/10 p-3.5 transition-colors hover:bg-foreground/5"
       >
-        <img
-          src={avatarURL(artist.displayName, artist.imageURL)}
-          alt=""
-          className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-foreground/10"
-        />
+        <Avatar imageURL={artist.imageURL} name={artist.displayName} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-foreground">
             {artist.displayName}
             {artist.emoji && <span className="ml-1">{artist.emoji}</span>}
           </p>
-          <p className={`mt-0.5 text-xs ${live ? 'text-zinc-400' : 'text-zinc-500'}`}>{label}</p>
+          <p data-live={live || undefined} className="mt-0.5 text-xs text-zinc-500 data-[live]:text-zinc-400">
+            {label}
+          </p>
         </div>
       </Link>
     </li>
   )
 }
 
-function PaymentMethodsSection() {
-  const { data, isLoading } = usePaymentMethodsQuery()
+function PaymentMethodsSection({ loading }: { loading: boolean }) {
+  const { data } = usePaymentMethodsQuery()
   const { mutateAsync: registerPaymentMethod, error: registerError } = useAddPaymentMethodMutation()
   const { mutate: deletePaymentMethod, isPending: deleting } = useDeletePaymentMethodMutation()
   const [confirmingId, setConfirmingId] = useState<number | null>(null)
@@ -153,13 +188,13 @@ function PaymentMethodsSection() {
   }, [])
 
   return (
-    <section>
-      <h3 className="text-sm font-semibold text-zinc-400">{t('methodsTitle')}</h3>
-
-      {isLoading ? (
-        <p className="mt-2 text-sm text-zinc-500">{t('loading')}</p>
+    <Section title={t('methodsTitle')}>
+      {loading ? (
+        <div className="space-y-2">
+          <CardRowSkeleton />
+        </div>
       ) : (
-        <ul className="mt-2 space-y-2">
+        <ul className="space-y-2">
           {data?.paymentMethods.map((method) => (
             <li key={method.id} className="flex items-center gap-3 rounded-xl border border-foreground/10 p-3.5">
               <CreditCard className="h-5 w-5 shrink-0 text-zinc-400" />
@@ -205,69 +240,78 @@ function PaymentMethodsSection() {
 
       {errorMessage && <p className="mt-2 text-xs text-red-400">{errorMessage}</p>}
 
-      <button
-        type="button"
+      <Button
+        busy={issuing}
+        className="mt-2 w-full border-dashed border-foreground/20 py-2.5 font-medium text-zinc-400 hover:border-indigo-500/50 hover:bg-transparent hover:text-indigo-400"
         onClick={() => void handleAddCard()}
-        disabled={issuing}
-        className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-foreground/20 py-2.5 text-sm font-medium text-zinc-400 transition-colors hover:border-indigo-500/50 hover:text-indigo-400 disabled:opacity-60"
+        variant="outline"
       >
-        {issuing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        {!issuing && <Plus className="h-4 w-4" />}
         {t('addCard')}
-      </button>
+      </Button>
       <p className="mt-1.5 text-[11px] text-zinc-500">{t('cardFallbackNote')}</p>
-    </section>
+    </Section>
   )
 }
 
-function PaymentHistorySection() {
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = usePaymentHistoryQuery()
+function PaymentHistorySection({ loading }: { loading: boolean }) {
+  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = usePaymentHistoryQuery()
   const t = useTranslations('Sobok.billing')
   const payments = data?.pages.flatMap((page) => page.payments) ?? []
 
-  return (
-    <section>
-      <h3 className="text-sm font-semibold text-zinc-400">{t('historyTitle')}</h3>
+  function renderBody() {
+    if (loading) {
+      return (
+        <div className="space-y-2">
+          <CardRowSkeleton />
+          <CardRowSkeleton />
+        </div>
+      )
+    }
 
-      {isLoading ? (
-        <p className="mt-2 text-sm text-zinc-500">{t('loading')}</p>
-      ) : payments.length === 0 ? (
-        <p className="mt-2 text-sm text-zinc-500">{t('historyEmpty')}</p>
-      ) : (
-        <ul className="mt-2 space-y-2">
-          {payments.map((payment) => (
-            <PaymentItem key={payment.id} payment={payment} />
-          ))}
-        </ul>
-      )}
+    if (payments.length === 0) {
+      return <p className="text-sm text-zinc-500">{t('historyEmpty')}</p>
+    }
+
+    return (
+      <ul className="space-y-2">
+        {payments.map((payment) => (
+          <PaymentItem key={payment.id} payment={payment} />
+        ))}
+      </ul>
+    )
+  }
+
+  return (
+    <Section title={t('historyTitle')}>
+      {renderBody()}
 
       {hasNextPage && (
-        <button
-          type="button"
+        <Button
+          busy={isFetchingNextPage}
+          className="mt-2 w-full border-foreground/10 font-normal text-zinc-400 hover:bg-foreground/5"
           onClick={() => void fetchNextPage()}
-          disabled={isFetchingNextPage}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-foreground/10 py-2 text-sm text-zinc-400 transition-colors hover:bg-foreground/5 disabled:opacity-60"
+          variant="outline"
         >
-          {isFetchingNextPage && <Loader2 className="h-4 w-4 animate-spin" />}
           {t('loadMore')}
-        </button>
+        </Button>
       )}
-    </section>
+    </Section>
   )
+}
+
+const PAYMENT_STATUS_TONE: Record<PaymentHistoryStatus, string> = {
+  paid: 'text-emerald-400',
+  failed: 'text-red-400',
+  refunded: 'text-amber-400',
+  pending: 'text-zinc-400',
 }
 
 function PaymentItem({ payment }: { payment: PaymentHistoryItemDTO }) {
   const t = useTranslations('Sobok.billing')
   const locale = useLocale()
 
-  const statusTone =
-    payment.status === 'paid'
-      ? 'text-emerald-400'
-      : payment.status === 'failed'
-        ? 'text-red-400'
-        : payment.status === 'refunded'
-          ? 'text-amber-400'
-          : 'text-zinc-400'
-
+  const statusTone = PAYMENT_STATUS_TONE[payment.status]
   const showReceipt = payment.status === 'paid' || payment.status === 'refunded'
   const partiallyRefunded = payment.status === 'paid' && payment.refundedAmount > 0
 

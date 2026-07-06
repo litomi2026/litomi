@@ -1,18 +1,21 @@
 'use client'
 
 import type { ChatArtistBrief, ChatFeedItem, ChatSubscriptionDTO } from '@litomi/contracts'
-import { REPLY_MAX_PER_MESSAGE } from '@litomi/domain/chat/policy'
-import { ChevronLeft, Loader2, X } from 'lucide-react'
+import { REPLY_MAX_PER_ARTIST_MESSAGE } from '@litomi/domain/chat/policy'
+import { X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
-import { Link } from '@/i18n/navigation'
 import useFanChatRoom, { type ReplyTarget } from '../_hooks/useFanChatRoom'
 import { avatarURL } from '../_lib/chat'
 import { ArtistBubble, type BubbleQuote, FanReplyBubble, QuotedMessage } from './ChatBubbles'
 import ChatComposer from './ChatComposer'
 import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import ComposerDock from './ComposerDock'
+import { MessageFeedSkeleton } from './RoomSkeleton'
 import SubscriptionMenu from './SubscriptionMenu'
+import Avatar from './ui/Avatar'
+import Button from './ui/Button'
+import PageHeader, { HeaderBackLink } from './ui/PageHeader'
 
 interface Props {
   artist: ChatArtistBrief
@@ -45,19 +48,21 @@ export default function FanChatRoom({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isLoadingHistory,
     isReadByArtist,
     isSending,
     itemById,
     items,
-    latestBroadcastId,
+    latestArtistTarget,
     quotes,
-    replyCountFor,
     sendReply,
+    usedReplies,
   } = useFanChatRoom({ artistId: artist.id, entitled, handle })
 
-  const effectiveContextId = replyTarget?.contextMessageId ?? latestBroadcastId
-  const usedReplies = effectiveContextId ? replyCountFor(effectiveContextId) : 0
-  const repliesExhausted = replyTextLimit !== undefined && usedReplies >= REPLY_MAX_PER_MESSAGE
+  // 명시 선택이 없으면 아티스트의 마지막 메시지(방송 ∪ 1:1 답장)에 답장한다 — 쿼터의 기준점과
+  // 같은 대상. 쿼터는 선택한 말풍선과 무관하며, 아티스트의 새 메시지가 오면 다시 채워진다.
+  const effectiveTarget = replyTarget ?? latestArtistTarget
+  const repliesExhausted = replyTextLimit !== undefined && usedReplies >= REPLY_MAX_PER_ARTIST_MESSAGE
   const targetPreview = replyTarget ? itemById.get(replyTarget.quotedMessageId ?? replyTarget.contextMessageId) : null
 
   // Jump to a quoted message and flash it briefly. It may be virtualized out of the DOM, so we
@@ -68,11 +73,11 @@ export default function FanChatRoom({
   }
 
   async function handleSend(text: string) {
-    if (!effectiveContextId) {
+    if (!effectiveTarget) {
       return
     }
 
-    await sendReply(replyTarget ?? { contextMessageId: effectiveContextId }, text)
+    await sendReply(effectiveTarget, text)
     setReplyTarget(null)
     listRef.current?.scrollToBottom()
   }
@@ -95,6 +100,7 @@ export default function FanChatRoom({
     if (item.kind === 'fanReply') {
       return (
         <FanReplyBubble
+          isHighlighted={highlightedId === item.messageId}
           isRead={isReadByArtist(item)}
           message={item}
           onQuoteClick={scrollToMessage}
@@ -149,35 +155,48 @@ export default function FanChatRoom({
   return (
     <div className="flex flex-col h-full bg-background relative">
       {/* Header */}
-      <div className="h-14 shrink-0 flex items-center justify-between px-2 border-b border-foreground/10 bg-background/80">
-        <div className="flex items-center gap-2">
-          <Link href="/sobok" className="p-2 text-zinc-400 hover:text-foreground transition-colors">
-            <ChevronLeft className="w-6 h-6" />
-          </Link>
-          <h2 className="font-bold text-lg text-foreground flex items-center gap-1.5">
-            {artist.displayName}
-            {artist.emoji && <span>{artist.emoji}</span>}
-            <span className="text-sm font-normal text-zinc-500">@{handle}</span>
+      <PageHeader
+        back={<HeaderBackLink className="lg:hidden" href="/sobok" />}
+        title={
+          <h2 className="flex min-w-0 items-center gap-2 text-lg font-bold text-foreground">
+            <Avatar className="h-8 w-8" imageURL={artist.imageURL} name={artist.displayName} />
+            <span className="truncate">
+              {artist.displayName}
+              {artist.emoji && <span className="ml-1.5">{artist.emoji}</span>}
+            </span>
+            <span className="shrink-0 text-sm font-normal text-zinc-500">@{handle}</span>
           </h2>
-        </div>
-        {entitled && subscription && (
-          <SubscriptionMenu handle={handle} subscription={subscription} onResume={onSubscribe} resuming={subscribing} />
-        )}
-      </div>
+        }
+        actions={
+          entitled &&
+          subscription && (
+            <SubscriptionMenu
+              handle={handle}
+              subscription={subscription}
+              onResume={onSubscribe}
+              resuming={subscribing}
+            />
+          )
+        }
+      />
 
       {/* Messages */}
-      <ChatMessageList
-        bottomInsetClassName="pb-[var(--sobok-dock-h)]"
-        dateOf={(item) => new Date(item.createdAt).getTime()}
-        hasOlder={hasNextPage}
-        isLoadingOlder={isFetchingNextPage}
-        itemKey={(item) => item.messageId}
-        items={items}
-        onLoadOlder={fetchNextPage}
-        ref={listRef}
-        renderItem={renderItem}
-        scrollButtonClassName="bottom-[calc(var(--sobok-dock-h)+0.75rem)] right-4"
-      />
+      {isLoadingHistory ? (
+        <MessageFeedSkeleton className="pb-[calc(var(--sobok-dock-h)+1rem)]" />
+      ) : (
+        <ChatMessageList
+          bottomInsetClassName="pb-[var(--sobok-dock-h)]"
+          dateOf={(item) => new Date(item.createdAt).getTime()}
+          hasOlder={hasNextPage}
+          isLoadingOlder={isFetchingNextPage}
+          itemKey={(item) => item.messageId}
+          items={items}
+          onLoadOlder={fetchNextPage}
+          ref={listRef}
+          renderItem={renderItem}
+          scrollButtonClassName="bottom-[calc(var(--sobok-dock-h)+0.75rem)] right-4"
+        />
+      )}
 
       {/* Composer island — the reply-target chip docks above the input on the same surface */}
       <ComposerDock
@@ -208,24 +227,20 @@ export default function FanChatRoom({
           <ChatComposer
             onSend={handleSend}
             placeholder={
-              repliesExhausted ? t('repliesExhausted', { count: REPLY_MAX_PER_MESSAGE }) : t('composerPlaceholder')
+              repliesExhausted
+                ? t('repliesExhausted', { count: REPLY_MAX_PER_ARTIST_MESSAGE })
+                : t('composerPlaceholder')
             }
-            disabled={isSending || !effectiveContextId || repliesExhausted}
+            disabled={isSending || !effectiveTarget || repliesExhausted}
             maxLength={replyTextLimit}
           />
         ) : (
           <div className="space-y-2 px-4 py-3">
             <p className="text-center text-sm text-zinc-400">{t('expiredNotice')}</p>
             {subscribeError && <p className="text-center text-xs text-red-400">{subscribeError}</p>}
-            <button
-              type="button"
-              onClick={onSubscribe}
-              disabled={subscribing}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-60"
-            >
-              {subscribing && <Loader2 className="h-4 w-4 animate-spin" />}
+            <Button busy={subscribing} className="w-full rounded-2xl py-2.5" onClick={onSubscribe}>
               {tSubscribe('resubscribe')}
-            </button>
+            </Button>
           </div>
         )}
       </ComposerDock>

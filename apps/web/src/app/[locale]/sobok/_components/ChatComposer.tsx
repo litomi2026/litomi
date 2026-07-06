@@ -1,6 +1,6 @@
 'use client'
 
-import { Image as ImageIcon, Send } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
@@ -40,20 +40,20 @@ export default function ChatComposer({ onSend, placeholder, disabled = false, ma
 
   return (
     <div className="flex items-center gap-2 p-1.5 pr-2">
-      <button className="p-2 text-zinc-400 hover:text-indigo-500 transition-colors shrink-0" type="button">
-        <ImageIcon className="w-6 h-6" />
-      </button>
       <TextareaAutosize
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="flex-1 bg-transparent border-none py-2.5 px-1 text-foreground placeholder-zinc-500 resize-none outline-none max-h-28"
+        className="flex-1 bg-transparent border-none py-2.5 pl-3 pr-1 text-foreground placeholder-zinc-500 resize-none outline-none max-h-28"
         maxRows={4}
         disabled={disabled}
       />
       {maxLength !== undefined && length > 0 && (
-        <span className={`shrink-0 text-[11px] font-medium ${overLimit ? 'text-red-400' : 'text-zinc-500'}`}>
+        <span
+          data-over={overLimit || undefined}
+          className="shrink-0 text-[11px] font-medium text-zinc-500 data-[over]:text-red-400"
+        >
           {length}/{maxLength}
         </span>
       )}

@@ -1,4 +1,4 @@
-import type { ChatFeedItem } from '@litomi/contracts'
+import type { ChatFeedItem, ChatReplyRoomItem } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
 
 export function dayKey(ts: number): string {
@@ -63,6 +63,12 @@ export function mergeById<T>(fetched: T[], realtime: T[], idOf: (item: T) => str
   return [...byId.values()].sort((a, b) => idOf(a).localeCompare(idOf(b)))
 }
 
+// A setState updater that appends `item` unless one with the same messageId is already present.
+// Realtime/optimistic messages can arrive twice (WS relay + refetch), so appends must dedupe.
+export function appendById<T extends { messageId: string }>(item: T) {
+  return (prev: T[]): T[] => (prev.some((existing) => existing.messageId === item.messageId) ? prev : [...prev, item])
+}
+
 // The fan timeline is broadcasts + the fan's replies + the artist's 1:1 answers, already merged
 // server-side into ChatFeedItem[]. Client-side we union the fetched pages with realtime and
 // optimistic items, deduped by messageId (fetched is authoritative), sorted chronologically.
@@ -102,6 +108,40 @@ export interface QuoteInfo {
 // most recent message before this one — i.e. skipping the sender's own consecutive messages,
 // they're effectively adjacent. It only shows when they're genuinely "far apart" (another
 // other-party message sits between them, or the answered message isn't loaded).
+// 답장방(플랫 멀티팬 타임라인)의 인용 계산 — 명시적 quotedMessageId가 있는 메시지만 대상이다
+// (인용 없는 팬 답장은 방 자체가 컨텍스트). 인용 대상이 그 시점의 "상대편(팬측↔아티스트측)
+// 마지막 메시지"면 시각적으로 인접하므로 숨기고, 그렇지 않을 때만 인용 헤더를 보여준다.
+// isMine은 아티스트(뷰어) 자신의 메시지를 인용했는지 여부.
+export function computeReplyRoomQuotes(items: ChatReplyRoomItem[]): Map<string, QuoteInfo> {
+  const byId = new Map(items.map((item) => [item.messageId, item]))
+  const quotes = new Map<string, QuoteInfo>()
+
+  let lastFanId: string | undefined
+  let lastArtistId: string | undefined
+
+  for (const item of items) {
+    const isFan = item.senderRole === 'fan'
+    const nearestOtherId = isFan ? lastArtistId : lastFanId
+
+    if (item.quotedMessageId && item.quotedMessageId !== nearestOtherId) {
+      const target = byId.get(item.quotedMessageId)
+      quotes.set(item.messageId, {
+        targetId: item.quotedMessageId,
+        preview: target ? target.content.text : (item.quoted?.preview ?? ''),
+        isMine: target ? target.senderRole === 'artist' : item.quoted?.senderRole === 'artist',
+      })
+    }
+
+    if (isFan) {
+      lastFanId = item.messageId
+    } else {
+      lastArtistId = item.messageId
+    }
+  }
+
+  return quotes
+}
+
 export function computeQuotes(items: ChatFeedItem[]): Map<string, QuoteInfo> {
   const byId = new Map(items.map((item) => [item.messageId, item]))
   const quotes = new Map<string, QuoteInfo>()
