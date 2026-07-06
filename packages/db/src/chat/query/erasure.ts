@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, or, type SQL, sql } from 'drizzle-orm'
+import { and, asc, eq, inArray, type SQL, sql } from 'drizzle-orm'
 
 import { chatDB } from '../db'
 import { chatDmMessageTable, chatReadCursorTable, chatReplyReadCursorTable } from '../schema'
@@ -7,21 +7,14 @@ const ERASE_BATCH_SIZE = 5000
 
 export interface EraseChatUserInput {
   userId: number
-  ownedArtistId: number | null
 }
 
-// 탈퇴 파기 — 사용자의 사적 데이터를 지운다. 1:1 대화는 두 당사자가 공동 소유하므로 어느 한쪽이
-// 탈퇴하면 그 대화 전체를 삭제한다(dangling id 없음): 팬으로서의 대화(fanId=user)와, 아티스트
-// 였다면 그 페르소나의 모든 1:1 대화(artistId=owned)를 함께 지운다. 브로드캐스트(chat_broadcast)는
-// "판매된 메시지 열람 보존" 정책에 따라 남긴다(App DB에서 페르소나는 tombstone). 모든 삭제는 멱등.
-export async function eraseChatUser({ userId, ownedArtistId }: EraseChatUserInput): Promise<void> {
-  const conditions = [eq(chatDmMessageTable.fanId, userId)]
-
-  if (ownedArtistId !== null) {
-    conditions.push(eq(chatDmMessageTable.artistId, ownedArtistId))
-  }
-
-  await eraseDmMessagesWhere(or(...conditions)!)
+// 탈퇴 파기 — 떠나는 사용자의 사적 데이터만 지운다. 1:1 대화는 값을 치른 팬의 사적 스레드이므로
+// 그가 팬이었던 대화(fanId=user) 전체를 삭제한다: 상대의 되답장에도 팬 정보가 인용돼 있을 수
+// 있어 절반만 지우면 파기권을 뚫는다. 반대로 아티스트 페르소나가 판매한 콘텐츠 — 브로드캐스트와
+// 1:1 되답장 — 는 구독 팬이 값을 치른 것이라 남긴다(App DB에서 페르소나는 tombstone). 멱등.
+export async function eraseChatUser({ userId }: EraseChatUserInput): Promise<void> {
+  await eraseDmMessagesWhere(eq(chatDmMessageTable.fanId, userId))
   await chatDB.delete(chatReadCursorTable).where(eq(chatReadCursorTable.userId, userId))
   await chatDB.delete(chatReplyReadCursorTable).where(eq(chatReplyReadCursorTable.userId, userId))
 }

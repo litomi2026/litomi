@@ -38,19 +38,13 @@ async function processErasures(): Promise<void> {
 
     for (const row of rows) {
       try {
-        // 아티스트였다면 본인 브로드캐스트는 남긴다(판매된 메시지 열람 보존 정책) —
-        // 페르소나 행도 App DB에서 tombstone(userId null)으로 살아 있다.
-        await eraseChatUser({
-          userId: row.userId,
-          ownedArtistId: row.chatArtistId,
-        })
+        // 팬으로서의 사적 대화만 지운다 — 아티스트 페르소나가 판매한 콘텐츠(브로드캐스트·1:1
+        // 되답장)는 구독 팬이 값을 치른 것이라 tombstone으로 보존된다.
+        await eraseChatUser({ userId: row.userId })
 
         await deleteUserErasure(row.userId)
 
-        console.info('chat-worker: erased chat data', {
-          userId: row.userId,
-          chatArtistId: row.chatArtistId,
-        })
+        console.info('chat-worker: erased chat data', { userId: row.userId })
       } catch (error) {
         // 이 행은 outbox에 남아 다음 틱에 재시도된다 — 배치 루프만 멈추고 폴러는 계속 돈다.
         failed = true
