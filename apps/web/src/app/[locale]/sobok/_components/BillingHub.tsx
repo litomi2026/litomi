@@ -3,9 +3,10 @@
 import type { BillingSubscriptionItemDTO, PaymentHistoryItemDTO, PaymentHistoryStatus } from '@litomi/contracts'
 import { CreditCard, Plus, Receipt, Trash2 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
-import { useEffect, useEffectEvent, useState } from 'react'
+import { useState } from 'react'
 import { Link } from '@/i18n/navigation'
-import { consumeBillingKeyRedirect, requestBillingKeyIssuance } from '../_lib/billing'
+import useBillingKeyRedirect from '../_hooks/useBillingKeyRedirect'
+import { requestBillingKeyIssuance } from '../_lib/billing'
 import { formatDate, formatKRW } from '../_lib/format'
 import useAddPaymentMethodMutation from '../_query/useAddPaymentMethodMutation'
 import useBillingSubscriptionsQuery from '../_query/useBillingSubscriptionsQuery'
@@ -122,7 +123,7 @@ function SubscriptionItem({ item }: { item: BillingSubscriptionItemDTO }) {
             {artist.displayName}
             {artist.emoji && <span className="ml-1">{artist.emoji}</span>}
           </p>
-          <p data-live={live || undefined} className="mt-0.5 text-xs text-zinc-500 data-[live]:text-zinc-400">
+          <p data-live={live || undefined} className="mt-0.5 text-xs text-zinc-500 data-live:text-zinc-400">
             {label}
           </p>
         </div>
@@ -140,23 +141,6 @@ function PaymentMethodsSection({ loading }: { loading: boolean }) {
   const [issueError, setIssueError] = useState<string | null>(null)
   const t = useTranslations('Sobok.billing')
   const errorMessage = issueError ?? (registerError instanceof Error ? registerError.message : null)
-
-  // 모바일 빌링키 발급의 full-page redirect 복귀 — 카드 등록을 마저 진행한다.
-  const resumeCardRegistration = useEffectEvent(() => {
-    const result = consumeBillingKeyRedirect(t('registerFailed'))
-
-    if (!result) {
-      return
-    }
-
-    if ('billingKey' in result) {
-      registerPaymentMethod({ token: result.billingKey }).catch((caught) => {
-        setIssueError(caught instanceof Error ? caught.message : t('registerFailed'))
-      })
-    } else {
-      setIssueError(result.errorMessage)
-    }
-  })
 
   async function handleAddCard() {
     if (!data?.storeId || !data.channelKey) {
@@ -183,9 +167,15 @@ function PaymentMethodsSection({ loading }: { loading: boolean }) {
     }
   }
 
-  useEffect(() => {
-    resumeCardRegistration()
-  }, [])
+  // 모바일 빌링키 발급의 full-page redirect 복귀 — 카드 등록을 마저 진행한다.
+  useBillingKeyRedirect({
+    failedMessage: t('registerFailed'),
+    onBillingKey: (billingKey) =>
+      registerPaymentMethod({ token: billingKey }).catch((caught) => {
+        setIssueError(caught instanceof Error ? caught.message : t('registerFailed'))
+      }),
+    onError: setIssueError,
+  })
 
   return (
     <Section title={t('methodsTitle')}>

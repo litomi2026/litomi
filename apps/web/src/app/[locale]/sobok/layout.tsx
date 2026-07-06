@@ -6,7 +6,7 @@ import SobokAuthGate from './_components/SobokAuthGate'
 // the coarse login gate, the shared WebSocket, and safe-area insets.
 export default function SobokLayout({ children }: LayoutProps<'/[locale]'>) {
   return (
-    <div className="flex h-dvh flex-col bg-background pl-[var(--safe-area-left)] pr-[var(--safe-area-right)] pt-[var(--safe-area-top)]">
+    <div className="flex h-dvh flex-col bg-background pl-safe pr-safe pt-safe">
       <SobokAuthGate>
         <ChatProvider>
           <ChatRealtime />

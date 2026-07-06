@@ -1,9 +1,9 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useEffect, useEffectEvent } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from '@/i18n/navigation'
-import { consumeBillingKeyRedirect } from '../_lib/billing'
+import useBillingKeyRedirect from '../_hooks/useBillingKeyRedirect'
 import useArtistQuery from '../_query/useArtistQuery'
 import useSubscribeAction from '../_query/useSubscribeAction'
 import ArtistSubscribe from './ArtistSubscribe'
@@ -36,23 +36,11 @@ export default function ChatRoom({ handle }: Props) {
   } = useSubscribeAction(handle, artist?.displayName ?? '', !isOwner)
 
   // 모바일 빌링키 발급의 full-page redirect 복귀 — 등록을 마저 진행하고 구독까지 잇는다.
-  const resumeBillingKeyFlow = useEffectEvent(() => {
-    const result = consumeBillingKeyRedirect(t('registerFailed'))
-
-    if (!result) {
-      return
-    }
-
-    if ('billingKey' in result) {
-      finishWithBillingKey(result.billingKey)
-    } else {
-      reportSubscribeError(result.errorMessage)
-    }
+  useBillingKeyRedirect({
+    failedMessage: t('registerFailed'),
+    onBillingKey: finishWithBillingKey,
+    onError: reportSubscribeError,
   })
-
-  useEffect(() => {
-    resumeBillingKeyFlow()
-  }, [])
 
   // Owners belong in the studio, not the fan room.
   useEffect(() => {
@@ -93,10 +81,8 @@ export default function ChatRoom({ handle }: Props) {
       artist={artist}
       entitled={entitled}
       handle={handle}
-      onSubscribe={subscribe}
       replyTextLimit={artistData?.replyTextLimit}
-      subscribeError={subscribeError}
-      subscribing={subscribing}
+      subscribe={{ onSubscribe: subscribe, pending: subscribing, error: subscribeError }}
       subscription={subscription}
     />
   )

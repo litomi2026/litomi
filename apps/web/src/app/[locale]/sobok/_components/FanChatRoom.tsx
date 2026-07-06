@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import useFanChatRoom, { type ReplyTarget } from '../_hooks/useFanChatRoom'
 import { avatarURL } from '../_lib/chat'
-import { ArtistBubble, type BubbleQuote, FanReplyBubble, QuotedMessage } from './ChatBubbles'
+import { type BubbleQuote, IncomingBubble, OutgoingBubble, QuotedMessage } from './ChatBubbles'
 import ChatComposer from './ChatComposer'
 import ChatMessageList, { type ChatMessageListHandle } from './ChatMessageList'
 import ComposerDock from './ComposerDock'
@@ -17,27 +17,22 @@ import Avatar from './ui/Avatar'
 import Button from './ui/Button'
 import PageHeader, { HeaderBackLink } from './ui/PageHeader'
 
+export interface SubscribeControls {
+  onSubscribe: () => void
+  pending: boolean
+  error: string | null
+}
+
 interface Props {
   artist: ChatArtistBrief
   entitled: boolean
   handle: string
-  onSubscribe: () => void
   replyTextLimit: number | undefined
-  subscribeError: string | null
-  subscribing: boolean
   subscription: ChatSubscriptionDTO | undefined
+  subscribe: SubscribeControls
 }
 
-export default function FanChatRoom({
-  artist,
-  entitled,
-  handle,
-  onSubscribe,
-  replyTextLimit,
-  subscribeError,
-  subscribing,
-  subscription,
-}: Props) {
+export default function FanChatRoom({ artist, entitled, handle, replyTextLimit, subscription, subscribe }: Props) {
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null)
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const listRef = useRef<ChatMessageListHandle>(null)
@@ -99,12 +94,13 @@ export default function FanChatRoom({
   function renderItem(item: ChatFeedItem) {
     if (item.kind === 'fanReply') {
       return (
-        <FanReplyBubble
+        <OutgoingBubble
+          createdAt={item.createdAt}
           isHighlighted={highlightedId === item.messageId}
-          isRead={isReadByArtist(item)}
-          message={item}
           onQuoteClick={scrollToMessage}
           quote={quoteFor(item)}
+          receipt={isReadByArtist(item) ? 'read' : 'sent'}
+          text={item.content.text}
         />
       )
     }
@@ -121,11 +117,11 @@ export default function FanChatRoom({
         : replyTarget?.contextMessageId === item.messageId && !replyTarget.quotedMessageId
 
     return (
-      <ArtistBubble
+      <IncomingBubble
         avatarSrc={avatarURL(artist.displayName, artist.imageURL)}
+        createdAt={item.createdAt}
         isHighlighted={highlightedId === item.messageId}
-        isTarget={isTarget}
-        message={item}
+        isSelected={isTarget}
         onQuoteClick={scrollToMessage}
         onSelect={() =>
           setReplyTarget((prev) =>
@@ -135,6 +131,7 @@ export default function FanChatRoom({
           )
         }
         quote={quoteFor(item)}
+        text={item.content.text}
       />
     )
   }
@@ -173,8 +170,8 @@ export default function FanChatRoom({
             <SubscriptionMenu
               handle={handle}
               subscription={subscription}
-              onResume={onSubscribe}
-              resuming={subscribing}
+              onResume={subscribe.onSubscribe}
+              resuming={subscribe.pending}
             />
           )
         }
@@ -237,8 +234,8 @@ export default function FanChatRoom({
         ) : (
           <div className="space-y-2 px-4 py-3">
             <p className="text-center text-sm text-zinc-400">{t('expiredNotice')}</p>
-            {subscribeError && <p className="text-center text-xs text-red-400">{subscribeError}</p>}
-            <Button busy={subscribing} className="w-full rounded-2xl py-2.5" onClick={onSubscribe}>
+            {subscribe.error && <p className="text-center text-xs text-red-400">{subscribe.error}</p>}
+            <Button busy={subscribe.pending} className="w-full rounded-2xl py-2.5" onClick={subscribe.onSubscribe}>
               {tSubscribe('resubscribe')}
             </Button>
           </div>

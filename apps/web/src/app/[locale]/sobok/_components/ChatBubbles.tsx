@@ -1,5 +1,6 @@
 import { Check, CheckCheck } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 import { formatTime } from '../_lib/format'
 
 interface QuotedMessageProps {
@@ -41,119 +42,150 @@ export function QuotedMessage({ className = '', label, onClick, preview, variant
   )
 }
 
-// The minimal shape every bubble needs from a feed item.
-interface BubbleMessage {
-  messageId: string
-  content: { text: string }
-  createdAt: string
-}
-
+// A quote header carried on a bubble (points at the message this one answers).
 export interface BubbleQuote {
   targetId: string
   label: string
   preview: string
 }
 
-// An artist message on the left: a broadcast bubble or a 1:1 answer. Both are selectable (tap
-// to reply). A 1:1 answer additionally carries a quote of the fan message it answers.
-interface ArtistBubbleProps {
-  avatarSrc: string
-  isHighlighted: boolean
-  isTarget: boolean
-  message: BubbleMessage
-  onQuoteClick?: (messageId: string) => void
-  onSelect: () => void
-  quote?: BubbleQuote
+function QuoteHeader({ quote, onQuoteClick }: { quote: BubbleQuote; onQuoteClick?: (targetId: string) => void }) {
+  return (
+    <QuotedMessage
+      label={quote.label}
+      onClick={() => onQuoteClick?.(quote.targetId)}
+      preview={quote.preview}
+      variant="onMessage"
+    />
+  )
 }
 
-export function ArtistBubble({
+// The other party's message on the left (avatar + optional sender name). Tappable to pick it as
+// the reply/answer target (aria-pressed) when `onSelect` is given. Fan room: the artist's
+// broadcasts/answers. Studio reply room: each fan's reply (with the fan's name).
+interface IncomingBubbleProps {
+  avatarSrc: string
+  text: string
+  createdAt: string
+  senderName?: string
+  quote?: BubbleQuote
+  onQuoteClick?: (targetId: string) => void
+  onSelect?: () => void
+  isSelected?: boolean
+  isHighlighted?: boolean
+}
+
+const INCOMING_BUBBLE =
+  'flex flex-col gap-1.5 text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border border-foreground/10 transition-colors data-[highlighted]:ring-2 data-[highlighted]:ring-indigo-400/80'
+
+export function IncomingBubble({
   avatarSrc,
-  isHighlighted,
-  isTarget,
-  message,
+  text,
+  createdAt,
+  senderName,
+  quote,
   onQuoteClick,
   onSelect,
-  quote,
-}: ArtistBubbleProps) {
+  isSelected = false,
+  isHighlighted = false,
+}: IncomingBubbleProps) {
   const locale = useLocale()
 
+  const body = (
+    <>
+      {quote && <QuoteHeader quote={quote} onQuoteClick={onQuoteClick} />}
+      <span>{text}</span>
+    </>
+  )
+
   return (
-    <div className="flex justify-start w-full">
+    <div className="flex w-full justify-start">
       <div className="flex max-w-[80%] flex-row items-end gap-2">
         <img
           src={avatarSrc}
           alt=""
-          className="w-9 h-9 rounded-full object-cover shadow-sm border border-foreground/10 shrink-0"
+          className="h-9 w-9 shrink-0 rounded-full border border-foreground/10 object-cover shadow-sm"
         />
-        <div className="flex items-end gap-1.5">
-          <button
-            type="button"
-            aria-pressed={isTarget}
-            data-highlighted={isHighlighted || undefined}
-            onClick={onSelect}
-            className="flex flex-col gap-1.5 text-left px-3.5 py-2 rounded-2xl rounded-bl-sm shadow-sm text-base leading-relaxed wrap-break-word whitespace-pre-wrap bg-zinc-800 text-foreground border border-foreground/10 transition-all aria-pressed:border-indigo-400 data-[highlighted]:ring-2 data-[highlighted]:ring-indigo-400/80"
-          >
-            {quote && (
-              <QuotedMessage
-                label={quote.label}
-                onClick={() => onQuoteClick?.(quote.targetId)}
-                preview={quote.preview}
-                variant="onMessage"
-              />
+        <div className="flex flex-col items-start">
+          {senderName && (
+            <span className="mb-1 ml-1 text-xs font-medium tracking-tight text-zinc-400">{senderName}</span>
+          )}
+          <div className="flex items-end gap-1.5">
+            {onSelect ? (
+              <button
+                type="button"
+                aria-pressed={isSelected}
+                data-highlighted={isHighlighted || undefined}
+                onClick={onSelect}
+                className={`${INCOMING_BUBBLE} aria-pressed:border-indigo-400`}
+              >
+                {body}
+              </button>
+            ) : (
+              <div data-highlighted={isHighlighted || undefined} className={INCOMING_BUBBLE}>
+                {body}
+              </div>
             )}
-            <span>{message.content.text}</span>
-          </button>
-          <span className="text-[10px] text-zinc-400 mb-0.5 shrink-0 font-medium">
-            {formatTime(message.createdAt, locale)}
-          </span>
+            <span className="mb-0.5 shrink-0 text-[10px] font-medium text-zinc-400">
+              {formatTime(createdAt, locale)}
+            </span>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-// The fan's own reply on the right, with a Telegram-style two-state receipt above the time:
-// single gray check = sent (persisted), double indigo check = the artist's reply-room watermark
-// has passed this message (room-level receipt). No delivered state — there is no per-device ack.
-interface FanReplyBubbleProps {
-  isHighlighted: boolean
-  isRead: boolean
-  message: BubbleMessage
-  onQuoteClick?: (messageId: string) => void
+// Own message on the right. `receipt` renders the Telegram-style ✓/✓✓ (fan's replies); `footer`
+// hangs a row under the bubble (broadcast → reply-room link). No delivered state — no per-device ack.
+interface OutgoingBubbleProps {
+  text: string
+  createdAt: string
   quote?: BubbleQuote
+  onQuoteClick?: (targetId: string) => void
+  isHighlighted?: boolean
+  receipt?: 'read' | 'sent'
+  footer?: ReactNode
 }
 
-export function FanReplyBubble({ isHighlighted, isRead, message, onQuoteClick, quote }: FanReplyBubbleProps) {
+export function OutgoingBubble({
+  text,
+  createdAt,
+  quote,
+  onQuoteClick,
+  isHighlighted = false,
+  receipt,
+  footer,
+}: OutgoingBubbleProps) {
   const locale = useLocale()
   const t = useTranslations('Sobok.fanRoom')
+  const time = <span className="text-[10px] font-medium text-zinc-400">{formatTime(createdAt, locale)}</span>
 
   return (
-    <div className="flex justify-end w-full">
-      <div className="flex max-w-[80%] flex-col items-end">
-        <div className="flex items-end gap-1.5 flex-row-reverse">
+    <div className="flex w-full justify-end">
+      <div className="flex max-w-[80%] flex-col items-end gap-1">
+        <div className="flex flex-row-reverse items-end gap-1.5">
           <div
             data-highlighted={isHighlighted || undefined}
-            className="flex flex-col gap-1.5 px-3.5 py-2 rounded-2xl rounded-br-sm shadow-sm text-base leading-relaxed bg-indigo-500 text-white data-[highlighted]:ring-2 data-[highlighted]:ring-indigo-300/80"
+            className="flex flex-col gap-1.5 rounded-2xl rounded-br-sm bg-indigo-500 px-3.5 py-2 text-base leading-relaxed text-white shadow-sm data-highlighted:ring-2 data-highlighted:ring-indigo-300/80"
           >
-            {quote && (
-              <QuotedMessage
-                label={quote.label}
-                onClick={() => onQuoteClick?.(quote.targetId)}
-                preview={quote.preview}
-                variant="onMessage"
-              />
-            )}
-            <span className="wrap-break-word whitespace-pre-wrap">{message.content.text}</span>
+            {quote && <QuoteHeader quote={quote} onQuoteClick={onQuoteClick} />}
+            <span className="wrap-break-word whitespace-pre-wrap">{text}</span>
           </div>
-          <div className="flex flex-col items-end mb-0.5 shrink-0">
-            {isRead ? (
-              <CheckCheck aria-label={t('read')} className="w-3.5 h-3.5 text-indigo-400" role="img" />
-            ) : (
-              <Check aria-label={t('sent')} className="w-3.5 h-3.5 text-zinc-600" role="img" />
-            )}
-            <span className="text-[10px] text-zinc-400 font-medium">{formatTime(message.createdAt, locale)}</span>
-          </div>
+          {receipt ? (
+            <div className="mb-0.5 flex shrink-0 flex-col items-end">
+              {receipt === 'read' ? (
+                <CheckCheck aria-label={t('read')} className="h-3.5 w-3.5 text-indigo-400" role="img" />
+              ) : (
+                <Check aria-label={t('sent')} className="h-3.5 w-3.5 text-zinc-600" role="img" />
+              )}
+              {time}
+            </div>
+          ) : (
+            <span className="mb-0.5 shrink-0">{time}</span>
+          )}
         </div>
+        {footer}
       </div>
     </div>
   )
