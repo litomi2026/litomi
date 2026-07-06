@@ -1,13 +1,14 @@
 'use client'
 
 import type { ChatSubscriptionDTO } from '@litomi/contracts'
-import { Loader2, Settings } from 'lucide-react'
+import { Settings } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { getErrorMessage } from '@/lib/error-message'
 import { formatDate } from '../_lib/format'
 import useCancelSubscriptionMutation from '../_query/useCancelSubscriptionMutation'
 import useRefundSubscriptionMutation from '../_query/useRefundSubscriptionMutation'
+import Button from './ui/Button'
 
 interface Props {
   handle: string
@@ -62,23 +63,17 @@ export default function SubscriptionMenu({ handle, subscription, onResume, resum
                 <p className="text-sm font-medium text-foreground">{t('refundConfirmTitle')}</p>
                 <p className="mt-1 text-xs text-zinc-400">{t('refundConfirmBody')}</p>
                 {refundError && <p className="mt-2 text-xs text-red-400">{refundError}</p>}
-                <button
-                  type="button"
-                  onClick={() => refundSubscription()}
-                  disabled={isBusy}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-red-500/90 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-500 disabled:opacity-60"
-                >
-                  {isBusy && <Loader2 className="h-4 w-4 animate-spin" />}
+                <Button busy={isBusy} className="mt-3 w-full" onClick={() => refundSubscription()} variant="danger">
                   {t('refundCta')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfirmingRefund(false)}
+                </Button>
+                <Button
+                  className="mt-2 w-full font-medium"
                   disabled={isBusy}
-                  className="mt-2 w-full rounded-xl border border-foreground/15 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-700/50 disabled:opacity-60"
+                  onClick={() => setConfirmingRefund(false)}
+                  variant="outline"
                 >
                   {t('back')}
-                </button>
+                </Button>
               </>
             ) : (
               <>
@@ -88,29 +83,22 @@ export default function SubscriptionMenu({ handle, subscription, onResume, resum
                     <p className="mt-1 text-xs text-zinc-400">
                       {t('nextBillingDate', { date: formatDate(endsAt, locale) })}
                     </p>
-                    <button
-                      type="button"
+                    <Button
+                      busy={isBusy}
+                      className="mt-3 w-full font-medium"
                       onClick={() => cancelSubscription()}
-                      disabled={isBusy}
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-foreground/15 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-700/50 disabled:opacity-60"
+                      variant="outline"
                     >
-                      {isBusy && <Loader2 className="h-4 w-4 animate-spin" />}
                       {t('cancelCta')}
-                    </button>
+                    </Button>
                   </>
                 ) : (
                   <>
                     <p className="text-sm font-medium text-foreground">{t('cancelScheduled')}</p>
                     <p className="mt-1 text-xs text-zinc-400">{t('endsAt', { date: formatDate(endsAt, locale) })}</p>
-                    <button
-                      type="button"
-                      onClick={onResume}
-                      disabled={isBusy}
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-60"
-                    >
-                      {isBusy && <Loader2 className="h-4 w-4 animate-spin" />}
+                    <Button busy={isBusy} className="mt-3 w-full" onClick={onResume}>
                       {t('keepCta')}
-                    </button>
+                    </Button>
                   </>
                 )}
                 <button

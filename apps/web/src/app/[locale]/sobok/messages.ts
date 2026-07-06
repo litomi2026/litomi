@@ -5,14 +5,21 @@ import type { LocalizedMessages } from '@/i18n/messages'
 export const messages = {
   [Locale.KO]: {
     Sobok: {
-      chatList: {
-        title: '채팅',
+      nav: {
+        chats: '채팅',
         billing: '결제 관리',
         studio: '스튜디오',
+      },
+      chatList: {
+        title: '채팅',
         searchPlaceholder: '아티스트 검색...',
-        loading: '채팅을 불러오는 중...',
+        searchNoResults: '검색 결과가 없어요',
         empty: '진행 중인 채팅이 없어요',
         waitingForMessage: '새로운 메시지를 기다리고 있어요',
+      },
+      emptyPane: {
+        title: '대화를 선택해 주세요',
+        description: '왼쪽 목록에서 아티스트를 선택하면 대화가 열려요.',
       },
       messageList: {
         loadingOlder: '불러오는 중...',
@@ -25,9 +32,10 @@ export const messages = {
         you: '나',
         read: '읽음',
         sent: '전송됨',
-        repliesExhausted: '이 메시지에는 답장을 모두 보냈어요 ({count}회)',
+        repliesExhausted: '답장 {count}회를 모두 보냈어요. 새 메시지가 오면 다시 보낼 수 있어요',
         composerPlaceholder: '메시지를 입력하세요...',
         expiredNotice: '구독이 만료되어 답장을 보낼 수 없어요.',
+        artistNotFound: '존재하지 않는 아티스트예요.',
       },
       subscribe: {
         monthly: '월 구독',
@@ -52,12 +60,18 @@ export const messages = {
         refundCta: '환불받기',
         back: '돌아가기',
       },
+      studioShell: {
+        title: '스튜디오',
+        backToChat: '채팅으로 돌아가기',
+        messages: '메시지',
+        earnings: '수익',
+        settings: '설정',
+      },
       studio: {
         onboardingTitle: '아티스트 시작하기',
         onboardingDescription:
           '팬에게 메시지를 보내고 월 구독으로 수익을 만들어 보세요. 프로필은 언제든 수정할 수 있어요.',
         onboardingSubmit: '아티스트 프로필 만들기',
-        settingsTitle: '스튜디오 설정',
         saveSubmit: '저장하기',
         form: {
           handleLabel: '핸들',
@@ -78,9 +92,6 @@ export const messages = {
         },
       },
       broadcast: {
-        title: '전체 메시지 (Broadcast)',
-        earningsAria: '정산·수익',
-        settingsAria: '스튜디오 설정',
         liveReplies: '실시간 팬 반응',
         fan: '팬',
         replyRoom: '답장방',
@@ -90,14 +101,13 @@ export const messages = {
       replyRoom: {
         title: '메시지 답장',
         empty: '아직 답장이 없어요.',
+        you: '나',
         fanNumber: '팬 #{id}',
-        reply: '답장',
         answering: '{name}에게 답장',
         answerPlaceholder: '{name}에게 답장…',
         selectToAnswer: '답장할 팬을 선택하세요',
       },
       earnings: {
-        title: '정산 · 수익',
         thisMonth: '이번 달',
         estimatedPayout: '예상 지급액',
         gross: '수납 {amount}',
@@ -129,7 +139,6 @@ export const messages = {
       billing: {
         title: '결제 관리',
         subscriptionsTitle: '구독',
-        loading: '불러오는 중...',
         subscriptionsEmpty: '구독 중인 아티스트가 없어요.',
         nextBilling: '다음 결제 {date} · {price}/월',
         cancelScheduled: '해지 예정 · {date}까지',
@@ -165,14 +174,21 @@ export const messages = {
   },
   [Locale.EN]: {
     Sobok: {
-      chatList: {
-        title: 'Chats',
+      nav: {
+        chats: 'Chats',
         billing: 'Billing',
         studio: 'Studio',
+      },
+      chatList: {
+        title: 'Chats',
         searchPlaceholder: 'Search artists...',
-        loading: 'Loading chats...',
+        searchNoResults: 'No results found',
         empty: 'No active chats',
         waitingForMessage: 'Waiting for new messages',
+      },
+      emptyPane: {
+        title: 'Select a chat',
+        description: 'Pick an artist from the list to open the conversation.',
       },
       messageList: {
         loadingOlder: 'Loading...',
@@ -185,9 +201,10 @@ export const messages = {
         you: 'You',
         read: 'Read',
         sent: 'Sent',
-        repliesExhausted: 'You have used all replies to this message ({count})',
+        repliesExhausted: "You've used all {count} replies. You can reply again when a new message arrives.",
         composerPlaceholder: 'Type a message...',
         expiredNotice: 'Your subscription has expired, so you can no longer reply.',
+        artistNotFound: 'This artist does not exist.',
       },
       subscribe: {
         monthly: 'Monthly subscription',
@@ -212,12 +229,18 @@ export const messages = {
         refundCta: 'Get a refund',
         back: 'Go back',
       },
+      studioShell: {
+        title: 'Studio',
+        backToChat: 'Back to chats',
+        messages: 'Messages',
+        earnings: 'Earnings',
+        settings: 'Settings',
+      },
       studio: {
         onboardingTitle: 'Become an artist',
         onboardingDescription:
           'Send messages to your fans and earn with a monthly subscription. You can edit your profile anytime.',
         onboardingSubmit: 'Create artist profile',
-        settingsTitle: 'Studio settings',
         saveSubmit: 'Save',
         form: {
           handleLabel: 'Handle',
@@ -240,9 +263,6 @@ export const messages = {
         },
       },
       broadcast: {
-        title: 'Broadcast',
-        earningsAria: 'Payouts & earnings',
-        settingsAria: 'Studio settings',
         liveReplies: 'Live fan replies',
         fan: 'Fan',
         replyRoom: 'Replies',
@@ -252,14 +272,13 @@ export const messages = {
       replyRoom: {
         title: 'Message replies',
         empty: 'No replies yet.',
+        you: 'You',
         fanNumber: 'Fan #{id}',
-        reply: 'Reply',
         answering: 'Reply to {name}',
         answerPlaceholder: 'Reply to {name}…',
         selectToAnswer: 'Pick a fan to reply to',
       },
       earnings: {
-        title: 'Payouts & earnings',
         thisMonth: 'This month',
         estimatedPayout: 'Estimated payout',
         gross: 'Collected {amount}',
@@ -291,7 +310,6 @@ export const messages = {
       billing: {
         title: 'Billing',
         subscriptionsTitle: 'Subscriptions',
-        loading: 'Loading...',
         subscriptionsEmpty: 'You are not subscribed to any artists.',
         nextBilling: 'Next billing {date} · {price}/mo',
         cancelScheduled: 'Cancellation scheduled · until {date}',
@@ -328,14 +346,21 @@ export const messages = {
   },
   [Locale.JA]: {
     Sobok: {
-      chatList: {
-        title: 'チャット',
+      nav: {
+        chats: 'チャット',
         billing: '決済管理',
         studio: 'スタジオ',
+      },
+      chatList: {
+        title: 'チャット',
         searchPlaceholder: 'アーティストを検索...',
-        loading: 'チャットを読み込み中...',
+        searchNoResults: '検索結果がありません',
         empty: '進行中のチャットはありません',
         waitingForMessage: '新しいメッセージを待っています',
+      },
+      emptyPane: {
+        title: 'チャットを選択してください',
+        description: '左のリストからアーティストを選ぶと会話が開きます。',
       },
       messageList: {
         loadingOlder: '読み込み中...',
@@ -348,9 +373,10 @@ export const messages = {
         you: '自分',
         read: '既読',
         sent: '送信済み',
-        repliesExhausted: 'このメッセージへの返信をすべて送りました（{count}回）',
+        repliesExhausted: '返信{count}回をすべて送りました。新しいメッセージが届くとまた返信できます',
         composerPlaceholder: 'メッセージを入力...',
         expiredNotice: 'サブスクの期限が切れているため、返信を送れません。',
+        artistNotFound: '存在しないアーティストです。',
       },
       subscribe: {
         monthly: '月額サブスク',
@@ -375,12 +401,18 @@ export const messages = {
         refundCta: '返金を受ける',
         back: '戻る',
       },
+      studioShell: {
+        title: 'スタジオ',
+        backToChat: 'チャットに戻る',
+        messages: 'メッセージ',
+        earnings: '収益',
+        settings: '設定',
+      },
       studio: {
         onboardingTitle: 'アーティストを始める',
         onboardingDescription:
           'ファンにメッセージを送り、月額サブスクで収益を作りましょう。プロフィールはいつでも編集できます。',
         onboardingSubmit: 'アーティストプロフィールを作成',
-        settingsTitle: 'スタジオ設定',
         saveSubmit: '保存する',
         form: {
           handleLabel: 'ハンドル',
@@ -402,9 +434,6 @@ export const messages = {
         },
       },
       broadcast: {
-        title: '全体メッセージ（Broadcast）',
-        earningsAria: '精算・収益',
-        settingsAria: 'スタジオ設定',
         liveReplies: 'リアルタイムのファンの反応',
         fan: 'ファン',
         replyRoom: '返信ルーム',
@@ -414,14 +443,13 @@ export const messages = {
       replyRoom: {
         title: 'メッセージへの返信',
         empty: 'まだ返信がありません。',
+        you: '自分',
         fanNumber: 'ファン #{id}',
-        reply: '返信',
         answering: '{name}に返信',
         answerPlaceholder: '{name}に返信…',
         selectToAnswer: '返信するファンを選んでください',
       },
       earnings: {
-        title: '精算・収益',
         thisMonth: '今月',
         estimatedPayout: '支払予定額',
         gross: '売上 {amount}',
@@ -453,7 +481,6 @@ export const messages = {
       billing: {
         title: '決済管理',
         subscriptionsTitle: 'サブスク',
-        loading: '読み込み中...',
         subscriptionsEmpty: '加入中のアーティストはいません。',
         nextBilling: '次回決済 {date} · {price}/月',
         cancelScheduled: '解約予定 · {date}まで',
@@ -490,14 +517,21 @@ export const messages = {
   },
   [Locale.ZH_CN]: {
     Sobok: {
-      chatList: {
-        title: '聊天',
+      nav: {
+        chats: '聊天',
         billing: '支付管理',
         studio: '工作室',
+      },
+      chatList: {
+        title: '聊天',
         searchPlaceholder: '搜索艺术家...',
-        loading: '正在加载聊天...',
+        searchNoResults: '没有搜索结果',
         empty: '暂无进行中的聊天',
         waitingForMessage: '正在等待新消息',
+      },
+      emptyPane: {
+        title: '请选择一个聊天',
+        description: '从左侧列表选择艺术家即可打开对话。',
       },
       messageList: {
         loadingOlder: '加载中...',
@@ -510,9 +544,10 @@ export const messages = {
         you: '我',
         read: '已读',
         sent: '已发送',
-        repliesExhausted: '你已用完对这条消息的全部回复（{count}次）',
+        repliesExhausted: '你已用完 {count} 次回复，收到新消息后可以再次回复',
         composerPlaceholder: '输入消息...',
         expiredNotice: '订阅已到期，无法发送回复。',
+        artistNotFound: '该艺术家不存在。',
       },
       subscribe: {
         monthly: '每月订阅',
@@ -536,11 +571,17 @@ export const messages = {
         refundCta: '申请退款',
         back: '返回',
       },
+      studioShell: {
+        title: '工作室',
+        backToChat: '返回聊天',
+        messages: '消息',
+        earnings: '收益',
+        settings: '设置',
+      },
       studio: {
         onboardingTitle: '成为艺术家',
         onboardingDescription: '给粉丝发送消息，通过每月订阅创造收入。个人资料随时可以修改。',
         onboardingSubmit: '创建艺术家资料',
-        settingsTitle: '工作室设置',
         saveSubmit: '保存',
         form: {
           handleLabel: '标识名',
@@ -561,9 +602,6 @@ export const messages = {
         },
       },
       broadcast: {
-        title: '全体消息（Broadcast）',
-        earningsAria: '结算·收益',
-        settingsAria: '工作室设置',
         liveReplies: '粉丝实时反应',
         fan: '粉丝',
         replyRoom: '回复房间',
@@ -573,14 +611,13 @@ export const messages = {
       replyRoom: {
         title: '消息回复',
         empty: '还没有回复。',
+        you: '我',
         fanNumber: '粉丝 #{id}',
-        reply: '回复',
         answering: '回复 {name}',
         answerPlaceholder: '回复 {name}…',
         selectToAnswer: '选择要回复的粉丝',
       },
       earnings: {
-        title: '结算 · 收益',
         thisMonth: '本月',
         estimatedPayout: '预计支付额',
         gross: '收款 {amount}',
@@ -612,7 +649,6 @@ export const messages = {
       billing: {
         title: '支付管理',
         subscriptionsTitle: '订阅',
-        loading: '加载中...',
         subscriptionsEmpty: '没有订阅中的艺术家。',
         nextBilling: '下次扣款 {date} · {price}/月',
         cancelScheduled: '即将取消 · 至 {date}',

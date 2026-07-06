@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-import ChatRoom from '../_components/ChatRoom'
+import ChatRoom from '../../_components/ChatRoom'
 
 export default async function RoomPage({ params }: PageProps<'/[locale]/sobok/[handle]'>) {
   const { handle: segment } = await params

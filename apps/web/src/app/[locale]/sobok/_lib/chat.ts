@@ -1,4 +1,4 @@
-import type { ChatFeedItem } from '@litomi/contracts'
+import type { ChatFeedItem, ChatReplyRoomItem } from '@litomi/contracts'
 import { env } from '@litomi/env/client'
 
 export function dayKey(ts: number): string {
@@ -63,6 +63,12 @@ export function mergeById<T>(fetched: T[], realtime: T[], idOf: (item: T) => str
   return [...byId.values()].sort((a, b) => idOf(a).localeCompare(idOf(b)))
 }
 
+// A setState updater that appends `item` unless one with the same messageId is already present.
+// Realtime/optimistic messages can arrive twice (WS relay + refetch), so appends must dedupe.
+export function appendById<T extends { messageId: string }>(item: T) {
+  return (prev: T[]): T[] => (prev.some((existing) => existing.messageId === item.messageId) ? prev : [...prev, item])
+}
+
 // The fan timeline is broadcasts + the fan's replies + the artist's 1:1 answers, already merged
 // server-side into ChatFeedItem[]. Client-side we union the fetched pages with realtime and
 // optimistic items, deduped by messageId (fetched is authoritative), sorted chronologically.
@@ -92,43 +98,46 @@ export interface QuoteInfo {
   targetId: string
   // The answered message's text (from the loaded timeline, else the server-embedded preview).
   preview: string
-  // The quoted message is the fan's own (→ label "me"); otherwise it's the artist's.
+  // The quoted message is the viewer's own (→ label "me"); otherwise the other party's.
   isMine: boolean
 }
 
-// Which items should render a quote header, and what it points at. A reply quotes the message
-// it answers (a fan reply → its context bubble unless it explicitly quotes; an artist answer →
-// the fan message it quotes). We hide the quote when the answered message is the OTHER party's
-// most recent message before this one — i.e. skipping the sender's own consecutive messages,
-// they're effectively adjacent. It only shows when they're genuinely "far apart" (another
-// other-party message sits between them, or the answered message isn't loaded).
-export function computeQuotes(items: ChatFeedItem[]): Map<string, QuoteInfo> {
+type Side = 'artist' | 'fan'
+
+// Each timeline projects into this normalized shape, then one algorithm resolves quotes for both.
+interface QuoteScanItem {
+  messageId: string
+  side: Side
+  text: string
+  // The message this one answers — undefined renders no quote header.
+  answeredId?: string
+  // Server-embedded preview, used when the answered message isn't in the loaded window.
+  fallback?: { preview: string; side: Side }
+}
+
+// A message shows a quote header only when the message it answers is NOT the other party's most
+// recent message before it (skipping the sender's own consecutive run) — otherwise they're
+// visually adjacent. `mineSide` is the viewer's side, so a quote of their own reads as "me".
+function resolveQuotes(items: QuoteScanItem[], mineSide: Side): Map<string, QuoteInfo> {
   const byId = new Map(items.map((item) => [item.messageId, item]))
   const quotes = new Map<string, QuoteInfo>()
 
-  // Most recent messageId seen per party as we scan forward (the fan vs. the artist).
   let lastFanId: string | undefined
   let lastArtistId: string | undefined
 
   for (const item of items) {
-    const isFan = item.kind === 'fanReply'
-    // The nearest preceding message from the OTHER party (skips this sender's own run).
-    const nearestOtherId = isFan ? lastArtistId : lastFanId
+    const nearestOtherId = item.side === 'fan' ? lastArtistId : lastFanId
 
-    if (item.kind !== 'broadcast') {
-      const answeredId = item.quotedMessageId ?? (isFan ? item.contextMessageId : undefined)
-
-      if (answeredId && nearestOtherId !== answeredId) {
-        const target = byId.get(answeredId)
-        quotes.set(item.messageId, {
-          targetId: answeredId,
-          preview: target ? target.content.text : (item.quoted?.preview ?? ''),
-          isMine: target ? target.kind === 'fanReply' : item.quoted?.senderRole === 'fan',
-        })
-      }
+    if (item.answeredId && item.answeredId !== nearestOtherId) {
+      const target = byId.get(item.answeredId)
+      quotes.set(item.messageId, {
+        targetId: item.answeredId,
+        preview: target ? target.text : (item.fallback?.preview ?? ''),
+        isMine: (target ? target.side : item.fallback?.side) === mineSide,
+      })
     }
 
-    if (isFan) {
+    if (item.side === 'fan') {
       lastFanId = item.messageId
     } else {
       lastArtistId = item.messageId
@@ -136,4 +145,49 @@ export function computeQuotes(items: ChatFeedItem[]): Map<string, QuoteInfo> {
   }
 
   return quotes
+}
+
+// Fan timeline: broadcasts (no quote), the fan's replies (answer their context bubble unless they
+// explicitly quote an artist answer), the artist's answers (quote the fan message). Viewer = fan.
+export function computeQuotes(items: ChatFeedItem[]): Map<string, QuoteInfo> {
+  return resolveQuotes(
+    items.map((item) => {
+      const side: Side = item.kind === 'fanReply' ? 'fan' : 'artist'
+
+      return {
+        messageId: item.messageId,
+        side,
+        text: item.content.text,
+        answeredId:
+          item.kind === 'broadcast'
+            ? undefined
+            : (item.quotedMessageId ?? (side === 'fan' ? item.contextMessageId : undefined)),
+        fallback:
+          item.kind !== 'broadcast' && item.quoted
+            ? { preview: item.quoted.preview, side: item.quoted.senderRole }
+            : undefined,
+      }
+    }),
+    'fan',
+  )
+}
+
+// Reply room: a flat cross-fan timeline; only explicit quotes (the room itself is the context).
+// Viewer = the artist.
+export function computeReplyRoomQuotes(items: ChatReplyRoomItem[]): Map<string, QuoteInfo> {
+  return resolveQuotes(
+    items.map((item) => ({
+      messageId: item.messageId,
+      side: item.senderRole,
+      text: item.content.text,
+      answeredId: item.quotedMessageId,
+      fallback: item.quoted
+        ? {
+            preview: item.quoted.preview,
+            side: item.quoted.senderRole,
+          }
+        : undefined,
+    })),
+    'artist',
+  )
 }

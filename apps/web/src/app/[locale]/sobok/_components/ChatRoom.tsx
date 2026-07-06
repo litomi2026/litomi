@@ -1,13 +1,15 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useEffect, useEffectEvent } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from '@/i18n/navigation'
-import { consumeBillingKeyRedirect } from '../_lib/billing'
+import useBillingKeyRedirect from '../_hooks/useBillingKeyRedirect'
 import useArtistQuery from '../_query/useArtistQuery'
 import useSubscribeAction from '../_query/useSubscribeAction'
 import ArtistSubscribe from './ArtistSubscribe'
 import FanChatRoom from './FanChatRoom'
+import RoomSkeleton from './RoomSkeleton'
+import PageHeader, { HeaderBackLink } from './ui/PageHeader'
 
 type Props = {
   handle: string
@@ -16,6 +18,7 @@ type Props = {
 export default function ChatRoom({ handle }: Props) {
   const { data: artistData, isLoading: isArtistLoading } = useArtistQuery(handle)
   const t = useTranslations('Sobok.billing')
+  const tRoom = useTranslations('Sobok.fanRoom')
   const router = useRouter()
 
   const artist = artistData?.artist
@@ -33,23 +36,11 @@ export default function ChatRoom({ handle }: Props) {
   } = useSubscribeAction(handle, artist?.displayName ?? '', !isOwner)
 
   // 모바일 빌링키 발급의 full-page redirect 복귀 — 등록을 마저 진행하고 구독까지 잇는다.
-  const resumeBillingKeyFlow = useEffectEvent(() => {
-    const result = consumeBillingKeyRedirect(t('registerFailed'))
-
-    if (!result) {
-      return
-    }
-
-    if ('billingKey' in result) {
-      finishWithBillingKey(result.billingKey)
-    } else {
-      reportSubscribeError(result.errorMessage)
-    }
+  useBillingKeyRedirect({
+    failedMessage: t('registerFailed'),
+    onBillingKey: finishWithBillingKey,
+    onError: reportSubscribeError,
   })
-
-  useEffect(() => {
-    resumeBillingKeyFlow()
-  }, [])
 
   // Owners belong in the studio, not the fan room.
   useEffect(() => {
@@ -58,10 +49,17 @@ export default function ChatRoom({ handle }: Props) {
     }
   }, [isOwner, handle, router])
 
-  if (isArtistLoading || !artist || isOwner) {
+  if (isArtistLoading || isOwner) {
+    return <RoomSkeleton />
+  }
+
+  if (!artist) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-background">
-        <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-500/30" />
+      <div className="flex h-full flex-col bg-background">
+        <PageHeader back={<HeaderBackLink className="lg:hidden" href="/sobok" />} title={null} />
+        <div className="flex flex-1 items-center justify-center px-8">
+          <p className="text-sm text-zinc-400">{tRoom('artistNotFound')}</p>
+        </div>
       </div>
     )
   }
@@ -83,10 +81,8 @@ export default function ChatRoom({ handle }: Props) {
       artist={artist}
       entitled={entitled}
       handle={handle}
-      onSubscribe={subscribe}
       replyTextLimit={artistData?.replyTextLimit}
-      subscribeError={subscribeError}
-      subscribing={subscribing}
+      subscribe={{ onSubscribe: subscribe, pending: subscribing, error: subscribeError }}
       subscription={subscription}
     />
   )

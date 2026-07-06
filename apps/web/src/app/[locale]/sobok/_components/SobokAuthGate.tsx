@@ -12,8 +12,11 @@ export default function SobokAuthGate({ children }: { children: ReactNode }) {
 
   if (me === undefined) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-background animate-fade-in">
-        <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-500/50" />
+      <div className="flex-1 flex items-center justify-center bg-background">
+        {/* Delayed reveal, like the skeletons: a fast me-resolution never flashes the dot. */}
+        <div className="animate-skeleton-appear">
+          <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-500/50" />
+        </div>
       </div>
     )
   }

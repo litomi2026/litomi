@@ -25,10 +25,13 @@ export function mergePaidIntervals(periods: { periodStart: Date; periodEnd: Date
   return merged
 }
 
-// 팬 답장 정책 — 횟수는 메시지당 고정, 길이만 가변: 기본 30자에서 연속 구독 30일을 채울 때마다
-// +30자, 300자에서 상한. "연속"의 근거는 끊김 없이 이어진 유료 기간(병합된 paid invoice
-// 구간)이므로, 구독이 끊겼다 재개되면 길이 보너스는 처음부터 다시 쌓입니다.
-export const REPLY_MAX_PER_MESSAGE = 3
+// 팬 답장 정책 — 횟수는 "아티스트의 마지막 메시지" 기준: 아티스트가 마지막으로 보낸 메시지
+// (전체 방송 ∪ 이 팬에게 온 1:1 답장 중 더 최신) 이후 팬은 3회까지 보낼 수 있고, 아티스트가
+// 새 메시지를 보내면(방송이든 1:1 답장이든) 쿼터가 다시 채워집니다. 길이만 가변: 기본 30자에서
+// 연속 구독 30일을 채울 때마다 +30자, 300자에서 상한. "연속"의 근거는 끊김 없이 이어진 유료
+// 기간(병합된 paid invoice 구간)이므로, 구독이 끊겼다 재개되면 길이 보너스는 처음부터 다시
+// 쌓입니다.
+export const REPLY_MAX_PER_ARTIST_MESSAGE = 3
 
 const REPLY_BASE_TEXT_LENGTH = 30
 const REPLY_BONUS_MAX = 9

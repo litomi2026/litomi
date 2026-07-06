@@ -16,6 +16,9 @@
   --animate-heartbeat: heartbeat 1.5s ease-in-out infinite;
   --animate-pulse-ring: pulse-ring 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   --animate-slide-up: slide-up 0.2s ease-out;
+  /* Delayed skeleton reveal: reserves space immediately (no CLS) but stays invisible for the
+     first 0.2s, so fast loads never flash a skeleton. */
+  --animate-skeleton-appear: skeleton-appear 0.7s ease-out 0.3s backwards;
 
   @keyframes fade-in {
     0% {
@@ -74,6 +77,12 @@
     }
     100% {
       transform: scale(1.3);
+      opacity: 0;
+    }
+  }
+
+  @keyframes skeleton-appear {
+    from {
       opacity: 0;
     }
   }

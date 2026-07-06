@@ -6,7 +6,7 @@ import {
 } from '@litomi/contracts'
 import { getChatArtistByHandle, listPaidIntervals } from '@litomi/db/app/query/chat'
 import { buildDmMessage, getFanReplyGate } from '@litomi/db/chat/query'
-import { REPLY_MAX_PER_MESSAGE, resolveReplyTextLimit } from '@litomi/domain/chat/policy'
+import { REPLY_MAX_PER_ARTIST_MESSAGE, resolveReplyTextLimit } from '@litomi/domain/chat/policy'
 import { publishChatDirectMessage } from '@litomi/events'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -71,10 +71,12 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 404 })
   }
 
-  if (gate.ownReplyCount >= REPLY_MAX_PER_MESSAGE) {
+  // 쿼터의 기준은 대상 말풍선이 아니라 "아티스트의 마지막 메시지" — 아티스트가 새 메시지를
+  // 보내면(방송/1:1) 다시 채워진다.
+  if (gate.repliesSinceLastArtistMessage >= REPLY_MAX_PER_ARTIST_MESSAGE) {
     return problemResponse(c, {
       problem: PROBLEM.REPLY_LIMIT_REACHED,
-      extensions: { limit: REPLY_MAX_PER_MESSAGE },
+      extensions: { limit: REPLY_MAX_PER_ARTIST_MESSAGE },
     })
   }
 

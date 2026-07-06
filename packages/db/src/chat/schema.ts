@@ -15,9 +15,10 @@ import { createdAt, updatedAt } from '../columns'
 //                        the broadcast bubble it started from (contextMessageId).
 //
 // The same 1:1 log is read two ways (CQRS):
-//   fan timeline   — PK (artistId, fanId, messageId): the fan's continuous chat.
-//   artist reply   — idx (artistId, contextMessageId, fanId, messageId): message M's reply
-//     room          room, grouped by fan; also serves the per-message reply quota count.
+//   fan timeline   — PK (artistId, fanId, messageId): the fan's continuous chat; also serves
+//                    the reply quota (fan messages since the artist's last message).
+//   artist reply   — idx (artistId, contextMessageId, messageId): message M's reply room as
+//     room           ONE flat cross-fan timeline (all fans' replies ∪ the artist's answers).
 // Privacy is structural: a fan can only read WHERE fanId = self, so one fan never sees
 // another fan's 1:1 messages (or the artist's private answers to them).
 
@@ -54,7 +55,9 @@ export const chatDmMessageTable = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.artistId, table.fanId, table.messageId] }),
-    index('idx_chat_dm_reply_room').on(table.artistId, table.contextMessageId, table.fanId, table.messageId),
+    // 답장방 = (artistId, contextMessageId) 파티션의 시간순 타임라인 — messageId가 키 마지막이라
+    // 역스캔이 곧 최신순 페이지. (chat DDL은 수동 SQL — drizzle push 불가, CLAUDE 메모리 참고)
+    index('idx_chat_dm_reply_room').on(table.artistId, table.contextMessageId, table.messageId),
   ],
 ).enableRLS()
 

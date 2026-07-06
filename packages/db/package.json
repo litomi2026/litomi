@@ -57,7 +57,7 @@
     "push:local:app": "bun --env-file=.env.local drizzle-kit push --config=drizzle.app.config.ts --force && bun --env-file=.env.local scripts/app/syncAppSql.ts",
     "push:local:catalog": "bun --env-file=.env.local drizzle-kit push --config=drizzle.catalog.config.ts --force",
     "push:local:chat": "bun --env-file=.env.local drizzle-kit push --config=drizzle.chat.config.ts --force",
-    "push:prod": "bun run push:prod:app && bun run push:prod:catalog && bun run push:prod:chat",
+    "push:prod": "bun run push:prod:app && bun run push:prod:catalog",
     "push:prod:app": "test -f .env.prod && bun --env-file=.env.prod drizzle-kit push --config=drizzle.app.config.ts && bun --env-file=.env.prod scripts/app/syncAppSql.ts",
     "push:prod:catalog": "test -f .env.prod && bun --env-file=.env.prod drizzle-kit push --config=drizzle.catalog.config.ts",
     "push:prod:chat": "test -f .env.prod && bun --env-file=.env.prod drizzle-kit push --config=drizzle.chat.config.ts"

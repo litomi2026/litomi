@@ -213,7 +213,7 @@ export const messages = {
         warning:
           '이 정보 내용은 청소년유해매체물로서 "정보통신망 이용촉진 및 정보보호 등에 관한 법률" 및 "청소년 보호법"에 따라 19세 미만의 청소년이 이용할 수 없습니다.',
         description:
-          '본 웹사이트에는 19세 이상 전용의 성인 콘텐츠(성인 만화 등)가 포함되어 있습니다. 관련 법률에 따라 "대한민국 지역"에서 접속한 사용자는 익명 성인인증이 완료되지 않으면 성인 콘텐츠를 이용하실 수 없습니다. 만약 인증을 거치지 않았는데도 성인 콘텐츠가 노출된다면 즉시 운영진에게 알려주시기 바랍니다.',
+          '본 웹사이트에는 19세 이상 전용의 성인 콘텐츠(성인 만화 등)가 포함되어 있습니다. 관련 법률에 따라 "대한민국 지역"에서 접속한 사용자는 익명 성인인증이 완료되지 않으면 성인 콘텐츠를 이용하실 수 없습니다.',
         enterAction: '19세 이상 성인입니다',
         leaveAction: '19세 미만 나가기',
       },
@@ -443,7 +443,7 @@ export const messages = {
         warning:
           'This content is restricted to adults and may not be used by anyone under 19 or under the age of majority in their jurisdiction.',
         description:
-          'This website contains adult-only content (such as adult comics) intended for users 19 and older. Users connecting from the "Republic of Korea" region cannot access adult content unless anonymous adult verification is completed. If adult content is exposed even without verification, please notify the administrators immediately.',
+          'This website contains adult-only content (such as adult comics) intended for users 19 and older. Users connecting from the "Republic of Korea" region cannot access adult content unless anonymous adult verification is completed.',
         enterAction: 'I am an adult',
         leaveAction: 'Leave',
       },
@@ -671,7 +671,7 @@ export const messages = {
       ageGate: {
         warning: 'この情報内容は青少年有害媒体物であり、関連法令により19歳未満の青少年は利用できません。',
         description:
-          '本ウェブサイトには19歳以上向けの成人コンテンツ(成人漫画など)が含まれています。「大韓民国地域」からアクセスするユーザーは、匿名の成人認証が完了しない限り、成人コンテンツを利用できません。もし認証を経ていないにもかかわらず成人コンテンツが表示される場合は、直ちに運営チームにお知らせください。',
+          '本ウェブサイトには19歳以上向けの成人コンテンツ(成人漫画など)が含まれています。「大韓民国地域」からアクセスするユーザーは、匿名の成人認証が完了しない限り、成人コンテンツを利用できません。',
         enterAction: '19歳以上の成人です',
         leaveAction: '19歳未満なので退出',
       },
@@ -898,7 +898,7 @@ export const messages = {
       ageGate: {
         warning: '本内容属于成人限制内容，未满 19 岁或未达到当地法定成年年龄者不得使用。',
         description:
-          '本网站包含仅限 19 岁以上用户观看的成人内容（如成人漫画等）。从“韩国地区”访问的用户必须完成匿名成人认证后才能访问成人内容。如果未经认证却依然显示成人内容，请立即通知运营团队。',
+          '本网站包含仅限 19 岁以上用户观看的成人内容（如成人漫画等）。从“韩国地区”访问的用户必须完成匿名成人认证后才能访问成人内容。',
         enterAction: '我是 19 岁以上成人',
         leaveAction: '未满 19 岁，离开',
       },

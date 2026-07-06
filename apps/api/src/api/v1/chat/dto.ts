@@ -6,9 +6,10 @@ import type {
   ChatMessageContent,
   ChatMessagePreview,
   ChatQuotedPreview,
-  ChatReplyRoomMessage,
+  ChatReplyRoomItem,
   ChatSenderRole,
   ChatSubscriptionDTO,
+  ChatUserBrief,
 } from '@litomi/contracts'
 import type { ChatArtistBriefRow, ChatArtistRow } from '@litomi/db/app/query/chat'
 import type { SubscriptionState } from '@litomi/db/app/query/subscription'
@@ -52,13 +53,23 @@ export function toDmFeedItem(row: ChatDmMessageRow, quoted?: ChatQuotedPreview):
   return row.senderRole === 'artist' ? { kind: 'artistReply', ...base } : { kind: 'fanReply', ...base }
 }
 
-export function toReplyRoomMessage(row: ChatDmMessageRow): ChatReplyRoomMessage {
+// A 1:1 message as a reply-room timeline item (flat, cross-fan). `fan` is the fan side of
+// this conversation; `quoted` mirrors the fan-timeline convention.
+export function toReplyRoomItem(
+  row: ChatDmMessageRow,
+  fan?: ChatUserBrief,
+  quoted?: ChatQuotedPreview,
+): ChatReplyRoomItem {
   return {
     messageId: row.messageId,
+    senderRole: row.senderRole as ChatSenderRole,
+    fanId: row.fanId,
     contentType: row.contentType as ChatContentType,
     content: row.content as ChatMessageContent,
     createdAt: row.createdAt.toISOString(),
+    ...(fan && { fan }),
     ...(row.quotedMessageId && { quotedMessageId: row.quotedMessageId }),
+    ...(quoted && { quoted }),
   }
 }
 

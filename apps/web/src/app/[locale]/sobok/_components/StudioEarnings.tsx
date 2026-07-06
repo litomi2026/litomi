@@ -1,76 +1,84 @@
 'use client'
 
-import type { ChatPayoutDTO } from '@litomi/contracts'
+import type { ChatPayoutDTO, ChatPayoutStatus } from '@litomi/contracts'
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
-import { ChevronLeft, Loader2 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
-import { Link } from '@/i18n/navigation'
 import { getErrorMessage } from '@/lib/error-message'
 import { formatKRW } from '../_lib/format'
 import useSavePayoutAccountMutation from '../_query/useSavePayoutAccountMutation'
 import useStudioEarningsQuery from '../_query/useStudioEarningsQuery'
+import Button from './ui/Button'
+import Section from './ui/Section'
+import Skeleton from './ui/Skeleton'
 
-type Props = {
-  handle: string
-}
-
-export default function StudioEarnings({ handle }: Props) {
-  const { data, isLoading } = useStudioEarningsQuery()
+// The 수익 tab content — chrome belongs to StudioShell. Section titles and card labels are
+// static, so they render immediately; only the unknown values shimmer.
+export default function StudioEarnings() {
+  const { data } = useStudioEarningsQuery()
   const t = useTranslations('Sobok.earnings')
   const locale = useLocale()
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="h-14 shrink-0 flex items-center px-2 border-b border-foreground/10 bg-background/80">
-        <Link href={`/sobok/studio/${handle}`} className="p-2 text-zinc-400 hover:text-foreground transition-colors">
-          <ChevronLeft className="w-6 h-6" />
-        </Link>
-        <h2 className="font-bold text-lg text-foreground ml-2">{t('title')}</h2>
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        {isLoading || !data ? (
-          <div className="flex h-full items-center justify-center">
-            <div className="animate-pulse w-8 h-8 rounded-full bg-indigo-500/30" />
+    <div className="h-full overflow-y-auto bg-background">
+      <div className="mx-auto w-full max-w-xl space-y-8 px-5 py-6">
+        <Section title={t('thisMonth')}>
+          <div className="rounded-2xl border border-foreground/10 bg-zinc-800/60 p-5">
+            <p className="text-sm text-zinc-400">{t('estimatedPayout')}</p>
+            {data ? (
+              <p className="mt-1 text-3xl font-bold text-foreground">
+                {formatKRW(data.currentMonth.estimatedPayableAmount, locale)}
+              </p>
+            ) : (
+              <Skeleton className="mt-1 h-9 w-36" />
+            )}
+            {data ? (
+              <p className="mt-2 text-xs text-zinc-500">
+                {t('gross', { amount: formatKRW(data.currentMonth.grossAmount, locale) })}
+                {data.currentMonth.refundAmount > 0 &&
+                  ` · ${t('refund', { amount: formatKRW(data.currentMonth.refundAmount, locale) })}`}{' '}
+                · {t('feeNote')}
+              </p>
+            ) : (
+              <Skeleton className="mt-2 h-4 w-64 max-w-full" />
+            )}
           </div>
-        ) : (
-          <div className="mx-auto w-full max-w-md space-y-8 px-5 py-6">
-            <section>
-              <h3 className="text-sm font-semibold text-zinc-400">{t('thisMonth')}</h3>
-              <div className="mt-2 rounded-2xl border border-foreground/10 bg-zinc-800/60 p-5">
-                <p className="text-sm text-zinc-400">{t('estimatedPayout')}</p>
-                <p className="mt-1 text-3xl font-bold text-foreground">
-                  {formatKRW(data.currentMonth.estimatedPayableAmount, locale)}
-                </p>
-                <p className="mt-2 text-xs text-zinc-500">
-                  {t('gross', { amount: formatKRW(data.currentMonth.grossAmount, locale) })}
-                  {data.currentMonth.refundAmount > 0 &&
-                    ` · ${t('refund', { amount: formatKRW(data.currentMonth.refundAmount, locale) })}`}{' '}
-                  · {t('feeNote')}
-                </p>
-              </div>
-            </section>
+        </Section>
 
-            <PayoutAccountSection account={data.account} />
+        <PayoutAccountSection account={data?.account} loading={!data} />
 
-            <section>
-              <h3 className="text-sm font-semibold text-zinc-400">{t('historyTitle')}</h3>
-              {data.payouts.length === 0 ? (
-                <p className="mt-2 text-sm text-zinc-500">{t('historyEmpty')}</p>
-              ) : (
-                <ul className="mt-2 space-y-2">
-                  {data.payouts.map((payout) => (
-                    <PayoutItem key={payout.periodStart} payout={payout} />
-                  ))}
-                </ul>
-              )}
-            </section>
-          </div>
-        )}
+        <Section title={t('historyTitle')}>
+          <PayoutHistory payouts={data?.payouts} />
+        </Section>
       </div>
     </div>
   )
+}
+
+function PayoutHistory({ payouts }: { payouts?: ChatPayoutDTO[] }) {
+  const t = useTranslations('Sobok.earnings')
+
+  if (!payouts) {
+    return <Skeleton className="h-24 rounded-xl" />
+  }
+
+  if (payouts.length === 0) {
+    return <p className="text-sm text-zinc-500">{t('historyEmpty')}</p>
+  }
+
+  return (
+    <ul className="space-y-2">
+      {payouts.map((payout) => (
+        <PayoutItem key={payout.periodStart} payout={payout} />
+      ))}
+    </ul>
+  )
+}
+
+const PAYOUT_STATUS_TONE: Record<ChatPayoutStatus, string> = {
+  paid: 'text-emerald-400',
+  pending: 'text-indigo-400',
+  carried: 'text-zinc-400',
 }
 
 type PayoutItemProps = {
@@ -78,12 +86,11 @@ type PayoutItemProps = {
 }
 
 function PayoutItem({ payout }: PayoutItemProps) {
-  const t = useTranslations('Sobok.earnings')
   const locale = useLocale()
-  const period = new Date(payout.periodStart)
+  const t = useTranslations('Sobok.earnings')
 
-  const statusTone =
-    payout.status === 'paid' ? 'text-emerald-400' : payout.status === 'pending' ? 'text-indigo-400' : 'text-zinc-400'
+  const period = new Date(payout.periodStart)
+  const statusTone = PAYOUT_STATUS_TONE[payout.status]
 
   return (
     <li className="rounded-xl border border-foreground/10 p-4">
@@ -116,9 +123,10 @@ type PayoutAccountSectionProps = {
     accountNumberMasked: string
     holderName: string
   }
+  loading: boolean
 }
 
-function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
+function PayoutAccountSection({ account, loading }: PayoutAccountSectionProps) {
   const [editing, setEditing] = useState(false)
   const { mutate: saveAccount, isPending, error } = useSavePayoutAccountMutation()
   const t = useTranslations('Sobok.earnings')
@@ -144,11 +152,11 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
   }
 
   return (
-    <section>
-      <h3 className="text-sm font-semibold text-zinc-400">{t('accountTitle')}</h3>
+    <Section title={t('accountTitle')}>
+      {loading && <Skeleton className="h-18 rounded-xl" />}
 
-      {!editing && account && (
-        <div className="mt-2 flex items-center justify-between rounded-xl border border-foreground/10 p-4">
+      {!loading && !editing && account && (
+        <div className="flex items-center justify-between rounded-xl border border-foreground/10 p-4">
           <div>
             <p className="text-sm font-medium text-foreground">
               {account.bankName} {account.accountNumberMasked}
@@ -165,8 +173,8 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
         </div>
       )}
 
-      {!editing && !account && (
-        <div className="mt-2 rounded-xl border border-foreground/10 p-4">
+      {!loading && !editing && !account && (
+        <div className="rounded-xl border border-foreground/10 p-4">
           <p className="text-sm text-zinc-400">{t('accountMissing')}</p>
           <button
             type="button"
@@ -179,7 +187,7 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
       )}
 
       {editing && (
-        <form onSubmit={handleSubmit} className="mt-2 space-y-3 rounded-xl border border-foreground/10 p-4">
+        <form onSubmit={handleSubmit} className="space-y-3 rounded-xl border border-foreground/10 p-4">
           <input
             type="text"
             name="bankName"
@@ -208,25 +216,20 @@ function PayoutAccountSection({ account }: PayoutAccountSectionProps) {
           />
           {errorMessage && <p className="text-xs text-red-400">{errorMessage}</p>}
           <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={isPending}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-500 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-50"
-            >
-              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+            <Button busy={isPending} className="flex-1 rounded-lg" type="submit">
               {t('save')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditing(false)}
+            </Button>
+            <Button
+              className="flex-1 rounded-lg font-medium"
               disabled={isPending}
-              className="flex-1 rounded-lg border border-foreground/15 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-700/50 disabled:opacity-60"
+              onClick={() => setEditing(false)}
+              variant="outline"
             >
               {t('cancel')}
-            </button>
+            </Button>
           </div>
         </form>
       )}
-    </section>
+    </Section>
   )
 }
