@@ -5,7 +5,7 @@ import { userTable } from './user'
 
 export const bbatonGenderEnum = pgEnum('bbaton_gender', ['F', 'M'])
 
-export const bbatonVerificationTable = pgTable(
+export const bbatonVerificationTable = pgTable.withRLS(
   'bbaton_verification',
   {
     userId: bigint('user_id', { mode: 'number' })
@@ -24,4 +24,4 @@ export const bbatonVerificationTable = pgTable(
     unique('bbaton_verification_bbaton_user_id_unique').on(table.bbatonUserId),
     index('idx_bbaton_verification_verified_at').on(table.verifiedAt.desc()),
   ],
-).enableRLS()
+)

@@ -3,7 +3,7 @@ import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
-export const postTable = pgTable(
+export const postTable = pgTable.withRLS(
   'post',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -25,9 +25,9 @@ export const postTable = pgTable(
     index('idx_post_parent_post_id').on(table.parentPostId),
     index('idx_post_referred_post_id').on(table.referredPostId),
   ],
-).enableRLS()
+)
 
-export const postLikeTable = pgTable(
+export const postLikeTable = pgTable.withRLS(
   'post_like',
   {
     userId: bigint('user_id', { mode: 'number' })
@@ -39,4 +39,4 @@ export const postLikeTable = pgTable(
     createdAt,
   },
   (table) => [primaryKey({ columns: [table.userId, table.postId] }), index('idx_post_like_post_id').on(table.postId)],
-).enableRLS()
+)

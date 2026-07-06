@@ -37,7 +37,7 @@
     "@simplewebauthn/server": "^13.3.2",
     "@t3-oss/env-core": "^0.13.11",
     "bcryptjs": "^3.0.3",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "1.0.0-rc.4",
     "gaxios": "^7.1.5",
     "hono": "^4.12.27",
     "jose": "^6.2.3",

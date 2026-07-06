@@ -48,7 +48,7 @@
     "bcryptjs": "^3.0.3",
     "country-flag-icons": "^1.6.19",
     "dayjs": "^1.11.21",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "1.0.0-rc.4",
     "js-cookie": "^3.0.8",
     "lucide-react": "^1.21.0",
     "masonic": "^4.1.0",

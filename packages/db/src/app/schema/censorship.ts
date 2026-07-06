@@ -3,7 +3,7 @@ import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
-export const userCensorshipTable = pgTable(
+export const userCensorshipTable = pgTable.withRLS(
   'user_censorship',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -16,4 +16,4 @@ export const userCensorshipTable = pgTable(
     createdAt,
   },
   (table) => [index('idx_user_censorship_user_id').on(table.userId)],
-).enableRLS()
+)

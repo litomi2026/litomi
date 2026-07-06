@@ -6,7 +6,7 @@ import { userTable } from './user'
 
 export const invoiceStatusEnum = pgEnum('invoice_status', ['open', 'paid', 'void'])
 
-export const invoiceTable = pgTable(
+export const invoiceTable = pgTable.withRLS(
   'invoice',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -34,4 +34,4 @@ export const invoiceTable = pgTable(
     index('idx_invoice_subscription_status').on(table.subscriptionId, table.status),
     index('idx_invoice_user').on(table.userId),
   ],
-).enableRLS()
+)

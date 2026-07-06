@@ -3,7 +3,7 @@ import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
-export const credentialTable = pgTable(
+export const credentialTable = pgTable.withRLS(
   'credential',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -23,4 +23,4 @@ export const credentialTable = pgTable(
     index('idx_credential_user_id').on(table.userId),
     unique('idx_credential_credential_id').on(table.credentialId),
   ],
-).enableRLS()
+)

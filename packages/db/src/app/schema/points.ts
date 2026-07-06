@@ -3,7 +3,7 @@ import { createdAt, updatedAt } from '../../columns'
 
 import { userTable } from './user'
 
-export const adImpressionTokenTable = pgTable(
+export const adImpressionTokenTable = pgTable.withRLS(
   'ad_impression_token',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -20,9 +20,9 @@ export const adImpressionTokenTable = pgTable(
     index('idx_ad_impression_token_user').on(table.userId),
     uniqueIndex('idx_ad_token_unique_user_ad_slot').on(table.userId, table.adSlotId),
   ],
-).enableRLS()
+)
 
-export const userPointsTable = pgTable('user_points', {
+export const userPointsTable = pgTable.withRLS('user_points', {
   userId: bigint('user_id', { mode: 'number' })
     .references(() => userTable.id, { onDelete: 'cascade' })
     .notNull()
@@ -31,9 +31,9 @@ export const userPointsTable = pgTable('user_points', {
   totalEarned: bigint('total_earned', { mode: 'number' }).notNull().default(0),
   totalSpent: bigint('total_spent', { mode: 'number' }).notNull().default(0),
   updatedAt,
-}).enableRLS()
+})
 
-export const pointTransactionTable = pgTable(
+export const pointTransactionTable = pgTable.withRLS(
   'point_transaction',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -46,9 +46,9 @@ export const pointTransactionTable = pgTable(
     createdAt,
   },
   (table) => [index('idx_point_transaction_user_id').on(table.userId, table.createdAt.desc())],
-).enableRLS()
+)
 
-export const pointDonationTable = pgTable(
+export const pointDonationTable = pgTable.withRLS(
   'point_donation',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -63,14 +63,14 @@ export const pointDonationTable = pgTable(
     index('idx_point_donation_user_id').on(table.userId, table.id.desc()),
     uniqueIndex('idx_point_donation_unique_point_transaction').on(table.pointTransactionId),
   ],
-).enableRLS()
+)
 
 export const DONATION_RECIPIENT_TYPE = {
   ARTIST: 1,
   GROUP: 2,
 } as const
 
-export const pointDonationRecipientTable = pgTable(
+export const pointDonationRecipientTable = pgTable.withRLS(
   'point_donation_recipient',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -92,9 +92,9 @@ export const pointDonationRecipientTable = pgTable(
       foreignColumns: [pointTransactionTable.id],
     }).onDelete('cascade'),
   ],
-).enableRLS()
+)
 
-export const userExpansionTable = pgTable(
+export const userExpansionTable = pgTable.withRLS(
   'user_expansion',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -106,9 +106,9 @@ export const userExpansionTable = pgTable(
     createdAt,
   },
   (table) => [index('idx_user_expansion_user_type').on(table.userId, table.type)],
-).enableRLS()
+)
 
-export const userItemTable = pgTable(
+export const userItemTable = pgTable.withRLS(
   'user_item',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -121,4 +121,4 @@ export const userItemTable = pgTable(
     createdAt,
   },
   (table) => [index('idx_user_item_user_type').on(table.userId, table.type)],
-).enableRLS()
+)

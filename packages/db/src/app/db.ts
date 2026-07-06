@@ -2,7 +2,6 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
 import { env } from './env'
-import * as schema from './schema'
 
 const {
   APP_POSTGRES_CERTIFICATE,
@@ -21,4 +20,4 @@ const client = postgres(APP_POSTGRES_URL, {
   ssl: APP_POSTGRES_CERTIFICATE ? { ca: APP_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
 })
 
-export const db = drizzle({ client, schema })
+export const db = drizzle({ client })

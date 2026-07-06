@@ -33,7 +33,7 @@
     "@litomi/std": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
     "bcryptjs": "^3.0.3",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "1.0.0-rc.4",
     "jose": "^6.2.3",
     "next": "16.2.9",
     "otplib": "^13.4.1",

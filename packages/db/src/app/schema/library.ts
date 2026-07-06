@@ -8,7 +8,7 @@ import { createdAt } from '../../columns'
 
 import { userTable } from './user'
 
-export const libraryTable = pgTable(
+export const libraryTable = pgTable.withRLS(
   'library',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -23,9 +23,9 @@ export const libraryTable = pgTable(
     createdAt,
   },
   (table) => [index('idx_library_user_id').on(table.userId)],
-).enableRLS()
+)
 
-export const libraryItemTable = pgTable(
+export const libraryItemTable = pgTable.withRLS(
   'library_item',
   {
     libraryId: bigint('library_id', { mode: 'number' })
@@ -39,9 +39,9 @@ export const libraryItemTable = pgTable(
     index('idx_library_item_created_at').on(table.createdAt.desc()),
     index('idx_library_item_manga_library').on(table.mangaId, table.libraryId),
   ],
-).enableRLS()
+)
 
-export const pinnedLibraryTable = pgTable(
+export const pinnedLibraryTable = pgTable.withRLS(
   'pinned_library',
   {
     userId: bigint('user_id', { mode: 'number' })
@@ -56,4 +56,4 @@ export const pinnedLibraryTable = pgTable(
     primaryKey({ columns: [table.userId, table.libraryId] }),
     index('idx_pinned_library_library_id').on(table.libraryId, table.createdAt),
   ],
-).enableRLS()
+)

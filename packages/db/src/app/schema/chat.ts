@@ -2,7 +2,7 @@ import { bigint, boolean, index, pgTable, text, varchar } from 'drizzle-orm/pg-c
 import { timestamps } from '../../columns'
 import { userTable } from './user'
 
-export const chatArtistTable = pgTable(
+export const chatArtistTable = pgTable.withRLS(
   'chat_artist',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -20,4 +20,4 @@ export const chatArtistTable = pgTable(
     ...timestamps,
   },
   (table) => [index('idx_chat_artist_active').on(table.isActive)],
-).enableRLS()
+)

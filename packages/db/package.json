@@ -66,12 +66,12 @@
     "@litomi/domain": "workspace:*",
     "@litomi/std": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "1.0.0-rc.4",
     "postgres": "^3.4.9",
     "ulid": "^3.0.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.31.10"
+    "drizzle-kit": "1.0.0-rc.4"
   }
 }

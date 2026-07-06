@@ -19,7 +19,7 @@
     "@litomi/db": "workspace:*",
     "@litomi/domain": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "1.0.0-rc.4",
     "zod": "^4.3.6"
   },
   "devDependencies": {

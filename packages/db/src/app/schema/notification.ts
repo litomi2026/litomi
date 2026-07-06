@@ -14,7 +14,7 @@ import { createdAt, timestamps } from '../../columns'
 
 import { userTable } from './user'
 
-export const webPushTable = pgTable('web_push', {
+export const webPushTable = pgTable.withRLS('web_push', {
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
   userId: bigint('user_id', { mode: 'number' })
     .references(() => userTable.id, { onDelete: 'cascade' })
@@ -25,9 +25,9 @@ export const webPushTable = pgTable('web_push', {
   userAgent: text('user_agent'),
   lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   createdAt,
-}).enableRLS()
+})
 
-export const pushSettingsTable = pgTable('push_settings', {
+export const pushSettingsTable = pgTable.withRLS('push_settings', {
   userId: bigint('user_id', { mode: 'number' })
     .references(() => userTable.id, { onDelete: 'cascade' })
     .notNull()
@@ -38,9 +38,9 @@ export const pushSettingsTable = pgTable('push_settings', {
   batchEnabled: boolean('batch_enabled').notNull().default(true),
   maxDaily: smallint('max_daily').notNull().default(10),
   ...timestamps,
-}).enableRLS()
+})
 
-export const notificationTable = pgTable(
+export const notificationTable = pgTable.withRLS(
   'notification',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -61,9 +61,9 @@ export const notificationTable = pgTable(
     // NOTE: createdAt < (NOW() - INTERVAL '30 days')
     index('idx_notification_created_at').on(table.createdAt),
   ],
-).enableRLS()
+)
 
-export const notificationCriteriaTable = pgTable(
+export const notificationCriteriaTable = pgTable.withRLS(
   'notification_criteria',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -81,9 +81,9 @@ export const notificationCriteriaTable = pgTable(
       .$onUpdate(() => new Date()),
   },
   (table) => [index('idx_notification_criteria_user_active').on(table.userId, table.isActive)],
-).enableRLS()
+)
 
-export const notificationConditionTable = pgTable(
+export const notificationConditionTable = pgTable.withRLS(
   'notification_condition',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -98,9 +98,9 @@ export const notificationConditionTable = pgTable(
     index('idx_notification_condition_type_value').on(table.type, table.value, table.isExcluded),
     unique('idx_notification_condition_unique').on(table.criteriaId, table.type, table.value),
   ],
-).enableRLS()
+)
 
-export const mangaSeenTable = pgTable('manga_seen', {
+export const mangaSeenTable = pgTable.withRLS('manga_seen', {
   mangaId: integer('manga_id').primaryKey(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-}).enableRLS()
+})

@@ -4,7 +4,7 @@ import { userTable } from './user'
 
 export const mangaReportReasonEnum = pgEnum('manga_report_reason', ['DEEPFAKE', 'REAL_PERSON_MINOR'])
 
-export const mangaReportTable = pgTable(
+export const mangaReportTable = pgTable.withRLS(
   'manga_report',
   {
     userId: bigint('user_id', { mode: 'number' })
@@ -20,4 +20,4 @@ export const mangaReportTable = pgTable(
     index('idx_manga_report_reported_at').on(table.reportedAt.desc()),
     index('idx_manga_report_reason_reported_at').on(table.reason, table.reportedAt.desc()),
   ],
-).enableRLS()
+)

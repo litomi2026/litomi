@@ -2,7 +2,6 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
 import { env } from './env'
-import * as schema from './schema'
 
 const {
   CATALOG_POSTGRES_APPLICATION_NAME,
@@ -21,4 +20,4 @@ const catalogClient = postgres(CATALOG_POSTGRES_URL, {
   ssl: CATALOG_POSTGRES_CERTIFICATE ? { ca: CATALOG_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
 })
 
-export const catalogDB = drizzle({ client: catalogClient, schema })
+export const catalogDB = drizzle({ client: catalogClient })
