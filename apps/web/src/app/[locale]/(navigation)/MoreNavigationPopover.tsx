@@ -1,6 +1,6 @@
 'use client'
 
-import { Bot, Clover, HeartHandshake, type LucideIcon, MoreHorizontal, ScanEye } from 'lucide-react'
+import { Bot, Clover, HeartHandshake, type LucideIcon, MessageCircleHeart, MoreHorizontal, ScanEye } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -51,6 +51,12 @@ const MORE_NAVIGATION_ITEMS = [
     href: '/fortune',
     labelKey: 'fortune',
     Icon: Clover,
+    selectedIconStyle: 'stroke',
+  },
+  {
+    href: '/sobok',
+    labelKey: 'sobok',
+    Icon: MessageCircleHeart,
     selectedIconStyle: 'stroke',
   },
 ] satisfies NavigationItem[]
