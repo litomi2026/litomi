@@ -23,9 +23,9 @@ export default function useSubscribeAction(handle: string, artistName: string, e
       await requestSubscribe({ paymentMethodId: saved.id })
     } catch (caught) {
       setError(errorMessage(caught, t('subscribeAction.failed')))
-    } finally {
-      setPending(false)
     }
+
+    setPending(false)
   }
 
   async function start() {
@@ -35,23 +35,21 @@ export default function useSubscribeAction(handle: string, artistName: string, e
     try {
       if (free) {
         await requestSubscribe({})
-        return
+      } else {
+        const savedId = billing?.paymentMethods[0]?.id
+
+        if (savedId) {
+          await requestSubscribe({ paymentMethodId: savedId })
+        } else {
+          const method = await addCard(t('subscribeAction.issueName', { name: artistName }))
+          await requestSubscribe({ paymentMethodId: method.id })
+        }
       }
-
-      const savedId = billing?.paymentMethods[0]?.id
-
-      if (savedId) {
-        await requestSubscribe({ paymentMethodId: savedId })
-        return
-      }
-
-      const method = await addCard(t('subscribeAction.issueName', { name: artistName }))
-      await requestSubscribe({ paymentMethodId: method.id })
     } catch (caught) {
       setError(errorMessage(caught, t('subscribeAction.failed')))
-    } finally {
-      setPending(false)
     }
+
+    setPending(false)
   }
 
   return {

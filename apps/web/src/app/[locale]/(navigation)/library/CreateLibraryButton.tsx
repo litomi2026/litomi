@@ -172,9 +172,9 @@ export default function CreateLibraryButton({ className = '' }: Props) {
       setSelectedIcon(nextIcon)
     } catch {
       toast.warning(t('randomIconError'))
-    } finally {
-      setIsRandomIconPending(false)
     }
+
+    setIsRandomIconPending(false)
   }
 
   useEffect(() => {

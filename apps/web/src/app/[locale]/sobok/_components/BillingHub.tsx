@@ -148,9 +148,9 @@ function PaymentMethodsSection({ loading }: { loading: boolean }) {
       await addCard(t('issueName'))
     } catch (caught) {
       setIssueError(caught instanceof Error ? caught.message : t('registerFailed'))
-    } finally {
-      setIssuing(false)
     }
+
+    setIssuing(false)
   }
 
   // 모바일 빌링키 발급의 full-page redirect 복귀 — 카드 등록을 마저 진행한다.

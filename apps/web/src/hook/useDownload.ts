@@ -76,10 +76,10 @@ export function useDownload({ manga }: Props) {
       } else {
         toast.error(t('failed'))
       }
-    } finally {
-      setIsDownloading(false)
-      setDownloadedCount(0)
     }
+
+    setIsDownloading(false)
+    setDownloadedCount(0)
   }, [isDownloading, manga, me, t, tErrors])
 
   return {

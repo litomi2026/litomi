@@ -158,9 +158,9 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Props)
       setSelectedIcon(nextIcon)
     } catch {
       toast.warning(createT('randomIconError'))
-    } finally {
-      setIsRandomIconPending(false)
     }
+
+    setIsRandomIconPending(false)
   }
 
   useEffect(() => {

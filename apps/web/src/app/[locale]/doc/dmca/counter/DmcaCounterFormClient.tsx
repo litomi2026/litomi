@@ -31,13 +31,14 @@ export default function DmcaCounterFormClient({ dmcaEmail }: Props) {
 
     setIsGenerating(true)
 
+    const form = formRef.current
+
+    if (!form?.reportValidity()) {
+      setIsGenerating(false)
+      return
+    }
+
     try {
-      const form = formRef.current!
-
-      if (!form.reportValidity()) {
-        return
-      }
-
       const formData = new FormData(form)
 
       const nextTemplate = [
@@ -74,9 +75,9 @@ export default function DmcaCounterFormClient({ dmcaEmail }: Props) {
       toast.success(t('copySuccess'))
     } catch {
       toast.error(t('copyError'))
-    } finally {
-      setIsGenerating(false)
     }
+
+    setIsGenerating(false)
   }
 
   return (

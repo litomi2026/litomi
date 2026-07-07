@@ -57,9 +57,9 @@ export default function OriginProtectionTurnstile() {
       clearanceGate.markFailed('siteverify-failed')
       setVerificationState('failed')
       console.warn('turnstile-siteverify', error)
-    } finally {
-      siteverifyInFlightRef.current = false
     }
+
+    siteverifyInFlightRef.current = false
   }
 
   function handleBeforeInteractive() {
