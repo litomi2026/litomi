@@ -32,18 +32,16 @@ export default function useSubscribeAction(handle: string, artistName: string, e
     setPending(true)
     setError(null)
 
+    const savedId = billing?.paymentMethods[0]?.id
+
     try {
       if (free) {
         await requestSubscribe({})
+      } else if (savedId) {
+        await requestSubscribe({ paymentMethodId: savedId })
       } else {
-        const savedId = billing?.paymentMethods[0]?.id
-
-        if (savedId) {
-          await requestSubscribe({ paymentMethodId: savedId })
-        } else {
-          const method = await addCard(t('subscribeAction.issueName', { name: artistName }))
-          await requestSubscribe({ paymentMethodId: method.id })
-        }
+        const method = await addCard(t('subscribeAction.issueName', { name: artistName }))
+        await requestSubscribe({ paymentMethodId: method.id })
       }
     } catch (caught) {
       setError(errorMessage(caught, t('subscribeAction.failed')))

@@ -39,45 +39,45 @@ export default function DmcaNoticeFormClient({ dmcaEmail }: Props) {
       return
     }
 
+    const formData = new FormData(form)
+    const reporterRole = getValue(formData, 'reporter-role')
+
+    const nextTemplate = [
+      t('mailSubject'),
+      `[${t('noticeHeading')}]`,
+      '',
+      t('reporterSection'),
+      `- ${t('reporterName')}: ${getValue(formData, 'reporter-name')}`,
+      `- ${t('reporterEmail')}: ${getValue(formData, 'reporter-email')}`,
+      `- ${t('reporterPhone')}: ${getValue(formData, 'reporter-phone')}`,
+      `- ${t('reporterAddress')}:`,
+      getValue(formData, 'reporter-address') || t('empty'),
+      `- ${t('reporterRole')}: ${
+        reporterRole === 'AUTHORIZED_AGENT'
+          ? t('reporterRoleAgent')
+          : reporterRole === 'COPYRIGHT_OWNER'
+            ? t('reporterRoleOwner')
+            : reporterRole
+      }`,
+      '',
+      t('workSection'),
+      `- ${t('workDescription')}:`,
+      getValue(formData, 'copyrighted-work-description') || t('empty'),
+      `- ${t('workURL')}: ${getValue(formData, 'copyrighted-work-url') || t('optional')}`,
+      '',
+      t('infringingSection'),
+      `- ${t('infringingReferences')}:`,
+      getValue(formData, 'infringing-references') || t('empty'),
+      '',
+      t('statementsSection'),
+      `- ${t('goodFaith')}: ${isChecked(formData, 'good-faith-confirmed') ? 'Y' : 'N'}`,
+      `- ${t('perjury')}: ${isChecked(formData, 'perjury-confirmed') ? 'Y' : 'N'}`,
+      `- ${t('signature')}: ${getValue(formData, 'signature')}`,
+    ].join('\n')
+
+    setTemplate(nextTemplate)
+
     try {
-      const formData = new FormData(form)
-      const reporterRole = getValue(formData, 'reporter-role')
-
-      const nextTemplate = [
-        t('mailSubject'),
-        `[${t('noticeHeading')}]`,
-        '',
-        t('reporterSection'),
-        `- ${t('reporterName')}: ${getValue(formData, 'reporter-name')}`,
-        `- ${t('reporterEmail')}: ${getValue(formData, 'reporter-email')}`,
-        `- ${t('reporterPhone')}: ${getValue(formData, 'reporter-phone')}`,
-        `- ${t('reporterAddress')}:`,
-        getValue(formData, 'reporter-address') || t('empty'),
-        `- ${t('reporterRole')}: ${
-          reporterRole === 'AUTHORIZED_AGENT'
-            ? t('reporterRoleAgent')
-            : reporterRole === 'COPYRIGHT_OWNER'
-              ? t('reporterRoleOwner')
-              : reporterRole
-        }`,
-        '',
-        t('workSection'),
-        `- ${t('workDescription')}:`,
-        getValue(formData, 'copyrighted-work-description') || t('empty'),
-        `- ${t('workURL')}: ${getValue(formData, 'copyrighted-work-url') || t('optional')}`,
-        '',
-        t('infringingSection'),
-        `- ${t('infringingReferences')}:`,
-        getValue(formData, 'infringing-references') || t('empty'),
-        '',
-        t('statementsSection'),
-        `- ${t('goodFaith')}: ${isChecked(formData, 'good-faith-confirmed') ? 'Y' : 'N'}`,
-        `- ${t('perjury')}: ${isChecked(formData, 'perjury-confirmed') ? 'Y' : 'N'}`,
-        `- ${t('signature')}: ${getValue(formData, 'signature')}`,
-      ].join('\n')
-
-      setTemplate(nextTemplate)
-
       await navigator.clipboard.writeText(nextTemplate)
       toast.success(t('copySuccess'))
     } catch {

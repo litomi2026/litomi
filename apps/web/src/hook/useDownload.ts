@@ -44,23 +44,23 @@ export function useDownload({ manga }: Props) {
     setIsDownloading(true)
     setDownloadedCount(0)
 
+    const { id, title, images = [] } = manga
+
+    const imageList = images.map(({ original, thumbnail }, index) => {
+      const url = original?.url ?? thumbnail?.url ?? ''
+      const extension = getImageExtension(url)
+
+      return {
+        urls: getSemanticDownloadCandidates({
+          mangaId: id,
+          imageIndex: index,
+          externalImageURL: url,
+        }),
+        filename: `${index}${extension}`,
+      }
+    })
+
     try {
-      const { id, title, images = [] } = manga
-
-      const imageList = images.map(({ original, thumbnail }, index) => {
-        const url = original?.url ?? thumbnail?.url ?? ''
-        const extension = getImageExtension(url)
-
-        return {
-          urls: getSemanticDownloadCandidates({
-            mangaId: id,
-            imageIndex: index,
-            externalImageURL: url,
-          }),
-          filename: `${index}${extension}`,
-        }
-      })
-
       await downloadMultipleImages({
         filename: `${id}-${title}`,
         images: imageList,
