@@ -49,18 +49,16 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   const rows: VirtualMangaGridRow<TItem>[] = columnCount > 0 ? chunkVirtualMangaGridItems(items, columnCount) : []
   const storageKey = createScrollRestorationStorageKey(scrollRestorationKey)
 
-  async function handleEndReached() {
+  function handleEndReached() {
     if (!fetchNextPage || !hasNextPage || isFetchingNextPage || fetchInFlightRef.current) {
       return
     }
 
     fetchInFlightRef.current = true
 
-    try {
-      await fetchNextPage()
-    } finally {
+    Promise.resolve(fetchNextPage()).finally(() => {
       fetchInFlightRef.current = false
-    }
+    })
   }
 
   function handleScrollerRef(element: HTMLElement | Window | null) {
