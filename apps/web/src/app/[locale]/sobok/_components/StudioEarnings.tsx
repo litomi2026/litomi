@@ -2,11 +2,13 @@
 
 import type { ChatPayoutDTO, ChatPayoutStatus } from '@litomi/contracts'
 import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
+import type { SettlementTaxType } from '@litomi/domain/payout/policy'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { getErrorMessage } from '@/lib/error-message'
 import { formatKRW } from '../_lib/format'
 import useSavePayoutAccountMutation from '../_query/useSavePayoutAccountMutation'
+import useSaveTaxTypeMutation from '../_query/useSaveTaxTypeMutation'
 import useStudioEarningsQuery from '../_query/useStudioEarningsQuery'
 import Button from './ui/Button'
 import Section from './ui/Section'
@@ -44,6 +46,8 @@ export default function StudioEarnings() {
             )}
           </div>
         </Section>
+
+        <TaxTypeSection countryCode={data?.settlementCountryCode} loading={!data} taxType={data?.settlementTaxType} />
 
         <PayoutAccountSection account={data?.account} loading={!data} />
 
@@ -114,6 +118,93 @@ function PayoutItem({ payout }: PayoutItemProps) {
           ` · ${t('paidOn', { date: new Date(payout.paidAt).toLocaleDateString(LOCALE_LANGUAGE_TAGS[locale]) })}`}
       </p>
     </li>
+  )
+}
+
+type TaxTypeSectionProps = {
+  taxType?: SettlementTaxType
+  countryCode?: string | null
+  loading: boolean
+}
+
+function TaxTypeSection({ taxType, countryCode, loading }: TaxTypeSectionProps) {
+  const { mutate, isPending, error } = useSaveTaxTypeMutation()
+  const t = useTranslations('Sobok.earnings')
+  const tErrors = useTranslations('Errors')
+  const locale = useLocale()
+  const errorMessage = getErrorMessage(tErrors, error)
+  const languageTag = LOCALE_LANGUAGE_TAGS[locale]
+  const countryOptions = useMemo(() => getCountryOptions(languageTag), [languageTag])
+
+  if (loading || !taxType) {
+    return (
+      <Section title={t('taxTypeTitle')}>
+        <Skeleton className="h-40 rounded-xl" />
+      </Section>
+    )
+  }
+
+  const options: { value: SettlementTaxType; label: string; desc: string }[] = [
+    { value: 'individual', label: t('taxTypeIndividual'), desc: t('taxTypeIndividualDesc') },
+    { value: 'business', label: t('taxTypeBusiness'), desc: t('taxTypeBusinessDesc') },
+    { value: 'non_resident', label: t('taxTypeNonResident'), desc: t('taxTypeNonResidentDesc') },
+  ]
+
+  function selectType(value: SettlementTaxType) {
+    if (value === taxType || isPending) {
+      return
+    }
+
+    // 비거주자로 전환 시 국가가 필요 — 기존 국가 또는 기본값(중국)으로 시작한다.
+    mutate(value === 'non_resident' ? { taxType: value, countryCode: countryCode ?? 'CN' } : { taxType: value })
+  }
+
+  return (
+    <Section title={t('taxTypeTitle')}>
+      <div className="space-y-2">
+        {options.map((option) => {
+          const selected = option.value === taxType
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              disabled={isPending}
+              onClick={() => selectType(option.value)}
+              className={`block w-full rounded-xl border p-4 text-left transition-colors disabled:opacity-60 ${
+                selected ? 'border-indigo-500 bg-indigo-500/10' : 'border-foreground/10 hover:border-foreground/25'
+              }`}
+            >
+              <p className="text-sm font-semibold text-foreground">{option.label}</p>
+              <p className="mt-1 text-xs text-zinc-500">{option.desc}</p>
+            </button>
+          )
+        })}
+      </div>
+
+      {taxType === 'non_resident' && (
+        <div className="mt-3">
+          <label className="text-xs text-zinc-400" htmlFor="settlement-country">
+            {t('taxCountryLabel')}
+          </label>
+          <select
+            id="settlement-country"
+            disabled={isPending}
+            value={countryCode ?? 'CN'}
+            onChange={(e) => mutate({ taxType: 'non_resident', countryCode: e.target.value })}
+            className="mt-1 w-full rounded-lg bg-zinc-800 px-3.5 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-indigo-500/50"
+          >
+            {countryOptions.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {errorMessage && <p className="mt-2 text-xs text-red-400">{errorMessage}</p>}
+    </Section>
   )
 }
 
@@ -232,4 +323,16 @@ function PayoutAccountSection({ account, loading }: PayoutAccountSectionProps) {
       )}
     </Section>
   )
+}
+
+// ISO 3166-1 alpha-2 국가 목록을 로케일 언어로 이름 붙여 정렬 — 하드코딩 없이 표준 API로 완전한 목록.
+function getCountryOptions(languageTag: string): { code: string; name: string }[] {
+  const display = new Intl.DisplayNames([languageTag], { type: 'region' })
+  // 현재 TS lib의 supportedValuesOf 타입엔 'region'이 아직 없어 캐스팅 — 런타임(Node 26/모던 브라우저)은 지원한다.
+  const regionCodes = (Intl.supportedValuesOf as (key: string) => string[])('region')
+
+  return regionCodes
+    .filter((code) => /^[A-Z]{2}$/.test(code))
+    .map((code) => ({ code, name: display.of(code) ?? code }))
+    .sort((a, b) => a.name.localeCompare(b.name, languageTag))
 }

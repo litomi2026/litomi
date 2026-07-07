@@ -72,6 +72,7 @@ async function settleArtist(
 ): Promise<void> {
   const grossAmount = activity?.grossAmount ?? 0
   const refundAmount = activity?.refundAmount ?? 0
+  const feeAmount = activity?.feeAmount ?? 0
   const carriedInAmount = latest?.status === 'carried' ? latest.payableAmount : 0
 
   if (grossAmount === 0 && refundAmount === 0 && carriedInAmount === 0) {
@@ -87,7 +88,14 @@ async function settleArtist(
     return
   }
 
-  const breakdown = computeSettlement({ grossAmount, refundAmount, carriedInAmount })
+  const breakdown = computeSettlement({
+    grossAmount,
+    refundAmount,
+    feeAmount,
+    carriedInAmount,
+    taxType: artist.settlementTaxType,
+  })
+
   const status = breakdown.payableAmount >= PAYOUT_MIN_AMOUNT ? 'pending' : 'carried'
 
   const created = await createPayout({
@@ -97,7 +105,7 @@ async function settleArtist(
     periodEnd: window.periodEnd,
     grossAmount,
     refundAmount,
-    feeAmount: breakdown.feeAmount,
+    feeAmount,
     withholdingAmount: breakdown.withholdingAmount,
     carriedInAmount,
     payableAmount: breakdown.payableAmount,

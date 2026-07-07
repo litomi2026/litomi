@@ -1,3 +1,4 @@
+import { SETTLEMENT_TAX_TYPES, type SettlementTaxType } from '@litomi/domain/payout/policy'
 import { z } from 'zod'
 
 import { INVALID_PARAM } from '../problem'
@@ -224,15 +225,16 @@ export interface ChatSubscriptionDTO {
   autoRenew: boolean
 }
 
-// The monthly price to subscribe to an artist. null = the artist is not open for subscription.
+// The monthly price to subscribe to an artist. Absent = not open for subscription; amount 0 = free & open.
 export interface ChatArtistPrice {
   amount: number
   currency: string
 }
 
 // Subscribe funds the first charge from a saved billing key (issued client-side first).
+// 무료 개방(가격 0) 구독은 결제가 없으므로 결제수단이 없어도 된다 — 유료 구독은 서버가 존재를 강제한다.
 export const postV1ChatSubscriptionBodySchema = z.object({
-  paymentMethodId: z.number().int().positive(),
+  paymentMethodId: z.number().int().positive().optional(),
 })
 
 export interface POSTV1ChatSubscriptionResponse {
@@ -277,7 +279,7 @@ const chatArtistHandleSchema = z
 const CHAT_ARTIST_NAME_MAX_LENGTH = 64
 const CHAT_ARTIST_DESCRIPTION_MAX_LENGTH = 500
 const CHAT_ARTIST_EMOJI_MAX_LENGTH = 16
-// 0 = 구독 미오픈. 열려 있다면 1,000원 이상 1,000,000원 이하.
+// null = 구독 미오픈, 0 = 무료 개방, 그 외 1,000원 이상 1,000,000원 이하 = 유료.
 const CHAT_ARTIST_PRICE_MIN = 1_000
 const CHAT_ARTIST_PRICE_MAX = 1_000_000
 
@@ -289,6 +291,7 @@ const chatArtistPriceAmountSchema = z
   .refine((amount) => amount === 0 || amount >= CHAT_ARTIST_PRICE_MIN, {
     params: { code: INVALID_PARAM.PRICE_BELOW_MINIMUM },
   })
+  .nullable()
 
 export const postV1ChatArtistBodySchema = z.object({
   handle: chatArtistHandleSchema,
@@ -323,7 +326,8 @@ export interface ChatArtistMine {
   description: string | null
   imageURL: string | null
   emoji: string | null
-  priceAmount: number
+  // null = 구독 미오픈, 0 = 무료 개방, 그 외 = 유료 월정액.
+  priceAmount: number | null
   priceCurrency: string
   isActive: boolean
 }
@@ -369,6 +373,10 @@ export interface ChatPayoutAccountDTO {
 
 export interface GETV1ChatStudioEarningsResponse {
   account?: ChatPayoutAccountDTO
+  // 정산 세무 유형 — individual=3.3% 원천징수, business=세금계산서, non_resident=비거주자(둘 다 원천징수 없음).
+  settlementTaxType: SettlementTaxType
+  // 비거주자의 거주 국가(ISO 3166-1 alpha-2). non_resident가 아니면 null.
+  settlementCountryCode: string | null
   // 진행 중인 이번 달(KST)의 실시간 집계 — 마감 전 추정치.
   currentMonth: {
     grossAmount: number
@@ -376,6 +384,22 @@ export interface GETV1ChatStudioEarningsResponse {
     estimatedPayableAmount: number
   }
   payouts: ChatPayoutDTO[]
+}
+
+export const putV1ChatTaxTypeBodySchema = z.object({
+  taxType: z.enum(SETTLEMENT_TAX_TYPES),
+  // ISO 3166-1 alpha-2. non_resident일 때만 저장된다(그 외 유형이면 서버가 null로 정리).
+  countryCode: z
+    .string()
+    .regex(/^[A-Z]{2}$/)
+    .optional(),
+})
+
+export type PUTV1ChatTaxTypeBody = z.infer<typeof putV1ChatTaxTypeBodySchema>
+
+export interface PUTV1ChatTaxTypeResponse {
+  taxType: SettlementTaxType
+  settlementCountryCode?: string
 }
 
 export const putV1ChatPayoutAccountBodySchema = z.object({

@@ -48,7 +48,9 @@ route.get('/', ...middlewares, async (c) => {
   const breakdown = computeSettlement({
     grossAmount: activity.grossAmount,
     refundAmount: activity.refundAmount,
+    feeAmount: activity.feeAmount,
     carriedInAmount,
+    taxType: artist.settlementTaxType,
   })
 
   const response = {
@@ -57,6 +59,8 @@ route.get('/', ...middlewares, async (c) => {
       accountNumberMasked: maskAccountNumber(decryptSecret(account.accountNumber)),
       holderName: account.holderName,
     },
+    settlementTaxType: artist.settlementTaxType,
+    settlementCountryCode: artist.settlementCountryCode,
     currentMonth: {
       grossAmount: activity.grossAmount,
       refundAmount: activity.refundAmount,

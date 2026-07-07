@@ -17,6 +17,7 @@ import artistPostRoute from './artist/POST'
 import studioEarningsGetRoute from './studio/earnings/GET'
 import studioGetRoute from './studio/GET'
 import studioPayoutAccountPutRoute from './studio/payout-account/PUT'
+import studioTaxTypePutRoute from './studio/tax-type/PUT'
 import threadsGetRoute from './threads/GET'
 
 const chatRoutes = new Hono<Env>()
@@ -25,6 +26,7 @@ chatRoutes.route('/threads', threadsGetRoute)
 chatRoutes.route('/studio', studioGetRoute)
 chatRoutes.route('/studio/earnings', studioEarningsGetRoute)
 chatRoutes.route('/studio/payout-account', studioPayoutAccountPutRoute)
+chatRoutes.route('/studio/tax-type', studioTaxTypePutRoute)
 chatRoutes.route('/artist', artistPostRoute)
 chatRoutes.route('/artist/:handle', artistHandleGetRoute)
 chatRoutes.route('/artist/:handle', artistHandlePatchRoute)

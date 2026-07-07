@@ -4,11 +4,13 @@ import { ensureOpenInvoice, voidOpenInvoice } from '@litomi/db/app/query/invoice
 import { ensureInvoicePayment, markPaymentFailed } from '@litomi/db/app/query/payment'
 import { getRenewalPaymentMethod } from '@litomi/db/app/query/payment-method'
 import {
+  activateFreeInvoice,
   confirmPayment,
   type DueSubscription,
   listSubscriptionsDue,
   markSubscriptionStatus,
 } from '@litomi/db/app/query/subscription'
+import { computeFeeAmount } from '@litomi/domain/payout/policy'
 import {
   addSubscriptionPeriod,
   RENEWAL_GRACE_MS,
@@ -89,20 +91,60 @@ async function handleDue(
     return
   }
 
-  const paymentMethod = await getRenewalPaymentMethod({ userId: sub.userId, preferredId: sub.paymentMethodId })
   const artist = await getChatArtistById(sub.targetId)
 
-  if (!paymentMethod || !artist?.isActive || sub.priceAmount <= 0) {
+  if (!artist?.isActive) {
+    await applyDunning(sub, now, summary)
+    return
+  }
+
+  const lapsedMs = now.getTime() - sub.expiresAt.getTime()
+  const periodStart = lapsedMs > RENEWAL_GRACE_MS ? now : sub.expiresAt
+
+  // 무료 구독(가격 0) — 결제 없이 0원 invoice로 열람권만 연장한다.
+  if (sub.priceAmount === 0) {
+    try {
+      if (lapsedMs > RENEWAL_GRACE_MS) {
+        await voidOpenInvoice(sub.id)
+      }
+
+      const freeInvoice = await ensureOpenInvoice({
+        subscriptionId: sub.id,
+        userId: sub.userId,
+        targetType: sub.targetType,
+        targetId: sub.targetId,
+        periodStart,
+        periodEnd: addSubscriptionPeriod(periodStart),
+        amount: 0,
+        currency: sub.priceCurrency,
+      })
+
+      if (freeInvoice) {
+        await activateFreeInvoice(freeInvoice.id, now)
+        summary.charged++
+      } else {
+        summary.skipped++
+      }
+    } catch (error) {
+      console.error('billing-worker: free renewal failed', { subscriptionId: sub.id, error })
+      summary.skipped++
+    }
+
+    return
+  }
+
+  const paymentMethod = await getRenewalPaymentMethod({ userId: sub.userId, preferredId: sub.paymentMethodId })
+
+  if (!paymentMethod) {
     await applyDunning(sub, now, summary)
     return
   }
 
   const orderName = `${artist.displayName} 구독`
-  const lapsedMs = now.getTime() - sub.expiresAt.getTime()
-  const periodStart = lapsedMs > RENEWAL_GRACE_MS ? now : sub.expiresAt
 
   let invoice: Awaited<ReturnType<typeof ensureOpenInvoice>>
   let paymentId: string
+
   try {
     if (lapsedMs > RENEWAL_GRACE_MS) {
       await voidOpenInvoice(sub.id)
@@ -130,6 +172,8 @@ async function handleDue(
       orderName,
       amount: invoice.amount,
       currency: invoice.currency,
+      feeBps: artist.feeBps,
+      feeAmount: computeFeeAmount(invoice.amount, artist.feeBps),
     }))
   } catch (error) {
     console.error('billing-worker: stage renewal failed', { subscriptionId: sub.id, error })

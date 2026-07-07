@@ -3,16 +3,22 @@
 import type { ChatArtistMine } from '@litomi/contracts'
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 export interface ArtistProfileFormValues {
   handle: string
   displayName: string
   description: string | null
   emoji: string | null
-  priceAmount: number
+  // null = 미오픈, 0 = 무료 개방, 그 외 = 유료.
+  priceAmount: number | null
   isActive: boolean
   agreeContentPolicy: boolean
 }
+
+// null(미오픈)/0(무료)/유료 세 상태를 폼에서 다루기 위한 모드.
+type PriceMode = 'closed' | 'free' | 'paid'
 
 interface Props {
   mode: 'create' | 'edit'
@@ -37,6 +43,13 @@ export default function ArtistProfileForm({
 }: Props) {
   const t = useTranslations('Sobok.studio.form')
   const isCreate = mode === 'create'
+  const [priceMode, setPriceMode] = useState<PriceMode>(() => toPriceMode(initial?.priceAmount))
+
+  const priceModeLabel: Record<PriceMode, string> = {
+    closed: t('priceModeClosed'),
+    free: t('priceModeFree'),
+    paid: t('priceModePaid'),
+  }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -53,7 +66,7 @@ export default function ArtistProfileForm({
       displayName: String(formData.get('displayName') ?? '').trim(),
       description: String(formData.get('description') ?? '').trim() || null,
       emoji: String(formData.get('emoji') ?? '').trim() || null,
-      priceAmount: price === '' ? 0 : Number(price),
+      priceAmount: priceMode === 'closed' ? null : priceMode === 'free' ? 0 : Number(price),
       isActive: isCreate || formData.get('isActive') === 'on',
       agreeContentPolicy: !isCreate || formData.get('agreeContentPolicy') === 'on',
     })
@@ -96,34 +109,56 @@ export default function ArtistProfileForm({
           />
         </label>
 
-        <div className="flex gap-3">
-          <label className="block flex-1">
-            <span className="text-sm font-medium text-foreground">{t('emojiLabel')}</span>
-            <input
-              type="text"
-              name="emoji"
-              defaultValue={initial?.emoji ?? ''}
-              placeholder="✨"
-              maxLength={16}
-              className="mt-1.5 w-full rounded-xl bg-zinc-800 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
-            />
-          </label>
+        <label className="block">
+          <span className="text-sm font-medium text-foreground">{t('emojiLabel')}</span>
+          <input
+            type="text"
+            name="emoji"
+            defaultValue={initial?.emoji ?? ''}
+            placeholder="✨"
+            maxLength={16}
+            className="mt-1.5 w-full rounded-xl bg-zinc-800 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
+          />
+        </label>
 
-          <label className="block flex-2">
-            <span className="text-sm font-medium text-foreground">{t('priceLabel')}</span>
+        <div>
+          <span className="text-sm font-medium text-foreground">{t('priceLabel')}</span>
+          <div className="mt-1.5 grid grid-cols-3 gap-2">
+            {(['closed', 'free', 'paid'] as const).map((m) => {
+              const selected = priceMode === m
+
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setPriceMode(m)}
+                  className={twMerge(
+                    'rounded-xl border py-2.5 text-sm font-medium transition-colors',
+                    selected
+                      ? 'border-indigo-500 bg-indigo-500/10 text-foreground'
+                      : 'border-foreground/10 text-zinc-400 hover:border-foreground/25',
+                  )}
+                >
+                  {priceModeLabel[m]}
+                </button>
+              )
+            })}
+          </div>
+          {priceMode === 'paid' && (
             <input
               type="number"
               name="priceAmount"
-              defaultValue={initial?.priceAmount}
+              defaultValue={initial?.priceAmount ?? ''}
               placeholder={t('pricePlaceholder')}
-              min={0}
+              required
+              min={1_000}
               max={1_000_000}
               step={100}
-              className="mt-1.5 w-full rounded-xl bg-zinc-800 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
+              className="mt-2 w-full rounded-xl bg-zinc-800 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/50"
             />
-          </label>
+          )}
+          <p className="mt-1.5 text-xs text-zinc-500">{t('priceHelp')}</p>
         </div>
-        <p className="-mt-3 text-xs text-zinc-500">{t('priceHelp')}</p>
 
         <label className="block">
           <span className="text-sm font-medium text-foreground">{t('bioLabel')}</span>
@@ -182,4 +217,12 @@ function normalizeHandleCase(e: React.InputEvent<HTMLInputElement>) {
     input.value = lower
     input.setSelectionRange(selectionStart, selectionEnd)
   }
+}
+
+function toPriceMode(priceAmount: number | null | undefined): PriceMode {
+  if (priceAmount == null) {
+    return 'closed'
+  }
+
+  return priceAmount === 0 ? 'free' : 'paid'
 }

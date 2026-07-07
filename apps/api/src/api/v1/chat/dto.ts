@@ -1,6 +1,7 @@
 import type {
   ChatArtistBrief,
   ChatArtistMine,
+  ChatArtistPrice,
   ChatContentType,
   ChatFeedItem,
   ChatMessageContent,
@@ -104,6 +105,18 @@ export function toArtistBrief(row: ChatArtistBriefRow): ChatArtistBrief {
     displayName: row.displayName,
     imageURL: row.imageURL,
     emoji: row.emoji,
+  }
+}
+
+// 공개 아티스트 응답용 가격 — priceAmount null(미오픈)은 생략, 0은 무료 개방(amount 0).
+export function toArtistPrice(row: ChatArtistRow): ChatArtistPrice | undefined {
+  if (!row.isActive || row.priceAmount === null) {
+    return undefined
+  }
+
+  return {
+    amount: row.priceAmount,
+    currency: row.priceCurrency,
   }
 }
 

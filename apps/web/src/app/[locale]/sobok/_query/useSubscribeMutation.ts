@@ -7,13 +7,13 @@ export default function useSubscribeMutation(handle: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ paymentMethodId }: { paymentMethodId: number }) => {
+    mutationFn: async ({ paymentMethodId }: { paymentMethodId?: number }) => {
       const url = `/api/v1/chat/artist/${handle}/subscription`
 
       const { data } = await fetchAPIData<POSTV1ChatSubscriptionResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ paymentMethodId }),
+        body: JSON.stringify(paymentMethodId === undefined ? {} : { paymentMethodId }),
       })
 
       return data
