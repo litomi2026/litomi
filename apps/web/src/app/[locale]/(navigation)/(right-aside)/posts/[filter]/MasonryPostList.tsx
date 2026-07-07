@@ -91,14 +91,23 @@ export function MasonryPostSkeletonGrid({ count, showMangaCover }: { count: numb
 }
 
 function CompactPostCard({ data }: RenderComponentProps<Post>) {
+  if (!data) {
+    return null
+  }
+
   return <PostCard post={data} showMangaCover={false} />
 }
 
-function getPostItemKey(post: Post) {
-  return post.id
+// masonic는 리플로우 중 축소된 items 배열 밖 인덱스를 요청할 수 있어 data/post가 undefined일 수 있어요.
+function getPostItemKey(post: Post | undefined, index: number) {
+  return post?.id ?? index
 }
 
 function PostCardWithMangaCover({ data }: RenderComponentProps<Post>) {
+  if (!data) {
+    return null
+  }
+
   return <PostCard post={data} showMangaCover />
 }
 
