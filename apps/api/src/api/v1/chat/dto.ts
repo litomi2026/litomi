@@ -14,7 +14,7 @@ import type {
 } from '@litomi/contracts'
 import type { ChatArtistBriefRow, ChatArtistRow } from '@litomi/db/app/query/chat'
 import type { SubscriptionState } from '@litomi/db/app/query/subscription'
-import type { ChatBroadcastRow, ChatBroadcastSummaryRow, ChatDmMessageRow } from '@litomi/db/chat/query'
+import type { ChatBroadcastRow, ChatDmMessageRow } from '@litomi/db/chat/query'
 
 const QUOTE_PREVIEW_MAX = 80
 
@@ -82,11 +82,11 @@ export function toQuotedPreview(row: ChatDmMessageRow): ChatQuotedPreview {
   }
 }
 
-export function broadcastSummaryPreview(summary: ChatBroadcastSummaryRow): ChatMessagePreview {
+export function broadcastPreview(row: ChatBroadcastRow): ChatMessagePreview {
   return {
-    messageId: summary.lastMessageId,
-    preview: summary.lastPreview,
-    createdAt: summary.lastCreatedAt.toISOString(),
+    messageId: row.messageId,
+    preview: truncate(textOf(row.content)),
+    createdAt: row.createdAt.toISOString(),
   }
 }
 

@@ -87,13 +87,3 @@ export const chatReplyReadCursorTable = cockroachTable.withRLS(
   },
   (table) => [primaryKey({ columns: [table.userId, table.artistId, table.contextMessageId] })],
 )
-
-// 아티스트별 최신 브로드캐스트 요약 — 팬 채팅 리스트/프리뷰용. DM last/unread은 별도 요약 없이
-// chat_dm_message PK 역스캔으로 파생한다.
-export const chatBroadcastSummaryTable = cockroachTable.withRLS('chat_broadcast_summary', {
-  artistId: bigint('artist_id', { mode: 'number' }).primaryKey(),
-  lastMessageId: varchar('last_message_id', { length: 26 }).notNull(),
-  lastPreview: varchar('last_preview', { length: 200 }).notNull(),
-  lastCreatedAt: timestamp('last_created_at', { precision: 3, withTimezone: true }).notNull(),
-  updatedAt,
-})

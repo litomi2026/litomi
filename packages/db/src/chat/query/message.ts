@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, gt, gte, inArray, lt, max, or } from 'drizzle-orm'
+import { and, asc, count, desc, eq, gt, gte, inArray, lt, max, or, type SQL } from 'drizzle-orm'
 import { encodeTime, ulid } from 'ulid'
 
 import { chatDB } from '../db'
@@ -186,6 +186,55 @@ export async function listBroadcast(artistId: number, options: ListBroadcastOpti
   }
 
   return rows
+}
+
+export interface ArtistBroadcastWindows {
+  artistId: number
+  // 이 아티스트에서 팬이 열람 가능한 결제 창(paid interval → messageId 범위). 빈 배열이면 열람 불가.
+  windows: TimelineWindow[]
+}
+
+// 팬이 아티스트별 결제 창 안에서 열람 가능한 방송만 고르는 조합 조건. 창이 없는(결제 이력 없는)
+// 아티스트는 제외하고, 전부 비면 undefined — 호출부는 빈 결과로 단락한다. 채팅 목록의 방송
+// 프리뷰/안읽음을 열람권으로 스코프하는 공유 빌더(getLatestBroadcastPerArtist·countBroadcastUnread).
+export function broadcastWindowsFilter(entries: ArtistBroadcastWindows[]): SQL | undefined {
+  const perArtist = entries
+    .filter((entry) => entry.windows.length > 0)
+    .map((entry) =>
+      and(
+        eq(chatBroadcastTable.artistId, entry.artistId),
+        or(
+          ...entry.windows.map((window) =>
+            and(
+              gte(chatBroadcastTable.messageId, window.fromId),
+              lt(chatBroadcastTable.messageId, window.toIdExclusive),
+            ),
+          ),
+        ),
+      ),
+    )
+
+  return perArtist.length > 0 ? or(...perArtist) : undefined
+}
+
+// 팬의 아티스트별 "결제 창 안 최신 방송" 한 건씩 — 채팅 목록의 방송 프리뷰용. DISTINCT ON으로
+// 아티스트당 최신 한 행만. 열람 가능한 방송이 없는 아티스트는 Map에서 빠진다.
+export async function getLatestBroadcastPerArtist(
+  entries: ArtistBroadcastWindows[],
+): Promise<Map<number, ChatBroadcastRow>> {
+  const filter = broadcastWindowsFilter(entries)
+
+  if (!filter) {
+    return new Map()
+  }
+
+  const rows = await chatDB
+    .selectDistinctOn([chatBroadcastTable.artistId])
+    .from(chatBroadcastTable)
+    .where(filter)
+    .orderBy(asc(chatBroadcastTable.artistId), desc(chatBroadcastTable.messageId))
+
+  return new Map(rows.map((row) => [row.artistId, row]))
 }
 
 export interface ListFanTimelineInput {

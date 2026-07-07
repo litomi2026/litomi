@@ -1,10 +1,12 @@
 import type { ChatMessagePreview, ChatThreadListItem, GETV1ChatThreadsResponse } from '@litomi/contracts'
-import { listChatThreadArtists } from '@litomi/db/app/query/chat'
+import { listChatThreadArtists, listPaidIntervalsByArtist } from '@litomi/db/app/query/chat'
 import {
+  type ArtistBroadcastWindows,
   countBroadcastUnread,
   countDmUnread,
-  getBroadcastSummaries,
   getLatestArtistDmPerArtist,
+  getLatestBroadcastPerArtist,
+  messageIdAtOrAfter,
 } from '@litomi/db/chat/query'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -14,16 +16,16 @@ import type { Env } from '@/app'
 import { requireAuth } from '@/middleware/require-auth'
 import { noStoreCacheControl } from '@/utils/cache-control'
 
-import { broadcastSummaryPreview, dmPreview, toArtistBrief } from '../dto'
+import { broadcastPreview, dmPreview, toArtistBrief } from '../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
 const middlewares = factory.createHandlers(requireAuth)
 
-// A fan's chat list = every artist they ever subscribed to. Broadcast preview/unread show only
-// while entitled (lapsed rows hide the broadcast archive), but the 1:1 history is always
-// readable, so the artist's latest 1:1 answer + its unread count show regardless. The row's
-// last message is whichever is newer.
+// A fan's chat list = every artist they ever subscribed to. The broadcast preview/unread are
+// scoped to the windows the fan paid for (same access rule as the timeline — pre-subscription and
+// gap-period broadcasts never show), while the 1:1 history is always readable, so the artist's
+// latest 1:1 answer + its unread count show regardless. The row's last message is whichever is newer.
 route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const artists = await listChatThreadArtists(userId)
@@ -35,33 +37,46 @@ route.get('/', ...middlewares, async (c) => {
   }
 
   const artistIds = artists.map((artist) => artist.id)
-  const entitledIds = artists.filter((artist) => artist.entitled).map((artist) => artist.id)
+  const intervalsByArtist = await listPaidIntervalsByArtist(userId, artistIds)
 
-  const [summaries, broadcastUnread, dmUnread, latestDm] = await Promise.all([
-    getBroadcastSummaries(entitledIds),
-    countBroadcastUnread(userId, entitledIds),
+  // Turn each artist's paid intervals into messageId windows — the broadcast preview/unread only
+  // see broadcasts inside them. A current interval's expiresAt is in the future, so it naturally
+  // covers the ongoing period's broadcasts.
+  const broadcastWindows: ArtistBroadcastWindows[] = artists.map((artist) => ({
+    artistId: artist.id,
+    windows: (intervalsByArtist.get(artist.id) ?? []).map((interval) => ({
+      fromId: messageIdAtOrAfter(interval.startedAt),
+      toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
+    })),
+  }))
+
+  const [previews, broadcastUnread, dmUnread, latestDm] = await Promise.all([
+    getLatestBroadcastPerArtist(broadcastWindows),
+    countBroadcastUnread(userId, broadcastWindows),
     countDmUnread(userId, artistIds),
     getLatestArtistDmPerArtist(userId, artistIds),
   ])
 
   const threads: ChatThreadListItem[] = artists.map(({ entitled, ...brief }) => {
-    const summary = entitled ? summaries.get(brief.id) : undefined
+    const preview = previews.get(brief.id)
     const dm = latestDm.get(brief.id)
 
     return {
       artist: toArtistBrief(brief),
       entitled,
-      lastMessage: pickLatest(summary && broadcastSummaryPreview(summary), dm && dmPreview(dm)),
-      unreadCount: (entitled ? (broadcastUnread.get(brief.id) ?? 0) : 0) + (dmUnread.get(brief.id) ?? 0),
+      lastMessage: pickLatest(preview && broadcastPreview(preview), dm && dmPreview(dm)),
+      unreadCount: (broadcastUnread.get(brief.id) ?? 0) + (dmUnread.get(brief.id) ?? 0),
     }
   })
 
   // Most-recently-active first; artists with no activity yet sink to the bottom.
   threads.sort((a, b) => (b.lastMessage?.messageId ?? '').localeCompare(a.lastMessage?.messageId ?? ''))
 
-  return c.json({ threads } satisfies GETV1ChatThreadsResponse, {
-    headers: { 'Cache-Control': noStoreCacheControl },
-  })
+  const response = {
+    threads,
+  } satisfies GETV1ChatThreadsResponse
+
+  return c.json(response, { headers: { 'Cache-Control': noStoreCacheControl } })
 })
 
 function pickLatest(a?: ChatMessagePreview, b?: ChatMessagePreview): ChatMessagePreview | undefined {
