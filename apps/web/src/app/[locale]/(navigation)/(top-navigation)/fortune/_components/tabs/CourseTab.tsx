@@ -28,12 +28,12 @@ export function CourseTab({ copy, copied, fortune, shareText }: Props) {
         <p className="mt-2 text-xs text-zinc-400">욕망을 확인하며, 격정적으로 탐험해요.</p>
 
         <div className="mt-4 grid gap-2.5 border-t border-white/7 pt-4 sm:grid-cols-2">
-          <CourseItem label="체위" value={fortune.course.position} />
+          <CourseItem label="자세" value={fortune.course.position} />
           <CourseItem label="장소" value={fortune.course.place} />
-          <CourseItem label="정력 음식" value={fortune.course.staminaFood} />
-          <CourseItem label="코스튬" value={fortune.course.costume} />
-          <CourseItem label="시나리오" value={fortune.course.scenario} />
-          <CourseItem label="애프터케어" value={fortune.course.aftercare} />
+          <CourseItem label="음식" value={fortune.course.staminaFood} />
+          <CourseItem label="의상" value={fortune.course.costume} />
+          <CourseItem label="상황" value={fortune.course.scenario} />
+          <CourseItem label="마무리" value={fortune.course.aftercare} />
         </div>
       </section>
 
