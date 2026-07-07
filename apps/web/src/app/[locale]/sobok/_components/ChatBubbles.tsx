@@ -1,6 +1,7 @@
 import { Check, CheckCheck } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
+import { twMerge } from 'tailwind-merge'
 import type { QuoteInfo } from '../_lib/chat'
 import { formatTime } from '../_lib/format'
 
@@ -20,7 +21,7 @@ export function QuotedMessage({ className = '', label, onClick, preview, variant
 
   if (variant === 'standalone') {
     return (
-      <button type="button" onClick={onClick} className={`${shared} border-indigo-400 ${className}`}>
+      <button type="button" onClick={onClick} className={twMerge(shared, 'border-indigo-400', className)}>
         <span className="max-w-full truncate text-xs font-semibold text-indigo-500">{label}</span>
         <span className="line-clamp-1 max-w-full text-xs leading-snug text-zinc-400">{preview}</span>
       </button>
@@ -35,7 +36,7 @@ export function QuotedMessage({ className = '', label, onClick, preview, variant
         e.stopPropagation()
         onClick()
       }}
-      className={`${shared} cursor-pointer border-white/45 ${className}`}
+      className={twMerge(shared, 'cursor-pointer border-white/45', className)}
     >
       <span className="max-w-full truncate text-xs font-semibold text-white">{label}</span>
       <span className="line-clamp-1 max-w-full text-xs leading-snug text-white/75">{preview}</span>

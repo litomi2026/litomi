@@ -1,4 +1,5 @@
 import { mergePaidIntervals, type PaidInterval } from '@litomi/domain/chat/policy'
+import type { SettlementTaxType } from '@litomi/domain/payout/policy'
 import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
 import { and, asc, desc, eq, gt, inArray, lte, sql } from 'drizzle-orm'
 import { db } from '../db'
@@ -136,7 +137,8 @@ export interface CreateChatArtistInput {
   displayName: string
   description: string | null
   emoji: string | null
-  priceAmount: number
+  // null = 미오픈, 0 = 무료 개방, 그 외 = 유료.
+  priceAmount: number | null
 }
 
 export async function createChatArtist(input: CreateChatArtistInput): Promise<ChatArtistRow> {
@@ -149,7 +151,7 @@ export interface ChatArtistPatch {
   displayName?: string
   description?: string | null
   emoji?: string | null
-  priceAmount?: number
+  priceAmount?: number | null
   isActive?: boolean
 }
 
@@ -171,6 +173,26 @@ export async function updateChatArtist({
     .returning()
 
   return row
+}
+
+export interface SetSettlementTaxProfileInput {
+  taxType: SettlementTaxType
+  // ISO 3166-1 alpha-2. non_resident가 아니면 무시하고 null로 정리한다(유형 밖 국가는 의미 없음).
+  countryCode?: string | null
+}
+
+// 정산 세무 프로필 변경 — 아티스트 본인만(userId로 스코프). 원천징수 분기의 유일한 입력.
+export async function setSettlementTaxProfile(
+  userId: number,
+  { taxType, countryCode }: SetSettlementTaxProfileInput,
+): Promise<void> {
+  await db
+    .update(chatArtistTable)
+    .set({
+      settlementTaxType: taxType,
+      settlementCountryCode: taxType === 'non_resident' ? (countryCode ?? null) : null,
+    })
+    .where(eq(chatArtistTable.userId, userId))
 }
 
 export interface ChatSubscriptionListRow {

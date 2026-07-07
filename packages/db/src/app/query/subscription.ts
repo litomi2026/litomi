@@ -127,6 +127,30 @@ export async function confirmPayment(paymentId: string, data: ConfirmPaymentInpu
   })
 }
 
+// 무료(0원) invoice를 결제 없이 정산 처리 — invoice를 paid로, 구독을 active + 열람권 갱신.
+// 무료 개방(가격 0)·무료 체험 공용. payment 행이 없으므로 정산 매출에도 잡히지 않는다.
+export async function activateFreeInvoice(invoiceId: number, paidAt: Date): Promise<void> {
+  await db.transaction(async (tx) => {
+    const [invoice] = await tx
+      .update(invoiceTable)
+      .set({ status: 'paid', paidAt })
+      .where(and(eq(invoiceTable.id, invoiceId), eq(invoiceTable.status, 'open')))
+      .returning({ subscriptionId: invoiceTable.subscriptionId })
+
+    if (invoice && invoice.subscriptionId !== null) {
+      await tx
+        .update(subscriptionTable)
+        .set({
+          status: 'active',
+          autoRenew: true,
+          canceledAt: null,
+          expiresAt: paidThroughExpiry(invoice.subscriptionId),
+        })
+        .where(eq(subscriptionTable.id, invoice.subscriptionId))
+    }
+  })
+}
+
 export interface EnsureSubscriptionInput {
   userId: number
   targetType: string

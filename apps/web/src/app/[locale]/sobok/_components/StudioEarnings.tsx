@@ -5,6 +5,7 @@ import { LOCALE_LANGUAGE_TAGS } from '@litomi/domain/locale'
 import type { SettlementTaxType } from '@litomi/domain/payout/policy'
 import { useLocale, useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import { getErrorMessage } from '@/lib/error-message'
 import { formatKRW } from '../_lib/format'
 import useSavePayoutAccountMutation from '../_query/useSavePayoutAccountMutation'
@@ -171,9 +172,10 @@ function TaxTypeSection({ taxType, countryCode, loading }: TaxTypeSectionProps) 
               type="button"
               disabled={isPending}
               onClick={() => selectType(option.value)}
-              className={`block w-full rounded-xl border p-4 text-left transition-colors disabled:opacity-60 ${
-                selected ? 'border-indigo-500 bg-indigo-500/10' : 'border-foreground/10 hover:border-foreground/25'
-              }`}
+              className={twMerge(
+                'block w-full rounded-xl border p-4 text-left transition-colors disabled:opacity-60',
+                selected ? 'border-indigo-500 bg-indigo-500/10' : 'border-foreground/10 hover:border-foreground/25',
+              )}
             >
               <p className="text-sm font-semibold text-foreground">{option.label}</p>
               <p className="mt-1 text-xs text-zinc-500">{option.desc}</p>
