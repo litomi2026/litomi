@@ -26,6 +26,16 @@ export default function OriginProtectionTurnstile() {
   const t = useTranslations('Common.guard.originProtection')
   const verificationRequired = verificationState !== 'hidden'
 
+  function reportTurnstileFailure(reason: OriginProtectionClearanceFailureReason, errorCode?: string) {
+    if (clearanceGate.isReady()) {
+      return
+    }
+
+    clearanceGate.markFailed(reason)
+    setVerificationState('failed')
+    console.warn('reportTurnstileFailure', errorCode)
+  }
+
   async function handleSuccess(token: string) {
     if (clearanceGate.isReady()) {
       setVerificationState('hidden')
@@ -57,9 +67,9 @@ export default function OriginProtectionTurnstile() {
       clearanceGate.markFailed('siteverify-failed')
       setVerificationState('failed')
       console.warn('turnstile-siteverify', error)
-    } finally {
-      siteverifyInFlightRef.current = false
     }
+
+    siteverifyInFlightRef.current = false
   }
 
   function handleBeforeInteractive() {
@@ -71,16 +81,6 @@ export default function OriginProtectionTurnstile() {
     clearanceGate.startVerification()
     setVerificationState('checking')
     turnstileRef.current?.reset()
-  }
-
-  function reportTurnstileFailure(reason: OriginProtectionClearanceFailureReason, errorCode?: string) {
-    if (clearanceGate.isReady()) {
-      return
-    }
-
-    clearanceGate.markFailed(reason)
-    setVerificationState('failed')
-    console.warn('reportTurnstileFailure', errorCode)
   }
 
   useEffect(() => {

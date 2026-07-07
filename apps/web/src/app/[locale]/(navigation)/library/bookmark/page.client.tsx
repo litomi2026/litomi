@@ -231,7 +231,6 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        measurementKey={sort}
         onScrollElementChange={handleScrollElementChange}
         renderItem={renderItem}
         scrollToOptions={scrollToOptions}

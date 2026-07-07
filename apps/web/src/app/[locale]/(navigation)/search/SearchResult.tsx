@@ -230,7 +230,6 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        measurementKey={searchParams}
         onScrollElementChange={handleScrollElementChange}
         renderItem={renderItem}
         scrollToOptions={scrollToOptions}

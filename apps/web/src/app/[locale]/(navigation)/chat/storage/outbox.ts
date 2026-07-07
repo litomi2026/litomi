@@ -102,13 +102,13 @@ export function useOutboxAutoFlush(options: { onUnauthorized?: () => void }) {
     }
 
     isFlushingRef.current = true
-    try {
-      const result = await flushOutbox()
-      if (result.paused) {
-        onUnauthorized?.()
-      }
-    } finally {
+
+    const result = await flushOutbox().finally(() => {
       isFlushingRef.current = false
+    })
+
+    if (result.paused) {
+      onUnauthorized?.()
     }
   }, [onUnauthorized])
 

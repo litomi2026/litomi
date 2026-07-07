@@ -117,8 +117,12 @@ export default function useUserFollowMutation(
       return false
     }
 
-    await mutation.mutateAsync({ following })
-    return true
+    try {
+      await mutation.mutateAsync({ following })
+      return true
+    } catch {
+      return false
+    }
   }
 
   return {

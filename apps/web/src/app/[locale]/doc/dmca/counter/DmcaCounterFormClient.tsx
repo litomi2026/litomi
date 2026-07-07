@@ -31,52 +31,53 @@ export default function DmcaCounterFormClient({ dmcaEmail }: Props) {
 
     setIsGenerating(true)
 
+    const form = formRef.current
+
+    if (!form?.reportValidity()) {
+      setIsGenerating(false)
+      return
+    }
+
+    const formData = new FormData(form)
+
+    const nextTemplate = [
+      t('mailSubject'),
+      `[${t('title')}]`,
+      '',
+      t('claimantSection'),
+      `- ${t('claimantName')}: ${getValue(formData, 'claimant-name')}`,
+      `- ${t('claimantEmail')}: ${getValue(formData, 'claimant-email')}`,
+      `- ${t('claimantPhone')}: ${getValue(formData, 'claimant-phone')}`,
+      `- ${t('claimantAddress')}:`,
+      getValue(formData, 'claimant-address') || t('empty'),
+      '',
+      t('relatedSection'),
+      `- ${t('relatedNoticeId')}: ${getValue(formData, 'related-notice-id') || t('optional')}`,
+      `- ${t('infringingReferences')}:`,
+      getValue(formData, 'infringing-references') || t('empty'),
+      '',
+      t('claimSection'),
+      `- ${t('claimDetails')}:`,
+      getValue(formData, 'claim-details') || t('empty'),
+      `- ${t('evidenceLinks')}:`,
+      getValue(formData, 'evidence-links') || t('optional'),
+      '',
+      t('statementsSection'),
+      `- ${t('goodFaith')}: ${isChecked(formData, 'good-faith-confirmed') ? 'Y' : 'N'}`,
+      `- ${t('perjury')}: ${isChecked(formData, 'perjury-confirmed') ? 'Y' : 'N'}`,
+      `- ${t('signature')}: ${getValue(formData, 'signature')}`,
+    ].join('\n')
+
+    setTemplate(nextTemplate)
+
     try {
-      const form = formRef.current!
-
-      if (!form.reportValidity()) {
-        return
-      }
-
-      const formData = new FormData(form)
-
-      const nextTemplate = [
-        t('mailSubject'),
-        `[${t('title')}]`,
-        '',
-        t('claimantSection'),
-        `- ${t('claimantName')}: ${getValue(formData, 'claimant-name')}`,
-        `- ${t('claimantEmail')}: ${getValue(formData, 'claimant-email')}`,
-        `- ${t('claimantPhone')}: ${getValue(formData, 'claimant-phone')}`,
-        `- ${t('claimantAddress')}:`,
-        getValue(formData, 'claimant-address') || t('empty'),
-        '',
-        t('relatedSection'),
-        `- ${t('relatedNoticeId')}: ${getValue(formData, 'related-notice-id') || t('optional')}`,
-        `- ${t('infringingReferences')}:`,
-        getValue(formData, 'infringing-references') || t('empty'),
-        '',
-        t('claimSection'),
-        `- ${t('claimDetails')}:`,
-        getValue(formData, 'claim-details') || t('empty'),
-        `- ${t('evidenceLinks')}:`,
-        getValue(formData, 'evidence-links') || t('optional'),
-        '',
-        t('statementsSection'),
-        `- ${t('goodFaith')}: ${isChecked(formData, 'good-faith-confirmed') ? 'Y' : 'N'}`,
-        `- ${t('perjury')}: ${isChecked(formData, 'perjury-confirmed') ? 'Y' : 'N'}`,
-        `- ${t('signature')}: ${getValue(formData, 'signature')}`,
-      ].join('\n')
-
-      setTemplate(nextTemplate)
-
       await navigator.clipboard.writeText(nextTemplate)
       toast.success(t('copySuccess'))
     } catch {
       toast.error(t('copyError'))
-    } finally {
-      setIsGenerating(false)
     }
+
+    setIsGenerating(false)
   }
 
   return (
