@@ -15,7 +15,7 @@ export function buildSexFortuneShareText({ todayKey, fortune, origin }: BuildSha
   const tasteLabel = [role?.label, intensity?.label].filter(Boolean).join(' · ')
 
   return [
-    `오늘의 섹스 운세 (${todayKey})`,
+    `오늘의 운세 (${todayKey})`,
     `${fortune.rarity} ${rarity.label} · ${fortune.overall}점`,
     `취향: ${tasteLabel}`,
     `키워드: ${fortune.keywords.join(' · ')}`,

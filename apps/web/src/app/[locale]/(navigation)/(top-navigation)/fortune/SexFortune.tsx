@@ -109,8 +109,8 @@ export default function SexFortune({ todayKey }: Props) {
 
           <div className="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-white/3 px-3.5 py-2.5">
             <p className="text-xs text-zinc-400">
-              마음에 안 들면 다시 뽑아봐 · 오늘 <span className="tabular-nums text-zinc-200">{rerollsRemaining}</span>번
-              남음
+              마음에 안 들면 다시 뽑아봐요 · 오늘 <span className="tabular-nums text-zinc-200">{rerollsRemaining}</span>
+              번 남았어요
             </p>
             <button
               className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/8 px-3 py-1.5 text-sm font-semibold text-zinc-100 transition hover:bg-white/12 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-45"

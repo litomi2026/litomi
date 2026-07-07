@@ -35,8 +35,8 @@ export function SexFortuneRerollGate({ me, remaining, onClose, onGranted }: Prop
         <div>
           <p className="text-base font-semibold tracking-tight text-zinc-100">🎰 다시 뽑기</p>
           <p className="mt-1 text-xs text-zinc-400">
-            광고를 한 번 눌러서 새로고침 없이 다시 뽑아. 오늘 <span className="tabular-nums">{remaining}</span>번
-            남았어.
+            광고를 한 번 눌러서 새로고침 없이 다시 뽑아요. 오늘 <span className="tabular-nums">{remaining}</span>번
+            남았어요.
           </p>
         </div>
         <button

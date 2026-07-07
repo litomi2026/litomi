@@ -16,7 +16,7 @@ export function SexFortuneTagFunnel({ tags }: { tags: FortuneTagRecommendation[]
         </span>
         <div>
           <p className="text-base font-semibold tracking-tight text-zinc-100">오늘의 운세 작품</p>
-          <p className="text-xs text-zinc-400">뽑힌 취향에 맞춘 태그예요. 눌러서 바로 감상해봐.</p>
+          <p className="text-xs text-zinc-400">뽑힌 취향에 맞춘 태그예요. 눌러서 바로 감상해봐요.</p>
         </div>
       </div>
 

@@ -141,31 +141,31 @@ type TemplateBank = Record<Exclude<FortuneRole, 'switch'>, readonly string[]>
 // 지배=능동(대상을 ~시킨다), 복종=피동(내가 ~당한다). 리스트 항목은 -기로 종결.
 const TIP: TemplateBank = {
   dominant: [
-    '{bodypart:을} {adv} {actDom} {command}라고 윽박지르며 {target:을} {climax}시켜버려.',
-    '{target:을} 인간이 아니라 구멍으로 취급하며 {adv} {actDom} {climax}시켜.',
-    '{command}라고 명령하며 {target:을} {adv} {actDom} {climax}시켜서 폐인으로 만들어버려.',
-    '{target}의 {bodypart:을} {adv} {actDom} 끝까지 {climax}시켜.',
-    '{command}라고 조롱하며 {target:을} {bodypart}만 남을 때까지 {adv} {actDom} {climax}시켜버려.',
+    '{bodypart:을} {adv} {actDom} {command}라고 윽박지르며 {target:을} {climax}시켜버려요.',
+    '{target:을} 인간이 아니라 구멍으로 취급하며 {adv} {actDom} {climax}시켜요.',
+    '{command}라고 명령하며 {target:을} {adv} {actDom} {climax}시켜서 폐인으로 만들어버려요.',
+    '{target}의 {bodypart:을} {adv} {actDom} 끝까지 {climax}시켜요.',
+    '{command}라고 조롱하며 {target:을} {bodypart}만 남을 때까지 {adv} {actDom} {climax}시켜버려요.',
   ],
   submissive: [
-    '{selfRef:가} 되어 {bodypart:을} 벌리고 {plead}라고 애원하며 {adv} {climax} 당해봐.',
-    '{adv} 짓밟히면서 {plead}라고 신음하고 {bodypart:가} {actSub} {climax} 당하는 쾌락에 빠져.',
-    '{selfRef}처럼 순종하며 {plead}라고 애원하고 {bodypart:가} {adv} {actSub}.',
-    '{selfRef:가} 되어 {adv} {actSub} {bodypart:가} 망가지게 {climax} 당해봐.',
-    '{plead}라고 애원하며 {bodypart:을} 벌리고 {adv} {climax} 당하는 걸 즐겨.',
+    '{selfRef:가} 되어 {bodypart:을} 벌리고 {plead}라고 애원하며 {adv} {climax} 당해봐요.',
+    '{adv} 짓밟히면서 {plead}라고 신음하고 {bodypart:가} {actSub} {climax} 당하는 쾌락에 빠져요.',
+    '{selfRef}처럼 순종하며 {plead}라고 애원하고 {bodypart:가} {adv} {actSub}요.',
+    '{selfRef:가} 되어 {adv} {actSub} {bodypart:가} 망가지게 {climax} 당해봐요.',
+    '{plead}라고 애원하며 {bodypart:을} 벌리고 {adv} {climax} 당하는 걸 즐겨요.',
   ],
 }
 
 const CAUTION: TemplateBank = {
   dominant: [
-    '너무 몰아치면 황홀함이 깨져. 오늘은 {target:을} {adv} 맛만 보고 "내일 더 세게 {climax}시켜줄게"라고 약속해.',
-    '급하게 굴지 말고 {adv} {target}의 {bodypart:을} 먼저 길들여. 그 긴장이 {climax}의 황홀감을 키워.',
-    '오늘은 힘 조절이 관건이야. {target:을} {adv} 달구기만 하고 "{climax:은} 내일"이라고 애태워.',
+    '너무 몰아치면 황홀함이 깨져요. 오늘은 {target:을} {adv} 맛만 보고 "내일 더 세게 {climax}시켜줄게"라고 약속해요.',
+    '급하게 굴지 말고 {adv} {target}의 {bodypart:을} 먼저 길들여요. 그 긴장이 {climax}의 황홀감을 키워요.',
+    '오늘은 힘 조절이 관건이에요. {target:을} {adv} 달구기만 하고 "{climax:은} 내일"이라고 애태워요.',
   ],
   submissive: [
-    '너무 빨리 무너지지 말고 {adv} 짓밟히는 순간을 즐겨. {selfRef:로}서 {climax} 당하기 직전의 애원이 절정을 키워.',
-    '컨디션이 안 좋으면 {selfRef}처럼 {adv} 봉사만 하고 쉬어. 내일의 미친 {climax:을} 위한 준비운동으로 써.',
-    '너무 서두르면 금방 무너져. {adv} 애태우다가 {selfRef:가} 못 참을 때 {climax} 당해.',
+    '너무 빨리 무너지지 말고 {adv} 짓밟히는 순간을 즐겨요. {selfRef:로}서 {climax} 당하기 직전의 애원이 절정을 키워요.',
+    '컨디션이 안 좋으면 {selfRef}처럼 {adv} 봉사만 하고 쉬어요. 내일의 미친 {climax:을} 위한 준비운동으로 써요.',
+    '너무 서두르면 금방 무너져요. {adv} 애태우다가 {selfRef:가} 못 참을 때 {climax} 당해요.',
   ],
 }
 

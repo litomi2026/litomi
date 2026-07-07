@@ -59,7 +59,7 @@ export function SexFortuneDrawStage({ initialTaste, isReroll, onComplete }: Prop
     <div className="space-y-5">
       <div className="rounded-2xl border border-white/10 bg-white/4 p-4 sm:p-5 space-y-5">
         <p className="text-sm font-semibold text-zinc-100">
-          {isReroll ? '취향을 다시 골라봐' : '오늘의 취향을 골라봐'}
+          {isReroll ? '취향을 다시 골라봐요' : '오늘의 취향을 골라봐요'}
         </p>
 
         <TasteGroup label="역할">

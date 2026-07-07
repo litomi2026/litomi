@@ -45,8 +45,8 @@ export function SpecialTab({ copy, copied, fortune, shareText }: Props) {
         </div>
         <p className="mt-2 text-xs text-zinc-400">
           {rarity.key === 'SSR'
-            ? '전설 등급! 특별 시나리오가 모두 열렸어.'
-            : '더 높은 등급을 뽑을수록 더 많은 특별 시나리오가 열려.'}
+            ? '전설 등급! 특별 시나리오가 모두 열렸어요.'
+            : '더 높은 등급을 뽑을수록 더 많은 특별 시나리오가 열려요.'}
         </p>
 
         <ol className="mt-4 space-y-2.5 border-t border-white/7 pt-4">

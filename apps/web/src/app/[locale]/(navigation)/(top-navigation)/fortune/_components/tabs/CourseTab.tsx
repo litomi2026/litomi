@@ -47,7 +47,7 @@ export function CourseTab({ copy, copied, fortune, shareText }: Props) {
           </span>
           <p className="text-base font-semibold tracking-tight text-zinc-100">오늘의 미션</p>
         </div>
-        <p className="mt-2 text-xs text-zinc-400">하나씩 클리어하며 오늘의 취향을 완성해봐.</p>
+        <p className="mt-2 text-xs text-zinc-400">하나씩 클리어하며 오늘의 취향을 완성해봐요.</p>
 
         <ol className="mt-4 space-y-2.5 border-t border-white/7 pt-4">
           {fortune.missions.map((mission, index) => (
