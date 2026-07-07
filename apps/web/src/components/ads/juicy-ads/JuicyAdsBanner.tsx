@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge'
 import { JUICY_ADS_BANNER_ID } from './constants'
 import JuicyAdsScript from './JuicyAdsScript'
 import JuicyAdsSlot from './JuicyAdsSlot'
-import { DEFAULT_NON_ADULT_AD_LAYOUT } from './layouts'
+import { DEFAULT_AD_LAYOUT } from './layouts'
 import type { JuicyAdsLayoutNode } from './types'
 
 type Props = {
@@ -23,7 +23,7 @@ export default function JuicyAdsBanner({ className, title, layout, onAdClick }: 
       {title && <div className="text-center text-xs text-zinc-400 font-medium">{title}</div>}
       <JuicyAdsScript />
       <div className="flex flex-wrap justify-center gap-1.5 self-stretch" id={JUICY_ADS_BANNER_ID}>
-        {renderLayoutNodes(layout ?? DEFAULT_NON_ADULT_AD_LAYOUT, onAdClick)}
+        {renderLayoutNodes(layout ?? DEFAULT_AD_LAYOUT, onAdClick)}
       </div>
     </section>
   )

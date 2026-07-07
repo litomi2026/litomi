@@ -13,17 +13,14 @@ import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './Vi
 
 const RESIZE_MEASURE_DEBOUNCE_MS = 100
 const VIEWPORT_OVERSCAN_PX = 800
-const MIN_MEASURED_HEIGHT = 320
-const DEFAULT_VIEWPORT_HEIGHT = 640
 
 type GridContext = {
   footer?: ReactNode
   header?: ReactNode
 }
 
-type GridMeasurement = {
+type GridColumns = {
   columnCount: number
-  height: number
   minColumnWidth: number
   width: number
 }
@@ -37,7 +34,6 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   isFetchingNextPage,
   itemGap = 0,
   items,
-  onScrollElementChange,
   renderItem,
   scrollRestorationKey = '',
   scrollToOptions,
@@ -46,9 +42,9 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   const outerRef = useRef<HTMLDivElement>(null)
   const virtuosoRef = useRef<VirtuosoHandle>(null)
   const fetchInFlightRef = useRef(false)
-  const [measurement, setMeasurement] = useState<GridMeasurement | null>(null)
+  const [columns, setColumns] = useState<GridColumns | null>(null)
 
-  const columnCount = measurement?.columnCount ?? 0
+  const columnCount = columns?.columnCount ?? 0
   const rows: VirtualMangaGridRow<TItem>[] = columnCount > 0 ? chunkVirtualMangaGridItems(items, columnCount) : []
   const storageKey = createScrollRestorationStorageKey(scrollRestorationKey)
 
@@ -62,10 +58,6 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
     Promise.resolve(fetchNextPage()).finally(() => {
       fetchInFlightRef.current = false
     })
-  }
-
-  function handleScrollerRef(element: HTMLElement | Window | null) {
-    onScrollElementChange?.(element instanceof HTMLElement ? element : null)
   }
 
   function renderRow(index: number, row: VirtualMangaGridRow<TItem>) {
@@ -87,9 +79,8 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
     )
   }
 
-  // 외부 컨테이너의 너비·높이와 CSS 변수 기반 최소 컬럼 너비를 측정해요.
-  // Virtuoso엔 픽셀 높이를 넘겨요 — 앱 셸이 min-height 기반 document-flow라 `height:100%`가
-  // 모바일(flex-col) WebKit에서 확정되지 않아 0으로 붕괴하기 때문이에요.
+  // 컬럼 수 계산을 위해 외부 컨테이너 너비와 CSS 변수 기반 최소 컬럼 너비만 측정해요.
+  // 스크롤은 window(document)가 담당하므로(useWindowScroll) 높이는 측정하지 않아요.
   useIsomorphicLayoutEffect(() => {
     const element = outerRef.current
 
@@ -100,26 +91,21 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
     const measuredElement = element
 
     function measure() {
-      setMeasurement((previous) => {
+      setColumns((previous) => {
         const rect = measuredElement.getBoundingClientRect()
         const width = Math.max(1, Math.round(rect.width || measuredElement.clientWidth || window.innerWidth || 1))
-        const viewportHeight = window.innerHeight || DEFAULT_VIEWPORT_HEIGHT
-        const minHeight = Math.max(MIN_MEASURED_HEIGHT, viewportHeight - rect.top)
-        const elementHeight = rect.height || measuredElement.clientHeight || minHeight
-        const height = Math.max(1, Math.round(elementHeight))
         const minColumnWidth = readMangaGridColumnMinWidth(measuredElement) ?? width
         const columnCount = getVirtualMangaGridColumnCount(width, minColumnWidth, itemGap)
 
         if (
           previous?.columnCount === columnCount &&
-          previous.height === height &&
           previous.minColumnWidth === minColumnWidth &&
           previous.width === width
         ) {
           return previous
         }
 
-        return { columnCount, height, minColumnWidth, width }
+        return { columnCount, minColumnWidth, width }
       })
     }
 
@@ -127,26 +113,22 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
 
     let debounceId: number | undefined
 
-    function scheduleMeasure() {
+    const observer = new ResizeObserver(() => {
       window.clearTimeout(debounceId)
       debounceId = window.setTimeout(measure, RESIZE_MEASURE_DEBOUNCE_MS)
-    }
-
-    const observer = new ResizeObserver(scheduleMeasure)
+    })
 
     observer.observe(measuredElement)
-    window.addEventListener('resize', scheduleMeasure)
 
     return () => {
       window.clearTimeout(debounceId)
       observer.disconnect()
-      window.removeEventListener('resize', scheduleMeasure)
     }
   }, [itemGap, view])
 
-  // 이탈(pagehide)·언마운트 시 현재 스크롤 상태를 저장해 재방문 시 복원해요.
+  // 이탈(pagehide)·언마운트 시 window 스크롤 상태를 저장해 재방문 시 복원해요.
   useEffect(() => {
-    if (!measurement) {
+    if (!columns) {
       return
     }
 
@@ -160,7 +142,7 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
       window.removeEventListener('pagehide', saveSnapshot)
       saveSnapshot()
     }
-  }, [measurement, storageKey])
+  }, [columns, storageKey])
 
   useEffect(() => {
     if (!scrollToOptions) {
@@ -171,10 +153,9 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   }, [scrollToOptions])
 
   return (
-    <div className={twMerge('min-h-0 flex-1', MANGA_GRID_COLUMN_MIN_WIDTH_CLASS[view], className)} ref={outerRef}>
-      {measurement && (
+    <div className={twMerge(MANGA_GRID_COLUMN_MIN_WIDTH_CLASS[view], className)} ref={outerRef}>
+      {columns && (
         <Virtuoso<VirtualMangaGridRow<TItem>, GridContext>
-          className="scrollbar-gutter-stable"
           components={GRID_COMPONENTS}
           computeItemKey={(index, row) => String(row.items[0]?.item.key ?? index)}
           context={{ footer, header }}
@@ -185,8 +166,7 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
           key={storageKey}
           ref={virtuosoRef}
           restoreStateFrom={readScrollSnapshot(storageKey)}
-          scrollerRef={handleScrollerRef}
-          style={{ height: measurement.height }}
+          useWindowScroll
         />
       )}
     </div>

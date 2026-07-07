@@ -12,7 +12,7 @@ export default async function Layout({ children }: LayoutProps<'/[locale]/search
   const t = await getTranslations('Search')
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <main className="flex flex-1 flex-col">
       <h1 className="sr-only">{t('title')}</h1>
       <AutoHideHeader
         className={twMerge(
@@ -28,7 +28,7 @@ export default async function Layout({ children }: LayoutProps<'/[locale]/search
           <FilterButton />
         </div>
       </AutoHideHeader>
-      <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+      <div className="flex flex-1 flex-col">{children}</div>
     </main>
   )
 }
