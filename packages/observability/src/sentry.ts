@@ -166,12 +166,32 @@ export const SENTRY_BROWSER_DENY_URLS: RegExp[] = [
 export const SENTRY_BROWSER_IGNORED_REQUEST_HOSTS: (string | RegExp)[] = [
   // hiyobi external manga-source API (e.g. the HiyobiPing health check)
   'api-kh.hiyobi.org',
+  // Third-party manga image CDNs. Image loads already fall back through a mirror chain (MangaImage's
+  // onError handler), so their transient "Load failed"/"Failed to fetch" rejections are out-of-our-control
+  // noise, not actionable app errors. Our own origin (litomi.cc) is deliberately NOT listed so real
+  // first-party API/proxy failures stay visible.
+  'siam-cdn.net',
+  'hentkor.net',
+  'k-hentai.org',
+  'soujpa.in',
+  'cdn.imagedeliveries.com',
+  'ehgt.org',
+  'zrocdn.xyz',
+  'hiromi.b-cdn.net',
+  'nhentai.net',
+  'gold-usergeneratedcontent.net',
+  // Grafana Faro RUM collector — its own upload failures are self-telemetry noise, never product traffic.
+  'grafana.net',
 ]
 
 const NETWORK_ERROR_MESSAGE = /Failed to fetch|Load failed|NetworkError when attempting to fetch|fetch failed/i
 
 // CSP blocking eval()/new Function(). Foreign (injected) eval is noise; a first-party dep tripping our CSP is real.
 const CSP_EVAL_BLOCKED_MESSAGE = /Evaluating a string as JavaScript|Refused to evaluate a string as JavaScript/i
+
+// Android WebView @JavascriptInterface artifact: thrown when the host app's injected Java object is
+// garbage-collected/detached. Exclusively an in-app WebView bridge token — never emitted by our code.
+const WEBVIEW_BRIDGE_NOISE_MESSAGE = /Java (?:object|bridge) is gone/i
 
 // Our own bundle frames at send time. Only the /_next/ asset path is considered first-party.
 // Document-URL frames (app:///<route>) are inline scripts: Safari attributes injected/extension code
@@ -266,6 +286,10 @@ export function isBrowserNoiseEvent(event: ErrorEvent): boolean {
   const frames = getEventFrames(event)
 
   if (isAdFillRejectionNoise(event)) {
+    return true
+  }
+
+  if (WEBVIEW_BRIDGE_NOISE_MESSAGE.test(getEventMessage(event))) {
     return true
   }
 
