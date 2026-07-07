@@ -9,7 +9,7 @@ function slot(slot: AdSlotDefinition, className?: string): JuicyAdsLayoutNode {
   return { type: 'slot', slot, className }
 }
 
-export const DEFAULT_NON_ADULT_AD_LAYOUT = [
+export const DEFAULT_AD_LAYOUT = [
   slot(AD_SLOTS.BANNER_308X286),
   slot(AD_SLOTS.BANNER_300X100, 'min-[720px]:hidden'),
   slot(AD_SLOTS.BANNER_308X286_2, 'hidden min-[720px]:flex'),
@@ -21,11 +21,11 @@ export const DEFAULT_NON_ADULT_AD_LAYOUT = [
   ]),
 ]
 
-export const LIBRARY_NON_ADULT_AD_LAYOUT = [
+export const LIBRARY_AD_LAYOUT = [
   slot(AD_SLOTS.BANNER_308X286),
-  slot(AD_SLOTS.BANNER_300X100, 'lg:hidden'),
-  slot(AD_SLOTS.BANNER_308X286_2, 'hidden lg:flex'),
+  slot(AD_SLOTS.BANNER_300X100, 'min-[800px]:hidden'),
+  slot(AD_SLOTS.BANNER_308X286_2, 'hidden min-[800px]:flex'),
   slot(AD_SLOTS.BANNER_300X250, 'hidden xl:flex'),
 ]
 
-export const VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT = [slot(AD_SLOTS.BANNER_308X286)]
+export const VIEWER_AD_LAYOUT = [slot(AD_SLOTS.BANNER_308X286)]

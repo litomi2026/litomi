@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
-import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
+import { LIBRARY_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
@@ -163,7 +163,7 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
   const header = (
     <>
       <LibraryHeaderSpacer />
-      <JuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
+      <JuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_AD_LAYOUT} />
       <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
         <ViewToggle onViewChange={onViewChange} view={view} />
       </div>
