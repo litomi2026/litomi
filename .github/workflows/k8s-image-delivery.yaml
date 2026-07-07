@@ -480,58 +480,6 @@ jobs:
           tags: ${{ steps.metadata_edge_proxy.outputs.tags }}
           labels: ${{ steps.metadata_edge_proxy.outputs.labels }}
 
-  # edge-proxy를 Cloud Run에 배포한다(방금 빌드한 GHCR 이미지를 digest로 고정해 immutable 배포).
-  # 선행조건(미설정 시 작업 자동 skip): GCP Workload Identity Federation + 아래 repo vars.
-  #   vars.GCP_WORKLOAD_IDENTITY_PROVIDER, vars.GCP_DEPLOY_SERVICE_ACCOUNT, vars.GCP_PROJECT_ID
-  # 배포 SA 권한: roles/run.admin + roles/iam.serviceAccountUser. (README "Cloud Run 배포 작업" 참고)
-  deploy-edge-proxy-cloud-run:
-    name: Deploy edge-proxy to Cloud Run
-    if: ${{ github.ref_name == 'main' && vars.GCP_WORKLOAD_IDENTITY_PROVIDER != '' }}
-    needs: build-and-publish-edge-proxy-image
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      id-token: write
-    env:
-      IMAGE_EDGE_PROXY: ghcr.io/${{ github.repository_owner }}/litomi-edge-proxy
-      SERVICE_FILE: apps/edge-proxy/cloudrun/service.yaml
-      REGION: asia-northeast3
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
-
-      - name: Set up gcloud
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Pin built image digest into service manifest
-        env:
-          DIGEST: ${{ needs.build-and-publish-edge-proxy-image.outputs.digest }}
-        run: |
-          set -euo pipefail
-
-          if [[ ! "${DIGEST}" == sha256:* ]]; then
-            echo "Invalid image digest: ${DIGEST}" >&2
-            exit 1
-          fi
-
-          IMAGE_REF="${IMAGE_EDGE_PROXY}@${DIGEST}"
-          IMAGE_REF="${IMAGE_REF}" yq -i \
-            '.spec.template.spec.containers[0].image = strenv(IMAGE_REF)' "${SERVICE_FILE}"
-          echo "Deploying image: ${IMAGE_REF}"
-
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run services replace "${SERVICE_FILE}" \
-            --project="${{ vars.GCP_PROJECT_ID }}" \
-            --region="${REGION}" \
-            --quiet
-
   propose-ops-production-image-digests:
     name: Propose ops production image digests
     if: ${{ github.ref_name == 'main' }}
