@@ -202,7 +202,17 @@ function createScrollRestorationStorageKey(scrollRestorationKey: string) {
 function readScrollSnapshot(storageKey: string): StateSnapshot | undefined {
   try {
     const raw = window.sessionStorage.getItem(storageKey)
-    return raw ? (JSON.parse(raw) as StateSnapshot) : undefined
+    if (!raw) {
+      return undefined
+    }
+
+    const parsed = JSON.parse(raw) as Partial<StateSnapshot>
+
+    if (!Array.isArray(parsed.ranges) || typeof parsed.scrollTop !== 'number') {
+      return undefined
+    }
+
+    return parsed as StateSnapshot
   } catch {
     return undefined
   }
