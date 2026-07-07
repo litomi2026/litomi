@@ -38,7 +38,7 @@ route.post('/', ...middlewares, async (c) => {
     return c.json(response, 201)
   } catch (error) {
     if (isPostgresError(error) && error.cause.code === '23505') {
-      if (error.cause.constraint_name === 'chat_artist_handle_unique') {
+      if (error.cause.constraint_name === 'chat_artist_handle_key') {
         return problemResponse(c, {
           problem: PROBLEM.HANDLE_CONFLICT,
           extensions: {
