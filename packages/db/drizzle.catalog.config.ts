@@ -10,6 +10,7 @@ const { CATALOG_POSTGRES_URL_DIRECT } = cliEnv
 export default defineConfig({
   schema: 'src/catalog/schema.ts',
   dialect: 'postgresql',
+  schemaFilter: ['public'],
   dbCredentials: postgresURLToDrizzleCredentials(CATALOG_POSTGRES_URL_DIRECT, CATALOG_POSTGRES_CERTIFICATE),
   strict: true,
 })

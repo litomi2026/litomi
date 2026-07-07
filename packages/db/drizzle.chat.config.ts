@@ -9,7 +9,8 @@ const { CHAT_POSTGRES_URL_DIRECT } = cliEnv
 
 export default defineConfig({
   schema: 'src/chat/schema.ts',
-  dialect: 'postgresql',
+  dialect: 'cockroach',
+  schemaFilter: ['public'],
   dbCredentials: postgresURLToDrizzleCredentials(CHAT_POSTGRES_URL_DIRECT, CHAT_POSTGRES_CERTIFICATE),
   strict: true,
 })

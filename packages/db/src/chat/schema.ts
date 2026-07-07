@@ -1,5 +1,5 @@
-import { bigint, index, jsonb, pgTable, primaryKey, timestamp, varchar } from 'drizzle-orm/pg-core'
-import { createdAt, updatedAt } from '../columns'
+import { bigint, cockroachTable, index, jsonb, primaryKey, timestamp, varchar } from 'drizzle-orm/cockroach-core'
+import { createdAt, updatedAt } from './columns'
 
 // Chat store — runs on a dedicated CockroachDB cluster (Postgres-wire). Rows reference
 // users/artists only by opaque id (no FK to the app DB), so this lives independently;
@@ -23,7 +23,7 @@ import { createdAt, updatedAt } from '../columns'
 // another fan's 1:1 messages (or the artist's private answers to them).
 
 // 아티스트의 1→N 공지 피드. 말풍선(message)들이 쌓이는 스트림.
-export const chatBroadcastTable = pgTable.withRLS(
+export const chatBroadcastTable = cockroachTable.withRLS(
   'chat_broadcast',
   {
     artistId: bigint('artist_id', { mode: 'number' }).notNull(),
@@ -37,7 +37,7 @@ export const chatBroadcastTable = pgTable.withRLS(
 
 // 팬↔아티스트 사적 1:1 대화. 팬의 답장과 아티스트의 되답장을 한 로그에 담고,
 // 대화가 시작된 브로드캐스트 말풍선(contextMessageId)에 앵커된다.
-export const chatDmMessageTable = pgTable.withRLS(
+export const chatDmMessageTable = cockroachTable.withRLS(
   'chat_dm_message',
   {
     artistId: bigint('artist_id', { mode: 'number' }).notNull(),
@@ -56,7 +56,7 @@ export const chatDmMessageTable = pgTable.withRLS(
   (table) => [
     primaryKey({ columns: [table.artistId, table.fanId, table.messageId] }),
     // 답장방 = (artistId, contextMessageId) 파티션의 시간순 타임라인 — messageId가 키 마지막이라
-    // 역스캔이 곧 최신순 페이지. (chat DDL은 수동 SQL — drizzle push 불가, CLAUDE 메모리 참고)
+    // 역스캔이 곧 최신순 페이지.
     index('idx_chat_dm_reply_room').on(table.artistId, table.contextMessageId, table.messageId),
   ],
 )
@@ -64,7 +64,7 @@ export const chatDmMessageTable = pgTable.withRLS(
 // 팬의 통합 타임라인 읽음 워터마크. 방송 + 1:1 답장이 하나의 messageId(ULID) 타임라인이라
 // 읽음 위치도 (userId=fanId, artistId)당 하나면 충분하다(안읽음 = 방송>커서 + 아티스트답장>커서).
 // 구조화 키라 unread 조인이 순수 eq(col,col) — scope 문자열/concat 불필요.
-export const chatReadCursorTable = pgTable.withRLS(
+export const chatReadCursorTable = cockroachTable.withRLS(
   'chat_read_cursor',
   {
     userId: bigint('user_id', { mode: 'number' }).notNull(),
@@ -76,7 +76,7 @@ export const chatReadCursorTable = pgTable.withRLS(
 )
 
 // 아티스트의 말풍선별 답장방 읽음 워터마크(userId = 오너 userId, contextMessageId당 하나).
-export const chatReplyReadCursorTable = pgTable.withRLS(
+export const chatReplyReadCursorTable = cockroachTable.withRLS(
   'chat_reply_read_cursor',
   {
     userId: bigint('user_id', { mode: 'number' }).notNull(),
@@ -90,7 +90,7 @@ export const chatReplyReadCursorTable = pgTable.withRLS(
 
 // 아티스트별 최신 브로드캐스트 요약 — 팬 채팅 리스트/프리뷰용. DM last/unread은 별도 요약 없이
 // chat_dm_message PK 역스캔으로 파생한다.
-export const chatBroadcastSummaryTable = pgTable.withRLS('chat_broadcast_summary', {
+export const chatBroadcastSummaryTable = cockroachTable.withRLS('chat_broadcast_summary', {
   artistId: bigint('artist_id', { mode: 'number' }).primaryKey(),
   lastMessageId: varchar('last_message_id', { length: 26 }).notNull(),
   lastPreview: varchar('last_preview', { length: 200 }).notNull(),
