@@ -9,7 +9,6 @@ import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSp
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { LIBRARY_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
-import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoginGate from '@/components/LoginGate'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
@@ -93,10 +92,8 @@ export default function BookmarkPageClient() {
 }
 
 function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProps) {
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { exit, isSelectionMode } = useLibrarySelection()
-  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
   const sortT = useTranslations('Library.sort')
@@ -194,11 +191,6 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
     return <SelectableMangaCard index={index} manga={manga} variant={view} />
   }
 
-  function handleScrollElementChange(element: HTMLElement | null) {
-    setScrollElement(element)
-    setNavigationAutoHideScrollElement(element)
-  }
-
   if (me === null) {
     return (
       <>
@@ -231,12 +223,11 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        onScrollElementChange={handleScrollElementChange}
         renderItem={renderItem}
         scrollToOptions={scrollToOptions}
         view={view}
       />
-      <ScrollButtons scrollElement={scrollElement} />
+      <ScrollButtons />
     </>
   )
 }

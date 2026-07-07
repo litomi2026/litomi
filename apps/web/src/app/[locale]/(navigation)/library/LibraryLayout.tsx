@@ -86,7 +86,7 @@ export default function LibraryLayout({ children }: Props) {
         userId={userId}
       />
       <div className="hidden sm:block sm:w-[67px] lg:w-52" />
-      <div className="flex min-h-0 flex-col flex-1 [--library-header-height:4rem] sm:[--library-header-height:4.5rem]">
+      <div className="flex flex-col flex-1 [--library-header-height:4rem] sm:[--library-header-height:4.5rem]">
         <LibrarySelectionProvider scopeKey={pathname}>
           <LibraryHeader
             historySource={canUseServerHistory ? 'server' : 'local'}

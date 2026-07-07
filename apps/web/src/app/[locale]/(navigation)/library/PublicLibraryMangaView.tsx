@@ -11,7 +11,6 @@ import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSp
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import { LIBRARY_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
-import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
@@ -117,8 +116,6 @@ function mergeUniquePublicLibraryMangaItems(pages?: { items: PublicLibraryManga[
 }
 
 function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: ContentProps) {
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
-  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { isVisible } = useMangaCensorship()
   const t = useTranslations('Library.empty')
   const guardT = useTranslations('Common.guard')
@@ -209,11 +206,6 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
     )
   }
 
-  function handleScrollElementChange(element: HTMLElement | null) {
-    setScrollElement(element)
-    setNavigationAutoHideScrollElement(element)
-  }
-
   if (isInitialLoading) {
     return (
       <>
@@ -259,11 +251,10 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        onScrollElementChange={handleScrollElementChange}
         renderItem={renderItem}
         view={view}
       />
-      <ScrollButtons scrollElement={scrollElement} />
+      <ScrollButtons />
     </>
   )
 }

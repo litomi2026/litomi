@@ -11,7 +11,6 @@ import { useState } from 'react'
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import { useSearchQuery } from '@/app/[locale]/(navigation)/search/useSearchQuery'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
-import { useNavigationAutoHideScrollElement } from '@/components/auto-hide/navigationAutoHide'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
@@ -79,9 +78,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
   const t = useTranslations('Search')
   const guardT = useTranslations('Common.guard')
   const params = new URLSearchParams(searchParams)
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
-  const setNavigationAutoHideScrollElement = useNavigationAutoHideScrollElement()
   const { isVisible } = useMangaCensorship()
 
   const {
@@ -171,11 +168,6 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
     query: params.get(SearchParam.QUERY),
   })
 
-  function handleScrollElementChange(element: HTMLElement | null) {
-    setScrollElement(element)
-    setNavigationAutoHideScrollElement(element)
-  }
-
   if (isLoading) {
     return (
       <SearchSpacer>
@@ -230,12 +222,11 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        onScrollElementChange={handleScrollElementChange}
         renderItem={renderItem}
         scrollToOptions={scrollToOptions}
         view={view}
       />
-      <ScrollButtons scrollElement={scrollElement} />
+      <ScrollButtons />
     </>
   )
 }

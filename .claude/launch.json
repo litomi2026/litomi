@@ -7,6 +7,13 @@
       "runtimeArgs": ["run", "dev"],
       "cwd": "apps/web",
       "port": 3000
+    },
+    {
+      "name": "web-prod",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev:prod"],
+      "cwd": ".",
+      "port": 3000
     }
   ]
 }
