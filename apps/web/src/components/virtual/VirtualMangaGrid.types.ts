@@ -12,7 +12,7 @@ export type VirtualMangaGridPositionedItem<TItem extends VirtualMangaGridItem> =
 
 export type VirtualMangaGridProps<TItem extends VirtualMangaGridItem> = {
   className?: string
-  fetchNextPage?: () => Promise<unknown> | void
+  fetchNextPage?: () => Promise<unknown> | undefined
   footer?: ReactNode
   hasNextPage?: boolean
   header?: ReactNode
