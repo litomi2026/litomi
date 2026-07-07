@@ -2,6 +2,7 @@ import { and, count, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 import { chatDB } from '../db'
 import { chatBroadcastTable, chatDmMessageTable, chatReadCursorTable, chatReplyReadCursorTable } from '../schema'
+import { type ArtistBroadcastWindows, broadcastWindowsFilter } from './message'
 
 export interface FanWatermarkInput {
   fanId: number
@@ -88,10 +89,16 @@ export async function getReplyRoomWatermarks({
   return new Map(rows.map((row) => [row.contextMessageId, row.lastReadMessageId]))
 }
 
-// 팬의 아티스트별 브로드캐스트 안읽음 수 — 커서 조인까지 한 쿼리로(N+1 방지). 커서 없는 방은
-// 전체가 안읽음. 방송은 항상 아티스트 발신이므로 자기 메시지 제외 불필요. 0인 아티스트는 Map 제외.
-export async function countBroadcastUnread(fanId: number, artistIds: number[]): Promise<Map<number, number>> {
-  if (artistIds.length === 0) {
+// 팬의 아티스트별 브로드캐스트 안읽음 수 — 결제 창 안 방송만 센다(타임라인 열람 범위와 일치).
+// 커서 조인까지 한 쿼리로(N+1 방지). 커서 없는 방은 창 안 전체가 안읽음. 방송은 항상 아티스트
+// 발신이므로 자기 메시지 제외 불필요. 0인/열람 창 없는 아티스트는 Map 제외.
+export async function countBroadcastUnread(
+  fanId: number,
+  entries: ArtistBroadcastWindows[],
+): Promise<Map<number, number>> {
+  const windowFilter = broadcastWindowsFilter(entries)
+
+  if (!windowFilter) {
     return new Map()
   }
 
@@ -104,7 +111,7 @@ export async function countBroadcastUnread(fanId: number, artistIds: number[]): 
     )
     .where(
       and(
-        inArray(chatBroadcastTable.artistId, artistIds),
+        windowFilter,
         or(
           isNull(chatReadCursorTable.lastReadMessageId),
           gt(chatBroadcastTable.messageId, chatReadCursorTable.lastReadMessageId),

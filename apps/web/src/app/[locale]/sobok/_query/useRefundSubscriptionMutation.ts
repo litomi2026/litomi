@@ -5,6 +5,10 @@ import { fetchAPIData } from '@/utils/api-request'
 
 // 청약철회 — 조건(결제 7일 이내 + 이번 기간 답장 미발신)은 서버가 검증하고,
 // 불충족 사유는 problem code(refund-*)로 내려와 Errors 카탈로그 카피로 표시된다.
+// 그 사유(400·402·403)는 확인 다이얼로그에 인라인으로 보여주므로 전역 토스트를 억제해
+// 이중 표시를 막는다. 예상 밖 시스템 오류(5xx 등)는 전역 토스트에 맡긴다.
+const REFUND_LOCAL_ERROR_STATUSES = [400, 402, 403] as const
+
 export default function useRefundSubscriptionMutation(handle: string) {
   const queryClient = useQueryClient()
 
@@ -19,5 +23,6 @@ export default function useRefundSubscriptionMutation(handle: string) {
       queryClient.invalidateQueries({ queryKey: QueryKeys.chatThreads })
       queryClient.invalidateQueries({ queryKey: QueryKeys.chatMessages(handle) })
     },
+    meta: { suppressGlobalErrorToastForStatuses: REFUND_LOCAL_ERROR_STATUSES },
   })
 }

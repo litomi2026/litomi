@@ -304,6 +304,50 @@ export async function listPaidIntervals({ userId, artistId }: FanArtistKey): Pro
   return mergePaidIntervals(rows)
 }
 
+// listPaidIntervals의 배치 버전 — 한 팬의 여러 아티스트 열람권 구간을 한 번에 읽는다(채팅 목록에서
+// 아티스트별 방송 프리뷰/안읽음을 결제 창으로 스코프하기 위함). 결제 이력이 없는 아티스트는
+// Map에서 빠진다.
+export async function listPaidIntervalsByArtist(
+  userId: number,
+  artistIds: number[],
+): Promise<Map<number, PaidInterval[]>> {
+  if (artistIds.length === 0) {
+    return new Map()
+  }
+
+  const rows = await db
+    .select({
+      artistId: invoiceTable.targetId,
+      periodStart: invoiceTable.periodStart,
+      periodEnd: invoiceTable.periodEnd,
+    })
+    .from(invoiceTable)
+    .where(
+      and(
+        eq(invoiceTable.userId, userId),
+        eq(invoiceTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
+        inArray(invoiceTable.targetId, artistIds),
+        eq(invoiceTable.status, 'paid'),
+      ),
+    )
+    // (targetId, periodStart) 오름차순 — 아티스트별 그룹이 곧바로 mergePaidIntervals 입력 순서가 된다.
+    .orderBy(asc(invoiceTable.targetId), asc(invoiceTable.periodStart))
+
+  const byArtist = new Map<number, { periodStart: Date; periodEnd: Date }[]>()
+
+  for (const { artistId, periodStart, periodEnd } of rows) {
+    const periods = byArtist.get(artistId)
+
+    if (periods) {
+      periods.push({ periodStart, periodEnd })
+    } else {
+      byArtist.set(artistId, [{ periodStart, periodEnd }])
+    }
+  }
+
+  return new Map([...byArtist].map(([artistId, periods]) => [artistId, mergePaidIntervals(periods)]))
+}
+
 export const SUBSCRIBER_PAGE_SIZE = 1_000
 
 export interface ListSubscribersOptions {

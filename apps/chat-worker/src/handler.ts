@@ -8,7 +8,6 @@ import {
   putBroadcast,
   putDmMessage,
   replyRoom,
-  upsertBroadcastSummary,
 } from '@litomi/db/chat/query'
 import {
   type ChatBroadcastEvent,
@@ -43,16 +42,10 @@ async function processBroadcast(event: ChatBroadcastEvent): Promise<void> {
     createdAt: new Date(event.createdAt),
   }
 
-  // Persist (idempotent on PK) then summarize (drives the fan chat list) — both on the
-  // critical path so a failure retries the whole message.
+  // Persist (idempotent on PK) on the critical path so a failure retries the whole message.
+  // The fan chat list derives its preview/unread directly from chat_broadcast (window-scoped),
+  // so there's no summary to maintain here.
   await putBroadcast(row)
-
-  await upsertBroadcastSummary({
-    artistId: event.artistId,
-    lastMessageId: event.messageId,
-    lastPreview: previewBody(event.content),
-    lastCreatedAt: row.createdAt,
-  })
 
   // Relay to the broadcast room (fans + owner subscribe).
   await publisherClient.publish(roomChannel(broadcastRoom(event.artistId)), JSON.stringify(toBroadcastRelay(row)))
