@@ -2,7 +2,7 @@ import { bigint, pgTable, primaryKey, text, timestamp, unique } from 'drizzle-or
 
 import { userTable } from './user'
 
-export const twoFactorTable = pgTable('two_factor', {
+export const twoFactorTable = pgTable.withRLS('two_factor', {
   userId: bigint('user_id', { mode: 'number' })
     .references(() => userTable.id, { onDelete: 'cascade' })
     .notNull()
@@ -11,9 +11,9 @@ export const twoFactorTable = pgTable('two_factor', {
   lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
   expiresAt: timestamp('expires_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-}).enableRLS()
+})
 
-export const twoFactorBackupCodeTable = pgTable(
+export const twoFactorBackupCodeTable = pgTable.withRLS(
   'two_factor_backup_code',
   {
     userId: bigint('user_id', { mode: 'number' })
@@ -22,9 +22,9 @@ export const twoFactorBackupCodeTable = pgTable(
     codeHash: text('code_hash').notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.codeHash] })],
-).enableRLS()
+)
 
-export const trustedBrowserTable = pgTable(
+export const trustedBrowserTable = pgTable.withRLS(
   'trusted_browser',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -38,4 +38,4 @@ export const trustedBrowserTable = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [unique('idx_trusted_browser_unique').on(table.userId, table.browserId)],
-).enableRLS()
+)

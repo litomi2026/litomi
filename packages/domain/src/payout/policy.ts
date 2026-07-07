@@ -1,4 +1,4 @@
-export const PAYOUT_FEE_RATE = 0.25
+export const PAYOUT_FEE_RATE = 0.2
 export const PAYOUT_WITHHOLDING_RATE = 0.033
 export const PAYOUT_MIN_AMOUNT = 10_000
 

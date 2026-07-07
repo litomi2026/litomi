@@ -9,7 +9,7 @@ export const payoutStatusEnum = pgEnum('payout_status', ['pending', 'paid', 'car
 // 아티스트 월 정산 원장 — 달력월(KST) 마감으로 billing-worker가 생성한다(아티스트×월당 1행).
 // 산식: 수납(gross) − 환불(refund) → 수수료 25% → 원천징수 3.3%(사업소득) → ±이월 = 실지급.
 // FK는 SET NULL: 재무 기록은 계정/프로필 삭제 후에도 보존한다(전자상거래 5년 보관).
-export const payoutTable = pgTable(
+export const payoutTable = pgTable.withRLS(
   'payout',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -34,10 +34,10 @@ export const payoutTable = pgTable(
     uniqueIndex('uq_payout_artist_period').on(table.chatArtistId, table.periodStart),
     index('idx_payout_status').on(table.status),
   ],
-).enableRLS()
+)
 
 // 정산 입금 계좌 — 수동 이체용. 계좌번호는 AES 암호화 저장(secret-crypto), 탈퇴 시 cascade 파기.
-export const payoutAccountTable = pgTable('payout_account', {
+export const payoutAccountTable = pgTable.withRLS('payout_account', {
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
   userId: bigint('user_id', { mode: 'number' })
     .references(() => userTable.id, { onDelete: 'cascade' })
@@ -47,4 +47,4 @@ export const payoutAccountTable = pgTable('payout_account', {
   accountNumber: varchar('account_number', { length: 256 }).notNull(),
   holderName: varchar('holder_name', { length: 32 }).notNull(),
   ...timestamps,
-}).enableRLS()
+})

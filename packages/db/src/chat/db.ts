@@ -1,8 +1,7 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
+import { drizzle } from 'drizzle-orm/cockroach'
+import { Pool } from 'pg'
 
 import { env } from './env'
-import * as schema from './schema'
 
 const {
   CHAT_POSTGRES_APPLICATION_NAME,
@@ -13,12 +12,18 @@ const {
   CHAT_POSTGRES_URL,
 } = env
 
-const client = postgres(CHAT_POSTGRES_URL, {
+const client = new Pool({
+  connectionString: CHAT_POSTGRES_URL,
   max: CHAT_POSTGRES_POOL_MAX,
-  idle_timeout: CHAT_POSTGRES_IDLE_TIMEOUT_SECONDS,
-  connect_timeout: CHAT_POSTGRES_CONNECT_TIMEOUT_SECONDS,
-  connection: { application_name: CHAT_POSTGRES_APPLICATION_NAME },
-  ssl: CHAT_POSTGRES_CERTIFICATE ? { ca: CHAT_POSTGRES_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
+  idleTimeoutMillis: CHAT_POSTGRES_IDLE_TIMEOUT_SECONDS * 1000,
+  connectionTimeoutMillis: CHAT_POSTGRES_CONNECT_TIMEOUT_SECONDS * 1000,
+  application_name: CHAT_POSTGRES_APPLICATION_NAME,
+  ...(CHAT_POSTGRES_CERTIFICATE && {
+    ssl: {
+      ca: CHAT_POSTGRES_CERTIFICATE,
+      rejectUnauthorized: true,
+    },
+  }),
 })
 
-export const chatDB = drizzle({ client, schema })
+export const chatDB = drizzle({ client })

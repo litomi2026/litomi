@@ -7,7 +7,7 @@ import { userTable } from './user'
 export const paymentProviderEnum = pgEnum('payment_provider', ['portone'])
 export const paymentStatusEnum = pgEnum('payment_status', ['pending', 'paid', 'failed', 'refunded'])
 
-export const paymentTable = pgTable(
+export const paymentTable = pgTable.withRLS(
   'payment',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -41,9 +41,9 @@ export const paymentTable = pgTable(
     index('idx_payment_pending_created').on(table.createdAt).where(sql`status = 'pending'`),
     index('idx_payment_paid_at').on(table.paidAt),
   ],
-).enableRLS()
+)
 
-export const paymentRefundTable = pgTable(
+export const paymentRefundTable = pgTable.withRLS(
   'payment_refund',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -62,9 +62,9 @@ export const paymentRefundTable = pgTable(
     index('idx_payment_refund_payment').on(table.paymentId),
     index('idx_payment_refund_refunded_at').on(table.refundedAt),
   ],
-).enableRLS()
+)
 
-export const webhookEventTable = pgTable(
+export const webhookEventTable = pgTable.withRLS(
   'webhook_event',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -76,4 +76,4 @@ export const webhookEventTable = pgTable(
     createdAt,
   },
   (table) => [uniqueIndex('uq_webhook_event_provider_event').on(table.provider, table.eventId)],
-).enableRLS()
+)

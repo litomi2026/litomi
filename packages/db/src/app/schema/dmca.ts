@@ -3,7 +3,7 @@ import { createdAt } from '../../columns'
 
 export const dmcaReporterRoleEnum = pgEnum('dmca_reporter_role', ['COPYRIGHT_OWNER', 'AUTHORIZED_AGENT'])
 
-export const dmcaNoticeTable = pgTable(
+export const dmcaNoticeTable = pgTable.withRLS(
   'dmca_notice',
   {
     id: uuid('id').primaryKey(),
@@ -26,9 +26,9 @@ export const dmcaNoticeTable = pgTable(
     createdAt,
   },
   (table) => [index('idx_dmca_notice_created_at').on(table.createdAt.desc())],
-).enableRLS()
+)
 
-export const dmcaNoticeTargetTable = pgTable(
+export const dmcaNoticeTargetTable = pgTable.withRLS(
   'dmca_notice_target',
   {
     noticeId: uuid('notice_id')
@@ -41,9 +41,9 @@ export const dmcaNoticeTargetTable = pgTable(
     primaryKey({ columns: [table.noticeId, table.mangaId] }),
     index('idx_dmca_notice_target_manga_id').on(table.mangaId),
   ],
-).enableRLS()
+)
 
-export const dmcaCounterNoticeTable = pgTable(
+export const dmcaCounterNoticeTable = pgTable.withRLS(
   'dmca_counter_notice',
   {
     id: uuid('id').primaryKey(),
@@ -65,9 +65,9 @@ export const dmcaCounterNoticeTable = pgTable(
     createdAt,
   },
   (table) => [index('idx_dmca_counter_notice_created_at').on(table.createdAt.desc())],
-).enableRLS()
+)
 
-export const dmcaCounterTargetTable = pgTable(
+export const dmcaCounterTargetTable = pgTable.withRLS(
   'dmca_counter_target',
   {
     counterId: uuid('counter_id')
@@ -80,4 +80,4 @@ export const dmcaCounterTargetTable = pgTable(
     primaryKey({ columns: [table.counterId, table.mangaId] }),
     index('idx_dmca_counter_target_manga_id').on(table.mangaId),
   ],
-).enableRLS()
+)

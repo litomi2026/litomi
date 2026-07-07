@@ -2,14 +2,14 @@ import { bigint, foreignKey, integer, pgTable, primaryKey, smallint, timestamp, 
 
 import { userTable } from './user'
 
-export const mangaRecommendationSetTable = pgTable('manga_recommendation_set', {
+export const mangaRecommendationSetTable = pgTable.withRLS('manga_recommendation_set', {
   userId: bigint('user_id', { mode: 'number' })
     .primaryKey()
     .references(() => userTable.id, { onDelete: 'cascade' }),
   generatedAt: timestamp('generated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-}).enableRLS()
+})
 
-export const mangaRecommendationTable = pgTable(
+export const mangaRecommendationTable = pgTable.withRLS(
   'manga_recommendation',
   {
     userId: bigint('user_id', { mode: 'number' }).notNull(),
@@ -27,4 +27,4 @@ export const mangaRecommendationTable = pgTable(
       foreignColumns: [mangaRecommendationSetTable.userId],
     }).onDelete('cascade'),
   ],
-).enableRLS()
+)

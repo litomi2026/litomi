@@ -5,7 +5,7 @@ import { userTable } from './user'
 export const paymentMethodProviderEnum = pgEnum('payment_method_provider', ['portone'])
 export const paymentMethodStatusEnum = pgEnum('payment_method_status', ['active', 'deleted'])
 
-export const paymentMethodTable = pgTable(
+export const paymentMethodTable = pgTable.withRLS(
   'payment_method',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -27,7 +27,7 @@ export const paymentMethodTable = pgTable(
     uniqueIndex('uq_payment_method_provider').on(table.provider, table.token),
     index('idx_payment_method_user').on(table.userId, table.status),
   ],
-).enableRLS()
+)
 
 export const subscriptionStatusEnum = pgEnum('subscription_status', [
   'incomplete',
@@ -37,7 +37,7 @@ export const subscriptionStatusEnum = pgEnum('subscription_status', [
   'expired',
 ])
 
-export const subscriptionTable = pgTable(
+export const subscriptionTable = pgTable.withRLS(
   'subscription',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
@@ -64,4 +64,4 @@ export const subscriptionTable = pgTable(
     index('idx_subscription_target').on(table.targetType, table.targetId, table.status),
     index('idx_subscription_expires_at').on(table.expiresAt),
   ],
-).enableRLS()
+)

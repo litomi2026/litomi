@@ -6,9 +6,10 @@ import { userTable } from '@litomi/db/app/user'
 import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
 import { kafka, TOPIC_CHAT_MESSAGE, TOPIC_CHAT_PUSH_FANOUT } from '@litomi/events'
 import { hash } from 'bcryptjs'
+import { and, eq } from 'drizzle-orm'
 
 async function getOrCreateUser(loginId: string, name: string, nickname: string, passwordHash: string) {
-  const user = await db.query.userTable.findFirst({ where: (u, { eq }) => eq(u.loginId, loginId) })
+  const [user] = await db.select().from(userTable).where(eq(userTable.loginId, loginId)).limit(1)
 
   if (user) {
     return user
@@ -28,7 +29,7 @@ async function getOrCreateUser(loginId: string, name: string, nickname: string, 
 }
 
 async function getOrCreateArtistProfile(userId: number, handle: string, displayName: string, emoji: string) {
-  const profile = await db.query.chatArtistTable.findFirst({ where: (c, { eq }) => eq(c.userId, userId) })
+  const [profile] = await db.select().from(chatArtistTable).where(eq(chatArtistTable.userId, userId)).limit(1)
 
   if (profile) {
     return profile
@@ -89,10 +90,17 @@ async function main() {
     const artistFans = fans.slice(c * 3, c * 3 + 3)
 
     for (const fan of artistFans) {
-      let subscription = await db.query.subscriptionTable.findFirst({
-        where: (s, { eq, and }) =>
-          and(eq(s.userId, fan.id), eq(s.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST), eq(s.targetId, artist.id)),
-      })
+      let [subscription] = await db
+        .select()
+        .from(subscriptionTable)
+        .where(
+          and(
+            eq(subscriptionTable.userId, fan.id),
+            eq(subscriptionTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
+            eq(subscriptionTable.targetId, artist.id),
+          ),
+        )
+        .limit(1)
 
       if (!subscription) {
         const expiresAt = new Date()
@@ -115,9 +123,11 @@ async function main() {
 
       // 프로덕션 불변식(active 구독 ⟹ paid invoice)을 시드 데이터에도 유지해
       // paid-window 접근(listPaidIntervals)이 로컬에서 동작하게 한다.
-      const paidInvoice = await db.query.invoiceTable.findFirst({
-        where: (i, { eq, and }) => and(eq(i.subscriptionId, subscription.id), eq(i.status, 'paid')),
-      })
+      const [paidInvoice] = await db
+        .select()
+        .from(invoiceTable)
+        .where(and(eq(invoiceTable.subscriptionId, subscription.id), eq(invoiceTable.status, 'paid')))
+        .limit(1)
 
       if (!paidInvoice) {
         await db.insert(invoiceTable).values({

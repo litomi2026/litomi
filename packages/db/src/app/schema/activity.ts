@@ -3,7 +3,7 @@ import { createdAt, timestamps, updatedAt } from '../../columns'
 
 import { userTable } from './user'
 
-export const bookmarkTable = pgTable(
+export const bookmarkTable = pgTable.withRLS(
   'bookmark',
   {
     userId: bigint('user_id', { mode: 'number' })
@@ -16,9 +16,9 @@ export const bookmarkTable = pgTable(
     primaryKey({ columns: [table.userId, table.mangaId] }),
     index('idx_bookmark_created_at').on(table.createdAt.desc()),
   ],
-).enableRLS()
+)
 
-export const readingHistoryTable = pgTable(
+export const readingHistoryTable = pgTable.withRLS(
   'reading_history',
   {
     userId: bigint('user_id', { mode: 'number' })
@@ -34,9 +34,9 @@ export const readingHistoryTable = pgTable(
     index('idx_reading_history_updated_at_only').on(table.updatedAt.desc()),
     index('idx_reading_history_manga_user').on(table.mangaId, table.userId),
   ],
-).enableRLS()
+)
 
-export const userRatingTable = pgTable(
+export const userRatingTable = pgTable.withRLS(
   'user_rating',
   {
     userId: bigint('user_id', { mode: 'number' })
@@ -50,4 +50,4 @@ export const userRatingTable = pgTable(
     primaryKey({ columns: [table.userId, table.mangaId] }),
     index('idx_user_rating_manga_rating_user').on(table.mangaId, table.rating, table.userId),
   ],
-).enableRLS()
+)
