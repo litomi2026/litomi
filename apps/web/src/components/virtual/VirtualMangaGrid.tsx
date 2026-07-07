@@ -104,20 +104,14 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
         const rect = measuredElement.getBoundingClientRect()
         const width = Math.max(1, Math.round(rect.width || measuredElement.clientWidth || window.innerWidth || 1))
         const viewportHeight = window.innerHeight || DEFAULT_VIEWPORT_HEIGHT
-
-        const height = Math.max(
-          1,
-          Math.round(
-            rect.height || measuredElement.clientHeight || Math.max(MIN_MEASURED_HEIGHT, viewportHeight - rect.top),
-          ),
-        )
-
+        const minHeight = Math.max(MIN_MEASURED_HEIGHT, viewportHeight - rect.top)
+        const elementHeight = rect.height || measuredElement.clientHeight || minHeight
+        const height = Math.max(1, Math.round(elementHeight))
         const minColumnWidth = readMangaGridColumnMinWidth(measuredElement) ?? width
         const columnCount = getVirtualMangaGridColumnCount(width, minColumnWidth, itemGap)
 
         if (
-          previous &&
-          previous.columnCount === columnCount &&
+          previous?.columnCount === columnCount &&
           previous.height === height &&
           previous.minColumnWidth === minColumnWidth &&
           previous.width === width
