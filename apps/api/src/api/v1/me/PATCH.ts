@@ -48,7 +48,7 @@ route.patch('/', ...middlewares, async (c) => {
     } satisfies PATCHV1MeResponse)
   } catch (error) {
     if (isPostgresError(error)) {
-      if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_unique') {
+      if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_key') {
         return problemResponse(c, {
           problem: PROBLEM.NAME_CONFLICT,
           extensions: {
