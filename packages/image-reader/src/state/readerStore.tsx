@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useStore } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
+import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware'
 import type { StoreApi } from 'zustand/vanilla'
 import { createStore } from 'zustand/vanilla'
 
@@ -129,6 +129,33 @@ export function clampZoomLevel(zoom: number) {
   return Math.min(Math.max(DEFAULT_ZOOM, zoom), MAX_ZOOM)
 }
 
+// 프라이빗 모드/인앱 WebView에서는 localStorage·sessionStorage 접근이 throw하거나 null이라
+// createJSONStorage가 undefined를 반환해 persist 미들웨어가 `.persist` API 자체를 안 붙여요(rehydrate 크래시).
+// 접근을 검증하고 실패 시 in-memory로 폴백해 항상 유효한 스토리지를 돌려줘요.
+function createSafeStorage(getStorage: () => Storage): StateStorage {
+  try {
+    const storage = getStorage()
+    const probeKey = '__litomi_reader_storage_probe__'
+
+    storage.setItem(probeKey, probeKey)
+    storage.removeItem(probeKey)
+
+    return storage
+  } catch {
+    const memory = new Map<string, string>()
+
+    return {
+      getItem: (key) => memory.get(key) ?? null,
+      removeItem: (key) => {
+        memory.delete(key)
+      },
+      setItem: (key, value) => {
+        memory.set(key, value)
+      },
+    }
+  }
+}
+
 export function ReaderProvider({ children, persistenceKey = DEFAULT_PERSISTENCE_KEY }: ReaderProviderProps) {
   const [stores] = useState(() => {
     return {
@@ -220,7 +247,7 @@ function createReaderSessionStore({ sessionStorageKey }: ReaderSessionStoreOptio
           zoomLevel: state.zoomLevel,
         }),
         skipHydration: true,
-        storage: createJSONStorage(() => sessionStorage),
+        storage: createJSONStorage(() => createSafeStorage(() => sessionStorage)),
       },
     ),
   )
@@ -328,7 +355,7 @@ function createReaderStore({ localStorageKey }: ReaderStoreOptions) {
           viewerMode: state.viewerMode,
         }),
         skipHydration: true,
-        storage: createJSONStorage(() => localStorage),
+        storage: createJSONStorage(() => createSafeStorage(() => localStorage)),
       },
     ),
   )
