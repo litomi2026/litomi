@@ -29,6 +29,9 @@ const FORTUNE_TAG_SEEDS: readonly FortuneTagSeed[] = [
   { label: '스타킹', tag: 'stockings', category: 'female', roles: ['dominant', 'submissive', 'switch'] },
   { label: '애널', tag: 'anal', category: 'female', roles: ['dominant', 'switch'] },
   { label: '이중삽입', tag: 'double penetration', category: 'female', roles: ['dominant', 'switch'] },
+  { label: '방뇨', tag: 'urination', category: 'female', roles: ['dominant', 'switch'] },
+  { label: '얀데레', tag: 'yandere', category: 'female', roles: ['submissive', 'switch'] },
+  { label: '유부녀', tag: 'milf', category: 'female', roles: ['dominant', 'submissive', 'switch'] },
 ]
 
 function toRecommendation(seed: FortuneTagSeed): FortuneTagRecommendation {

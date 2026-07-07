@@ -24,6 +24,14 @@ const VIBES = [
   '🔨 딜도로 쑤시며 노예처럼 굴복시키는 날',
   '🔌 애널플러그 꽂고 클리토리스 자극하는 날',
   '👑 계집종처럼 복종하며 자궁 채우는 날',
+  '🩸 자궁 부서질 때까지 처박히는 날',
+  '🐎 암말처럼 씨받이로 팔려가는 날',
+  '🕳️ 구멍이란 구멍 다 뚫리는 날',
+  '💉 정액 주입기로 자궁 채워지는 날',
+  '⛓️ 목줄 차고 네발로 기며 조교당하는 날',
+  '🥩 정액변기로 전락해 짓밟히는 날',
+  '🍯 끈적하게 조교당하며 녹아내리는 날',
+  '🔞 강제로 육변기 데뷔하는 날',
 ]
 
 const KEYWORDS = [
@@ -67,9 +75,26 @@ const KEYWORDS = [
   '딜도',
   '애널플러그',
   '발정',
+  '처박기',
+  '자궁파괴',
+  '정액주입',
+  '목구멍',
+  '항문',
+  '가축조교',
+  '정액변기',
+  '자궁받이',
 ]
 
-const BEST_TIMES = ['밤 10시 이후', '저녁 8~10시', '점심 이후', '이른 새벽', '아침 햇살 있을 때']
+const BEST_TIMES = [
+  '밤 10시 이후',
+  '저녁 8~10시',
+  '점심 이후',
+  '이른 새벽',
+  '아침 햇살 있을 때',
+  '한밤중',
+  '해 뜨기 직전',
+  '퇴근 직후',
+]
 
 const LUCKY_COLORS = [
   '정액 하양',
@@ -82,6 +107,10 @@ const LUCKY_COLORS = [
   '암캐 초록',
   '납치 남색',
   '걸레 회색',
+  '항문 갈색',
+  '자궁 진홍',
+  '조교 흑색',
+  '씨받이 살색',
 ]
 
 const POSITIONS = [
@@ -94,6 +123,11 @@ const POSITIONS = [
   '허벌 자세로 가축년처럼 엎드린 상대를 개보지 취급하며 뒤에서 박기',
   '자궁주차 자세로 깊숙이 박아 씨받이로 만들기',
   '보지마게 자세로 질싸하기 좋게 벌려서 채우기',
+  '기립 후배위로 목덜미 잡고 자궁까지 처박기',
+  '프레스 자세로 다리 눌러 개보지 관통하기',
+  '목줄 채운 도그 스타일로 가축년처럼 조교하기',
+  '벽에 밀어붙여 목구멍까지 쑤셔박기',
+  '결박한 채 딜도와 자지로 이중삽입하기',
 ]
 
 const PLACES = [
@@ -113,6 +147,12 @@ const PLACES = [
   '지하철',
   '택시',
   '주차장',
+  '찜질방',
+  '고시원',
+  '노래방',
+  '화장실 칸',
+  '폐가',
+  '농막',
 ]
 
 const STAMINA_FOODS = [
@@ -128,6 +168,10 @@ const STAMINA_FOODS = [
   '오나홀 윤활유',
   '자궁주차 강화제',
   '노예 순종 영양제',
+  '자궁파괴 촉진제',
+  '정액 증량 보충제',
+  '연속발사 부스터',
+  '가축조교 영양제',
 ]
 
 const COSTUMES = [
@@ -145,6 +189,10 @@ const COSTUMES = [
   '보지마게 벌림 의상',
   '육변기 전용 의복',
   '개보지 노출 코스튬',
+  '목줄 채운 알몸',
+  '씨받이 임부복',
+  '가축 낙인 코스튬',
+  '정액변기 노출복',
 ]
 
 const AFTERCARES = [
@@ -156,6 +204,10 @@ const AFTERCARES = [
   '따뜻한 담요로 걸레처럼 감싸주기',
   '젖탱이 어루만지며 "이 씨받이 자궁에 좆물 잘 받았어" 칭찬하기',
   '가축년처럼 쓰다듬으며 "너 같은 암컷 노예가 최고야" 속삭이기',
+  '망가진 자궁 쓰다듬으며 "다음엔 더 부서지게 박아줄게" 약속하기',
+  '목줄 풀어주며 "오늘 조교 잘 받았어" 칭찬하기',
+  '흘러나온 정액 닦아주며 "임신 잘 됐나 확인하자" 속삭이기',
+  '기진맥진한 몸 안아주며 물이랑 간식 챙겨주기',
 ]
 
 export function createClientSeed() {
@@ -204,7 +256,7 @@ export function generateFortune({ todayKey, userKey, taste, nonce }: GenerateFor
   const special = fortuneText.special(rng, taste, rarity.specialCount)
   const recommendedTags = pickRecommendedTags(rng, taste, 3)
 
-  const message = buildMessage({ overall, stats, vibe, keywords })
+  const message = buildMessage(rng, { overall, stats, vibe, keywords })
 
   return {
     taste,
@@ -266,23 +318,35 @@ type BuildMessageInput = {
   keywords: string[]
 }
 
-function buildMessage({ overall, stats, vibe, keywords }: BuildMessageInput) {
+function buildMessage(rng: () => number, { overall, stats, vibe, keywords }: BuildMessageInput) {
   const strongest = getStrongestStat(stats)
   const joined = keywords.join(' · ')
 
   if (overall >= 92) {
-    return `${vibe} 오늘은 전설급이야! ${attachJosa(strongest, '가')} 터져버려서 키워드(${joined}) 하나만 골라도 미친 듯이 좆집을 파헤칠 수 있어. 절정이 폭발해서 정액쓰레기통처럼 범벅되고, 보지마게 벌려서 질싸하며 배빵시키고 임신·낙태까지 몰아치는 날이야.`
+    return pick(rng, [
+      `${vibe} 오늘은 전설급이야! ${attachJosa(strongest, '가')} 터져버려서 키워드(${joined}) 하나만 골라도 미친 듯이 좆집을 파헤칠 수 있어. 절정이 폭발해서 정액쓰레기통처럼 범벅되고, 보지마게 벌려서 질싸하며 배빵시키고 임신·낙태까지 몰아치는 날이야.`,
+      `${vibe} 오늘은 전설급 대박이야! ${attachJosa(strongest, '가')} 폭주해서 상대를 정액변기로 굴리며 자궁이 부서질 때까지 몰아붙이는 날이야. 키워드(${joined})에 몸을 맡기고 임신·낙태를 몇 번이고 반복해.`,
+    ])
   }
 
   if (overall >= 78) {
-    return `${vibe} 욕심 부려도 되는 날이야. 특히 ${attachJosa(strongest, '을')} 독점하며 상대를 인간이 아니라 오나홀 취급하고, 키워드(${joined})로 모든 생각이 사라지는 암캐 같은 황홀감에 빠져봐.`
+    return pick(rng, [
+      `${vibe} 욕심 부려도 되는 날이야. 특히 ${attachJosa(strongest, '을')} 독점하며 상대를 인간이 아니라 오나홀 취급하고, 키워드(${joined})로 모든 생각이 사라지는 암캐 같은 황홀감에 빠져봐.`,
+      `${vibe} 오늘은 뭘 해도 젖는 날이야. ${attachJosa(strongest, '을')} 앞세워 상대를 정액변기로 굴리고, 키워드(${joined})로 자궁이 얼얼할 때까지 몰아쳐.`,
+    ])
   }
 
   if (overall >= 60) {
-    return `${vibe} 리듬을 느끼며 창녀처럼 젖어들어 봐. ${strongest}부터 독점하고 가축년처럼 허벌 자세로 개보지 벌려서 노예처럼 길들이면 폭풍이 몰아쳐.`
+    return pick(rng, [
+      `${vibe} 리듬을 느끼며 창녀처럼 젖어들어 봐. ${attachJosa(strongest, '을')} 앞세워 가축년처럼 허벌 자세로 개보지 벌려서 노예처럼 길들이면 폭풍이 몰아쳐.`,
+      `${vibe} 슬슬 달아오르는 날이야. ${attachJosa(strongest, '을')} 밑천 삼아 개보지 벌리고 노예처럼 조교당하다 보면 폭풍이 몰아쳐.`,
+    ])
   }
 
-  return `${vibe} 컨디션과 더러운 명령으로 육변기를 채우는 날이야. ${strongest}부터 독점하며 BDSM처럼 지배하면 모든 게 사라지는 황홀한 강간 같은 폭풍이 몰아치고, 하찮은 자궁에 정액주머니처럼 채워 폐인 만들 수 있어.`
+  return pick(rng, [
+    `${vibe} 컨디션과 더러운 명령으로 육변기를 채우는 날이야. ${attachJosa(strongest, '을')} 앞세워 BDSM처럼 지배하면 모든 게 사라지는 황홀한 강간 같은 폭풍이 몰아치고, 하찮은 자궁에 정액주머니처럼 채워 폐인 만들 수 있어.`,
+    `${vibe} 오늘은 천천히 달구는 게 답이야. ${attachJosa(strongest, '을')} 밑천 삼아 더러운 명령으로 육변기를 채우다 보면, 하찮은 자궁이 정액주머니처럼 부풀어 폐인이 될 거야.`,
+  ])
 }
 
 function clampInt(value: number, min: number, max: number) {
