@@ -40,5 +40,11 @@ function resolvePostgresSSL(parsedURL: URL, certificate?: string): DrizzlePostgr
     return sslMode
   }
 
+  // drizzle-kit's pg driver treats 'prefer' as "require SSL", so local Postgres (CI services,
+  // docker-compose dev) without TLS must default to no SSL instead.
+  if (['localhost', '127.0.0.1', '::1'].includes(parsedURL.hostname)) {
+    return false
+  }
+
   return 'prefer'
 }
