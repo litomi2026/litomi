@@ -13,7 +13,7 @@ import { noStoreCacheControl } from '@/utils/cache-control'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
-import { toArtistBrief, toSubscriptionDTO } from '../../dto'
+import { toArtistBrief, toArtistPrice, toSubscriptionDTO } from '../../dto'
 
 const route = new Hono<Env>()
 const factory = createFactory<Env>()
@@ -52,10 +52,7 @@ route.get('/', ...middlewares, async (c) => {
     artist: { ...toArtistBrief(artist), description: artist.description },
     isOwner,
     entitled,
-    price:
-      artist.isActive && artist.priceAmount > 0
-        ? { amount: artist.priceAmount, currency: artist.priceCurrency }
-        : undefined,
+    price: toArtistPrice(artist),
     subscription: subscription && toSubscriptionDTO(subscription),
     replyTextLimit,
   } satisfies GETV1ChatArtistResponse

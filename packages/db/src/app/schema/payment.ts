@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { bigint, index, pgEnum, pgTable, text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { bigint, index, integer, pgEnum, pgTable, text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 import { createdAt, timestamps } from '../../columns'
 import { invoiceTable } from './invoice'
 import { userTable } from './user'
@@ -18,6 +18,11 @@ export const paymentTable = pgTable.withRLS(
     // Smallest currency unit (minor units), à la Stripe: KRW won (₩1000 → 1000), USD cents ($10.00 → 1000)
     amount: bigint({ mode: 'number' }).notNull(),
     currency: varchar({ length: 3 }).notNull().default('KRW'),
+    // 정산용 수수료 스냅샷 — 청구 시점 아티스트 요율(basis point)과 그 요율로 산정된 수수료액.
+    // 정산이 나중 요율 변경과 무관하게 재현되고, 환불 시 요율 비례 역산의 기준이 된다.
+    // 구독(invoice) 결제에만 존재; 비구독 결제는 null.
+    feeBps: integer('fee_bps'),
+    feeAmount: bigint('fee_amount', { mode: 'number' }),
     // The PSP/gateway we integrated with.
     provider: paymentProviderEnum().notNull().default('portone'),
     // The payment-method brand the user chose (card | kakaopay | alipay | wechatpay | …),

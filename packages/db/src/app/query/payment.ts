@@ -28,6 +28,9 @@ export interface EnsureInvoicePaymentInput {
   orderName: string
   amount: number
   currency: string
+  // 청구 시점 아티스트 요율과 그 요율로 산정한 수수료액 — 원장에 동결되어 정산의 진실이 된다.
+  feeBps: number
+  feeAmount: number
 }
 
 export async function ensureInvoicePayment(input: EnsureInvoicePaymentInput): Promise<{ paymentId: string }> {
@@ -40,6 +43,8 @@ export async function ensureInvoicePayment(input: EnsureInvoicePaymentInput): Pr
       orderName: input.orderName,
       amount: input.amount,
       currency: input.currency,
+      feeBps: input.feeBps,
+      feeAmount: input.feeAmount,
     })
     .onConflictDoUpdate({
       target: paymentTable.invoiceId,

@@ -37,21 +37,38 @@ export default function ArtistSubscribe({ artist, price, onSubscribe, isPending,
         </div>
 
         {price ? (
-          <div className="w-full max-w-sm space-y-4">
-            <div className="rounded-2xl border border-foreground/10 bg-zinc-800/60 p-5">
-              <p className="text-sm text-zinc-400">{t('monthly')}</p>
-              <p className="mt-1 text-3xl font-bold text-foreground">{formatPrice(price, locale)}</p>
-              <p className="mt-2 text-xs text-zinc-500">{t('pitch', { name: artist.displayName })}</p>
+          price.amount === 0 ? (
+            <div className="w-full max-w-sm space-y-4">
+              <div className="rounded-2xl border border-foreground/10 bg-zinc-800/60 p-5">
+                <p className="text-3xl font-bold text-foreground">{t('free')}</p>
+                <p className="mt-2 text-xs text-zinc-500">{t('pitch', { name: artist.displayName })}</p>
+              </div>
+
+              {error && <p className="text-sm text-red-400">{error}</p>}
+
+              <Button busy={isPending} className="w-full rounded-2xl py-3.5 text-base" onClick={onSubscribe}>
+                {lapsed ? t('resubscribe') : t('subscribeFreeCta')}
+              </Button>
+
+              <p className="text-[11px] text-zinc-500">{t('freeNotice')}</p>
             </div>
+          ) : (
+            <div className="w-full max-w-sm space-y-4">
+              <div className="rounded-2xl border border-foreground/10 bg-zinc-800/60 p-5">
+                <p className="text-sm text-zinc-400">{t('monthly')}</p>
+                <p className="mt-1 text-3xl font-bold text-foreground">{formatPrice(price, locale)}</p>
+                <p className="mt-2 text-xs text-zinc-500">{t('pitch', { name: artist.displayName })}</p>
+              </div>
 
-            {error && <p className="text-sm text-red-400">{error}</p>}
+              {error && <p className="text-sm text-red-400">{error}</p>}
 
-            <Button busy={isPending} className="w-full rounded-2xl py-3.5 text-base" onClick={onSubscribe}>
-              {lapsed ? t('resubscribe') : t('subscribeCta', { price: formatPrice(price, locale) })}
-            </Button>
+              <Button busy={isPending} className="w-full rounded-2xl py-3.5 text-base" onClick={onSubscribe}>
+                {lapsed ? t('resubscribe') : t('subscribeCta', { price: formatPrice(price, locale) })}
+              </Button>
 
-            <p className="text-[11px] text-zinc-500">{t('autoRenewNotice')}</p>
-          </div>
+              <p className="text-[11px] text-zinc-500">{t('autoRenewNotice')}</p>
+            </div>
+          )
         ) : (
           <p className="text-sm text-zinc-400">{t('notOpen')}</p>
         )}

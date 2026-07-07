@@ -1,6 +1,6 @@
 import type { SettlementWindow } from '@litomi/domain/payout/policy'
 import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
-import { and, asc, desc, eq, gte, inArray, isNotNull, lt, sum } from 'drizzle-orm'
+import { and, asc, desc, eq, gte, inArray, isNotNull, lt, sql, sum } from 'drizzle-orm'
 import { db } from '../db'
 import { invoiceTable } from '../schema/invoice'
 import { paymentRefundTable, paymentTable } from '../schema/payment'
@@ -11,6 +11,8 @@ export type PayoutRow = typeof payoutTable.$inferSelect
 export interface SettlementActivity {
   grossAmount: number
   refundAmount: number
+  // 스냅샷 원장 기준 net 수수료 = 수납 결제의 수수료 합 − 환불분의 요율 비례 역산.
+  feeAmount: number
 }
 
 export interface SettlementActivityOptions {
@@ -27,7 +29,11 @@ export async function sumSettlementActivity(
   const artistCondition = artistId === undefined ? [] : [eq(invoiceTable.targetId, artistId)]
 
   const payments = await db
-    .select({ artistId: invoiceTable.targetId, total: sum(paymentTable.amount) })
+    .select({
+      artistId: invoiceTable.targetId,
+      total: sum(paymentTable.amount),
+      fee: sum(paymentTable.feeAmount),
+    })
     .from(paymentTable)
     .innerJoin(invoiceTable, eq(invoiceTable.id, paymentTable.invoiceId))
     .where(
@@ -43,7 +49,12 @@ export async function sumSettlementActivity(
     .groupBy(invoiceTable.targetId)
 
   const refunds = await db
-    .select({ artistId: invoiceTable.targetId, total: sum(paymentRefundTable.amount) })
+    .select({
+      artistId: invoiceTable.targetId,
+      total: sum(paymentRefundTable.amount),
+      // 환불액 × 원 결제의 요율(bps) 합 — JS에서 /10000 trunc해 되돌릴 수수료를 구한다.
+      feeReversedScaled: sql<string>`sum(${paymentRefundTable.amount} * coalesce(${paymentTable.feeBps}, 0))`,
+    })
     .from(paymentRefundTable)
     .innerJoin(paymentTable, eq(paymentTable.id, paymentRefundTable.paymentId))
     .innerJoin(invoiceTable, eq(invoiceTable.id, paymentTable.invoiceId))
@@ -60,16 +71,27 @@ export async function sumSettlementActivity(
   const activity = new Map<number, SettlementActivity>()
 
   for (const row of payments) {
-    activity.set(row.artistId, { grossAmount: Number(row.total ?? 0), refundAmount: 0 })
+    activity.set(row.artistId, {
+      grossAmount: Number(row.total ?? 0),
+      refundAmount: 0,
+      feeAmount: Number(row.fee ?? 0),
+    })
   }
 
   for (const row of refunds) {
+    const refundAmount = Number(row.total ?? 0)
+    const feeReversed = Math.trunc(Number(row.feeReversedScaled ?? 0) / 10_000)
     const entry = activity.get(row.artistId)
 
     if (entry) {
-      entry.refundAmount = Number(row.total ?? 0)
+      entry.refundAmount = refundAmount
+      entry.feeAmount -= feeReversed
     } else {
-      activity.set(row.artistId, { grossAmount: 0, refundAmount: Number(row.total ?? 0) })
+      activity.set(row.artistId, {
+        grossAmount: 0,
+        refundAmount,
+        feeAmount: -feeReversed,
+      })
     }
   }
 
@@ -87,6 +109,7 @@ export async function getSettlementActivityOfArtist(
     activity.get(artistId) ?? {
       grossAmount: 0,
       refundAmount: 0,
+      feeAmount: 0,
     }
   )
 }

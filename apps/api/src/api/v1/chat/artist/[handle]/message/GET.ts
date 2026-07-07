@@ -36,8 +36,9 @@ const middlewares = factory.createHandlers(
 // The fan timeline is the artist's broadcast feed woven together with the fan's 1:1 messages
 // (their replies + the artist's answers), merged in messageId (time) order. The owner instead
 // gets just their broadcast feed plus each bubble's unread-reply count.
-// Access: owner / entitled fan → full broadcast; lapsed fan → broadcast sent during the
-// windows they paid for; never-subscribed → 403. The 1:1 history is always readable.
+// Access: owner → full broadcast; fan → broadcast sent during the windows they paid for
+// (current subscription included, pre-subscription excluded); never-subscribed → 403.
+// The 1:1 history is always readable.
 route.get('/', ...middlewares, async (c) => {
   const userId = c.get('userId')!
   const { handle } = c.req.valid('param')
@@ -72,14 +73,12 @@ route.get('/', ...middlewares, async (c) => {
     return c.json(ownerTimeline, { headers: { 'Cache-Control': noStoreCacheControl } })
   }
 
-  // 만료(lapsed) 팬은 결제했던 기간에 발송된 방송만 열람할 수 있다.
-  const windows =
-    access.kind === 'lapsed'
-      ? access.intervals.map((interval) => ({
-          fromId: messageIdAtOrAfter(interval.startedAt),
-          toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
-        }))
-      : undefined
+  // 팬은 결제한 기간에 발송된 방송만 열람한다 — 현재 구독 중이어도 구독 이전 방송은 제외된다.
+  // 현재 구간은 expiresAt이 미래라 진행 중인 기간의 방송을 자연스럽게 모두 덮는다.
+  const windows = access.intervals.map((interval) => ({
+    fromId: messageIdAtOrAfter(interval.startedAt),
+    toIdExclusive: messageIdAtOrAfter(interval.expiresAt),
+  }))
 
   const fanTimeline = await buildFanTimeline(artist, userId, { before, after, limit, windows })
 
@@ -106,7 +105,7 @@ async function buildFanTimeline(
   // artist.userId null = 탈퇴한 아티스트 tombstone — 읽음 커서도 파기되었으므로 receipt 없음.
   artist: { id: number; userId: number | null },
   fanId: number,
-  { before, after, limit, windows }: PageOptions & { windows?: TimelineWindow[] },
+  { before, after, limit, windows }: PageOptions & { windows: TimelineWindow[] },
 ): Promise<GETV1ChatMessagesResponse> {
   const artistId = artist.id
   const isForward = Boolean(after) && !before
@@ -133,8 +132,14 @@ async function buildFanTimeline(
   }
 
   let tagged: TaggedRow[] = [
-    ...broadcasts.map((row) => ({ messageId: row.messageId, broadcast: row })),
-    ...dmRows.map((row) => ({ messageId: row.messageId, dm: row })),
+    ...broadcasts.map((row) => ({
+      messageId: row.messageId,
+      broadcast: row,
+    })),
+    ...dmRows.map((row) => ({
+      messageId: row.messageId,
+      dm: row,
+    })),
   ]
 
   tagged.sort((a, b) => (isForward ? a.messageId.localeCompare(b.messageId) : b.messageId.localeCompare(a.messageId)))

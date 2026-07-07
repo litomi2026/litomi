@@ -26,6 +26,7 @@ export default function ChatRoom({ handle }: Props) {
   const entitled = artistData?.entitled ?? false
   const subscription = artistData?.subscription
   const showRoom = entitled || subscription !== undefined
+  const free = artistData?.price?.amount === 0
 
   const {
     start: subscribe,
@@ -33,7 +34,7 @@ export default function ChatRoom({ handle }: Props) {
     reportError: reportSubscribeError,
     isPending: subscribing,
     error: subscribeError,
-  } = useSubscribeAction(handle, artist?.displayName ?? '', !isOwner)
+  } = useSubscribeAction(handle, artist?.displayName ?? '', !isOwner, free)
 
   // 모바일 빌링키 발급의 full-page redirect 복귀 — 등록을 마저 진행하고 구독까지 잇는다.
   useBillingKeyRedirect({

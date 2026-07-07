@@ -5,8 +5,8 @@ import { useState } from 'react'
 import useAddCard from './useAddCard'
 import useSubscribeMutation from './useSubscribeMutation'
 
-export default function useSubscribeAction(handle: string, artistName: string, enabled = true) {
-  const { billing, addCard, registerCard } = useAddCard(enabled)
+export default function useSubscribeAction(handle: string, artistName: string, enabled = true, free = false) {
+  const { billing, addCard, registerCard } = useAddCard(enabled && !free)
   const { mutateAsync: requestSubscribe } = useSubscribeMutation(handle)
   const [error, setError] = useState<string | null>(null)
   const [isPending, setPending] = useState(false)
@@ -33,6 +33,11 @@ export default function useSubscribeAction(handle: string, artistName: string, e
     setError(null)
 
     try {
+      if (free) {
+        await requestSubscribe({})
+        return
+      }
+
       const savedId = billing?.paymentMethods[0]?.id
 
       if (savedId) {

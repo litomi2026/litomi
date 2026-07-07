@@ -9,7 +9,14 @@ import { getChatArtistByHandle } from '@litomi/db/app/query/chat'
 import { ensureOpenInvoice, voidOpenInvoice } from '@litomi/db/app/query/invoice'
 import { ensureInvoicePayment, markPaymentFailed } from '@litomi/db/app/query/payment'
 import { getActivePaymentMethodForUser } from '@litomi/db/app/query/payment-method'
-import { confirmPayment, ensureSubscription, getSubscription, setAutoRenew } from '@litomi/db/app/query/subscription'
+import {
+  activateFreeInvoice,
+  confirmPayment,
+  ensureSubscription,
+  getSubscription,
+  setAutoRenew,
+} from '@litomi/db/app/query/subscription'
+import { computeFeeAmount } from '@litomi/domain/payout/policy'
 import {
   addSubscriptionPeriod,
   RENEWAL_GRACE_MS,
@@ -49,7 +56,8 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { status: 404 })
   }
 
-  if (!artist.isActive || artist.userId === userId || artist.priceAmount <= 0) {
+  // priceAmount null = 미오픈(구독 불가). 0 = 무료 개방, 그 외 = 유료.
+  if (!artist.isActive || artist.userId === userId || artist.priceAmount === null) {
     return problemResponse(c, { status: 403 })
   }
 
@@ -70,6 +78,49 @@ route.post('/', ...middlewares, async (c) => {
     } satisfies POSTV1ChatSubscriptionResponse)
   }
 
+  const now = new Date()
+
+  // 무료 개방(가격 0) — 결제·카드 없이 즉시 구독하고 0원 invoice로 열람권을 연다.
+  if (artist.priceAmount === 0) {
+    const subscription = await ensureSubscription({
+      userId,
+      targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+      targetId: artist.id,
+      paymentMethodId: null,
+      priceAmount: 0,
+      priceCurrency: artist.priceCurrency,
+      now,
+    })
+
+    const invoice = await ensureOpenInvoice({
+      subscriptionId: subscription.id,
+      userId,
+      targetType: SUBSCRIPTION_TARGET_CHAT_ARTIST,
+      targetId: artist.id,
+      periodStart: now,
+      periodEnd: addSubscriptionPeriod(now),
+      amount: 0,
+      currency: artist.priceCurrency,
+    })
+
+    if (invoice) {
+      await activateFreeInvoice(invoice.id, now)
+    }
+
+    const activated = await getSubscription(subscriptionKey)
+
+    if (!activated) {
+      return problemResponse(c, { status: 500 })
+    }
+
+    return c.json({ subscription: toSubscriptionDTO(activated) } satisfies POSTV1ChatSubscriptionResponse)
+  }
+
+  // 유료 — 결제수단 필수.
+  if (paymentMethodId === undefined) {
+    return problemResponse(c, { problem: PROBLEM.PAYMENT_METHOD_NOT_FOUND })
+  }
+
   const paymentMethod = await getActivePaymentMethodForUser({
     id: paymentMethodId,
     userId,
@@ -79,7 +130,6 @@ route.post('/', ...middlewares, async (c) => {
     return problemResponse(c, { problem: PROBLEM.PAYMENT_METHOD_NOT_FOUND })
   }
 
-  const now = new Date()
   const orderName = `${artist.displayName} 구독`
 
   let paymentId: string | undefined
@@ -121,6 +171,8 @@ route.post('/', ...middlewares, async (c) => {
         orderName,
         amount: invoice.amount,
         currency: invoice.currency,
+        feeBps: artist.feeBps,
+        feeAmount: computeFeeAmount(invoice.amount, artist.feeBps),
       }))
 
       const charge = await chargeWithBillingKey({
