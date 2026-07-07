@@ -1,3 +1,4 @@
+import { attachJosa } from './sexFortuneJosa'
 import { getRarityMeta } from './sexFortuneRarity'
 import { pickRecommendedTags } from './sexFortuneTags'
 import { INTENSITY_STAT_TILT, ROLE_STAT_TILT } from './sexFortuneTaste'
@@ -270,11 +271,11 @@ function buildMessage({ overall, stats, vibe, keywords }: BuildMessageInput) {
   const joined = keywords.join(' · ')
 
   if (overall >= 92) {
-    return `${vibe} 오늘은 전설급이야! ${strongest}이 터져버려서 키워드(${joined}) 하나만 골라도 미친 듯이 좆집을 파헤칠 수 있어. 절정이 폭발해서 정액쓰레기통처럼 범벅되고, 보지마게 벌려서 질싸하며 배빵시키고 임신·낙태까지 몰아치는 날이야.`
+    return `${vibe} 오늘은 전설급이야! ${attachJosa(strongest, '가')} 터져버려서 키워드(${joined}) 하나만 골라도 미친 듯이 좆집을 파헤칠 수 있어. 절정이 폭발해서 정액쓰레기통처럼 범벅되고, 보지마게 벌려서 질싸하며 배빵시키고 임신·낙태까지 몰아치는 날이야.`
   }
 
   if (overall >= 78) {
-    return `${vibe} 욕심 부려도 되는 날이야. 특히 ${strongest}를 독점하며 상대를 인간이 아니라 오나홀 취급하고, 키워드(${joined})로 모든 생각이 사라지는 암캐 같은 황홀감에 빠져봐.`
+    return `${vibe} 욕심 부려도 되는 날이야. 특히 ${attachJosa(strongest, '을')} 독점하며 상대를 인간이 아니라 오나홀 취급하고, 키워드(${joined})로 모든 생각이 사라지는 암캐 같은 황홀감에 빠져봐.`
   }
 
   if (overall >= 60) {
