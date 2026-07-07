@@ -275,7 +275,6 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
         isFetchingNextPage={isFetchingNextPage}
         itemGap={8}
         items={items}
-        measurementKey={`${libraryId}:${effectiveSort}`}
         onScrollElementChange={handleScrollElementChange}
         renderItem={renderItem}
         scrollToOptions={scrollToOptions}
