@@ -2,29 +2,30 @@ import { Flame } from 'lucide-react'
 
 import type { Fortune } from '../../_lib/sexFortuneTypes'
 
-export function FortuneTab({
-  copy,
-  copied,
-  fortune,
-  shareText,
-}: {
+import { SexFortuneTagFunnel } from '../SexFortuneTagFunnel'
+
+type Props = {
   copy: (text: string) => void
   copied: boolean
   fortune: Fortune
   shareText: string
-}) {
+}
+
+export function FortuneTab({ copy, copied, fortune, shareText }: Props) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-white/7 bg-white/3 p-4">
           <p className="text-sm font-semibold text-zinc-200">오늘의 팁</p>
-          <p className="mt-2 text-sm text-zinc-300 leading-relaxed">{fortune.tip}</p>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-300">{fortune.tip}</p>
         </div>
         <div className="rounded-xl border border-white/7 bg-white/3 p-4">
           <p className="text-sm font-semibold text-zinc-200">오늘의 주의</p>
-          <p className="mt-2 text-sm text-zinc-300 leading-relaxed">{fortune.caution}</p>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-300">{fortune.caution}</p>
         </div>
       </div>
+
+      <SexFortuneTagFunnel tags={fortune.recommendedTags} />
 
       <div className="flex flex-wrap items-center gap-2">
         <button

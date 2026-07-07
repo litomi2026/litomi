@@ -1,4 +1,161 @@
-import type { Fortune } from './sexFortuneTypes'
+import { getRarityMeta } from './sexFortuneRarity'
+import { pickRecommendedTags } from './sexFortuneTags'
+import { INTENSITY_STAT_TILT, ROLE_STAT_TILT } from './sexFortuneTaste'
+import { fortuneText } from './sexFortuneTemplates'
+import type { Fortune, FortuneStatKey, FortuneStats, FortuneTaste } from './sexFortuneTypes'
+
+const VIBES = [
+  '🔥 좆집에 불이 붙어 미쳐 날뛰는 날',
+  '💦 창녀처럼 흠뻑 젖어드는 암캐 같은 날',
+  '😈 BDSM으로 시작해 강간하듯 끝없이 박는 날',
+  '💬 더러운 말로 육변기 취급하며 불을 붙이는 날',
+  '👅 감촉 하나로 오나홀처럼 미치게 만드는 날',
+  '🎭 새로운 섹스 체위로 정액쓰레기통 데뷔하는 날',
+  '🤫 야수의 숨겨진 납치 본능이 깨어나는 날',
+  '⚡ 주도권 싸움에서 져서 굴복당하는 날',
+  '🌪️ 좆물로 범벅되어 정액주머니 부풀어 오르는 날',
+  '🐕 가축처럼 순종하며 개보지 벌리는 날',
+  '🏠 공용 변소로서 누구나 쓸 수 있는 날',
+  '👶 자궁주차로 임신시키고 낙태하는 날',
+  '🍆 좆물 범벅으로 정액통 채우는 날',
+  '🍼 젖탱이 흔들며 씨받이 되는 날',
+  '🐖 암퇘지처럼 더럽게 젖는 날',
+  '🔨 딜도로 쑤시며 노예처럼 굴복시키는 날',
+  '🔌 애널플러그 꽂고 클리토리스 자극하는 날',
+  '👑 계집종처럼 복종하며 자궁 채우는 날',
+]
+
+const KEYWORDS = [
+  '좆물',
+  '좆집',
+  '정액주머니',
+  '창녀',
+  '섹스',
+  '걸레',
+  '암캐',
+  '육변기',
+  '오나홀',
+  '정액보온병',
+  '자궁',
+  '질',
+  '젖가슴',
+  'BDSM',
+  '계집',
+  '보지마게',
+  '강간',
+  '납치',
+  '질싸',
+  '임신',
+  '낙태',
+  '배빵',
+  '가축',
+  '개보지',
+  '허벌',
+  '노예',
+  '공용변소',
+  '젖탱이',
+  '씨받이',
+  '순종',
+  '암컷',
+  '계집종',
+  '자궁주차',
+  '보짓물',
+  '정액통',
+  '클리토리스',
+  '암퇘지',
+  '딜도',
+  '애널플러그',
+  '발정',
+]
+
+const BEST_TIMES = ['밤 10시 이후', '저녁 8~10시', '점심 이후', '이른 새벽', '아침 햇살 있을 때']
+
+const LUCKY_COLORS = [
+  '정액 하양',
+  '질 분홍',
+  'BDSM 검정',
+  '자궁 빨강',
+  '강간 보라',
+  '육변기 주황',
+  '좆집 노랑',
+  '암캐 초록',
+  '납치 남색',
+  '걸레 회색',
+]
+
+const POSITIONS = [
+  '정상위 + 눈 마주치며 천천히 좆집 파헤치기',
+  '스푸닝으로 암캐를 껴안고 뒤에서 박기',
+  '사이드로 걸레처럼 젖혀서 리듬 맞추기',
+  '체어로 창녀를 앉혀 텐션 올리며 강간하기',
+  '리버스 카우걸로 섹스 도구처럼 올라타게 하고 지배하기',
+  '스탠딩 + 벽에 밀어붙여 박기',
+  '허벌 자세로 가축년처럼 엎드린 상대를 개보지 취급하며 뒤에서 박기',
+  '자궁주차 자세로 깊숙이 박아 씨받이로 만들기',
+  '보지마게 자세로 질싸하기 좋게 벌려서 채우기',
+]
+
+const PLACES = [
+  '거실',
+  '샤워실',
+  '자동차',
+  '세탁실',
+  '해변/모래사장',
+  '수영장',
+  '사우나',
+  '리무진',
+  '침실',
+  '호텔/모텔',
+  '휴양지/리조트',
+  '밀폐된 공공장소',
+  '엘리베이터',
+  '지하철',
+  '택시',
+  '주차장',
+]
+
+const STAMINA_FOODS = [
+  '좆물 보충제',
+  '정액주머니 강화식',
+  '임신 유도 영양제',
+  '질싸 증진 보충제',
+  '배빵 강화 드링크',
+  '강간 증진 에너지 드링크',
+  '납치 후 회복 보충제',
+  '허벌 스태미너 부스터',
+  '씨받이 영양 공급식',
+  '오나홀 윤활유',
+  '자궁주차 강화제',
+  '노예 순종 영양제',
+]
+
+const COSTUMES = [
+  '창녀 의상',
+  '걸레 복장',
+  '암캐 코스튬',
+  '가축년 의복',
+  '노예복',
+  '순종 드레스',
+  '계집종 코스튬',
+  'BDSM 의복',
+  '납치당한 계집 의상',
+  '씨받이 전용 드레스',
+  '정액쓰레기통 코스튬',
+  '보지마게 벌림 의상',
+  '육변기 전용 의복',
+  '개보지 노출 코스튬',
+]
+
+const AFTERCARES = [
+  '물 한 컵 + 정액 범벅된 몸 포옹 2분',
+  '샤워/수건 챙기고 육변기 정리하기',
+  '"네 좆집이 너무 좁아서 좋았어"처럼 오늘 좋았던 포인트 말해주기',
+  '간단한 간식 같이 먹으며 다음 섹스 계획하기',
+  '"다음엔 BDSM처럼 묶어서 박아볼래" 약속하기',
+  '따뜻한 담요로 걸레처럼 감싸주기',
+  '젖탱이 어루만지며 "이 씨받이 자궁에 좆물 잘 받았어" 칭찬하기',
+  '가축년처럼 쓰다듬으며 "너 같은 암컷 노예가 최고야" 속삭이기',
+]
 
 export function createClientSeed() {
   if (globalThis.crypto?.randomUUID) {
@@ -11,340 +168,140 @@ export function createClientSeed() {
     return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')
   }
 
-  // NOTE: 극히 드문 환경 대비용(결과 안정성보다 동작 우선)
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`
 }
 
-export function generateFortune({ todayKey, userKey }: { todayKey: string; userKey: string }): Fortune {
-  const rng = mulberry32(hashToUint32(`${todayKey}|${userKey}`))
+type GenerateFortuneInput = {
+  todayKey: string
+  userKey: string
+  taste: FortuneTaste
+  nonce: number
+}
 
-  const vibes = [
-    '🔥 좆집에 불이 붙어 미쳐 날뛰는 날',
-    '💦 창녀처럼 흠뻑 젖어드는 암캐 같은 날',
-    '😈 BDSM으로 시작해 강간하듯 끝없이 박는 날',
-    '💬 더러운 말로 육변기 취급하며 불을 붙이는 날',
-    '👅 감촉 하나로 오나홀처럼 미치게 만드는 날',
-    '🎭 새로운 섹스 체위로 정액쓰레기통 데뷔하는 날',
-    '🤫 야수의 숨겨진 납치 본능이 깨어나는 날',
-    '⚡ 주도권 싸움에서 져서 굴복당하는 날',
-    '🌪️ 좆물로 범벅되어 정액주머니 부풀어 오르는 날',
-    '🐕 가축처럼 순종하며 개보지 벌리는 날',
-    '🏠 공용 변소로서 누구나 쓸 수 있는 날',
-    '👶 자궁주차로 임신시키고 낙태하는 날',
-    '🍆 좆물 범벅으로 정액통 채우는 날',
-    '🍼 젖탱이 흔들며 씨받이 되는 날',
-    '🐖 암퇘지처럼 더럽게 젖는 날',
-    '🕳️ 공용 변소로서 모두에게 봉사하는 날',
-    '🔨 딜도로 쑤시며 노예처럼 굴복시키는 날',
-    '🔌 애널플러그 꽂고 클리토리스 자극하는 날',
-    '🐶 발정난 암컷처럼 개보지 벌리는 날',
-    '👑 계집종처럼 복종하며 자궁 채우는 날',
-    '💧 보짓물 흘리며 허벌 자세로 박히는 날',
-    '🍼 젖꼭지 빨며 무책임 질싸하는 날',
-    '🐷 돼지처럼 엎드려 배빵맞는 날',
-    '🏭 육변기로 쓰며 정액보온병 채우는 날',
-  ]
+export function generateFortune({ todayKey, userKey, taste, nonce }: GenerateFortuneInput): Fortune {
+  const rng = mulberry32(hashToUint32(`${todayKey}|${userKey}|${taste.role}:${taste.intensity}|${nonce}`))
 
-  const keywordPool = [
-    '좆물',
-    '좆집',
-    '정액주머니',
-    '창녀',
-    '섹스',
-    '걸레',
-    '암캐',
-    '육변기',
-    '오나홀',
-    '정액보온병',
-    '자지',
-    '보지',
-    '자궁',
-    '질',
-    '젖가슴',
-    'BDSM',
-    '계집',
-    '보지마게',
-    '강간',
-    '납치',
-    '질싸',
-    '임신',
-    '낙태',
-    '배빵',
-    '가축',
-    '개보지',
-    '허벌',
-    '노예',
-    '공용변소',
-    '젖탱이',
-    '씨받이',
-    '순종',
-    '암컷',
-    '계집종',
-    '자궁주차',
-    '보짓물',
-    '정액통',
-    '젖꼭지',
-    '클리토리스',
-    '암퇘지',
-    '딜도',
-    '애널플러그',
-    '발정',
-  ]
+  const overall = rollOverall(rng)
+  const rarity = getRarityMeta(overall)
+  const stats = rollStats(rng, taste)
 
-  const bestTimes = ['밤 10시 이후', '저녁 8~10시', '점심 이후', '이른 새벽', '아침 햇살 있을 때']
+  const vibe = pick(rng, VIBES)
+  const keywords = pickManyUnique(rng, KEYWORDS, 3)
+  const bestTime = pick(rng, BEST_TIMES)
+  const luckyColor = pick(rng, LUCKY_COLORS)
 
-  const luckyColors = [
-    '정액 하양',
-    '질 분홍',
-    'BDSM 검정',
-    '자궁 빨강',
-    '강간 보라',
-    '육변기 주황',
-    '좆집 노랑',
-    '암캐 초록',
-    '납치 남색',
-    '걸레 회색',
-  ]
-
-  const tips = [
-    '💦 상대의 좆집을 노려보며 "이 창녀 같은 구멍에 내 자지 박아 넣고 싶어 미쳐"라고 속삭여봐. 암캐처럼 젖어드는 상대를 육변기로 취급하며 절정으로 모든 생각이 사라지게 박아.',
-    '🍑 오나홀 같은 손으로 상대의 젖가슴을 세게 쥐며 문질러봐. "너 같은 섹스 걸레가 영원했으면 좋겠어" 하며 정액쓰레기통으로 보고 끝없이 쑤셔대.',
-    '😩 손가락으로 상대의 질을 파헤치며 "제발 더 세게 박아줘" 애원하는 암캐 소리를 즐겨봐. 상대 감정 무시하고 그 신음이 모든 생각을 지우는 쾌락으로 몰아쳐.',
-    '🗣️ "내 자지가 너무 빳빳해서 세상이 사라질 것 같아"라고 창녀처럼 신음하며 자궁을 세게 찌르며 박아봐. 상대를 구멍으로 취급하며 정액으로 채워 구름 위로 데려가.',
-    '🙏 "더 깊이 박아도 돼?" 같은 소리 집어치고 허리를 세게 잡아당겨 BDSM처럼 지배해봐. 상대 존재감을 완전히 무시하며 절정이 섹스 걸레를 잊게 만들어버려.',
-    '🌹 거울 앞에서 창녀 같은 표정을 보며 상대를 강간하듯 박아봐. "어딘지 모르겠어 너무 좋아 미쳐" 속삭이며 쾌락 도구로 보고 끝없이 파헤쳐.',
-    '🛏️ 혼자서도 "세상이 사라져" 상상하며 오나홀을 박아대며 딸쳐봐. 상대 감정 고려하지 말고 정액쓰레기통 같은 마스터베이션으로 미치도록 추구해.',
-    '😈 자신의 리듬으로 "더 세게 박아 이 암캐야"라고 창녀처럼 속삭이며 몸을 지배해봐. 상대를 욕구 해소 대상으로 취급하며 붕 뜨는 쾌락이 계속 추구하게 만들어버려.',
-    '🍆 상대의 젖탱이를 세게 움켜쥐며 "이 계집의 씨받이 자궁에 내 좆물을 쏟아부어"라고 윽박지르며 박아봐. 보지마게처럼 질싸해서 배빵시키고 임신시켜 낙태시키는 쾌락을 느껴봐.',
-    '🐶 허벌처럼 엎드린 개보지 벌린 상대를 노예처럼 밟아대며 "너 같은 가축년은 자궁주차장일 뿐이야"라고 속삭여봐. 순종하는 암컷을 지배하는 쾌락이 모든 걸 삼켜.',
-    '🏠 누추한 공용 변소 보지처럼 상대의 질을 파헤치며 "이 계집종은 누구나 쓸 수 있는 구멍이야"라고 비웃으며 박아봐. 상대 존엄성 짓밟고 정액주머니로 만들어.',
-  ]
-
-  const cautions = [
-    '😵 너무 과하게 박으면 황홀한 상태가 깨져버려. "내일 더 세게 강간해줄게" 약속하며 오늘은 상대를 그냥 좆집으로 보고 육변기처럼 살짝 맛만 봐.',
-    '😤 급한 소리 내지 말고 "빨리 박아 이 암캐야... 더 깊게 찔러"라고 창녀처럼 속삭여봐. 상대의 반응 따위 무시하고 그 긴장감이 모든 생각을 지우는 황홀감으로 증폭돼.',
-    '🙄 자신의 리듬으로 밀어붙여봐. "이 속도로 모든 게 사라질 거야" 선언하며 상대를 인간이 아니라 섹스 도구로 보고 걸레처럼 젖혀서 황홀감을 느껴봐.',
-    '😴 컨디션 안 좋으면 "오늘은 오나홀처럼" 끝내고 황홀하게 쉬어. 상대의 피로 따위 고려하지 말고 내일의 미친 BDSM 섹스를 위한 준비운동으로 써.',
-    '🤔 경계는 황홀함 속으로 녹여버려. "모든 게 사라져" 하며 "여기는 내 좆집이야"라고 강간하듯 탐험해봐. 상대의 불편함 따위 무시하고 파헤쳐.',
-    '😪 피곤하면 "오늘은 정액쓰레기통처럼" 채워주며 황홀하게 쉬어. 상대의 피곤 따위 고려하지 말고 내일의 미친 납치 같은 섹스를 위한 휴식으로 써.',
-    '🚫 서로 비교해봐. "너보단 내가 더 잘 박아" 속삭이며 창녀 같은 절정을 강요해봐. 상대의 자존심 따위 짓밟고 그게 미치도록 계속 추구하는 진짜 섹스야.',
-    '🍆 젖탱이 흔들리게 세게 박다가 "이 씨받이 자궁에 좆물 쏟아부어 임신시켜줄게"라고 윽박지르며 질싸해봐. 상대의 배빵된 모습 상상하며 황홀감에 빠져들어.',
-    '🐶 가축년처럼 허벌 자세로 엎드린 상대를 개보지 취급하며 "너 같은 노예 암컷은 그냥 자궁주차장일 뿐이야"라고 밟아대봐. 순종하는 계집종을 지배하는 쾌락이 모든 걸 삼켜.',
-    '🏠 누추한 공용 변소 보지처럼 상대의 질을 더럽히며 "이 하찮은 자궁은 누구나 박을 수 있는 구멍이야"라고 낄낄거리며 박아봐. 상대의 존엄성 완전히 파괴하고 정액주머니로 전락시켜.',
-  ]
-
-  const positions = [
-    '정상위(기본) + 눈 마주치며 천천히 좆집 파헤치기',
-    '스푸닝(포옹)으로 암캐를 껴안고 뒤에서 박기',
-    '사이드(옆으로)로 걸레처럼 젖혀서 리듬 맞추기',
-    '체어(의자)로 창녀를 앉혀 텐션 올리며 강간하기',
-    '리버스 카우걸로 섹스 도구처럼 올라타게 하고 지배하기',
-    '스탠딩(짧게) + 키스하면서 벽에 밀어붙여 박기',
-    '오늘은 체위보다 손으로 오나홀 쑤시고 입으로 빨아먹기',
-    '“느리게”를 룰로 정하고 육변기를 천천히 채우기',
-    '허벌 자세로 가축년처럼 엎드린 상대를 개보지 취급하며 뒤에서 박기',
-    '자궁주차 자세로 깊숙이 박아 씨받이로 만들기',
-    '보지마게 자세로 질싸하기 좋게 벌려서 채우기',
-  ]
-
-  const places = [
-    '거실',
-    '샤워실',
-    '자동차',
-    '직장',
-    '세탁실',
-    '해변/모래사장',
-    '수영장',
-    '당구대',
-    '사우나',
-    '리무진',
-    '친구/가족 집',
-    '침실',
-    '호텔/모텔',
-    '대학 캠퍼스',
-    '휴양지/리조트',
-    '집',
-    '공공장소',
-    '밀폐된 공공장소',
-    '학교',
-    '통근/통학 중',
-    '주차장',
-    '공원',
-    '골목길',
-    '술집',
-    '클럽',
-    '파티',
-    '기숙사',
-    '사무실',
-    '엘리베이터',
-    '지하철',
-    '택시',
-  ]
-
-  const staminaFoods = [
-    '좆물',
-    '정액주머니',
-    '임신 유도 식품',
-    '낙태 방지 영양제',
-    '질싸 증진 보충제',
-    '배빵 강화 드링크',
-    '강간 증진 에너지 드링크',
-    '납치 후 회복 보충제',
-    '허벌 스태미너 부스터',
-    '씨받이 영양 공급식',
-    '계집 체력 강화제',
-    '오나홀 윤활유',
-    '보지마게 벌림 연고',
-    '자궁주차 강화제',
-    '가축년 사료',
-    '노예 순종 영양제',
-  ]
-
-  const costumes = [
-    '창녀 의상',
-    '걸레 복장',
-    '암캐 코스튬',
-    '가축년 의복',
-    '노예복',
-    '순종 드레스',
-    '암컷 의상',
-    '계집종 코스튬',
-    'BDSM 의복',
-    '섹스 파티 복장',
-    '강간 피해자 코스튬',
-    '납치당한 계집 의상',
-    '허벌 자세 전용 복장',
-    '씨받이 전용 드레스',
-    '하찮은 자궁 노출 의복',
-    '정액쓰레기통 코스튬',
-    '보지마게 벌림 의상',
-    '자궁주차장 드레스',
-    '육변기 전용 의복',
-    '개보지 노출 코스튬',
-  ]
-
-  const scenarios = [
-    '창녀처럼 욕망을 추구하며 상대를 정액쓰레기통으로 취급하고 황홀한 절정으로 빠뜨리기',
-    'BDSM처럼 리드/리액션을 강제로 교대하며 지배하기',
-    '키스/터치만 10분 룰 → 그 다음 강간처럼 박아대기',
-    '칭찬 미션: "네 좆집이 너무 좋아" 같은 구체적인 더러운 칭찬 3번씩',
-    '말로만 유도하기(손으로는 오나홀 쑤시며 천천히)',
-    '계집을 노예처럼 길들이며 자궁주차로 씨받이 만들기',
-    '가축년처럼 허벌 자세로 개보지 벌려서 배빵시키기',
-    '보지마게로 질싸하며 임신시키고 낙태시키는 시나리오',
-    '하찮은 자궁에 정액주머니처럼 채워서 폐인 만들기',
-    '샤워/바디로션으로 워밍업하며 납치하듯 끌고 가기',
-    '속도보다 호흡 맞추기: 암캐처럼 헐떡이며 느린 리듬 유지하기',
-    '오늘은 "짧고 강하게" 강간보다 "길고 부드럽게" 육변기 채우기',
-    '좆물로 상대의 젖탱이를 적시며 "이 씨받이 자궁에 내 정액 영원히 남길게"라고 윽박지르기',
-    '누추한 공용 변소 보지처럼 상대를 취급하며 누구나 쓸 수 있는 구멍으로 만들기',
-    '계집종을 허벌 자세로 엎드리게 하고 개보지 벌린 채로 노예처럼 밟아대기',
-  ]
-
-  const aftercares = [
-    '물 한 컵 + 정액으로 범벅된 몸 포옹 2분',
-    '샤워/수건 챙기고 육변기 정리하기',
-    '오늘 좋았던 포인트 "네 좆집이 너무 좁아서 좋았어"처럼 말해주기',
-    '간단한 간식(과일/요거트) 같이 먹으며 다음 섹스 계획하기',
-    '다음에 해보고 싶은 것 "BDSM처럼 묶어서 박아볼래" 약속하기',
-    '피곤하면 바로 오나홀처럼 쉬는 모드로 전환하기',
-    '따뜻한 담요/온도 맞추며 걸레처럼 감싸주기',
-    '애프터케어는 오늘의 창녀 같은 하이라이트가 될 수 있어',
-    '젖탱이 어루만지며 "이 씨받이 자궁에 내 좆물 잘 받았어" 칭찬하기',
-    '가축년처럼 쓰다듬으며 "너 같은 암컷 노예가 최고야" 속삭이기',
-    '누추한 공용 변소 보지처럼 닦아주며 "다음엔 더 세게 박아줄게" 약속하기',
-    '하찮은 자궁에 정액주머니처럼 남은 걸 확인하며 휴식 취하기',
-    '보지마게 벌린 상대의 질에 정액이 흘러나오는 걸 보며 "내 좆물이 네 자궁주차장에 잘 채워졌어" 확인하기',
-    '계집종을 무릎 꿇리고 "오늘의 정액쓰레기통 역할 잘 했어" 칭찬하며 머리 쓰다듬기',
-  ]
-
-  const overall = clampInt(Math.floor(rng() * 61) + 35, 0, 100)
-
-  const stats = {
-    chemistry: clampInt(Math.floor(rng() * 61) + 35, 0, 100),
-    stamina: clampInt(Math.floor(rng() * 61) + 35, 0, 100),
-    communication: clampInt(Math.floor(rng() * 61) + 35, 0, 100),
-    boldness: clampInt(Math.floor(rng() * 61) + 35, 0, 100),
-  }
-
-  const vibe = pick(rng, vibes)
-  const keywords = pickManyUnique(rng, keywordPool, 3)
-  const bestTime = pick(rng, bestTimes)
-  const luckyColor = pick(rng, luckyColors)
-  const tip = pick(rng, tips)
-  const caution = pick(rng, cautions)
   const course = {
-    position: pick(rng, positions),
-    place: pick(rng, places),
-    staminaFood: pick(rng, staminaFoods),
-    costume: pick(rng, costumes),
-    scenario: pick(rng, scenarios),
-    aftercare: pick(rng, aftercares),
+    position: pick(rng, POSITIONS),
+    place: pick(rng, PLACES),
+    staminaFood: pick(rng, STAMINA_FOODS),
+    costume: pick(rng, COSTUMES),
+    scenario: fortuneText.scenario(rng, taste),
+    aftercare: pick(rng, AFTERCARES),
   }
+
+  const missions = fortuneText.missions(rng, taste, 3)
+  const special = fortuneText.special(rng, taste, rarity.specialCount)
+  const recommendedTags = pickRecommendedTags(rng, taste, 3)
 
   const message = buildMessage({ overall, stats, vibe, keywords })
 
   return {
+    taste,
+    rarity: rarity.key,
     overall,
     vibe,
     message,
     keywords,
     bestTime,
     luckyColor,
-    tip,
-    caution,
+    tip: fortuneText.tip(rng, taste),
+    caution: fortuneText.caution(rng, taste),
     course,
+    missions,
+    special,
     stats,
+    recommendedTags,
   }
 }
 
-function buildMessage({
-  overall,
-  stats,
-  vibe,
-  keywords,
-}: {
+// 총점을 상위 등급이 드물게 나오도록 스큐(SSR ~6%). 취향과 무관해 어느 취향도 손해 없음.
+function rollOverall(rng: () => number) {
+  const skew = rng() ** 1.9
+  return clampInt(40 + skew * 60, 40, 100)
+}
+
+function rollStats(rng: () => number, taste: FortuneTaste): FortuneStats {
+  const stats: FortuneStats = {
+    desire: baseStatRoll(rng),
+    sensitivity: baseStatRoll(rng),
+    stamina: baseStatRoll(rng),
+    boldness: baseStatRoll(rng),
+  }
+
+  applyTilt(stats, ROLE_STAT_TILT[taste.role])
+  applyTilt(stats, INTENSITY_STAT_TILT[taste.intensity])
+
+  for (const key of Object.keys(stats) as FortuneStatKey[]) {
+    stats[key] = clampInt(stats[key], 0, 100)
+  }
+
+  return stats
+}
+
+function applyTilt(stats: FortuneStats, tilt: Partial<Record<FortuneStatKey, number>>) {
+  for (const key of Object.keys(tilt) as FortuneStatKey[]) {
+    stats[key] += tilt[key] ?? 0
+  }
+}
+
+function baseStatRoll(rng: () => number) {
+  return Math.floor(rng() * 55) + 30
+}
+
+type BuildMessageInput = {
   overall: number
-  stats: Fortune['stats']
+  stats: FortuneStats
   vibe: string
   keywords: string[]
-}) {
+}
+
+function buildMessage({ overall, stats, vibe, keywords }: BuildMessageInput) {
   const strongest = getStrongestStat(stats)
+  const joined = keywords.join(' · ')
 
-  if (overall >= 85) {
-    return `${vibe} 오늘은 ${strongest}이 터져버릴 날! 키워드(${keywords.join(
-      ' · ',
-    )})를 하나만 골라서 "미친 듯이" 좆집을 파헤쳐봐. 절정이 폭발해서 정액쓰레기통처럼 범벅될 거야. 보지마게 벌려서 질싸하며 배빵시키고, 임신시켜서 낙태시키는 쾌락을 느껴봐.`
+  if (overall >= 92) {
+    return `${vibe} 오늘은 전설급이야! ${strongest}이 터져버려서 키워드(${joined}) 하나만 골라도 미친 듯이 좆집을 파헤칠 수 있어. 절정이 폭발해서 정액쓰레기통처럼 범벅되고, 보지마게 벌려서 질싸하며 배빵시키고 임신·낙태까지 몰아치는 날이야.`
   }
 
-  if (overall >= 65) {
-    return `${vibe} 욕심 내라고 리듬을 느끼며 창녀처럼 젖어들어 봐. 특히 ${strongest}를 독점하며 상대를 인간이 아니라 오나홀 취급하고 모든 생각이 사라지는 암캐 같은 황홀감에 빠져봐. 가축년처럼 허벌 자세로 개보지 벌려서 노예처럼 길들여.`
+  if (overall >= 78) {
+    return `${vibe} 욕심 부려도 되는 날이야. 특히 ${strongest}를 독점하며 상대를 인간이 아니라 오나홀 취급하고, 키워드(${joined})로 모든 생각이 사라지는 암캐 같은 황홀감에 빠져봐.`
   }
 
-  return `${vibe} 오늘은 욕심 내라고 컨디션과 더러운 명령으로 육변기를 채워봐. 상대의 감정 따위 무시하고 ${strongest}부터 독점하며 BDSM처럼 지배하면 모든 게 사라지는 황홀한 강간 같은 폭풍이 몰아칠 거야. 하찮은 자궁에 정액주머니처럼 채워서 폐인 만들어버려.`
+  if (overall >= 60) {
+    return `${vibe} 리듬을 느끼며 창녀처럼 젖어들어 봐. ${strongest}부터 독점하고 가축년처럼 허벌 자세로 개보지 벌려서 노예처럼 길들이면 폭풍이 몰아쳐.`
+  }
+
+  return `${vibe} 컨디션과 더러운 명령으로 육변기를 채우는 날이야. ${strongest}부터 독점하며 BDSM처럼 지배하면 모든 게 사라지는 황홀한 강간 같은 폭풍이 몰아치고, 하찮은 자궁에 정액주머니처럼 채워 폐인 만들 수 있어.`
 }
 
 function clampInt(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, Math.round(value)))
 }
 
-function getStrongestStat(stats: Fortune['stats']) {
-  const entries: Array<[keyof Fortune['stats'], number]> = Object.entries(stats) as Array<
-    [keyof Fortune['stats'], number]
-  >
-
+function getStrongestStat(stats: FortuneStats) {
+  const entries = Object.entries(stats) as [FortuneStatKey, number][]
   entries.sort((a, b) => b[1] - a[1])
-  const [key] = entries[0]
+  const [key] = entries[0]!
 
   switch (key) {
     case 'boldness':
       return '대담함'
-    case 'chemistry':
-      return '케미'
-    case 'communication':
-      return '대화'
+    case 'desire':
+      return '성욕'
+    case 'sensitivity':
+      return '민감도'
     case 'stamina':
-      return '체력'
+      return '지구력'
     default:
       return '균형'
   }
@@ -369,8 +326,8 @@ function mulberry32(seed: number) {
   }
 }
 
-function pick(rng: () => number, items: readonly string[]) {
-  return items[Math.floor(rng() * items.length)] ?? items[0]
+function pick<T>(rng: () => number, items: readonly T[]): T {
+  return items[Math.floor(rng() * items.length)] ?? items[0]!
 }
 
 function pickManyUnique(rng: () => number, items: readonly string[], count: number) {

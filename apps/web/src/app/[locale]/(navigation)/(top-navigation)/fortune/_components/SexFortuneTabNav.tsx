@@ -9,13 +9,12 @@ const TABS: { id: SexFortuneTab; label: string; icon: ReactNode }[] = [
   { id: 'special', label: '특별', icon: <Zap className="size-4" /> },
 ]
 
-export function SexFortuneTabNav({
-  activeTab,
-  onChange,
-}: {
+type Props = {
   activeTab: SexFortuneTab
   onChange: (tab: SexFortuneTab) => void
-}) {
+}
+
+export function SexFortuneTabNav({ activeTab, onChange }: Props) {
   return (
     <div
       aria-label="섹스 운세 탭"
