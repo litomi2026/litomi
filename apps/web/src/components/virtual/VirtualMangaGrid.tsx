@@ -13,6 +13,8 @@ import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './Vi
 
 const RESIZE_MEASURE_DEBOUNCE_MS = 100
 const VIEWPORT_OVERSCAN_PX = 800
+const MIN_MEASURED_HEIGHT = 320
+const DEFAULT_VIEWPORT_HEIGHT = 640
 
 type GridContext = {
   footer?: ReactNode
@@ -21,6 +23,7 @@ type GridContext = {
 
 type GridMeasurement = {
   columnCount: number
+  height: number
   minColumnWidth: number
   width: number
 }
@@ -84,8 +87,9 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
     )
   }
 
-  // 외부 컨테이너 너비와 CSS 변수 기반 최소 컬럼 너비를 측정해 컬럼 수를 결정해요.
-  // react-virtuoso가 세로 가상화·동적 행 높이를 담당하므로 높이는 측정하지 않아요.
+  // 외부 컨테이너의 너비·높이와 CSS 변수 기반 최소 컬럼 너비를 측정해요.
+  // Virtuoso엔 픽셀 높이를 넘겨요 — 앱 셸이 min-height 기반 document-flow라 `height:100%`가
+  // 모바일(flex-col) WebKit에서 확정되지 않아 0으로 붕괴하기 때문이에요.
   useIsomorphicLayoutEffect(() => {
     const element = outerRef.current
 
@@ -99,19 +103,23 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
       setMeasurement((previous) => {
         const rect = measuredElement.getBoundingClientRect()
         const width = Math.max(1, Math.round(rect.width || measuredElement.clientWidth || window.innerWidth || 1))
+        const viewportHeight = window.innerHeight || DEFAULT_VIEWPORT_HEIGHT
+        const minHeight = Math.max(MIN_MEASURED_HEIGHT, viewportHeight - rect.top)
+        const elementHeight = rect.height || measuredElement.clientHeight || minHeight
+        const height = Math.max(1, Math.round(elementHeight))
         const minColumnWidth = readMangaGridColumnMinWidth(measuredElement) ?? width
         const columnCount = getVirtualMangaGridColumnCount(width, minColumnWidth, itemGap)
 
         if (
-          previous &&
-          previous.columnCount === columnCount &&
+          previous?.columnCount === columnCount &&
+          previous.height === height &&
           previous.minColumnWidth === minColumnWidth &&
           previous.width === width
         ) {
           return previous
         }
 
-        return { columnCount, minColumnWidth, width }
+        return { columnCount, height, minColumnWidth, width }
       })
     }
 
@@ -119,16 +127,20 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
 
     let debounceId: number | undefined
 
-    const observer = new ResizeObserver(() => {
+    function scheduleMeasure() {
       window.clearTimeout(debounceId)
       debounceId = window.setTimeout(measure, RESIZE_MEASURE_DEBOUNCE_MS)
-    })
+    }
+
+    const observer = new ResizeObserver(scheduleMeasure)
 
     observer.observe(measuredElement)
+    window.addEventListener('resize', scheduleMeasure)
 
     return () => {
       window.clearTimeout(debounceId)
       observer.disconnect()
+      window.removeEventListener('resize', scheduleMeasure)
     }
   }, [itemGap, view])
 
@@ -174,7 +186,7 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
           ref={virtuosoRef}
           restoreStateFrom={readScrollSnapshot(storageKey)}
           scrollerRef={handleScrollerRef}
-          style={{ height: '100%' }}
+          style={{ height: measurement.height }}
         />
       )}
     </div>
