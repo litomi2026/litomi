@@ -11,17 +11,13 @@ export type VirtualMangaGridPositionedItem<TItem extends VirtualMangaGridItem> =
 }
 
 export type VirtualMangaGridProps<TItem extends VirtualMangaGridItem> = {
-  className?: string
-  fetchNextPage?: () => Promise<unknown> | undefined
+  fetchNextPage: () => Promise<unknown> | undefined
   footer?: ReactNode
-  hasNextPage?: boolean
+  hasNextPage: boolean
   header?: ReactNode
-  isFetchingNextPage?: boolean
   itemGap?: number
   items: readonly TItem[]
   renderItem: (item: TItem, index: number) => ReactNode
-  scrollRestorationKey?: string
-  scrollToOptions?: ScrollToOptions
   view: View
 }
 

@@ -78,7 +78,6 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
   const t = useTranslations('Search')
   const guardT = useTranslations('Common.guard')
   const params = new URLSearchParams(searchParams)
-  const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { isVisible } = useMangaCensorship()
 
   const {
@@ -134,7 +133,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
             isLoading={isRefetching}
             onClick={async () => {
               await refetch()
-              setScrollToOptions({ top: 0 })
+              window.scrollTo({ top: 0 })
             }}
             timer={1}
           />
@@ -219,11 +218,8 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
         footer={footer}
         hasNextPage={canAutoLoadMore}
         header={headerWithSpacer}
-        isFetchingNextPage={isFetchingNextPage}
-        itemGap={8}
         items={items}
         renderItem={renderItem}
-        scrollToOptions={scrollToOptions}
         view={view}
       />
       <ScrollButtons />
