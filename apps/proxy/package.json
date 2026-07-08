@@ -1,5 +1,5 @@
 {
-  "name": "@litomi/edge-proxy",
+  "name": "@litomi/proxy",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,13 +7,13 @@
     "dev": "bun run dev:local",
     "dev:local": "bun run --env-file=.env.local --watch src/server.ts",
     "dev:prod": "bun run --env-file=.env.prod.dev --watch src/server.ts",
-    "build": "bun build --compile --minify --sourcemap src/server.ts --target=bun --outfile dist/litomi-edge-proxy",
+    "build": "bun build --compile --minify --sourcemap src/server.ts --target=bun --outfile dist/litomi-proxy",
     "start": "bun run start:prod",
     "start:local": "bun --env-file=.env.local src/server.ts",
     "start:prod": "bun --env-file=.env.prod.runtime src/server.ts",
     "type": "tsc --noEmit",
-    "docker:build": "docker build -f Dockerfile -t litomi-edge-proxy-local ../..",
-    "docker:run": "docker run --rm -p 3001:3001 --env-file .env.prod.runtime litomi-edge-proxy-local"
+    "docker:build": "docker build -f Dockerfile -t litomi-proxy-local ../..",
+    "docker:run": "docker run --rm -p 3001:3001 --env-file .env.prod.runtime litomi-proxy-local"
   },
   "dependencies": {
     "@litomi/catalog": "workspace:*",

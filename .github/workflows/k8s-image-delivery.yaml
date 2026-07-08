@@ -431,27 +431,29 @@ jobs:
           tags: ${{ steps.metadata_chat_push.outputs.tags }}
           labels: ${{ steps.metadata_chat_push.outputs.labels }}
 
-  # ops 디지스트 승격(propose-ops) 작업에는 넣지 않는다(k8s 대상이 아님).
-  build-and-publish-edge-proxy-image:
-    name: Build and publish edge-proxy image
+  # Cloud Run 대상. 서비스 자체는 litomi-ops/infra/gcp/proxy 가 Terraform으로 소유(HCP Terraform 적용).
+  # 이 이미지 digest는 아래 propose-ops-proxy-image-digest 잡이 litomi-ops에 PR로 승격한다.
+  # amd64 전용: Cloud Run은 arm64 이미지를 실행할 수 없다(OKE 앱들과 달리 amd64로 빌드).
+  build-and-publish-proxy-image:
+    name: Build and publish proxy image
     if: ${{ github.ref_name == 'main' }}
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
     outputs:
-      digest: ${{ steps.build_edge_proxy_image.outputs.digest }}
+      digest: ${{ steps.build_proxy_image.outputs.digest }}
     env:
-      IMAGE_EDGE_PROXY: ghcr.io/${{ github.repository_owner }}/litomi-edge-proxy
+      IMAGE_PROXY: ghcr.io/${{ github.repository_owner }}/litomi-proxy
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Generate edge-proxy image metadata
-        id: metadata_edge_proxy
+      - name: Generate proxy image metadata
+        id: metadata_proxy
         uses: docker/metadata-action@v6
         with:
-          images: ${{ env.IMAGE_EDGE_PROXY }}
+          images: ${{ env.IMAGE_PROXY }}
           tags: |
             type=raw,value=${{ github.sha }}
             type=raw,value=latest
@@ -467,18 +469,98 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and publish edge-proxy image
-        id: build_edge_proxy_image
+      - name: Build and publish proxy image
+        id: build_proxy_image
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: apps/edge-proxy/Dockerfile
+          file: apps/proxy/Dockerfile
           platforms: linux/amd64
           push: true
           build-args: |
             COMMIT_SHA=${{ github.sha }}
-          tags: ${{ steps.metadata_edge_proxy.outputs.tags }}
-          labels: ${{ steps.metadata_edge_proxy.outputs.labels }}
+          tags: ${{ steps.metadata_proxy.outputs.tags }}
+          labels: ${{ steps.metadata_proxy.outputs.labels }}
+
+  # 프록시 이미지 digest를 litomi-ops Terraform 입력(image.auto.tfvars.json)으로 승격(PR).
+  # Cloud Run 서비스는 litomi-ops/infra/gcp/proxy 가 Terraform으로 소유하고 HCP Terraform이 적용한다.
+  # CI는 GCP 자격증명을 갖지 않는다 — 이미지 빌드/푸시(GHCR)와 digest 승격만 한다.
+  propose-ops-proxy-image-digest:
+    name: Propose ops proxy image digest
+    if: ${{ github.ref_name == 'main' }}
+    needs:
+      - build-and-publish-proxy-image
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    env:
+      OPS_REPOSITORY: ${{ github.repository_owner }}/litomi-ops
+      OPS_PATH: litomi-ops
+      # Terraform이 jsondecode(file())로 읽는 일반 JSON(.tfvars가 아니라서 litomi-ops .gitignore에 안 걸림).
+      OPS_PROXY_IMAGE_FILE: infra/gcp/proxy/image.json
+      IMAGE_PROXY: ghcr.io/${{ github.repository_owner }}/litomi-proxy
+      IMAGE_PROXY_DIGEST: ${{ needs.build-and-publish-proxy-image.outputs.digest }}
+    steps:
+      - name: Generate litomi-ops GitHub App token
+        id: ops_app_token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.OPS_REPO_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPS_REPO_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: litomi-ops
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Checkout litomi-ops main branch
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.OPS_REPOSITORY }}
+          token: ${{ steps.ops_app_token.outputs.token }}
+          path: ${{ env.OPS_PATH }}
+          fetch-depth: 0
+          ref: main
+
+      - name: Update litomi-ops proxy image digest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ ! "${IMAGE_PROXY_DIGEST}" == sha256:* ]]; then
+            echo "Invalid digest for ${IMAGE_PROXY}: ${IMAGE_PROXY_DIGEST}" >&2
+            exit 1
+          fi
+
+          DIGEST="${IMAGE_PROXY_DIGEST}" yq -i -o=json \
+            '.digest = strenv(DIGEST)' "${OPS_PATH}/${OPS_PROXY_IMAGE_FILE}"
+
+      - name: Create or update litomi-ops proxy promotion PR
+        id: create_proxy_pr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ steps.ops_app_token.outputs.token }}
+          path: ${{ env.OPS_PATH }}
+          add-paths: |
+            ${{ env.OPS_PROXY_IMAGE_FILE }}
+          branch: codex/litomi-proxy-image-digest
+          delete-branch: true
+          commit-message: 'chore(gcp): promote proxy image digest'
+          title: 'chore(gcp): promote proxy image digest'
+          body: |
+            This PR updates the litomi-ops Terraform input for the Cloud Run proxy to the latest immutable image digest built from `litomi` `main`.
+
+            - Proxy: `${{ env.IMAGE_PROXY }}@${{ env.IMAGE_PROXY_DIGEST }}`
+            - Source commit: `${{ github.sha }}`
+            - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            HCP Terraform (`gcp-proxy` workspace) plans on this PR and applies on merge.
+          base: main
+
+      - name: Report proxy promotion PR
+        if: ${{ steps.create_proxy_pr.outputs.pull-request-url }}
+        shell: bash
+        run: |
+          echo "Created or updated proxy promotion PR: ${{ steps.create_proxy_pr.outputs.pull-request-url }}"
 
   propose-ops-production-image-digests:
     name: Propose ops production image digests
