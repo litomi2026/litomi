@@ -1,6 +1,7 @@
 'use client'
 
 import type { GETV1ChatThreadsResponse } from '@litomi/contracts'
+import { sobokRoomPath } from '@litomi/domain/chat/routes'
 import { Search } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -22,7 +23,7 @@ function ChatThreadItem({ thread, active }: { thread: ChatThread; active: boolea
   return (
     <Link
       aria-current={active ? 'page' : undefined}
-      href={`/sobok/@${artist.handle}`}
+      href={sobokRoomPath(artist.handle)}
       className="flex items-center gap-4 rounded-2xl p-3 transition-all active:scale-[0.98] active:bg-foreground/5 aria-[current=page]:bg-foreground/5"
     >
       <Avatar className="h-14 w-14 shadow-sm" imageURL={artist.imageURL} name={artist.displayName} />

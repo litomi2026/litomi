@@ -1,6 +1,7 @@
 'use client'
 
 import type { BillingSubscriptionItemDTO, PaymentHistoryItemDTO, PaymentHistoryStatus } from '@litomi/contracts'
+import { sobokRoomPath } from '@litomi/domain/chat/routes'
 import { CreditCard, Plus, Receipt, Trash2 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -113,7 +114,7 @@ function SubscriptionItem({ item }: { item: BillingSubscriptionItemDTO }) {
   return (
     <li>
       <Link
-        href={`/sobok/@${artist.handle}`}
+        href={sobokRoomPath(artist.handle)}
         className="flex items-center gap-3 rounded-xl border border-foreground/10 p-3.5 transition-colors hover:bg-foreground/5"
       >
         <Avatar imageURL={artist.imageURL} name={artist.displayName} />

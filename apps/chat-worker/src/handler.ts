@@ -9,6 +9,7 @@ import {
   putDmMessage,
   replyRoom,
 } from '@litomi/db/chat/query'
+import { sobokRoomPath, sobokStudioPath } from '@litomi/domain/chat/routes'
 import {
   type ChatBroadcastEvent,
   type ChatDirectMessageEvent,
@@ -67,7 +68,7 @@ async function processBroadcast(event: ChatBroadcastEvent): Promise<void> {
       payload: {
         title: artist.emoji ? `${artist.emoji} ${artist.displayName}` : artist.displayName,
         body: previewBody(event.content),
-        url: `/sobok/${artist.handle}`,
+        url: sobokRoomPath(artist.handle),
         tag: `chat:${event.artistId}`,
       },
     })
@@ -122,7 +123,7 @@ async function relayFanReply(event: ChatDirectMessageEvent, row: ChatDmMessageRo
     await pushDirect(event.artistId, artist.userId, {
       title: fan?.nickname ?? '팬',
       body: previewBody(event.content),
-      url: `/sobok/studio/${artist.handle}`,
+      url: sobokStudioPath(artist.handle),
       tag: `chat-reply:${event.artistId}`,
       ...(fan?.imageURL && { icon: fan.imageURL }),
     })
@@ -148,7 +149,7 @@ async function relayArtistReply(event: ChatDirectMessageEvent, row: ChatDmMessag
     await pushDirect(event.artistId, event.fanId, {
       title: artist.emoji ? `${artist.emoji} ${artist.displayName}` : artist.displayName,
       body: previewBody(event.content),
-      url: `/sobok/${artist.handle}`,
+      url: sobokRoomPath(artist.handle),
       tag: `chat-dm:${event.artistId}`,
       ...(artist.imageURL && { icon: artist.imageURL }),
     })

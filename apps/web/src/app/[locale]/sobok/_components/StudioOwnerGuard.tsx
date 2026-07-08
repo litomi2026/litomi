@@ -1,5 +1,6 @@
 'use client'
 
+import { sobokRoomPath } from '@litomi/domain/chat/routes'
 import type { ReactNode } from 'react'
 import { useEffect } from 'react'
 import { useRouter } from '@/i18n/navigation'
@@ -14,7 +15,7 @@ export default function StudioOwnerGuard({ handle, children }: { handle: string;
 
   useEffect(() => {
     if (data && !data.isOwner) {
-      router.replace(`/sobok/@${handle}`)
+      router.replace(sobokRoomPath(handle))
     } else if (isError) {
       router.replace('/sobok/studio')
     }

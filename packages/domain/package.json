@@ -10,6 +10,7 @@
     "./censorship/model": "./src/censorship/model.ts",
     "./censorship/policy": "./src/censorship/policy.ts",
     "./chat/policy": "./src/chat/policy.ts",
+    "./chat/routes": "./src/chat/routes.ts",
     "./generated/emojis": "./src/generated/emojis.ts",
     "./library/defaults": "./src/library/defaults.ts",
     "./library/policy": "./src/library/policy.ts",
