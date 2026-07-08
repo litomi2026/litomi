@@ -16,3 +16,11 @@ export function withProxyHeaders(response: Response): Response {
   response.headers.set(ACCESS_CONTROL_ALLOW_CREDENTIALS, 'true')
   return response
 }
+
+export function createJSONResponse(data: unknown, init?: HeadersInit): Response {
+  const body = JSON.stringify(data)
+  const headers = createProxyHeaders(init)
+  headers.set('Content-Type', 'application/json; charset=utf-8')
+  headers.set('Content-Length', String(Buffer.byteLength(body)))
+  return new Response(body, { headers })
+}

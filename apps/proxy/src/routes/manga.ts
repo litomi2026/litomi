@@ -8,7 +8,7 @@ import { sec } from '@litomi/std'
 import type { Context } from 'hono'
 import { z } from 'zod'
 
-import { createProxyHeaders, withProxyHeaders } from '@/util/http'
+import { createJSONResponse, createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { calculateOptimalCacheDuration, handleRouteError } from '@/util/proxy-route'
 
 const GETProxyMangaIdSchema = z.object({
@@ -20,11 +20,10 @@ const BROWSER_CACHE_MAX_AGE = 3
 
 export async function handleMangaProxy(c: Context): Promise<Response> {
   const request = c.req.raw
-  const url = new URL(request.url)
 
   const validation = GETProxyMangaIdSchema.safeParse({
     id: c.req.param('id'),
-    ...Object.fromEntries(url.searchParams),
+    ...c.req.query(),
   })
 
   if (!validation.success) {
@@ -38,7 +37,7 @@ export async function handleMangaProxy(c: Context): Promise<Response> {
 
   const { id, locale } = validation.data
 
-  if (BLACKLISTED_MANGA_IDS.includes(id)) {
+  if (BLACKLISTED_MANGA_IDS.has(id)) {
     const swr = sec('10 minutes')
 
     const forbiddenHeaders = createCacheControlHeaders({
@@ -136,7 +135,7 @@ export async function handleMangaProxy(c: Context): Promise<Response> {
       headers.set(DEGRADED_REASON_HEADER, 'IMAGES_ONLY')
 
       const { isError: _, ...mangaWithoutIsError } = manga
-      return Response.json(mangaWithoutIsError, { headers })
+      return createJSONResponse(mangaWithoutIsError, headers)
     }
 
     // NOTE: 모든 이미지 TTL이 동일해서 첫 번째 이미지만 확인함
@@ -160,7 +159,7 @@ export async function handleMangaProxy(c: Context): Promise<Response> {
     const headers = createProxyHeaders(successHeaders)
     headers.set('Content-Language', LOCALE_LANGUAGE_TAGS[locale])
 
-    return Response.json(manga, { headers })
+    return createJSONResponse(manga, headers)
   } catch (error) {
     return withProxyHeaders(handleRouteError(error, request))
   }
