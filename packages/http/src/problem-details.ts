@@ -96,11 +96,13 @@ export function createProblemDetailsResponse(
 ): Response {
   const { headers: headersInit, ...problemOptions } = options
   const problem = getProblemDetails(request, problemOptions)
+  const body = JSON.stringify(problem)
 
   const headers = new Headers(headersInit)
   headers.set('Content-Type', PROBLEM_CONTENT_TYPE)
+  headers.set('Content-Length', String(Buffer.byteLength(body)))
 
-  return new Response(JSON.stringify(problem), {
+  return new Response(body, {
     status: options.status,
     headers,
   })

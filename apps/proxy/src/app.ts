@@ -1,3 +1,4 @@
+import { httpInstrumentationMiddleware } from '@hono/otel'
 import { Hono } from 'hono'
 import { compress } from 'hono/compress'
 
@@ -7,11 +8,21 @@ import { handleMangaProxy } from './routes/manga'
 
 const app = new Hono()
 
-app.use(compress())
+// 1. 상태 검사
+app.get('/health', () => {
+  return new Response(null, {
+    status: 204,
+    headers: { 'Cache-Control': 'no-store' },
+  })
+})
 
-// Cloud Run / 로드밸런서 상태 검사
-app.get('/health', () => new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } }))
+// 2. 관측성
+app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-proxy' }))
 
+// 3. 응답 변환
+app.use(compress({ threshold: 1024 }))
+
+// 4. 하위 route
 app.get('/api/proxy/manga/:id', handleMangaProxy)
 app.get('/api/proxy/hiyobi/new', handleHiyobiNewProxy)
 app.get('/api/proxy/k/search', handleKSearchProxy)

@@ -2,7 +2,7 @@ import type { Locale } from '@litomi/domain/locale'
 import { type Manga, type MangaError, tagCategoryNameToInt } from '@litomi/domain/manga/model'
 import { sec } from '@litomi/std'
 
-import { AllSourcesFailedError, isAbortError, NotFoundError } from '../core/errors'
+import { AllSourcesFailedError, NotFoundError } from '../core/errors'
 import { hentaiPawClient } from '../sources/hentai-paw'
 import { hentKorClient } from '../sources/hentkor'
 import { hitomiClient } from '../sources/hitomi/hitomi'
@@ -82,13 +82,13 @@ export async function fetchMangaFromMultiSources({ id, locale, signal }: MangaFe
 
       return normalizeManga(manga)
     } catch (e) {
+      if (signal?.aborted) {
+        throw e
+      }
+
       if (e instanceof NotFoundError) {
         notFoundCount++
       } else {
-        if (isAbortError(e)) {
-          throw e
-        }
-
         lastError = e instanceof Error ? e : new Error(String(e))
       }
     }
