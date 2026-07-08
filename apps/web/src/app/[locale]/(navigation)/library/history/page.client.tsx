@@ -4,6 +4,8 @@ import { View } from '@litomi/std'
 import { useTranslations } from 'next-intl'
 
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
+import { LIBRARY_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
@@ -123,7 +125,12 @@ export default function HistoryPageClient() {
         </>
       }
       hasNextPage={canAutoLoadMore}
-      header={<LibraryHeaderSpacer />}
+      header={
+        <>
+          <LibraryHeaderSpacer />
+          <JuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_AD_LAYOUT} />
+        </>
+      }
       isFullWidth={(item) => item.type === 'header'}
       items={items}
       renderItem={renderItem}

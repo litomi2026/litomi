@@ -6,6 +6,7 @@ import { View } from '@litomi/std'
 import { useTranslations } from 'next-intl'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import { insertNativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
@@ -65,6 +66,7 @@ export default function RandomMangaList({ nativeGridSponsor }: Props) {
 
   return (
     <>
+      <JuicyAdsBanner />
       <div className={`flex-1 grid ${MANGA_GRID_COLUMN[View.CARD]} gap-2`}>
         {items.map((item) => {
           if (item.type === 'native-grid-sponsor') {

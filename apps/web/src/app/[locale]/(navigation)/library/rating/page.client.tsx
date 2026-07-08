@@ -9,6 +9,8 @@ import { useState } from 'react'
 
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
+import { LIBRARY_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoginGate from '@/components/LoginGate'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
@@ -213,6 +215,7 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
       header={
         <>
           <LibraryHeaderSpacer />
+          <JuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_AD_LAYOUT} />
           <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
             <select
               className="bg-zinc-900 text-base px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
