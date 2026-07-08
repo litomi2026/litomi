@@ -1,8 +1,8 @@
 import { Flame } from 'lucide-react'
 
-import type { Fortune } from '../../_lib/sexFortuneTypes'
+import type { Fortune } from '../../_lib/types'
 
-import { SexFortuneTagFunnel } from '../SexFortuneTagFunnel'
+import { TagFunnel } from '../TagFunnel'
 
 type Props = {
   copy: (text: string) => void
@@ -25,7 +25,7 @@ export function FortuneTab({ copy, copied, fortune, shareText }: Props) {
         </div>
       </div>
 
-      <SexFortuneTagFunnel tags={fortune.recommendedTags} />
+      <TagFunnel tags={fortune.recommendedTags} />
 
       <div className="flex flex-wrap items-center gap-2">
         <button

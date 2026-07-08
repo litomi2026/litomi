@@ -1,4 +1,4 @@
-export function SexFortuneHeader() {
+export function Header() {
   return (
     <header className="px-1">
       <h1 className="text-2xl font-bold">오늘의 운세</h1>

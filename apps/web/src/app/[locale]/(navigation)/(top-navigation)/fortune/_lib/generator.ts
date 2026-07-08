@@ -1,9 +1,9 @@
-import { attachJosa } from './sexFortuneJosa'
-import { getRarityMeta } from './sexFortuneRarity'
-import { pickRecommendedTags } from './sexFortuneTags'
-import { INTENSITY_STAT_TILT, ROLE_STAT_TILT } from './sexFortuneTaste'
-import { fortuneText } from './sexFortuneTemplates'
-import type { Fortune, FortuneStatKey, FortuneStats, FortuneTaste } from './sexFortuneTypes'
+import { attachJosa } from './josa'
+import { getRarityMeta } from './rarity'
+import { pickRecommendedTags } from './tags'
+import { INTENSITY_STAT_TILT, ROLE_STAT_TILT } from './taste'
+import { fortuneText } from './templates'
+import type { Fortune, FortuneStatKey, FortuneStats, FortuneTaste } from './types'
 
 const VIBES = [
   '🔥 좆집에 불이 붙어 미쳐 날뛰는 날',

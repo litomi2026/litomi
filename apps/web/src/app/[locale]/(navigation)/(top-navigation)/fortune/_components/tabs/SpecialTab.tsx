@@ -1,10 +1,10 @@
 import { Lock, Skull } from 'lucide-react'
 
-import { getRarityMetaByKey } from '../../_lib/sexFortuneRarity'
-import type { Fortune } from '../../_lib/sexFortuneTypes'
+import { getRarityMetaByKey } from '../../_lib/rarity'
+import type { Fortune } from '../../_lib/types'
 
-import { SexFortuneCopyBar } from '../SexFortuneCopyBar'
-import { getAccentCardStyle, SECTION_CARD_CLASS, SECTION_ITEM_CLASS } from '../sexFortuneStyles'
+import { CopyBar } from '../CopyBar'
+import { getAccentCardStyle, SECTION_CARD_CLASS, SECTION_ITEM_CLASS } from '../styles'
 
 const MAX_SPECIAL_COUNT = getRarityMetaByKey('SSR').specialCount
 
@@ -70,7 +70,7 @@ export function SpecialTab({ copy, copied, fortune, shareText }: Props) {
         </ol>
       </section>
 
-      <SexFortuneCopyBar copied={copied} onCopy={() => copy(shareText)} />
+      <CopyBar copied={copied} onCopy={() => copy(shareText)} />
     </div>
   )
 }

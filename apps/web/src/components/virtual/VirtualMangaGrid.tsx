@@ -11,8 +11,8 @@ import { MANGA_GRID_COLUMN_MIN_WIDTH_CLASS, readMangaGridColumnMinWidth } from '
 import type { VirtualMangaGridItem, VirtualMangaGridProps, VirtualMangaGridRow } from './VirtualMangaGrid.types'
 import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './VirtualMangaGrid.utils'
 
-const RESIZE_MEASURE_DEBOUNCE_MS = 100
-const VIEWPORT_OVERSCAN_PX = 800
+const RESIZE_MEASURE_DEBOUNCE_MS = 300
+const VIEWPORT_OVERSCAN_PX = 900
 
 type GridContext = {
   footer?: ReactNode

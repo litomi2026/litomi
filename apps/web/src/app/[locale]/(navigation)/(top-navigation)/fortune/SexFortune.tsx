@@ -7,19 +7,19 @@ import LoginGate from '@/components/LoginGate'
 import useClipboard from '@/hook/useClipboard'
 import useMeQuery from '@/query/useMeQuery'
 
-import { SexFortuneDrawStage } from './_components/SexFortuneDrawStage'
-import { SexFortuneHeader } from './_components/SexFortuneHeader'
-import { SexFortuneHeroCard } from './_components/SexFortuneHeroCard'
-import { SexFortuneLoadingState } from './_components/SexFortuneLoadingState'
-import { SexFortuneRerollGate } from './_components/SexFortuneRerollGate'
-import { SexFortuneStreakBanner } from './_components/SexFortuneStreakBanner'
-import { SexFortuneTabNav } from './_components/SexFortuneTabNav'
-import { LIBO_PAGE_LAYOUT } from './_components/sexFortuneStyles'
+import { DrawStage } from './_components/DrawStage'
+import { Header } from './_components/Header'
+import { HeroCard } from './_components/HeroCard'
+import { LoadingState } from './_components/LoadingState'
+import { RerollGate } from './_components/RerollGate'
+import { StreakBanner } from './_components/StreakBanner'
+import { LIBO_PAGE_LAYOUT } from './_components/styles'
+import { TabNav } from './_components/TabNav'
 import { CourseTab } from './_components/tabs/CourseTab'
 import { FortuneTab } from './_components/tabs/FortuneTab'
 import { SpecialTab } from './_components/tabs/SpecialTab'
-import { generateFortune } from './_lib/sexFortuneGenerator'
-import { buildSexFortuneShareText } from './_lib/sexFortuneShareText'
+import { generateFortune } from './_lib/generator'
+import { buildShareText } from './_lib/shareText'
 import {
   type FortuneStreak,
   getUserKey,
@@ -28,8 +28,8 @@ import {
   readStreak,
   touchStreak,
   writeDailyState,
-} from './_lib/sexFortuneStorage'
-import type { FortuneTaste, SexFortuneTab } from './_lib/sexFortuneTypes'
+} from './_lib/storage'
+import type { FortuneTaste, SexFortuneTab } from './_lib/types'
 
 type Props = {
   todayKey: string
@@ -74,11 +74,11 @@ export default function SexFortune({ todayKey }: Props) {
   }
 
   if (!hydrated || !userKey) {
-    return <SexFortuneLoadingState />
+    return <LoadingState />
   }
 
   const fortune = revealed && taste ? generateFortune({ todayKey, userKey, taste, nonce }) : null
-  const shareText = fortune ? buildSexFortuneShareText({ todayKey, fortune, origin: window.location.origin }) : ''
+  const shareText = fortune ? buildShareText({ todayKey, fortune, origin: window.location.origin }) : ''
   const rerollsRemaining = MAX_REROLLS_PER_DAY - nonce
 
   function handleComplete(selected: FortuneTaste) {
@@ -98,14 +98,14 @@ export default function SexFortune({ todayKey }: Props) {
 
   return (
     <div className={LIBO_PAGE_LAYOUT.container}>
-      <SexFortuneHeader />
-      {streak && <SexFortuneStreakBanner streak={streak} />}
+      <Header />
+      {streak && <StreakBanner streak={streak} />}
 
       {!revealed || !fortune ? (
-        <SexFortuneDrawStage initialTaste={taste} isReroll={nonce > 0} key={nonce} onComplete={handleComplete} />
+        <DrawStage initialTaste={taste} isReroll={nonce > 0} key={nonce} onComplete={handleComplete} />
       ) : (
         <>
-          <SexFortuneHeroCard fortune={fortune} />
+          <HeroCard fortune={fortune} />
 
           <div className="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-white/3 px-3.5 py-2.5">
             <p className="text-xs text-zinc-400">
@@ -124,7 +124,7 @@ export default function SexFortune({ todayKey }: Props) {
           </div>
 
           {showReroll && (
-            <SexFortuneRerollGate
+            <RerollGate
               me={me}
               onClose={() => setShowReroll(false)}
               onGranted={handleRerollGranted}
@@ -132,7 +132,7 @@ export default function SexFortune({ todayKey }: Props) {
             />
           )}
 
-          <SexFortuneTabNav activeTab={activeTab} onChange={setActiveTab} />
+          <TabNav activeTab={activeTab} onChange={setActiveTab} />
 
           <div className={LIBO_PAGE_LAYOUT.panelReserved} role="tabpanel">
             {activeTab === 'fortune' && (

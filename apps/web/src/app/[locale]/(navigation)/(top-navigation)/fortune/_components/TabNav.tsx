@@ -1,7 +1,7 @@
 import { Heart, Sparkles, Zap } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import type { SexFortuneTab } from '../_lib/sexFortuneTypes'
+import type { SexFortuneTab } from '../_lib/types'
 
 const TABS: { id: SexFortuneTab; label: string; icon: ReactNode }[] = [
   { id: 'course', label: '코스', icon: <Heart className="size-4" /> },
@@ -14,7 +14,7 @@ type Props = {
   onChange: (tab: SexFortuneTab) => void
 }
 
-export function SexFortuneTabNav({ activeTab, onChange }: Props) {
+export function TabNav({ activeTab, onChange }: Props) {
   return (
     <div
       aria-label="섹스 운세 탭"

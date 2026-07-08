@@ -1,6 +1,6 @@
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
 
-import type { FortuneRole, FortuneTagRecommendation, FortuneTaste } from './sexFortuneTypes'
+import type { FortuneRole, FortuneTagRecommendation, FortuneTaste } from './types'
 
 type FortuneTagSeed = {
   label: string

@@ -5,7 +5,8 @@ import type { GETV1MeResponse } from '@litomi/contracts'
 import { X } from 'lucide-react'
 import { useRef } from 'react'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
-import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
+import { SINGLE_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import { hasAdultAccess } from '@/utils/adult-verification'
 
 type Props = {
@@ -15,11 +16,11 @@ type Props = {
   onGranted: () => void
 }
 
-export function SexFortuneRerollGate({ me, remaining, onClose, onGranted }: Props) {
+export function RerollGate({ me, remaining, onClose, onGranted }: Props) {
   const grantedRef = useRef(false)
   const canAccess = hasAdultAccess(me)
 
-  // rewardEnabled=false 슬롯은 광고 클릭아웃 감지 시에만 콜백을 부름 → 리롤 부여 신호로 사용.
+  // 광고 클릭아웃이 감지되면 콜백이 불림 → 리롤 부여 신호로 사용.
   function handleAdClick() {
     if (grantedRef.current) {
       return
@@ -51,7 +52,7 @@ export function SexFortuneRerollGate({ me, remaining, onClose, onGranted }: Prop
 
       <div className="mt-4 flex justify-center">
         {canAccess ? (
-          <AdsterraBanner300x250 adSlotId="fortune-reroll" onAdClick={handleAdClick} rewardEnabled={false} />
+          <JuicyAdsBanner layout={SINGLE_AD_LAYOUT} onAdClick={handleAdClick} />
         ) : (
           <AdultVerificationGate description="다시 뽑기는 성인 인증 후 이용할 수 있어요." />
         )}

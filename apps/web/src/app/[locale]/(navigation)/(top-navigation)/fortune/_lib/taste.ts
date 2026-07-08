@@ -1,4 +1,4 @@
-import type { FortuneIntensity, FortuneRole, FortuneStatKey } from './sexFortuneTypes'
+import type { FortuneIntensity, FortuneRole, FortuneStatKey } from './types'
 
 export type FortuneRoleOption = {
   key: FortuneRole

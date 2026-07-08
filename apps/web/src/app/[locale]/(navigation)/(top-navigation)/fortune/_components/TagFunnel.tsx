@@ -2,9 +2,9 @@ import { ArrowUpRight, Compass } from 'lucide-react'
 
 import { Link } from '@/i18n/navigation'
 
-import type { FortuneTagRecommendation } from '../_lib/sexFortuneTypes'
+import type { FortuneTagRecommendation } from '../_lib/types'
 
-export function SexFortuneTagFunnel({ tags }: { tags: FortuneTagRecommendation[] }) {
+export function TagFunnel({ tags }: { tags: FortuneTagRecommendation[] }) {
   return (
     <section className="rounded-2xl border border-white/8 bg-white/3 p-4 sm:p-5">
       <div className="flex items-center gap-2">
