@@ -101,7 +101,6 @@ export default function LibraryItemsClient({ libraryId }: Props) {
 }
 
 function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view }: ContentProps) {
-  const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { exit, isSelectionMode } = useLibrarySelection()
   const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
@@ -181,7 +180,7 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
     if (newSort !== sort) {
       exit()
       onSortChange(newSort as LibraryItemSort)
-      setScrollToOptions({ top: 0 })
+      window.scrollTo({ top: 0 })
     }
   }
 
@@ -264,11 +263,8 @@ function LibraryItemsContent({ libraryId, onSortChange, onViewChange, sort, view
         footer={footer}
         hasNextPage={canAutoLoadMore}
         header={header}
-        isFetchingNextPage={isFetchingNextPage}
-        itemGap={8}
         items={items}
         renderItem={renderItem}
-        scrollToOptions={scrollToOptions}
         view={view}
       />
       <ScrollButtons />

@@ -1,6 +1,6 @@
-import { getRarityMetaByKey } from './sexFortuneRarity'
-import { FORTUNE_INTENSITIES, FORTUNE_ROLES } from './sexFortuneTaste'
-import type { Fortune } from './sexFortuneTypes'
+import { getRarityMetaByKey } from './rarity'
+import { FORTUNE_INTENSITIES, FORTUNE_ROLES } from './taste'
+import type { Fortune } from './types'
 
 type BuildShareTextInput = {
   todayKey: string
@@ -8,7 +8,7 @@ type BuildShareTextInput = {
   origin: string
 }
 
-export function buildSexFortuneShareText({ todayKey, fortune, origin }: BuildShareTextInput) {
+export function buildShareText({ todayKey, fortune, origin }: BuildShareTextInput) {
   const rarity = getRarityMetaByKey(fortune.rarity)
   const role = FORTUNE_ROLES.find((option) => option.key === fortune.taste.role)
   const intensity = FORTUNE_INTENSITIES.find((option) => option.key === fortune.taste.intensity)

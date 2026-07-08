@@ -1,5 +1,5 @@
-import { createClientSeed } from './sexFortuneGenerator'
-import type { FortuneTaste } from './sexFortuneTypes'
+import { createClientSeed } from './generator'
+import type { FortuneTaste } from './types'
 
 const USER_KEY = 'litomi.sexFortune.userId'
 const DAILY_KEY = 'litomi.sexFortune.daily'

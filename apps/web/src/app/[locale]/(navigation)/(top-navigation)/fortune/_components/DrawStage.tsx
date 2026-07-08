@@ -4,8 +4,8 @@ import { Sparkles } from 'lucide-react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { FORTUNE_INTENSITIES, FORTUNE_ROLES } from '../_lib/sexFortuneTaste'
-import type { FortuneIntensity, FortuneRole, FortuneTaste } from '../_lib/sexFortuneTypes'
+import { FORTUNE_INTENSITIES, FORTUNE_ROLES } from '../_lib/taste'
+import type { FortuneIntensity, FortuneRole, FortuneTaste } from '../_lib/types'
 
 const DRAW_DURATION_MS = 1900
 
@@ -15,7 +15,7 @@ type Props = {
   onComplete: (taste: FortuneTaste) => void
 }
 
-export function SexFortuneDrawStage({ initialTaste, isReroll, onComplete }: Props) {
+export function DrawStage({ initialTaste, isReroll, onComplete }: Props) {
   const [role, setRole] = useState<FortuneRole | null>(initialTaste?.role ?? null)
   const [intensity, setIntensity] = useState<FortuneIntensity | null>(initialTaste?.intensity ?? null)
   const [drawing, setDrawing] = useState(false)
@@ -28,6 +28,7 @@ export function SexFortuneDrawStage({ initialTaste, isReroll, onComplete }: Prop
     }
 
     setDrawing(true)
+
     timerRef.current = window.setTimeout(() => {
       onComplete({ role, intensity })
     }, DRAW_DURATION_MS)

@@ -1,9 +1,9 @@
 import { Heart, Target } from 'lucide-react'
 
-import type { Fortune } from '../../_lib/sexFortuneTypes'
+import type { Fortune } from '../../_lib/types'
 
-import { SexFortuneCopyBar } from '../SexFortuneCopyBar'
-import { getAccentCardStyle, SECTION_CARD_CLASS, SECTION_ITEM_CLASS } from '../sexFortuneStyles'
+import { CopyBar } from '../CopyBar'
+import { getAccentCardStyle, SECTION_CARD_CLASS, SECTION_ITEM_CLASS } from '../styles'
 
 type Props = {
   copy: (text: string) => void
@@ -59,7 +59,7 @@ export function CourseTab({ copy, copied, fortune, shareText }: Props) {
         </ol>
       </section>
 
-      <SexFortuneCopyBar copied={copied} onCopy={() => copy(shareText)} />
+      <CopyBar copied={copied} onCopy={() => copy(shareText)} />
     </div>
   )
 }

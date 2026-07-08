@@ -28,4 +28,4 @@ export const LIBRARY_AD_LAYOUT = [
   slot(AD_SLOTS.BANNER_300X250, 'hidden xl:flex'),
 ]
 
-export const VIEWER_AD_LAYOUT = [slot(AD_SLOTS.BANNER_308X286)]
+export const SINGLE_AD_LAYOUT = [slot(AD_SLOTS.BANNER_308X286)]

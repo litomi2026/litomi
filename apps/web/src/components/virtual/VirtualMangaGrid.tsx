@@ -4,15 +4,15 @@ import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import type { StateSnapshot, VirtuosoHandle } from 'react-virtuoso'
 import { Virtuoso } from 'react-virtuoso'
-import { twMerge } from 'tailwind-merge'
 
 import { useIsomorphicLayoutEffect } from '@/hook/useIsomorphicLayoutEffect'
 import { MANGA_GRID_COLUMN_MIN_WIDTH_CLASS, readMangaGridColumnMinWidth } from '@/utils/style'
 import type { VirtualMangaGridItem, VirtualMangaGridProps, VirtualMangaGridRow } from './VirtualMangaGrid.types'
 import { chunkVirtualMangaGridItems, getVirtualMangaGridColumnCount } from './VirtualMangaGrid.utils'
 
-const RESIZE_MEASURE_DEBOUNCE_MS = 100
-const VIEWPORT_OVERSCAN_PX = 800
+const RESIZE_MEASURE_DEBOUNCE_MS = 300
+const VIEWPORT_OVERSCAN_PX = 900
+const DEFAULT_ITEM_GAP = 8
 
 type GridContext = {
   footer?: ReactNode
@@ -26,30 +26,27 @@ type GridColumns = {
 }
 
 export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
-  className = '',
   fetchNextPage,
   footer,
   hasNextPage,
   header,
-  isFetchingNextPage,
-  itemGap = 0,
+  isFullWidth,
+  itemGap = DEFAULT_ITEM_GAP,
   items,
   renderItem,
-  scrollRestorationKey = '',
-  scrollToOptions,
   view,
 }: VirtualMangaGridProps<TItem>) {
-  const outerRef = useRef<HTMLDivElement>(null)
-  const virtuosoRef = useRef<VirtuosoHandle>(null)
-  const fetchInFlightRef = useRef(false)
   const [columns, setColumns] = useState<GridColumns | null>(null)
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
+  const outerRef = useRef<HTMLDivElement>(null)
+  const fetchInFlightRef = useRef(false)
 
+  const storageKey = createScrollRestorationStorageKey()
   const columnCount = columns?.columnCount ?? 0
-  const rows: VirtualMangaGridRow<TItem>[] = columnCount > 0 ? chunkVirtualMangaGridItems(items, columnCount) : []
-  const storageKey = createScrollRestorationStorageKey(scrollRestorationKey)
+  const rows = columnCount > 0 ? chunkVirtualMangaGridItems(items, columnCount, isFullWidth) : []
 
   function handleEndReached() {
-    if (!fetchNextPage || !hasNextPage || isFetchingNextPage || fetchInFlightRef.current) {
+    if (!hasNextPage || fetchInFlightRef.current) {
       return
     }
 
@@ -61,6 +58,10 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   }
 
   function renderRow(index: number, row: VirtualMangaGridRow<TItem>) {
+    if (row.type === 'full') {
+      return renderItem(row.item, row.itemIndex)
+    }
+
     return (
       <div
         className="grid"
@@ -144,20 +145,12 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
     }
   }, [columns, storageKey])
 
-  useEffect(() => {
-    if (!scrollToOptions) {
-      return
-    }
-
-    virtuosoRef.current?.scrollTo(scrollToOptions)
-  }, [scrollToOptions])
-
   return (
-    <div className={twMerge(MANGA_GRID_COLUMN_MIN_WIDTH_CLASS[view], className)} ref={outerRef}>
+    <div className={MANGA_GRID_COLUMN_MIN_WIDTH_CLASS[view]} ref={outerRef}>
       {columns && (
         <Virtuoso<VirtualMangaGridRow<TItem>, GridContext>
           components={GRID_COMPONENTS}
-          computeItemKey={(index, row) => String(row.items[0]?.item.key ?? index)}
+          computeItemKey={getRowKey}
           context={{ footer, header }}
           data={rows}
           endReached={handleEndReached}
@@ -173,27 +166,32 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   )
 }
 
-function GridHeader({ context }: { context?: GridContext }) {
-  return <>{context?.header}</>
-}
-
-function GridFooter({ context }: { context?: GridContext }) {
-  return <>{context?.footer}</>
-}
-
 const GRID_COMPONENTS = {
-  Footer: GridFooter,
-  Header: GridHeader,
+  Footer: ({ context }: { context?: GridContext }) => {
+    return <>{context?.footer}</>
+  },
+  Header: ({ context }: { context?: GridContext }) => {
+    return <>{context?.header}</>
+  },
 }
 
-function createScrollRestorationStorageKey(scrollRestorationKey: string) {
+function getRowKey<TItem extends VirtualMangaGridItem>(index: number, row: VirtualMangaGridRow<TItem>) {
+  if (row.type === 'full') {
+    return String(row.item.key)
+  }
+
+  return String(row.items[0]?.item.key ?? index)
+}
+
+function createScrollRestorationStorageKey() {
   const scope = typeof window === 'undefined' ? '' : window.location.href
-  return `virtual-scroll:${scope}:${scrollRestorationKey}`
+  return `virtual-scroll:${scope}`
 }
 
 function readScrollSnapshot(storageKey: string): StateSnapshot | undefined {
   try {
     const raw = window.sessionStorage.getItem(storageKey)
+
     if (!raw) {
       return undefined
     }

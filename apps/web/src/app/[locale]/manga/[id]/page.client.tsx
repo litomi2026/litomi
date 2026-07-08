@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
-import { VIEWER_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
+import { SINGLE_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import Loading from './loading'
@@ -52,7 +52,7 @@ export default function MangaPage({ id, initialManga }: Props) {
       <div className="flex h-full flex-col items-center justify-center p-4">
         <JuicyAdsBanner
           className="flex flex-col gap-3 items-center justify-center"
-          layout={VIEWER_AD_LAYOUT}
+          layout={SINGLE_AD_LAYOUT}
           onAdClick={() => setIsAdClicked(true)}
           title={<p className="text-zinc-300 text-sm">{unlockT('title')}</p>}
         />

@@ -1,5 +1,5 @@
-import { attachJosa, type JosaKind } from './sexFortuneJosa'
-import type { FortuneRole, FortuneTaste } from './sexFortuneTypes'
+import { attachJosa, type JosaKind } from './josa'
+import type { FortuneRole, FortuneTaste } from './types'
 
 // 공유 어휘(수위 유지). 슬롯에 채워져 문장이 곱연산으로 조합됨.
 const LEXICON = {

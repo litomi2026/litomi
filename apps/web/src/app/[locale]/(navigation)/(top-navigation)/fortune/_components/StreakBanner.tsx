@@ -1,8 +1,8 @@
 import { Flame } from 'lucide-react'
 
-import type { FortuneStreak } from '../_lib/sexFortuneStorage'
+import type { FortuneStreak } from '../_lib/storage'
 
-export function SexFortuneStreakBanner({ streak }: { streak: FortuneStreak }) {
+export function StreakBanner({ streak }: { streak: FortuneStreak }) {
   const count = Math.max(streak.count, 0)
 
   return (

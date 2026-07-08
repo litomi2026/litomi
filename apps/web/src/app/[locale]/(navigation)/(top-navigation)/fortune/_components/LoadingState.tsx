@@ -1,8 +1,8 @@
 'use client'
 
-import { LIBO_PAGE_LAYOUT } from './sexFortuneStyles'
+import { LIBO_PAGE_LAYOUT } from './styles'
 
-export function SexFortuneLoadingState({ message }: { message?: string }) {
+export function LoadingState({ message }: { message?: string }) {
   return (
     <div className={LIBO_PAGE_LAYOUT.container}>
       <div className="flex-1 grid place-items-center py-10 text-sm text-zinc-400">

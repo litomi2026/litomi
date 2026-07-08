@@ -1,8 +1,8 @@
-import { getRarityMetaByKey } from '../_lib/sexFortuneRarity'
-import { FORTUNE_INTENSITIES, FORTUNE_ROLES, FORTUNE_STAT_META } from '../_lib/sexFortuneTaste'
-import type { Fortune } from '../_lib/sexFortuneTypes'
+import { getRarityMetaByKey } from '../_lib/rarity'
+import { FORTUNE_INTENSITIES, FORTUNE_ROLES, FORTUNE_STAT_META } from '../_lib/taste'
+import type { Fortune } from '../_lib/types'
 
-export function SexFortuneHeroCard({ fortune }: { fortune: Fortune }) {
+export function HeroCard({ fortune }: { fortune: Fortune }) {
   const rarity = getRarityMetaByKey(fortune.rarity)
   const role = FORTUNE_ROLES.find((option) => option.key === fortune.taste.role)
   const intensity = FORTUNE_INTENSITIES.find((option) => option.key === fortune.taste.intensity)

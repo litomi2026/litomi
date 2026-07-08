@@ -1,4 +1,4 @@
-import type { FortuneRarity } from './sexFortuneTypes'
+import type { FortuneRarity } from './types'
 
 export type FortuneRarityMeta = {
   key: FortuneRarity

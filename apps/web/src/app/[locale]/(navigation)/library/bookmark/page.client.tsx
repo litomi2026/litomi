@@ -92,7 +92,6 @@ export default function BookmarkPageClient() {
 }
 
 function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProps) {
-  const [scrollToOptions, setScrollToOptions] = useState<ScrollToOptions>()
   const { exit, isSelectionMode } = useLibrarySelection()
   const { isVisible } = useMangaCensorship()
   const { data: me } = useMeQuery()
@@ -144,7 +143,7 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
     if (newSort !== sort) {
       exit()
       onSortChange(newSort as LibraryItemSort)
-      setScrollToOptions({ top: 0 })
+      window.scrollTo({ top: 0 })
     }
   }
 
@@ -220,11 +219,8 @@ function BookmarkContent({ onSortChange, onViewChange, sort, view }: ContentProp
         footer={footer}
         hasNextPage={canAutoLoadMore}
         header={header}
-        isFetchingNextPage={isFetchingNextPage}
-        itemGap={8}
         items={items}
         renderItem={renderItem}
-        scrollToOptions={scrollToOptions}
         view={view}
       />
       <ScrollButtons />

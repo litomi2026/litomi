@@ -248,8 +248,6 @@ function PublicLibraryMangaContent({ nativeGridSponsor, onViewChange, view }: Co
         footer={footer}
         hasNextPage={canAutoLoadMore}
         header={header}
-        isFetchingNextPage={isFetchingNextPage}
-        itemGap={8}
         items={items}
         renderItem={renderItem}
         view={view}

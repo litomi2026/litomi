@@ -1,8 +1,8 @@
 import { Flame } from 'lucide-react'
 
-import { COPY_BAR_CLASS, COPY_BUTTON_CLASS } from './sexFortuneStyles'
+import { COPY_BAR_CLASS, COPY_BUTTON_CLASS } from './styles'
 
-export function SexFortuneCopyBar({ copied, onCopy }: { copied: boolean; onCopy: () => void }) {
+export function CopyBar({ copied, onCopy }: { copied: boolean; onCopy: () => void }) {
   return (
     <div className={COPY_BAR_CLASS}>
       <button className={COPY_BUTTON_CLASS} onClick={onCopy} type="button">
