@@ -12,7 +12,7 @@ import { createCanonicalSearchParams } from './canonicalSearchParams'
 import { SearchParam, SearchSort } from './constants'
 import { addLanguageFilterIfMissing, readPreferredSearchLanguage } from './searchLanguage'
 
-const { NEXT_PUBLIC_PROXY_SEARCH_ORIGIN } = env
+const { NEXT_PUBLIC_PROXY_ORIGIN } = env
 
 type GETProxyKSearchResponse = {
   mangas: Manga[]
@@ -52,7 +52,7 @@ export function useSearchQuery(searchParams: URLSearchParams) {
         pagedParams.delete(SearchParam.SKIP)
       }
 
-      const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_PROXY_SEARCH_ORIGIN)
+      const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_PROXY_ORIGIN)
       url.search = createCanonicalSearchParams(pagedParams).toString()
 
       const { data } = await fetchProxyAPIData<GETProxyKSearchResponse>(url)
