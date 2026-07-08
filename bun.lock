@@ -141,6 +141,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@litomi/db": "workspace:*",
+        "@litomi/domain": "workspace:*",
         "@litomi/events": "workspace:*",
         "@litomi/kv": "workspace:*",
         "@litomi/std": "workspace:*",
