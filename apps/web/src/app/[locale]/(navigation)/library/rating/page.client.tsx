@@ -1,25 +1,27 @@
 'use client'
 
 import { isGroupedRatingSort, RatingSort } from '@litomi/domain/library/sort'
-import type { Manga } from '@litomi/domain/manga/model'
 import { getViewFromSearchParams, setViewToSearchParams, View } from '@litomi/std'
 import { Star } from 'lucide-react'
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
+
+import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoginGate from '@/components/LoginGate'
 import SearchParamsSync from '@/components/router/SearchParamsSync'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import ViewToggle from '@/components/ViewToggle'
-import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
+import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
 import useMangaCensorship from '@/hook/useMangaCensorship'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
-import { MANGA_GRID_COLUMN } from '@/utils/style'
+
 import { LibraryHeaderSpacer } from '../LibraryHeaderLayout'
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -43,14 +45,20 @@ type ContentProps = {
   view: View
 }
 
-type MangaListProps = {
-  isSelectionMode: boolean
-  items: { mangaId: number; rating: number }[]
-  mangaMap: Map<number, Manga>
-  ratingIndexMap: Map<number, number>
-  showLoadingSkeleton?: boolean
-  view: View
-}
+type RatingGridItem = VirtualMangaGridItem &
+  (
+    | {
+        type: 'header'
+        rating: number
+        count: number
+      }
+    | {
+        type: 'manga'
+        mangaId: number
+        rating: number
+      }
+    | { type: 'loading' }
+  )
 
 export default function RatingPageClient() {
   const [sort, setSort] = useState<RatingSort>(RatingSort.UPDATED_DESC)
@@ -113,33 +121,16 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
     catalogMangas: ratingItems.map(({ manga }) => manga),
   })
 
-  const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const showLoadingSkeleton = (!data && (me === undefined || isLoading)) || isFetchingNextPage
   const visibleRatingItems = ratingItems.filter(({ mangaId }) => isVisible(mangaMap.get(mangaId)))
   const ratingIndexMap = new Map(visibleRatingItems.map((item, index) => [item.mangaId, index]))
-  const groupedRatings = new Map<number, typeof ratingItems>()
 
-  const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage: canAutoLoadMore,
-    isFetchingNextPage,
-    fetchNextPage,
-  })
-
-  for (const item of visibleRatingItems) {
-    const group = groupedRatings.get(item.rating) || []
-    group.push(item)
-
-    if (group.length === 1) {
-      groupedRatings.set(item.rating, group)
-    }
-  }
-
-  const sortedGroups = Array.from(groupedRatings.entries()).sort(([aRating], [bRating]) => {
-    if (sort === RatingSort.RATING_ASC) {
-      return aRating - bRating
-    }
-    return bRating - aRating
+  const items = buildRatingGridItems({
+    isGrouped: isGroupedRatingSort(sort),
+    showLoadingSkeleton,
+    sort,
+    visibleRatingItems,
   })
 
   function handleSortChange(newSort: RatingSort) {
@@ -147,6 +138,40 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
       exit()
       onSortChange(newSort)
     }
+  }
+
+  function renderItem(item: RatingGridItem) {
+    if (item.type === 'header') {
+      return (
+        <h4 className="bg-background border-b px-4 py-2 flex items-center">
+          <div className="flex items-center gap-x-0.5">
+            <StarRating rating={item.rating} />
+            <span className="ml-2 text-sm text-zinc-400">({t('rating.groupLabel', { rating: item.rating })})</span>
+          </div>
+          <span className="ml-auto text-sm text-zinc-500">{t('rating.groupCount', { count: item.count })}</span>
+        </h4>
+      )
+    }
+
+    if (item.type === 'loading') {
+      return <MangaCardSkeleton variant={view} />
+    }
+
+    const manga = mangaMap.get(item.mangaId) ?? createLoadingManga(item.mangaId)
+    const index = ratingIndexMap.get(item.mangaId) ?? 0
+
+    if (isSelectionMode) {
+      return <SelectableMangaCard index={index} manga={manga} variant={view} />
+    }
+
+    return (
+      <div className="relative group overflow-hidden">
+        <div className="absolute top-0.5 left-0.5 right-0.5 z-10 flex justify-center p-2 rounded-t-xl bg-background/60 pointer-events-none">
+          <StarRating rating={item.rating} />
+        </div>
+        <MangaCard className="h-full" index={index} manga={manga} variant={view} />
+      </div>
+    )
   }
 
   if (me === null) {
@@ -172,83 +197,93 @@ function RatingContent({ onSortChange, onViewChange, sort, view }: ContentProps)
   }
 
   return (
-    <>
-      <LibraryHeaderSpacer />
-      <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
-        <select
-          className="bg-zinc-900 text-base px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
-          onChange={(e) => handleSortChange(e.target.value as RatingSort)}
-          value={sort}
-        >
-          {SORT_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {sortT(option.labelKey)}
-            </option>
-          ))}
-        </select>
-        <ViewToggle onViewChange={onViewChange} view={view} />
-      </div>
-      {shouldGroupByRating && sortedGroups.length > 0 ? (
-        <div className="grid gap-4">
-          {sortedGroups.map(([rating, items], i) => (
-            <div key={rating}>
-              <h4 className="bg-background border-b px-4 py-2 flex items-center">
-                <div className="flex items-center gap-x-0.5">
-                  <StarRating rating={rating} />
-                  <span className="ml-2 text-sm text-zinc-400">({t('rating.groupLabel', { rating })})</span>
-                </div>
-                <span className="ml-auto text-sm text-zinc-500">{t('rating.groupCount', { count: items.length })}</span>
-              </h4>
-              <MangaList
-                isSelectionMode={isSelectionMode}
-                items={items}
-                mangaMap={mangaMap}
-                ratingIndexMap={ratingIndexMap}
-                showLoadingSkeleton={i === sortedGroups.length - 1 && isFetchingNextPage}
-                view={view}
-              />
+    <VirtualMangaGrid
+      fetchNextPage={fetchNextPage}
+      footer={
+        <>
+          {isFetchNextPageError && (
+            <div className="flex justify-center p-2">
+              <LoadMoreRetryButton onRetry={fetchNextPage} />
             </div>
-          ))}
-        </div>
-      ) : (
-        <MangaList
-          isSelectionMode={isSelectionMode}
-          items={visibleRatingItems}
-          mangaMap={mangaMap}
-          ratingIndexMap={ratingIndexMap}
-          showLoadingSkeleton={showLoadingSkeleton}
-          view={view}
-        />
-      )}
-      {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
-      {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
-    </>
+          )}
+          <MobileNavigationSpacer />
+        </>
+      }
+      hasNextPage={canAutoLoadMore}
+      header={
+        <>
+          <LibraryHeaderSpacer />
+          <div className="flex flex-wrap items-center gap-2 p-2 pb-0">
+            <select
+              className="bg-zinc-900 text-base px-3 py-2 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
+              onChange={(e) => handleSortChange(e.target.value as RatingSort)}
+              value={sort}
+            >
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {sortT(option.labelKey)}
+                </option>
+              ))}
+            </select>
+            <ViewToggle onViewChange={onViewChange} view={view} />
+          </div>
+        </>
+      }
+      isFullWidth={(item) => item.type === 'header'}
+      items={items}
+      renderItem={renderItem}
+      view={view}
+    />
   )
 }
 
-function MangaList({ showLoadingSkeleton, isSelectionMode, items, mangaMap, ratingIndexMap, view }: MangaListProps) {
-  return (
-    <div className={`grid ${MANGA_GRID_COLUMN[view]} gap-2 p-2`}>
-      {items.map(({ mangaId, rating }) => {
-        const manga = mangaMap.get(mangaId) ?? createLoadingManga(mangaId)
-        const index = ratingIndexMap.get(mangaId) ?? 0
+function buildRatingGridItems({
+  isGrouped,
+  showLoadingSkeleton,
+  sort,
+  visibleRatingItems,
+}: {
+  isGrouped: boolean
+  showLoadingSkeleton: boolean
+  sort: RatingSort
+  visibleRatingItems: { mangaId: number; rating: number }[]
+}): RatingGridItem[] {
+  const items: RatingGridItem[] = []
+  const groups = new Map<number, { mangaId: number; rating: number }[]>()
 
-        if (!isSelectionMode) {
-          return (
-            <div className="relative group overflow-hidden" key={mangaId}>
-              <div className="absolute top-0.5 left-0.5 right-0.5 z-10 flex justify-center p-2 rounded-t-xl bg-background/60 pointer-events-none">
-                <StarRating rating={rating} />
-              </div>
-              <MangaCard className="h-full" index={index} manga={manga} variant={view} />
-            </div>
-          )
-        }
+  for (const item of visibleRatingItems) {
+    const group = groups.get(item.rating)
 
-        return <SelectableMangaCard index={index} key={mangaId} manga={manga} variant={view} />
-      })}
-      {showLoadingSkeleton && <MangaCardSkeleton variant={view} />}
-    </div>
+    if (group) {
+      group.push(item)
+    } else {
+      groups.set(item.rating, [item])
+    }
+  }
+
+  const sortedGroups = Array.from(groups.entries()).sort(([aRating], [bRating]) =>
+    sort === RatingSort.RATING_ASC ? aRating - bRating : bRating - aRating,
   )
+
+  if (isGrouped && sortedGroups.length > 0) {
+    for (const [rating, groupItems] of sortedGroups) {
+      items.push({ key: `header:${rating}`, type: 'header', rating, count: groupItems.length })
+
+      for (const { mangaId } of groupItems) {
+        items.push({ key: `manga:${mangaId}`, type: 'manga', mangaId, rating })
+      }
+    }
+  } else {
+    for (const { mangaId, rating } of visibleRatingItems) {
+      items.push({ key: `manga:${mangaId}`, type: 'manga', mangaId, rating })
+    }
+  }
+
+  if (showLoadingSkeleton) {
+    items.push({ key: 'loading', type: 'loading' })
+  }
+
+  return items
 }
 
 function StarRating({ rating }: { rating: number }) {

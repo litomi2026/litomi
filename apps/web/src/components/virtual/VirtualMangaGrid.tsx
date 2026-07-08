@@ -30,6 +30,7 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   footer,
   hasNextPage,
   header,
+  isFullWidth,
   itemGap = DEFAULT_ITEM_GAP,
   items,
   renderItem,
@@ -40,9 +41,9 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   const outerRef = useRef<HTMLDivElement>(null)
   const fetchInFlightRef = useRef(false)
 
-  const columnCount = columns?.columnCount ?? 0
-  const rows: VirtualMangaGridRow<TItem>[] = columnCount > 0 ? chunkVirtualMangaGridItems(items, columnCount) : []
   const storageKey = createScrollRestorationStorageKey()
+  const columnCount = columns?.columnCount ?? 0
+  const rows = columnCount > 0 ? chunkVirtualMangaGridItems(items, columnCount, isFullWidth) : []
 
   function handleEndReached() {
     if (!hasNextPage || fetchInFlightRef.current) {
@@ -57,6 +58,10 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   }
 
   function renderRow(index: number, row: VirtualMangaGridRow<TItem>) {
+    if (row.type === 'full') {
+      return renderItem(row.item, row.itemIndex)
+    }
+
     return (
       <div
         className="grid"
@@ -145,7 +150,7 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
       {columns && (
         <Virtuoso<VirtualMangaGridRow<TItem>, GridContext>
           components={GRID_COMPONENTS}
-          computeItemKey={(index, row) => String(row.items[0]?.item.key ?? index)}
+          computeItemKey={getRowKey}
           context={{ footer, header }}
           data={rows}
           endReached={handleEndReached}
@@ -161,17 +166,21 @@ export default function VirtualMangaGrid<TItem extends VirtualMangaGridItem>({
   )
 }
 
-function GridHeader({ context }: { context?: GridContext }) {
-  return <>{context?.header}</>
-}
-
-function GridFooter({ context }: { context?: GridContext }) {
-  return <>{context?.footer}</>
-}
-
 const GRID_COMPONENTS = {
-  Footer: GridFooter,
-  Header: GridHeader,
+  Footer: ({ context }: { context?: GridContext }) => {
+    return <>{context?.footer}</>
+  },
+  Header: ({ context }: { context?: GridContext }) => {
+    return <>{context?.header}</>
+  },
+}
+
+function getRowKey<TItem extends VirtualMangaGridItem>(index: number, row: VirtualMangaGridRow<TItem>) {
+  if (row.type === 'full') {
+    return String(row.item.key)
+  }
+
+  return String(row.items[0]?.item.key ?? index)
 }
 
 function createScrollRestorationStorageKey() {

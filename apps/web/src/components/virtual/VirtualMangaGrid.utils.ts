@@ -3,16 +3,46 @@ import type { VirtualMangaGridItem, VirtualMangaGridRow } from './VirtualMangaGr
 export function chunkVirtualMangaGridItems<TItem extends VirtualMangaGridItem>(
   items: readonly TItem[],
   columnCount: number,
+  isFullWidth?: (item: TItem) => boolean,
 ) {
   const safeColumnCount = Math.max(1, columnCount)
   const rows: VirtualMangaGridRow<TItem>[] = []
+  let cells: { item: TItem; itemIndex: number }[] = []
 
-  for (let itemIndex = 0; itemIndex < items.length; itemIndex += safeColumnCount) {
-    rows.push({
-      items: items.slice(itemIndex, itemIndex + safeColumnCount).map((item, offset) => ({
+  for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+    const item = items[itemIndex]
+
+    if (isFullWidth?.(item)) {
+      if (cells.length > 0) {
+        rows.push({
+          items: cells,
+          type: 'items',
+        })
+        cells = []
+      }
+
+      rows.push({
         item,
-        itemIndex: itemIndex + offset,
-      })),
+        itemIndex,
+        type: 'full',
+      })
+      continue
+    }
+
+    cells.push({ item, itemIndex })
+
+    if (cells.length === safeColumnCount) {
+      rows.push({
+        items: cells,
+        type: 'items',
+      })
+      cells = []
+    }
+  }
+
+  if (cells.length > 0) {
+    rows.push({
+      items: cells,
       type: 'items',
     })
   }
