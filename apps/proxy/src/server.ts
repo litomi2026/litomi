@@ -11,4 +11,4 @@ const server = Bun.serve({
 registerShutdownHandler('http-server', () => server.stop())
 registerShutdownSignals()
 
-console.info(`litomi edge-proxy listening on http://${server.hostname}:${server.port}`)
+console.info(`litomi-proxy listening on http://${server.hostname}:${server.port}`)

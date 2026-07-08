@@ -1,0 +1,5 @@
+# 기본값으로 충분하면 이 파일 없이도 apply 가능하다. 덮어쓸 값만 주석 해제.
+# project_id                = "litomi-2026"
+# region                    = "asia-northeast3"
+# github_repository         = "litomi2026/litomi"
+# deploy_service_account_id = "proxy-deployer"

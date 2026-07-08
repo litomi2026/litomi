@@ -4,7 +4,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: litomi-edge-proxy
+  name: litomi-proxy
   labels:
     cloud.googleapis.com/location: asia-northeast3
   annotations:
@@ -21,7 +21,7 @@ spec:
       containerConcurrency: 200
       timeoutSeconds: 20
       containers:
-        - image: ghcr.io/litomi2026/litomi-edge-proxy:latest
+        - image: ghcr.io/litomi2026/litomi-proxy:latest
           ports:
             - name: http1
               containerPort: 8080
