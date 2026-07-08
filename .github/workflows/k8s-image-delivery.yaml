@@ -431,7 +431,8 @@ jobs:
           tags: ${{ steps.metadata_chat_push.outputs.tags }}
           labels: ${{ steps.metadata_chat_push.outputs.labels }}
 
-  # Cloud Run 대상(GHCR pull). k8s가 아니므로 propose-ops 승격 작업에는 넣지 않는다.
+  # Cloud Run 대상. 서비스 자체는 litomi-ops/infra/gcp/proxy 가 Terraform으로 소유(HCP Terraform 적용).
+  # 이 이미지 digest는 아래 propose-ops-proxy-image-digest 잡이 litomi-ops에 PR로 승격한다.
   # amd64 전용: Cloud Run은 arm64 이미지를 실행할 수 없다(OKE 앱들과 달리 amd64로 빌드).
   build-and-publish-proxy-image:
     name: Build and publish proxy image
@@ -481,80 +482,85 @@ jobs:
           tags: ${{ steps.metadata_proxy.outputs.tags }}
           labels: ${{ steps.metadata_proxy.outputs.labels }}
 
-  # Cloud Run 자동 배포: 방금 빌드한 이미지 digest를 service.yaml에 핀 → `gcloud run services replace`.
-  # GCP repo vars(GCP_WORKLOAD_IDENTITY_PROVIDER / GCP_DEPLOY_SERVICE_ACCOUNT / GCP_PROJECT_ID)가
-  # 설정되기 전까지는 자동으로 건너뛴다. 부트스트랩(WIF/IAM/SA)은 infra/gcp Terraform 참고.
-  deploy-proxy-cloud-run:
-    name: Deploy proxy to Cloud Run
-    if: >-
-      ${{ github.ref_name == 'main'
-      && vars.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
-      && vars.GCP_DEPLOY_SERVICE_ACCOUNT != ''
-      && vars.GCP_PROJECT_ID != '' }}
+  # 프록시 이미지 digest를 litomi-ops Terraform 입력(image.auto.tfvars.json)으로 승격(PR).
+  # Cloud Run 서비스는 litomi-ops/infra/gcp/proxy 가 Terraform으로 소유하고 HCP Terraform이 적용한다.
+  # CI는 GCP 자격증명을 갖지 않는다 — 이미지 빌드/푸시(GHCR)와 digest 승격만 한다.
+  propose-ops-proxy-image-digest:
+    name: Propose ops proxy image digest
+    if: ${{ github.ref_name == 'main' }}
     needs:
       - build-and-publish-proxy-image
     runs-on: ubuntu-24.04
     permissions:
       contents: read
-      id-token: write
     env:
+      OPS_REPOSITORY: ${{ github.repository_owner }}/litomi-ops
+      OPS_PATH: litomi-ops
+      # Terraform이 jsondecode(file())로 읽는 일반 JSON(.tfvars가 아니라서 litomi-ops .gitignore에 안 걸림).
+      OPS_PROXY_IMAGE_FILE: infra/gcp/proxy/image.json
       IMAGE_PROXY: ghcr.io/${{ github.repository_owner }}/litomi-proxy
       IMAGE_PROXY_DIGEST: ${{ needs.build-and-publish-proxy-image.outputs.digest }}
-      SERVICE_MANIFEST: apps/proxy/cloudrun/service.yaml
-      CLOUD_RUN_SERVICE: litomi-proxy
-      CLOUD_RUN_REGION: asia-northeast3
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v3
+      - name: Generate litomi-ops GitHub App token
+        id: ops_app_token
+        uses: actions/create-github-app-token@v3
         with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          client-id: ${{ vars.OPS_REPO_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPS_REPO_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: litomi-ops
+          permission-contents: write
+          permission-pull-requests: write
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
+      - name: Checkout litomi-ops main branch
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.OPS_REPOSITORY }}
+          token: ${{ steps.ops_app_token.outputs.token }}
+          path: ${{ env.OPS_PATH }}
+          fetch-depth: 0
+          ref: main
 
-      - name: Pin built image digest into service manifest
+      - name: Update litomi-ops proxy image digest
         shell: bash
         run: |
           set -euo pipefail
 
           if [[ ! "${IMAGE_PROXY_DIGEST}" == sha256:* ]]; then
-            echo "Invalid image digest: ${IMAGE_PROXY_DIGEST}" >&2
+            echo "Invalid digest for ${IMAGE_PROXY}: ${IMAGE_PROXY_DIGEST}" >&2
             exit 1
           fi
 
-          IMAGE_REF="${IMAGE_PROXY}@${IMAGE_PROXY_DIGEST}" \
-            yq -i '.spec.template.spec.containers[0].image = strenv(IMAGE_REF)' "${SERVICE_MANIFEST}"
+          DIGEST="${IMAGE_PROXY_DIGEST}" yq -i -o=json \
+            '.digest = strenv(DIGEST)' "${OPS_PATH}/${OPS_PROXY_IMAGE_FILE}"
 
-          echo "Deploying image:"
-          yq '.spec.template.spec.containers[0].image' "${SERVICE_MANIFEST}"
+      - name: Create or update litomi-ops proxy promotion PR
+        id: create_proxy_pr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ steps.ops_app_token.outputs.token }}
+          path: ${{ env.OPS_PATH }}
+          add-paths: |
+            ${{ env.OPS_PROXY_IMAGE_FILE }}
+          branch: codex/litomi-proxy-image-digest
+          delete-branch: true
+          commit-message: 'chore(gcp): promote proxy image digest'
+          title: 'chore(gcp): promote proxy image digest'
+          body: |
+            This PR updates the litomi-ops Terraform input for the Cloud Run proxy to the latest immutable image digest built from `litomi` `main`.
 
-      - name: Deploy Cloud Run service
+            - Proxy: `${{ env.IMAGE_PROXY }}@${{ env.IMAGE_PROXY_DIGEST }}`
+            - Source commit: `${{ github.sha }}`
+            - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            HCP Terraform (`gcp-proxy` workspace) plans on this PR and applies on merge.
+          base: main
+
+      - name: Report proxy promotion PR
+        if: ${{ steps.create_proxy_pr.outputs.pull-request-url }}
         shell: bash
         run: |
-          set -euo pipefail
-
-          gcloud run services replace "${SERVICE_MANIFEST}" \
-            --project "${{ vars.GCP_PROJECT_ID }}" \
-            --region "${CLOUD_RUN_REGION}" \
-            --quiet
-
-      - name: Allow public (unauthenticated) invocations
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # 소스 프록시는 Cloudflare 뒤에서 공개로 호출된다(현 Vercel과 동일한 노출 수준).
-          # 조직 정책이 allUsers를 막는 경우 이 단계가 실패하니 infra/gcp README의 하드닝 옵션 참고.
-          gcloud run services add-iam-policy-binding "${CLOUD_RUN_SERVICE}" \
-            --project "${{ vars.GCP_PROJECT_ID }}" \
-            --region "${CLOUD_RUN_REGION}" \
-            --member allUsers \
-            --role roles/run.invoker \
-            --quiet
+          echo "Created or updated proxy promotion PR: ${{ steps.create_proxy_pr.outputs.pull-request-url }}"
 
   propose-ops-production-image-digests:
     name: Propose ops production image digests
