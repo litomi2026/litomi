@@ -37,7 +37,10 @@ probeRoutes.get('/startup', (c) => {
       timestamp: new Date(),
     } satisfies StartupResponse
 
-    return c.json(response, { status: 503, headers: noStoreHeaders })
+    return c.json(response, {
+      status: 503,
+      headers: noStoreHeaders,
+    })
   }
 
   const response = {
@@ -45,7 +48,10 @@ probeRoutes.get('/startup', (c) => {
     timestamp: new Date(),
   } satisfies StartupResponse
 
-  return c.json(response, { status: 200, headers: noStoreHeaders })
+  return c.json(response, {
+    status: 200,
+    headers: noStoreHeaders,
+  })
 })
 
 probeRoutes.get('/health', () => {
@@ -73,7 +79,10 @@ probeRoutes.get('/ready', (c) => {
       timestamp,
     } satisfies ReadyResponse
 
-    return c.json(response, { status: 503, headers: noStoreHeaders })
+    return c.json(response, {
+      status: 503,
+      headers: noStoreHeaders,
+    })
   }
 
   if (draining) {
@@ -83,7 +92,10 @@ probeRoutes.get('/ready', (c) => {
       timestamp,
     } satisfies ReadyResponse
 
-    return c.json(response, { status: 503, headers: noStoreHeaders })
+    return c.json(response, {
+      status: 503,
+      headers: noStoreHeaders,
+    })
   }
 
   const response = {
@@ -91,7 +103,10 @@ probeRoutes.get('/ready', (c) => {
     timestamp,
   } satisfies ReadyResponse
 
-  return c.json(response, { status: 200, headers: noStoreHeaders })
+  return c.json(response, {
+    status: 200,
+    headers: noStoreHeaders,
+  })
 })
 
 export default probeRoutes

@@ -5,7 +5,7 @@ export const MANGA_TITLE_MAX_LENGTH = 50
 export const LAST_VERIFIED_MANGA_ID = 4_000_000
 export const MAX_MANGA_ID = LAST_VERIFIED_MANGA_ID * 2
 
-export const BLACKLISTED_MANGA_IDS = [
+export const BLACKLISTED_MANGA_IDS = new Set([
   2533746, // eun
   2643174, // Various Celebrità Fake [AI Generated]
   2648793, // Various Celebrità Fake [AI Generated]
@@ -119,4 +119,4 @@ export const BLACKLISTED_MANGA_IDS = [
   3708803,
   3710198,
   3710508,
-]
+])

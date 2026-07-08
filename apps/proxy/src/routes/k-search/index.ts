@@ -7,7 +7,7 @@ import { createProblemDetailsResponse } from '@litomi/http/problem-details'
 import { sec } from '@litomi/std'
 import type { Context } from 'hono'
 
-import { createProxyHeaders, withProxyHeaders } from '@/util/http'
+import { createJSONResponse, createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { handleRouteError } from '@/util/proxy-route'
 
 import { GETProxyKSearchSchema } from './schema'
@@ -19,9 +19,7 @@ const JAPANESE_LANGUAGE_DEFAULT_CATEGORIES = encodeCategories('doujinshi,manga,a
 export async function handleKSearchProxy(c: Context): Promise<Response> {
   const request = c.req.raw
   const requestSignal = request.signal
-  const url = new URL(request.url)
-  const searchParams = Object.fromEntries(url.searchParams)
-  const validation = GETProxyKSearchSchema.safeParse(searchParams)
+  const validation = GETProxyKSearchSchema.safeParse(c.req.query())
 
   if (!validation.success) {
     return createProblemDetailsResponse(request, {
@@ -106,7 +104,7 @@ export async function handleKSearchProxy(c: Context): Promise<Response> {
       }
     }
 
-    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
+    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.has(manga.id))
     const mangas = filterMangasByMinusPrefix(filteredMangas, rewrittenQuery)
     const response: GETProxyKSearchResponse = {
       mangas,
@@ -116,7 +114,7 @@ export async function handleKSearchProxy(c: Context): Promise<Response> {
     const headers = createProxyHeaders(getCacheControlHeader(params))
     headers.set('Content-Language', LOCALE_LANGUAGE_TAGS[locale])
 
-    return Response.json(response, { headers })
+    return createJSONResponse(response, headers)
   } catch (error) {
     return withProxyHeaders(handleRouteError(error, request))
   }

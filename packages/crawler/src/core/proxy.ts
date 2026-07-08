@@ -57,7 +57,7 @@ export class ProxyClient {
 
       const signal =
         options.signal && timeoutSignal
-          ? abortSignalAny([options.signal, timeoutSignal])
+          ? AbortSignal.any([options.signal, timeoutSignal])
           : (options.signal ?? timeoutSignal)
 
       let response: Response
@@ -106,24 +106,4 @@ export class ProxyClient {
 
     return this.circuitBreaker ? this.circuitBreaker.execute(wrappedWithRetry) : wrappedWithRetry()
   }
-}
-
-function abortSignalAny(signals: AbortSignal[]): AbortSignal {
-  if ('any' in AbortSignal && typeof AbortSignal.any === 'function') {
-    return AbortSignal.any(signals)
-  }
-
-  // NOTE: Edge 런타임에 AbortSignal.any가 없을 수 있어 직접 구현해요.
-  const controller = new AbortController()
-
-  for (const signal of signals) {
-    if (signal.aborted) {
-      controller.abort(signal.reason)
-      return controller.signal
-    }
-
-    signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true })
-  }
-
-  return controller.signal
 }

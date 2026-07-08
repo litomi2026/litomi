@@ -1,17 +1,13 @@
 import { httpInstrumentationMiddleware } from '@hono/otel'
 import { Hono } from 'hono'
-import { getConnInfo } from 'hono/bun'
 import { compress } from 'hono/compress'
-import { contextStorage } from 'hono/context-storage'
 import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
-import { ipRestriction } from 'hono/ip-restriction'
 import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
-import { timing } from 'hono/timing'
 
 import apiRoutes from './api'
 import imageRoutes from './i'
@@ -38,15 +34,15 @@ const csrfMiddleware = csrf({
   secFetchSite: isProduction ? 'same-origin' : 'same-site',
 })
 
-// 1. 관측성 및 전역 설정
+// 1. 상태 검사
+app.route('/', probeRoutes)
+
+// 2. 관측성
 app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-api' }))
 app.use('*', requestId())
 app.use(logger())
-app.use(timing())
-app.use(contextStorage())
 
-// 2. 초기 보안 및 네트워크 방어막
-app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
+// 3. 네트워크 보안
 app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
 
 app.use(
@@ -68,11 +64,8 @@ app.use(
   }),
 )
 
-// 3. 상태 검사
-app.route('/', probeRoutes)
-
 // 4. 응답 변환
-app.use(compress())
+app.use(compress({ threshold: 1024 }))
 
 app.use('/api/*', async (c, next) => {
   if (c.req.method === 'GET' || c.req.method === 'HEAD') {

@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/manga/[i
   const locale = await getLocaleFromParams(params)
   const t = await getTranslations({ locale, namespace: 'Metadata.manga' })
 
-  if (BLACKLISTED_MANGA_IDS.includes(id)) {
+  if (BLACKLISTED_MANGA_IDS.has(id)) {
     return {
       title: '403 Forbidden',
       description: t('forbiddenDescription'),
@@ -65,7 +65,7 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]'>
 
   const { id } = validation.data
 
-  if (BLACKLISTED_MANGA_IDS.includes(id)) {
+  if (BLACKLISTED_MANGA_IDS.has(id)) {
     return <Forbidden />
   }
 

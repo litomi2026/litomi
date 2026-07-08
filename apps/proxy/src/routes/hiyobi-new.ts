@@ -7,7 +7,7 @@ import { sec } from '@litomi/std'
 import type { Context } from 'hono'
 import z from 'zod'
 
-import { createProxyHeaders, withProxyHeaders } from '@/util/http'
+import { createJSONResponse, createProxyHeaders, withProxyHeaders } from '@/util/http'
 import { handleRouteError } from '@/util/proxy-route'
 
 const GETProxyHiyobiNewSchema = z.object({
@@ -17,9 +17,7 @@ const GETProxyHiyobiNewSchema = z.object({
 
 export async function handleHiyobiNewProxy(c: Context): Promise<Response> {
   const request = c.req.raw
-  const url = new URL(request.url)
-  const searchParams = Object.fromEntries(url.searchParams)
-  const validation = GETProxyHiyobiNewSchema.safeParse(searchParams)
+  const validation = GETProxyHiyobiNewSchema.safeParse(c.req.query())
 
   if (!validation.success) {
     return createProblemDetailsResponse(request, {
@@ -59,7 +57,7 @@ export async function handleHiyobiNewProxy(c: Context): Promise<Response> {
     const headers = createProxyHeaders(cacheControlHeader)
     headers.set('Content-Language', LOCALE_LANGUAGE_TAGS[locale])
 
-    return Response.json(mangas, { headers })
+    return createJSONResponse(mangas, headers)
   } catch (error) {
     return withProxyHeaders(handleRouteError(error, request))
   }
