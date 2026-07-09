@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
+import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoginGate from '@/components/LoginGate'
 import StatusState from '@/components/status/StatusState'
@@ -18,7 +19,6 @@ import useMeQuery from '@/query/useMeQuery'
 import { hasAdultAccess } from '@/utils/adult-verification'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
-
 import useMangaRecommendationQuery from './useMangaRecommendationQuery'
 
 export default function RecommendMangaPageClient() {
@@ -70,6 +70,7 @@ export default function RecommendMangaPageClient() {
 
   return (
     <>
+      <JuicyAdsBanner />
       <section className="flex flex-col gap-3 p-2">
         <header className="flex flex-wrap items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950/60 p-3">
           <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -85,14 +86,6 @@ export default function RecommendMangaPageClient() {
               )}
             </div>
           </div>
-          <button
-            aria-label="추천 작품 새로고침"
-            className="inline-flex px-3 py-2 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-200 transition hover:bg-zinc-800 active:bg-zinc-950 disabled:cursor-not-allowed disabled:opacity-60"
-            title="새로고침"
-            type="button"
-          >
-            준비 중입니다
-          </button>
         </header>
 
         {visibleRecommendations.length === 0 ? (
@@ -144,13 +137,10 @@ function ErrorState({ isFetching, onRetry }: { isFetching: boolean; onRetry: () 
 
 function LoadingState() {
   return (
-    <section className="grid gap-3 p-2">
-      <div className="h-16 rounded-lg border border-zinc-800 bg-zinc-950/60" />
-      <div className={`grid ${MANGA_GRID_COLUMN.card} gap-2`}>
-        {Array.from({ length: 6 }).map((_, index) => (
-          <MangaCardSkeleton key={index} />
-        ))}
-      </div>
-    </section>
+    <div className={`grid ${MANGA_GRID_COLUMN.card} gap-2`}>
+      {Array.from({ length: 6 }).map((_, index) => (
+        <MangaCardSkeleton key={index} />
+      ))}
+    </div>
   )
 }
