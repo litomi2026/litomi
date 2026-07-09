@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/git,macos,nextjs,node,python,terraform
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,macos,nextjs,node,python,terraform
+# Created by https://www.toptal.com/developers/gitignore/api/git,macos,nextjs,node,python,terraform,turbo
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,macos,nextjs,node,python,terraform,turbo
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -132,6 +132,9 @@ web_modules/
 
 # Optional npm cache directory
 .npm
+
+# Optional eslint cache
+.eslintcache
 
 # Optional stylelint cache
 .stylelintcache
@@ -337,9 +340,7 @@ celerybeat.pid
 
 # Environments
 .venv
-env/
 venv/
-ENV/
 env.bak/
 venv.bak/
 
@@ -420,33 +421,32 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# End of https://www.toptal.com/developers/gitignore/api/git,macos,nextjs,node,python,terraform
+### Turbo ###
+# Turborepo task cache
+.turbo
+
+# End of https://www.toptal.com/developers/gitignore/api/git,macos,nextjs,node,python,terraform,turbo
 
 # Environment variables
 .env.*
 *.env
 !.env*.example
 !apps/web/public.env
-/k8s/vault-secrets/**
-!/k8s/vault-secrets/
-!/k8s/vault-secrets/**/
-!/k8s/vault-secrets/**/*.env.example
-!/k8s/vault-secrets/README.md
 
 # Certificates
 certificates
+*.crt
 
 # Android signing
 android/keystore.properties
 android/keystore/
+*.jks
 
 # Playwright
 /test-results/
 /playwright-report/
 /playwright/.cache/
-
-# Bun
-bun.lockb
+.playwright-mcp/
 
 # Cloudflare
 .wrangler
@@ -463,8 +463,3 @@ tmp
 data/model/
 
 .open-next/
-*.crt
-
-.turbo/
-.playwright-mcp/
-*.jks
