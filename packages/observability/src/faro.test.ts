@@ -17,8 +17,8 @@ describe('FARO_IGNORED_URLS', () => {
     'https://litomi.cc/notification',
     'https://litomi.cc/api/v1/library/manga',
     'https://litomi.cc/api/v1/notification/unread-count',
-    'https://vercel.litomi.cc/api/proxy/manga/123',
-    'https://vercel.litomi.cc/api/proxy/k/new',
+    'https://proxy.litomi.cc/api/proxy/manga/123',
+    'https://proxy.litomi.cc/api/proxy/k/new',
     'https://img.litomi.cc/api/health',
   ])('traces first-party request: %s', (url) => {
     expect(isIgnored(url)).toBe(false)
