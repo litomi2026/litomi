@@ -137,13 +137,10 @@ function ErrorState({ isFetching, onRetry }: { isFetching: boolean; onRetry: () 
 
 function LoadingState() {
   return (
-    <section className="grid gap-3 p-2">
-      <div className="h-16 rounded-lg border border-zinc-800 bg-zinc-950/60" />
-      <div className={`grid ${MANGA_GRID_COLUMN.card} gap-2`}>
-        {Array.from({ length: 6 }).map((_, index) => (
-          <MangaCardSkeleton key={index} />
-        ))}
-      </div>
-    </section>
+    <div className={`grid ${MANGA_GRID_COLUMN.card} gap-2`}>
+      {Array.from({ length: 6 }).map((_, index) => (
+        <MangaCardSkeleton key={index} />
+      ))}
+    </div>
   )
 }
