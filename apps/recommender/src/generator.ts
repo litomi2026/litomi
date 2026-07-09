@@ -14,6 +14,7 @@ import {
   scoreCatalogMangaRecordByFeaturePosterior,
   type UserFeaturePosterior,
 } from './feature-posterior'
+import { log } from './log'
 import { searchMangaIdsByFeaturePosterior } from './opensearch'
 import {
   mergeCandidateRows,
@@ -41,16 +42,25 @@ export async function generateMangaRecommendationsForUser(
   const visiblePositiveSignals = visibleSignals.filter((signal) => signal.sentiment === 'positive')
   const featurePosterior = buildUserFeaturePosterior(visibleSignals, signalRecordMap)
   const candidates = new Map<number, Candidate>()
+  const candidateRecordCache = new Map<number, CatalogMangaRecord>()
 
   if (visiblePositiveSignals.length > 0) {
     mergeCandidateRows(candidates, await selectCollaborativeCandidates(userId, visiblePositiveSignals, CANDIDATE_LIMIT))
   }
 
   if (hasUsableFeaturePosterior(featurePosterior)) {
-    mergeCandidateRows(
-      candidates,
-      await selectFeaturePosteriorCandidates(userId, featurePosterior, hiddenCensorshipMatcher, censorshipRules),
+    const posterior = await selectFeaturePosteriorCandidates(
+      userId,
+      featurePosterior,
+      hiddenCensorshipMatcher,
+      censorshipRules,
     )
+
+    mergeCandidateRows(candidates, posterior.rows)
+
+    for (const record of posterior.records) {
+      candidateRecordCache.set(record.id, record)
+    }
   }
 
   const items = await scoreCandidates(
@@ -58,7 +68,9 @@ export async function generateMangaRecommendationsForUser(
     itemLimit,
     hiddenCensorshipMatcher,
     featurePosterior,
+    candidateRecordCache,
   )
+
   await replaceMangaRecommendationSet(userId, items)
 
   return items
@@ -69,19 +81,30 @@ async function selectFeaturePosteriorCandidates(
   featurePosterior: UserFeaturePosterior,
   hiddenCensorshipMatcher: CensorshipMatcher,
   censorshipRules: readonly CensorshipRule[],
-): Promise<CandidateRow[]> {
+): Promise<{ records: CatalogMangaRecord[]; rows: CandidateRow[] }> {
   const excludedMangaIds = new Set(await selectUserInteractedMangaIds(userId))
 
-  const mangaIds = await searchMangaIdsByFeaturePosterior({
-    censorshipRules,
-    excludedMangaIds: Array.from(excludedMangaIds),
-    hints: getFeaturePosteriorCatalogHints(featurePosterior),
-    limit: POSTERIOR_CANDIDATE_LIMIT,
-  })
+  let mangaIds: number[]
+
+  try {
+    mangaIds = await searchMangaIdsByFeaturePosterior({
+      censorshipRules,
+      excludedMangaIds: Array.from(excludedMangaIds),
+      hints: getFeaturePosteriorCatalogHints(featurePosterior),
+      limit: POSTERIOR_CANDIDATE_LIMIT,
+    })
+  } catch (error) {
+    // OpenSearch is a soft dependency: degrade to collaborative-only candidates when the search fails.
+    log.warn('degraded: skipping feature-posterior candidates after OpenSearch failure', {
+      error: error instanceof Error ? error.message : String(error),
+      userId,
+    })
+    return { records: [], rows: [] }
+  }
 
   const records = await selectCatalogMangaRecordsByIds(mangaIds)
 
-  return records.flatMap((record) => {
+  const rows = records.flatMap<CandidateRow>((record) => {
     if (excludedMangaIds.has(record.id) || isMangaHiddenByCensorship(record, hiddenCensorshipMatcher)) {
       return []
     }
@@ -100,6 +123,8 @@ async function selectFeaturePosteriorCandidates(
       },
     ]
   })
+
+  return { records, rows }
 }
 
 async function selectVisibleSignalsWithRecords(

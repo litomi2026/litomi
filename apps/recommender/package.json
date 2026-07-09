@@ -5,14 +5,14 @@
   "type": "module",
   "scripts": {
     "build": "bun build --compile --minify --sourcemap src/index.ts --target=bun --outfile dist/recommender",
-    "start": "bun run start:local",
-    "start:local": "bun --env-file=.env.local src/index.ts",
-    "start:prod": "bun --env-file=.env.prod.runtime src/index.ts",
+    "start": "bun run generate:local",
+    "generate:local": "bun --env-file=.env.local src/index.ts generate",
+    "generate:prod": "bun --env-file=.env.prod.runtime src/index.ts generate",
+    "sync-index:local": "bun --env-file=.env.local src/index.ts sync-index",
+    "sync-index:prod": "bun --env-file=.env.prod.runtime src/index.ts sync-index",
     "type": "tsc --noEmit",
     "docker:build": "docker build -f Dockerfile -t litomi-recommender-local ../..",
-    "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-recommender-local",
-    "opensearch:local": "bun --env-file=.env.local src/opensearch-sync.ts",
-    "opensearch:prod": "bun --env-file=.env.prod.runtime src/opensearch-sync.ts"
+    "docker:run": "docker run --rm --env-file .env.prod.runtime litomi-recommender-local generate"
   },
   "dependencies": {
     "@litomi/catalog": "workspace:*",
