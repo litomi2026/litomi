@@ -6,8 +6,8 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
+import useIsAdultGateError from '@/hook/useIsAdultGateError'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import Loading from './loading'
 import MangaReader from './MangaReader'
 import usePageMetadata from './usePageMetadata'
@@ -24,8 +24,9 @@ type Translator = ReturnType<typeof useTranslations>
 export default function MangaPage({ id, initialManga }: Props) {
   const [isAdClicked, setIsAdClicked] = useState(false)
   const { isLoading, mangaMap, errorMap } = useMangaListCachedQuery({ mangaIds: [id] })
-  const unlockT = useTranslations('MangaViewer.unlock')
+  const isAdultGate = useIsAdultGateError(errorMap.get(id))
   const metadataT = useTranslations('MangaViewer.metadata')
+  const unlockT = useTranslations('MangaViewer.unlock')
   const guardT = useTranslations('Common.guard')
 
   const manga = prepareManga(mangaMap.get(id), initialManga)
@@ -38,7 +39,7 @@ export default function MangaPage({ id, initialManga }: Props) {
     return <Loading />
   }
 
-  if (isAdultVerificationRequiredError(errorMap.get(id))) {
+  if (isAdultGate) {
     return (
       <div className="flex h-full">
         <AdultVerificationGate description={guardT('adultDescription')} />

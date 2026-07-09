@@ -1,5 +1,5 @@
 import { clearanceGate } from '@/lib/cloudflare/clearance'
-import { fetchResponseData, HTTPResponseError } from '@/utils/fetch-response'
+import { fetchResponseData, OpaqueOriginError } from '@/utils/fetch-response'
 
 export async function fetchProxyAPIData<T>(input: string | Request | URL, init?: RequestInit) {
   const request = new Request(input, { ...init, credentials: 'include' })
@@ -9,8 +9,8 @@ export async function fetchProxyAPIData<T>(input: string | Request | URL, init?:
     return await fetchResponseData<T>(request.clone())
   } catch (error) {
     if (!clearanceGate.reportFetchError(error) || request.method !== 'GET') {
-      if (error instanceof TypeError && typeof navigator !== 'undefined' && navigator.onLine) {
-        throw new HTTPResponseError(new Response(null, { status: 403 }))
+      if (isOnlineFetchTypeError(error)) {
+        throw new OpaqueOriginError({ cause: error })
       }
 
       throw error
@@ -19,8 +19,8 @@ export async function fetchProxyAPIData<T>(input: string | Request | URL, init?:
     try {
       await clearanceGate.wait()
     } catch {
-      if (error instanceof TypeError && typeof navigator !== 'undefined' && navigator.onLine) {
-        throw new HTTPResponseError(new Response(null, { status: 403 }))
+      if (isOnlineFetchTypeError(error)) {
+        throw new OpaqueOriginError({ cause: error })
       }
 
       throw error
@@ -29,11 +29,15 @@ export async function fetchProxyAPIData<T>(input: string | Request | URL, init?:
     try {
       return await fetchResponseData<T>(request.clone())
     } catch (retryError) {
-      if (retryError instanceof TypeError && typeof navigator !== 'undefined' && navigator.onLine) {
-        throw new HTTPResponseError(new Response(null, { status: 403 }))
+      if (isOnlineFetchTypeError(retryError)) {
+        throw new OpaqueOriginError({ cause: retryError })
       }
 
       throw retryError
     }
   }
+}
+
+function isOnlineFetchTypeError(error: unknown): boolean {
+  return error instanceof TypeError && typeof navigator !== 'undefined' && navigator.onLine
 }

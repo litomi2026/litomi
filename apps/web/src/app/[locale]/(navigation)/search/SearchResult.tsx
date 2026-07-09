@@ -19,8 +19,8 @@ import { insertNativeGridSponsorItem, type NativeGridSponsorItem } from '@/compo
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import VirtualMangaGrid from '@/components/virtual/VirtualMangaGrid'
 import type { VirtualMangaGridItem } from '@/components/virtual/VirtualMangaGrid.types'
+import useIsAdultGateError from '@/hook/useIsAdultGateError'
 import useMangaCensorship from '@/hook/useMangaCensorship'
-import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { ProblemDetailsError } from '@/utils/fetch-response'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
@@ -93,6 +93,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
     error,
   } = useSearchQuery(params)
 
+  const isAdultGate = useIsAdultGateError(error)
   const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
   const visibleMangas = mangas.filter(isVisible)
   const showRefreshButton = params.get(SearchParam.SORT) === SearchSort.RANDOM
@@ -176,7 +177,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
   }
 
   if (error) {
-    if (isAdultVerificationRequiredError(error)) {
+    if (isAdultGate) {
       return (
         <SearchSpacer>
           <AdultVerificationGate description={guardT('adultDescription')} />
