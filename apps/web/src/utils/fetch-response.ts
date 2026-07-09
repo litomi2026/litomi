@@ -56,6 +56,16 @@ export class ProblemDetailsError extends Error {
   }
 }
 
+// 브라우저가 cross-origin 응답을 CORS로 가려 실제 상태(예: 성인 WAF 403 차단 vs 오리진 530)를 읽을 수 없는 실패.
+// 두 원인이 동일하게 opaque TypeError로 관측되므로, 성인 게이트/일반 오류 분류는 호출부가 사용자 상태로 판단한다.
+export class OpaqueOriginError extends Error {
+  readonly name = 'OpaqueOriginError'
+
+  constructor(options?: { cause?: unknown }) {
+    super('Origin response was blocked or unreachable', options)
+  }
+}
+
 export async function fetchResponseData<T>(
   input: string | Request | URL,
   init?: RequestInit,

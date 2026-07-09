@@ -10,8 +10,8 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import NativeGridSponsorCard from '@/components/card/NativeGridSponsorCard'
 import { insertNativeGridSponsorItem } from '@/components/sponsor/nativeGridSponsorItem'
+import useIsAdultGateError from '@/hook/useIsAdultGateError'
 import useMangaCensorship from '@/hook/useMangaCensorship'
-import { isAdultVerificationRequiredError } from '@/utils/adult-verification-error'
 import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import { useNewMangaQuery } from './useNewMangaQuery'
@@ -23,6 +23,7 @@ type Props = {
 
 export default function NewMangaList({ nativeGridSponsor, page }: Props) {
   const { data: mangas, isLoading, error } = useNewMangaQuery({ page })
+  const isAdultGate = useIsAdultGateError(error)
   const { isVisible } = useMangaCensorship()
   const t = useTranslations('Common.manga')
   const guardT = useTranslations('Common.guard')
@@ -50,7 +51,7 @@ export default function NewMangaList({ nativeGridSponsor, page }: Props) {
     )
   }
 
-  if (isAdultVerificationRequiredError(error)) {
+  if (isAdultGate) {
     return <AdultVerificationGate description={guardT('adultDescription')} />
   }
 
