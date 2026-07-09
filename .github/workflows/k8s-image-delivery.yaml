@@ -497,7 +497,7 @@ jobs:
       OPS_REPOSITORY: ${{ github.repository_owner }}/litomi-ops
       OPS_PATH: litomi-ops
       # Terraform이 jsondecode(file())로 읽는 일반 JSON(.tfvars가 아니라서 litomi-ops .gitignore에 안 걸림).
-      OPS_PROXY_IMAGE_FILE: infra/gcp/proxy/image.json
+      OPS_PROXY_IMAGE_FILE: infra/gcp/image.json
       IMAGE_PROXY: ghcr.io/${{ github.repository_owner }}/litomi-proxy
       IMAGE_PROXY_DIGEST: ${{ needs.build-and-publish-proxy-image.outputs.digest }}
     steps:
@@ -547,13 +547,13 @@ jobs:
           commit-message: 'chore(gcp): promote proxy image digest'
           title: 'chore(gcp): promote proxy image digest'
           body: |
-            This PR updates the litomi-ops Terraform input for the Cloud Run proxy to the latest immutable image digest built from `litomi` `main`.
+            This PR updates the litomi-ops Terraform input for the Cloud Run proxies to the latest immutable image digest built from `litomi` `main`.
 
             - Proxy: `${{ env.IMAGE_PROXY }}@${{ env.IMAGE_PROXY_DIGEST }}`
             - Source commit: `${{ github.sha }}`
             - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            HCP Terraform (`gcp-proxy` workspace) plans on this PR and applies on merge.
+            Every `gcp-proxy*` HCP Terraform workspace reads this shared digest, so all Cloud Run proxy accounts plan on this PR and apply on merge.
           base: main
 
       - name: Report proxy promotion PR
