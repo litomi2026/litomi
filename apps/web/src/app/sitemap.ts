@@ -24,7 +24,7 @@ const PRIORITY_LEVELS = {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    ...generateNewMangaPages(),
+    ...localizedSitemapEntries('/new', 'daily', PRIORITY_LEVELS.MAIN_SECTIONS),
     ...generateSearchPages(),
     ...generateRankingPages(),
     ...generatePopularMangaPages(),
@@ -45,16 +45,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...localizedSitemapEntries('/auth/login', 'yearly', PRIORITY_LEVELS.AUTH),
     ...localizedSitemapEntries('/auth/signup', 'yearly', PRIORITY_LEVELS.AUTH),
   ]
-}
-
-function generateNewMangaPages(): MetadataRoute.Sitemap {
-  const pages = []
-
-  for (let i = 1; i <= 10; i++) {
-    pages.push(...localizedSitemapEntries(`/new/${i}`, 'daily', PRIORITY_LEVELS.MAIN_SECTIONS))
-  }
-
-  return pages
 }
 
 function generatePopularMangaPages(): MetadataRoute.Sitemap {

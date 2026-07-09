@@ -26,7 +26,7 @@ export default async function Forbidden() {
       title={t('title')}
     >
       <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
-        <StatusActionLink className="max-w-none" href="/new/1" variant="secondary">
+        <StatusActionLink className="max-w-none" href="/new" variant="secondary">
           {t('newAction')}
         </StatusActionLink>
         <StatusActionLink className="max-w-none" href="/">

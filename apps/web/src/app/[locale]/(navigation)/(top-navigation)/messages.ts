@@ -12,7 +12,6 @@ export const messages = {
         },
         new: {
           title: '신작',
-          pagedTitle: '신작 {page}페이지',
           description: '새로 추가된 작품을 최신순으로 확인하세요.',
         },
         random: {
@@ -125,7 +124,6 @@ export const messages = {
         },
         new: {
           title: 'New',
-          pagedTitle: 'New Manga Page {page}',
           description: 'Browse newly added manga in latest order.',
         },
         random: {
@@ -238,7 +236,6 @@ export const messages = {
         },
         new: {
           title: '新着',
-          pagedTitle: '新着作品 {page}ページ',
           description: '新しく追加された作品を新着順で確認しましょう。',
         },
         random: {
@@ -351,7 +348,6 @@ export const messages = {
         },
         new: {
           title: '新作',
-          pagedTitle: '新作第 {page} 页',
           description: '按最新顺序查看新添加的作品。',
         },
         random: {
