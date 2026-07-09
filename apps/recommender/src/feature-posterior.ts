@@ -1,4 +1,4 @@
-import type { CatalogMangaRecord } from '@litomi/db/catalog/query'
+import type { CatalogMangaScoringRecord } from '@litomi/db/catalog/query'
 
 import {
   addMangaRecommendationReason,
@@ -108,7 +108,7 @@ const FEATURE_POLICIES: Record<
 
 export function buildUserFeaturePosterior(
   signals: readonly PreferenceSignal[],
-  recordMap: ReadonlyMap<number, CatalogMangaRecord>,
+  recordMap: ReadonlyMap<number, CatalogMangaScoringRecord>,
 ): UserFeaturePosterior {
   const evidenceByKind = createFeatureEvidenceMap()
 
@@ -153,7 +153,7 @@ export function hasUsableFeaturePosterior(posterior: UserFeaturePosterior) {
 }
 
 export function scoreCatalogMangaRecordByFeaturePosterior(
-  record: CatalogMangaRecord,
+  record: CatalogMangaScoringRecord,
   posterior: UserFeaturePosterior,
 ): FeaturePosteriorMatch {
   const scoreByKind = createFeatureScoreMap()

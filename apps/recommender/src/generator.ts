@@ -1,4 +1,4 @@
-import { type CatalogMangaRecord, selectCatalogMangaRecordsByIds } from '@litomi/db/catalog/query'
+import { type CatalogMangaScoringRecord, selectCatalogMangaScoringRecordsByIds } from '@litomi/db/catalog/query'
 import { CensorshipLevel } from '@litomi/domain/censorship/model'
 import { MANGA_RECOMMENDATION_ITEM_LIMIT } from '@litomi/domain/manga-recommendation/policy'
 import {
@@ -42,7 +42,7 @@ export async function generateMangaRecommendationsForUser(
   const visiblePositiveSignals = visibleSignals.filter((signal) => signal.sentiment === 'positive')
   const featurePosterior = buildUserFeaturePosterior(visibleSignals, signalRecordMap)
   const candidates = new Map<number, Candidate>()
-  const candidateRecordCache = new Map<number, CatalogMangaRecord>()
+  const candidateRecordCache = new Map<number, CatalogMangaScoringRecord>()
 
   if (visiblePositiveSignals.length > 0) {
     mergeCandidateRows(candidates, await selectCollaborativeCandidates(userId, visiblePositiveSignals, CANDIDATE_LIMIT))
@@ -81,7 +81,7 @@ async function selectFeaturePosteriorCandidates(
   featurePosterior: UserFeaturePosterior,
   hiddenCensorshipMatcher: CensorshipMatcher,
   censorshipRules: readonly CensorshipRule[],
-): Promise<{ records: CatalogMangaRecord[]; rows: CandidateRow[] }> {
+): Promise<{ records: CatalogMangaScoringRecord[]; rows: CandidateRow[] }> {
   const excludedMangaIds = new Set(await selectUserInteractedMangaIds(userId))
 
   let mangaIds: number[]
@@ -102,7 +102,7 @@ async function selectFeaturePosteriorCandidates(
     return { records: [], rows: [] }
   }
 
-  const records = await selectCatalogMangaRecordsByIds(mangaIds)
+  const records = await selectCatalogMangaScoringRecordsByIds(mangaIds)
 
   const rows = records.flatMap<CandidateRow>((record) => {
     if (excludedMangaIds.has(record.id) || isMangaHiddenByCensorship(record, hiddenCensorshipMatcher)) {
@@ -130,7 +130,7 @@ async function selectFeaturePosteriorCandidates(
 async function selectVisibleSignalsWithRecords(
   signals: PreferenceSignal[],
   hiddenCensorshipMatcher: CensorshipMatcher,
-): Promise<{ signalRecordMap: Map<number, CatalogMangaRecord>; visibleSignals: PreferenceSignal[] }> {
+): Promise<{ signalRecordMap: Map<number, CatalogMangaScoringRecord>; visibleSignals: PreferenceSignal[] }> {
   if (signals.length === 0) {
     return {
       signalRecordMap: new Map(),
@@ -138,7 +138,7 @@ async function selectVisibleSignalsWithRecords(
     }
   }
 
-  const records = await selectCatalogMangaRecordsByIds(signals.map((signal) => signal.mangaId))
+  const records = await selectCatalogMangaScoringRecordsByIds(signals.map((signal) => signal.mangaId))
   const recordMap = new Map(records.map((record) => [record.id, record]))
 
   if (hiddenCensorshipMatcher.size === 0) {

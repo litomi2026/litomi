@@ -39,6 +39,24 @@ export type CatalogMangaRecord = {
   tagCategories: number[]
 }
 
+const catalogMangaScoringColumns = {
+  id: mangaTable.id,
+  title: mangaTable.title,
+  type: mangaTable.type,
+  count: mangaTable.count,
+  createdAt: mangaTable.createdAt,
+  artists: mangaTable.artists,
+  characters: mangaTable.characters,
+  series: mangaTable.series,
+  groups: mangaTable.groups,
+  languages: mangaTable.languages,
+  uploader: mangaTable.uploader,
+  tagValues: mangaTable.tagValues,
+  tagCategories: mangaTable.tagCategories,
+}
+
+export type CatalogMangaScoringRecord = Omit<CatalogMangaRecord, 'description' | 'lines'>
+
 export async function selectCatalogMangaRecordById(id: number): Promise<CatalogMangaRecord | null> {
   const [record] = await catalogDB.select(catalogMangaColumns).from(mangaTable).where(eq(mangaTable.id, id))
 
@@ -53,4 +71,16 @@ export async function selectCatalogMangaRecordsByIds(ids: readonly number[]): Pr
   }
 
   return await catalogDB.select(catalogMangaColumns).from(mangaTable).where(inArray(mangaTable.id, uniqueIds))
+}
+
+export async function selectCatalogMangaScoringRecordsByIds(
+  ids: readonly number[],
+): Promise<CatalogMangaScoringRecord[]> {
+  const uniqueIds = Array.from(new Set(ids))
+
+  if (uniqueIds.length === 0) {
+    return []
+  }
+
+  return await catalogDB.select(catalogMangaScoringColumns).from(mangaTable).where(inArray(mangaTable.id, uniqueIds))
 }
