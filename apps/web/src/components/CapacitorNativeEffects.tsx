@@ -1,13 +1,12 @@
 'use client'
 
+import { useTheme } from 'next-themes'
 import { useEffect } from 'react'
-
-import { useThemeStore } from '@/store/theme'
+import { Theme } from '@/theme'
 import { checkCapacitorApp } from '@/utils/browser'
-import { getNativeSystemBarsStyle } from '@/utils/native-app'
 
 export default function CapacitorNativeEffects() {
-  const theme = useThemeStore((state) => state.theme)
+  const { resolvedTheme } = useTheme()
 
   // NOTE: 시스템 바 스타일을 적용해요
   useEffect(() => {
@@ -25,7 +24,7 @@ export default function CapacitorNativeEffects() {
           return
         }
 
-        const style = getNativeSystemBarsStyle(theme) === 'LIGHT' ? SystemBarsStyle.Light : SystemBarsStyle.Dark
+        const style = resolvedTheme === Theme.LIGHT ? SystemBarsStyle.Light : SystemBarsStyle.Dark
         await SystemBars.setStyle({ style })
       } catch (error) {
         console.error('시스템 바 스타일 적용에 실패했어요:', error)
@@ -37,6 +36,6 @@ export default function CapacitorNativeEffects() {
     return () => {
       cancelled = true
     }
-  }, [theme])
+  }, [resolvedTheme])
   return null
 }

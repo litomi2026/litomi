@@ -36,6 +36,10 @@ export const messages = {
       },
       theme: {
         options: {
+          system: {
+            label: '자동',
+            description: '기기 설정에 맞춰 자동으로 전환돼요',
+          },
           light: {
             label: '라이트',
             description: '밝고 깔끔한 화이트 테마',
@@ -89,6 +93,10 @@ export const messages = {
       },
       theme: {
         options: {
+          system: {
+            label: 'System',
+            description: 'Follows your device settings',
+          },
           light: {
             label: 'Light',
             description: 'Bright, clean white theme',
@@ -142,6 +150,10 @@ export const messages = {
       },
       theme: {
         options: {
+          system: {
+            label: 'システム',
+            description: 'デバイスの設定に合わせて切り替わります',
+          },
           light: {
             label: 'ライト',
             description: '明るくすっきりしたホワイトテーマ',
@@ -195,6 +207,10 @@ export const messages = {
       },
       theme: {
         options: {
+          system: {
+            label: '跟随系统',
+            description: '跟随设备的浅色或深色设置',
+          },
           light: {
             label: '浅色',
             description: '明亮简洁的白色主题',

@@ -71,7 +71,7 @@ export default function RecommendMangaPageClient() {
   return (
     <>
       <JuicyAdsBanner />
-      <section className="flex flex-col gap-3 p-2">
+      <section className="flex flex-col gap-2">
         <header className="flex flex-wrap items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950/60 p-3">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">
