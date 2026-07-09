@@ -45,7 +45,7 @@ export async function handleHiyobiNewProxy(c: Context): Promise<Response> {
     const cacheControlHeader = createCacheControlHeaders({
       cloudflare: {
         public: true,
-        maxAge: sec('4 hours'),
+        maxAge: sec('1 hour'),
       },
       browser: {
         public: true,

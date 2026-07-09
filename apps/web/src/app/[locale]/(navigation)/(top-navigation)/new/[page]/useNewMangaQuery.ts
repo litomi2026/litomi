@@ -7,7 +7,7 @@ import { useLocale } from 'next-intl'
 import { QueryKeys } from '@/lib/react-query/query-keys'
 import { fetchProxyAPIData } from '@/utils/proxy-api-request'
 
-const { NEXT_PUBLIC_PROXY_NEW_ORIGIN } = env
+const { NEXT_PUBLIC_PROXY_SEARCH_ORIGIN } = env
 
 type QueryOptions = {
   page: number
@@ -23,7 +23,7 @@ export function useNewMangaQuery({ page }: QueryOptions) {
 }
 
 async function fetchNewManga(page: number, locale: string) {
-  const url = new URL('/api/proxy/hiyobi/new', NEXT_PUBLIC_PROXY_NEW_ORIGIN)
+  const url = new URL('/api/proxy/hiyobi/new', NEXT_PUBLIC_PROXY_SEARCH_ORIGIN)
   url.searchParams.set('page', String(page))
   url.searchParams.set('locale', locale)
 

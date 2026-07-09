@@ -20,7 +20,6 @@ process.env.NEXT_PUBLIC_APP_ORIGIN ??= 'http://localhost:3000'
 process.env.NEXT_PUBLIC_IMAGE_PROXY_ORIGIN ??= 'https://example.com'
 process.env.NEXT_PUBLIC_PROXY_SEARCH_ORIGIN ??= 'https://example.com'
 process.env.NEXT_PUBLIC_PROXY_MANGA_ORIGIN ??= process.env.NEXT_PUBLIC_PROXY_SEARCH_ORIGIN
-process.env.NEXT_PUBLIC_PROXY_NEW_ORIGIN ??= process.env.NEXT_PUBLIC_PROXY_SEARCH_ORIGIN
 process.env.JWT_SECRET_ACCESS_TOKEN ??= 'test-jwt-access'
 process.env.JWT_SECRET_REFRESH_TOKEN ??= 'test-jwt-refresh'
 process.env.JWT_SECRET_TRUSTED_DEVICE ??= 'test-jwt-trusted'
