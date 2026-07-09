@@ -14,7 +14,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchProxyAPIData } from '@/utils/proxy-api-request'
 
-const { NEXT_PUBLIC_PROXY_RANDOM_ORIGIN } = env
+const { NEXT_PUBLIC_PROXY_SEARCH_ORIGIN } = env
 
 type ProxyRandomResponse = {
   mangas: Manga[]
@@ -44,7 +44,7 @@ export function useRandomMangaQuery() {
 }
 
 async function fetchRandomManga(params: URLSearchParams, locale: string) {
-  const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_PROXY_RANDOM_ORIGIN)
+  const url = new URL('/api/proxy/k/search', NEXT_PUBLIC_PROXY_SEARCH_ORIGIN)
   const requestParams = new URLSearchParams(params)
   requestParams.set('locale', locale)
   url.search = createCanonicalSearchParams(requestParams).toString()
