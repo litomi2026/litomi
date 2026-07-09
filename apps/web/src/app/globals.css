@@ -182,6 +182,8 @@
 }
 
 [data-theme='light'] {
+  color-scheme: light;
+
   --color-background: #ffffff;
   --color-foreground: #0a0a0a;
   --color-brand-start: #3b82f6;
@@ -246,12 +248,16 @@
 }
 
 [data-theme='dark'] {
+  color-scheme: dark;
+
   --color-background: #0a0a0a;
   --color-foreground: #ededed;
   --color-zinc-700: oklch(37% 0.013 285.805);
 }
 
 [data-theme='neon'] {
+  color-scheme: dark;
+
   --color-background: #0a0014;
   --color-foreground: #00ff9f;
   --color-brand-start: #ff00ff;
@@ -272,6 +278,8 @@
 }
 
 [data-theme='retro'] {
+  color-scheme: dark;
+
   --color-background: #2b1810;
   --color-foreground: #f4e4c1;
   --color-brand-start: #ff6b35;

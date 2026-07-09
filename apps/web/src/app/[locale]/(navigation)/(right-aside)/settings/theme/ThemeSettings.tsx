@@ -1,42 +1,52 @@
 'use client'
 
-import { Check, Moon, Palette, Sparkles, Sun } from 'lucide-react'
+import { Check, Monitor, Moon, Palette, Sparkles, Sun } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { Theme, useThemeStore } from '@/store/theme'
+import { Theme } from '@/theme'
 
-const THEMES = [
+const SYSTEM_THEME = 'system'
+
+const THEME_OPTIONS = [
+  {
+    value: SYSTEM_THEME,
+    Icon: Monitor,
+  },
   {
     value: Theme.LIGHT,
-    messageKey: 'light',
     Icon: Sun,
   },
   {
     value: Theme.DARK,
-    messageKey: 'dark',
     Icon: Moon,
   },
   {
     value: Theme.NEON,
-    messageKey: 'neon',
     Icon: Sparkles,
   },
   {
     value: Theme.RETRO,
-    messageKey: 'retro',
     Icon: Palette,
   },
 ] as const
 
 export default function ThemeSettings() {
-  const { theme, setTheme } = useThemeStore()
+  const { theme, setTheme, systemTheme } = useTheme()
   const t = useTranslations('Settings.theme')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <div className="grid gap-2">
-      {THEMES.map(({ value, messageKey, Icon }) => {
-        const isSelected = theme === value
+      {THEME_OPTIONS.map(({ value, Icon }) => {
+        const isSelected = mounted && theme === value
+        const swatchTheme = value === SYSTEM_THEME ? systemTheme : value
 
         return (
           <button
@@ -51,13 +61,13 @@ export default function ThemeSettings() {
           >
             <div
               className="size-10 rounded-lg shrink-0 flex items-center justify-center border border-zinc-700 bg-background"
-              data-theme={value}
+              data-theme={swatchTheme}
             >
               <Icon className="size-5 text-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-medium">{t(`options.${messageKey}.label`)}</div>
-              <div className="text-sm text-zinc-400">{t(`options.${messageKey}.description`)}</div>
+              <div className="font-medium">{t(`options.${value}.label`)}</div>
+              <div className="text-sm text-zinc-400">{t(`options.${value}.description`)}</div>
             </div>
             {isSelected && <Check className="size-5 text-brand shrink-0" />}
           </button>

@@ -8,9 +8,9 @@ import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
 import { NextIntlClientProvider } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
+import { ThemeProvider } from 'next-themes'
 import type { ReactNode } from 'react'
 import { Toaster } from 'sonner'
-
 import CapacitorNativeEffects from '@/components/CapacitorNativeEffects'
 import LibraryModal from '@/components/card/LibraryModal'
 import MangaTorrentModal from '@/components/card/MangaTorrentModal'
@@ -19,12 +19,12 @@ import { MangaDetailModal } from '@/components/MangaDetailModal'
 import OriginProtectionTurnstile from '@/components/OriginProtectionTurnstile'
 import SEOText from '@/components/SEOText'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
-import ThemeProvider from '@/components/ThemeProvider'
 import OverlayHost from '@/components/ui/OverlayHost'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
 import QueryProvider from '@/lib/react-query/QueryProvider'
-
+import { LocalStorageKey } from '@/storage'
+import { DEFAULT_THEME, THEMES } from '@/theme'
 import NewYearToastNudge from './nye/NewYearToastNudge'
 
 const { NEXT_PUBLIC_APP_ORIGIN, NEXT_PUBLIC_GTM_ID } = env
@@ -102,39 +102,46 @@ export default async function RootLayout({ children, params }: Props) {
   const appMetadata = APP_METADATA[locale]
 
   return (
-    <html className="h-full" lang={locale}>
+    <html className="h-full" lang={locale} suppressHydrationWarning>
       <head>
         <meta content={appMetadata.shortName} name="apple-mobile-web-app-title" />
         <meta content="f9b44ff18cfe0010c3c2eeab98eb7a9c" name="juicyads-site-verification" />
         <meta content="c8c42155770cd0c29a31f02c8a926ed2" name="6a97888e-site-verification" />
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
-        <ThemeProvider />
-        <CapacitorNativeEffects />
-        <NextIntlClientProvider>
-          <OverlayHost>
-            <Toaster
-              className="pointer-events-auto notranslate"
-              mobileOffset={{ top: 'calc(1rem + var(--safe-area-top))' }}
-              position="top-center"
-              theme="system"
-            />
-          </OverlayHost>
-          <QueryProvider>
-            {children}
-            <LibraryModal />
-            <MangaDetailModal />
-            <MangaTorrentModal />
-          </QueryProvider>
-          <NewYearToastNudge />
-          <OriginProtectionTurnstile />
-        </NextIntlClientProvider>
-        <ServiceWorkerRegistrar />
-        <HiyobiPing />
-        {NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} />}
-        <p className="h-0 overflow-hidden tracking-widest invisible">
-          <SEOText />
-        </p>
+        <ThemeProvider
+          defaultTheme={DEFAULT_THEME}
+          disableTransitionOnChange
+          enableColorScheme={false}
+          storageKey={LocalStorageKey.THEME}
+          themes={THEMES}
+        >
+          <CapacitorNativeEffects />
+          <NextIntlClientProvider>
+            <OverlayHost>
+              <Toaster
+                className="pointer-events-auto notranslate"
+                mobileOffset={{ top: 'calc(1rem + var(--safe-area-top))' }}
+                position="top-center"
+                theme="system"
+              />
+            </OverlayHost>
+            <QueryProvider>
+              {children}
+              <LibraryModal />
+              <MangaDetailModal />
+              <MangaTorrentModal />
+            </QueryProvider>
+            <NewYearToastNudge />
+            <OriginProtectionTurnstile />
+          </NextIntlClientProvider>
+          <ServiceWorkerRegistrar />
+          <HiyobiPing />
+          {NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} />}
+          <p className="h-0 overflow-hidden tracking-widest invisible">
+            <SEOText />
+          </p>
+        </ThemeProvider>
       </body>
     </html>
   )
