@@ -13,7 +13,7 @@ import { QueryKeys } from '@/lib/react-query/query-keys'
 import { createLoadingManga } from '@/utils/manga-placeholder'
 import { fetchProxyAPIData } from '@/utils/proxy-api-request'
 
-const { NEXT_PUBLIC_PROXY_MANGA_ORIGIN } = env
+const { NEXT_PUBLIC_PROXY_ORIGIN } = env
 
 const DEFAULT_STALE_TIME = ms('1 hour')
 const DEFAULT_GC_TIME = ms('2 hours')
@@ -104,7 +104,7 @@ export default function useMangaListCachedQuery({
         throw new InactiveQueuedMangaRequestError()
       }
 
-      const url = new URL(`/api/proxy/manga/${id}`, NEXT_PUBLIC_PROXY_MANGA_ORIGIN)
+      const url = new URL(`/api/proxy/manga/${id}`, NEXT_PUBLIC_PROXY_ORIGIN)
       url.searchParams.set('locale', locale)
       const { data, response } = await fetchProxyAPIData<Manga>(url)
 
