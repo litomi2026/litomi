@@ -1,5 +1,3 @@
-import type { Manga } from '@litomi/domain/manga/model'
-
 export type Candidate = {
   mangaId: number
   reasonMask: number
@@ -22,7 +20,6 @@ export type MangaRecommendation = {
   reasonMask: number
   score: number
   generatedAt: Date
-  manga?: Manga
 }
 
 export type PreferenceSignal = Signal & {

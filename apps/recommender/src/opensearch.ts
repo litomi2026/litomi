@@ -1,5 +1,5 @@
 import { catalogDB } from '@litomi/db/catalog'
-import type { CatalogMangaRecord } from '@litomi/db/catalog/query'
+import type { CatalogMangaScoringRecord } from '@litomi/db/catalog/query'
 import { mangaTable } from '@litomi/db/catalog/schema'
 import { CensorshipKey } from '@litomi/domain/censorship/model'
 import { MANGA_TYPE_VALUE_BY_ID, TagCategory } from '@litomi/domain/manga/model'
@@ -24,8 +24,6 @@ const SYNC_BULK_REQUEST_TIMEOUT_MS = 60_000
 const catalogMangaColumns = {
   id: mangaTable.id,
   title: mangaTable.title,
-  description: mangaTable.description,
-  lines: mangaTable.lines,
   type: mangaTable.type,
   count: mangaTable.count,
   createdAt: mangaTable.createdAt,
@@ -123,7 +121,7 @@ export async function syncMangaSearchIndex({ batchSize = 1_000 }: SyncMangaSearc
   await createMangaSearchIndex(indexName)
 
   while (true) {
-    const records = await selectCatalogMangaRecordsForSearchIndexSync({ afterId, limit: batchSize })
+    const records = await selectCatalogMangaScoringRecordsForSearchIndexSync({ afterId, limit: batchSize })
 
     if (records.length === 0) {
       break
@@ -152,7 +150,7 @@ function addCensorshipKeys(keys: string[], key: CensorshipKey, values: readonly 
   }
 }
 
-async function bulkIndexMangaRecords(indexName: string, records: readonly CatalogMangaRecord[]) {
+async function bulkIndexMangaRecords(indexName: string, records: readonly CatalogMangaScoringRecord[]) {
   if (records.length === 0) {
     return
   }
@@ -242,7 +240,7 @@ function createMangaIndexBody() {
   }
 }
 
-function createMangaSearchDocument(record: CatalogMangaRecord) {
+function createMangaSearchDocument(record: CatalogMangaScoringRecord) {
   return {
     artists: record.artists,
     censorshipKeys: getMangaCensorshipKeys(record),
@@ -325,7 +323,7 @@ async function getAliasIndexNames(alias: string) {
   }
 }
 
-function getMangaCensorshipKeys(record: CatalogMangaRecord) {
+function getMangaCensorshipKeys(record: CatalogMangaScoringRecord) {
   const keys: string[] = []
 
   addCensorshipKeys(keys, CensorshipKey.ARTIST, record.artists)
@@ -462,13 +460,13 @@ function roundBoost(boost: number) {
   return Math.max(0.001, Math.round(boost * 1_000) / 1_000)
 }
 
-async function selectCatalogMangaRecordsForSearchIndexSync({
+async function selectCatalogMangaScoringRecordsForSearchIndexSync({
   afterId = 0,
   limit,
 }: {
   afterId?: number
   limit: number
-}): Promise<CatalogMangaRecord[]> {
+}): Promise<CatalogMangaScoringRecord[]> {
   return await catalogDB
     .select(catalogMangaColumns)
     .from(mangaTable)

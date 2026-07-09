@@ -1,7 +1,4 @@
-import { catalogMangaRecordsToMangaMap } from '@litomi/catalog/manga'
-import { type CatalogMangaRecord, selectCatalogMangaRecordsByIds } from '@litomi/db/catalog/query'
-import { Locale } from '@litomi/domain/locale'
-import type { Manga } from '@litomi/domain/manga/model'
+import { type CatalogMangaScoringRecord, selectCatalogMangaScoringRecordsByIds } from '@litomi/db/catalog/query'
 import { addMangaRecommendationReason } from '@litomi/domain/manga-recommendation/reason'
 import { type CensorshipMatcher, isMangaHiddenByCensorship } from './censorship'
 import { scoreCatalogMangaRecordByFeaturePosterior, type UserFeaturePosterior } from './feature-posterior'
@@ -21,7 +18,6 @@ type AgeBucket = 'evergreen' | 'fresh' | 'recent' | 'unknown'
 
 type ScoreCandidateContext = {
   featurePosterior: UserFeaturePosterior
-  mangaMap: Map<number, Manga>
   now: number
   hiddenCensorshipMatcher: CensorshipMatcher
 }
@@ -43,7 +39,7 @@ export async function scoreCandidates(
   limit: number,
   hiddenCensorshipMatcher: CensorshipMatcher,
   featurePosterior: UserFeaturePosterior,
-  recordCache: ReadonlyMap<number, CatalogMangaRecord> = new Map(),
+  recordCache: ReadonlyMap<number, CatalogMangaScoringRecord> = new Map(),
 ): Promise<MangaRecommendation[]> {
   if (candidates.length === 0) {
     return []
@@ -51,21 +47,15 @@ export async function scoreCandidates(
 
   const candidateIds = candidates.map((candidate) => candidate.mangaId)
   const missingIds = candidateIds.filter((id) => !recordCache.has(id))
-  const fetchedRecords = missingIds.length > 0 ? await selectCatalogMangaRecordsByIds(missingIds) : []
+  const fetchedRecords = missingIds.length > 0 ? await selectCatalogMangaScoringRecordsByIds(missingIds) : []
   const recordMap = new Map(recordCache)
 
   for (const record of fetchedRecords) {
     recordMap.set(record.id, record)
   }
 
-  const records = candidateIds.flatMap((id) => {
-    const record = recordMap.get(id)
-    return record ? [record] : []
-  })
-
-  const mangaMap = catalogMangaRecordsToMangaMap(records, Locale.KO)
   const now = Date.now()
-  const context = { featurePosterior, mangaMap, now, hiddenCensorshipMatcher }
+  const context = { featurePosterior, now, hiddenCensorshipMatcher }
 
   const scoredCandidates = candidates
     .map((candidate) => scoreCandidate(candidate, recordMap.get(candidate.mangaId), context))
@@ -139,7 +129,7 @@ function getAgeBucket(createdAt: Date | null, now: number): AgeBucket {
   return 'evergreen'
 }
 
-function getDiversityKeys(record: CatalogMangaRecord) {
+function getDiversityKeys(record: CatalogMangaScoringRecord) {
   return [
     ...record.series.map((value) => `series:${value}`),
     ...record.artists.map((value) => `artist:${value}`),
@@ -166,20 +156,14 @@ function getFeatureRepeatPenalty(key: string) {
 
 function scoreCandidate(
   candidate: Candidate,
-  record: CatalogMangaRecord | undefined,
-  { featurePosterior, mangaMap, now, hiddenCensorshipMatcher }: ScoreCandidateContext,
+  record: CatalogMangaScoringRecord | undefined,
+  { featurePosterior, now, hiddenCensorshipMatcher }: ScoreCandidateContext,
 ): ScoredRecommendation | null {
   if (!record) {
     return null
   }
 
   if (isMangaHiddenByCensorship(record, hiddenCensorshipMatcher)) {
-    return null
-  }
-
-  const manga = mangaMap.get(candidate.mangaId)
-
-  if (!manga) {
     return null
   }
 
@@ -210,7 +194,6 @@ function scoreCandidate(
     diversityKeys: getDiversityKeys(record),
     generatedAt: new Date(now),
     mangaId: candidate.mangaId,
-    manga,
     rank: 0,
     rankScore,
     reasonMask,
@@ -264,7 +247,6 @@ function scoreSource(score: number) {
 function toMangaRecommendation(item: ScoredRecommendation, rank: number): MangaRecommendation {
   return {
     generatedAt: item.generatedAt,
-    manga: item.manga,
     mangaId: item.mangaId,
     rank,
     reasonMask: item.reasonMask,
