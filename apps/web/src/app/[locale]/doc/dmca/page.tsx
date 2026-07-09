@@ -56,7 +56,7 @@ export default async function Page({ params, searchParams }: PageProps<'/[locale
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             className="inline-flex text-xs text-zinc-400 hover:text-zinc-200 underline underline-offset-4"
-            href="/new/1"
+            href="/new"
             prefetch={false}
           >
             {t('backHome')}

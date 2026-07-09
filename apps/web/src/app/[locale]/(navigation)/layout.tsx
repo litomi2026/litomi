@@ -36,7 +36,7 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
           <Link className="p-3 w-fit mx-auto hidden sm:block 2xl:m-0" href="/" prefetch={false}>
             <IconLogo className="w-8" priority />
           </Link>
-          <SelectableLink href="/new/1" icon={<IconHome />} selectedIconStyle="fill">
+          <SelectableLink href="/new" icon={<IconHome />} selectedIconStyle="fill">
             {t('home')}
           </SelectableLink>
           <SelectableLink href="/search" icon={<Search />}>

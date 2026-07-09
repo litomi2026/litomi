@@ -26,6 +26,12 @@ type ScoreCandidateContext = {
   hiddenCensorshipMatcher: CensorshipMatcher
 }
 
+type DiversityState = {
+  featureCounts: Map<string, number>
+  freshCount: number
+  recentOrFreshCount: number
+}
+
 type ScoredRecommendation = MangaRecommendation & {
   ageBucket: AgeBucket
   diversityKeys: string[]
@@ -37,14 +43,26 @@ export async function scoreCandidates(
   limit: number,
   hiddenCensorshipMatcher: CensorshipMatcher,
   featurePosterior: UserFeaturePosterior,
+  recordCache: ReadonlyMap<number, CatalogMangaRecord> = new Map(),
 ): Promise<MangaRecommendation[]> {
   if (candidates.length === 0) {
     return []
   }
 
   const candidateIds = candidates.map((candidate) => candidate.mangaId)
-  const records = await selectCatalogMangaRecordsByIds(candidateIds)
-  const recordMap = new Map(records.map((record) => [record.id, record]))
+  const missingIds = candidateIds.filter((id) => !recordCache.has(id))
+  const fetchedRecords = missingIds.length > 0 ? await selectCatalogMangaRecordsByIds(missingIds) : []
+  const recordMap = new Map(recordCache)
+
+  for (const record of fetchedRecords) {
+    recordMap.set(record.id, record)
+  }
+
+  const records = candidateIds.flatMap((id) => {
+    const record = recordMap.get(id)
+    return record ? [record] : []
+  })
+
   const mangaMap = catalogMangaRecordsToMangaMap(records, Locale.KO)
   const now = Date.now()
   const context = { featurePosterior, mangaMap, now, hiddenCensorshipMatcher }
@@ -56,21 +74,24 @@ export async function scoreCandidates(
   return diversifyRecommendations(scoredCandidates, limit).map((item, index) => toMangaRecommendation(item, index + 1))
 }
 
-function countSelectedFeatures(selected: ScoredRecommendation[]) {
-  const counts = new Map<string, number>()
-
-  for (const item of selected) {
-    for (const key of item.diversityKeys) {
-      counts.set(key, (counts.get(key) ?? 0) + 1)
-    }
+function applyDiversityState(state: DiversityState, item: ScoredRecommendation) {
+  for (const key of item.diversityKeys) {
+    state.featureCounts.set(key, (state.featureCounts.get(key) ?? 0) + 1)
   }
 
-  return counts
+  if (item.ageBucket === 'fresh') {
+    state.freshCount++
+  }
+
+  if (item.ageBucket === 'fresh' || item.ageBucket === 'recent') {
+    state.recentOrFreshCount++
+  }
 }
 
 function diversifyRecommendations(items: ScoredRecommendation[], limit: number): ScoredRecommendation[] {
   const selected: ScoredRecommendation[] = []
   const remaining = [...items].sort((left, right) => right.rankScore - left.rankScore || left.mangaId - right.mangaId)
+  const state: DiversityState = { featureCounts: new Map(), freshCount: 0, recentOrFreshCount: 0 }
 
   while (selected.length < limit && remaining.length > 0) {
     let bestIndex = 0
@@ -78,7 +99,7 @@ function diversifyRecommendations(items: ScoredRecommendation[], limit: number):
 
     for (let index = 0; index < remaining.length; index++) {
       const item = remaining[index]!
-      const rerankScore = item.rankScore - scoreDiversityPenalty(item, selected, limit)
+      const rerankScore = item.rankScore - scoreDiversityPenalty(item, state, selected.length, limit)
 
       if (
         rerankScore > bestRerankScore ||
@@ -92,7 +113,9 @@ function diversifyRecommendations(items: ScoredRecommendation[], limit: number):
       }
     }
 
-    selected.push(remaining.splice(bestIndex, 1)[0]!)
+    const [picked] = remaining.splice(bestIndex, 1) as [ScoredRecommendation]
+    selected.push(picked)
+    applyDiversityState(state, picked)
   }
 
   return selected
@@ -195,32 +218,31 @@ function scoreCandidate(
   }
 }
 
-function scoreDiversityPenalty(item: ScoredRecommendation, selected: ScoredRecommendation[], limit: number) {
-  if (selected.length === 0) {
+function scoreDiversityPenalty(
+  item: ScoredRecommendation,
+  state: DiversityState,
+  selectedCount: number,
+  limit: number,
+) {
+  if (selectedCount === 0) {
     return 0
   }
 
   let penalty = 0
-  const selectedFeatureCounts = countSelectedFeatures(selected)
 
   for (const key of item.diversityKeys) {
-    penalty += (selectedFeatureCounts.get(key) ?? 0) * getFeatureRepeatPenalty(key)
+    penalty += (state.featureCounts.get(key) ?? 0) * getFeatureRepeatPenalty(key)
   }
 
-  const selectedFreshCount = selected.filter((selectedItem) => selectedItem.ageBucket === 'fresh').length
-  const selectedRecentOrFreshCount = selected.filter(
-    (selectedItem) => selectedItem.ageBucket === 'fresh' || selectedItem.ageBucket === 'recent',
-  ).length
+  const freshBucketLimit = Math.ceil(limit * FRESH_BUCKET_LIMIT_RATIO)
+  const recentBucketLimit = Math.ceil(limit * RECENT_BUCKET_LIMIT_RATIO)
 
-  if (item.ageBucket === 'fresh' && selectedFreshCount >= Math.ceil(limit * FRESH_BUCKET_LIMIT_RATIO)) {
-    penalty += 120 + (selectedFreshCount - Math.ceil(limit * FRESH_BUCKET_LIMIT_RATIO)) * 30
+  if (item.ageBucket === 'fresh' && state.freshCount >= freshBucketLimit) {
+    penalty += 120 + (state.freshCount - freshBucketLimit) * 30
   }
 
-  if (
-    (item.ageBucket === 'fresh' || item.ageBucket === 'recent') &&
-    selectedRecentOrFreshCount >= Math.ceil(limit * RECENT_BUCKET_LIMIT_RATIO)
-  ) {
-    penalty += 70 + (selectedRecentOrFreshCount - Math.ceil(limit * RECENT_BUCKET_LIMIT_RATIO)) * 20
+  if ((item.ageBucket === 'fresh' || item.ageBucket === 'recent') && state.recentOrFreshCount >= recentBucketLimit) {
+    penalty += 70 + (state.recentOrFreshCount - recentBucketLimit) * 20
   }
 
   return penalty

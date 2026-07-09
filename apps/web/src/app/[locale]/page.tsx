@@ -36,7 +36,7 @@ export default async function Home({ params }: PageProps<'/[locale]'>) {
       <div className="grid gap-2">
         <Link
           className={`${linkClassName} bg-brand-gradient relative text-background before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40`}
-          href="/new/1"
+          href="/new"
         >
           {t('enterAction')}
           <LinkPending

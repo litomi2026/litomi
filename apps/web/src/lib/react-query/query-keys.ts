@@ -95,7 +95,6 @@ export const QueryKeys = {
     locale,
     Object.fromEntries(searchParams),
   ],
-  proxyHiyobiNew: (page: number, locale: PublicLocale) => [...QueryKeys.proxyBase, 'hiyobi', 'new', page, locale],
 
   chatThreads: ['chat', 'threads'],
   chatStudio: ['chat', 'studio'],

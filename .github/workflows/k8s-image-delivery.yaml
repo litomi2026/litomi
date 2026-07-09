@@ -584,6 +584,7 @@ jobs:
       OPS_API_OVERLAY_FILE: k8s/workload/litomi/prod/api/kustomization.yaml
       OPS_CATALOGER_OVERLAY_FILE: k8s/workload/litomi/prod/cataloger/kustomization.yaml
       OPS_NOTIFIER_OVERLAY_FILE: k8s/workload/litomi/prod/notifier/kustomization.yaml
+      OPS_RECOMMENDER_OVERLAY_FILE: k8s/workload/litomi/prod/recommender/kustomization.yaml
       OPS_CHAT_OVERLAY_FILE: k8s/workload/litomi/prod/chat/kustomization.yaml
       OPS_CHAT_WORKER_OVERLAY_FILE: k8s/workload/litomi/prod/chat-worker/kustomization.yaml
       OPS_CHAT_PUSH_OVERLAY_FILE: k8s/workload/litomi/prod/chat-push/kustomization.yaml
@@ -591,6 +592,7 @@ jobs:
       IMAGE_API: ghcr.io/${{ github.repository_owner }}/litomi-api
       IMAGE_CATALOGER: ghcr.io/${{ github.repository_owner }}/litomi-cataloger
       IMAGE_NOTIFIER: ghcr.io/${{ github.repository_owner }}/litomi-notifier
+      IMAGE_RECOMMENDER: ghcr.io/${{ github.repository_owner }}/litomi-recommender
       IMAGE_CHAT: ghcr.io/${{ github.repository_owner }}/litomi-chat
       IMAGE_CHAT_WORKER: ghcr.io/${{ github.repository_owner }}/litomi-chat-worker
       IMAGE_CHAT_PUSH: ghcr.io/${{ github.repository_owner }}/litomi-chat-push
@@ -598,6 +600,7 @@ jobs:
       IMAGE_API_DIGEST: ${{ needs.build-and-publish-api-image.outputs.digest }}
       IMAGE_CATALOGER_DIGEST: ${{ needs.build-and-publish-cataloger-image.outputs.digest }}
       IMAGE_NOTIFIER_DIGEST: ${{ needs.build-and-publish-notifier-image.outputs.digest }}
+      IMAGE_RECOMMENDER_DIGEST: ${{ needs.build-and-publish-recommender-image.outputs.digest }}
       IMAGE_CHAT_DIGEST: ${{ needs.build-and-publish-chat-image.outputs.digest }}
       IMAGE_CHAT_WORKER_DIGEST: ${{ needs.build-and-publish-chat-worker-image.outputs.digest }}
       IMAGE_CHAT_PUSH_DIGEST: ${{ needs.build-and-publish-chat-push-image.outputs.digest }}
@@ -651,6 +654,7 @@ jobs:
           set_digest "${OPS_PATH}/${OPS_API_OVERLAY_FILE}" "${IMAGE_API}" "${IMAGE_API_DIGEST}"
           set_digest "${OPS_PATH}/${OPS_CATALOGER_OVERLAY_FILE}" "${IMAGE_CATALOGER}" "${IMAGE_CATALOGER_DIGEST}"
           set_digest "${OPS_PATH}/${OPS_NOTIFIER_OVERLAY_FILE}" "${IMAGE_NOTIFIER}" "${IMAGE_NOTIFIER_DIGEST}"
+          set_digest "${OPS_PATH}/${OPS_RECOMMENDER_OVERLAY_FILE}" "${IMAGE_RECOMMENDER}" "${IMAGE_RECOMMENDER_DIGEST}"
           set_digest "${OPS_PATH}/${OPS_CHAT_OVERLAY_FILE}" "${IMAGE_CHAT}" "${IMAGE_CHAT_DIGEST}"
           set_digest "${OPS_PATH}/${OPS_CHAT_WORKER_OVERLAY_FILE}" "${IMAGE_CHAT_WORKER}" "${IMAGE_CHAT_WORKER_DIGEST}"
           set_digest "${OPS_PATH}/${OPS_CHAT_PUSH_OVERLAY_FILE}" "${IMAGE_CHAT_PUSH}" "${IMAGE_CHAT_PUSH_DIGEST}"
@@ -666,6 +670,7 @@ jobs:
             ${{ env.OPS_API_OVERLAY_FILE }}
             ${{ env.OPS_CATALOGER_OVERLAY_FILE }}
             ${{ env.OPS_NOTIFIER_OVERLAY_FILE }}
+            ${{ env.OPS_RECOMMENDER_OVERLAY_FILE }}
             ${{ env.OPS_CHAT_OVERLAY_FILE }}
             ${{ env.OPS_CHAT_WORKER_OVERLAY_FILE }}
             ${{ env.OPS_CHAT_PUSH_OVERLAY_FILE }}
@@ -680,6 +685,7 @@ jobs:
             - API: `${{ env.IMAGE_API }}@${{ env.IMAGE_API_DIGEST }}`
             - Cataloger: `${{ env.IMAGE_CATALOGER }}@${{ env.IMAGE_CATALOGER_DIGEST }}`
             - Notifier: `${{ env.IMAGE_NOTIFIER }}@${{ env.IMAGE_NOTIFIER_DIGEST }}`
+            - Recommender: `${{ env.IMAGE_RECOMMENDER }}@${{ env.IMAGE_RECOMMENDER_DIGEST }}`
             - Chat: `${{ env.IMAGE_CHAT }}@${{ env.IMAGE_CHAT_DIGEST }}`
             - Chat worker: `${{ env.IMAGE_CHAT_WORKER }}@${{ env.IMAGE_CHAT_WORKER_DIGEST }}`
             - Chat push: `${{ env.IMAGE_CHAT_PUSH }}@${{ env.IMAGE_CHAT_PUSH_DIGEST }}`

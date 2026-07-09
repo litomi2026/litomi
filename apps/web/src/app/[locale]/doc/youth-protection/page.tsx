@@ -42,7 +42,7 @@ export default async function Page({ params }: PageProps<'/[locale]/doc/youth-pr
         <header className="space-y-2">
           <Link
             className="inline-flex text-xs text-zinc-400 hover:text-zinc-200 underline underline-offset-4"
-            href="/new/1"
+            href="/new"
             prefetch={false}
           >
             {commonT('back')}

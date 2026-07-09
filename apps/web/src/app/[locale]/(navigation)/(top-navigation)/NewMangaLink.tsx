@@ -17,7 +17,7 @@ export default function NewMangaLink() {
     <Link
       aria-current={isNewPage}
       className={`${topNavigationActionClassName} aria-current:bg-brand aria-current:text-background aria-current:font-semibold aria-current:pointer-events-none`}
-      href={`/new/1`}
+      href="/new"
     >
       <LinkPending className="size-5">
         <Rabbit className="size-5" />

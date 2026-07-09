@@ -15,7 +15,7 @@ export default function NotFound() {
       icon={<SearchX className="size-8" />}
       title={t('title')}
     >
-      <StatusActionLink href="/new/1">{t('action')}</StatusActionLink>
+      <StatusActionLink href="/new">{t('action')}</StatusActionLink>
     </StatusState>
   )
 }
