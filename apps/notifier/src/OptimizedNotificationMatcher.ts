@@ -1,9 +1,10 @@
 import { db } from '@litomi/db/app'
 import { notificationConditionTable, notificationCriteriaTable } from '@litomi/db/app/notification'
+import { anyOf } from '@litomi/db/sql'
 import type { Manga } from '@litomi/domain/manga/model'
 import { NotificationConditionType } from '@litomi/domain/notification/model'
 import { normalizeValue } from '@litomi/domain/utils/normalize-value'
-import { and, count, eq, inArray, or, type SQL, sql } from 'drizzle-orm'
+import { and, count, eq, or, type SQL, sql } from 'drizzle-orm'
 
 export interface MangaMetadata {
   artists?: string[]
@@ -94,7 +95,7 @@ export class OptimizedNotificationMatcher {
     for (const [type, values] of valuesByType) {
       if (values.size > 0) {
         conditions.push(
-          and(eq(notificationConditionTable.type, type), inArray(notificationConditionTable.value, Array.from(values))),
+          and(eq(notificationConditionTable.type, type), anyOf(notificationConditionTable.value, Array.from(values))),
         )
       }
     }
@@ -142,7 +143,7 @@ export class OptimizedNotificationMatcher {
         conditionCount: count(),
       })
       .from(notificationConditionTable)
-      .where(inArray(notificationConditionTable.criteriaId, criteriaIds))
+      .where(anyOf(notificationConditionTable.criteriaId, criteriaIds))
       .groupBy(notificationConditionTable.criteriaId, notificationConditionTable.isExcluded)
 
     // Separate counts for included and excluded conditions
@@ -249,7 +250,7 @@ export class OptimizedNotificationMatcher {
         matchCount: sql`${notificationCriteriaTable.matchCount} + 1`,
         lastMatchedAt: new Date(),
       })
-      .where(inArray(notificationCriteriaTable.id, Array.from(uniqueCriteriaIds)))
+      .where(anyOf(notificationCriteriaTable.id, Array.from(uniqueCriteriaIds)))
   }
 
   private extractNormalizedValues(metadata: MangaMetadata): Map<NotificationConditionType, Set<string>> {

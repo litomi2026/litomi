@@ -6,6 +6,8 @@ import { PostType } from '@litomi/domain/post/model'
 import { and, count, desc, eq, inArray, isNotNull, isNull, lt, or, type SQL } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
+import { anyOf } from '../../sql'
+
 type DeletedReferredPost = {
   isDeleted: true
 }
@@ -78,7 +80,7 @@ export default async function selectPost({
   }
 
   if (postIds) {
-    conditions.push(inArray(postTable.id, postIds))
+    conditions.push(anyOf(postTable.id, postIds))
   }
 
   if (filter === PostFilter.MANGA) {

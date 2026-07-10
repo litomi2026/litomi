@@ -1,5 +1,6 @@
-import { eq, inArray } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
+import { anyOf } from '../sql'
 import { catalogDB } from './db'
 import { mangaTable } from './schema'
 
@@ -70,7 +71,7 @@ export async function selectCatalogMangaRecordsByIds(ids: readonly number[]): Pr
     return []
   }
 
-  return await catalogDB.select(catalogMangaColumns).from(mangaTable).where(inArray(mangaTable.id, uniqueIds))
+  return await catalogDB.select(catalogMangaColumns).from(mangaTable).where(anyOf(mangaTable.id, uniqueIds))
 }
 
 export async function selectCatalogMangaScoringRecordsByIds(
@@ -82,5 +83,5 @@ export async function selectCatalogMangaScoringRecordsByIds(
     return []
   }
 
-  return await catalogDB.select(catalogMangaScoringColumns).from(mangaTable).where(inArray(mangaTable.id, uniqueIds))
+  return await catalogDB.select(catalogMangaScoringColumns).from(mangaTable).where(anyOf(mangaTable.id, uniqueIds))
 }

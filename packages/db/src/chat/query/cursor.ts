@@ -1,5 +1,6 @@
-import { and, count, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
+import { and, count, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
+import { anyOf } from '../../sql'
 import { chatDB } from '../db'
 import { chatBroadcastTable, chatDmMessageTable, chatReadCursorTable, chatReplyReadCursorTable } from '../schema'
 import { type ArtistBroadcastWindows, broadcastWindowsFilter } from './message'
@@ -82,7 +83,7 @@ export async function getReplyRoomWatermarks({
       and(
         eq(chatReplyReadCursorTable.userId, artistUserId),
         eq(chatReplyReadCursorTable.artistId, artistId),
-        inArray(chatReplyReadCursorTable.contextMessageId, contextMessageIds),
+        anyOf(chatReplyReadCursorTable.contextMessageId, contextMessageIds),
       ),
     )
 
@@ -139,7 +140,7 @@ export async function countDmUnread(fanId: number, artistIds: number[]): Promise
     )
     .where(
       and(
-        inArray(chatDmMessageTable.artistId, artistIds),
+        anyOf(chatDmMessageTable.artistId, artistIds),
         eq(chatDmMessageTable.fanId, fanId),
         eq(chatDmMessageTable.senderRole, 'artist'),
         or(
@@ -177,7 +178,7 @@ export async function countReplyRoomUnread(
     .where(
       and(
         eq(chatDmMessageTable.artistId, artistId),
-        inArray(chatDmMessageTable.contextMessageId, contextMessageIds),
+        anyOf(chatDmMessageTable.contextMessageId, contextMessageIds),
         eq(chatDmMessageTable.senderRole, 'fan'),
         or(
           isNull(chatReplyReadCursorTable.lastReadMessageId),

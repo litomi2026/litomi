@@ -1,7 +1,8 @@
 import { type DELETEV1LibraryItemResponse, deleteV1LibraryItemBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { anyOf } from '@litomi/db/sql'
+import { and, eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -35,7 +36,7 @@ route.delete('/', ...middlewares, async (c) => {
 
       const deleted = await tx
         .delete(libraryItemTable)
-        .where(and(eq(libraryItemTable.libraryId, libraryId), inArray(libraryItemTable.mangaId, requestedMangaIds)))
+        .where(and(eq(libraryItemTable.libraryId, libraryId), anyOf(libraryItemTable.mangaId, requestedMangaIds)))
         .returning({ deleted: sql<number>`1` })
 
       return deleted.length

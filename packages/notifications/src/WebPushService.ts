@@ -1,7 +1,8 @@
 import { db } from '@litomi/db/app'
 import { pushSettingsTable, webPushTable } from '@litomi/db/app/notification'
+import { anyOf } from '@litomi/db/sql'
 import { env as commonEnv } from '@litomi/env/server.common'
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import type { PushSubscription } from 'web-push'
 import webpush from 'web-push'
 
@@ -85,7 +86,7 @@ export class WebPushService {
         maxDaily: pushSettingsTable.maxDaily,
       })
       .from(pushSettingsTable)
-      .where(inArray(pushSettingsTable.userId, uniqueUserIds))
+      .where(anyOf(pushSettingsTable.userId, uniqueUserIds))
 
     const result = new Map<number, PushSettings>()
 
@@ -197,7 +198,7 @@ export class WebPushService {
         auth: webPushTable.auth,
       })
       .from(webPushTable)
-      .where(inArray(webPushTable.userId, uniqueUserIds))
+      .where(anyOf(webPushTable.userId, uniqueUserIds))
 
     const subscriptionsByUser = new Map<number, typeof subscriptions>()
 
@@ -297,9 +298,9 @@ export class WebPushService {
         db
           .update(webPushTable)
           .set({ lastUsedAt: new Date() })
-          .where(inArray(webPushTable.id, Array.from(successfulWebPushIds))),
+          .where(anyOf(webPushTable.id, Array.from(successfulWebPushIds))),
       expiredWebPushIds.size > 0 &&
-        db.delete(webPushTable).where(inArray(webPushTable.id, Array.from(expiredWebPushIds))),
+        db.delete(webPushTable).where(anyOf(webPushTable.id, Array.from(expiredWebPushIds))),
     ])
 
     return {

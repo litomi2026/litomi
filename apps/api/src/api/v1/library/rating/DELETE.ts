@@ -1,7 +1,8 @@
 import { type DELETEV1LibraryRatingResponse, deleteV1LibraryRatingBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userRatingTable } from '@litomi/db/app/activity'
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { anyOf } from '@litomi/db/sql'
+import { and, eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -23,7 +24,7 @@ route.delete('/', ...middlewares, async (c) => {
   try {
     const deleted = await db
       .delete(userRatingTable)
-      .where(and(eq(userRatingTable.userId, userId), inArray(userRatingTable.mangaId, requestedMangaIds)))
+      .where(and(eq(userRatingTable.userId, userId), anyOf(userRatingTable.mangaId, requestedMangaIds)))
       .returning({ deleted: sql<number>`1` })
 
     return c.json({ deletedCount: deleted.length } satisfies DELETEV1LibraryRatingResponse)

@@ -1,7 +1,8 @@
 import { mergePaidIntervals, type PaidInterval } from '@litomi/domain/chat/policy'
 import type { SettlementTaxType } from '@litomi/domain/payout/policy'
 import { SUBSCRIPTION_TARGET_CHAT_ARTIST } from '@litomi/domain/subscription/policy'
-import { and, asc, desc, eq, gt, inArray, lte, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, gt, lte, sql } from 'drizzle-orm'
+import { anyOf } from '../../sql'
 import { db } from '../db'
 import { chatArtistTable } from '../schema/chat'
 import { invoiceTable } from '../schema/invoice'
@@ -31,7 +32,7 @@ export async function listChatArtistsByIds(artistIds: number[]): Promise<Map<num
     return new Map()
   }
 
-  const rows = await db.select().from(chatArtistTable).where(inArray(chatArtistTable.id, artistIds))
+  const rows = await db.select().from(chatArtistTable).where(anyOf(chatArtistTable.id, artistIds))
 
   return new Map(rows.map((row) => [row.id, row]))
 }
@@ -66,7 +67,7 @@ export async function listUserBriefs(userIds: number[]): Promise<Map<number, Cha
       imageURL: userTable.imageURL,
     })
     .from(userTable)
-    .where(inArray(userTable.id, userIds))
+    .where(anyOf(userTable.id, userIds))
 
   return new Map(rows.map((row) => [row.id, row]))
 }
@@ -326,7 +327,7 @@ export async function listPaidIntervalsByArtist(
       and(
         eq(invoiceTable.userId, userId),
         eq(invoiceTable.targetType, SUBSCRIPTION_TARGET_CHAT_ARTIST),
-        inArray(invoiceTable.targetId, artistIds),
+        anyOf(invoiceTable.targetId, artistIds),
         eq(invoiceTable.status, 'paid'),
       ),
     )

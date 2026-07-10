@@ -4,8 +4,9 @@ import { bookmarkTable, readingHistoryTable, userRatingTable } from '@litomi/db/
 import { userCensorshipTable } from '@litomi/db/app/censorship'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
 import { userTable } from '@litomi/db/app/user'
+import { anyOf } from '@litomi/db/sql'
 import { compare } from 'bcryptjs'
-import { eq, inArray } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -129,7 +130,7 @@ route.post('/', ...middlewares, async (c) => {
                 createdAt: libraryItemTable.createdAt,
               })
               .from(libraryItemTable)
-              .where(inArray(libraryItemTable.libraryId, libraryIds))
+              .where(anyOf(libraryItemTable.libraryId, libraryIds))
           : []
 
       const itemsByLibraryId = Map.groupBy(allItems, (item) => item.libraryId)

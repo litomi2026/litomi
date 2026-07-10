@@ -1,5 +1,6 @@
 import { bookmarkTable } from '@litomi/db/app/activity'
-import { and, count, eq, inArray } from 'drizzle-orm'
+import { anyOf } from '@litomi/db/sql'
+import { and, count, eq } from 'drizzle-orm'
 
 import { type BookmarkTx, getBookmarkLimit } from './limit'
 
@@ -41,7 +42,7 @@ export async function saveBookmarks(
     .where(
       and(
         eq(bookmarkTable.userId, userId),
-        inArray(
+        anyOf(
           bookmarkTable.mangaId,
           uniqueEntries.map(({ mangaId }) => mangaId),
         ),

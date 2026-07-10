@@ -1,8 +1,9 @@
 import { type POSTV1LibraryItemAddResponse, PROBLEM, postV1LibraryItemAddBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
+import { anyOf } from '@litomi/db/sql'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -27,7 +28,7 @@ route.post('/', ...middlewares, async (c) => {
       const libraries = await tx
         .select({ id: libraryTable.id })
         .from(libraryTable)
-        .where(and(eq(libraryTable.userId, userId), inArray(libraryTable.id, requestedLibraryIds)))
+        .where(and(eq(libraryTable.userId, userId), anyOf(libraryTable.id, requestedLibraryIds)))
         .orderBy(libraryTable.id)
         .for('update')
 
@@ -43,7 +44,7 @@ route.post('/', ...middlewares, async (c) => {
           count: sql<number>`COUNT(*)`,
         })
         .from(libraryItemTable)
-        .where(inArray(libraryItemTable.libraryId, lockedLibraryIds))
+        .where(anyOf(libraryItemTable.libraryId, lockedLibraryIds))
         .groupBy(libraryItemTable.libraryId)
 
       const countMap = new Map(itemCounts.map((itemCount) => [itemCount.libraryId, Number(itemCount.count)]))
