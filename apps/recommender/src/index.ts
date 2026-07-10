@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { runGenerate } from './generate'
 import { log } from './log'
 import { runSyncIndex } from './sync-index'
@@ -11,17 +9,15 @@ const COMMANDS = {
 
 type CommandName = keyof typeof COMMANDS
 
-if (import.meta.main) {
-  main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      log.error('fatal error', {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      })
-      process.exit(1)
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    log.error('fatal error', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
     })
-}
+    process.exit(1)
+  })
 
 async function main() {
   const [command, ...argv] = process.argv.slice(2)

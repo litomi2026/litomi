@@ -388,6 +388,8 @@ async function openSearchRequest<T = unknown>({
   timeoutMs: number
 }): Promise<T> {
   const url = new URL(path, env.OPENSEARCH_URL)
+  const username = env.OPENSEARCH_USERNAME
+  const password = env.OPENSEARCH_PASSWORD
   const headers = new Headers()
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
@@ -399,15 +401,12 @@ async function openSearchRequest<T = unknown>({
     requestBody = typeof body === 'string' ? body : JSON.stringify(body)
   }
 
-  if (Boolean(env.OPENSEARCH_USERNAME) !== Boolean(env.OPENSEARCH_PASSWORD)) {
-    throw new Error('OPENSEARCH_USERNAME and OPENSEARCH_PASSWORD must be configured together')
+  if (Boolean(username) !== Boolean(password)) {
+    throw new Error('OpenSearch username and password must be configured together')
   }
 
-  if (env.OPENSEARCH_USERNAME && env.OPENSEARCH_PASSWORD) {
-    headers.set(
-      'authorization',
-      `Basic ${Buffer.from(`${env.OPENSEARCH_USERNAME}:${env.OPENSEARCH_PASSWORD}`).toString('base64')}`,
-    )
+  if (username && password) {
+    headers.set('authorization', `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`)
   }
 
   try {
