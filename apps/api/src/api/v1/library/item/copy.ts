@@ -1,8 +1,9 @@
 import { type POSTV1LibraryItemCopyResponse, PROBLEM, postV1LibraryItemCopyBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
+import { anyOf } from '@litomi/db/sql'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
-import { and, count, eq, inArray, sql } from 'drizzle-orm'
+import { and, count, eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -48,7 +49,7 @@ route.post('/', ...middlewares, async (c) => {
       const existingItems = await tx
         .select({ mangaId: libraryItemTable.mangaId })
         .from(libraryItemTable)
-        .where(and(eq(libraryItemTable.libraryId, toLibraryId), inArray(libraryItemTable.mangaId, requestedMangaIds)))
+        .where(and(eq(libraryItemTable.libraryId, toLibraryId), anyOf(libraryItemTable.mangaId, requestedMangaIds)))
 
       const existingMangaIds = new Set(existingItems.map((item) => item.mangaId))
       const newMangaIds = requestedMangaIds.filter((mangaId) => !existingMangaIds.has(mangaId)).slice(0, availableSlots)

@@ -1,5 +1,6 @@
 import { db } from '@litomi/db/app'
 import { mangaSeenTable, notificationTable } from '@litomi/db/app/notification'
+import { anyOf } from '@litomi/db/sql'
 import type { Manga } from '@litomi/domain/manga/model'
 import { MANGA_TITLE_MAX_LENGTH } from '@litomi/domain/manga/policy'
 import type { NotificationData } from '@litomi/domain/notification/model'
@@ -7,7 +8,7 @@ import { NotificationType } from '@litomi/domain/notification/model'
 import { MAX_NOTIFICATION_COUNT } from '@litomi/domain/notification/policy'
 import { getViewerLink } from '@litomi/domain/utils/manga'
 import { isWithinQuietHours, type WebPushMessage, WebPushService } from '@litomi/notifications'
-import { and, count, desc, gte, inArray, isNull, sql } from 'drizzle-orm'
+import { and, count, desc, gte, isNull, sql } from 'drizzle-orm'
 
 import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
 
@@ -222,7 +223,7 @@ export class MangaNotificationProcessor {
                 ORDER BY created_at DESC, id DESC
               ) as row_num
             FROM ${notificationTable}
-            WHERE ${inArray(notificationTable.userId, affectedUserIds)}
+            WHERE ${anyOf(notificationTable.userId, affectedUserIds)}
           ) ranked_notifications
           WHERE
             created_at < (NOW() - INTERVAL '30 days')
@@ -310,7 +311,7 @@ export class MangaNotificationProcessor {
         count: count(),
       })
       .from(notificationTable)
-      .where(and(inArray(notificationTable.userId, allUserIds), gte(notificationTable.sentAt, todayStart)))
+      .where(and(anyOf(notificationTable.userId, allUserIds), gte(notificationTable.sentAt, todayStart)))
       .groupBy(notificationTable.userId)
 
     const userDailyCounts = new Map(dailyCounts.map((row) => [row.userId, row.count]))
@@ -363,7 +364,7 @@ export class MangaNotificationProcessor {
         await db
           .update(notificationTable)
           .set({ sentAt: new Date() })
-          .where(and(inArray(notificationTable.id, sentNotificationIds), isNull(notificationTable.sentAt)))
+          .where(and(anyOf(notificationTable.id, sentNotificationIds), isNull(notificationTable.sentAt)))
       }
 
       if (sendResult.failed.length > 0) {

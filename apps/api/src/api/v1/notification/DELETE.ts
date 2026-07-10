@@ -1,7 +1,8 @@
 import { type DELETEV1NotificationResponse, deleteV1NotificationBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
-import { and, eq, inArray } from 'drizzle-orm'
+import { anyOf } from '@litomi/db/sql'
+import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -21,7 +22,7 @@ route.delete('/', ...middlewares, async (c) => {
   try {
     const deleted = await db
       .delete(notificationTable)
-      .where(and(eq(notificationTable.userId, userId), inArray(notificationTable.id, ids)))
+      .where(and(eq(notificationTable.userId, userId), anyOf(notificationTable.id, ids)))
       .returning({ id: notificationTable.id })
 
     return c.json({ ids: deleted.map((item) => item.id) } satisfies DELETEV1NotificationResponse)

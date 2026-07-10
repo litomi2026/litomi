@@ -1,7 +1,8 @@
 import { type DELETEV1CensorshipDeleteResponse, deleteV1CensorshipDeleteBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { userCensorshipTable } from '@litomi/db/app/censorship'
-import { and, eq, inArray } from 'drizzle-orm'
+import { anyOf } from '@litomi/db/sql'
+import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -21,7 +22,7 @@ route.delete('/', ...middlewares, async (c) => {
   try {
     const deleted = await db
       .delete(userCensorshipTable)
-      .where(and(eq(userCensorshipTable.userId, userId), inArray(userCensorshipTable.id, ids)))
+      .where(and(eq(userCensorshipTable.userId, userId), anyOf(userCensorshipTable.id, ids)))
       .returning({ id: userCensorshipTable.id })
 
     return c.json({ ids: deleted.map((r) => r.id) } satisfies DELETEV1CensorshipDeleteResponse)

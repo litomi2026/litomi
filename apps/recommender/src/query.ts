@@ -8,7 +8,7 @@ import { mangaRecommendationSetTable, mangaRecommendationTable } from '@litomi/d
 import { userTable } from '@litomi/db/app/user'
 import type { CensorshipKey, CensorshipLevel } from '@litomi/domain/censorship/model'
 import { MANGA_RECOMMENDATION_REASON_BITS } from '@litomi/domain/manga-recommendation/reason'
-import { and, eq, type SQL, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 
 import type { CensorshipRule } from './censorship'
 import type {
@@ -167,7 +167,10 @@ export async function selectCollaborativeCandidates(
 
   const rows = await db.execute<RawCandidateRow>(sql`
     with signal(manga_id, weight) as (
-      values ${signalValues(signals)}
+      select * from unnest(
+        ${sql.param(signals.map((signal) => signal.mangaId))}::int[],
+        ${sql.param(signals.map((signal) => signal.weight))}::double precision[]
+      )
     ),
     weighted_signal as (
       select
@@ -426,13 +429,6 @@ function normalizeCandidateRows(rows: RawCandidateRow[]): CandidateRow[] {
     reasonMask: toSafeInteger(row.reasonMask, 'reasonMask'),
     score: toFiniteNumber(row.score, 'score'),
   }))
-}
-
-function signalValues(signals: Signal[]): SQL {
-  return sql.join(
-    signals.map((signal) => sql`(${signal.mangaId}::integer, ${signal.weight}::double precision)`),
-    sql`, `,
-  )
 }
 
 function toFiniteNumber(value: number | string, field: string) {

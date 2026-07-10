@@ -3,7 +3,8 @@ import type { PATCHV1NotificationReadAllResponse, PATCHV1NotificationReadRespons
 import { patchV1NotificationReadBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { notificationTable } from '@litomi/db/app/notification'
-import { and, eq, inArray } from 'drizzle-orm'
+import { anyOf } from '@litomi/db/sql'
+import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -24,7 +25,7 @@ route.patch('/read', ...middlewares, async (c) => {
     const updated = await db
       .update(notificationTable)
       .set({ read: true })
-      .where(and(eq(notificationTable.userId, userId), inArray(notificationTable.id, ids)))
+      .where(and(eq(notificationTable.userId, userId), anyOf(notificationTable.id, ids)))
       .returning({ id: notificationTable.id })
 
     return c.json({ ids: updated.map((item) => item.id) } satisfies PATCHV1NotificationReadResponse)

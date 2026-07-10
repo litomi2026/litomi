@@ -1,5 +1,7 @@
-import { and, asc, count, desc, eq, gt, gte, inArray, lt, max, or, type SQL } from 'drizzle-orm'
+import { and, asc, count, desc, eq, gt, gte, lt, max, or, type SQL } from 'drizzle-orm'
 import { encodeTime, ulid } from 'ulid'
+
+import { anyOf } from '../../sql'
 
 import { chatDB } from '../db'
 import { chatBroadcastTable, chatDmMessageTable } from '../schema'
@@ -324,7 +326,7 @@ export async function getReplyRoomMessagesByIds(
       and(
         eq(chatDmMessageTable.artistId, artistId),
         eq(chatDmMessageTable.contextMessageId, contextMessageId),
-        inArray(chatDmMessageTable.messageId, messageIds),
+        anyOf(chatDmMessageTable.messageId, messageIds),
       ),
     )
 
@@ -346,7 +348,7 @@ export async function getLatestArtistDmPerArtist(
     .from(chatDmMessageTable)
     .where(
       and(
-        inArray(chatDmMessageTable.artistId, artistIds),
+        anyOf(chatDmMessageTable.artistId, artistIds),
         eq(chatDmMessageTable.fanId, fanId),
         eq(chatDmMessageTable.senderRole, 'artist'),
       ),
@@ -374,7 +376,7 @@ export async function getDmMessagesByIds(
       and(
         eq(chatDmMessageTable.artistId, artistId),
         eq(chatDmMessageTable.fanId, fanId),
-        inArray(chatDmMessageTable.messageId, messageIds),
+        anyOf(chatDmMessageTable.messageId, messageIds),
       ),
     )
 

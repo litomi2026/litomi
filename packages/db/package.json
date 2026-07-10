@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./cursor": "./src/cursor.ts",
+    "./sql": "./src/sql.ts",
     "./app/activity": "./src/app/schema/activity.ts",
     "./app/auth": "./src/app/schema/auth.ts",
     "./app/bbaton": "./src/app/schema/bbaton.ts",

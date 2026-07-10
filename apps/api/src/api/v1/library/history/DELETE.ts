@@ -1,7 +1,8 @@
 import { type DELETEV1ReadingHistoryResponse, deleteV1ReadingHistoryBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { readingHistoryTable } from '@litomi/db/app/activity'
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { anyOf } from '@litomi/db/sql'
+import { and, eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -43,7 +44,7 @@ route.delete('/', ...middlewares, async (c) => {
 
       const deleted = await tx
         .delete(readingHistoryTable)
-        .where(and(eq(readingHistoryTable.userId, userId), inArray(readingHistoryTable.mangaId, mangaIds)))
+        .where(and(eq(readingHistoryTable.userId, userId), anyOf(readingHistoryTable.mangaId, mangaIds)))
         .returning({ deleted: sql<number>`1` })
 
       return deleted.length

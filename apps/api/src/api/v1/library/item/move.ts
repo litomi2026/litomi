@@ -1,6 +1,7 @@
 import { type POSTV1LibraryItemMoveResponse, PROBLEM, postV1LibraryItemMoveBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { libraryItemTable, libraryTable } from '@litomi/db/app/library'
+import { anyOf } from '@litomi/db/sql'
 import { MAX_ITEMS_PER_LIBRARY } from '@litomi/domain/library/policy'
 import { and, count, eq, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -51,7 +52,7 @@ route.post('/', ...middlewares, async (c) => {
       const sourceItems = await tx
         .select({ mangaId: libraryItemTable.mangaId })
         .from(libraryItemTable)
-        .where(and(eq(libraryItemTable.libraryId, fromLibraryId), inArray(libraryItemTable.mangaId, requestedMangaIds)))
+        .where(and(eq(libraryItemTable.libraryId, fromLibraryId), anyOf(libraryItemTable.mangaId, requestedMangaIds)))
 
       const sourceMangaSet = new Set(sourceItems.map((item) => item.mangaId))
       const sourceMangaIds = requestedMangaIds.filter((mangaId) => sourceMangaSet.has(mangaId))
@@ -63,7 +64,7 @@ route.post('/', ...middlewares, async (c) => {
       const existingInTarget = await tx
         .select({ mangaId: libraryItemTable.mangaId })
         .from(libraryItemTable)
-        .where(and(eq(libraryItemTable.libraryId, toLibraryId), inArray(libraryItemTable.mangaId, sourceMangaIds)))
+        .where(and(eq(libraryItemTable.libraryId, toLibraryId), anyOf(libraryItemTable.mangaId, sourceMangaIds)))
         .limit(sourceMangaIds.length)
 
       const existingSet = new Set(existingInTarget.map((item) => item.mangaId))
@@ -75,7 +76,7 @@ route.post('/', ...middlewares, async (c) => {
 
       await tx
         .delete(libraryItemTable)
-        .where(and(eq(libraryItemTable.libraryId, fromLibraryId), inArray(libraryItemTable.mangaId, movableMangaIds)))
+        .where(and(eq(libraryItemTable.libraryId, fromLibraryId), anyOf(libraryItemTable.mangaId, movableMangaIds)))
 
       const inserted = await tx
         .insert(libraryItemTable)

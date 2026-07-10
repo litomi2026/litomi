@@ -1,7 +1,8 @@
 import { type DELETEV1BookmarkResponse, deleteV1BookmarkBodySchema } from '@litomi/contracts'
 import { db } from '@litomi/db/app'
 import { bookmarkTable } from '@litomi/db/app/activity'
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { anyOf } from '@litomi/db/sql'
+import { and, eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -27,7 +28,7 @@ route.delete('/', ...middlewares, async (c) => {
 
       const deleted = await tx
         .delete(bookmarkTable)
-        .where(and(eq(bookmarkTable.userId, userId), inArray(bookmarkTable.mangaId, requestedMangaIds)))
+        .where(and(eq(bookmarkTable.userId, userId), anyOf(bookmarkTable.mangaId, requestedMangaIds)))
         .returning({ deleted: sql<number>`1` })
 
       return deleted.length

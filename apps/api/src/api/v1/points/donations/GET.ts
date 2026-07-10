@@ -15,9 +15,10 @@ import {
   pointDonationTable,
   pointTransactionTable,
 } from '@litomi/db/app/points'
+import { anyOf } from '@litomi/db/sql'
 import { createCacheControl } from '@litomi/http/cache-control'
 import { sec } from '@litomi/std'
-import { and, desc, eq, inArray, lt, sum } from 'drizzle-orm'
+import { and, desc, eq, lt, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
 
@@ -109,7 +110,7 @@ route.get('/me', ...meMiddlewares, async (c) => {
             amount: pointDonationRecipientTable.amount,
           })
           .from(pointDonationRecipientTable)
-          .where(inArray(pointDonationRecipientTable.pointTransactionId, transactionIds))
+          .where(anyOf(pointDonationRecipientTable.pointTransactionId, transactionIds))
       : []
 
     const artistValueSet = new Set<string>()
