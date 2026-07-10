@@ -25,11 +25,12 @@ COPY types ./types
 RUN bunx turbo run build --filter=@litomi/recommender
 
 # Stage 3: Runtime
-FROM gcr.io/distroless/base-nossl-debian13:nonroot
+FROM gcr.io/distroless/nodejs26-debian13:nonroot
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NODE_OPTIONS=--enable-source-maps
 
-COPY --chown=nonroot:nonroot --from=builder /app/apps/recommender/dist/recommender ./
+COPY --chown=nonroot:nonroot --from=builder /app/apps/recommender/dist/ ./dist/
 
-ENTRYPOINT [ "./recommender" ]
+ENTRYPOINT [ "/nodejs/bin/node", "/app/dist/index.js" ]
