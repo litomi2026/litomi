@@ -3,7 +3,7 @@
 import type { Manga } from '@litomi/domain/manga/model'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import JuicyAdsBanner from '@/components/ads/juicy-ads/JuicyAdsBanner'
 import useIsAdultGateError from '@/hook/useIsAdultGateError'
@@ -14,6 +14,8 @@ import usePageMetadata from './usePageMetadata'
 
 const NotFound = dynamic(() => import('./not-found'))
 
+const AD_AUTO_SKIP_MS = 5_000
+
 type Props = {
   id: number
   initialManga?: Manga | null
@@ -23,6 +25,7 @@ type Translator = ReturnType<typeof useTranslations>
 
 export default function MangaPage({ id, initialManga }: Props) {
   const [isAdClicked, setIsAdClicked] = useState(false)
+  const [adSecondsLeft, setAdSecondsLeft] = useState(AD_AUTO_SKIP_MS / 1000)
   const { isLoading, mangaMap, errorMap } = useMangaListCachedQuery({ mangaIds: [id] })
   const isAdultGate = useIsAdultGateError(errorMap.get(id))
   const metadataT = useTranslations('MangaViewer.metadata')
@@ -34,6 +37,27 @@ export default function MangaPage({ id, initialManga }: Props) {
 
   // NOTE: 클라이언트 측에서 메타데이터를 업데이트 해요
   usePageMetadata(metadata)
+
+  // 자동 광고 제거
+  useEffect(() => {
+    if (isLoading || isAdultGate || isAdClicked) {
+      return
+    }
+
+    const interval = setInterval(() => {
+      setAdSecondsLeft((prev) => Math.max(prev - 1, 0))
+    }, 1000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [isLoading, isAdultGate, isAdClicked])
+
+  useEffect(() => {
+    if (adSecondsLeft <= 0) {
+      setIsAdClicked(true)
+    }
+  }, [adSecondsLeft])
 
   if (isLoading) {
     return <Loading />
@@ -56,11 +80,11 @@ export default function MangaPage({ id, initialManga }: Props) {
           title={<p className="text-zinc-300 text-sm">{unlockT('title')}</p>}
         />
         <button
-          className="w-full max-w-xs text-sm text-zinc-400 underline p-4"
+          className="w-full max-w-xs text-sm text-zinc-400 underline p-4 tabular-nums"
           onClick={() => setIsAdClicked(true)}
           type="button"
         >
-          {unlockT('skipAd')}
+          {unlockT('skipAd')} {adSecondsLeft}
         </button>
       </div>
     )
