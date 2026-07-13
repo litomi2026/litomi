@@ -19,7 +19,7 @@ export default function MangaCardList({ catalogMangas, mangaIds }: Props) {
   const visibleMangaIds = mangaIds.filter((id) => isVisible(mangaMap.get(id)))
 
   return (
-    <ul className="flex gap-2 overflow-x-auto scrollbar-hidden snap-x snap-mandatory">
+    <ul className="flex gap-2 overflow-x-auto scrollbar-hidden snap-x snap-mandatory [&_a]:touch-auto">
       {visibleMangaIds.map((id, index) => {
         const manga = mangaMap.get(id)
 
