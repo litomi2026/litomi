@@ -1,5 +1,6 @@
 import { DiagConsoleLogger, DiagLogLevel, diag } from '@opentelemetry/api'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
+import { AggregationType } from '@opentelemetry/sdk-metrics'
 import { NodeSDK } from '@opentelemetry/sdk-node'
 
 let openTelemetrySDK: NodeSDK | undefined
@@ -28,7 +29,21 @@ export function initBackendOtel() {
     diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG)
   }
 
-  const sdk = new NodeSDK({ traceExporter: new OTLPTraceExporter() })
+  const sdk = new NodeSDK({
+    traceExporter: new OTLPTraceExporter(),
+    // Coarsen @hono/otel's http.server.request.duration histogram from 14 default
+    // buckets to 7 to keep Grafana Cloud free-tier active series under the cap.
+    views: [
+      {
+        instrumentName: 'http.server.request.duration',
+        aggregation: {
+          type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+          options: { boundaries: [0.05, 0.1, 0.25, 0.5, 1, 2.5, 5] },
+        },
+      },
+    ],
+  })
+
   sdk.start()
   openTelemetrySDK = sdk
 }
