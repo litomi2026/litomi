@@ -1,9 +1,11 @@
 import { MANGA_DESCRIPTION_MAX_LENGTH, MANGA_TITLE_MAX_LENGTH } from '@litomi/domain/manga/policy'
 import { createKHentaiThumbnailCoverURL } from '@litomi/http/image-proxy'
 import { truncateAtWordBoundary } from '@litomi/std'
+import { ErrorBoundary } from '@suspensive/react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { Suspense } from 'react'
 
 import PostList from '@/app/[locale]/(navigation)/(right-aside)/posts/[filter]/PostList'
 import { MobileNavigationSpacer } from '@/app/[locale]/(navigation)/NavigationSpacers'
@@ -74,10 +76,26 @@ export default async function Page({ params }: PageProps<'/[locale]/manga/[id]/d
       </div>
       <div className="flex min-w-0 flex-col flex-1">
         <RelatedMangaSection mangaId={id} />
-        <RecommendedByUsersSection mangaId={id} />
-        <AlsoViewedSection mangaId={id} />
-        <PublicLibrarySection mangaId={id} />
-        <RatingDistributionSection mangaId={id} />
+        <ErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <RecommendedByUsersSection mangaId={id} />
+          </Suspense>
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <AlsoViewedSection mangaId={id} />
+          </Suspense>
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <PublicLibrarySection mangaId={id} />
+          </Suspense>
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <RatingDistributionSection mangaId={id} />
+          </Suspense>
+        </ErrorBoundary>
         <div className="border-b">
           <RatingInput className="p-4 py-8" mangaId={id} />
         </div>
