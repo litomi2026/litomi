@@ -33,9 +33,32 @@ export default function ScrollButtons(props: Props = {}) {
   const usesElementScroll = 'scrollElement' in props
   const scrollElement = props.scrollElement ?? null
 
+  function scrollToTop(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation()
+    const { scrollTop } = getScrollMetrics(scrollElement, usesElementScroll)
+
+    if (scrollTop > PADDING) {
+      scrollToPosition(0, scrollElement, usesElementScroll)
+    }
+  }
+
+  function scrollToBottom(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation()
+    const { maxScrollTop, scrollTop } = getScrollMetrics(scrollElement, usesElementScroll)
+
+    if (scrollTop < maxScrollTop - PADDING) {
+      scrollToPosition(maxScrollTop, scrollElement, usesElementScroll)
+    }
+  }
+
   useEffect(() => {
     if (usesElementScroll && !scrollElement) {
-      setScrollState({ canScrollDown: false, canScrollUp: false })
+      setScrollState((previous) => {
+        if (previous.canScrollDown || previous.canScrollUp) {
+          return { canScrollDown: false, canScrollUp: false }
+        }
+        return previous
+      })
       return
     }
 
@@ -47,10 +70,14 @@ export default function ScrollButtons(props: Props = {}) {
 
       frameId = window.requestAnimationFrame(() => {
         const { maxScrollTop, scrollTop } = getScrollMetrics(scrollElement, usesElementScroll)
+        const canScrollDown = scrollTop < maxScrollTop - PADDING
+        const canScrollUp = scrollTop > PADDING
 
-        setScrollState({
-          canScrollDown: scrollTop < maxScrollTop - PADDING,
-          canScrollUp: scrollTop > PADDING,
+        setScrollState((previous) => {
+          if (previous.canScrollDown === canScrollDown && previous.canScrollUp === canScrollUp) {
+            return previous
+          }
+          return { canScrollDown, canScrollUp }
         })
       })
     }
@@ -77,24 +104,6 @@ export default function ScrollButtons(props: Props = {}) {
       resizeObserver.disconnect()
     }
   }, [scrollElement, usesElementScroll])
-
-  function scrollToTop(event: MouseEvent<HTMLButtonElement>) {
-    event.stopPropagation()
-    const { scrollTop } = getScrollMetrics(scrollElement, usesElementScroll)
-
-    if (scrollTop > PADDING) {
-      scrollToPosition(0, scrollElement, usesElementScroll)
-    }
-  }
-
-  function scrollToBottom(event: MouseEvent<HTMLButtonElement>) {
-    event.stopPropagation()
-    const { maxScrollTop, scrollTop } = getScrollMetrics(scrollElement, usesElementScroll)
-
-    if (scrollTop < maxScrollTop - PADDING) {
-      scrollToPosition(maxScrollTop, scrollElement, usesElementScroll)
-    }
-  }
 
   if (!scrollState.canScrollDown && !scrollState.canScrollUp) {
     return null
