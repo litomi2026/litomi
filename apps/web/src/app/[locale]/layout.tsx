@@ -5,7 +5,6 @@ import { PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import { GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata, Viewport } from 'next'
-import localFont from 'next/font/local'
 import { NextIntlClientProvider } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
@@ -29,27 +28,6 @@ import { DEFAULT_THEME, THEMES } from '@/theme'
 import NewYearToastNudge from './nye/NewYearToastNudge'
 
 const { NEXT_PUBLIC_APP_ORIGIN, NEXT_PUBLIC_GTM_ID } = env
-
-const PretendardVariable = localFont({
-  src: '../../fonts/PretendardVariable.400-700.3713.woff2',
-  display: 'swap',
-  weight: '400 700',
-  fallback: [
-    '-apple-system',
-    'BlinkMacSystemFont',
-    'system-ui',
-    'Roboto',
-    'Helvetica Neue',
-    'Segoe UI',
-    'Apple SD Gothic Neo',
-    'Noto Sans KR',
-    'Malgun Gothic',
-    'Apple Color Emoji',
-    'Segoe UI Emoji',
-    'Segoe UI Symbol',
-    'sans-serif',
-  ],
-})
 
 export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Promise<Metadata> {
   const locale = await getLocaleFromParams(params)
@@ -109,8 +87,22 @@ export default async function RootLayout({ children, params }: Props) {
         <meta content="f9b44ff18cfe0010c3c2eeab98eb7a9c" name="juicyads-site-verification" />
         <meta content="c8c42155770cd0c29a31f02c8a926ed2" name="6a97888e-site-verification" />
         <SiteJsonLd locale={locale} />
+        {/* Self-hosted Pretendard / Pretendard JP / Noto Sans SC dynamic subsets —
+            the primary font stack, switched per locale in globals.css (:lang).
+            Han unification is resolved by font-family order, not unicode-range. */}
+        <link
+          href="/fonts/pretendard/1.3.9/variable/pretendardvariable-dynamic-subset.css"
+          precedence="font"
+          rel="stylesheet"
+        />
+        <link
+          href="/fonts/pretendard-jp/1.3.9/variable/pretendardvariable-jp-dynamic-subset.css"
+          precedence="font"
+          rel="stylesheet"
+        />
+        <link href="/fonts/noto-sans-sc/5.3.0/wght.css" precedence="font" rel="stylesheet" />
       </head>
-      <body className={`${PretendardVariable.className} antialiased h-full`}>
+      <body className="antialiased h-full">
         <ThemeProvider
           defaultTheme={DEFAULT_THEME}
           disableTransitionOnChange
