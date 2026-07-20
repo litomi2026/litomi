@@ -306,6 +306,66 @@ html {
 body {
   color: var(--color-foreground);
   background: var(--color-background);
+  font-family:
+    'Pretendard Variable',
+    'Pretendard JP Variable',
+    'Noto Sans SC Variable',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    'Helvetica Neue',
+    'Segoe UI',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'Malgun Gothic',
+    'Hiragino Sans',
+    Meiryo,
+    'Noto Sans JP',
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    sans-serif;
+}
+
+html:lang(ja) body {
+  font-family:
+    'Pretendard JP Variable',
+    'Pretendard Variable',
+    'Noto Sans SC Variable',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    'Helvetica Neue',
+    'Segoe UI',
+    'Hiragino Sans',
+    Meiryo,
+    'Noto Sans JP',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    sans-serif;
+}
+
+html:lang(zh-CN) body {
+  font-family:
+    'Noto Sans SC Variable',
+    'Pretendard Variable',
+    'PingFang SC',
+    'Microsoft YaHei',
+    'Noto Sans SC',
+    'Noto Sans CJK SC',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    sans-serif;
 }
 
 [data-sonner-toast][data-styled='true'] {

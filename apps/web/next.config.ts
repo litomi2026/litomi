@@ -105,6 +105,11 @@ const nextConfig: NextConfig = {
         },
       ],
     },
+    {
+      // Vendored fonts carry their upstream version in the path, so they are immutable.
+      source: '/fonts/:path*',
+      headers: [{ key: 'Cache-Control', value: `public, max-age=${sec('1 year')}, immutable` }],
+    },
   ],
   ...(!isProduction && {
     rewrites: async () => ({

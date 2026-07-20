@@ -44,7 +44,7 @@ export function generateLocalizedMetadata({ pathname, locale, title, description
     twitter: {
       ...socialMetadata,
       card: 'summary_large_image',
-      site: '@litomi_in',
+      site: '@litomi_cc',
     },
   }
 }
