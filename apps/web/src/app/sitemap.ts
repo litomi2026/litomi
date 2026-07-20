@@ -1,4 +1,4 @@
-import { PUBLIC_LOCALES } from '@litomi/domain/locale'
+import { DEFAULT_LOCALE, PUBLIC_LOCALES } from '@litomi/domain/locale'
 import { env } from '@litomi/env/client'
 import type { MetadataRoute } from 'next'
 
@@ -85,9 +85,18 @@ function localizedSitemapEntries(
   changeFrequency: NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>,
   priority: number,
 ): MetadataRoute.Sitemap {
+  const toURL = (locale: (typeof PUBLIC_LOCALES)[number]) =>
+    new URL(getPathname({ href: path, locale }), NEXT_PUBLIC_APP_ORIGIN).toString()
+
+  const languages = {
+    ...Object.fromEntries(PUBLIC_LOCALES.map((locale) => [locale, toURL(locale)])),
+    'x-default': toURL(DEFAULT_LOCALE),
+  }
+
   return PUBLIC_LOCALES.map((locale) => ({
-    url: new URL(getPathname({ href: path, locale }), NEXT_PUBLIC_APP_ORIGIN).toString(),
+    url: toURL(locale),
     changeFrequency,
     priority,
+    alternates: { languages },
   }))
 }

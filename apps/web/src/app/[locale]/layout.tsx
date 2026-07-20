@@ -19,6 +19,7 @@ import { MangaDetailModal } from '@/components/MangaDetailModal'
 import OriginProtectionTurnstile from '@/components/OriginProtectionTurnstile'
 import SEOText from '@/components/SEOText'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
+import SiteJsonLd from '@/components/SiteJsonLd'
 import OverlayHost from '@/components/ui/OverlayHost'
 import { getLocaleFromParams } from '@/i18n/server'
 import { generateLocalizedMetadata } from '@/lib/metadata'
@@ -107,6 +108,7 @@ export default async function RootLayout({ children, params }: Props) {
         <meta content={appMetadata.shortName} name="apple-mobile-web-app-title" />
         <meta content="f9b44ff18cfe0010c3c2eeab98eb7a9c" name="juicyads-site-verification" />
         <meta content="c8c42155770cd0c29a31f02c8a926ed2" name="6a97888e-site-verification" />
+        <SiteJsonLd locale={locale} />
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <ThemeProvider

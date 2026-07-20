@@ -1,4 +1,5 @@
 import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@litomi/domain/app/metadata'
+import { DEFAULT_LOCALE } from '@litomi/domain/locale'
 import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
@@ -6,6 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: APPLICATION_NAME,
     short_name: SHORT_NAME,
     description: DESCRIPTION,
+    lang: DEFAULT_LOCALE,
     start_url: '/',
     display: 'standalone',
     display_override: ['window-controls-overlay', 'standalone'],
