@@ -21,9 +21,9 @@ export default function BottomNavigation() {
       <div
         className={twMerge(
           'pointer-events-auto mx-auto grid w-full max-w-md grid-cols-[4fr_1fr] items-center px-2',
-          'rounded-3xl border border-foreground/15 bg-background/80 shadow-lg backdrop-blur',
-          'origin-bottom transition duration-300',
-          'data-[auto-hide=true]:scale-95 data-[auto-hide=true]:opacity-30',
+          'rounded-3xl border border-foreground/15 bg-background/80 shadow backdrop-blur',
+          'origin-bottom transition',
+          'data-[auto-hide=true]:scale-98 data-[auto-hide=true]:opacity-30',
         )}
         data-auto-hide={isNavigationHidden || undefined}
         onClick={revealNavigationAutoHide}
