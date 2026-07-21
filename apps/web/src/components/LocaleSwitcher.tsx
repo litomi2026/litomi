@@ -10,7 +10,7 @@ type Props = {
   className?: string
 }
 
-const itemClassName = 'rounded-full px-3 py-1.5 text-sm font-medium whitespace-nowrap transition'
+const itemClassName = 'rounded-full px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition sm:text-sm'
 
 export default function LocaleSwitcher({ className }: Props) {
   const currentLocale = useLocale()
