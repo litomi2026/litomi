@@ -150,6 +150,7 @@ export const messages = {
     },
     Navigation: {
       sidebar: {
+        label: '주요 메뉴',
         home: '홈',
         search: '검색',
         ranking: '인기',
@@ -340,6 +341,7 @@ export const messages = {
     },
     Navigation: {
       sidebar: {
+        label: 'Main navigation',
         home: 'Home',
         search: 'Explore',
         ranking: 'Popular',
@@ -531,6 +533,7 @@ export const messages = {
     },
     Navigation: {
       sidebar: {
+        label: 'メインナビゲーション',
         home: 'ホーム',
         search: '検索',
         ranking: '人気',
@@ -712,6 +715,7 @@ export const messages = {
     },
     Navigation: {
       sidebar: {
+        label: '主导航',
         home: '首页',
         search: '搜索',
         ranking: '热门',

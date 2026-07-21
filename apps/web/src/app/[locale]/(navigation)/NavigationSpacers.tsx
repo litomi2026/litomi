@@ -3,5 +3,5 @@ export function DesktopNavigationSpacer() {
 }
 
 export function MobileNavigationSpacer() {
-  return <div aria-hidden className="w-full h-[calc(4rem+var(--safe-area-bottom))] shrink-0 sm:hidden" />
+  return <div aria-hidden className="w-full h-[calc(4rem+max(var(--safe-area-bottom),0.75rem))] shrink-0 sm:hidden" />
 }

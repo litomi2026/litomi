@@ -59,7 +59,7 @@ export default function SelectableLink({
             {icon}
           </span>
         </LinkPending>
-        <span className="hidden min-w-0 2xl:block">{children}</span>
+        <span className="min-w-0 sr-only 2xl:not-sr-only">{children}</span>
       </div>
     </Link>
   )
