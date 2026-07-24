@@ -8,7 +8,6 @@ import { createFactory } from 'hono/factory'
 import type { Env } from '@/app'
 
 import { requireAuth } from '@/middleware/require-auth'
-import { lockUserRowForUpdate } from '@/utils/lock-user-row'
 import { problemResponse } from '@/utils/problem'
 import { zProblemValidator } from '@/utils/validator'
 
@@ -21,12 +20,7 @@ route.delete('/', ...middlewares, async (c) => {
   const { id: mangaId } = c.req.valid('param')
 
   try {
-    await db.transaction(async (tx) => {
-      // Use the same per-user lock as PUT so concurrent bookmark writes stay ordered.
-      await lockUserRowForUpdate(tx, userId)
-
-      await tx.delete(bookmarkTable).where(and(eq(bookmarkTable.userId, userId), eq(bookmarkTable.mangaId, mangaId)))
-    })
+    await db.delete(bookmarkTable).where(and(eq(bookmarkTable.userId, userId), eq(bookmarkTable.mangaId, mangaId)))
 
     return c.body(null, 204)
   } catch (error) {

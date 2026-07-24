@@ -46,12 +46,13 @@ route.put('/', ...middlewares, async (c) => {
         }
       }
 
-      const limit = await getBookmarkLimit(tx, userId)
-
-      const [{ count: currentCount }] = await tx
-        .select({ count: count(bookmarkTable.mangaId) })
-        .from(bookmarkTable)
-        .where(eq(bookmarkTable.userId, userId))
+      const [limit, [{ count: currentCount }]] = await Promise.all([
+        getBookmarkLimit(tx, userId),
+        tx
+          .select({ count: count(bookmarkTable.mangaId) })
+          .from(bookmarkTable)
+          .where(eq(bookmarkTable.userId, userId)),
+      ])
 
       if (Number(currentCount) >= limit) {
         throw new Error(ErrorCode.BOOKMARK_LIMIT_REACHED)
