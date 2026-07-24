@@ -226,15 +226,15 @@ export async function refreshSession(
 
     await insertSessionToken(tokenValues, tx)
 
-    await markSessionTokenRotated(tx, token.id, nextToken.id, now)
-
-    await touchSessionFamily(tx, family.id, {
-      idleExpiresAt: nextIdleExpiresAt,
-      lastUsedAt: now,
-      deviceLabel: truncateSessionMetadata(deviceLabel ?? family.deviceLabel, SESSION_DEVICE_LABEL_MAX_LENGTH),
-    })
-
-    const adult = await readAdultFlag(tx, family.userId)
+    const [, , adult] = await Promise.all([
+      markSessionTokenRotated(tx, token.id, nextToken.id, now),
+      touchSessionFamily(tx, family.id, {
+        idleExpiresAt: nextIdleExpiresAt,
+        lastUsedAt: now,
+        deviceLabel: truncateSessionMetadata(deviceLabel ?? family.deviceLabel, SESSION_DEVICE_LABEL_MAX_LENGTH),
+      }),
+      readAdultFlag(tx, family.userId),
+    ])
 
     return {
       adult,

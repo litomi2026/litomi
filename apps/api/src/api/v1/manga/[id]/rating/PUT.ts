@@ -66,19 +66,20 @@ route.put('/:id/rating', ...middlewares, async (c) => {
         }
       }
 
-      // 3) 신규 생성만 한도 체크 (COUNT + 확장 합계)
-      const [expansion] = await tx
-        .select({ totalAmount: sum(userExpansionTable.amount) })
-        .from(userExpansionTable)
-        .where(and(eq(userExpansionTable.userId, userId), eq(userExpansionTable.type, EXPANSION_TYPE.RATING)))
+      // 3) 신규 생성만 한도 체크 (COUNT + 확장 합계, 서로 독립적이라 한 번의 왕복으로 묶음)
+      const [[expansion], [{ count: currentCount }]] = await Promise.all([
+        tx
+          .select({ totalAmount: sum(userExpansionTable.amount) })
+          .from(userExpansionTable)
+          .where(and(eq(userExpansionTable.userId, userId), eq(userExpansionTable.type, EXPANSION_TYPE.RATING))),
+        tx
+          .select({ count: count(userRatingTable.mangaId) })
+          .from(userRatingTable)
+          .where(eq(userRatingTable.userId, userId)),
+      ])
 
       const extra = Number(expansion?.totalAmount ?? 0)
       const limit = Math.min(MAX_RATINGS_PER_USER + extra, POINT_CONSTANTS.RATING_MAX_EXPANSION)
-
-      const [{ count: currentCount }] = await tx
-        .select({ count: count(userRatingTable.mangaId) })
-        .from(userRatingTable)
-        .where(eq(userRatingTable.userId, userId))
 
       if (Number(currentCount) >= limit) {
         throw new Error(ErrorCode.RATING_LIMIT_REACHED)
