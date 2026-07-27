@@ -23,14 +23,16 @@ export default function MobileNavigationButton() {
   return (
     <>
       <button
+        aria-expanded={isMenuOpen}
+        aria-haspopup="dialog"
         aria-label={t('menu')}
-        className={`${topNavigationActionClassName} sm:hidden`}
+        className={`${topNavigationActionClassName} aria-expanded:bg-zinc-900 sm:hidden`}
         onClick={handleMenuClick}
         type="button"
       >
         <Menu className="size-5" />
       </button>
-      {isMenuOpen && <MobileNavigationMenu onClose={handleClose} />}
+      <MobileNavigationMenu onClose={handleClose} open={isMenuOpen} />
     </>
   )
 }
