@@ -11,8 +11,6 @@ import useCooldown from '@/hook/useCooldown'
 import { usePathname, useRouter } from '@/i18n/navigation'
 import { reloadIfStaleDeployment } from '@/utils/stale-deployment'
 
-import { SearchHeaderSpacer } from './SearchHeaderSpacer'
-
 type Props = {
   error: Error & { digest?: string }
   reset: () => void
@@ -51,7 +49,6 @@ export default function ErrorPage({ error, reset }: Props) {
 
   return (
     <>
-      <SearchHeaderSpacer />
       <main className="flex flex-col grow justify-center items-center gap-6 text-center px-4">
         <h1 className="flex items-center justify-center gap-2 text-xl md:text-2xl">
           <TriangleAlert aria-hidden className="size-6 shrink-0 text-amber-400" />
