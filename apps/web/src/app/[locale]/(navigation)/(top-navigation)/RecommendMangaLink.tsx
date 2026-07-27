@@ -15,8 +15,8 @@ export default function RecommendMangaLink() {
 
   return (
     <Link
-      aria-current={isRecommendPage}
-      className={`${topNavigationActionClassName} aria-current:bg-brand aria-current:text-background aria-current:font-semibold aria-current:pointer-events-none`}
+      aria-current={isRecommendPage ? 'page' : undefined}
+      className={`${topNavigationActionClassName} aria-[current=page]:bg-brand aria-[current=page]:text-background aria-[current=page]:font-semibold aria-[current=page]:pointer-events-none`}
       href="/recommend/manga"
     >
       <LinkPending className="size-5">

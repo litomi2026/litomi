@@ -226,13 +226,13 @@ function MobileMenuLink({
   const isSelected = hrefMatch ? pathname.includes(hrefMatch) : pathname === href
   const isSamePath = pathname === href
   const selectedIconClassName = isSelected ? getSelectedIconClassName(selectedIconStyle) : ''
-  const iconClassName = 'size-4 shrink-0 text-zinc-400 aria-current:text-foreground'
+  const iconClassName = 'size-4 shrink-0 text-zinc-400 group-aria-[current=page]:text-foreground'
 
   return (
     <Link
       aria-current={isSelected ? 'page' : undefined}
       className={twMerge(
-        'flex items-center gap-4 p-3 rounded-lg transition hover:bg-zinc-800/50 border border-transparent',
+        'group flex items-center gap-4 p-3 rounded-lg transition hover:bg-zinc-800/50 border border-transparent',
         'aria-[current=page]:bg-zinc-800 aria-[current=page]:border-zinc-700',
       )}
       href={href}

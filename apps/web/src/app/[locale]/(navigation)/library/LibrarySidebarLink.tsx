@@ -37,9 +37,9 @@ export default function LibrarySidebarLink({
 
   return (
     <Link
-      aria-current={isActive}
+      aria-current={isActive ? 'page' : undefined}
       className={twMerge(
-        'flex text-sm items-center gap-3 p-2 lg:px-3 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-foreground aria-current:bg-zinc-800 aria-current:text-foreground aria-current:border-zinc-700',
+        'group flex text-sm items-center gap-3 p-2 lg:px-3 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-foreground aria-[current=page]:bg-zinc-800 aria-[current=page]:text-foreground aria-[current=page]:border-zinc-700',
         className,
       )}
       href={href}
@@ -48,18 +48,14 @@ export default function LibrarySidebarLink({
       title={title}
     >
       <div
-        aria-current={isActive}
-        className="size-8 rounded-lg flex items-center justify-center shrink-0 aria-current:shadow-md"
+        className="size-8 rounded-lg flex items-center justify-center shrink-0 group-aria-[current=page]:shadow-md"
         style={iconBackground ? { background: iconBackground } : undefined}
       >
         <LinkPending className="size-4 text-background">{icon}</LinkPending>
       </div>
       <div className="flex-1 sm:hidden lg:block">
         <div className="flex items-center justify-between gap-1.5">
-          <h3
-            aria-current={isActive}
-            className="font-medium line-clamp-1 break-all aria-current:text-foreground text-zinc-500"
-          >
+          <h3 className="font-medium line-clamp-1 break-all group-aria-[current=page]:text-foreground text-zinc-500">
             {title}
           </h3>
           {badge}

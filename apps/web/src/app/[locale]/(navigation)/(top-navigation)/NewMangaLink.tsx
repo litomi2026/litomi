@@ -15,8 +15,8 @@ export default function NewMangaLink() {
 
   return (
     <Link
-      aria-current={isNewPage}
-      className={`${topNavigationActionClassName} aria-current:bg-brand aria-current:text-background aria-current:font-semibold aria-current:pointer-events-none`}
+      aria-current={isNewPage ? 'page' : undefined}
+      className={`${topNavigationActionClassName} aria-[current=page]:bg-brand aria-[current=page]:text-background aria-[current=page]:font-semibold aria-[current=page]:pointer-events-none`}
       href="/new"
     >
       <LinkPending className="size-5">
