@@ -81,10 +81,7 @@ export default function MobileNavigationMenu({ open, onClose }: Props) {
           <X className="size-5" />
         </button>
       </div>
-      <nav
-        aria-label={t('navLabel')}
-        className="grid min-h-0 grid-cols-2 gap-1 overflow-y-auto p-3 pb-[calc(0.75rem+var(--safe-area-bottom))]"
-      >
+      <nav aria-label={t('navLabel')} className="grid min-h-0 grid-cols-2 gap-1 overflow-y-auto p-3">
         <MobileMenuLink
           href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
           icon={<Flame />}

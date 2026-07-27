@@ -26,7 +26,6 @@ import { MANGA_GRID_COLUMN } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 import { SearchParam, SearchSort } from './constants'
-import { SearchHeaderSpacer } from './SearchHeaderSpacer'
 import useTrackSearchTrendingView from './useTrackSearchTrendingView'
 
 const Error400 = dynamic(() => import('./Error400'))
@@ -116,13 +115,6 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
       type: 'loading',
     })
   }
-
-  const headerWithSpacer = (
-    <>
-      <SearchHeaderSpacer />
-      {header}
-    </>
-  )
 
   const footer = (
     <>
@@ -218,7 +210,7 @@ function SearchResultContent({ header, nativeGridSponsor, searchParams, view }: 
         fetchNextPage={fetchNextPage}
         footer={footer}
         hasNextPage={canAutoLoadMore}
-        header={headerWithSpacer}
+        header={header}
         items={items}
         renderItem={renderItem}
         view={view}
@@ -241,7 +233,6 @@ function SearchResultLoading({ view }: { view: View }) {
 function SearchSpacer({ children }: { children: ReactNode }) {
   return (
     <>
-      <SearchHeaderSpacer />
       {children}
       <MobileNavigationSpacer />
     </>

@@ -285,7 +285,7 @@ export default function SearchForm({ className = '' }: Props) {
       <SearchParamsSync onUpdate={handleSearchParamUpdate} />
       <form
         className={twMerge(
-          'flex items-center gap-1 rounded-2xl border border-zinc-700 bg-zinc-900/92 text-zinc-400 shadow-sm transition',
+          'flex items-center gap-1 rounded-full border border-zinc-700 bg-zinc-900/92 text-zinc-400 shadow-sm transition',
           'hover:border-zinc-600 hover:bg-zinc-900 focus-within:border-zinc-500 focus-within:bg-zinc-900',
         )}
         onSubmit={onSubmit}
@@ -333,7 +333,7 @@ export default function SearchForm({ className = '' }: Props) {
         <button
           aria-label={t('submit')}
           className={twMerge(
-            'flex items-center justify-center rounded-[0.95rem] bg-foreground px-3.5 py-2 shrink-0 text-sm font-bold text-background',
+            'flex items-center justify-center rounded-full bg-foreground px-3.5 py-2 shrink-0 text-sm font-bold text-background',
             'shadow-sm transition disabled:opacity-60 active:scale-[0.98] hover:opacity-90',
             'focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:ring-inset',
           )}
