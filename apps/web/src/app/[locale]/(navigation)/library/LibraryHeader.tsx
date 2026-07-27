@@ -2,6 +2,7 @@
 
 import type { LibraryListItem } from '@litomi/contracts'
 
+import { Dialog } from '@litomi/ui'
 import { Edit, Menu, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
@@ -95,6 +96,8 @@ export default function LibraryHeader({
     history: t('header.pageTitle.history'),
     rating: t('header.pageTitle.rating'),
   }[pageKind]
+
+  const drawerTitle = pageKind === 'browse' ? t('header.browseDrawerTitle') : t('header.drawerTitle')
 
   const ownedLibraries = libraries
     .filter((library) => library.userId === userId && library.id !== currentLibraryId)
@@ -199,26 +202,27 @@ export default function LibraryHeader({
     return currentLibrary?.itemCount
   }
 
+  // NOTE: 사이드바가 상시 노출되는 폭이 되면 드로어는 중복이라 닫아요
   useEffect(() => {
     if (!isDrawerOpen) {
       return
     }
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const query = window.matchMedia('(min-width: 40rem)')
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
+    function closeWhenSidebarVisible(event: MediaQueryListEvent) {
+      if (event.matches) {
         setIsDrawerOpen(false)
       }
     }
 
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
+    if (query.matches) {
+      setIsDrawerOpen(false)
     }
+
+    query.addEventListener('change', closeWhenSidebarVisible)
+
+    return () => query.removeEventListener('change', closeWhenSidebarVisible)
   }, [isDrawerOpen])
 
   return (
@@ -226,7 +230,7 @@ export default function LibraryHeader({
       <AutoHideHeader
         className={twMerge(
           'fixed top-0 left-0 right-0 z-40 border-b border-zinc-800 bg-background transition px-safe pt-safe',
-          'sm:left-[calc(5rem+67px)] sm:pl-0',
+          'sm:left-36.75 sm:pl-0',
           'lg:left-72',
           '2xl:left-[calc((100vw-1536px)/2+29rem)] 2xl:right-[calc((100vw-1536px)/2)]',
         )}
@@ -234,8 +238,10 @@ export default function LibraryHeader({
         <div className="flex min-h-(--library-header-height) items-center justify-between gap-3 p-2.5 sm:p-3">
           <div className="flex items-center gap-3">
             <button
+              aria-expanded={isDrawerOpen}
+              aria-haspopup="dialog"
               aria-label={t('header.menu')}
-              className="p-3 -mx-2 hover:bg-zinc-800 rounded-lg transition sm:hidden"
+              className="p-3 -mx-2 hover:bg-zinc-800 rounded-lg transition aria-expanded:bg-zinc-800 sm:hidden"
               onClick={openDrawer}
               type="button"
             >
@@ -290,39 +296,38 @@ export default function LibraryHeader({
           </div>
         </div>
       </AutoHideHeader>
-      {isDrawerOpen && (
-        <>
-          <div className="fixed inset-0 z-50 bg-background/50 animate-fade-in-fast sm:hidden" onClick={closeDrawer} />
-          <div
-            className="fixed top-0 left-0 z-50 h-full w-3xs bg-background border-r shadow-xl pt-safe animate-fade-in-fast sm:hidden overflow-y-auto"
-            ref={drawerScrollContainerRef}
+      <Dialog
+        ariaLabel={drawerTitle}
+        className={twMerge(
+          'w-3xs max-w-[85vw] mr-auto scale-100 -translate-x-full rounded-none border-r border-zinc-800 bg-background',
+          'data-[state=open]:translate-x-0',
+        )}
+        onClose={closeDrawer}
+        open={isDrawerOpen}
+      >
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-zinc-800 p-4">
+          <h2 className="text-lg font-medium">{drawerTitle}</h2>
+          <button
+            aria-label={t('header.closeDrawer')}
+            className="p-3 -m-2 hover:bg-zinc-800 rounded-lg transition"
+            onClick={closeDrawer}
+            type="button"
           >
-            <div className="sticky top-0 bg-background flex items-center justify-between p-4 border-b border-zinc-800">
-              <h2 className="text-lg font-medium">
-                {pageKind === 'browse' ? t('header.browseDrawerTitle') : t('header.drawerTitle')}
-              </h2>
-              <button
-                className="p-3 -m-2 hover:bg-zinc-800 rounded-lg transition"
-                onClick={closeDrawer}
-                title="close drawer"
-                type="button"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-            <LibrarySidebar
-              className="pb-safe"
-              libraries={libraries}
-              onClick={closeDrawer}
-              pagination={sidebarPagination}
-              pinnedLibraries={pinnedLibraries}
-              scrollContainerRef={drawerScrollContainerRef}
-              summary={summary}
-              userId={userId}
-            />
-          </div>
-        </>
-      )}
+            <X className="size-5" />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto" ref={drawerScrollContainerRef}>
+          <LibrarySidebar
+            libraries={libraries}
+            onClick={closeDrawer}
+            pagination={sidebarPagination}
+            pinnedLibraries={pinnedLibraries}
+            scrollContainerRef={drawerScrollContainerRef}
+            summary={summary}
+            userId={userId}
+          />
+        </div>
+      </Dialog>
     </>
   )
 }
