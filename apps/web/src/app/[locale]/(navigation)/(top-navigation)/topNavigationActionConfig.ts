@@ -23,4 +23,4 @@ export const TOR_LINKS = {
 } as const
 
 export const topNavigationActionClassName =
-  'flex items-center gap-2 rounded-xl border-2 px-3 py-2 text-foreground transition hover:bg-zinc-900'
+  "relative flex items-center gap-2 rounded-full px-3 py-2 text-foreground transition hover:bg-zinc-900 before:content-[''] before:absolute before:-inset-x-0.5 before:-inset-y-1"

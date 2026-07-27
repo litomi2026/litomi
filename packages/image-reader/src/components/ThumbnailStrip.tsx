@@ -126,7 +126,7 @@ export default function ThumbnailStrip<TPage extends ReaderPage>({
               aria-label={messages.goToPage(i + 1)}
               className={twMerge(
                 'relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition',
-                'aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70',
+                'aria-[current=page]:border-foreground aria-[current=page]:scale-105 active:scale-95 hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/70',
               )}
               data-page-index={i}
               key={page.id}

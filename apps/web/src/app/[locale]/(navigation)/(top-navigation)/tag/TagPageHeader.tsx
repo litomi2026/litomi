@@ -17,7 +17,7 @@ export default async function TagPageHeader({ activeView, locale, tagsHref = '/t
   const t = await getTranslations({ locale, namespace: 'Tag' })
 
   const viewLinkClassName =
-    'inline-flex items-center justify-center gap-2 rounded-md px-3 py-1 text-sm font-semibold text-zinc-400 transition hover:bg-zinc-800/70 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 aria-current:bg-foreground aria-current:text-background'
+    'inline-flex items-center justify-center gap-2 rounded-md px-3 py-1 text-sm font-semibold text-zinc-400 transition hover:bg-zinc-800/70 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 aria-[current=page]:bg-foreground aria-[current=page]:text-background'
 
   return (
     <header className="mx-auto flex w-full max-w-6xl flex-col gap-4 pb-1 md:flex-row md:items-end md:justify-between">

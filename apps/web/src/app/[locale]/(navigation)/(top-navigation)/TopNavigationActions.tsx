@@ -19,8 +19,11 @@ export default async function TopNavigationActions({ locale }: Props) {
   const t = await getTranslations({ locale, namespace: 'TopNavigation.actions' })
 
   return (
-    <AutoHideHeader className="sticky top-0 z-40 -mx-2 border-b-2 border-background bg-background/90 px-2 pt-[calc(0.5rem+var(--safe-area-top))] pb-2 backdrop-blur">
-      <nav aria-label={t('label')} className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end md:text-base">
+    <AutoHideHeader className="pointer-events-none sticky top-(--safe-area-top) z-40 origin-top pt-3 transition data-[auto-hide=true]:scale-98">
+      <nav
+        aria-label={t('label')}
+        className="pointer-events-auto mx-auto flex w-fit items-center gap-1 px-2 py-1 text-sm sm:mr-0 md:text-base rounded-3xl border border-foreground/15 bg-background/90 shadow backdrop-blur"
+      >
         <MobileNavigationButton />
         <NewMangaLink />
         <RecommendMangaLink />

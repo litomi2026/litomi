@@ -19,8 +19,8 @@ export default function ViewSliderLink() {
     <div className="flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400">
       {layouts.map(([layout, { index, label }]) => (
         <Link
-          aria-current={currentLayout === layout}
-          className="flex items-center relative rounded px-3 py-1 aria-current:font-bold aria-current:text-foreground aria-current:pointer-events-none"
+          aria-current={currentLayout === layout ? 'page' : undefined}
+          className="flex items-center relative rounded px-3 py-1 aria-[current=page]:font-bold aria-[current=page]:text-foreground aria-[current=page]:pointer-events-none"
           href={layout}
           key={label}
           prefetch={false}

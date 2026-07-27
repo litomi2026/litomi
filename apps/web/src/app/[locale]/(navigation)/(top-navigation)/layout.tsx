@@ -23,7 +23,7 @@ export default async function Layout({ children, params }: LayoutProps<'/[locale
   const pornDudeUrl = PORN_DUDE_URL_BY_LOCALE[locale]
 
   return (
-    <div className="flex flex-col flex-1 gap-2 px-2 pb-2">
+    <div className="flex flex-col flex-1 gap-2 px-2 pt-safe pb-2">
       <TopNavigationActions locale={locale} />
       <main className="flex flex-col grow gap-2">{children}</main>
       <footer className="text-center grid gap-2 p-4 text-sm">

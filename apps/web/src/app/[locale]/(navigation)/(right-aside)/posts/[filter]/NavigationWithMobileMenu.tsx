@@ -26,7 +26,7 @@ export default function NavigationWithMobileMenu({ children, className }: Props)
       <TopNavigation className={className} onMenuClick={handleMenuClick}>
         {children}
       </TopNavigation>
-      {isMenuOpen && <MobileNavigationMenu onClose={handleClose} />}
+      <MobileNavigationMenu onClose={handleClose} open={isMenuOpen} />
     </>
   )
 }

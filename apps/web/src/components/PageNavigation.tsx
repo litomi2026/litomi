@@ -29,7 +29,7 @@ export default function PageNavigation({
   const { startPage, endPage, visiblePageNumbers } = getVisiblePageRange(currentPage, totalPages, VISIBLE_PAGES)
 
   const commonClassName =
-    'justify-center items-center rounded-full px-2 min-w-10 h-10 aria-current:bg-brand-gradient aria-current:pointer-events-none aria-current:text-background aria-disabled:pointer-events-none aria-disabled:text-zinc-600 hover:bg-zinc-700 active:bg-zinc-800'
+    'justify-center items-center rounded-full px-2 min-w-10 h-10 aria-[current=page]:bg-brand-gradient aria-[current=page]:pointer-events-none aria-[current=page]:text-background aria-disabled:pointer-events-none aria-disabled:text-zinc-600 hover:bg-zinc-700 active:bg-zinc-800'
 
   return (
     <nav
@@ -73,7 +73,7 @@ export default function PageNavigation({
       {/* 현재 페이지 주변의 번호들 */}
       {visiblePageNumbers.map((page) => (
         <Link
-          aria-current={page === currentPage}
+          aria-current={page === currentPage ? 'page' : undefined}
           className={`flex ${commonClassName}`}
           href={`${hrefPrefix}${page}${hrefSuffix}`}
           key={page}

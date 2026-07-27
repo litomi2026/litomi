@@ -45,28 +45,28 @@ const CATEGORY_TONES: Record<
     dot: 'bg-rose-400 shadow-rose-400/40',
     skeleton: 'bg-rose-400/10',
     summary: 'from-rose-950/30 via-zinc-950/50',
-    tab: 'hover:border-rose-400/50 hover:bg-rose-950/20 hover:text-rose-100 aria-current:border-rose-400/70 aria-current:bg-rose-950/35 aria-current:text-rose-100 aria-current:ring-1 aria-current:ring-rose-300/20',
+    tab: 'hover:border-rose-400/50 hover:bg-rose-950/20 hover:text-rose-100 aria-[current=page]:border-rose-400/70 aria-[current=page]:bg-rose-950/35 aria-[current=page]:text-rose-100 aria-[current=page]:ring-1 aria-[current=page]:ring-rose-300/20',
   },
   male: {
     chip: 'border-sky-400/20 bg-sky-500/10 text-sky-100 hover:border-sky-300/45 hover:bg-sky-500/20',
     dot: 'bg-sky-400 shadow-sky-400/40',
     skeleton: 'bg-sky-400/10',
     summary: 'from-sky-950/30 via-zinc-950/50',
-    tab: 'hover:border-sky-400/50 hover:bg-sky-950/20 hover:text-sky-100 aria-current:border-sky-400/70 aria-current:bg-sky-950/35 aria-current:text-sky-100 aria-current:ring-1 aria-current:ring-sky-300/20',
+    tab: 'hover:border-sky-400/50 hover:bg-sky-950/20 hover:text-sky-100 aria-[current=page]:border-sky-400/70 aria-[current=page]:bg-sky-950/35 aria-[current=page]:text-sky-100 aria-[current=page]:ring-1 aria-[current=page]:ring-sky-300/20',
   },
   mixed: {
     chip: 'border-violet-400/20 bg-violet-500/10 text-violet-100 hover:border-violet-300/45 hover:bg-violet-500/20',
     dot: 'bg-violet-400 shadow-violet-400/40',
     skeleton: 'bg-violet-400/10',
     summary: 'from-violet-950/30 via-zinc-950/50',
-    tab: 'hover:border-violet-400/50 hover:bg-violet-950/20 hover:text-violet-100 aria-current:border-violet-400/70 aria-current:bg-violet-950/35 aria-current:text-violet-100 aria-current:ring-1 aria-current:ring-violet-300/20',
+    tab: 'hover:border-violet-400/50 hover:bg-violet-950/20 hover:text-violet-100 aria-[current=page]:border-violet-400/70 aria-[current=page]:bg-violet-950/35 aria-[current=page]:text-violet-100 aria-[current=page]:ring-1 aria-[current=page]:ring-violet-300/20',
   },
   other: {
     chip: 'border-zinc-600/50 bg-zinc-800/45 text-zinc-100 hover:border-zinc-400/60 hover:bg-zinc-700/60',
     dot: 'bg-zinc-300 shadow-zinc-300/30',
     skeleton: 'bg-zinc-700/40',
     summary: 'from-zinc-800/45 via-zinc-950/50',
-    tab: 'hover:border-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-100 aria-current:border-zinc-400/80 aria-current:bg-zinc-800/80 aria-current:text-zinc-100 aria-current:ring-1 aria-current:ring-zinc-300/20',
+    tab: 'hover:border-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-100 aria-[current=page]:border-zinc-400/80 aria-[current=page]:bg-zinc-800/80 aria-[current=page]:text-zinc-100 aria-[current=page]:ring-1 aria-[current=page]:ring-zinc-300/20',
   },
 }
 
@@ -84,7 +84,7 @@ export default function TagCategoryPageClient({ category }: TagCategoryPageClien
   return (
     <section className="mx-auto flex w-full max-w-6xl grow flex-col gap-4">
       <div className="grid gap-3">
-        <nav aria-label={t('categories.label')} className="grid grid-cols-2 gap-2 md:grid-cols-4">
+        <nav aria-label={t('categories.label')} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {TAG_CATEGORY_PARAMS.map((cat) => (
             <Link
               aria-current={cat === category ? 'page' : undefined}

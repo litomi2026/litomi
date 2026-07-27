@@ -36,9 +36,9 @@ export default function RandomRefreshButton({ timer, className = '', isLoading =
       type="button"
       aria-disabled={isDisabled}
       className={twMerge(
-        'bg-brand font-semibold hover:bg-brand/90 active:bg-brand/95 aria-disabled:font-normal aria-disabled:text-zinc-800 aria-disabled:bg-brand/50 aria-disabled:pointer-events-none',
+        'bg-brand font-semibold active:bg-brand/95 aria-disabled:font-normal aria-disabled:text-zinc-800 aria-disabled:bg-brand/50 aria-disabled:pointer-events-none',
         className,
-        'text-background',
+        'text-background hover:bg-brand/90',
       )}
       onClick={handleClick}
       title={showLoading ? t('loadingTitle') : cooldown > 0 ? t('cooldownTitle') : t('refreshTitle')}
