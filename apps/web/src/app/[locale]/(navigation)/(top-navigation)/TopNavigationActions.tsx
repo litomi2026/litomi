@@ -19,7 +19,7 @@ export default async function TopNavigationActions({ locale }: Props) {
   const t = await getTranslations({ locale, namespace: 'TopNavigation.actions' })
 
   return (
-    <AutoHideHeader className="pointer-events-none sticky top-(--safe-area-top) z-40 origin-top pt-3 transition data-[auto-hide=true]:scale-98">
+    <AutoHideHeader className="pointer-events-none sticky top-(--safe-area-top) z-40 origin-top pt-3 transition max-sm:data-[auto-hide=true]:scale-98">
       <nav
         aria-label={t('label')}
         className="pointer-events-auto mx-auto flex w-fit items-center gap-1 px-2 py-1 text-sm sm:mr-0 md:text-base rounded-3xl border border-foreground/15 bg-background/90 shadow backdrop-blur"

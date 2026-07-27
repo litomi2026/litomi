@@ -46,7 +46,6 @@ type SelectedIconStyle = 'fill-soft' | 'fill' | 'stroke'
 export default function MobileNavigationMenu({ open, onClose }: Props) {
   const pathname = usePathname()
   const openedPathnameRef = useRef(pathname)
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
   const t = useTranslations('Navigation.mobileMenu')
 
   // NOTE: 페이지 이동 시 자동으로 닫힘
@@ -61,25 +60,12 @@ export default function MobileNavigationMenu({ open, onClose }: Props) {
     }
   }, [onClose, open, pathname])
 
-  // NOTE: Dialog는 아직 숨겨진 상태에서 showModal()을 부르기 때문에 열린 뒤에 포커스를 옮겨요
-  useEffect(() => {
-    if (!open) {
-      return
-    }
-
-    const frame = requestAnimationFrame(() => {
-      closeButtonRef.current?.focus()
-    })
-
-    return () => cancelAnimationFrame(frame)
-  }, [open])
-
   return (
     <Dialog
       ariaLabel={t('menuLabel')}
       className={twMerge(
         'h-auto max-h-[85dvh] scale-100 translate-y-full self-end rounded-t-3xl',
-        'group-data-[state=open]:translate-y-0 max-sm:pt-0',
+        'data-[state=open]:translate-y-0 max-sm:pt-0',
       )}
       onClose={onClose}
       open={open}
@@ -90,7 +76,6 @@ export default function MobileNavigationMenu({ open, onClose }: Props) {
           aria-label={t('close')}
           className="-m-2 rounded-full p-2 transition hover:bg-zinc-800"
           onClick={onClose}
-          ref={closeButtonRef}
           type="button"
         >
           <X className="size-5" />

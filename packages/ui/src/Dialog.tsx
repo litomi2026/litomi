@@ -95,6 +95,18 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
       rafRef.current = window.requestAnimationFrame(() => {
         hasEnteredOpenStateRef.current = true
         setState('open')
+
+        // NOTE: showModal()은 아직 숨겨진 dialog에서 호출돼 포커스 대상을 찾지 못해요.
+        // 보이게 된 뒤에 옮기되, 내부가 이미 포커스를 가졌으면 건드리지 않아요.
+        if (!dialog.contains(document.activeElement)) {
+          const autoFocusTarget = dialog.querySelector<HTMLElement>('[autofocus]')
+
+          if (autoFocusTarget) {
+            autoFocusTarget.focus()
+          } else {
+            panelRef.current?.focus()
+          }
+        }
       })
 
       return
@@ -237,7 +249,7 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
     <dialog
       aria-label={ariaLabel}
       className={twMerge(
-        'fixed inset-0 m-0 h-dvh w-dvw max-h-none max-w-none p-0 border-0 bg-transparent text-foreground outline-none group flex items-center justify-center',
+        'fixed inset-0 m-0 h-dvh w-dvw max-h-none max-w-none p-0 border-0 bg-transparent text-foreground outline-none overflow-hidden group/dialog flex items-center justify-center',
         'data-[state=closed]:hidden backdrop:bg-black/80 backdrop:transition backdrop:opacity-0 data-[state=open]:backdrop:opacity-100',
       )}
       data-state={state}
@@ -248,14 +260,16 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
     >
       <div
         className={twMerge(
-          'flex w-dvw h-dvh flex-col overflow-hidden bg-zinc-900 transition scale-98 opacity-0 group-data-[state=open]:scale-100 group-data-[state=open]:opacity-100 max-sm:pt-safe max-sm:pb-safe sm:max-w-prose sm:h-auto sm:max-h-[calc(100dvh-4rem)] sm:w-full sm:rounded-xl sm:border-2 sm:border-zinc-800',
+          'flex w-dvw h-dvh flex-col overflow-hidden bg-zinc-900 outline-none transition scale-98 opacity-0 data-[state=open]:scale-100 data-[state=open]:opacity-100 max-sm:pt-safe max-sm:pb-safe sm:max-w-prose sm:h-auto sm:max-h-[calc(100dvh-4rem)] sm:w-full sm:rounded-xl sm:border-2 sm:border-zinc-800',
           className,
         )}
+        data-state={state}
         onClick={(e) => e.stopPropagation()}
         onTouchMoveCapture={stopScrollEventPropagation}
         onWheelCapture={stopScrollEventPropagation}
         ref={panelRef}
         style={style}
+        tabIndex={-1}
       >
         {children}
       </div>
