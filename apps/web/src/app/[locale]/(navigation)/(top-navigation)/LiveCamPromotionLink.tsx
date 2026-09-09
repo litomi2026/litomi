@@ -1,24 +1,25 @@
 'use client'
 
-import type { PublicLocale } from '@litomi/domain/locale'
 import { Webcam } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
 import { track } from '@/lib/analytics/browser'
 import { createPromotionEventParams } from '@/lib/analytics/promotion'
 
-import { LIVE_CAM_AD_URL_BY_LOCALE, topNavigationActionClassName } from './topNavigationActionConfig'
+import { topNavigationActionClassName } from './topNavigationActionConfig'
+
+const LIVE_CAM_AD_URL =
+  'https://go.mayzaent.com/easy?campaignId=9d20b0e1cdc5d8f431284a7a4770b95bd86895005a5c5fed752274c9c358439d&userId=aa4758cfc7c43c51b566cfe94b70d526647e75bdcc7256792426df97f7d809ac&p1=litomi'
 
 export default function LiveCamPromotionLink() {
   const t = useTranslations('TopNavigation.actions')
-  const locale = useLocale() as PublicLocale
 
   const promotionParams = createPromotionEventParams({
     creative_name: 'top-navigation-button',
     creative_slot: 'top-navigation',
     promotion_id: 'live-cam-top-navigation',
-    promotion_name: '라이브 섹스 캠',
+    promotion_name: '라이브 캠',
   })
 
   const { ref } = useGAViewEvent({
@@ -29,14 +30,14 @@ export default function LiveCamPromotionLink() {
 
   return (
     <a
-      className={topNavigationActionClassName}
-      href={LIVE_CAM_AD_URL_BY_LOCALE[locale]}
+      className={`${topNavigationActionClassName} shrink-0 whitespace-nowrap`}
+      href={LIVE_CAM_AD_URL}
       onClick={() => track('select_promotion', promotionParams)}
       ref={ref}
       rel="noopener sponsored"
       target="_blank"
     >
-      <Webcam className="size-5 hidden sm:block" />
+      <Webcam aria-hidden className="size-5 hidden sm:block" />
       {t('liveCam')}
     </a>
   )

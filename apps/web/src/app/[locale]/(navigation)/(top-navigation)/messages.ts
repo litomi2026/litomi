@@ -35,7 +35,7 @@ export const messages = {
         recommend: '추천',
         new: '신작',
         random: '랜덤',
-        liveCam: '라이브 섹스 캠',
+        liveCam: '라이브 캠',
         randomRefresh: {
           loadingTitle: '로딩 중...',
           cooldownTitle: '잠시 후에 시도해 주세요',
@@ -147,7 +147,7 @@ export const messages = {
         recommend: 'Recommended',
         new: 'New',
         random: 'Random',
-        liveCam: 'Live sex cam',
+        liveCam: 'Live Cams',
         randomRefresh: {
           loadingTitle: 'Loading...',
           cooldownTitle: 'Please try again shortly',
@@ -259,7 +259,7 @@ export const messages = {
         recommend: 'おすすめ',
         new: '新着',
         random: 'おまかせ',
-        liveCam: '成人向け生配信',
+        liveCam: 'Live Cams',
         randomRefresh: {
           loadingTitle: '読み込み中...',
           cooldownTitle: '少し待ってからお試しください',
@@ -371,7 +371,7 @@ export const messages = {
         recommend: '推荐',
         new: '新作',
         random: '随机',
-        liveCam: '性爱视频直播',
+        liveCam: 'Live Cams',
         randomRefresh: {
           loadingTitle: '加载中...',
           cooldownTitle: '请稍后再试',
