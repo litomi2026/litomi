@@ -259,7 +259,7 @@ export const messages = {
         recommend: 'おすすめ',
         new: '新着',
         random: 'おまかせ',
-        liveCam: 'Live Cams',
+        liveCam: 'ライブカメラ',
         randomRefresh: {
           loadingTitle: '読み込み中...',
           cooldownTitle: '少し待ってからお試しください',
@@ -371,7 +371,7 @@ export const messages = {
         recommend: '推荐',
         new: '新作',
         random: '随机',
-        liveCam: 'Live Cams',
+        liveCam: '直播摄像头',
         randomRefresh: {
           loadingTitle: '加载中...',
           cooldownTitle: '请稍后再试',
